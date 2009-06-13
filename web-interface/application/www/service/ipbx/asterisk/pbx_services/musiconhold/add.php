@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$fm_save = null;
+
 do
 {
 	if(isset($_QR['fm_send']) === false)
@@ -28,14 +30,19 @@ do
 	if(($result = $musiconhold->chk_values($_QR)) === false
 	|| ($result['mode'] === 'custom' && (string) $result['application'] === '') === true)
 	{
+		$fm_save = false;
 		$info = $musiconhold->get_filter_result();
 		break;
 	}
 
 	if($musiconhold->add_category($result) !== false)
 		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
+	else
+		$fm_save = false;
 }
 while(false);
+
+$_HTML->set_var('fm_save',$fm_save);
 
 $element = $musiconhold->get_element();
 

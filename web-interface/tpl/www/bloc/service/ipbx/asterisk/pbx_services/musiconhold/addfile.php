@@ -23,6 +23,11 @@ $element = $this->get_var('element');
 $option = $this->get_var('option');
 $info = $this->get_var('info');
 
+if($this->get_var('fm_save') === false):
+	$dhtml = &$this->get_module('dhtml');
+	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
+endif;
+
 ?>
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">

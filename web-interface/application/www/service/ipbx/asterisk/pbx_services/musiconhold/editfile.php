@@ -31,6 +31,8 @@ if(isset($_QR['id']) === false || ($info['file'] = $musiconhold->get_file($_QR['
 $info['filename'] = $info['file']['basename'];
 $id = $info['file']['filename'];
 
+$fm_save = null;
+
 do
 {
 	if(isset($_QR['fm_send'],$_QR['filename'],$_QR['category']) === false
@@ -42,13 +44,18 @@ do
 
 	if(($info['category'] = $musiconhold->chk_value('category',$info['category'])) === false
 	|| ($info['filename'] = $musiconhold->chk_value('filename',$info['filename'])) === false)
+	{
+		$fm_save = false;
 		break;
+	}
 
 	$filename = xivo_file::joinpath($info['file']['dirname'],$info['file']['filename']);
 	$newfilename = xivo_file::joinpath($info['category'],$info['filename']);
 
 	if($musiconhold->edit_file($filename,$newfilename) === true)
 		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
+	else
+		$fm_save = false;
 
 	$info['filename'] = $info['file']['basename'];
 }
@@ -56,5 +63,6 @@ while(false);
 
 $_HTML->set_var('id',$id);
 $_HTML->set_var('info',$info);
+$_HTML->set_var('fm_save',$fm_save);
 
 ?>

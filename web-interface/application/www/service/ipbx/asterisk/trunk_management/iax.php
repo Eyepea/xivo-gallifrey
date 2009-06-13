@@ -32,7 +32,7 @@ switch($act)
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_IAX));
 
-		$result = null;
+		$result = $fm_save = null;
 
 		$allow = array();
 
@@ -41,6 +41,7 @@ switch($act)
 			if($apptrunk->set_add($_QR) === false
 			|| $apptrunk->add() === false)
 			{
+				$fm_save = false;
 				$result = $apptrunk->get_result();
 
 				if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
@@ -74,6 +75,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
 		$_HTML->set_var('info',$result);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$element);
 		$_HTML->set_var('context_list',$apptrunk->get_context_list());
 		$_HTML->set_var('timezone_list',$apptrunk->get_timezones());
@@ -86,7 +88,7 @@ switch($act)
 		|| ($info = $apptrunk->get($_QR['id'])) === false)
 			$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
 
-		$result = null;
+		$result = $fm_save = null;
 		$return = &$info;
 
 		if(isset($info['protocol']['allow']) === true)
@@ -101,6 +103,7 @@ switch($act)
 			if($apptrunk->set_edit($_QR) === false
 			|| $apptrunk->edit() === false)
 			{
+				$fm_save = false;
 				$result = $apptrunk->get_result();
 
 				if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
@@ -135,6 +138,7 @@ switch($act)
 
 		$_HTML->set_var('id',$info['trunkfeatures']['id']);
 		$_HTML->set_var('info',$return);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$element);
 		$_HTML->set_var('context_list',$apptrunk->get_context_list());
 		$_HTML->set_var('timezone_list',$apptrunk->get_timezones());

@@ -41,13 +41,19 @@ switch($act)
 		$param['act'] = 'listdir';
 
 		$info = array();
+		$fm_save = null;
 
-		if(isset($_QR['fm_send']) === true
-		&& ($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get_qr('dirname'))) !== false
-		&& $sounds->add_dir($info['dirname']) === true)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+		if(isset($_QR['fm_send']) === true)
+		{
+			if(($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get_qr('dirname'))) !== false
+			&& $sounds->add_dir($info['dirname']) === true)
+				$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			else
+				$fm_save = false;
+		}
 
 		$_HTML->set_var('info',$info);
+		$_HTML->set_var('fm_save',$fm_save);
 		break;
 	case 'editdir':
 		$param['act'] = 'listdir';
@@ -56,14 +62,20 @@ switch($act)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$id = $info['dirname'];
+		$fm_save = null;
 
-		if(isset($_QR['fm_send']) === true
-		&& ($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get_qr('dirname'))) !== false
-		&& $sounds->edit_dir($id,$info['dirname']) === true)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+		if(isset($_QR['fm_send']) === true)
+		{
+			if(($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get_qr('dirname'))) !== false
+			&& $sounds->edit_dir($id,$info['dirname']) === true)
+				$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			else
+				$fm_save = false;
+		}
 
 		$_HTML->set_var('id',$id);
 		$_HTML->set_var('info',$info);
+		$_HTML->set_var('fm_save',$fm_save);
 		break;
 	case 'deletedir':
 		$param['act'] = 'listdir';
@@ -86,14 +98,21 @@ switch($act)
 		$info['filename'] = '';
 		$info['dirname'] = $dir;
 
+		$fm_save = null;
+
 		if(isset($_QR['fm_send'],$_QR['dirname']) === false
 		|| ($info['directory'] = $sounds->get_dir($_QR['dirname'])) === false
 		|| ($fileuploaded = $sounds->get_upload('filename')) === false
 		|| ($info['dirname'] = $sounds->chk_value('dirname',$info['directory']['dirname'])) === false
 		|| ($info['filename'] = $sounds->chk_value('filename',$fileuploaded['name'])) === false)
 		{
-			if(isset($fileuploaded) === true && is_array($fileuploaded) === true)
-				xivo_file::rm($fileuploaded['tmp_name']);
+			if(isset($fileuploaded) === true)
+			{
+				$fm_save = false;
+
+				if(is_array($fileuploaded) === true)
+					xivo_file::rm($fileuploaded['tmp_name']);
+			}
 		}
 		else
 		{
@@ -104,9 +123,12 @@ switch($act)
 				$param['dir'] = $info['dirname'];
 				$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 			}
+			else
+				$fm_save = false;
 		}
 
 		$_HTML->set_var('info',$info);
+		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('option',$sounds->get_option());
 		break;
 	case 'edit':
@@ -125,6 +147,8 @@ switch($act)
 		$info['filename'] = $info['file']['basename'];
 		$id = $info['file']['filename'];
 
+		$fm_save = null;
+
 		if(isset($_QR['fm_send'],$_QR['filename'],$_QR['dirname']) === true
 		&& ($info['directory'] = $sounds->get_dir($_QR['dirname'])) !== false)
 		{
@@ -142,13 +166,18 @@ switch($act)
 					$param['dir'] = $info['dirname'];
 					$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
 				}
+				else
+					$fm_save = false;
 
 				$info['filename'] = $info['file']['basename'];
 			}
+			else
+				$fm_save = false;
 		}
 
 		$_HTML->set_var('id',$id);
 		$_HTML->set_var('info',$info);
+		$_HTML->set_var('fm_save',$fm_save);
 		break;
 	case 'delete':
 		$param['dir'] = $dir;
