@@ -20,6 +20,10 @@ import os
 import shutil
 from xivo_fetchfw import fetchfw
 
+AASTRA_MODEL_STANDARDIZE = {'6751i':    '51i',
+                            '6753i':    '53i',
+                            '6755i':    '55i',
+                            '6757i':    '57i'}
 
 def aastra_install_langs(firmware, xfile):
     label = "%s_%s" % ("aastra", "langs")
@@ -41,7 +45,11 @@ def aastra_install_fw(firmware, xfile):
     zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
     fw_src_path = os.path.join(zip_path, "%s.st" % firmware.model)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra")
-    
+
+    if not (os.access(fw_src_path, os.R_OK) and os.path.isfile(fw_src_path)) \
+       and AASTRA_MODEL_STANDARDIZE.has_key(firmware.model):
+        fw_src_path = os.path.join(zip_path, "%s.st" % AASTRA_MODEL_STANDARDIZE.get(firmware.model))
+
     try:
         os.makedirs(fw_dst_dir)
     except OSError:
