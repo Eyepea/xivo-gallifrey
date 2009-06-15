@@ -292,26 +292,26 @@ model: SoundPoint IP 670
 version: 3.1.3RevB
 files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_3RevB_release_sig_split.zip
 
-# Polycom SoundStation IP 4000 SIP 3.1.2RevB
-[pcssip4000sip_312]
+# Polycom SoundStation IP 4000 SIP 3.1.3RevB
+[pcssip4000sip_313]
 brand: Polycom
 model: SoundStation IP 4000 SIP
-version: 3.1.2RevB
-files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
+version: 3.1.3RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_3RevB_release_sig_split.zip
 
-# Polycom SoundStation IP 6000 SIP 3.1.2RevB
-[pcssip6000sip_312]
+# Polycom SoundStation IP 6000 SIP 3.1.3RevB
+[pcssip6000sip_313]
 brand: Polycom
 model: SoundStation IP 6000 SIP
-version: 3.1.2RevB
-files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
+version: 3.1.3RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_3RevB_release_sig_split.zip
 
-# Polycom SoundStation IP 7000 SIP 3.1.2RevB
-[pcssip7000sip_312]
+# Polycom SoundStation IP 7000 SIP 3.1.3RevB
+[pcssip7000sip_313]
 brand: Polycom
 model: SoundStation IP 7000 SIP
-version: 3.1.2RevB
-files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
+version: 3.1.3RevB
+files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_3RevB_release_sig_split.zip
 
 # Common files for Polycom phones
 
