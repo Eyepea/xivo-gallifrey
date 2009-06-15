@@ -51,7 +51,7 @@ if($has_softkeys === true):
 	$tagmain = $tagdirectory;
 
 	echo	'<',$tagdirectory,
-		($previous === '' ? '' : 'previous="'.$previous.'"'),
+		($previous === '' ? '' : ' previous="'.$previous.'"'),
 		' destroyOnExit="yes">',"\n";
 else:
 	$tagmain = $tagmenu;
