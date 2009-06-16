@@ -20,6 +20,7 @@
 
 $sysinfo = $this->get_var('sysinfo');
 $cpuinfo = $this->get_var('cpuinfo');
+$devinfo = $this->get_var('devinfo');
 $meminfo = $this->get_var('meminfo');
 $netinfo = $this->get_var('netinfo');
 $telephony = $this->get_var('telephony');
@@ -72,43 +73,96 @@ endif;
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content sb-list">
-		<div id="sysinfo">
-			<table border="0" cellpadding="0" cellspacing="0">
-				<tr class="sb-top">
-					<th colspan="2" class="th-left th-right"><?=$this->bbf('sysinfos_system');?></th>
-				</tr>
-				<tr class="l-infos-1on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_servername');?></td>
-					<td class="td-right txt-right"><?=php_uname('n');?></td>
-				</tr>
-				<tr class="l-infos-2on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_os');?></td>
-					<td class="td-right txt-right"><?=php_uname('s');?></td>
-				</tr>
-				<tr class="l-infos-1on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_kernel');?></td>
-					<td class="td-right txt-right"><?=php_uname('r');?></td>
-				</tr>
-				<tr class="l-infos-2on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_ipaddr');?></td>
-					<td class="td-right txt-right"><?=$_SERVER['SERVER_ADDR']?></td>
-				</tr>
-				<tr class="l-infos-1on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_dnsaddr');?></td>
-					<td class="td-right txt-right"><?=gethostbyaddr($_SERVER['SERVER_ADDR']);?></td>
-				</tr>
-				<tr class="l-infos-2on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_uptime');?></td>
-					<td class="td-right txt-right"><?=$this->bbf('sysinfos_uptime-duration',
-										     xivo_calc_time('second',
-										     		    $this->get_var('uptime'),
-												    '%d%H%M%s'));?></td>
-				</tr>
-				<tr class="l-infos-1on2">
-					<td class="td-left txt-left"><?=$this->bbf('sysinfos_loadaverage');?></td>
-					<td class="td-right txt-right"><?=$load?></td>
-				</tr>
-			</table>
+		<div id="leftinfo">
+			<div id="sysinfo">
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr class="sb-top">
+						<th colspan="2" class="th-left th-right"><?=$this->bbf('sysinfos_system');?></th>
+					</tr>
+					<tr class="l-infos-1on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_servername');?></td>
+						<td class="td-right txt-right"><?=php_uname('n');?></td>
+					</tr>
+					<tr class="l-infos-2on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_os');?></td>
+						<td class="td-right txt-right"><?=php_uname('s');?></td>
+					</tr>
+					<tr class="l-infos-1on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_kernel');?></td>
+						<td class="td-right txt-right"><?=php_uname('r');?></td>
+					</tr>
+					<tr class="l-infos-2on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_ipaddr');?></td>
+						<td class="td-right txt-right"><?=$_SERVER['SERVER_ADDR']?></td>
+					</tr>
+					<tr class="l-infos-1on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_dnsaddr');?></td>
+						<td class="td-right txt-right"><?=gethostbyaddr($_SERVER['SERVER_ADDR']);?></td>
+					</tr>
+					<tr class="l-infos-2on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_uptime');?></td>
+						<td class="td-right txt-right"><?=$this->bbf('sysinfos_uptime-duration',
+											     xivo_calc_time('second',
+													    $this->get_var('uptime'),
+													    '%d%H%M%s'));?></td>
+					</tr>
+					<tr class="l-infos-1on2">
+						<td class="td-left txt-left"><?=$this->bbf('sysinfos_loadaverage');?></td>
+						<td class="td-right txt-right"><?=$load?></td>
+					</tr>
+				</table>
+			</div>
+			<div id="devinfo">
+				<table border="0" cellpadding="0" cellspacing="0">
+					<tr class="sb-top">
+						<th colspan="6" class="th-left th-right"><?=$this->bbf('sysinfos_device');?></th>
+					</tr>
+					<tr class="l-subth">
+						<td><?=$this->bbf('sysinfos_col_partition');?></td>
+						<td colspan="2"><?=$this->bbf('sysinfos_col_percent');?></td>
+						<td><?=$this->bbf('sysinfos_col_free');?></td>
+						<td><?=$this->bbf('sysinfos_col_used');?></td>
+						<td class="td-right"><?=$this->bbf('sysinfos_col_total');?></td>
+					</tr>
+<?php
+			if(is_array($devinfo) === true && ($nb = count($devinfo)) > 0):
+				for($i = 0;$i < $nb;$i++):
+					$ref = &$devinfo[$i]['block'];
+					$total = $ref['total'] * $ref['size'];
+					$free = $ref['free'] * $ref['size'];
+					$used = $total - $free;
+					$devtotal = xivo_size_iec($total);
+					$devfree = xivo_size_iec($free);
+					$devused = xivo_size_iec($used);
+
+					if($total > 0):
+						$devpercent = ($used / $total * 100);
+					else:
+						$devpercent = 0;
+					endif;
+?>
+					<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
+						<td><?=xivo_trunc(xivo_htmlen($devinfo[$i]['name']),20,'...',false);?></td>
+						<td class="gauge">
+							<div><div style="width: <?=round($devpercent);?>px;">&nbsp;</div></div>
+						</td>
+						<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$devpercent);?></td>
+						<td class="txt-right"><?=$this->bbf('size_iec_'.$devfree[1],$devfree[0]);?></td>
+						<td class="txt-right"><?=$this->bbf('size_iec_'.$devused[1],$devused[0]);?></td>
+						<td class="td-right txt-right"><?=$this->bbf('size_iec_'.$devtotal[1],$devtotal[0]);?></td>
+					</tr>
+<?php
+				endfor;
+			else:
+?>
+					<tr class="l-infos-1on2">
+						<td colspan="6" class="td-single"><?=$this->bbf('sysinfos_no-devinfo');?></td>
+					</tr>
+<?php
+			endif;
+?>
+				</table>
+			</div>
 		</div>
 		<div id="cpuinfo">
 			<table border="0" cellpadding="0" cellspacing="0">

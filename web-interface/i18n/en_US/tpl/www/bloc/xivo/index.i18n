@@ -28,11 +28,20 @@ Uptime
 ; sysinfos_loadaverage
 Load average
 
+; sysinfos_device
+Device
+
+; sysinfos_no-netinfo
+No device found
+
 ; sysinfos_cpu
 CPU
 
 ; sysinfos_memory
 Memory
+
+; sysinfos_col_partition
+Partition
 
 ; sysinfos_col_type
 Type

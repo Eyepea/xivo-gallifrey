@@ -20,51 +20,57 @@
 
 class xivo_monit
 {
-	var $_url	= 'https://localhost:443/monit/';
-	var $_statusurl	= 'https://localhost:443/monit/_status?format=json';
-	var $_option	= array('ssl_verifypeer' => false);
-	var $_curl	= null;
-	var $_uri	= null;
-	var $_conf	= false;
-	var $_monit	= false;
-	var $_service	= array();
-	var $_group	= array();
-	var $_status	= array('accessible',
-				'accessible',
-				'accessible',
-				'running',
-				'online',
-				'running',
-				'accessible');
-	var $_types	= array('Device',
-				'Directory',
-				'File',
-				'Process',
-				'Remote Host',
-				'System',
-				'Fifo');
-	var $_monitor	= array('notmonitored',
-				'monitored',
-				'initializing');
-	var $_events	= array(0x00		=> 'noevent',
-				0x01		=> 'checksum',
-				0x02		=> 'resource',
-				0x04		=> 'timeout',
-				0x08		=> 'timestamp',
-				0x10		=> 'size',
-				0x20		=> 'connection',
-				0x40		=> 'permission',
-				0x80		=> 'uid',
-				0x100		=> 'gid',
-				0x200		=> 'noexist',
-				0x400		=> 'invalid',
-				0x800		=> 'data',
-				0x1000		=> 'exec',
-				0x2000		=> 'changed',
-				0x4000		=> 'icmp',
-				0x8000		=> 'match',
-				0x10000		=> 'instance',
-				0xFFFFFFFF	=> 'all');
+	var $_url		= 'https://localhost:443/monit/';
+	var $_statusurl		= 'https://localhost:443/monit/_status?format=json';
+	var $_option		= array('ssl_verifypeer' => false);
+	var $_curl		= null;
+	var $_uri		= null;
+	var $_conf		= false;
+	var $_monit		= false;
+	var $_service		= array();
+	var $_group		= array();
+	var $_device		= array();
+	var $_directory		= array();
+	var $_file		= array();
+	var $_process		= array();
+	var $_remotehost	= array();
+	var $_fifo		= array();
+	var $_status		= array('accessible',
+					'accessible',
+					'accessible',
+					'running',
+					'online',
+					'running',
+					'accessible');
+	var $_types		= array('Device',
+					'Directory',
+					'File',
+					'Process',
+					'Remote Host',
+					'System',
+					'Fifo');
+	var $_monitor		= array('notmonitored',
+					'monitored',
+					'initializing');
+	var $_events		= array(0x00		=> 'noevent',
+					0x01		=> 'checksum',
+					0x02		=> 'resource',
+					0x04		=> 'timeout',
+					0x08		=> 'timestamp',
+					0x10		=> 'size',
+					0x20		=> 'connection',
+					0x40		=> 'permission',
+					0x80		=> 'uid',
+					0x100		=> 'gid',
+					0x200		=> 'noexist',
+					0x400		=> 'invalid',
+					0x800		=> 'data',
+					0x1000		=> 'exec',
+					0x2000		=> 'changed',
+					0x4000		=> 'icmp',
+					0x8000		=> 'match',
+					0x10000		=> 'instance',
+					0xFFFFFFFF	=> 'all');
 
 	function xivo_monit($conf=null)
 	{
@@ -104,9 +110,60 @@ class xivo_monit
 		return(false);
 	}
 
+	function get_device()
+	{
+		if(empty($this->_device) === false)
+			return($this->_device);
+
+		return(false);
+	}
+
+	function get_directory()
+	{
+		if(empty($this->_directory) === false)
+			return($this->_directory);
+
+		return(false);
+	}
+
+	function get_file()
+	{
+		if(empty($this->_file) === false)
+			return($this->_file);
+
+		return(false);
+	}
+
+	function get_process()
+	{
+		if(empty($this->_process) === false)
+			return($this->_process);
+
+		return(false);
+	}
+
+	function get_remotehost()
+	{
+		if(empty($this->_remotehost) === false)
+			return($this->_remotehost);
+
+		return(false);
+	}
+
+	function get_fifo()
+	{
+		if(empty($this->_fifo) === false)
+			return($this->_fifo);
+
+		return(false);
+	}
+
 	function get_system()
 	{
-		return($this->get_service('SYSTEM'));
+		if(empty($this->_system) === false)
+			return($this->_system);
+
+		return(false);
 	}
 
 	function get_group($name=null)
@@ -315,7 +372,15 @@ class xivo_monit
 			return(true);
 		}
 
-		$this->_service = array();
+		$this->_service		= array();
+		$this->_group		= array();
+		$this->_device		= array();
+		$this->_directory	= array();
+		$this->_file		= array();
+		$this->_process		= array();
+		$this->_system		= array();
+		$this->_remotehost	= array();
+		$this->_fifo		= array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -342,7 +407,10 @@ class xivo_monit
 			$ref['unmonitorable'] = $this->is_unmonitorable($name);
 
 			if($ref['type'] === 5)
+			{
+				$this->_system = $ref;
 				continue;
+			}
 
 			if(xivo_issa('service',$this->_conf) === true
 			&& isset($this->_conf['service'][$name]) === true
@@ -350,6 +418,28 @@ class xivo_monit
 			{
 				unset($this->_service[$name]);
 				continue;
+			}
+
+			switch($typename)
+			{
+				case 'Device':
+					$this->_device[$name] = $ref;
+					break;
+				case 'Directory':
+					$this->_directory[$name] = $ref;
+					break;
+				case 'File':
+					$this->_file[$name] = $ref;
+					break;
+				case 'Process':
+					$this->_process[$name] = $ref;
+					break;
+				case 'Remote Host':
+					$this->_remotehost[$name] = $ref;
+					break;
+				case 'Fifo':
+					$this->_fifo[$name] = $ref;
+					break;
 			}
 
 			if($ref['group'] !== '')

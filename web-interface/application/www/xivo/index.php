@@ -32,6 +32,7 @@ if(isset($_QR['service'],$_QR['action']) === true)
 
 $mon_telephony = $monitoring->get_group('telephony');
 $mon_grpundef = $monitoring->get_group_undefined();
+$devinfo = $monitoring->get_device();
 
 $_SYSINFO = new xivo_sysinfo();
 
@@ -44,13 +45,17 @@ if(is_array($mon_telephony) === true)
 if(is_array($mon_grpundef) === true)
 	usort($mon_grpundef,array(&$sort,'strnat_usort'));
 
+if(is_array($devinfo) === true)
+	usort($devinfo,array(&$sort,'strnat_usort'));
+
 $_HTML->set_var('sysinfo',$monitoring->get_system());
-$_HTML->set_var('mon_telephony',$mon_telephony);
-$_HTML->set_var('mon_grpundef',$mon_grpundef);
 $_HTML->set_var('uptime',$_SYSINFO->uptime());
 $_HTML->set_var('cpuinfo',$_SYSINFO->cpuinfo());
+$_HTML->set_var('devinfo',$devinfo);
 $_HTML->set_var('meminfo',$_SYSINFO->meminfo(true));
 $_HTML->set_var('netinfo',$_SYSINFO->netinfo());
+$_HTML->set_var('mon_telephony',$mon_telephony);
+$_HTML->set_var('mon_grpundef',$mon_grpundef);
 
 $menu = &$_HTML->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

@@ -28,11 +28,20 @@ Durée de fonctionnement
 ; sysinfos_loadaverage
 Moyenne de la charge système
 
+; sysinfos_device
+Périphérique
+
+; sysinfos_no-devinfo
+Aucun périphérique trouvé
+
 ; sysinfos_cpu
 Processeur
 
 ; sysinfos_memory
 Mémoire
+
+; sysinfos_col_partition
+Partition
 
 ; sysinfos_col_type
 Type
