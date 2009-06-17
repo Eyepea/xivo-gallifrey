@@ -404,6 +404,8 @@ static int load_module(void)
 			set_ifempty,
 			set_ifempty_synopsis,
 			set_ifempty_description) < 0) {
+		ast_unregister_application(set_one_name);
+		ast_unregister_application(set_ifempty_name);
 		ast_custom_function_unregister(&validexten_function);
 		ast_custom_function_unregister(&funcexists_function);
 		ast_custom_function_unregister(&appexists_function);
