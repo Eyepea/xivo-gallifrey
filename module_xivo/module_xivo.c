@@ -338,8 +338,17 @@ static int _set_parse(struct ast_channel *chan, void *data, int ifempty)
 	*scan = '\0';
 	content = scan + 1;
 
-	if (!ifempty || !(tmp = pbx_builtin_getvar_helper(chan, varname)) || ast_strlen_zero(tmp)) {
+	if (!ifempty)
 		pbx_builtin_setvar_helper(chan, varname, content);
+	else {
+		if (*params == '_') {
+			params++;
+			if (*params == '_')
+				params++;
+		}
+
+		if (!(tmp = pbx_builtin_getvar_helper(chan, params)) || ast_strlen_zero(tmp))
+			pbx_builtin_setvar_helper(chan, varname, content);
 	}
 	return 0;
 
