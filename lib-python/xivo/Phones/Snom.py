@@ -139,12 +139,17 @@ class Snom(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
+            template_common_path = os.path.join(self.SNOM_SPEC_DIR, "templates", "snom-template.htm")
+
+            if not os.access(template_common_path, os.R_OK):
+                template_common_path = self.SNOM_SPEC_TEMPLATE
+
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       template_specific_path,
                       errno,
                       errstr,
-                      self.SNOM_SPEC_TEMPLATE)
-            template_file = open(self.SNOM_SPEC_TEMPLATE)
+                      template_common_path)
+            template_file = open(template_common_path)
 
         template_lines = template_file.readlines()
         template_file.close()

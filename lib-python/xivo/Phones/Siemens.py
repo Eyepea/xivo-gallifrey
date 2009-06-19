@@ -406,7 +406,11 @@ class Siemens(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            template_common_path = os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file)
+            template_common_path = os.path.join(self.SIEMENS_COMMON_DIR, "templates", "siemens-%s" % common_file)
+
+            if not os.access(template_common_path, os.R_OK):
+                template_common_path = os.path.join(self.TEMPLATES_DIR, "siemens-%s" % common_file)
+
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       template_specific_path,
                       errno,

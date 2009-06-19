@@ -101,7 +101,11 @@ class Polycom(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            template_common_path = os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg")
+            template_common_path = os.path.join(self.POLYCOM_COMMON_DIR, "templates", "polycom-phone.cfg")
+
+            if not os.access(template_common_path, os.R_OK):
+                template_common_path = os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg")
+
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       template_specific_path,
                       errno,

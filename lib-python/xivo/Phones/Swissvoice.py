@@ -140,12 +140,17 @@ class Swissvoice(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", cfg_template_specific_path)
             cfg_template_file = open(cfg_template_specific_path)
         except IOError, (errno, errstr):
+            cfg_template_common_path = os.path.join(self.SWISSVOICE_SPEC_DIR, "templates", "template_ip10.cfg")
+
+            if not os.access(cfg_template_common_path, os.R_OK):
+                cfg_template_common_path = self.SWISSVOICE_SPEC_CFG_TEMPLATE
+
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       cfg_template_specific_path,
                       errno,
                       errstr,
-                      self.SWISSVOICE_SPEC_CFG_TEMPLATE)
-            cfg_template_file = open(self.SWISSVOICE_SPEC_CFG_TEMPLATE)
+                      cfg_template_common_path)
+            cfg_template_file = open(cfg_template_common_path)
 
         cfg_template_lines = cfg_template_file.readlines()
         cfg_template_file.close()
