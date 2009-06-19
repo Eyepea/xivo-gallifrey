@@ -310,7 +310,12 @@ class Thomson(PhoneVendorMixin):
         for x in cls.THOMSON_MODELS:
             for line in (
                 'class "Thomson%s" {\n' % x[1],
-                '    match if option user-class = "Thomson %s";\n' % x[1],
+                '    match if (option user-class = "Thomson %s"\n' % x[1],
+                '              or binary-to-ascii(16,\n',
+                '                   8,\n',
+                '                   "",\n',
+                '                   substring(option vendor-class-identifier, 2, 15)) = "%s");\n' %
+                                        '54686f6d736f6e26'.join(["%x" % ord(c) for c in x[1][:-1]]),
                 '    log("boot Thomson%s");\n' % x[1],
                 '    option bootfile-name "Thomson/%s";\n' % x[1],
                 '    option tftp-server-name "%s";\n' % addresses['bootServer'],
