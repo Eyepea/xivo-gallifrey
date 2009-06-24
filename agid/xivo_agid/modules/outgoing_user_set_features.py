@@ -78,7 +78,7 @@ def outgoing_user_set_features(agi, cursor, args):
 
         agi.set_variable('XIVO_TRUNKSUFFIX%d' % i, intfsuffix)
 
-    if callerid:
+    if callerid and callerid != 'default':
         objects.CallerID.set(agi, callerid)
 
         if callerid == 'anonymous':
