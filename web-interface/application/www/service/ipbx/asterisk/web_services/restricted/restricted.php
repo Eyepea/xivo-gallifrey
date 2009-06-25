@@ -18,17 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+define('XIVO_TPL_WEBSERVICES_MODE','restricted');
+
 xivo::load_class('xivo_http');
-$http = new xivo_http();
 
 if(isset($access) === false)
 {
+	$http = new xivo_http();
 	$http->set_authent_basic('Access Restricted');
 	$http->set_status(401);
 	$http->send(true);
 }
 else if($access === false)
 {
+	$http = new xivo_http();
 	$http->set_status(403);
 	$http->send(true);
 }

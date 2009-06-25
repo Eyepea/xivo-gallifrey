@@ -29,7 +29,48 @@ switch($_QRY->get_qs('act'))
 {
 	case 'add':
 		$appuser = &$ipbx->get_application('user');
-		$status = $appuser->import_json() === true ? 201 : 400;
+
+		if($appuser->add_from_json() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[userlist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+/*
+	case 'edit':
+		$appuser = &$ipbx->get_application('user');
+
+		if($appuser->get($_QRY->get_qs('id')) !== false
+		&& $appuser->edit_from_json() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[userlist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+*/
+	case 'delete':
+		$appuser = &$ipbx->get_application('user');
+
+		if($appuser->get($_QRY->get_qs('id')) !== false
+		&& $appuser->delete() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[userlist,update]');
+		}
+		else
+			$status = 400;
 
 		$http = new xivo_http();
 		$http->set_status($status);

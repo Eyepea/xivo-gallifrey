@@ -25,12 +25,33 @@ $access = $_AWS->chk_http_access('pbx_settings','meetme');
 
 include(dirname(__FILE__).'/../restricted.php');
 
-$appmeetme = &$ipbx->get_application('meetme',null,false);
-
 switch($_QRY->get_qs('act'))
 {
+	case 'add':
+		$appmeetme = &$ipbx->get_application('meetme');
+		$status = $appmeetme->add_from_json() === true ? 200 : 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+	case 'delete':
+		$appmeetme = &$ipbx->get_application('meetme');
+
+		if($appmeetme->get($_QRY->get_qs('id')) !== false
+		&& $appmeetme->delete() === true)
+			$status = 200;
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
 	case 'list':
 	default:
+		$appmeetme = &$ipbx->get_application('meetme',null,false);
+
 		if(($meetme = $appmeetme->get_meetme_list()) === false)
 		{
 			xivo::load_class('xivo_http');

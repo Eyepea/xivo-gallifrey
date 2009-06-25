@@ -25,12 +25,44 @@ $access = $_AWS->chk_http_access('pbx_settings','agents');
 
 include(dirname(__FILE__).'/../restricted.php');
 
-$appagent = &$ipbx->get_application('agent',null,false);
-
 switch($_QRY->get_qs('act'))
 {
+	case 'add':
+		$appagent = &$ipbx->get_application('agent');
+
+		if($appagent->add_from_json() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('module reload chan_agent.so');
+			$ipbx->discuss('xivo[agentlist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+	case 'delete':
+		$appagent = &$ipbx->get_application('agent');
+
+		if($appagent->get($_QRY->get_qs('id')) !== false
+		&& $appagent->delete() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[agentlist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
 	case 'list':
 	default:
+		$appagent = &$ipbx->get_application('agent',null,false);
+
 		if(($agents = $appagent->get_agents_list()) === false)
 		{
 			xivo::load_class('xivo_http');

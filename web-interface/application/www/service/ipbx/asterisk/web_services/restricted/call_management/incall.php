@@ -29,7 +29,20 @@ switch($_QRY->get_qs('act'))
 {
 	case 'add':
 		$appincall = &$ipbx->get_application('incall');
-		$status = $appincall->import_json() === true ? 201 : 400;
+		$status = $appincall->add_from_json() === true ? 200 : 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+	case 'delete':
+		$appincall = &$ipbx->get_application('incall');
+
+		if($appincall->get($_QRY->get_qs('id')) !== false
+		&& $appincall->delete() === true)
+			$status = 200;
+		else
+			$status = 400;
 
 		$http = new xivo_http();
 		$http->set_status($status);
@@ -41,7 +54,6 @@ switch($_QRY->get_qs('act'))
 
 		if(($incall = $appincall->get_incalls_list()) === false)
 		{
-			xivo::load_class('xivo_http');
 			$http = new xivo_http();
 			$http->set_status(204);
 			$http->send(true);

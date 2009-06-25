@@ -25,12 +25,43 @@ $access = $_AWS->chk_http_access('pbx_settings','groups');
 
 include(dirname(__FILE__).'/../restricted.php');
 
-$appgroup = &$ipbx->get_application('group',null,false);
-
 switch($_QRY->get_qs('act'))
 {
+	case 'add':
+		$appgroup = &$ipbx->get_application('group');
+
+		if($appgroup->add_from_json() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[grouplist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+	case 'delete':
+		$appgroup = &$ipbx->get_application('group');
+
+		if($appgroup->get($_QRY->get_qs('id')) !== false
+		&& $appgroup->delete() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[grouplist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
 	case 'list':
 	default:
+		$appgroup = &$ipbx->get_application('group',null,false);
+
 		if(($groups = $appgroup->get_groups_list()) === false)
 		{
 			xivo::load_class('xivo_http');

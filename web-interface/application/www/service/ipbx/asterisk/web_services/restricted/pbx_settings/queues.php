@@ -25,12 +25,43 @@ $access = $_AWS->chk_http_access('pbx_settings','queues');
 
 include(dirname(__FILE__).'/../restricted.php');
 
-$appqueue = &$ipbx->get_application('queue',null,false);
-
 switch($_QRY->get_qs('act'))
 {
+	case 'add':
+		$appqueue = &$ipbx->get_application('queue');
+
+		if($appqueue->add_from_json() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[queuelist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+	case 'delete':
+		$appqueue = &$ipbx->get_application('queue');
+
+		if($appqueue->get($_QRY->get_qs('id')) !== false
+		&& $appqueue->delete() === true)
+		{
+			$status = 200;
+			$ipbx->discuss('xivo[queuelist,update]');
+		}
+		else
+			$status = 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
 	case 'list':
 	default:
+		$appqueue = &$ipbx->get_application('queue',null,false);
+
 		if(($queues = $appqueue->get_queues_list()) === false)
 		{
 			xivo::load_class('xivo_http');

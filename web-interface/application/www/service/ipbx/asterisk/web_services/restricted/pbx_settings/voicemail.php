@@ -29,7 +29,20 @@ switch($_QRY->get_qs('act'))
 {
 	case 'add':
 		$appvoicemail = &$ipbx->get_application('voicemail');
-		$status = $appvoicemail->import_json() === true ? 201 : 400;
+		$status = $appvoicemail->add_from_json() === true ? 200 : 400;
+
+		$http = new xivo_http();
+		$http->set_status($status);
+		$http->send(true);
+		break;
+	case 'delete':
+		$appvoicemail = &$ipbx->get_application('voicemail');
+
+		if($appvoicemail->get($_QRY->get_qs('id')) !== false
+		&& $appvoicemail->delete() === true)
+			$status = 200;
+		else
+			$status = 400;
 
 		$http = new xivo_http();
 		$http->set_status($status);
