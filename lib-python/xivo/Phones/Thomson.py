@@ -174,7 +174,7 @@ class Thomson(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", txt_template_specific_path)
             txt_template_file = open(txt_template_specific_path)
         except IOError, (errno, errstr):
-            txt_template_common_path = os.path.join(self.THOMSON_COMMON_DIR, "templates", model + "_template.txt")
+            txt_template_common_path = os.path.join(self.THOMSON_COMMON_DIR, "templates", "ST" + model + "_template.txt")
 
             if not os.access(txt_template_common_path, os.R_OK):
                 txt_template_common_path = self.THOMSON_SPEC_TXT_TEMPLATE + model + "_template.txt"
