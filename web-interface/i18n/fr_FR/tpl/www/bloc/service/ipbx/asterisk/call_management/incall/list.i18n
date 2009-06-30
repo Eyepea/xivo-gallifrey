@@ -43,6 +43,9 @@ Horaire
 ; incall_destination-voicemenu
 Menu vocal
 
+; incall_destination-extension
+Extension
+
 ; incall_destination-application-callbackdisa
 CallBackDISA
 

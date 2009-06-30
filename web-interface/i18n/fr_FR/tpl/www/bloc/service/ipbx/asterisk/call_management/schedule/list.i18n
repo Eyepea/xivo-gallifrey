@@ -67,6 +67,9 @@ Horaire
 ; schedule_destination-voicemenu
 Menu vocal
 
+; schedule_destination-extension
+Extension
+
 ; schedule_destination-application-callbackdisa
 CallBackDISA
 
