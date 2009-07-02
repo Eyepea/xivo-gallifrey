@@ -46,17 +46,19 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  						ast_channel_unlock(subscription->owner);
 Index: asterisk-1.4.24/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-05-27 12:58:33.000000000 +0200
-+++ asterisk-1.4.24/apps/app_directed_pickup.c	2009-05-27 12:58:44.000000000 +0200
-@@ -115,22 +115,33 @@
+--- asterisk-1.4.24.orig/apps/app_directed_pickup.c	2009-07-02 10:23:36.000000000 +0200
++++ asterisk-1.4.24/apps/app_directed_pickup.c	2009-07-02 10:26:22.000000000 +0200
+@@ -115,22 +115,35 @@
  /* Attempt to pick up specified mark */
  static int pickup_by_mark(struct ast_channel *chan, char *mark)
  {
 -	int res = -1;
+-	const char *tmp = NULL;
 +	int res;
- 	const char *tmp = NULL;
-+	char *pmarktmp = NULL;
-+	char *exten = NULL;
++	const char *tmp;
++	char *pmarktmp;
++	char *exten;
++	char *scan;
  	struct ast_channel *target = NULL;
  
  	while ((target = ast_channel_walk_locked(target))) {
@@ -71,8 +73,9 @@ Index: asterisk-1.4.24/apps/app_directed_pickup.c
  		}
 +
 +		pmarktmp = ast_strdup(tmp);
++		scan = pmarktmp;
 +
-+		while ((exten = strsep(&pmarktmp, "&"))) {
++		while ((exten = strsep(&scan, "&"))) {
 +			if (!strcasecmp(exten, mark) && can_pickup(target)) {
 +				res = pickup_do(chan, target);
 +				ast_free(pmarktmp);
