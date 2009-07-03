@@ -26,15 +26,28 @@ $netinfo = $this->get_var('netinfo');
 $telephony = $this->get_var('telephony');
 $grpundef = $this->get_var('grpundef');
 
+$memrealused = $meminfo['memused'] - $meminfo['buffers'] - $meminfo['cached'];
+
 $memtotal = xivo_size_iec($meminfo['memtotal']);
 $memfree = xivo_size_iec($meminfo['memfree']);
-$memused = xivo_size_iec($meminfo['memused']);
+$memused = xivo_size_iec($memrealused);
+$membuffers = xivo_size_iec($meminfo['buffers']);
+$memcached = xivo_size_iec($meminfo['cached']);
 
 if($meminfo['memtotal'] > 0):
-	$mempercent = ($meminfo['memused'] / $meminfo['memtotal'] * 100);
+	$memrealusedpercent = ($memrealused / $meminfo['memtotal'] * 100);
+	$memrealusedpcentrnd = round($memrealusedpercent);
+	$membufferspercent = ($meminfo['buffers'] / $meminfo['memtotal'] * 100);
+	$membufferspcentrnd = round($membufferspercent);
+	$memcachedpercent = ($meminfo['cached'] / $meminfo['memtotal'] * 100);
+	$memcachedpcentrnd = round($memcachedpercent);
 else:
-	$mempercent = 0;
+	$memrealusedpercent = $memrealusedpcentrnd = 0;
+	$membufferspercent = $membufferspcentrnd = 0;
+	$memcachedpercent = $memcachedpcentrnd = 0;
 endif;
+
+$memusedpcentrnd = $memrealusedpcentrnd + $membufferspcentrnd + $memcachedpcentrnd;
 
 $swaptotal = xivo_size_iec($meminfo['swaptotal']);
 $swapfree = xivo_size_iec($meminfo['swapfree']);
@@ -186,40 +199,6 @@ endif;
 				</tr>
 			</table>
 		</div>
-		<div id="meminfo">
-			<table border="0" cellpadding="0" cellspacing="0">
-				<tr class="sb-top">
-					<th colspan="6" class="th-left th-right"><?=$this->bbf('sysinfos_memory');?></th>
-				</tr>
-				<tr class="l-subth">
-					<td><?=$this->bbf('sysinfos_col_type');?></td>
-					<td colspan="2"><?=$this->bbf('sysinfos_col_percent');?></td>
-					<td><?=$this->bbf('sysinfos_col_free');?></td>
-					<td><?=$this->bbf('sysinfos_col_used');?></td>
-					<td class="td-right"><?=$this->bbf('sysinfos_col_total');?></td>
-				</tr>
-				<tr class="l-infos-1on2">
-					<td><?=$this->bbf('sysinfos_physical-memory');?></td>
-					<td class="gauge">
-						<div><div style="width: <?=round($mempercent);?>px;">&nbsp;</div></div>
-					</td>
-					<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$mempercent);?></td>
-					<td class="txt-right"><?=$this->bbf('size_iec_'.$memfree[1],$memfree[0]);?></td>
-					<td class="txt-right"><?=$this->bbf('size_iec_'.$memused[1],$memused[0]);?></td>
-					<td class="td-right txt-right"><?=$this->bbf('size_iec_'.$memtotal[1],$memtotal[0]);?></td>
-				</tr>
-				<tr class="l-infos-2on2">
-					<td><?=$this->bbf('sysinfos_swap-partition');?></td>
-					<td class="gauge">
-						<div><div style="width: <?=round($swappercent);?>px;">&nbsp;</div></div>
-					</td>
-					<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$swappercent);?></td>
-					<td class="txt-right"><?=$this->bbf('size_iec_'.$swapfree[1],$swapfree[0]);?></td>
-					<td class="txt-right"><?=$this->bbf('size_iec_'.$swapused[1],$swapused[0]);?></td>
-					<td class="td-right txt-right"><?=$this->bbf('size_iec_'.$swaptotal[1],$swaptotal[0]);?></td>
-				</tr>
-			</table>
-		</div>
 		<div id="netinfo">
 			<table border="0" cellpadding="0" cellspacing="0">
 				<tr class="sb-top">
@@ -261,6 +240,48 @@ endif;
 			</table>
 		</div>
 		<div class="clearboth"></div>
+		<div id="meminfo">
+			<table border="0" cellpadding="0" cellspacing="0">
+				<tr class="sb-top">
+					<th colspan="8" class="th-left th-right"><?=$this->bbf('sysinfos_memory');?></th>
+				</tr>
+				<tr class="l-subth">
+					<td><?=$this->bbf('sysinfos_col_type');?></td>
+					<td colspan="2"><?=$this->bbf('sysinfos_col_percent');?></td>
+					<td><?=$this->bbf('sysinfos_col_free');?></td>
+					<td><?=$this->bbf('sysinfos_col_used');?></td>
+					<td><?=$this->bbf('sysinfos_col_buffers');?></td>
+					<td><?=$this->bbf('sysinfos_col_cached');?></td>
+					<td class="td-right"><?=$this->bbf('sysinfos_col_total');?></td>
+				</tr>
+				<tr class="l-infos-1on2">
+					<td><?=$this->bbf('sysinfos_physical-memory');?></td>
+					<td class="gauge">
+						<div><div style="width: <?=$memusedpcentrnd?>px;">
+							<img src="/img/z.gif" width="<?=$memrealusedpcentrnd?>" height="10" alt="<?=$this->bbf('sysinfos_used-memory',$memrealusedpercent);?>" /><img src="/img/z.gif" width="<?=$membufferspcentrnd?>" height="10" alt="<?=$this->bbf('sysinfos_buffers-memory',$membufferspercent);?>" style="background-color: #5dbc00;" /><img src="/img/z.gif" width="<?=$memcachedpcentrnd?>" height="10" alt="<?=$this->bbf('sysinfos_cached-memory',$memcachedpercent);?>" style="background-color: #f96101;" />
+						</div></div>
+					</td>
+					<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$memrealusedpercent);?></td>
+					<td class="txt-right"><?=$this->bbf('size_iec_'.$memfree[1],$memfree[0]);?></td>
+					<td class="txt-right"><?=$this->bbf('size_iec_'.$memused[1],$memused[0]);?></td>
+					<td class="txt-right"><?=$this->bbf('size_iec_'.$membuffers[1],$membuffers[0]);?></td>
+					<td class="txt-right"><?=$this->bbf('size_iec_'.$memcached[1],$memcached[0]);?></td>
+					<td class="td-right txt-right"><?=$this->bbf('size_iec_'.$memtotal[1],$memtotal[0]);?></td>
+				</tr>
+				<tr class="l-infos-2on2">
+					<td><?=$this->bbf('sysinfos_swap-partition');?></td>
+					<td class="gauge">
+						<div><div style="width: <?=round($swappercent);?>px;">&nbsp;</div></div>
+					</td>
+					<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$swappercent);?></td>
+					<td class="txt-right"><?=$this->bbf('size_iec_'.$swapfree[1],$swapfree[0]);?></td>
+					<td class="txt-right"><?=$this->bbf('size_iec_'.$swapused[1],$swapused[0]);?></td>
+					<td class="txt-right">-</td>
+					<td class="txt-right">-</td>
+					<td class="td-right txt-right"><?=$this->bbf('size_iec_'.$swaptotal[1],$swaptotal[0]);?></td>
+				</tr>
+			</table>
+		</div>
 <?php
 	$this->file_include('bloc/xivo/monitoring/group',
 			    array('group_name'	=> 'mon_server'));
