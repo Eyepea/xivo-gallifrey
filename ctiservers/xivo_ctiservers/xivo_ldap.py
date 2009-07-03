@@ -29,60 +29,92 @@ LDAP class.
 
 import ldap
 import logging
-import sys
-import urllib
+from xivo import urisup
 
 log = logging.getLogger('ldap')
 
 ## \class xivo_ldap
 class xivo_ldap:
-        def __init__(self, iuri):
-                self.l = None
-                self.iuri = iuri
-                try:
-                        log.info('requested uri = %s' % iuri)
-                        ldapf = iuri.split('://')
-                        ldapkind = ldapf[0]
-                        postldap = ldapf[1]
-                        if postldap.find('@') > 0:
-                                userpass = postldap.split('@')[0]
-                                [addport, self.dbname] = postldap.split('@')[1].split('/')
-                        else:
-                                userpass = None
-                                [addport, self.dbname] = postldap.split('/')
-                        self.uri  = 'ldap://%s' % addport
-                        self.l = ldap.initialize(self.uri)
-                        self.l.protocol_version = ldap.VERSION3
-                        if ldapkind == 'ldaps':
-                                # find a better way to define when TLS has to be used ? (ldaps:// doesn't seem proper)
-                                self.l.start_tls_s()
-                        if userpass is not None:
-                                self.user = userpass.split(':', 1)[0]
-                                self.passwd = userpass.split(':', 1)[1]
-                                self.l.simple_bind_s(self.user, self.passwd)
-                        else:
-                                self.l.simple_bind_s()
-                                
-                except ldap.LDAPError, exc:
-                        log.exception('__init__ : ldap.LDAPError (%s %s %s)' % (self.l, iuri, exc))
-                        self.l = None
-                        
-        def getldap(self, filter, attrib):
-                try:
-                        resultat = self.l.search_s(self.dbname,
-                                                   ldap.SCOPE_SUBTREE,
-                                                   filter,
-                                                   attrib)
-                        return resultat
-                except ldap.LDAPError, exc1:
-                        # display exc1 since sometimes the error stack looks too long for the logfile
-                        log.exception('getldap : ldap.LDAPError (%s %s %s) retrying to connect' % (self.l, self.uri, exc1))
-                        self.__init__(self.iuri)
-                        try:
-                                resultat = self.l.search_s(self.dbname,
-                                                           ldap.SCOPE_SUBTREE,
-                                                           filter,
-                                                           attrib)
-                                return resultat
-                        except ldap.LDAPError, exc2:
-                                log.exception('getldap : ldap.LDAPError (%s %s %s) could not reconnect' % (self.l, self.uri, exc2))
+    def __init__(self, iuri):
+        self.iuri   = iuri
+        self.l      = None
+        self.uri    = None
+        self.dbname = None
+
+        try:
+            log.info('LDAP URI requested: %r', iuri)
+
+            if isinstance(iuri, unicode):
+                ldapuri = urisup.uri_help_split(iuri.encode('utf8'))
+            else:
+                ldapuri = urisup.uri_help_split(iuri)
+
+            uri_scheme = ldapuri[0]
+            if uri_scheme not in ('ldap', 'ldaps'):
+                raise NotImplementedError, 'Unknown URI scheme: %r' % uri_scheme
+
+            if ldapuri[1][2] is None:
+                ldaphost = 'localhost'
+            else:
+                ldaphost = ldapuri[1][2]
+
+            if ldapuri[1][3] is None:
+                if uri_scheme == 'ldaps':
+                    ldapport = '636'
+                else:
+                    ldapport = '389'
+            else:
+                ldapport = ldapuri[1][3]
+
+            if ldapuri[2] is not None:
+                if ldapuri[2].startswith('/'):
+                    self.dbname = ldapuri[2][1:]
+                else:
+                    self.dbname = ldapuri[2]
+
+            if ldapuri[3] is not None:
+                ldapquery = dict(ldapuri[3])
+            else:
+                ldapquery = {}
+
+            self.uri = "%s://%s:%s" % (uri_scheme, ldaphost, ldapport)
+            self.l = ldap.initialize(self.uri)
+
+            if ldapquery.has_key('protocol_version'):
+                self.l.set_option(ldap.OPT_PROTOCOL_VERSION,
+                                  ldapquery.get('protocol_version'))
+
+            if ldapquery.has_key('network_timeout'):
+                self.l.set_option(ldap.OPT_NETWORK_TIMEOUT,
+                                  ldapquery.get('network_timeout'))
+
+            if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
+                self.l.start_tls_s()
+
+            self.l.simple_bind_s(ldapuri[1][0], ldapuri[1][1])
+        except ldap.LDAPError, exc:
+            log.exception('__init__: ldap.LDAPError (%r, %r, %r)', self.l, iuri, exc)
+            self.l = None
+            
+    def getldap(self, xfilter, attrib):
+        if self.l is None:
+            self.__init__(self.iuri)
+
+        try:
+            result = self.l.search_s(self.dbname,
+                                     ldap.SCOPE_SUBTREE,
+                                     xfilter,
+                                     attrib)
+            return result
+        except (AttributeError, ldap.LDAPError), exc1:
+            # display exc1 since sometimes the error stack looks too long for the logfile
+            log.exception('getldap: ldap.LDAPError (%r, %r, %r) retrying to connect', self.l, self.uri, exc1)
+            self.__init__(self.iuri)
+            try:
+                result = self.l.search_s(self.dbname,
+                                         ldap.SCOPE_SUBTREE,
+                                         xfilter,
+                                         attrib)
+                return result
+            except ldap.LDAPError, exc2:
+                log.exception('getldap: ldap.LDAPError (%r, %r, %r) could not reconnect', self.l, self.uri, exc2)

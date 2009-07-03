@@ -5643,203 +5643,217 @@ class XivoCTICommand(BaseCommand):
             return self.__cjson_encode__(tosend)
     
     def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
-            fullstatlist = []
-            
-            if searchpattern == '':
-                return []
-            
-            dbkind = z.uri.split(':')[0]
-            if dbkind in ['ldap', 'ldaps']:
-                    selectline = []
-                    for fname in z.match_direct:
-                        if searchpattern == '*':
-                            selectline.append("(%s=*)" % fname)
-                        else:
-                            selectline.append("(%s=*%s*)" %(fname, searchpattern))
-                    try:
-                            results = None
-                            if z.uri in self.ldapids:
-                                    ldapid = self.ldapids[z.uri]
-                            else:
-                                    ldapid = xivo_ldap.xivo_ldap(z.uri)
-                                    if ldapid.l is not None:
-                                            self.ldapids[z.uri] = ldapid
-                            if ldapid.l is not None:
-                                    results = ldapid.getldap('(|%s)' % ''.join(selectline),
-                                                             z.match_direct)
-                            if results is not None:
-                                    for result in results:
-                                            futureline = {'xivo-dir' : z.name}
-                                            for keyw, dbkeys in z.fkeys.iteritems():
-                                                    for dbkey in dbkeys:
-                                                            if dbkey in result[1]:
-                                                                    futureline[keyw] = result[1][dbkey][0]
-                                            fullstatlist.append(futureline)
-                    except Exception:
-                            log.exception('ldaprequest (directory)')
-            
-            elif dbkind == 'file':
-                    f = urllib.urlopen(z.uri)
-                    n = 0
-                    if reversedir:
-                        matchkeywords = z.match_reverse
-                    else:
-                        matchkeywords = z.match_direct
-                    for line in f:
-                            if n == 0:
-                                    header = line
-                                    headerfields = header.strip().split(z.delimiter)
-                                    revindex = []
-                                    for mr in matchkeywords:
-                                        if mr in headerfields:
-                                            revindex.append(headerfields.index(mr))
-                            else:
-                                    ll = line.strip()
-                                    t = ll.split(z.delimiter)
-                                    matchme = False
-                                    for ri in revindex:
-                                        if t[ri].lower().find(searchpattern.lower()) >= 0:
-                                            matchme = True
-                                    if matchme:
-                                        # XXX problem when badly set delimiter + index()
-                                        futureline = {'xivo-dir' : z.name}
-                                        for keyw, dbkeys in z.fkeys.iteritems():
-                                            for dbkey in dbkeys:
-                                                idx = headerfields.index(dbkey)
-                                                futureline[keyw] = t[idx]
-                                        fullstatlist.append(futureline)
-                            n += 1
-                    if n == 0:
-                        log.warning('WARNING : %s is empty' % z.uri)
-                    elif n == 1:
-                        log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
-                        
-            elif dbkind == 'phonebook':
-                if reversedir:
-                    matchkeywords = z.match_reverse
+        fullstatlist = []
+        
+        if searchpattern == '':
+            return []
+        
+        dbkind = z.uri.split(':')[0]
+        if dbkind in ['ldap', 'ldaps']:
+            selectline = []
+            ldapattrib = []
+            for fname in z.match_direct:
+                if searchpattern == '*':
+                    selectline.append("(%s=*)" % fname)
                 else:
-                    matchkeywords = z.match_direct
-                for iastid in self.weblist['phonebook'].keys():
-                    for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
-                        matchme = False
-                        for tmatch in matchkeywords:
-                            if v.has_key(tmatch):
-                                if reversedir:
-                                    if v[tmatch].lstrip('0') == searchpattern.lstrip('0'):
-                                        matchme = True
-                                else:
-                                    if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
-                                        matchme = True
-                        if matchme:
-                            futureline = {'xivo-dir' : z.name}
-                            for keyw, dbkeys in z.fkeys.iteritems():
-                                for dbkey in dbkeys:
-                                    if dbkey in v.keys():
-                                        futureline[keyw] = v[dbkey]
-                            fullstatlist.append(futureline)
-                            
-            elif dbkind == 'http':
-                    if not reversedir:
-                            fulluri = z.uri
-                            # add an ending slash if needed
-                            if fulluri[8:].find('/') == -1:
-                                fulluri += '/'
-                            fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in z.match_direct])
-                            n = 0
-                            try:
-                                f = urllib.urlopen(fulluri)
-                                # use f.info() to detect charset
-                                charset = 'utf-8'
-                                s = f.info().getheader('Content-Type')
-                                k = s.lower().find('charset=')
-                                if k >= 0:
-                                    charset = s[k:].split(' ')[0].split('=')[1]                                    
-                                for line in f:
-                                    if n == 0:
-                                        header = line
-                                        headerfields = header.strip().split(z.delimiter)
-                                    else:
-                                        ll = line.strip()
-                                        if isinstance(ll, str): # dont try to decode unicode string.
-                                            ll = ll.decode(charset)
-                                        t = ll.split(z.delimiter)
-                                        futureline = {'xivo-dir' : z.name}
-                                        # XXX problem when badly set delimiter + index()
-                                        for keyw, dbkeys in z.fkeys.iteritems():
-                                            for dbkey in dbkeys:
-                                                idx = headerfields.index(dbkey)
-                                                futureline[keyw] = t[idx]
-                                        fullstatlist.append(futureline)
-                                    n += 1
-                                f.close()
-                            except Exception:
-                                    log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
-                            if n == 0:
-                                    log.warning('WARNING : %s is empty' % z.uri)
-                            # we don't warn about "only one line" here since the filter has probably already been applied
+                    selectline.append("(%s=*%s*)" %(fname, searchpattern))
+
+            for listvalue in z.fkeys.itervalues():
+                for attrib in listvalue:
+                    if isinstance(attrib, unicode):
+                        ldapattrib.append(attrib.encode('utf8'))
                     else:
-                            fulluri = z.uri
-                            # add an ending slash if needed
-                            if fulluri[8:].find('/') == -1:
-                                fulluri += '/'
-                            fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in z.match_reverse])
-                            f = urllib.urlopen(fulluri)
-                            # TODO : use f.info() to detect charset
-                            fsl = f.read().strip()
-                            if fsl:
-                                fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
-                            else:
-                                fullstatlist = []
-                                
-            elif dbkind in ['sqlite', 'mysql']:
-                    if searchpattern == '*':
-                        whereline = ''
-                    else:
-                        # prevent SQL injection and make use of '*' wildcard possible
-                        esc_searchpattern = searchpattern.replace("'", "\\'").replace('%', '\\%').replace('*', '%')
-                        wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in z.match_direct]
-                        whereline = 'WHERE ' + ' OR '.join(wl)
-                        
-                    results = []
-                    try:
-                        conn = anysql.connect_by_uri(str(z.uri))
-                        cursor = conn.cursor()
-                        sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
-                        cursor.query(sqlrequest,
-                                     tuple(z.match_direct),
-                                     None)
-                        results = cursor.fetchall()
-                        conn.close()
-                    except Exception:
-                        log.exception('sqlrequest for %s' % z.uri)
-                        
+                        ldapattrib.append(attrib)
+
+            try:
+                results = None
+                if z.uri in self.ldapids:
+                    ldapid = self.ldapids[z.uri]
+                else:
+                    ldapid = xivo_ldap.xivo_ldap(z.uri)
+                    if ldapid.l is not None:
+                        self.ldapids[z.uri] = ldapid
+
+                if ldapid.l is not None:
+                    results = ldapid.getldap('(|%s)' % ''.join(selectline),
+                                             ldapattrib)
+                if results is not None:
                     for result in results:
                         futureline = {'xivo-dir' : z.name}
                         for keyw, dbkeys in z.fkeys.iteritems():
                             for dbkey in dbkeys:
-                                if dbkey in z.match_direct:
-                                    n = z.match_direct.index(dbkey)
-                                    futureline[keyw] = result[n]
+                                if futureline.get(keyw, '') != '':
+                                    break
+                                elif dbkey in result[1]:
+                                    futureline[keyw] = result[1][dbkey][0]
+                                elif keyw not in futureline:
+                                    futureline[keyw] = ''
                         fullstatlist.append(futureline)
-            else:
-                log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                            % (dbkind, dirname))
-            
+            except Exception:
+                log.exception('ldaprequest (directory)')
+        
+        elif dbkind == 'file':
+            f = urllib.urlopen(z.uri)
+            n = 0
             if reversedir:
-                display_reverse = z.display_reverse
-                if fullstatlist:
-                    for k, v in fullstatlist[0].iteritems():
-                        if isinstance(v, unicode):
-                            display_reverse = display_reverse.replace('{%s}' % k, v)
-                        elif isinstance(v, str):
-                            # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
-                            # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
-                            display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
+                matchkeywords = z.match_reverse
+            else:
+                matchkeywords = z.match_direct
+            for line in f:
+                if n == 0:
+                    header = line
+                    headerfields = header.strip().split(z.delimiter)
+                    revindex = []
+                    for mr in matchkeywords:
+                        if mr in headerfields:
+                            revindex.append(headerfields.index(mr))
+                else:
+                    ll = line.strip()
+                    t = ll.split(z.delimiter)
+                    matchme = False
+                    for ri in revindex:
+                        if t[ri].lower().find(searchpattern.lower()) >= 0:
+                            matchme = True
+                    if matchme:
+                        # XXX problem when badly set delimiter + index()
+                        futureline = {'xivo-dir' : z.name}
+                        for keyw, dbkeys in z.fkeys.iteritems():
+                            for dbkey in dbkeys:
+                                idx = headerfields.index(dbkey)
+                                futureline[keyw] = t[idx]
+                        fullstatlist.append(futureline)
+                n += 1
+            if n == 0:
+                log.warning('WARNING : %s is empty' % z.uri)
+            elif n == 1:
+                log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
+                
+        elif dbkind == 'phonebook':
+            if reversedir:
+                matchkeywords = z.match_reverse
+            else:
+                matchkeywords = z.match_direct
+            for iastid in self.weblist['phonebook'].keys():
+                for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
+                    matchme = False
+                    for tmatch in matchkeywords:
+                        if v.has_key(tmatch):
+                            if reversedir:
+                                if v[tmatch].lstrip('0') == searchpattern.lstrip('0'):
+                                    matchme = True
+                            else:
+                                if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
+                                    matchme = True
+                    if matchme:
+                        futureline = {'xivo-dir' : z.name}
+                        for keyw, dbkeys in z.fkeys.iteritems():
+                            for dbkey in dbkeys:
+                                if dbkey in v.keys():
+                                    futureline[keyw] = v[dbkey]
+                        fullstatlist.append(futureline)
+                        
+        elif dbkind == 'http':
+            if not reversedir:
+                fulluri = z.uri
+                # add an ending slash if needed
+                if fulluri[8:].find('/') == -1:
+                    fulluri += '/'
+                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in z.match_direct])
+                n = 0
+                try:
+                    f = urllib.urlopen(fulluri)
+                    # use f.info() to detect charset
+                    charset = 'utf-8'
+                    s = f.info().getheader('Content-Type')
+                    k = s.lower().find('charset=')
+                    if k >= 0:
+                        charset = s[k:].split(' ')[0].split('=')[1]                                    
+                    for line in f:
+                        if n == 0:
+                            header = line
+                            headerfields = header.strip().split(z.delimiter)
                         else:
-                            log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
-                    e = fullstatlist[0]
-                    e.update({'dbr-display' : display_reverse})
-            return fullstatlist
+                            ll = line.strip()
+                            if isinstance(ll, str): # dont try to decode unicode string.
+                                ll = ll.decode(charset)
+                            t = ll.split(z.delimiter)
+                            futureline = {'xivo-dir' : z.name}
+                            # XXX problem when badly set delimiter + index()
+                            for keyw, dbkeys in z.fkeys.iteritems():
+                                for dbkey in dbkeys:
+                                    idx = headerfields.index(dbkey)
+                                    futureline[keyw] = t[idx]
+                            fullstatlist.append(futureline)
+                        n += 1
+                    f.close()
+                except Exception:
+                    log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
+                if n == 0:
+                    log.warning('WARNING : %s is empty' % z.uri)
+                # we don't warn about "only one line" here since the filter has probably already been applied
+            else:
+                    fulluri = z.uri
+                    # add an ending slash if needed
+                    if fulluri[8:].find('/') == -1:
+                        fulluri += '/'
+                    fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in z.match_reverse])
+                    f = urllib.urlopen(fulluri)
+                    # TODO : use f.info() to detect charset
+                    fsl = f.read().strip()
+                    if fsl:
+                        fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
+                    else:
+                        fullstatlist = []
+                        
+        elif dbkind in ['sqlite', 'mysql']:
+            if searchpattern == '*':
+                whereline = ''
+            else:
+                # prevent SQL injection and make use of '*' wildcard possible
+                esc_searchpattern = searchpattern.replace("'", "\\'").replace('%', '\\%').replace('*', '%')
+                wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in z.match_direct]
+                whereline = 'WHERE ' + ' OR '.join(wl)
+                
+            results = []
+            try:
+                conn = anysql.connect_by_uri(str(z.uri))
+                cursor = conn.cursor()
+                sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
+                cursor.query(sqlrequest,
+                             tuple(z.match_direct),
+                             None)
+                results = cursor.fetchall()
+                conn.close()
+            except Exception:
+                log.exception('sqlrequest for %s' % z.uri)
+                
+            for result in results:
+                futureline = {'xivo-dir' : z.name}
+                for keyw, dbkeys in z.fkeys.iteritems():
+                    for dbkey in dbkeys:
+                        if dbkey in z.match_direct:
+                            n = z.match_direct.index(dbkey)
+                            futureline[keyw] = result[n]
+                fullstatlist.append(futureline)
+        else:
+            log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
+                        % (dbkind, dirname))
+        
+        if reversedir:
+            display_reverse = z.display_reverse
+            if fullstatlist:
+                for k, v in fullstatlist[0].iteritems():
+                    if isinstance(v, unicode):
+                        display_reverse = display_reverse.replace('{%s}' % k, v)
+                    elif isinstance(v, str):
+                        # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
+                        # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
+                        display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
+                    else:
+                        log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
+                e = fullstatlist[0]
+                e.update({'dbr-display' : display_reverse})
+        return fullstatlist
     
     def __counts__(self, astid, context, presenceid):
             # input : presenceid, i.e. 'presence-xivo', 'presence-agent', ...
