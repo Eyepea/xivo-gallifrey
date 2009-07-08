@@ -49,7 +49,7 @@ fi
 
 if [ "${XIVO_MAINTENANCE}" = "1" ]; then
   ALERT_EMAILS="${ALERT_EMAILS} pv-tech-xivo-alerts+${XIVO_HOSTNAME}@lists.proformatique.com"
-  XIVO_SMTP_CANONICAL="root\tpv-tech-xivo-reports+${XIVO_HOSTNAME}+root@lists.proformatique.com\nasterisk\tpv-tech-xivo-reports+${XIVO_HOSTNAME}+asterisk@lists.proformatique.com"
+  XIVO_SMTP_CANONICAL="root\tpv-tech-xivo-reports+${XIVO_HOSTNAME}+root@lists.proformatique.com\nasterisk\tpv-tech-xivo-reports+${XIVO_HOSTNAME}+asterisk@lists.proformatique.com\n${XIVO_SMTP_CANONICAL}"
 fi
 
 # list all variables with the good prefix
