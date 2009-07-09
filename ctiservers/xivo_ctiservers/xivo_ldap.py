@@ -82,11 +82,11 @@ class xivo_ldap:
 
             if ldapquery.has_key('protocol_version'):
                 self.l.set_option(ldap.OPT_PROTOCOL_VERSION,
-                                  ldapquery.get('protocol_version'))
+                                  int(ldapquery.get('protocol_version')))
 
             if ldapquery.has_key('network_timeout'):
                 self.l.set_option(ldap.OPT_NETWORK_TIMEOUT,
-                                  ldapquery.get('network_timeout'))
+                                  float(ldapquery.get('network_timeout')))
 
             if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
                 self.l.start_tls_s()
