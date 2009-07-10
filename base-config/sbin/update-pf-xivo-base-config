@@ -11,6 +11,9 @@ CUSTOM_TEMPLATE_DIR=/etc/pf-xivo/custom-templates
 . /etc/pf-xivo/common.conf
 
 
+# TODO: use the _XIVO_* namespace for generated variables
+
+
 echo "Generating configuration"
 
 #### Set and check general variables ####
@@ -52,8 +55,14 @@ if [ "${XIVO_MAINTENANCE}" = "1" ]; then
   XIVO_SMTP_CANONICAL="root\tpv-tech-xivo-reports+${XIVO_HOSTNAME}+root@lists.proformatique.com\nasterisk\tpv-tech-xivo-reports+${XIVO_HOSTNAME}+asterisk@lists.proformatique.com\n${XIVO_SMTP_CANONICAL}"
 fi
 
+if [ -n "${XIVO_SMTP_MYDOMAIN}" ]; then
+  _XIVO_SMTP_MYDOMAIN=${XIVO_SMTP_DOMAIN}
+else
+  _XIVO_SMTP_MYDOMAIN=${XIVO_DOMAIN}
+fi
+
 # list all variables with the good prefix
-TEMPLATE_VARS=$(compgen -v XIVO_)
+TEMPLATE_VARS=$(compgen -v XIVO_ _XIVO_)
 
 
 #### functions used for templating ####
