@@ -607,12 +607,14 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
         authority = (user, passwd, host, port)
     if path:
         path = pct_encode(path, P_ENCDCT)
-        if (not authority) and (not scheme):
+        if authority:
+            if path[0] != '/':
+                path = '/' + path
+        elif (not scheme):
             # check for path-noscheme special case
             sppath = path.split('/', 1)
             if ':' in sppath[0]:
-                sppath[0] = pct_encode(sppath[0],
-                                       re.compile('[\\:]'))
+                sppath[0] = sppath[0].replace(':', '%3A')
                 path = '/'.join(sppath)
     if query:
         query = tuple([(query_elt_encode(x, QUERY_KEY_ENCDCT),
