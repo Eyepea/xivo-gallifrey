@@ -189,7 +189,6 @@ endif;
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'field'	=> false,
-					    'browse'	=> 'qfeatures',
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['list']);
@@ -222,7 +221,6 @@ endif;
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'field'	=> false,
-					    'browse'	=> 'qfeatures',
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['slt']);
@@ -239,11 +237,11 @@ endif;
 		</tr>
 <?php
 		foreach($queues as $value):
-			$name = $value['qfeatures']['name'];
+			$name = $value['name'];
 
-			if(xivo_issa($value['qfeatures']['id'],$qmember['info']) === true):
+			if(xivo_issa($value['id'],$qmember['info']) === true):
 				$class = '';
-				$value['member'] = $qmember['info'][$value['qfeatures']['id']];
+				$value['member'] = $qmember['info'][$value['id']];
 				$penalty = intval($value['member']['penalty']);
 			else:
 				$class = ' b-nodisplay';

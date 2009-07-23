@@ -53,6 +53,17 @@ class xivo_service_abstract
 		return($r);
 	}
 
+	function load_module_class($module)
+	{
+		if($this->chk_module_enable($module) === false)
+		{
+			trigger_error('Invalid module '.$module.' in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		return($this->_load_module_class($module));
+	}
+
 	function _load_module_class($module)
 	{
 		$module = (string) $module;
@@ -219,7 +230,7 @@ class xivo_service_abstract
 
 		if($this->chk_module_enable($name) === false)
 		{
-			trigger_error('Invalid module in '.$name.' '.$this->_name,E_USER_ERROR);
+			trigger_error('Invalid module '.$name.' in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
 

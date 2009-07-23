@@ -624,8 +624,6 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			if($voicemenuid !== null)
 				$this->_reverse_add($voicemenuid);
 		}
-		else
-			$this->_service->discuss('dialplan reload');
 
 		$this->_status = '';
 
@@ -752,8 +750,6 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			$r = false;
 			$this->_reverse_edit();
 		}
-		else
-			$this->_service->discuss('dialplan reload');
 
 		$this->_status = '';
 

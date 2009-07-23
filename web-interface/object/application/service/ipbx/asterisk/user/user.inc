@@ -459,49 +459,49 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function get_users_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
+	function get_users_search($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('search',null,$disable,$search,$order,$limit,$assoc,$initialized));
+		return($this->_get_users('search',$protocols,$disable,$search,$context,$order,$limit,$assoc,$initialized));
 	}
 
-	function get_users_search_number($search,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
+	function get_users_search_number($search,$context='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('search_number',null,$disable,$search,$order,$limit,$assoc,$initialized));
+		return($this->_get_users('search_number',$protocols,$disable,$search,$context,$order,$limit,$assoc,$initialized));
 	}
 
 	function get_users_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('list',$protocols,$disable,null,$order,$limit,$assoc,$initialized));
+		return($this->_get_users('list',$protocols,$disable,null,null,$order,$limit,$assoc,$initialized));
 	}
 
-	function get_users_context($context,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
+	function get_users_context($context,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
-		return($this->_get_users('context',null,$disable,$context,$order,$limit,$assoc,$initialized));
+		return($this->_get_users('context',$protocols,$disable,null,$context,$order,$limit,$assoc,$initialized));
 	}
 
-	function _get_users($action,$protocols=null,$disable=null,$search='',$order=null,$limit=null,$assoc=false,$initialized=null)
+	function _get_users($action,$protocols=null,$disable=null,$search='',$context='',$order=null,$limit=null,$assoc=false,$initialized=null)
 	{
 		$action = (string) $action;
 		$search = strval($search);
 
+		if(is_array($protocols) === true && empty($protocols) === false)
+			$protocols = array_values($protocols);
+		else
+			$protocols = null;
+
 		switch($action)
 		{
 			case 'search':
-				$rs = $this->_dso->search($search,$disable,$initialized,$order,$limit);
+				$rs = $this->_dso->search($search,$context,$protocols,$disable,$initialized,$order,$limit);
 				break;
 			case 'search_number':
-				$rs = $this->_dso->search($search,$disable,$initialized,$order,$limit,1);
+				$rs = $this->_dso->search($search,$context,$protocols,$disable,$initialized,$order,$limit,'number');
 				break;
 			case 'context':
-				$rs = $this->_dso->search($search,$disable,$initialized,$order,$limit,2);
+				$rs = $this->_dso->get_all($protocols,$disable,$initialized,$order,$limit,null,$context);
 				break;
 			case 'list':
 			default:
-				if(is_array($protocols) === true && empty($protocols) === false)
-					$protocols = array_values($protocols);
-				else
-					$protocols = null;
-
 				$rs = $this->_dso->get_all($protocols,$disable,$initialized,$order,$limit);
 		}
 
@@ -516,30 +516,31 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$ref = &$rs[$i];
 
-			switch($ref['protocol'])
+			$userfeatures = $this->_userfeatures->_prepare(
+						xivo_array_startswith_key($ref,'userfeatures.',true));
+
+			switch($userfeatures['protocol'])
 			{
 				case XIVO_SRE_IPBX_AST_PROTO_SIP:
-					$ref['initialized'] = xivo_haslen($ref['fullcontact']);
-					$ref['secret'] = $ref['sipsecret'];
-					$ref['callerid'] = $ref['sipcallerid'];
+					$sip = xivo_array_startswith_key($ref,'usersip.',true);
+					$sip['initialized'] = xivo_haslen($sip['fullcontact']);
+					unset($sip['fullcontact']);
+					$r[$userfeatures['id']] = array_merge($sip,$userfeatures);
 					break;
 				case XIVO_SRE_IPBX_AST_PROTO_IAX:
-					$ref['initialized'] = true;
-					$ref['secret'] = $ref['iaxsecret'];
-					$ref['callerid'] = $ref['iaxcallerid'];
+					$iax = xivo_array_startswith_key($ref,'useriax.',true);
+					$iax['initialized'] = true;
+					$r[$userfeatures['id']] = array_merge($iax,$userfeatures);
+					break;
+				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
+					$custom = xivo_array_startswith_key($ref,'usercustom.',true);
+					$custom['initialized'] = true;
+					$r[$userfeatures['id']] = array_merge($custom,$userfeatures);
 					break;
 				default:
-					$ref['initialized'] = true;
-					break;
+					$this->_cnt = 0;
+					return(false);
 			}
-
-			unset($ref['fullcontact'],
-			      $ref['sipsecret'],
-			      $ref['sipcallerid'],
-			      $ref['iaxsecret'],
-			      $ref['iaxcallerid']);
-
-			$r[$ref['id']] = $this->_userfeatures->_prepare($ref);
 		}
 
 		if(empty($r) === true)
@@ -1354,7 +1355,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$ref['iduserfeatures'] = $ufeaturesid;
 
 			if(($ref['typeextenumbers'] !== null
-			|| $ref['typeextenumbersright'] !== null) === true
+			   || $ref['typeextenumbersright'] !== null) === true
 			&& $this->_phonefunckey->is_valid($ref['typeextenumbers'],
 							  $ref['typevalextenumbers'],
 							  $ref['typeextenumbersright'],
@@ -2261,54 +2262,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function import_csv()
+	function _prepare_import($arr)
 	{
-		$file = new xivo_file();
-
-		if(xivo::load_class('xivo::file::csv') === false
-		|| $file->get_upload('import',$this->_conf['import']['file']) === false)
+		if(($issa_protocol = xivo_issa('protocol',$arr)) === false
+		|| isset($arr['protocol']['protocol']) === false)
 			return(false);
 
-		$filecsv = new xivo_file_csv();
-
-		if(($data = $filecsv->parse($file->info['tmp_name'],0,'|',null,true,
-					    $this->_conf['import']['field'])) === false
-		|| ($nb = count($data)) === 0)
-		{
-			xivo_file::rm($file->info['tmp_name']);
-			return(false);
-		}
-
-		for($i = 0;$i < $nb;$i++)
-			$this->_import($data[$i]);
-
-		xivo_file::rm($file->info['tmp_name']);
-	}
-
-	function import_json()
-	{
-		$_QRY = &xivo_gct::get('xivo_query');
-
-		if(xivo::load_class('xivo_json') === false
-		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
-		|| is_array($data) === false)
-			return(false);
-		else if(xivo_issa('userfeatures',$data) === true)
-			$data['ufeatures'] = $data['userfeatures'];
-
-		return($this->_import($data));
-	}
-
-	function _import($arr)
-	{
-		$appincall = &$this->_service->get_application('incall');
-
-		$issa_protocol = xivo_issa('protocol',$arr);
 		$issa_ufeatures = xivo_issa('ufeatures',$arr);
-
-		$incall = array();
-		$incall['dialaction'] = array();
-		$incall['dialaction']['answer'] = array();
 
 		if(xivo_issa('voicemail',$arr) === true
 		&& empty($arr['voicemail']) === false
@@ -2347,29 +2307,89 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		unset($arr['ufeatures']['agentnumber']);
 
-		if($issa_protocol === false
-		|| isset($arr['protocol']['protocol']) === false
+		return($arr);
+	}
+
+	function import_csv()
+	{
+		$file = new xivo_file();
+
+		if(xivo::load_class('xivo::file::csv') === false
+		|| $file->get_upload('import',$this->_conf['import']['file']) === false)
+			return(false);
+
+		$filecsv = new xivo_file_csv();
+
+		if(($data = $filecsv->parse($file->info['tmp_name'],0,'|',null,true,
+					    $this->_conf['import']['field'])) === false
+		|| ($nb = count($data)) === 0)
+		{
+			xivo_file::rm($file->info['tmp_name']);
+			return(false);
+		}
+
+		$appincall = &$this->_service->get_application('incall');
+
+		$incall = array();
+		$incall['dialaction'] = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(($arr = $this->_prepare_import($data[$i])) === false
+			|| $this->set_add($arr,$arr['protocol']['protocol']) === false
+			|| $this->add() === false)
+				continue;
+
+			if(xivo_issa('incall',$arr) === true
+			&& xivo_haslen($arr['incall'],'exten') === true)
+			{
+				$incall['incall'] = $arr['incall'];
+
+				$incall['dialaction']['answer'] = array();
+				$incall['dialaction']['answer']['actiontype'] = 'user';
+				$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
+
+				if(xivo_haslen($arr['incall'],'ringseconds') === true)
+					$incall['dialaction']['answer']['actionarg2'] = $arr['incall']['ringseconds'];
+				else
+					$incall['dialaction']['answer']['actionarg2'] = '';
+
+				unset($incall['incall']['ringseconds']);
+
+				if($appincall->set_add($incall) === true)
+					$appincall->add();
+			}
+		}
+
+		xivo_file::rm($file->info['tmp_name']);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('userfeatures',$data) === true)
+			$data['ufeatures'] = &$data['userfeatures'];
+
+		if(($arr = $this->_prepare_import($data)) === false
 		|| $this->set_add($arr,$arr['protocol']['protocol']) === false
 		|| $this->add() === false)
 			return(false);
-		else if(xivo_issa('incall',$arr) === true
-		&& xivo_haslen($arr['incall'],'exten') === true)
-		{
-			$incall['incall'] = $arr['incall'];
-			$incall['dialaction']['answer']['actiontype'] = 'user';
-			$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
 
-			if(xivo_haslen($arr['incall'],'ringseconds') === true)
-				$incall['dialaction']['answer']['actionarg2'] = $arr['incall']['ringseconds'];
-			else
-				$incall['dialaction']['answer']['actionarg2'] = '';
+		return(true);
+	}
 
-			unset($incall['incall']['ringseconds']);
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('userfeatures',$data) === true)
+			$data['ufeatures'] = &$data['userfeatures'];
 
-			if($appincall->set_add($incall) === false
-			|| $appincall->add() === false)
-				return(false);
-		}
+		if(($arr = $this->_prepare_import($data)) === false
+		|| $this->set_edit($arr,$arr['protocol']['protocol']) === false
+		|| $this->edit() === false)
+			return(false);
 
 		return(true);
 	}

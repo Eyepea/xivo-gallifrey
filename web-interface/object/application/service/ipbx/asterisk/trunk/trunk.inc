@@ -171,8 +171,21 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		return($r);
 	}
 
-	function get_all_trunks($protocols=null,$disable=null,$limit=null,$assoc=false)
+	function get_trunks_search($search,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
+		return($this->_get_trunks('search',$search,$protocols,$disable,$order,$limit,$assoc));
+	}
+
+	function get_trunks_list($protocols=null,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_trunks('list',null,$protocols,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_trunks($action,$search='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
 		if(is_array($protocols) === true && empty($protocols) === false)
 			$protocols = array_values($protocols);
 		else if($protocols === true && xivo_haslen($this->_param['protocol']) === true)
@@ -180,114 +193,109 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		else
 			$protocols = null;
 
-		$rs = $this->_dso->get_all($protocols,$disable,null,$limit);
+		switch($action)
+		{
+			case 'search':
+				$rs = $this->_dso->search($search,$protocols,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_dso->get_all($protocols,$disable,$order,$limit);
+		}
 
 		$this->_cnt = $this->_dso->get_cnt();
 
+		$sipidentity = $staticsipclass = null;
+		$iaxidentity = $staticiaxclass = null;
+		$customidentity = null;
+
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
+
+		if($protocols === null
+		|| in_array(XIVO_SRE_IPBX_AST_PROTO_SIP,$protocols) === true)
+		{
+			if(($sipidentity = $this->_service->get_identity('trunksip')) === false)
+				return(false);
+			else if(($staticsipclass = &$this->_service->get_realstatic('staticsip')) === false)
+				return(false);
+		}
+
+		if($protocols === null
+		|| in_array(XIVO_SRE_IPBX_AST_PROTO_IAX,$protocols) === true)
+		{
+			if(($iaxidentity = $this->_service->get_identity('trunkiax')) === false)
+				return(false);
+			else if(($staticiaxclass = &$this->_service->get_realstatic('staticiax')) === false)
+				return(false);
+		}
+
+		if($protocols === null
+		|| in_array(XIVO_SRE_IPBX_AST_PROTO_CUSTOM,$protocols) === true)
+		{
+			if(($customidentity = $this->_service->get_identity('trunkcustom')) === false)
+				return(false);
+		}
 
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
-			$ref['name'] = '';
 
-			switch($ref['protocol'])
+			$trunkfeatures = xivo_array_startswith_key($ref,'trunkfeatures.',true);
+
+			switch($trunkfeatures['protocol'])
 			{
 				case XIVO_SRE_IPBX_AST_PROTO_SIP:
-					$ref['name'] = $ref['sipname'];
-					$ref['type'] = $ref['siptype'];
-					$ref['context'] = $ref['sipcontext'];
-					$ref['host'] = $ref['siphost'];
+					$sip = xivo_array_startswith_key($ref,'usersip.',true);
+					$sip['commented'] = (bool) $sip['commented'];
 
-					if(empty($ref['sipcalllimit']) === true)
-						$ref['call-limit'] = '';
-					else
-						$ref['call-limit'] = $ref['sipcalllimit'];
+					if(empty($sip['calllimit']) === true)
+						$sip['call-limit'] = '';
 
-					$ref['commented'] = (bool) $ref['sipcommented'];
+					$sip['register'] = call_user_func(
+								array($staticsipclass,'parse_register_uri'),
+								$ref['register']);
 
-					if(($channel = $this->_service->get_channel_by_protocol($ref['protocol'])) !== false)
-						$ref['identity'] = $ref['name'].' ('.$channel.')';
-					else
-						$ref['identity'] = $ref['name'];
+					if(is_array($sip['register']) === true)
+						$sip['register']['commented'] = (bool) $trunkfeatures['registercommented'];
+
+					unset($trunkfeatures['registercommented']);
+
+					$sip['identity'] = $sipidentity->mk_identity($sip);
+
+					$r[$trunkfeatures['id']] = array_merge($sip,$trunkfeatures);
 					break;
 				case XIVO_SRE_IPBX_AST_PROTO_IAX:
-					$ref['name'] = $ref['iaxname'];
-					$ref['type'] = $ref['iaxtype'];
-					$ref['context'] = $ref['iaxcontext'];
-					$ref['host'] = $ref['iaxhost'];
-					$ref['commented'] = (bool) $ref['iaxcommented'];
+					$iax = xivo_array_startswith_key($ref,'useriax.',true);
+					$iax['commented'] = (bool) $iax['commented'];
 
-					if(($channel = $this->_service->get_channel_by_protocol($ref['protocol'])) !== false)
-						$ref['identity'] = $ref['name'].' ('.$channel.')';
-					else
-						$ref['identity'] = $ref['name'];
+					$iax['register'] = call_user_func(
+								array($staticiaxclass,'parse_register_uri'),
+								$ref['register']);
+
+					if(is_array($iax['register']) === true)
+						$iax['register']['commented'] = (bool) $trunkfeatures['registercommented'];
+
+					unset($trunkfeatures['registercommented']);
+
+					$iax['identity'] = $iaxidentity->mk_identity($iax);
+
+					$r[$trunkfeatures['id']] = array_merge($iax,$trunkfeatures);
 					break;
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
-					$ref['name'] = $ref['customname'];
-					$ref['context'] = $ref['customcontext'];
-					$ref['interface'] = $ref['custominterface'];
-					$ref['intfsuffix'] = $ref['customintfsuffix'];
-					$ref['commented'] = (bool) $ref['customcommented'];
+					$custom = xivo_array_startswith_key($ref,'usercustom.',true);
+					$custom['commented'] = (bool) $custom['commented'];
+					$custom['identity'] = $customidentity->mk_identity($custom);
 
-					if(xivo_haslen($ref['intfsuffix']) === true)
-						$ref['identity'] = $ref['name'].' ('.$ref['interface'].'|'.$ref['intfsuffix'].')';
-					else
-						$ref['identity'] = $ref['name'].' ('.$ref['interface'].')';
+					unset($trunkfeatures['registercommented']);
+
+					$r[$trunkfeatures['id']] = array_merge($custom,$trunkfeatures);
 					break;
+				default:
+					$this->_cnt = 0;
+					return(false);
 			}
-
-			$r[$ref['trunkfeaturesid']] = $ref;
-		}
-
-		if(empty($r) === true)
-			return(false);
-		else if((bool) $assoc === false)
-			return(array_values($r));
-
-		return($r);
-	}
-
-	function get_trunks_list($disable=null,$order=null,$limit=null,$assoc=false)
-	{
-		$this->_cnt = 0;
-
-		if(is_object($this->_protocol) === false)
-			return(false);
-		else if(($rs = $this->_protocol->get_all($disable,true,$order,$limit)) === false
-		|| ($nb = count($rs)) === 0)
-		{
-			$this->_cnt = $this->_protocol->get_cnt();
-			return(false);
-		}
-
-		$this->_cnt = $this->_protocol->get_cnt();
-
-		$r = $info = array();
-
-		$where = array();
-		$where['protocol'] = $this->_param['protocol'];
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$info['protocol'] = $rs[$i];
-
-			$where['protocolid'] = $info['protocol']['id'];
-
-			if(($info['trunkfeatures'] = $this->_trunkfeatures->get_where($where)) === false)
-				continue;
-
-			if(is_object($this->_register) === true
-			&& ($registerid = xivo_ulongint($info['trunkfeatures']['registerid'])) !== 0
-			&& ($register = $this->_register->get_register($registerid)) !== false)
-				$info['register'] = $register;
-			else
-				$info['register'] = null;
-
-			$r[$info['trunkfeatures']['id']] = $info;
 		}
 
 		if(empty($r) === true)
@@ -922,6 +930,16 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					break;
 			}
 		}
+
+		return(true);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
 
 		return(true);
 	}

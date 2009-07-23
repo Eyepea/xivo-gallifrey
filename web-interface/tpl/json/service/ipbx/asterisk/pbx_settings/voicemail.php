@@ -56,7 +56,10 @@ if(($list = xivo_json::encode($list)) === false)
 	$http->set_status(500);
 	$http->send(true);
 }
-else if($this->get_var('sum') === md5($list))
+
+$sum = $this->get_var('sum');
+
+if(isset($sum{0}) === true && $sum === md5($list))
 {
 	$http->set_status(304);
 	$http->send(true);

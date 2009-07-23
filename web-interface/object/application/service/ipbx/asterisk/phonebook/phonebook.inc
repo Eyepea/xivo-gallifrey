@@ -83,10 +83,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($this->_info['phonebookaddress'][$info[$i]['type']]) === true)
-				continue;
-
-			$this->_info['phonebookaddress'][$info[$i]['type']] = $info[$i];
+			if(isset($this->_info['phonebookaddress'][$info[$i]['type']]) === false)
+				$this->_info['phonebookaddress'][$info[$i]['type']] = $info[$i];
 		}
 
 		$this->_origin['phonebookaddress'] = $this->_phonebookaddress->get_origin_list();
@@ -110,10 +108,8 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($this->_info['phonebooknumber'][$info[$i]['type']]) === true)
-				continue;
-
-			$this->_info['phonebooknumber'][$info[$i]['type']] = $info[$i];
+			if(isset($this->_info['phonebooknumber'][$info[$i]['type']]) === false)
+				$this->_info['phonebooknumber'][$info[$i]['type']] = $info[$i];
 		}
 
 		$this->_origin['phonebooknumber'] = $this->_phonebooknumber->get_origin_list();
@@ -733,6 +729,26 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		xivo_file::rm($file->info['tmp_name']);
 
 		return($r);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
+
+		return(true);
 	}
 }
 

@@ -315,15 +315,10 @@ class xivo_file
 	{
 		$path = '';
 
-		if(preg_match('/^[a-z0-9\-_.]+$/i',$file) !== 1)
+		if(preg_match('/^[a-z0-9\-_\.]+$/i',$file) !== 1)
 			return(false);
 		else if(is_array($dir) === true)
-		{
-			if(isset($dir[0]) === false)
-				return(false);
-
-			$dir = implode($dir,DIRECTORY_SEPARATOR);
-		}
+			$dir = xivo_file::list_to_path($dir);
 
 		$dir = (string) $dir;
 
@@ -359,14 +354,10 @@ class xivo_file
 
 	function required($arr,$once=false,$includable=false)
 	{
-		$arr = (array) $arr;
+		$path = xivo_file::list_to_path($arr);
 
-		if(isset($arr[0]) === false)
-			return(false);
-
-		$path = implode($arr,DIRECTORY_SEPARATOR);
-
-		if(($path = xivo_file::is_f_r($path)) === false
+		if($path === false
+		|| ($path = xivo_file::is_f_r($path)) === false
 		|| ((bool) $includable === true
 		   && xivo_file::is_includable($path) === false) === true)
 			return(false);
@@ -411,6 +402,14 @@ class xivo_file
 		return((is_readable($file) === true && is_writeable($file) === true && is_executable($file) === true));
 	}
 
+	function list_to_path($list)
+	{
+		if(is_array($list) === false)
+			return(false);
+
+		return(implode(DIRECTORY_SEPARATOR,$list));
+	}
+
 	function joinpath()
 	{
 		$arr = func_get_args();
@@ -446,7 +445,7 @@ class xivo_file
 				array_pop($r);
 		}
 
-		return(DIRECTORY_SEPARATOR.implode(DIRECTORY_SEPARATOR,$r));
+		return(DIRECTORY_SEPARATOR.xivo_file::list_to_path($r));
 	}
 
 	function is_f($file,$mode=1)

@@ -63,17 +63,26 @@ class xivo_application_service_asterisk_realstatic_iax_register extends xivo_app
 			$this->_set_error($this->_name,'invalid data');
 			return(false);
 		}
-		else if(($rs = $this->build_register($arr)) === false)
+		else if(($rs = $this->chk_values($arr)) === false)
 		{
-			$arr['commented'] = false;
-			$this->_set_result($this->_name,$arr);
+			$rs = $this->get_filter_result();
+			$rs['commented'] = false;
+
+			$this->_set_result($this->_name,$rs);
+			$this->_set_error($this->_name,'invalid data');
+			return(false);
+		}
+		else if(($res = $this->_realstatic->build_register_uri($rs)) === false)
+		{
+			$rs['commented'] = false;
+			$this->_set_result($this->_name,$rs);
 			$this->_set_error($this->_name,'invalid data');
 			return(false);
 		}
 
-		$rs['arr']['commented'] = false;
+		$res['arr']['commented'] = false;
 
-		$this->_set_result($this->_name,$rs);
+		$this->_set_result($this->_name,$res);
 
 		return(true);
 	}
@@ -164,31 +173,6 @@ class xivo_application_service_asterisk_realstatic_iax_register extends xivo_app
 	function disable_register($status,$id=0)
 	{
 		return($this->_enable_disable_register($status,true,$id));
-	}
-
-	function build_register($arr)
-	{
-		$r = array('str' => '','arr' => array());
-
-		if(is_array($arr) === false
-		|| isset($arr['username'],$arr['host']) === false
-		|| ($r['arr']['username'] = $this->chk_value('username',$arr['username'])) === false
-		|| ($r['arr']['host'] = $this->chk_value('host',$arr['host'])) === false)
-			return(false);
-
-		$r['str'] = $r['arr']['username'];
-
-		if(isset($arr['password']) === true
-		&& ($r['arr']['password'] = $this->set_chk_value('password',$arr['password'])) !== '')
-			$r['str'] .= ':'.$r['arr']['password'];
-
-		$r['str'] .= '@'.$r['arr']['host'];
-
-		if(isset($arr['port']) === true
-		&& ($r['arr']['port'] = $this->set_chk_value('port',$arr['port'])) !== '')
-			$r['str'] .= ':'.$r['arr']['port'];
-
-		return($r);
 	}
 }
 

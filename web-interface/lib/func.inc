@@ -532,6 +532,47 @@ function xivo_group_array($ref,&$arr)
 	return($r);
 }
 
+function xivo_array_combine($keys,$values)
+{
+	if(is_array($keys) === false || is_array($values) === false)
+		return(false);
+
+	$r = array();
+
+	foreach($keys as $k => $v)
+	{
+		if(array_key_exists($k,$values) === true && is_scalar($v) === true)
+			$r[$v] = $values[$k];
+	}
+
+	return($r);
+}
+
+function xivo_array_startswith_key($arr,$str,$sub=false)
+{
+	$sub = (bool) $sub;
+
+	if(is_array($arr) === false || xivo_haslen($str) === false)
+		return(false);
+
+	$len = strlen($str);
+
+	$r = array();
+
+	foreach($arr as $key => $value)
+	{
+		if(strncmp($str,$key,$len) === 0)
+		{
+			if($sub === true)
+				$r[substr($key,$len)] = $value;
+			else
+				$r[$key] = $value;
+		}
+	}
+
+	return($r);
+}
+
 function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
 {
 	$empty = (bool) $empty;

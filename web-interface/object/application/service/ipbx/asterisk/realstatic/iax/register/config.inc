@@ -35,8 +35,8 @@ $array['element']['port']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['username'] = array('set' => false,'regexp' => '/^[a-z0-9_@\.-]+$/i','maxlen' => 80);
-$array['filter']['password'] = array('set' => false,'chk' => 2,'regexp' => '/^([a-z0-9_\.-]+|\[[a-z0-9\+\/]+={0,2}\])$/i','maxlen' => 80);
+$array['filter']['username'] = array('set' => false,'maxlen' => 80);
+$array['filter']['password'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['host'] = array('set' => false,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 

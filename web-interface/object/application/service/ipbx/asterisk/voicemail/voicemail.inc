@@ -704,13 +704,9 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		return($r);
 	}
 
-	function import_json()
+	function add_from_json()
 	{
-		$_QRY = &xivo_gct::get('xivo_query');
-
-		if(xivo::load_class('xivo_json') === false
-		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
-		|| xivo_issa('voicemail',$data) === false
+		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set_add($data) === false
 		|| $this->add() === false)
 			return(false);

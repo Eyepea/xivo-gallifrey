@@ -22,6 +22,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_outcall extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_outcall		= false;
 	var $_extenumbers	= false;
 	var $_outcalltrunk	= false;
@@ -30,9 +31,14 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	var $_contextmember	= false;
 	var $_contextlist	= array();
 
-	function xivo_application_service_asterisk_outcall(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_outcall(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_outcall = &$this->_service->get_module('outcall')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'outcall'))) === false
@@ -114,15 +120,57 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return($r);
 	}
 
+	function get_outcalls_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_outcalls('search',$search,$disable,$order,$limit,$assoc));
+	}
+
 	function get_outcalls_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_outcall->get_all($disable,true,$order,$limit,$assoc)) !== false
-		&& empty($rs) === true)
-			$rs = false;
+		return($this->_get_outcalls('list',null,$disable,$order,$limit,$assoc));
+	}
 
-		$this->_cnt = $this->_outcall->get_cnt();
+	function _get_outcalls($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
 
-		return($rs);
+		switch($action)
+		{
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_dso->get_all($disable,$order,$limit);
+		}
+
+		$this->_cnt = $this->_dso->get_cnt();
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+	
+		$r = $identity = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$r[$rs[$i]['id']] = $rs[$i];
+
+			$ref = &$r[$rs[$i]['id']];
+			$ref['exten'] = $this->_service->display_extension($ref['exten']);
+
+			$identity['name'] = $ref['name'];
+			$identity['context'] = $ref['context'];
+
+			$ref['identity'] = $this->_outcall->mk_identity($identity);
+			$ref['commented'] = (bool) $ref['commented'];
+		}
+
+		if(empty($r) === true)
+			return(false);
+		else if((bool) $assoc === false)
+			return(array_values($r));
+
+		return($r);
 	}
 
 	function _mk_outcallmacro_appdata($outcallid)
@@ -728,6 +776,26 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 					break;
 			}
 		}
+
+		return(true);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
 
 		return(true);
 	}

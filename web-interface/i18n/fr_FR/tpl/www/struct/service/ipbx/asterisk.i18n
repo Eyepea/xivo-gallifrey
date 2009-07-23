@@ -87,16 +87,16 @@ Dialogic VOX (ADPCM)
 ; ast_format_name_info-sln
 Signed Linear (SLN)
 
-; ast_amaflag_name_info-default
+; ast_amaflag_name_info(default)
 Défaut
 
-; ast_amaflag_name_info-omit
+; ast_amaflag_name_info(omit)
 Omission
 
-; ast_amaflag_name_info-billing
+; ast_amaflag_name_info(billing)
 Facturation
 
-; ast_amaflag_name_info-documentation
+; ast_amaflag_name_info(documentation)
 Documentation
 
 ; toolbar_add_menu_add-directory

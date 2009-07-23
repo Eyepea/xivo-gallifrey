@@ -28,15 +28,23 @@ class xivo_service_asterisk_realstatic_meetme extends xivo_service_asterisk_real
 	{
 		if($data['category'] === 'rooms'
 		&& $data['var_name'] === 'conf')
-		{
-			$val = explode(',',$data['var_val'],3);
-
-			$data['number'] = xivo_haslen($val,0) === true ? $val[0] : '';
-			$data['pin'] = xivo_haslen($val,1) === true ? $val[1] : '';
-			$data['admin-pin'] = xivo_haslen($val,2) === true ? $val[2] : '';
-		}
+			return($this->parse_room($data));
 
 		return(parent::_prepare($data));
+	}
+
+	function parse_room($data)
+	{
+		if(is_array($data) === false || isset($data['var_val']) === false)
+			return(false);
+
+		$val = explode(',',$data['var_val'],3);
+
+		$data['number'] = xivo_haslen($val,0) === true ? $val[0] : '';
+		$data['pin'] = xivo_haslen($val,1) === true ? $val[1] : '';
+		$data['admin-pin'] = xivo_haslen($val,2) === true ? $val[2] : '';
+
+		return($data);
 	}
 }
 

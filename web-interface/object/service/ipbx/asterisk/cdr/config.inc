@@ -160,18 +160,18 @@ $array['filter']['dcontext'] = array('set' => false,'chk' => 2,'callback' => 'xi
 					XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['amaflags'] = array('set' => false,'chk' => 2,'key' => xivo_service_asterisk::get_amaflags_list());
 $array['filter']['src'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
-$array['filter']['srcformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['srcformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['dst'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80);
-$array['filter']['dstformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['dstformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['clid'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 80,'notag' => false);
-$array['filter']['clidformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['clidformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
-$array['filter']['accountcodeformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['accountcodeformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['userfield'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-zA-Z0-9-\._~\!\$&\'\[\]\*\+;=:%@]+$/','maxlen' => 255);
-$array['filter']['userfieldformat'] = array('key' => array('exact','begin','contain','end'));
+$array['filter']['userfieldformat'] = array('set' => false,'key' => array('exact','begin','contain','end'));
 $array['filter']['dubeg'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 5);
 $array['filter']['duend'] = array('set' => false,'chk' => 2,'cast' => 'uint','maxlen' => 5);
-$array['filter']['dubegunit'] = array('key' => array('seconds','minutes'));
-$array['filter']['duendunit'] = array('key' => array('seconds','minutes'));
+$array['filter']['dubegunit'] = array('set' => false,'key' => array('seconds','minutes'));
+$array['filter']['duendunit'] = array('set' => false,'key' => array('seconds','minutes'));
 
 ?>

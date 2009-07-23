@@ -21,12 +21,18 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
+xivo_print_r($this->get_var('users'));
+die();
+
 if(($data = xivo_json::encode($this->get_var('users'))) === false)
 {
 	$http->set_status(500);
 	$http->send(true);
 }
-else if($this->get_var('sum') === md5($data))
+
+$sum = $this->get_var('sum');
+
+if(isset($sum{0}) === true && $sum === md5($data))
 {
 	$http->set_status(304);
 	$http->send(true);

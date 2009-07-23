@@ -7,6 +7,15 @@ Utilisateurs
 ; acl_service
 Services
 
+; acl_xivo-configuration
+Configuration
+
+; acl_xivo-configuration-manage
+Gestion
+
+; acl_xivo-configuration-manage-entity
+Entités
+
 ; acl_service-ipbx
 IPBX
 

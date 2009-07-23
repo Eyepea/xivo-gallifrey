@@ -91,7 +91,7 @@ else
 	$return['special'] = false;
 
 $apptrunk = &$ipbx->get_application('trunk',null,false);
-if(($trunkslist = $apptrunk->get_all_trunks(null,null,null,true)) !== false)
+if(($trunkslist = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
 {
 	xivo::load_class('xivo_sort');
 	$trunksort = new xivo_sort(array('key' => 'identity'));

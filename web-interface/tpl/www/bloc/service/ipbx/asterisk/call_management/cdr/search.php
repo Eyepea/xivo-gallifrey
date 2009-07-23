@@ -209,7 +209,8 @@ $dhtml->write_js($js_result);
 				    'name'	=> 'channel',
 				    'labelid'	=> 'channel',
 				    'empty'	=> true,
-				    'bbf'	=> array('mixvalue','fm_channel-opt'),
+				    'bbf'	=> 'fm_channel-opt',
+				    'bbf_opt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['channel']['default'],
 				    'value'	=> $info['channel']),
 			      $element['channel']['value']),
@@ -219,7 +220,8 @@ $dhtml->write_js($js_result);
 				    'labelid'	=> 'disposition',
 				    'empty'	=> true,
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_disposition-opt-'),
+				    'bbf'	=> 'fm_disposition-opt',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['disposition']['default'],
 				    'value'	=> $info['disposition']),
 			      $element['disposition']['value']),
@@ -228,7 +230,8 @@ $dhtml->write_js($js_result);
 				    'name'	=> 'amaflags',
 				    'labelid'	=> 'amaflags',
 				    'empty'	=> true,
-				    'bbf'	=> array('mixvalue','ast_amaflag_name_info-'),
+				    'bbf'	=> 'ast_amaflag_name_info',
+				    'bbf_opt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['amaflags']['default'],
 				    'value'	=> $amaflags),
 			      $element['amaflags']['value']);
@@ -238,10 +241,11 @@ if($context_list !== false):
 				    'name'	=> 'dcontext',
 				    'labelid'	=> 'dcontext',
 				    'empty'	=> true,
-				    'bbf'	=> array('mixvalue','fm_dcontext-opt'),
+				    'bbf'	=> 'fm_dcontext-opt',
+				    'bbf_opt'	=> array('argmode' => 'paramvalue'),
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    				    'value'	=> $dcontext),
+				    'value'	=> $dcontext),
 
 			      $context_list,
 			      'onchange="xivo_chg_attrib(\'fm_dcontext\',
@@ -276,7 +280,8 @@ endif;
 				    'name'	=> 'srcformat',
 				    'labelid'	=> 'srcformat',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_srcformat-opt-'),
+				    'bbf'	=> 'fm_search-format',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['srcformat']['default'],
 				    'value'	=> $info['srcformat']),
 			      $element['srcformat']['value']);
@@ -297,7 +302,8 @@ endif;
 				    'name'	=> 'dstformat',
 				    'labelid'	=> 'dstformat',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_dstformat-opt-'),
+				    'bbf'	=> 'fm_search-format',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['dstformat']['default'],
 				    'value'	=> $info['dstformat']),
 			      $element['dstformat']['value']);
@@ -319,7 +325,8 @@ endif;
 				    'name'	=> 'clidformat',
 				    'labelid'	=> 'clidformat',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_clidformat-opt-'),
+				    'bbf'	=> 'fm_search-format',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['clidformat']['default'],
 				    'value'	=> $info['clidformat']),
 			      $element['clidformat']['value']);
@@ -340,7 +347,8 @@ endif;
 				    'name'	=> 'accountcodeformat',
 				    'labelid'	=> 'accountcodeformat',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_accountcodeformat-opt-'),
+				    'bbf'	=> 'fm_search-format',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['accountcodeformat']['default'],
 				    'value'	=> $info['accountcodeformat']),
 			      $element['accountcodeformat']['value']);
@@ -361,7 +369,8 @@ endif;
 				    'name'	=> 'userfieldformat',
 				    'labelid'	=> 'userfieldformat',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_userfieldformat-opt-'),
+				    'bbf'	=> 'fm_search-format',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['userfieldformat']['default'],
 				    'value'	=> $info['userfieldformat']),
 			      $element['userfieldformat']['value']);
@@ -383,7 +392,8 @@ endif;
 				    'id'	=> 'dubegunit',
 				    'label'	=> false,
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_dubegunit-opt-'),
+				    'bbf'	=> 'fm_dubegunit-opt',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['dubegunit']['default'],
 				    'value'	=> $info['dubegunit']),
 			      $element['dubegunit']['value']);
@@ -403,7 +413,8 @@ endif;
 				    'id'	=> 'duendunit',
 				    'label'	=> false,
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_duendunit-opt-'),
+				    'bbf'	=> 'fm_duendunit-opt',
+				    'bbf_opt'	=> array('argmode' => 'paramkey'),
 				    'default'	=> $element['duendunit']['default'],
 				    'value'	=> $info['duendunit']),
 			      $element['duendunit']['value']);
@@ -492,7 +503,7 @@ endif;
 			endif;
 
 			if($ref['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
-				$ref['channel'] = $this->bbf('entry_channel-unknown');
+				$ref['channel'] = $this->bbf('entry_channel','unknown');
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2 curpointer"
 	    onmouseover="this.tmp = this.className;
@@ -525,12 +536,12 @@ endif;
 
 			if(xivo_haslen($ref['disposition']) === true):
 				echo	'<dt>',$this->bbf('entry_disposition'),'</dt>',
-					'<dd>',$this->bbf('entry_disposition-'.$ref['disposition']),'<br /></dd>';
+					'<dd>',$this->bbf('entry_disposition',$ref['disposition']),'<br /></dd>';
 			endif;
 
 			if(xivo_haslen($ref['amaflagsmeta']) === true):
 				echo	'<dt>',$this->bbf('entry_amaflagsmeta'),'</dt>',
-					'<dd>',$this->bbf('ast_amaflag_name_info-'.$ref['amaflagsmeta']),'<br /></dd>';
+					'<dd>',$this->bbf('ast_amaflag_name_info',$ref['amaflagsmeta']),'<br /></dd>';
 			endif;
 
 			if(xivo_haslen($ref['clid']) === true):

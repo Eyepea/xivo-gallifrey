@@ -20,10 +20,13 @@
 
 $array = array();
 $array['tree'] = array();
+$array['tree']['xivo'] = array();
+$array['tree']['xivo']['configuration'] = array();
+$array['tree']['xivo']['configuration']['manage'] = array();
+$array['tree']['xivo']['configuration']['manage']['entity'] = true;
+
 $array['tree']['service'] = array();
-
 $array['tree']['service']['ipbx'] = array();
-
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
@@ -34,6 +37,8 @@ $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
+$array['tree']['service']['ipbx']['call_management']['outcall'] = true;
+$array['tree']['service']['ipbx']['call_management']['cdr'] = true;
 
 $array['tree']['service']['ipbx']['trunk_management'] = array();
 $array['tree']['service']['ipbx']['trunk_management']['sip'] = true;
@@ -42,5 +47,12 @@ $array['tree']['service']['ipbx']['trunk_management']['custom'] = true;
 
 $array['tree']['service']['ipbx']['pbx_services'] = array();
 $array['tree']['service']['ipbx']['pbx_services']['phonebook'] = true;
+
+$array['tree']['service']['ipbx']['system_management'] = array();
+$array['tree']['service']['ipbx']['system_management']['context'] = true;
+
+$array['tree']['service']['ipbx']['control_system'] = array();
+$array['tree']['service']['ipbx']['control_system']['reload'] = true;
+$array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 ?>

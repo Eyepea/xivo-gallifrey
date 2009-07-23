@@ -98,7 +98,7 @@ switch($act)
 			{
 				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
 
-				$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
+				$groupsort = new xivo_sort(array('key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
 		}
@@ -111,7 +111,7 @@ switch($act)
 			{
 				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
 
-				$incallsort = new xivo_sort(array('browse' => 'incall','key' => 'exten'));
+				$incallsort = new xivo_sort(array('key' => 'exten'));
 				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
 			}
 		}
@@ -124,7 +124,7 @@ switch($act)
 			{
 				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
 
-				$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
+				$outcallsort = new xivo_sort(array('key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
 		}
@@ -224,7 +224,7 @@ switch($act)
 			{
 				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
 
-				$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
+				$groupsort = new xivo_sort(array('key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
 		}
@@ -237,7 +237,7 @@ switch($act)
 			{
 				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
 
-				$incallsort = new xivo_sort(array('browse' => 'incall','key' => 'exten'));
+				$incallsort = new xivo_sort(array('key' => 'exten'));
 				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
 			}
 		}
@@ -250,7 +250,7 @@ switch($act)
 			{
 				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
 
-				$outcallsort = new xivo_sort(array('browse' => 'outcall','key' => 'name'));
+				$outcallsort = new xivo_sort(array('key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
 		}

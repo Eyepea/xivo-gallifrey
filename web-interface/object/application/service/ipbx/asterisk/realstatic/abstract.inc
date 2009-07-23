@@ -191,6 +191,11 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		return($this->get_element());
 	}
 
+	function _realstatic_prepare($data)
+	{
+		return($this->_realstatic->_prepare($data));
+	}
+
 	function _realstatic_get($name,$disable=null)
 	{
 		$this->_info[$this->_name] = false;

@@ -30,11 +30,13 @@ else:
 	$searchjs = 'xivo_fm[\'fm-users-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
 endif;
 
-if(($context = $this->get_var('context')) === '' && $search === ''):
+if(($context = (string) $this->get_var('context')) === ''):
 	$contextjs = '';
 else:
 	$contextjs = 'xivo_fm[\'fm-users-list\'][\'context\'].value = \''.$dhtml->escape($context).'\';';
 endif;
+
+$escaped_fm_search = $dhtml->escape($this->bbf('toolbar_fm_search'));
 
 ?>
 <form action="#" method="post" accept-charset="utf-8">
@@ -53,7 +55,7 @@ endif;
 					  'field'	=> false,
 					  'value'	=> $search,
 					  'default'	=> $this->bbf('toolbar_fm_search')),
-				    'onfocus="this.value = this.value === \''.$dhtml->escape($this->bbf('toolbar_fm_search')).'\'
+				    'onfocus="this.value = this.value === \''.$escaped_fm_search.'\'
 				    			   ? \'\'
 							   : this.value;
 					      xivo_fm_set_onfocus(this);"'),
@@ -71,7 +73,9 @@ endif;
 					    'value'	=> $context),
 				      $this->get_var('contexts'),
 				      'style="margin-left: 20px;"
-				       onchange="this.form[\'search\'].value = \'\';
+				       onchange="this.form[\'search\'].value = this.form[\'search\'].value === \''.$escaped_fm_search.'\'
+				    			   ? \'\'
+							   : this.form[\'search\'].value;
 						 this.form.submit();"');
 ?>
 	</div>

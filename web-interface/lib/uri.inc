@@ -135,11 +135,15 @@ class xivo_uri
 			{
 				$path = $this->encode($arr['path'],'path');
 
-				if($authority === '' && $scheme === ''
-				&& ($pos = strpos($path,'/')) !== false)
+				if($authority !== '')
 				{
-					$path  = str_replace(':','%3A',substr($path,0,$pos)).
-						 substr($path,$pos);
+					if($path{0} !== '/')
+						$path = '/'.$path;
+				}
+				else if($scheme === '' && ($pos = strpos($path,'/')) !== false)
+				{
+					$path = str_replace(':','%3A',substr($path,0,$pos)).
+						substr($path,$pos);
 				}
 			}
 		}
@@ -279,8 +283,6 @@ class xivo_uri
 
 	function uri_split($uri)
 	{
-		$uri = (string) $uri;
-
 		if(preg_match('@^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$@',$uri,$match) !== 1)
 			return(false);
 
@@ -443,8 +445,6 @@ class xivo_uri
 
 	function get_host_type($host)
 	{
-		$host = (string) $host;
-
 		if(xivo_haslen($host) === false)
 			return($this->_host['reg_name']);
 		else if($host{0} === '[')
@@ -620,10 +620,7 @@ class xivo_uri
 
 	function valid_host($host)
 	{
-		$host = (string) $host;
-		$type = $this->get_host_type($host);
-
-		switch($type)
+		switch($this->get_host_type($host))
 		{
 			case $this->_host['reg_name']:
 				if(preg_match('/^'.$this->_regexp['host'].'$/',$host) === 1)
@@ -659,8 +656,6 @@ class xivo_uri
 
 	function valid_user($user)
 	{
-		$user = (string) $user;
-
 		if(preg_match('/^'.$this->_regexp['user'].'$/',$user) === 1)
 			return(true);
 
@@ -669,8 +664,6 @@ class xivo_uri
 
 	function valid_passwd($passwd)
 	{
-		$passwd = (string) $passwd;
-
 		if(preg_match('/^'.$this->_regexp['passwd'].'$/',$passwd) === 1)
 			return(true);
 
@@ -679,8 +672,6 @@ class xivo_uri
 
 	function valid_port($port)
 	{
-		$port = (string) $port;
-
 		if(preg_match('/^'.$this->_regexp['port'].'$/',$port) === 1)
 			return(true);
 
@@ -689,8 +680,6 @@ class xivo_uri
 
 	function valid_path($path)
 	{
-		$path = (string) $path;
-
 		if(preg_match('/^'.$this->_regexp['path'].'$/',$path) === 1)
 			return(true);
 
@@ -699,8 +688,6 @@ class xivo_uri
 
 	function valid_query($query)
 	{
-		$query = (string) $query;
-
 		if(preg_match('/^'.$this->_regexp['query'].'$/',$query) === 1)
 			return(true);
 

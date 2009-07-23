@@ -39,7 +39,7 @@ switch($act)
 		xivo::load_class('xivo_sort');
 
 		$apptrunk = &$ipbx->get_application('trunk',null,false);
-		if(($outcalltrunk['list'] = $apptrunk->get_all_trunks(null,null,null,true)) !== false)
+		if(($outcalltrunk['list'] = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
 		{
 			$trunksort = new xivo_sort(array('key' => 'identity'));
 			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
@@ -109,7 +109,7 @@ switch($act)
 		xivo::load_class('xivo_sort');
 
 		$apptrunk = &$ipbx->get_application('trunk',null,false);
-		if(($outcalltrunk['list'] = $apptrunk->get_all_trunks(null,null,null,true)) !== false)
+		if(($outcalltrunk['list'] = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
 		{
 			$trunksort = new xivo_sort(array('key' => 'identity'));
 			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));

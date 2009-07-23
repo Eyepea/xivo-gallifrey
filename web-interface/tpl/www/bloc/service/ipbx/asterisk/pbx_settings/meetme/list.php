@@ -71,7 +71,7 @@
 
 			$ref = &$list[$i];
 
-			if($ref['meetmeroom']['commented'] === true):
+			if($ref['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
@@ -82,7 +82,7 @@
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
 			<?=$form->checkbox(array('name'		=> 'meetme[]',
-						 'value'	=> $ref['meetmeroom']['id'],
+						 'value'	=> $ref['id'],
 						 'label'	=> false,
 						 'id'		=> 'it-meetme-'.$i,
 						 'checked'	=> false,
@@ -92,13 +92,13 @@
 			<label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_trunc($ref['mfeatures']['name'],25,'...',false);
+					xivo_trunc($ref['name'],25,'...',false);
 ?>
 			</label>
 		</td>
-		<td><?=$ref['meetmeroom']['number']?></td>
-		<td><?=(xivo_haslen($ref['meetmeroom']['pin']) === true ? $ref['meetmeroom']['pin'] : '-')?></td>
-		<td><?=(xivo_haslen($ref['meetmeroom']['admin-pin']) === true ? $ref['meetmeroom']['admin-pin'] : '-')?></td>
+		<td><?=$ref['number']?></td>
+		<td><?=(xivo_haslen($ref['pin']) === true ? $ref['pin'] : '-')?></td>
+		<td><?=(xivo_haslen($ref['admin-pin']) === true ? $ref['admin-pin'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
@@ -106,7 +106,7 @@
 						       'border="0"'),
 					'service/ipbx/pbx_settings/meetme',
 					array('act'	=> 'edit',
-					      'id'	=> $ref['meetmeroom']['id']),
+					      'id'	=> $ref['id']),
 					null,
 					$this->bbf('opt_modify')),"\n",
 			$url->href_html($url->img_html('img/site/button/delete.gif',
@@ -114,7 +114,7 @@
 						       'border="0"'),
 					'service/ipbx/pbx_settings/meetme',
 					array('act'	=> 'delete',
-					      'id'	=> $ref['meetmeroom']['id'],
+					      'id'	=> $ref['id'],
 					      'page'	=> $pager['page']),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 					$this->bbf('opt_delete'));

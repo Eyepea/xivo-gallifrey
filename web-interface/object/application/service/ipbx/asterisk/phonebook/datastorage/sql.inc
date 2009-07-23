@@ -31,6 +31,9 @@ class xivo_application_service_asterisk_phonebook_sql extends xivo_application_s
 	{
 		$this->_cnt = 0;
 
+		if(xivo_haslen($value) === false)
+			return(false);
+
 		$this->_dso->new_select($this->_table['phonebook']);
 
 		$this->_dso->leftjoin($this->_table['phonebookaddress'],

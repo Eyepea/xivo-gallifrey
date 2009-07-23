@@ -745,12 +745,9 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(true);
 	}
 
-	function import_json()
+	function add_from_json()
 	{
-		$_QRY = &xivo_gct::get('xivo_query');
-
-		if(xivo::load_class('xivo_json') === false
-		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
+		if(($data = $this->_get_data_from_json()) === false
 		|| xivo_issa('incall',$data) === false
 		|| xivo_haslen($data['incall'],'exten') === false)
 			return(false);

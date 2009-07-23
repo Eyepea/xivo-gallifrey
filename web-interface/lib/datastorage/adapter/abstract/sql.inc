@@ -355,6 +355,9 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$noassoc = in_array(0,$keys,true);
 		$nb = count($keys);
 
+		if(isset($this->_colalias[$table]) === false)
+			$this->_colalias[$table] = array();
+
 		for($i = 0;$i < $nb;$i++)
 		{
 			$key = &$keys[$i];
@@ -378,8 +381,11 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 				if($noassoc === true && is_int($key) === true)
 					$col = sprintf('%s',$val);
 				else
+				{
 					$col = sprintf('%s AS %s',$val,
 								  $this->quote_identifier($key));
+					$this->_colalias[$table][$key] = $val;
+				}
 
 				$this->_column[] = $col;
 				continue;
@@ -400,7 +406,10 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			$this->_tablecolumn[$table][] = $col;
 
 			if($noassoc === false || is_int($key) === false)
+			{
 				$col .= ' AS '.$this->quote_identifier($key);
+				$this->_colalias[$table][$key] = $val;
+			}
 
 			$this->_column[] = $col;
 		}
@@ -663,7 +672,28 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return($r);
 	}
 
-	function aggregate_where($all=false)
+	function _valid_logic($logic)
+	{
+		$r = '';
+
+		if(is_string($logic) === true)
+			$next = strtoupper($logic);
+		else
+			return($r);
+
+		switch($next)
+		{
+			case 'AND':
+			case 'OR':
+			case 'XOR':
+				$r = $logic;
+			default:
+		}
+
+		return($r);
+	}
+
+	function aggregate_where($all=false,$agglogic='')
 	{
 		if($this->_where === '')
 			return(false);
@@ -682,7 +712,11 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(preg_match('/^([\s])?(AND|OR|XOR)([\(\s])?/i',$end,$match) === 0)
 			return(false);
 
-		$logic = $match[1].strtoupper($match[2]);
+		if(($agglogic = $this->_valid_logic($agglogic)) === '')
+			$logic = $match[1].strtoupper($match[2]);
+		else
+			$logic = $match[1].$agglogic;
+
 		$len = strlen($match[2]);
 
 		if(isset($match[3]{0}) === false)
@@ -704,7 +738,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return($this->aggregate_where(true));
 	}
 
-	function aggregate_joinwhere($table,$all=false)
+	function aggregate_joinwhere($table,$all=false,$agglogic='')
 	{
 		if(isset($this->_joinwhere[$table]) === false
 		|| $this->_joinwhere[$table] === '')
@@ -727,7 +761,11 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(preg_match('/^([\s])?(AND|OR|XOR)([\(\s])?/i',$end,$match) === 0)
 			return(false);
 
-		$logic = $match[1].strtoupper($match[2]);
+		if(($agglogic = $this->_valid_logic($agglogic)) === '')
+			$logic = $match[1].strtoupper($match[2]);
+		else
+			$logic = $match[1].$agglogic;
+
 		$len = strlen($match[2]);
 
 		if(isset($match[3]{0}) === false)
@@ -1811,22 +1849,31 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return($r);
 	}
 
-	function select_all($query='',$free=true)
+	function select_all($query='',$free=true,$full_column_names=false)
 	{
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if((xivo_haslen($query) === false
-		   && ($query = $this->get_select()) === null) === true
-		|| $this->query($query,($free === false)) === false)
+		if(xivo_haslen($query) === false
+		&& ($query = $this->get_select()) === null)
 			return(false);
 
-		$r = array();
+		if((bool) $full_column_names === true)
+			$r = $this->_fetch_assoc_full_column_names($query,$free);
+		else
+		{
+			$r = array();
 
-		for($i = 0;$m = $this->fetch_assoc();$i++)
-			$r[$i] = $m;
+			if((xivo_haslen($query) === false
+			   && ($query = $this->get_select()) === null) === true
+			|| $this->query($query,($free === false)) === false)
+				return(false);
 
-		if(array_key_exists(0,$r) === false)
+			for($i = 0;$m = $this->fetch_assoc();$i++)
+				$r[$i] = $m;
+		}
+
+		if(is_array($r) === false || array_key_exists(0,$r) === false)
 			$r = false;
 
 		if($this->_free === true && $free === true)

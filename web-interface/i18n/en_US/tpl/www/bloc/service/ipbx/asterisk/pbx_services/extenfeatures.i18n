@@ -34,10 +34,10 @@ Enable voicemail:
 ; fm_extenfeatures_enablevm
 Extension:
 
-; fm_extenfeatures_enable-voicemsg
-Reach the voicemail:
+; fm_extenfeatures_enable-vmusermsg
+Reach the user's voicemail:
 
-; fm_extenfeatures_voicemsg
+; fm_extenfeatures_vmusermsg
 Extension:
 
 ; fm_extenfeatures_enable-recsnd
@@ -142,10 +142,10 @@ Listen to online calls:
 ; fm_extenfeatures_calllistening
 Extension:
 
-; fm_extenfeatures_enable-vmdelete
-Delete messages from voicemail:
+; fm_extenfeatures_enable-vmuserpurge
+Delete messages from user's voicemail:
 
-; fm_extenfeatures_vmdelete
+; fm_extenfeatures_vmuserpurge
 Extension:
 
 ; fm_extenfeatures_enable-directoryaccess

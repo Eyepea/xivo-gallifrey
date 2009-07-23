@@ -26,6 +26,8 @@ class xivo_application_service_asterisk_voicemail_sql extends xivo_application_s
 
 	function search($value,$disable=null,$order=null,$limit=null)
 	{
+		$this->_cnt = 0;
+
 		if(xivo_haslen($value) === false)
 			return(false);
 

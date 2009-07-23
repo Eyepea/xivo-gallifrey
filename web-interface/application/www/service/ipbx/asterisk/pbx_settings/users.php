@@ -132,9 +132,9 @@ switch($act)
 		$limit[1] = $nbbypage;
 
 		if($search !== '')
-			$list = $appuser->get_users_search($search,null,$order,$limit);
+			$list = $appuser->get_users_search($search,$context,null,null,$order,$limit);
 		else if($context !== '')
-			$list = $appuser->get_users_context($context,null,$order,$limit);
+			$list = $appuser->get_users_context($context,null,null,$order,$limit);
 		else
 			$list = $appuser->get_users_list(null,null,$order,$limit);
 

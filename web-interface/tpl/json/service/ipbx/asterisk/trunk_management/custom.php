@@ -21,46 +21,21 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-$trunks = $this->get_var('trunks');
-
-if(is_array($trunks) === false)
+if(($data = xivo_json::encode($this->get_var('trunks'))) === false)
 {
 	$http->set_status(500);
 	$http->send(true);
 }
-else if(($nb = count($trunks)) === 0)
-{
-	$http->set_status(204);
-	$http->send(true);
-}
 
-$data = $list = array();
+$sum = $this->get_var('sum');
 
-for($i = 0;$i < $nb;$i++)
-{
-	$ref = &$trunks[$i];
-
-	$data = $ref['protocol'];
-	$data['protocolid'] = $ref['protocol']['id'];
-	$data['id'] = $ref['trunkfeatures']['id'];
-	$data['description'] = $ref['trunkfeatures']['description'];
-	unset($data['register']);
-
-	$list[] = $data;
-}
-
-if(($list = xivo_json::encode($list)) === false)
-{
-	$http->set_status(500);
-	$http->send(true);
-}
-else if($this->get_var('sum') === md5($list))
+if(isset($sum{0}) === true && $sum === md5($data))
 {
 	$http->set_status(304);
 	$http->send(true);
 }
 
 header(xivo_json::get_header());
-die($list);
+die($data);
 
 ?>

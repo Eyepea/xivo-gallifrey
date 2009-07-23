@@ -143,14 +143,34 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		return($this->_context->get_all_except($name,$order,$limit,$assoc));
 	}
 
+	function get_contexts_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_contexts('search',$search,$disable,$order,$limit,$assoc));
+	}
+
 	function get_contexts_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_context->get_all($disable,true,$order,$limit)) === false
-		|| ($nb = count($rs)) === 0)
+		return($this->_get_contexts('list',null,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_contexts($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
+		switch($action)
 		{
-			$this->_cnt = $this->_context->get_cnt();
-			return(false);
+			case 'search':
+				$rs = $this->_context->search($search,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_context->get_all($disable,true,$order,$limit);
 		}
+
+		$this->_cnt = $this->_context->get_cnt();
+
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
 
 		$this->_load_entity();
 
@@ -178,6 +198,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 				$info['deletable'] = false;
 			else
 				$info['deletable'] = true;
+
+			$info['contextinclude'] = $this->_contextinclude->get_where(
+								array('context' => $info['context']['name']));
 
 			$r[$info['context']['name']] = $info;
 		}
@@ -1627,6 +1650,16 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			$this->_return['context'] = $r;
 
 		return($r);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
 	}
 }
 

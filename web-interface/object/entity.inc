@@ -83,10 +83,32 @@ class xivo_entity extends xivo_libdatastorage_abstract
 		return(true);
 	}
 
+	function get_entities_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_entities('search',$search,$disable,$order,$limit,$assoc));
+	}
+
 	function get_entities_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->get_all($disable,true,$order,$limit,$assoc)) === false
-		|| empty($rs) === true)
+		return($this->_get_entities('list',null,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_entities($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
+		switch($action)
+		{
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+				$this->_cnt = $this->_dso->get_cnt();
+				break;
+			default:
+				$rs = $this->get_all($disable,true,$order,$limit,$assoc);
+		}
+
+		if(empty($rs) === true)
 			return(false);
 
 		$_SRE = &xivo_gct::get('xivo_service');

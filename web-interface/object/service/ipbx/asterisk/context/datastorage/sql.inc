@@ -25,6 +25,38 @@ class xivo_service_asterisk_context_sql extends xivo_service_asterisk_abstract_s
 	var $_autoincrement	= false;
 	var $_unique		= 'name';
 
+	function search($value,$disable=null,$order=null,$limit=null)
+	{
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_table);
+		$this->_dso->wherecontain('name',$value);
+		$this->_dso->orwherecontain('displayname',$value);
+		$this->_dso->orwherecontain('entity',$value);
+
+		if($this->_dso->aggregate_where() === false)
+			return(false);
+
+		$arr = array();
+
+		if($disable !== null && isset($this->_disable) === true)
+			$this->_dso->andwhere(array($this->_disable => intval((bool) $disable)));
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
+
 	function get_all_except($name,$order=null,$limit=null)
 	{
 		$this->_dso->new_select($this->_table,'*');

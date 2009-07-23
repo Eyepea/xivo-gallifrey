@@ -299,6 +299,42 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 		return(false);
 	}
 
+	function _fetch_assoc_full_column_names($query,$free=true)
+	{
+		if($this->query($query,((bool) $free === false)) === false
+		|| ($full_column_names = $this->fetch_full_column_names()) === false)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$m = $this->fetch_row();$i++)
+			$r[$i] = xivo_array_combine($full_column_names,$m);
+		
+		return($r);
+	}
+
+	function fetch_full_column_names()
+	{
+		if(is_resource($this->_result) === false
+		|| ($num = mysql_num_fields($this->_result)) === 0)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$i < $num; ++$i)
+		{
+			$table = mysql_field_table($this->_result,$i);
+			$column = mysql_field_name($this->_result,$i);
+
+			if(isset($this->_colalias[$table],$this->_colalias[$table][$column]) === true)
+				$r[$i] = $column;
+			else
+				$r[$i] = sprintf('%s.%s',$table,$column);
+		}
+
+		return($r);
+	}
+
 	function unix_timestamp($column='',$time='')
 	{
 		if(($r = $this->_expr_typetime('date',$column,$time,$this->_date['datetime'])) !== false)

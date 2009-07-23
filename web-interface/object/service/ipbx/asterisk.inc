@@ -116,6 +116,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($identity->mk_identity($arr));
 	}
 
+	function load_realstatic_class($module)
+	{
+		if($this->chk_realstatic_enable($module) === false)
+		{
+			trigger_error('Invalid realtime static '.$module.' in '.$this->_name,E_USER_ERROR);
+			return(false);
+		}
+
+		return($this->_load_realstatic_class($module));
+	}
+
 	function _load_realstatic_class($name)
 	{
 		$file = $name.'.inc';
@@ -151,7 +162,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		if($this->chk_realstatic_enable($name) === false)
 		{
-			trigger_error('Invalid realtime static in '.$name.' '.$this->_name,E_USER_ERROR);
+			trigger_error('Invalid realtime static '.$name.' in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
 

@@ -29,7 +29,9 @@ $param = array();
 
 if(($search = (string) $this->get_var('search')) !== ''):
 	$param['search'] = $search;
-elseif(($context = $this->get_var('context')) !== ''):
+endif;
+
+if(($context = $this->get_var('context')) !== ''):
 	$param['context'] = $context;
 endif;
 

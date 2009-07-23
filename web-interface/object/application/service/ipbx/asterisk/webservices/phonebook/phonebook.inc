@@ -139,7 +139,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	{
 		$appuser = &$this->_service->get_application('user',null,false);
 
-		if(($rs = $appuser->get_users_search_number($search,$disable)) === false
+		if(($rs = $appuser->get_users_search_number($search,null,null,$disable)) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
 

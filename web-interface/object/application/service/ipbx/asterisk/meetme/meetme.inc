@@ -22,6 +22,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_meetme extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_appmeetme		= false;
 	var $_meetmefeatures	= false;
 	var $_meetmeroom	= false;
@@ -32,9 +33,14 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
 
-	function xivo_application_service_asterisk_meetme(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_meetme(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_meetmefeatures = &$this->_service->get_module('meetmefeatures')) === false
 		|| ($this->_appmeetme = &$this->_service->get_apprealstatic('meetme')) === false
@@ -63,9 +69,10 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom($id)) === false
-		|| ($this->_info['mfeatures'] = $this->_meetmefeatures->get_where(
-							array('meetmeid' => $this->_info['meetmeroom']['id']))) === false)
+		if(($this->_info['mfeatures'] = $this->_meetmefeatures->get($id)) === false
+		|| ($this->_info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom(
+						$this->_info['mfeatures']['meetmeid'],
+						$disable)) === false)
 			return(false);
 
 		$this->_origin['mfeatures'] = $this->_meetmefeatures->get_origin();
@@ -110,31 +117,58 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		return($r);
 	}
 
-	function get_meetme_list($disable=null,$order=null,$limit=null)
+	function get_meetme_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_meetmefeatures->get_all(null,true,$order,$limit)) === false
-		|| ($nb = count($rs)) === 0)
+		return($this->_get_meetme('search',$search,$disable,$order,$limit,$assoc));
+	}
+
+	function get_meetme_list($disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_meetme('list',null,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_meetme($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
+		switch($action)
 		{
-			$this->_cnt = $this->_meetmefeatures->get_cnt();
-			return(false);
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}
 
-		$this->_cnt = $this->_meetmefeatures->get_cnt();
+		$this->_cnt = $this->_dso->get_cnt();
 
-		$r = $info = array();
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+	
+		$r = $identity = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['mfeatures'] = $rs[$i];
+			$r[$rs[$i]['id']] = $rs[$i];
 
-			if(($info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom(
-							$info['mfeatures']['meetmeid'],
-							$disable)) !== false)
-				$r[] = $info;
+			$ref = &$r[$rs[$i]['id']];
+
+			$identity['name'] = $ref['name'];
+			$identity['number'] = $ref['number'];
+			$identity['context'] = $ref['context'];
+
+			$ref['identity'] = $this->_meetmefeatures->mk_identity($identity);
+			$ref = xivo_service_asterisk_realstatic_meetme::parse_room($ref);
+			$ref['commented'] = (bool) $ref['commented'];
+
+			unset($ref['var_val']);
 		}
 
-		if(isset($r[0]) === false)
-			$r = false;
+		if(empty($r) === true)
+			return(false);
+		else if((bool) $assoc === false)
+			return(array_values($r));
 
 		return($r);
 	}
@@ -593,6 +627,126 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 			$dialaction->unlinked_where($where);
 		}
+
+		return(true);
+	}
+
+	function enable()
+	{
+		$r = true;
+
+		$this->_status = 'enable';
+		$this->_return = array();
+
+		if(is_object($this->_meetmeroom) === false)
+			$r = false;
+		else if($this->enable_meetmeroom() === false)
+		{
+			$r = false;
+			$this->_reverse_enable_disable();
+		}
+
+		$this->_status = '';
+
+		return($r);
+	}
+
+	function disable()
+	{
+		$r = true;
+
+		$this->_status = 'disable';
+		$this->_return = array();
+
+		if(is_object($this->_meetmeroom) === false)
+			$r = false;
+		else if($this->disable_meetmeroom() === false)
+		{
+			$r = false;
+			$this->_reverse_enable_disable();
+		}
+
+		$this->_status = '';
+
+		return(true);
+	}
+
+	function enable_meetmeroom()
+	{
+		return($this->_enable_disable_meetmeroom(false));
+	}
+
+	function disable_meetmeroom()
+	{
+		return($this->_enable_disable_meetmeroom(true));
+	}
+
+	function _enable_disable_meetmeroom($disable=false)
+	{
+		if(xivo_issa('meetmeroom',$this->_info) === false)
+			return(false);
+		else if((bool) $disable === false)
+			$r = $this->_meetmeroom->enable($this->_info['meetmeroom']['id']);
+		else
+			$r = $this->_meetmeroom->disable($this->_info['meetmeroom']['id']);
+
+		if($this->_status === 'enable' || $this->_status === 'disable')
+			$this->_return['meetmeroom'] = $r;
+
+		return($r);
+	}
+
+	function _reverse_enable_disable()
+	{
+		if(($this->_status !== 'enable' && $this->_status !== 'disable') === true
+		|| is_array($this->_return) === false
+		|| empty($this->_return) === true)
+			return(false);
+
+		$disable = $this->_status === 'enable';
+
+		$this->_status = '';
+
+		foreach($this->_return as $key => $val)
+		{
+			if($val === false)
+				continue;
+
+			switch($key)
+			{
+				case 'meetmeroom':
+					$this->_enable_disable_meetmeroom($disable);
+					break;
+			}
+		}
+
+		return(true);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('meetmefeatures',$data) === true)
+			$data['mfeatures'] = &$data['meetmefeatures'];
+
+		if($this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('meetmefeatures',$data) === true)
+			$data['mfeatures'] = &$data['meetmefeatures'];
+
+		if($this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
 
 		return(true);
 	}

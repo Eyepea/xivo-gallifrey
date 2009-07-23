@@ -172,6 +172,11 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 
 	function search($value,$disable=null,$order=null,$limit=null)
 	{
+		$this->_cnt = 0;
+
+		if(xivo_haslen($value) === false)
+			return(false);
+
 		return($this->get_all($disable,$order,$limit,$value));
 	}
 }

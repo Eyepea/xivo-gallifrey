@@ -129,7 +129,7 @@ switch($act)
 		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
 
-		$appvoicemail = &$ipbx->get_application('voicemail');
+		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
 		$nb = count($values);
 

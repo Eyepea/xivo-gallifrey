@@ -18,19 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_settings/groups',
-			    array('act' => $act));
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_settings/groups',
+		    array('act' => $act));
+
 ?>
 <div class="b-list">
 <?php
@@ -63,7 +64,7 @@
 
 			$ref = &$list[$i];
 
-			if($ref['queue']['commented'] === true):
+			if($ref['commented'] === true):
 				$icon = 'disable';
 			else:
 				$icon = 'enable';
@@ -74,7 +75,7 @@
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
 			<?=$form->checkbox(array('name'		=> 'groups[]',
-						 'value'	=> $ref['gfeatures']['id'],
+						 'value'	=> $ref['id'],
 						 'label'	=> false,
 						 'id'		=> 'it-groups-'.$i,
 						 'checked'	=> false,
@@ -83,11 +84,11 @@
 			<label for="it-groups-<?=$i?>" id="lb-groups-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_trunc($ref['gfeatures']['name'],25,'...',false);
+					xivo_trunc($ref['name'],25,'...',false);
 ?>
 			</label>
 		</td>
-		<td><?=(xivo_haslen($ref['gfeatures']['number']) === true ? $ref['gfeatures']['number'] : '-')?></td>
+		<td><?=(xivo_haslen($ref['number']) === true ? $ref['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="2">
 <?php
@@ -96,7 +97,7 @@
 						       'border="0"'),
 					'service/ipbx/pbx_settings/groups',
 					array('act'	=> 'edit',
-					      'id'	=> $ref['gfeatures']['id']),
+					      'id'	=> $ref['id']),
 					null,
 					$this->bbf('opt_modify')),"\n",
 			$url->href_html($url->img_html('img/site/button/delete.gif',
@@ -104,7 +105,7 @@
 						       'border="0"'),
 					'service/ipbx/pbx_settings/groups',
 					array('act'	=> 'delete',
-					      'id'	=> $ref['gfeatures']['id'],
+					      'id'	=> $ref['id'],
 					      'page'	=> $pager['page']),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 					$this->bbf('opt_delete'));

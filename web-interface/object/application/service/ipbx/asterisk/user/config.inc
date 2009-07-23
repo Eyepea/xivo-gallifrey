@@ -25,6 +25,7 @@ $array['import']['file'] = array();
 $array['import']['file']['name'] = '/^[a-z0-9_-]{1,50}(?:\.[a-z]{1,10})?$/i';
 $array['import']['file']['mime'] = array('text/plain','text/csv');
 
+$array['import']['field'] = array();
 $array['import']['field']['firstname'] = array('ufeatures','firstname');
 $array['import']['field']['lastname'] = array('ufeatures','lastname');
 $array['import']['field']['username'] = array('protocol','name');

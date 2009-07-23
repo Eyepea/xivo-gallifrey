@@ -25,6 +25,7 @@ class xivo_tpl
 	var $_file	= array();
 	var $_var	= array();
 	var $_url	= array();
+	var $_api_misc	= array();
 	var $_option	= array('overload_i18n'	=> null);
 	var $_module	= array();
 
@@ -60,6 +61,8 @@ class xivo_tpl
 
 		if(is_array($url) === true)
 			$this->_url = $url;
+
+		$this->_api_misc = &xivo_gat::load_get('api_misc',XIVO_PATH_OBJECTCONF);
 
 		if(empty($modules) === true)
 			return(null);
@@ -476,12 +479,9 @@ class xivo_tpl
 	function get_application($section,$nb=0,$path='',$ext='')
 	{
 		$section = (string) $section;
-		$nb = (int) $nb;
+		$nb = xivo_uint($nb,20);
 		$path = (string) $path;
 		$ext = (string) $ext;
-
-		if($nb !== 0)
-			$nb = xivo_uint($nb,20);
 
 		if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;
@@ -498,23 +498,58 @@ class xivo_tpl
 
 		if($path !== '')
 		{
-			$path = preg_replace($search,$replace,$path);
+			$pathcleaned = preg_replace($search,$replace,$path);
 
-			if($nb !== 0)
+			if(($exp = explode(XIVO_SEP_DIR,$pathcleaned,$nb+1)) === false)
+				return(false);
+
+			$path = '';
+
+			$cnt = count($exp);
+
+			for($i = 0;$i < $cnt && $i < $nb;$i++)
 			{
-				if(($path = explode(XIVO_SEP_DIR,$path)) === false)
+				if(isset($exp[$i]{0}) === false || $exp[$i]{0} === '_' || $exp[$i]{0} === '.')
 					return(false);
 
-				$path = implode(XIVO_SEP_DIR,array_slice($path,0,$nb));
+				$path .= XIVO_SEP_DIR.$exp[$i];
 			}
+
+			$path = substr($path,1);
 		}
 
 		$this->set_option('api_path_info',$path);
 		$this->set_option('api_section_info',$section);
 
-		$dir = XIVO_SEP_DIR.trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR).'.'.$ext;
+		$filepath = trim($section.XIVO_SEP_DIR.$path,XIVO_SEP_DIR);
+		$newpath = $this->_apply_api_misc($filepath);
 
-		return(xivo_file::is_f_r($this->get_option('application_path').$dir));
+		if(is_string($newpath) === true)
+			$filepath = $newpath;
+
+		return(xivo_file::is_f_r($this->get_option('application_path').XIVO_SEP_DIR.$filepath.'.'.$ext));
+	}
+
+	function _apply_api_misc($api_path)
+	{
+		if(xivo_issa($api_path,$this->_api_misc) === false)
+			return(false);
+
+		$list = $this->_api_misc[$api_path];
+
+		if(xivo_issa('define',$list) === true)
+		{
+			foreach($list['define'] as $key => $value)
+			{
+				if(defined($key) === false && is_scalar($value) === true)
+					define($key,$value);
+			}
+		}
+
+		if(isset($list['path'],$list['path']{0}) === true)
+			return($list['path']);
+
+		return(true);
 	}
 }
 

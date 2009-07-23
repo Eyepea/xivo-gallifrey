@@ -46,7 +46,6 @@ $qmember = $this->get_var('qmember');
 					       'multiple'	=> true,
 					       'size'		=> 5,
 					       'field'		=> false,
-					       'browse'		=> 'gfeatures',
 					       'key'		=> 'name',
 					       'altkey'		=> 'name'),
 					 $gmember['list']);
@@ -78,7 +77,6 @@ $qmember = $this->get_var('qmember');
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'field'	=> false,
-					    'browse'	=> 'gfeatures',
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $gmember['slt']);
@@ -96,11 +94,11 @@ $qmember = $this->get_var('qmember');
 		</tr>
 <?php
 		foreach($groups as $value):
-			$name = $value['gfeatures']['name'];
+			$name = $value['name'];
 
-			if(xivo_issa($value['gfeatures']['id'],$gmember['info']) === true):
+			if(xivo_issa($value['id'],$gmember['info']) === true):
 				$class = '';
-				$value['member'] = $gmember['info'][$value['gfeatures']['id']];
+				$value['member'] = $gmember['info'][$value['id']];
 				$calllimit = intval($value['member']['call-limit']);
 			else:
 				$class = ' b-nodisplay';
@@ -162,7 +160,6 @@ $qmember = $this->get_var('qmember');
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'field'	=> false,
-					    'browse'	=> 'qfeatures',
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['list']);
@@ -195,7 +192,6 @@ $qmember = $this->get_var('qmember');
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'field'	=> false,
-					    'browse'	=> 'qfeatures',
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['slt']);
@@ -214,11 +210,11 @@ $qmember = $this->get_var('qmember');
 		</tr>
 <?php
 		foreach($queues as $value):
-			$name = $value['qfeatures']['name'];
+			$name = $value['name'];
 
-			if(xivo_issa($value['qfeatures']['id'],$qmember['info']) === true):
+			if(xivo_issa($value['id'],$qmember['info']) === true):
 				$class = '';
-				$value['member'] = $qmember['info'][$value['qfeatures']['id']];
+				$value['member'] = $qmember['info'][$value['id']];
 				$calllimit = intval($value['member']['call-limit']);
 				$penalty = intval($value['member']['penalty']);
 			else:

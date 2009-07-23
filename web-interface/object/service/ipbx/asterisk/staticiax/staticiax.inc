@@ -23,39 +23,88 @@ xivo_service_asterisk::required(array('realstatic','realstatic.inc'),true);
 class xivo_service_asterisk_realstatic_staticiax extends xivo_service_asterisk_realstatic
 {
 	var $_filename	= 'iax.conf';
+	var $_uri	= null;
 
 	function _prepare($data)
 	{
 		if($data['category'] === 'general'
 		&& $data['var_name'] === 'register'
 		&& is_scalar($data['var_val']) === true
-		&& ($register = $this->parse_register($data['var_val'])) !== false)
+		&& ($register = $this->parse_register_uri($data['var_val'])) !== false)
 			$data = array_merge($register,$data);
 
 		return(parent::_prepare($data));
 	}
 
-	function parse_register($val)
+	function _load_uri()
 	{
-		if(preg_match('#^((?:[a-z0-9_\.-]+)(?:@[a-z0-9\.-]+)?)'.
-			      '(:[a-z0-9_\.-]+)?'.
-			      '@([a-z0-9\.-]+)(:[0-9]{1,5})?$#i',$val,$match) !== 1)
+		if(is_object($this->_uri) === true)
+			return(true);
+		else if(xivo::load_class('xivo_uri') === false)
 			return(false);
 
-		$r = array();
+		$this->_uri = new xivo_uri();
 
-		$r['username'] = $match[1];
-		$r['host'] = $match[3];
+		return(true);
+	}
 
-		if(isset($match[2]) === true && $match[2] !== '')
-			$r['password'] = substr($match[2],1);
-		else
-			$r['password'] = '';
+	function build_register_uri($arr)
+	{
+		$r = array('str' => '','arr' => array());
 
-		if(isset($match[4]) === true && $match[4] !== '')
-			$r['port'] = substr($match[4],1);
-		else
-			$r['port'] = '';
+		if($this->_load_uri() === false
+		|| xivo_haslen($arr,'username') === false
+		|| xivo_haslen($arr,'host') === false)
+			return(false);
+
+		$uri['user'] = $arr['username'];
+		$uri['host'] = $arr['host'];
+
+		if(xivo_haslen($arr,'password') === true)
+			$uri['passwd'] = $arr['password'];
+
+		if(xivo_haslen($arr,'port') === true)
+			$uri['port'] = $arr['port'];
+
+		if(($r['str'] = $this->_uri->build_uri($uri)) === false
+		|| ($r['arr'] = $this->parse_register_uri($r['str'],false)) === false)
+			return(false);
+
+		if(substr($r['str'],0,2) === '//')
+			$r['str'] = substr($r['str'],2);
+
+		return($r);
+	}
+
+	function parse_register_uri($val,$decode=true)
+	{
+		if(is_scalar($val) === true && substr($val,0,2) !== '//')
+			$val = '//'.$val;
+
+		if($this->_load_uri() === false
+		|| ($parse_uri = $this->_uri->parse_uri($val,$decode)) === false)
+			return(false);
+
+		$r = array(
+			'username'	=> '',
+			'password'	=> '',
+			'host'		=> '',
+			'port'		=> '');
+
+		if(xivo_issa('authority',$parse_uri) === true)
+		{
+			if(isset($parse_uri['authority']['user']) === true)
+				$r['username'] = $parse_uri['authority']['user'];
+
+			if(isset($parse_uri['authority']['passwd']) === true)
+				$r['password'] = $parse_uri['authority']['passwd'];
+
+			if(isset($parse_uri['authority']['host']) === true)
+				$r['host'] = $parse_uri['authority']['host'];
+
+			if(isset($parse_uri['authority']['port']) === true)
+				$r['port'] = $parse_uri['authority']['port'];
+		}
 
 		return($r);
 	}

@@ -22,8 +22,6 @@ $form = &$this->get_module('form');
 $info = $this->get_var('info');
 $tree = $this->get_var('tree');
 
-$tree = &$tree['service'];
-
 ?>
 <div id="acl" class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -48,8 +46,33 @@ $tree = &$tree['service'];
 
 		'<table cellspacing="0" cellpadding="0" border="0">';
 
-	if(xivo_issa('child',$tree) === true && empty($tree['child']) === false):
-		foreach($tree['child'] as $v):
+	$ref = &$tree['xivo'];
+
+	if(xivo_issa('child',$ref) === true && empty($ref['child']) === false):
+		foreach($ref['child'] as $v):
+			echo	'<tr><th>',
+				$form->checkbox(array('desc'	=> array('%s%s',$this->bbf('acl_'.$v['id']),1),
+						      'name'	=> 'tree[]',
+						      'label'	=> 'lb-'.$v['id'],
+						      'id'	=> $v['id'],
+						      'field'	=> false,
+						      'value'	=> $v['path'],
+						      'checked'	=> $v['access']),
+						'onclick="xivo_fm_mk_acl(this);"'),
+				'</th></tr>';
+
+			if(isset($v['child']) === true):
+				$this->file_include('bloc/xivo/configuration/manage/acl/tree',
+						    array('tree'	=> $v['child'],
+						    	  'parent'	=> null));
+			endif;
+		endforeach;
+	endif;
+
+	$ref = &$tree['service'];
+
+	if(xivo_issa('child',$ref) === true && empty($ref['child']) === false):
+		foreach($ref['child'] as $v):
 			echo	'<tr><th>',
 				$form->checkbox(array('desc'	=> array('%s%s',$this->bbf('acl_'.$v['id']),1),
 						      'name'	=> 'tree[]',

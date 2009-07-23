@@ -373,7 +373,7 @@ Online call recording
 ; fm_phonefunckey_extension-typeval-opt-featuremap-disconnect
 Hangup
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-voicemsg
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmusermsg
 Reach the voicemail
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundoall
@@ -412,7 +412,7 @@ Connect a dynamic agent
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-calllistening
 Listen to online calls
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmdelete
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmuserpurge
 Delete messages from voicemail
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-directoryaccess

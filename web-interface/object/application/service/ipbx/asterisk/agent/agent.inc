@@ -1103,6 +1103,34 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 
 		return(true);
 	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('agentfeatures',$data) === true)
+			$data['afeatures'] = &$data['agentfeatures'];
+
+		if($this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('agentfeatures',$data) === true)
+			$data['afeatures'] = &$data['agentfeatures'];
+
+		if($this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
+
+		return(true);
+	}
 }
 
 ?>

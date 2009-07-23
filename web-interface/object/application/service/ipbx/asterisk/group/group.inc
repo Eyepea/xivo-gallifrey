@@ -22,6 +22,7 @@ xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_group extends xivo_application_asterisk_abstract
 {
+	var $_dso		= null;
 	var $_groupfeatures	= false;
 	var $_queue		= false;
 	var $_extensions	= false;
@@ -34,9 +35,14 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 	var $_musiconhold	= array();
 	var $_contextlist	= array();
 
-	function xivo_application_service_asterisk_group(&$service,$param=null,$components=true)
+	function xivo_application_service_asterisk_group(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_groupfeatures = &$this->_service->get_module('groupfeatures')) === false
 		|| ($this->_queue = &$this->_service->get_module('queue')) === false)
@@ -144,31 +150,50 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function get_groups_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_groups('search',$search,$disable,$order,$limit,$assoc));
+	}
+
 	function get_groups_list($disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		if(($rs = $this->_groupfeatures->get_all(false,true,$order,$limit)) === false
-		|| ($nb = count($rs)) === 0)
+		return($this->_get_groups('list',null,$disable,$order,$limit,$assoc));
+	}
+
+	function _get_groups($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		$action = (string) $action;
+		$search = strval($search);
+
+		switch($action)
 		{
-			$this->_cnt = $this->_groupfeatures->get_cnt();
-			return(false);
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+				break;
+			default:
+				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}
 
-		$this->_cnt = $this->_groupfeatures->get_cnt();
+		$this->_cnt = $this->_dso->get_cnt();
 
-		$this->_queuemember = &$this->_service->get_module('queuemember');
-
-		$r = $info = array();
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+	
+		$r = $identity = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$info['gfeatures'] = $rs[$i];
+			$r[$rs[$i]['id']] = $rs[$i];
 
-			if(($info['queue'] = $this->_queue->get($info['gfeatures']['name'],
-								$disable)) !== false
-			&& ($info['nb_qmember'] = $this->_queuemember->get_nb(
-							array('queue_name' => $info['queue']['name']),
-							$disable)) !== false)
-				$r[$info['gfeatures']['id']] = $info;
+			$ref = &$r[$rs[$i]['id']];
+
+			$identity['name'] = $ref['name'];
+			$identity['number'] = $ref['number'];
+			$identity['context'] = $ref['context'];
+
+			$ref['identity'] = $this->_groupfeatures->mk_identity($identity);
+			$ref['deleted'] = (bool) $ref['deleted'];
+			$ref['commented'] = (bool) $ref['commented'];
 		}
 
 		if(empty($r) === true)
@@ -1050,6 +1075,34 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		$this->delete_user_callgroup($this->_info['gfeatures']['id']);
 		$this->_dialaction->unlinked('group',$this->_info['gfeatures']['id']);
+
+		return(true);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('groupfeatures',$data) === true)
+			$data['gfeatures'] = &$data['groupfeatures'];
+
+		if($this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false)
+			return(false);
+		else if(xivo_issa('groupfeatures',$data) === true)
+			$data['gfeatures'] = &$data['groupfeatures'];
+
+		if($this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
 
 		return(true);
 	}

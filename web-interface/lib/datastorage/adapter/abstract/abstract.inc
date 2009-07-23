@@ -32,6 +32,7 @@ class xivo_datastorage_adapter_abstract
 	var $_from	= '';
 	var $_table	= array();
 	var $_column	= array();
+	var $_colalias	= array();
 	var $_colall	= array();
 	var $_where	= '';
 	var $_aggwhere	= array();
@@ -131,7 +132,7 @@ class xivo_datastorage_adapter_abstract
 
 	function reset_column()
 	{
-		$this->_column = $this->_colall = array();
+		$this->_column = $this->_colalias = $this->_colall = array();
 	}
 
 	function get_column()

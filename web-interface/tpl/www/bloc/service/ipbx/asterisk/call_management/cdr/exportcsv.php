@@ -49,7 +49,7 @@ if($info['dend'] !== '')
 if($info['channel'] !== '')
 {
 	if($info['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
-		$info['channel'] = $this->bbf('fm_channel-optunknown');
+		$info['channel'] = $this->bbf('fm_channel-opt','unknown');
 
 	echo	'"',str_replace('"','""',$this->bbf('fm_channel')),'";',
 		'"',str_replace('"','""',$info['channel']),'"',"\n";
@@ -58,13 +58,13 @@ if($info['channel'] !== '')
 if($info['disposition'] !== '')
 {
 	echo	'"',str_replace('"','""',$this->bbf('fm_disposition')),'";',
-		'"',str_replace('"','""',$this->bbf('fm_disposition-opt-'.$info['disposition'])),'"',"\n";
+		'"',str_replace('"','""',$this->bbf('fm_disposition-opt',$info['disposition'])),'"',"\n";
 }
 
 if($info['amaflags'] !== '')
 {
 	echo	'"',str_replace('"','""',$this->bbf('fm_amaflags')),'";',
-		'"',str_replace('"','""',$this->bbf('ast_amaflag_name_info-'.$info['amaflagsmeta'])),'"',"\n";
+		'"',str_replace('"','""',$this->bbf('ast_amaflag_name_info',$info['amaflagsmeta'])),'"',"\n";
 }
 
 if($info['dcontext'] !== '')
@@ -147,15 +147,15 @@ for($i = 0;$i < $nb;$i++)
 	$ref = &$result[$i];
 
 	if($ref['channel'] === XIVO_SRE_IPBX_AST_CHAN_UNKNOWN)
-		$ref['channel'] = $this->bbf('entry_channel-unknown');
+		$ref['channel'] = $this->bbf('entry_channel','unknown');
 
 	echo	'"',str_replace('"','""',strftime($this->bbf('date_format_yymmddhhiiss'),strtotime($ref['calldate']))),'";',
 		'"',str_replace('"','""',$ref['src']),'";',
 		'"',str_replace('"','""',$ref['dst']),'";',
 		'"',str_replace('"','""',$ref['duration']),'";',
 		'"',str_replace('"','""',$ref['channel']),'";',
-		'"',str_replace('"','""',$this->bbf('entry_disposition-'.$ref['disposition'])),'";',
-		'"',str_replace('"','""',$this->bbf('ast_amaflag_name_info-'.$ref['amaflagsmeta'])),'";',
+		'"',str_replace('"','""',$this->bbf('entry_disposition',$ref['disposition'])),'";',
+		'"',str_replace('"','""',$this->bbf('ast_amaflag_name_info',$ref['amaflagsmeta'])),'";',
 		'"',str_replace('"','""',$ref['clid']),'";',
 		'"',str_replace('"','""',$ref['accountcode']),'";',
 		'"',str_replace('"','""',$ref['userfield']),'";',

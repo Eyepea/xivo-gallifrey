@@ -82,9 +82,10 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 			$this->halt('Can\'t find database SQLite');
 	}
 
-	function _chk_pragma($key,$value)
+	function _chk_pragma($key,$value=null,$onlykey=false)
 	{
 		$key = strtolower($key);
+		$onlykey = (bool) $onlykey;
 
 		switch($key)
 		{
@@ -92,14 +93,23 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 			case 'short_column_names':
 			case 'count_changes':
 			case 'empty_result_callbacks':
+				if($onlykey === true)
+					return(true);
+
 				$value = intval((bool) $value);
 				break;
 			case 'cache_size':
 			case 'default_cache_size':
+				if($onlykey === true)
+					return(true);
+
 				if(($value = xivo_uint($value)) === 0 || $value > 4000)
 					return(false);
 				break;
 			case 'synchronous':
+				if($onlykey === true)
+					return(true);
+
 				if(($value = strtoupper($value)) !== 'FULL'
 				&& $value !== 'NORMAL'
 				&& $value !== 'OFF'
@@ -113,9 +123,15 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 			case 'index_info':
 			case 'index_list':
 			case 'table_info':
+				if($onlykey === true)
+					return(true);
+
 				$value = $this->quote_identifier($value);
 				break;
 			case 'temp_store':
+				if($onlykey === true)
+					return(true);
+
 				if(($value = strtoupper($value)) !== 'DEFAULT'
 				&& $value !== 'FILE'
 				&& $value !== 'MEMORY'
@@ -125,16 +141,23 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 					return(false);
 				break;
 			case 'integrity_check':
+				if($onlykey === true)
+					return(true);
+
 				if(($value = xivo_uint($value)) === 0 || $value > 200)
 					return(false);
 				break;
 			case 'parser_trace':
 			case 'vdbe_trace':
+				if($onlykey === true)
+					return(true);
+
 				$value = intval((bool) $value);
 				break;
 			default:
 				return(false);
 		}
+
 		return($value);
 	}
 
@@ -144,9 +167,16 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		|| ($value = $this->_chk_pragma($key,$value)) === false)
 			return(false);
 
-		$query = sprintf('PRAGMA %s = %s',strtolower($key),$value);
+		return($this->query(sprintf('PRAGMA %s = %s',strtolower($key),$value)));
+	}
 
-		return($this->query($query));
+	function get_pragma($key)
+	{
+		if(is_resource($this->_link) === false
+		|| $this->_chk_pragma($key,null,true) === false)
+			return(false);
+
+		return($this->select_one(sprintf('PRAGMA %s',strtolower($key))));
 	}
 
 	function open()
@@ -270,6 +300,28 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 			return(sqlite_fetch_array($this->_result,SQLITE_ASSOC));
 
 		return(false);
+	}
+
+	function _fetch_assoc_full_column_names($query,$free=true)
+	{
+		$pragma_short_column_names = $this->get_pragma('short_column_names');
+		$pragma_full_column_names = $this->get_pragma('full_column_names');
+
+		$this->set_pragma('short_column_names',false);
+		$this->set_pragma('full_column_names',true);
+
+		if($this->query($query,((bool) $free === false)) === false)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$m = $this->fetch_assoc();$i++)
+			$r[$i] = $m;
+
+		$this->set_pragma('short_column_names',$pragma_short_column_names);
+		$this->set_pragma('full_column_names',$pragma_full_column_names);
+
+		return($r);
 	}
 
 	function unix_timestamp($column='',$time='')

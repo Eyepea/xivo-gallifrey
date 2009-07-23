@@ -18,15 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
 
-	$type = $this->get_var('type');
-	$trunkslist = $this->get_var('trunkslist');
-	$count = $this->get_var('count');
-	$element = $this->get_var('element');
-	$error = $this->get_var('error');
-	$info = $this->get_var('info');
+$type = $this->get_var('type');
+$trunkslist = $this->get_var('trunkslist');
+$count = $this->get_var('count');
+$element = $this->get_var('element');
+$error = $this->get_var('error');
+$info = $this->get_var('info');
+
 ?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<thead>
@@ -65,7 +66,7 @@ if($count > 0):
 					       'id'		=> false,
 					       'label'		=> false,
 					       'key'		=> 'identity',
-					       'altkey'		=> 'trunkfeaturesid',
+					       'altkey'		=> 'id',
 					       'invalid'	=> true,
 					       'optgroup'	=> array('key'		=> true,
 									 'altkey'	=> 'protocol',
@@ -115,7 +116,7 @@ endif;
 					       'id'		=> false,
 					       'label'		=> false,
 					       'key'		=> 'identity',
-					       'altkey'		=> 'trunkfeaturesid',
+					       'altkey'		=> 'id',
 					       'disabled'	=> true,
 					       'optgroup'	=> array('key'		=> true,
 					       				 'altkey'	=> 'protocol',

@@ -31,6 +31,51 @@ class xivo_entity_abstract_sql extends xivo_datastorage_helper_table
 	{
 		parent::_init(&$dso,$param);
 	}
+
+	function search($value,$disable=null,$order=null,$limit=null)
+	{
+		$this->_cnt = 0;
+
+		if(xivo_haslen($value) === false)
+			return(false);
+
+		$this->_dso->new_select($this->_table);
+		$this->_dso->wherecontain('name',$value);
+		$this->_dso->orwherecontain('displayname',$value);
+		$this->_dso->orwherecontain('phonenumber',$value);
+		$this->_dso->orwherecontain('faxnumber',$value);
+		$this->_dso->orwherecontain('email',$value);
+		$this->_dso->orwherecontain('url',$value);
+		$this->_dso->orwherecontain('address1',$value);
+		$this->_dso->orwherecontain('address2',$value);
+		$this->_dso->orwherecontain('city',$value);
+		$this->_dso->orwherecontain('state',$value);
+		$this->_dso->orwherecontain('zipcode',$value);
+		$this->_dso->orwherecontain('country',$value);
+		$this->_dso->orwherecontain('description',$value);
+
+		if($this->_dso->aggregate_where() === false)
+			return(false);
+
+		$arr = array();
+
+		if($disable !== null && isset($this->_disable) === true)
+			$this->_dso->andwhere(array($this->_disable => intval((bool) $disable)));
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

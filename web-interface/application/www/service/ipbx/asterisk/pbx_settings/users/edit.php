@@ -130,7 +130,7 @@ if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
 								 'gfeaturesid');
 		$gmember['list'] = xivo_array_diff_key($gmember['list'],$gmember['slt']);
 
-		$groupsort = new xivo_sort(array('browse' => 'gfeatures','key' => 'name'));
+		$groupsort = new xivo_sort(array('key' => 'name'));
 		uasort($gmember['slt'],array(&$groupsort,'str_usort'));
 	}
 }
@@ -148,7 +148,7 @@ if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
 								 'qfeaturesid');
 		$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
-		$queuesort = new xivo_sort(array('browse' => 'qfeatures','key' => 'name'));
+		$queuesort = new xivo_sort(array('key' => 'name'));
 		uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 	}
 }

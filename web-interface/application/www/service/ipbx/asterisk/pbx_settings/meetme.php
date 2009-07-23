@@ -128,17 +128,18 @@ switch($act)
 		if(($values = xivo_issa_val('meetme',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
 
-		$appmeetme = &$ipbx->get_apprealstatic('meetme');
-		$appmeetmeroom = &$appmeetme->get_module('room');
+		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($act === 'disables')
-				$appmeetmeroom->disable($values[$i]);
+			if($appmeetme->get($values[$i]) === false)
+				continue;
+			else if($act === 'disables')
+				$appmeetme->disable();
 			else
-				$appmeetmeroom->enable($values[$i]);
+				$appmeetme->enable();
 		}
 
 		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);

@@ -154,7 +154,7 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $apptrunk->get_trunks_list(null,$order,$limit);
+		$list = $apptrunk->get_trunks_list(true,null,$order,$limit);
 		$total = $apptrunk->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)

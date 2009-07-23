@@ -16,6 +16,18 @@ Résultat(s) : %s
 ; bt_showcalendar
 Calendrier
 
+; fm_search-format(exact)
+Exact
+
+; fm_search-format(begin)
+Commence par
+
+; fm_search-format(contain)
+Contient
+
+; fm_search-format(end)
+Fini par
+
 ; fm_dbeg
 Date de début :
 
@@ -25,10 +37,10 @@ Date de fin :
 ; fm_channel
 Canal :
 
-; fm_channel-optothers
+; fm_channel-opt(others)
 Autres
 
-; fm_channel-optunknown
+; fm_channel-opt(unknown)
 Inconnu
 
 ; fm_channel-opt
@@ -37,19 +49,19 @@ Inconnu
 ; fm_disposition
 Statut de l'appel :
 
-; fm_disposition-opt-ANSWERED
+; fm_disposition-opt(ANSWERED)
 Répondu
 
-; "fm_disposition-opt-NO ANSWER"
+; fm_disposition-opt(NO ANSWER)
 Pas de réponse
 
-; fm_disposition-opt-BUSY
+; fm_disposition-opt(BUSY)
 Occupé
 
-; fm_disposition-opt-FAILED
+; fm_disposition-opt(FAILED)
 Echoué
 
-; fm_disposition-opt-UNKNOWN
+; fm_disposition-opt(UNKNOWN)
 Inconnu
 
 ; fm_amaflags
@@ -58,7 +70,7 @@ Drapeau de facturation :
 ; fm_dcontext
 Contexte :
 
-; fm_dcontext-optcustom
+; fm_dcontext-opt(custom)
 Personnalisé
 
 ; fm_dcontext-opt
@@ -67,94 +79,34 @@ Personnalisé
 ; fm_src
 Appelant :
 
-; fm_srcformat-opt-exact
-Exact
-
-; fm_srcformat-opt-begin
-Commence par
-
-; fm_srcformat-opt-contain
-Contient
-
-; fm_srcformat-opt-end
-Fini par
-
 ; fm_dst
 Appelé :
-
-; fm_dstformat-opt-exact
-Exact
-
-; fm_dstformat-opt-begin
-Commence par
-
-; fm_dstformat-opt-contain
-Contient
-
-; fm_dstformat-opt-end
-Fini par
 
 ; fm_clid
 Nom d'appel :
 
-; fm_clidformat-opt-exact
-Exact
-
-; fm_clidformat-opt-begin
-Commence par
-
-; fm_clidformat-opt-contain
-Contient
-
-; fm_clidformat-opt-end
-Fini par
-
 ; fm_accountcode
 Numéro d'acompte :
-
-; fm_accountcodeformat-opt-exact
-Exact
-
-; fm_accountcodeformat-opt-begin
-Commence par
-
-; fm_accountcodeformat-opt-contain
-Contient
-
-; fm_accountcodeformat-opt-end
-Fini par
 
 ; fm_userfield
 Champ utilisateur :
 
-; fm_userfieldformat-opt-exact
-Exact
-
-; fm_userfieldformat-opt-begin
-Commence par
-
-; fm_userfieldformat-opt-contain
-Contient
-
-; fm_userfieldformat-opt-end
-Fini par
-
 ; fm_dubeg
 Début de la durée :
 
-; fm_dubegunit-opt-seconds
+; fm_dubegunit-opt(seconds)
 Secondes
 
-; fm_dubegunit-opt-minutes
+; fm_dubegunit-opt(minutes)
 Minutes
 
 ; fm_duend
 Fin de la durée :
 
-; fm_duendunit-opt-seconds
+; fm_duendunit-opt(seconds)
 Secondes
 
-; fm_duendunit-opt-minutes
+; fm_duendunit-opt(minutes)
 Minutes
 
 ; fm_bt-search
@@ -187,25 +139,25 @@ Durée
 ; entry_channel
 Canal :
 
-; entry_channel-unknown
+; entry_channel(unknown)
 Inconnu
 
 ; entry_disposition
 Statut de l'appel :
 
-; entry_disposition-ANSWERED
+; entry_disposition(ANSWERED)
 Répondu
 
-; "entry_disposition-NO ANSWER"
+; entry_disposition(NO ANSWER)
 Pas de réponse
 
-; entry_disposition-BUSY
+; entry_disposition(BUSY)
 Occupé
 
-; entry_disposition-FAILED
+; entry_disposition(FAILED)
 Echoué
 
-; entry_disposition-UNKNOWN
+; entry_disposition(UNKNOWN)
 Inconnu
 
 ; entry_amaflagsmeta

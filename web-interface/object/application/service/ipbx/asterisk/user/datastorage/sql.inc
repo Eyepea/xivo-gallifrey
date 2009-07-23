@@ -90,109 +90,13 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 		return(xivo_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
 	}
 
-	function search($value,$disable=null,$initialized=null,$order=null,$limit=null,$type=0)
+	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null)
 	{
-		$arr = array();
-		$type = xivo_uint($type);
+		$this->_cnt = 0;
 
-		$this->_dso->new_select($this->_table['userfeatures']);
+		if($mode !== 'number')
+			$mode = null;
 
-		$this->_dso->leftjoin($this->_table['usersip'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersip'].'.id',
-				      null,
-				      array('fullcontact',
-				      	    'sipsecret' => 'secret',
-					    'sipcallerid' => 'callerid'));
-
-		$this->_dso->leftjoin($this->_table['useriax'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['useriax'].'.id',
-				      null,
-				      array('iaxsecret' => 'secret',
-				      	    'iaxcallerid' => 'callerid'));
-
-		$this->_dso->leftjoin($this->_table['usercustom'],
-				      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usercustom'].'.id');
-
-		if($type === 2)
-			$this->_dso->where($this->_table['userfeatures'].'.context = %s',$value);
-		else
-		{
-			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
-			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);
-
-			if($type === 0)
-				$this->_dso->orwherecontain('context',$value,true,$this->_table['userfeatures']);
-		}
-
-		$this->_dso->aggregate_where();
-
-		$this->_dso->where($this->_table['usersip'].'.id IS NOT NULL');
-		$this->_dso->orwhere($this->_table['useriax'].'.id IS NOT NULL');
-		$this->_dso->orwhere($this->_table['usercustom'].'.id IS NOT NULL');
-
-		$this->_dso->aggregate_where();
-
-		$arr['internal'] = 0;
-
-		$sip = $iax = $custom = array();
-		$sip['category'] = $iax['category'] = $custom['category'] = 'user';
-
-		if($disable !== null)
-		{
-			$disable = intval((bool) $disable);
-			$arr['commented'] = $disable;
-			$sip['commented'] = $disable;
-			$iax['commented'] = $disable;
-			$custom['commented'] = $disable;
-		}
-
-		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
-
-		if($type === 1)
-			$this->_dso->andwherenot('IFNULL('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
-
-		$this->_dso->joinwhere($this->_table['usersip'],$sip);
-		$this->_dso->joinwhere($this->_table['useriax'],$iax);
-		$this->_dso->joinwhere($this->_table['usercustom'],$custom);
-
-		$this->_dso->andjoinwhere($this->_table['usersip'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['usersip'].'.protocol');
-
-		$this->_dso->andjoinwhere($this->_table['useriax'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['useriax'].'.protocol');
-
-		$this->_dso->andjoinwhere($this->_table['usercustom'],
-					  $this->_table['userfeatures'].'.protocol = '.$this->_table['usercustom'].'.protocol');
-
-		if($initialized !== null)
-		{
-			if((bool) $initialized === false)
-				$this->_dso->andjoinwhere($this->_table['usersip'],
-							  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
-			else
-				$this->_dso->andjoinwherenot($this->_table['usersip'],
-							  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
-		}
-
-		$this->_dso->new_order($order,null,$this->_table['userfeatures']);
-		$this->_dso->limit($limit);
-
-		$r = $this->_dso->select_all();
-
-		$this->_dso->reset_order();
-		$this->_dso->reset_limit();
-
-		if(($this->_cnt = $this->_dso->select_count(null,'id',$this->_table['userfeatures'])) === false
-		|| isset($r[0]) === false)
-			$r = false;
-
-		return($r);
-	}
-
-	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null)
-	{
 		$arr = array();
 
 		$this->_dso->new_select($this->_table['userfeatures']);
@@ -226,14 +130,15 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 		$this->_dso->andwhere($arr,$this->_table['userfeatures']);
 
+		if($mode === 'number')
+			$this->_dso->andwherenot('IFNULL('.$this->_table['userfeatures'].'.number,\'\') = \'\'');
+
 		if($use_sip === true)
 		{
 			$this->_dso->leftjoin($this->_table['usersip'],
 					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usersip'].'.id',
 					      null,
-					      array('fullcontact',
-					      	    'sipsecret'		=> 'secret',
-						    'sipcallerid'	=> 'callerid'));
+					      '*');
 
 			$this->_dso->joinwhere($this->_table['usersip'],$sip);
 
@@ -256,8 +161,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 			$this->_dso->leftjoin($this->_table['useriax'],
 					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['useriax'].'.id',
 					      null,
-					      array('iaxsecret'		=> 'secret',
-					      	    'iaxcallerid'	=> 'callerid'));
+					      '*');
 
 			$this->_dso->joinwhere($this->_table['useriax'],$iax);
 
@@ -268,7 +172,9 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 		if($use_custom === true)
 		{
 			$this->_dso->leftjoin($this->_table['usercustom'],
-					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usercustom'].'.id');
+					      $this->_table['userfeatures'].'.protocolid = '.$this->_table['usercustom'].'.id',
+					      null,
+					      'interface');
 
 			$this->_dso->joinwhere($this->_table['usercustom'],$custom);
 
@@ -278,31 +184,38 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 		$this->_dso->aggregate_where();
 
-		if($use_sip === true)
-			$this->_dso->where($this->_table['usersip'].'.id IS NOT NULL');
+		if(($has_context = xivo_haslen($context)) === true)
+			$this->_dso->where($this->_table['userfeatures'].'.context = %s',$context);
 
-		if($use_iax === true)
+		if(xivo_haslen($value) === true)
 		{
-			if($use_sip === false)
-				$this->_dso->where($this->_table['useriax'].'.id IS NOT NULL');
-			else
-				$this->_dso->orwhere($this->_table['useriax'].'.id IS NOT NULL');
-		}
+			$this->_dso->aggregate_where();
+			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('lastname',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('number',$value,true,$this->_table['userfeatures']);
+			$this->_dso->orwherecontain('name',$value,true,$this->_table['userfeatures']);
 
-		if($use_custom === true)
-		{
-			if($use_sip === false && $use_iax === false)
-				$this->_dso->where($this->_table['usercustom'].'.id IS NOT NULL');
-			else
-				$this->_dso->orwhere($this->_table['usercustom'].'.id IS NOT NULL');
+			if($mode === null && $has_context === false)
+				$this->_dso->orwherecontain('context',$value,true,$this->_table['userfeatures']);
 		}
 
 		$this->_dso->aggregate_where();
 
+		if($use_sip === true)
+			$this->_dso->orwhere($this->_table['usersip'].'.id IS NOT NULL');
+
+		if($use_iax === true)
+			$this->_dso->orwhere($this->_table['useriax'].'.id IS NOT NULL');
+
+		if($use_custom === true)
+			$this->_dso->orwhere($this->_table['usercustom'].'.id IS NOT NULL');
+
+		$this->_dso->aggregate_where(false,'AND');
+
 		$this->_dso->new_order($order,null,$this->_table['userfeatures']);
 		$this->_dso->limit($limit);
 
-		$r = $this->_dso->select_all();
+		$r = $this->_dso->select_all(null,true,true);
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
@@ -312,6 +225,16 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 			$r = false;
 
 		return($r);
+	}
+
+	function search($value,$context,$protocols,$disable=null,$initialized=null,$order=null,$limit=null,$mode=null)
+	{
+		$this->_cnt = 0;
+
+		if(xivo_haslen($value) === false && $mode === null)
+			return(false);
+
+		return($this->get_all($protocols,$disable,$initialized,$order,$limit,$value,$context,$mode));
 	}
 
 	function get_bsfilter($id,$context,$bsfilter)
@@ -355,8 +278,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 		$this->_dso->innerjoin($this->_table['callfilter'],
 				       $this->_table['callfiltermember'].'.callfilterid = '.$this->_table['callfilter'].'.id',
 				       null,
-				       array('callfilterid' => 'id',
-				             'callfiltername' => 'name'));
+				       array('callfilterid'	=> 'id',
+				             'callfiltername'	=> 'name'));
 
 		$this->_dso->joinwhere($this->_table['callfilter'],array('type' => 'bosssecretary'));
 		$this->_dso->andjoinwhere($this->_table['callfilter'],$this->_table['callfilter'].'.bosssecretary IS NOT NULL');
@@ -382,7 +305,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 		$this->_dso->innerjoin(array('cfilterm1' => $this->_table['callfiltermember']),
 				       $this->_table['callfilter'].'.id = cfilterm1.callfilterid');
-		$this->_dso->joinwhere('cfilterm1',array('type' => 'user','bstype' => $bsfilter));
+		$this->_dso->joinwhere('cfilterm1',array('type'		=> 'user',
+							 'bstype'	=> $bsfilter));
 
 		$this->_dso->innerjoin(array('user1' => $this->_table['userfeatures']),
 				       'cfilterm1.typeval = user1.id');
@@ -400,7 +324,9 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 		$this->_dso->innerjoin(array('user2' => $this->_table['userfeatures']),
 				       'cfilterm2.typeval = user2.id');
 		$this->_dso->joinwhere('user2','cfilterm2.bstype = user2.bsfilter');
-		$this->_dso->andjoinwhere('user2',array('id' => $user2id,'context' => $context,'internal' => 0));
+		$this->_dso->andjoinwhere('user2',array('id'		=> $user2id,
+							'context'	=> $context,
+							'internal'	=> 0));
 		$this->_dso->andjoinwherenot('user2','IFNULL(user2.number,\'\') = \'\'');
 
 		return($this->_dso->select_one());

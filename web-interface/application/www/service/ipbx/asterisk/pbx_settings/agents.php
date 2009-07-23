@@ -104,8 +104,7 @@ switch($act)
 
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
-				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
-								 'key'		=> 'name'));
+				$queuesort = new xivo_sort(array('key'	=> 'name'));
 
 				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 			}
@@ -205,8 +204,7 @@ switch($act)
 										 'qfeaturesid');
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
-				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
-								 'key'		=> 'name'));
+				$queuesort = new xivo_sort(array('key'	=> 'name'));
 
 				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 			}
@@ -374,8 +372,7 @@ switch($act)
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
 				xivo::load_class('xivo_sort');
-				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
-								 'key'		=> 'name'));
+				$queuesort = new xivo_sort(array('key'	=> 'name'));
 
 				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 			}
@@ -487,8 +484,7 @@ switch($act)
 
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
-				$queuesort = new xivo_sort(array('browse'	=> 'qfeatures',
-								 'key'		=> 'name'));
+				$queuesort = new xivo_sort(array('key'	=> 'name'));
 
 				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 			}

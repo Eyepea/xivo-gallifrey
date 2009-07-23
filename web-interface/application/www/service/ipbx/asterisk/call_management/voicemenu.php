@@ -43,7 +43,10 @@ switch($act)
 				$error = $appvoicemenu->get_error();
 			}
 			else
+			{
+				$ipbx->discuss('dialplan reload');
 				$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			}
 		}
 
 		$dhtml = &$_HTML->get_module('dhtml');
@@ -96,7 +99,10 @@ switch($act)
 				$error = $appvoicemenu->get_error();
 			}
 			else
+			{
+				$ipbx->discuss('dialplan reload');
 				$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			}
 		}
 
 		if(xivo_issa('voicemenuflow-data',$return) === false)
@@ -134,6 +140,7 @@ switch($act)
 
 		$appvoicemenu->delete();
 
+		$ipbx->discuss('dialplan reload');
 		$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	case 'deletes':
@@ -152,6 +159,7 @@ switch($act)
 				$appvoicemenu->delete();
 		}
 
+		$ipbx->discuss('dialplan reload');
 		$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	case 'enables':
@@ -175,6 +183,7 @@ switch($act)
 				$appvoicemenu->enable();
 		}
 
+		$ipbx->discuss('dialplan reload');
 		$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	default:

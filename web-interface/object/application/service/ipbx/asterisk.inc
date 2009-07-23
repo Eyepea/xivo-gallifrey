@@ -612,6 +612,18 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 		return(false);
 	}
+
+	function _get_data_from_json()
+	{
+		$_QRY = &xivo_gct::get('xivo_query');
+
+		if(xivo::load_class('xivo_json') === false
+		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
+		|| is_array($data) === false)
+			return(false);
+
+		return($data);
+	}
 }
 
 ?>
