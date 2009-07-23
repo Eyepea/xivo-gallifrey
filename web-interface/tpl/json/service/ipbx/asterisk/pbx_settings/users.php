@@ -21,9 +21,6 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-xivo_print_r($this->get_var('users'));
-die();
-
 if(($data = xivo_json::encode($this->get_var('users'))) === false)
 {
 	$http->set_status(500);
