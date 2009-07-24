@@ -40,21 +40,34 @@ log = logging.getLogger("xivo.Phones.Linksys") # pylint: disable-msg=C0103
 
 class Linksys(PhoneVendorMixin):
 
-    LINKSYS_MODELS = (('spa901', 'SPA-901'),
+    LINKSYS_MODELS = (#('spa400', 'SPA400'),
+                      ('spa901', 'SPA-901'),
                       ('spa921', 'SPA-921'),
                       ('spa922', 'SPA-922'),
                       ('spa941', 'SPA-941'),
                       ('spa942', 'SPA-942'),
                       ('spa962', 'SPA-962'),
                       ('spa3102', 'SPA-3102'),
+                      #('spa8000', 'SPA8000'),
                       ('pap2t', 'PAP2T'))
 
-    LINKSYS_MACADDR_PREFIX = ('1:00:0e:08',
+    LINKSYS_MACADDR_PREFIX = ('1:00:0c:41',
+                              '1:00:0e:08',
+                              '1:00:0f:66',
+                              '1:00:12:17',
+                              '1:00:13:10',
+                              '1:00:14:bf',
+                              '1:00:16:b6',
+                              '1:00:18:39',
                               '1:00:18:f8',
+                              '1:00:1a:70',
                               '1:00:1c:10',
                               '1:00:1d:7e',
                               '1:00:1e:e5',
-                              '1:00:21:29')
+                              '1:00:21:29',
+                              '1:00:22:6b',
+                              '1:00:23:69',
+                              '1:00:25:9c')
 
     LINKSYS_COMMON_HTTP_USER = "admin"
     LINKSYS_COMMON_HTTP_PASS = "adminpass"
@@ -149,8 +162,8 @@ class Linksys(PhoneVendorMixin):
                   'user_phone_number':  self.xml_escape(provinfo['number']),
                   'user_phone_passwd':  self.xml_escape(provinfo['passwd']),
                   'user_vmail_addr':    self.xml_escape(provinfo['vmailaddr']),
-                  'asterisk_ipv4' :     self.ASTERISK_IPV4,
-                  'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
+                  'asterisk_ipv4':      self.ASTERISK_IPV4,
+                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                   'function_keys':      function_keys_config_lines,
                 },
                 cfg_filename,

@@ -204,6 +204,7 @@ class Thomson(PhoneVendorMixin):
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
                   'user_vmail_addr':    provinfo['vmailaddr'],
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                   'simultcalls':        multilines,
@@ -259,6 +260,7 @@ class Thomson(PhoneVendorMixin):
                   'passwd':         "guest",
                   'simultcalls':    "10",
                   'vmailaddr':      "",
+                  'subscribemwi':   "0",
                   'funckey':        {},
                 })
 
@@ -269,8 +271,10 @@ class Thomson(PhoneVendorMixin):
         """
         if bool(int(provinfo.get('vmenable', 0))):
             provinfo['vmailaddr'] = self.ASTERISK_IPV4
+            provinfo['subscribemwi'] = '1'
         else:
             provinfo['vmailaddr'] = ""
+            provinfo['subscribemwi'] = '0'
 
         self.__generate(provinfo)
 

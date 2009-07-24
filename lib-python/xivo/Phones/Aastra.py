@@ -191,6 +191,7 @@ class Aastra(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                   'function_keys': function_keys_config_lines,
@@ -203,25 +204,31 @@ class Aastra(PhoneVendorMixin):
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
 
-    def do_autoprov(self, provinfo):
-        """
-        Entry point to generate the provisioned configuration for
-        this phone.
-        """
-        self.__generate(provinfo)
-
     def do_reinitprov(self):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
         self.__generate(
-                { 'name':       "guest",
-                  'ident':      "guest",
-                  'number':     "guest",
-                  'passwd':     "guest",
-                  'funckey':    {},
+                { 'name':           "guest",
+                  'ident':          "guest",
+                  'number':         "guest",
+                  'passwd':         "guest",
+                  'subscribemwi':   "0",
+                  'funckey':        {},
                 })
+
+    def do_autoprov(self, provinfo):
+        """
+        Entry point to generate the provisioned configuration for
+        this phone.
+        """
+        if bool(int(provinfo.get('vmenable', 0))):
+            provinfo['subscribemwi'] = '1'
+        else:
+            provinfo['subscribemwi'] = '0'
+
+        self.__generate(provinfo)
 
     # Introspection entry points
 

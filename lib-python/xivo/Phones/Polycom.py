@@ -125,6 +125,7 @@ class Polycom(PhoneVendorMixin):
                   'user_phone_number':  escape(provinfo['number']),
                   'user_phone_passwd':  escape(provinfo['passwd']),
                   'user_vmail_addr':    escape(provinfo['vmailaddr']),
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
                 },
@@ -142,11 +143,12 @@ class Polycom(PhoneVendorMixin):
         configuration for this phone.
         """
         self.__generate(
-                { 'name':       "guest",
-                  'ident':      "guest",
-                  'number':     "guest",
-                  'passwd':     "guest",
-                  'vmailaddr':  "",
+                { 'name':           "guest",
+                  'ident':          "guest",
+                  'number':         "guest",
+                  'passwd':         "guest",
+                  'vmailaddr':      "",
+                  'subscribemwi':   "0",
                 })
 
     def do_autoprov(self, provinfo):
@@ -156,8 +158,10 @@ class Polycom(PhoneVendorMixin):
         """
         if bool(int(provinfo.get('vmenable', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
+            provinfo['subscribemwi'] = '1'
         else:
             provinfo['vmailaddr'] = ""
+            provinfo['subscribemwi'] = '0'
 
         self.__generate(provinfo)
 

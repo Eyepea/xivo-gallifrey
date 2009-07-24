@@ -427,6 +427,7 @@ class Siemens(PhoneVendorMixin):
                   'user_phone_ident':   provinfo['ident'],
                   'user_phone_number':  provinfo['number'],
                   'user_phone_passwd':  provinfo['passwd'],
+                  'user_subscribe_mwi': provinfo['subscribemwi'],
                   'config_sha1sum':     provinfo['sha1sum'],
                   'asterisk_ipv4':      self.ASTERISK_IPV4,
                   'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
@@ -517,17 +518,23 @@ class Siemens(PhoneVendorMixin):
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__action_prov({'name':     'guest',
-                            'ident':    'guest',
-                            'number':   'guest',
-                            'passwd':   'guest',
-                            'sha1sum':  self.__get_config_sha1sum()})
+        self.__action_prov({'name':         'guest',
+                            'ident':        'guest',
+                            'number':       'guest',
+                            'passwd':       'guest',
+                            'subscribemwi': '0',
+                            'sha1sum':      self.__get_config_sha1sum()})
 
     def do_autoprov(self, provinfo):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        if bool(int(provinfo.get('vmenable', 0))):
+            provinfo['subscribemwi'] = '1'
+        else:
+            provinfo['subscribemwi'] = '0'
+
         provinfo['sha1sum'] = self.__get_config_sha1sum()
         self.__action_prov(provinfo)
 
