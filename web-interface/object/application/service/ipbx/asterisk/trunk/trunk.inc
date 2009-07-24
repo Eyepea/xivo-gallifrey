@@ -253,9 +253,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					if(empty($sip['calllimit']) === true)
 						$sip['call-limit'] = '';
 
-					$sip['register'] = call_user_func(
-								array($staticsipclass,'parse_register_uri'),
-								$ref['register']);
+					$sip['register'] = $staticsipclass->parse_register_uri($ref['register']);
 
 					if(is_array($sip['register']) === true)
 						$sip['register']['commented'] = (bool) $trunkfeatures['registercommented'];
@@ -270,9 +268,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					$iax = xivo_array_startswith_key($ref,'useriax.',true);
 					$iax['commented'] = (bool) $iax['commented'];
 
-					$iax['register'] = call_user_func(
-								array($staticiaxclass,'parse_register_uri'),
-								$ref['register']);
+					$iax['register'] = $staticiaxclass->parse_register_uri($ref['register']);
 
 					if(is_array($iax['register']) === true)
 						$iax['register']['commented'] = (bool) $trunkfeatures['registercommented'];

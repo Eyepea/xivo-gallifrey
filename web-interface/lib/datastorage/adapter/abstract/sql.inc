@@ -672,7 +672,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return($r);
 	}
 
-	function _valid_logic($logic)
+	function valid_logic($logic)
 	{
 		$r = '';
 
@@ -687,6 +687,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			case 'OR':
 			case 'XOR':
 				$r = $logic;
+				break;
 			default:
 		}
 
@@ -712,7 +713,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(preg_match('/^([\s])?(AND|OR|XOR)([\(\s])?/i',$end,$match) === 0)
 			return(false);
 
-		if(($agglogic = $this->_valid_logic($agglogic)) === '')
+		if(($agglogic = $this->valid_logic($agglogic)) === '')
 			$logic = $match[1].strtoupper($match[2]);
 		else
 			$logic = $match[1].$agglogic;
@@ -761,7 +762,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(preg_match('/^([\s])?(AND|OR|XOR)([\(\s])?/i',$end,$match) === 0)
 			return(false);
 
-		if(($agglogic = $this->_valid_logic($agglogic)) === '')
+		if(($agglogic = $this->valid_logic($agglogic)) === '')
 			$logic = $match[1].strtoupper($match[2]);
 		else
 			$logic = $match[1].$agglogic;
