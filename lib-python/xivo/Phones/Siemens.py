@@ -226,12 +226,48 @@ class SiemensHTMLParser(HTMLParser):
         self.result = []
 
 
+class SiemensHTMLParserTD(HTMLParser):
+    def __init__(self, searchattrs=None):
+        HTMLParser.__init__(self)
+        self.searchtag = 'td'
+        self.searchattrs = searchattrs
+        self.flagdata = 0
+        self.result = []
+
+    def handle_starttag(self, tag, attrs):
+        if isinstance(self.searchtag, basestring):
+            if self.searchtag != tag:
+                return
+
+        if isinstance(self.searchattrs, (tuple, list)):
+            for k in self.searchattrs:
+                if k not in attrs:
+                    return
+
+        self.flagdata = 1
+
+    def handle_endtag(self, tag):
+        if isinstance(self.searchtag, basestring):
+            if self.searchtag != tag:
+                return
+
+        self.flagdata = 0
+
+    def handle_data(self, data):
+        if self.flagdata:
+            self.result.append(data)
+
+    def reset(self):
+        HTMLParser.reset(self)
+        self.result = []
+
+
 class Siemens(PhoneVendorMixin):
 
     SIEMENS_MODELS          = ('C470IP', 'S675IP')
     SIEMENS_MACADDR_PREFIX  = ('1:00:01:e3', '1:00:13:a9', '1:00:21:04')
     SIEMENS_COMMON_PIN      = '0000'
-    SIEMENS_FIRMWARE        = '021840000000'
+    SIEMENS_FIRMWARE        = '021910000000'
 
     SIEMENS_COMMON_DIR = None
 
@@ -340,10 +376,40 @@ class Siemens(PhoneVendorMixin):
         http.login(self.phone['ipv4'])
 
         request = None
+        html = SiemensHTMLParserTD()
         ret = False
 
         try:
             try:
+                request = http.request(self.phone['ipv4'], 'status_device.html')
+
+                html.feed(request.read())
+                request.close()
+                html.close()
+
+                flagver = 0
+                phonefwversion = None
+
+                for k in html.result:
+                    if k.lower().find("firmware version") == 0:
+                        flagver = 1
+                    elif flagver == 1:
+                        phonefwversion = k.strip()
+                        if version.LooseVersion(self.SIEMENS_FIRMWARE) <= version.LooseVersion(phonefwversion):
+                            flagver = 0
+                        break
+                    else:
+                        flagver = 0
+
+                html.reset()
+
+                if flagver != 1:
+                    if phonefwversion is None:
+                        raise LookupError, "Unable to get phone firmware version"
+                    else:
+                        raise ValueError, "Unable to upgrade: Firmware version differs. (current: %r, phone: %r)" \
+                                          % (self.SIEMENS_FIRMWARE, phonefwversion)
+
                 request = http.request(self.phone['ipv4'], 'settings_admin_special.html', params)
                 if "/status.html" not in request.headers.getheaders('ETag'):
                     raise LookupError, "Unable to upgrade: settings_admin_special.html (ip: %s)" % self.phone['ipv4']

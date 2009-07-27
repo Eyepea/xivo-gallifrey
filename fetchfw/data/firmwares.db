@@ -96,6 +96,19 @@ size: 734611
 md5sum: e7ba2044430f20c01110e3e46e865349
 sha1sum: 76e5279b2f6f41beade87f85ba1c28b34c2a049d
 
+# Linksys SPA400 1.1.2.2
+[lsspa400_1122]
+brand: Linksys
+model: SPA400
+version: 1.1.2.2
+files: spa400-1-1-2-2.zip
+
+[spa400-1-1-2-2.zip]
+url: http://downloads.xivo.fr/firmware/Linksys/spa400-1-1-2-2.zip
+size: 3535892
+md5sum: 8f45e5395c2ef3ac5d8b4a35ab625cd1
+sha1sum: ce46e8c6b6361f503513f2c9ae19dff67cd21536
+
 # Linksys SPA901 5.1.5
 [lsspa901_515]
 brand: Linksys
@@ -333,31 +346,25 @@ size: 76006473
 md5sum: 5beffe74f6dcd1efec1de74cc247b3be
 sha1sum: e584d67fb33eecba80b708dabd96aac47a1945fc
 
-# Siemens C470IP 021840000000
-[siemens_c470ip_02184]
+# Siemens C470IP 021910000000
+[siemens_c470ip_02191]
 brand: Siemens
 model: C470IP
-version: 184
-files: chagall184_02.bin
+version: 191
+files: chagall191_02.bin
 
-[chagall184_02.bin]
-url: http://gigaset.siemens.com/chagall/2/chagall184_02.bin
-size: 1835008
-md5sum: 6f783b369177db50edb45fae12c45379
-sha1sum: 8410951a167e928f39f5eeae70d64524bbe3234b
-
-# Siemens S675IP 021840000000
-[siemens_s675ip_02184]
+# Siemens S675IP 021910000000
+[siemens_s675ip_02191]
 brand: Siemens
 model: S675IP
-version: 184
-files: chagall184_02.bin
+version: 191
+files: chagall191_02.bin
 
-[chagall184_02.bin]
-url: http://gigaset.siemens.com/chagall/2/chagall184_02.bin
+[chagall191_02.bin]
+url: http://gigaset.siemens.com/chagall/2/chagall191_02.bin
 size: 1835008
-md5sum: 6f783b369177db50edb45fae12c45379
-sha1sum: 8410951a167e928f39f5eeae70d64524bbe3234b
+md5sum: f85c4cca4f9a6b0072f3f8b342205066
+sha1sum: ac4bb09ca952b3db32dbd6cf42141052d40781d3
 
 # Snom 300 7.3.7
 [sn300_737]
