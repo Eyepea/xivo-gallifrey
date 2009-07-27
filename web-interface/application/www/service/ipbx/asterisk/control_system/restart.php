@@ -25,7 +25,6 @@ if(xivo_user::chk_acl(true) === false)
 
 $ami = &$ipbx->get_module('ami');
 $ami->cmd('restart now',true);
-$ami->cmd('moh reload',true);
 
 if(isset($_SERVER['HTTP_REFERER']) === true)
 	$_QRY->go($_SERVER['HTTP_REFERER'],false);

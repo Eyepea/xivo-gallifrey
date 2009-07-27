@@ -28,7 +28,9 @@ if(isset($access_category,$access_subcategory) === false)
 xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
 $_AWS = new xivo_accesswebservice();
 
-if($_AWS->chk_http_access($access_category,$access_subcategory) === false)
+$http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
+
+if(empty($http_access) === true)
 {
 	$http->set_status(403);
 	$http->send(true);

@@ -72,7 +72,14 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 			$uri['port'] = $arr['port'];
 
 		if(xivo_haslen($arr,'contact') === true)
-			$uri['path'] = $arr['contact'];
+		{
+			$arr['contact'] = (string) $arr['contact'];
+
+			if($arr['contact']{0} !== '/')
+				$uri['path'] = '/'.$arr['contact'];
+			else
+				$uri['path'] = $arr['contact'];
+		}
 
 		if(($r['str'] = $this->_uri->build_uri($uri)) === false
 		|| ($r['arr'] = $this->parse_register_uri($r['str'],false)) === false)

@@ -52,13 +52,10 @@ class xivo_uri
 		$this->_encode['fragment'] = '[^'.$unreserved.$sub_delims.':@\/\?]';
 	}
 
-	function build_uri($arr,$encode=true,$type_host=0)
+	function build_uri($arr,$encode=true,$type_host=null)
 	{
 		$encode = (bool) $encode;
 		$scheme = $authority = $userinfo = $hostport = $path = $query = $fragment = '';
-
-		if(($type_host = xivo_uint($type_host)) === 0 || $type_host > 3)
-			$type_host = $this->_host['reg_name'];
 
 		if(is_array($arr) === false)
 			return(false);
@@ -74,7 +71,7 @@ class xivo_uri
 		{
 			$arr['host'] = (string) $arr['host'];
 
-			switch($type_host)
+			switch((empty($type_host) === true ? $this->get_host_type($arr['host']) : $type_host))
 			{
 				case $this->_host['ip_litteral']:
 					if($this->valid_ipliteral($arr['host']) === false)
@@ -85,6 +82,7 @@ class xivo_uri
 						return(false);
 					break;
 				case $this->_host['reg_name']:
+				default:
 					if($encode === true)
 						$arr['host'] = $this->encode($arr['host'],'reg_name');
 					break;
@@ -129,22 +127,22 @@ class xivo_uri
 		if(xivo_haslen($arr,'path') === true)
 		{
 			$arr['path'] = (string) $arr['path'];
-			if($encode === false)
+
+			if($authority !== '' && $arr['path']{0} !== '/')
+				return(false);
+			else if($encode === false)
 				$path = $arr['path'];
 			else
 			{
 				$path = $this->encode($arr['path'],'path');
 
-				if($authority !== '')
-				{
-					if($path{0} !== '/')
-						$path = '/'.$path;
-				}
-				else if($scheme === '' && ($pos = strpos($path,'/')) !== false)
-				{
-					$path = str_replace(':','%3A',substr($path,0,$pos)).
+				if($authority === ''
+				&& $scheme === ''
+				&& ($pos = strpos($path,'/')) !== false)
+					$path = str_replace(':',
+							    '%3A',
+							    substr($path,0,$pos)).
 						substr($path,$pos);
-				}
 			}
 		}
 

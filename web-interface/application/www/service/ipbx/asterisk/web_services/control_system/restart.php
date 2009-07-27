@@ -18,22 +18,27 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if(isset($access_category,$access_subcategory) === false)
-{
-	$http->set_authent_basic('Access Restricted');
-	$http->set_status(401);
-	$http->send(true);
-}
+xivo::load_class('xivo_http');
+$http = new xivo_http();
 
-xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
-$_AWS = new xivo_accesswebservice();
-
-$http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
-
-if(empty($http_access) === true)
+if(defined('XIVO_TPL_WEBSERVICES_MODE') === false
+|| (XIVO_TPL_WEBSERVICES_MODE !== 'private'
+   && XIVO_TPL_WEBSERVICES_MODE !== 'restricted') === true)
 {
 	$http->set_status(403);
 	$http->send(true);
 }
+
+$access_category = 'control_system';
+$access_subcategory = 'restart';
+
+include(xivo_file::joinpath(dirname(__FILE__),'..','_'.XIVO_TPL_WEBSERVICES_MODE.'.php'));
+
+$ami = &$ipbx->get_module('ami');
+
+$status = $ami->cmd('restart now',true) === false ? 500 : 200;
+
+$http->set_status($status);
+$http->send(true);
 
 ?>
