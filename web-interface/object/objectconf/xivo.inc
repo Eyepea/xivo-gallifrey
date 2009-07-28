@@ -29,7 +29,7 @@ define('XIVO_CORP_NAME','proformatique');
 define('XIVO_CORP_LABEL','Proformatique');
 define('XIVO_CORP_EMAIL','contact@proformatique.com');
 define('XIVO_CORP_URL','proformatique.com');
-define('XIVO_CORP_ADDRESS','67 rue Voltaire');
+define('XIVO_CORP_ADDRESS','10 bis, rue Lucien VOILIN');
 define('XIVO_CORP_ZIPCODE','92800');
 define('XIVO_CORP_CITY','Puteaux');
 define('XIVO_CORP_COUNTRY','France');
