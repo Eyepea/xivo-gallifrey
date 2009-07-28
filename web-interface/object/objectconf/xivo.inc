@@ -22,8 +22,8 @@ define('XIVO_LABEL','XIVO-WEBI');
 
 define('XIVO_SOFT_NAME','xivo');
 define('XIVO_SOFT_LABEL','XIVO');
-define('XIVO_SOFT_VERSION','1.0');
-define('XIVO_SOFT_CODENAME','Dalek');
+define('XIVO_SOFT_VERSION','1.1');
+define('XIVO_SOFT_CODENAME','Gallifrey');
 define('XIVO_SOFT_URL','xivo.fr');
 define('XIVO_CORP_NAME','proformatique');
 define('XIVO_CORP_LABEL','Proformatique');
