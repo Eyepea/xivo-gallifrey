@@ -398,12 +398,12 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 		{
 			$where['var_name'] = $rs['var_name'];
 
-			if(($r = $this->_realstatic->edit_where($where,$rs)) === false)
+			if($this->_realstatic->edit_where($where,$rs) === false)
 				$this->_return[$this->_name] = false;
 			else
 				$this->_return[$this->_name] = $rs['var_name'];
 
-			return($r);
+			return($this->_return[$this->_name]);
 		}
 		else if(is_array($rs) === false || isset($rs[0],$rs[0]['var_name']) === false)
 			return(($this->_return[$this->_name] = false));

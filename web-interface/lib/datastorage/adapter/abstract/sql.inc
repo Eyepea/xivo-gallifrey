@@ -33,6 +33,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 	var $_query		= '';
 	var $_meta		= 'sql';
 	var $_tablecolumn	= array();
+	var $_colalias		= array();
 	var $_join		= array();
 	var $_jointype		= array();
 	var $_joinwhere		= array();
@@ -129,6 +130,12 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		parent::reset_all();
 		$this->reset_join();
 		$this->reset_group();
+	}
+
+	function reset_column()
+	{
+		parent::reset_column();
+		$this->_tablecolumn = $this->_colalias = array();
 	}
 
 	function from($table,$column='*')
