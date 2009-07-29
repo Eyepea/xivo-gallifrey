@@ -36,7 +36,7 @@ define('XIVO_CORP_COUNTRY','France');
 define('XIVO_CORP_PHONE','+33 (0) 1 41 38 99 60');
 define('XIVO_CORP_FAX','+33 (0) 1 41 38 99 70');
 
-define('XIVO_WS_HEADER_VERNAME','X-XIVO-WS-VERSION');
+define('XIVO_WS_HEADER_NAME_VERSION','X-XIVO-WS-VERSION');
 define('XIVO_WS_VERSION','1.0');
 
 ?>

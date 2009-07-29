@@ -21,7 +21,7 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-header(XIVO_WS_HEADER_VERNAME.': '.XIVO_WS_VERSION);
+header(XIVO_WS_HEADER_NAME_VERSION.': '.XIVO_WS_VERSION);
 
 if(defined('XIVO_TPL_WEBSERVICES_MODE') === false
 || (XIVO_TPL_WEBSERVICES_MODE !== 'private'
