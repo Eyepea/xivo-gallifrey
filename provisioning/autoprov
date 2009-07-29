@@ -207,7 +207,8 @@ class SQLBackEnd:
             'simultcalls': number of simultaneous calls (multiline)
             'number': extension number
             'proto': protocol
-            'vmenable': voicemail enabled
+            'mailbox': voicemail mailbox
+            'subscribemwi': MWI subscription
             'funckey': mapping where keys are function key number
                  and values a tuple (exten, supervise).
                  .exten is the extension to speed dial/supervise
@@ -229,7 +230,8 @@ class SQLBackEnd:
             UF_TABLE+".id":              'iduserfeatures',
             UF_TABLE+".provisioningid":  'provcode',
             UF_TABLE+".protocol":        'proto',
-            UF_TABLE+".enablevoicemail": 'vmenable',
+            SIP_TABLE+".mailbox":        'mailbox',
+            SIP_TABLE+".subscribemwi":   'subscribemwi',
         }
         confdico = self.sql_select_one(
             ("SELECT ${columns} "

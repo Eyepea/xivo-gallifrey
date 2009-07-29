@@ -5,7 +5,6 @@ regid1={{user_phone_ident}}
 regpwd1={{user_phone_passwd}}
 DisplayNumFlag1=1
 DisplayNum1={{user_phone_number}}
-VoiceMailAddr={{user_vmail_addr}}
 VoiceMailTelNum=*98{{user_phone_number}}
 subscribe_event={{user_subscribe_mwi}}
 

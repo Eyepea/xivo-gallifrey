@@ -223,7 +223,7 @@ class Aastra(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        if bool(int(provinfo.get('vmenable', 0))):
+        if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['subscribemwi'] = '1'
         else:
             provinfo['subscribemwi'] = '0'

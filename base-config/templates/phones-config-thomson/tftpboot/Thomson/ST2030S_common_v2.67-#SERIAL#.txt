@@ -330,7 +330,7 @@ UnRegister_priorFlgBK3=1
 UnRegister_priorFlgBK4=1
 use_PrivateNumber=0
 UseContactInSubscribe=0
-VoiceMailAddr=
+VoiceMailAddr=#XIVO_NET4_IP#
 VoiceMailTelNum=*98
 VoiceMailPort=5060
 

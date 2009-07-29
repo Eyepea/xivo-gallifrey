@@ -219,7 +219,7 @@ class Linksys(PhoneVendorMixin):
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        if bool(int(provinfo.get('vmenable', 0))):
+        if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
