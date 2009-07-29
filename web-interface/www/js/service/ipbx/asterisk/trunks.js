@@ -243,10 +243,10 @@ function xivo_ast_chg_trunk_type(trunktype)
 	if(trunktype === 'user')
 		return(true);
 
-	if((host_dynamic = xivo_eid('it-protocol-host-dynamic')) !== false)
+	if((host_type = xivo_eid('it-protocol-host-type')) !== false)
 		xivo_chg_attrib('ast_fm_trunk_host',
 				'fd-protocol-host-static',
-				Number(host_dynamic.value === 'static'));
+				Number(host_type.value === 'static'));
 }
 
 function xivo_ast_trunk_onload()

@@ -583,13 +583,13 @@ Tout
 ; fm_protocol_sendani
 Envoyer la présentation du nom et numéro d'appel :
 
-; fm_protocol_host
+; fm_protocol_host-type
 Type d'adressage IP :
 
-; fm_protocol_host-dynamic
+; fm_protocol_host-type-opt(dynamic)
 Dynamique
 
-; fm_protocol_host-static
+; fm_protocol_host-type-opt(static)
 Statique
 
 ; fm_protocol_mask

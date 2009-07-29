@@ -207,9 +207,9 @@ $array['element']['host-static'] = array();
 $array['element']['host-static']['default'] = '';
 $array['element']['host-static']['unset'] = true;
 
-$array['element']['host-dynamic'] = array();
-$array['element']['host-dynamic']['value'] = array('dynamic','static');
-$array['element']['host-dynamic']['unset'] = true;
+$array['element']['host-type'] = array();
+$array['element']['host-type']['value'] = array('dynamic','static');
+$array['element']['host-type']['unset'] = true;
 
 $array['element']['port'] = array();
 $array['element']['port']['unset'] = true;

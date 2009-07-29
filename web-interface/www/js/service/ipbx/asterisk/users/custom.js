@@ -23,7 +23,7 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'protocol-qualify': {it: false},
 	'protocol-disallow': {it: false},
 	'protocol-callerid': {it: false},
-	'protocol-host-dynamic': {it: false},
+	'protocol-host-type': {it: false},
 	'protocol-host-static': {it: false},
 	'protocol-permit': {it: false},
 	'protocol-deny': {it: false},

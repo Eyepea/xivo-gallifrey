@@ -810,7 +810,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_set_error('protocol','invalid module');
 			return(false);
 		}
-		else if(($rs = $protocol->chk_values($arr)) === false)
+
+		if(isset($arr['host-type']) === true)
+			$arr['host'] = $arr['host-type'];
+		else if(isset($arr['host']) === false)
+			$arr['host'] = '';
+
+		if(isset($arr['host-static']) === true && $arr['host'] === 'static')
+			$arr['host'] = $arr['host-static'];
+
+		if(($rs = $protocol->chk_values($arr)) === false)
 		{
 			$this->_set_result('protocol',$protocol->get_filter_result());
 			$this->_set_error('protocol',$protocol->get_filter_error());
@@ -865,6 +874,15 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(isset($arr['destbusy']) === true
 		&& xivo_haslen($arr['destbusy']) === false)
 			$arr['enablebusy'] = false;
+
+		if(isset($arr['outcallerid-type']) === true)
+			$arr['outcallerid'] = $arr['outcallerid-type'];
+		else if(isset($arr['outcallerid']) === false)
+			$arr['outcallerid'] = '';
+
+		if(isset($arr['outcallerid-custom']) === true
+		&& $arr['outcallerid'] === 'custom')
+			$arr['outcallerid'] = $arr['outcallerid-custom'];
 
 		if(($rs = $this->_userfeatures->chk_values($arr)) === false)
 		{

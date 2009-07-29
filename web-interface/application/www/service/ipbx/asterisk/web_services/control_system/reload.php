@@ -18,21 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
-
-if(defined('XIVO_TPL_WEBSERVICES_MODE') === false
-|| (XIVO_TPL_WEBSERVICES_MODE !== 'private'
-   && XIVO_TPL_WEBSERVICES_MODE !== 'restricted') === true)
-{
-	$http->set_status(403);
-	$http->send(true);
-}
-
 $access_category = 'control_system';
 $access_subcategory = 'reload';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_'.XIVO_TPL_WEBSERVICES_MODE.'.php'));
+include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $ami = &$ipbx->get_module('ami');
 

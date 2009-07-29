@@ -31,13 +31,13 @@ Context:
 ; fm_protocol_calllimit
 Call limit:
 
-; fm_protocol_host
+; fm_protocol_host-type
 IP Addressing type:
 
-; fm_protocol_host-dynamic
+; fm_protocol_host-type-opt(dynamic)
 Dynamic
 
-; fm_protocol_host-static
+; fm_protocol_host-type-opt(static)
 Static
 
 ; fm_protocol_port

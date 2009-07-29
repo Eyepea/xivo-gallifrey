@@ -65,31 +65,6 @@ if(isset($_QR['fm_send']) === true
 {
 	$return = &$result;
 
-	if(xivo_issa('allow',$_QR['protocol']) === false)
-		unset($_QR['protocol']['allow'],$_QR['protocol']['disallow']);
-
-	if(isset($_QR['protocol']['host-dynamic']) === true)
-		$_QR['protocol']['host'] = $_QR['protocol']['host-dynamic'];
-	else
-		$_QR['protocol']['host'] = '';
-
-	if(isset($_QR['protocol']['host-static']) === true
-	&& $_QR['protocol']['host'] === 'static')
-		$_QR['protocol']['host'] = $_QR['protocol']['host-static'];
-
-	unset($_QR['protocol']['host-dynamic'],$_QR['protocol']['host-static']);
-
-	if(isset($_QR['ufeatures']['outcallerid-type']) === true)
-		$_QR['ufeatures']['outcallerid'] = $_QR['ufeatures']['outcallerid-type'];
-	else
-		$_QR['ufeatures']['outcallerid'] = '';
-
-	if(isset($_QR['ufeatures']['outcallerid-custom']) === true
-	&& $_QR['ufeatures']['outcallerid'] === 'custom')
-		$_QR['ufeatures']['outcallerid'] = $_QR['ufeatures']['outcallerid-custom'];
-
-	unset($_QR['ufeatures']['outcallerid-type'],$_QR['ufeatures']['outcallerid-custom']);
-
 	if($appuser->set_edit($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->edit() === false)
 	{

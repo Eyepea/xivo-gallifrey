@@ -43,8 +43,14 @@ Password:
 ; fm_protocol_interface
 Interface:
 
-; fm_protocol_host
+; fm_protocol_host-type
 IP Addressing type:
+
+; fm_protocol_host-type-opt(dynamic)
+Dynamic
+
+; fm_protocol_host-type-opt(static)
+Static
 
 ; fm_protocol_protocol
 Protocol:
@@ -291,12 +297,6 @@ Anonymous
 
 ; fm_ufeatures_outcallerid-opt-custom
 Customize
-
-; fm_protocol_host-dynamic
-Dynamic
-
-; fm_protocol_host-static
-Static
 
 ; fm_autoprov_modact
 Mode:

@@ -382,9 +382,9 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 				$arr['host'] = 'dynamic';
 			else
 			{
-				if(isset($arr['host-dynamic']) === true)
-					$arr['host'] = $arr['host-dynamic'];
-				else
+				if(isset($arr['host-type']) === true)
+					$arr['host'] = $arr['host-type'];
+				else if(isset($arr['host']) === false)
 					$arr['host'] = '';
 
 				if(isset($arr['host-static']) === true && $arr['host'] === 'static')

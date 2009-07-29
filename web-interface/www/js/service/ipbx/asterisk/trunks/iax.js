@@ -33,7 +33,7 @@ var xivo_ast_trunks_elt_default = {
 	'protocol-amaflags': {it: true, fd: true},
 	'protocol-accountcode': {it: true, fd: true},
 	'protocol-host-static': {it: true, fd: true},
-	'protocol-host-dynamic': {it: true, fd: true}};
+	'protocol-host-type': {it: true, fd: true}};
 
 var xivo_ast_trunk_type_elt = {};
 xivo_ast_trunk_type_elt['peer'] = {
@@ -55,7 +55,7 @@ xivo_ast_trunk_type_elt['user'] = {
 	'protocol-mask': {it: false, fd: false},
 	'protocol-outkey': {it: false, fd: false},
 	'protocol-host-static': {it: false, fd: false},
-	'protocol-host-dynamic': {it: {property: {disabled: true,
+	'protocol-host-type': {it: {property: {disabled: true,
 						  className: 'it-readonly',
 						  value: 'dynamic'}},
 				  fd: true}};

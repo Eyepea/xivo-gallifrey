@@ -54,7 +54,7 @@ var xivo_ast_users_elt_default = {
 	'protocol-callerid': {it: true},
 	'protocol-sendani': {it: false, fd: false},
 	'protocol-insecure': {it: false, fd: false},
-	'protocol-host-dynamic': {it: true},
+	'protocol-host-type': {it: true},
 	'protocol-host-static': {it: true},
 	'protocol-mask': {it: false, fd: false},
 	'protocol-permit': {it: true},
@@ -513,10 +513,10 @@ function xivo_ast_chg_user_protocol(protocol)
 	&& voicemail.disabled === false)
 		xivo_chg_attrib('ast_fm_user_voicemail','it-voicemail-fullname',0);
 
-	if((host_dynamic = xivo_eid('it-protocol-host-dynamic')) !== false)
+	if((host_type = xivo_eid('it-protocol-host-type')) !== false)
 		xivo_chg_attrib('ast_fm_user_host',
 				'fd-protocol-host-static',
-				Number(host_dynamic.value === 'static'));
+				Number(host_type.value === 'static'));
 
 	if((autoprov_modact = xivo_eid('it-autoprov-modact')) !== false)
 		xivo_chg_attrib('ast_fm_user_autoprov-'+xivo_ast_user_protocol,
