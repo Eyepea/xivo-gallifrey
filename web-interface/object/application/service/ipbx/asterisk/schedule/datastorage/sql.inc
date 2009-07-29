@@ -148,6 +148,7 @@ class xivo_application_service_asterisk_schedule_sql extends xivo_application_se
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['meetmefeatures']);
 			$this->_dso->orwherecontain('fullname',$value,true,$this->_table['voicemail']);
 			$this->_dso->orwherecontain('mailbox',$value,true,$this->_table['voicemail']);
+			$this->_dso->orwherecontain('email',$value,true,$this->_table['voicemail']);
 			$this->_dso->orwherecontain('name',$value,true,'scheduledest');
 			$this->_dso->orwherecontain('name',$value,true,$this->_table['voicemenu']);
 			$this->_dso->orwherecontain('number',$value,true,$this->_table['voicemenu']);
