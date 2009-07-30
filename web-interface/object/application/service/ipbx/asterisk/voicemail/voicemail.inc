@@ -61,7 +61,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -76,7 +76,8 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_contextmember($this->_info['voicemail']['uniqueid']);
+		if(xivo_ak('contextmember',$nocomponents,true) === false)
+			$this->_get_contextmember($this->_info['voicemail']['uniqueid']);
 
 		return($this->_info);
 	}
@@ -86,7 +87,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		return($this->_voicemail->get_nb($arr,$disable));
 	}
 
-	function get_by_mailbox_context($mailbox,$context,$disable=null)
+	function get_by_mailbox_context($mailbox,$context,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -103,7 +104,8 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_contextmember($this->_info['voicemail']['uniqueid']);
+		if(xivo_ak('contextmember',$nocomponents,true) === false)
+			$this->_get_contextmember($this->_info['voicemail']['uniqueid']);
 
 		return($this->_info);
 	}

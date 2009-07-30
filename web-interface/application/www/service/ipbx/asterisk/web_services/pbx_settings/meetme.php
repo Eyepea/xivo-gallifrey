@@ -23,10 +23,31 @@ $access_subcategory = 'meetme';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$appmeetme = &$ipbx->get_application('meetme');
+
+		$nocomponents = array('meetmemacro'		=> true,
+				      'extenumbers'		=> true,
+				      'contextnummember'	=> true,
+				      'contextmember'		=> true);
+
+		if(($info = $appmeetme->get($_QRY->get_qs('id'),
+					    null,
+					    $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$appmeetme = &$ipbx->get_application('meetme');
+
 		$status = $appmeetme->add_from_json() === true ? 200 : 400;
 
 		$http->set_status($status);
@@ -35,11 +56,12 @@ switch($_QRY->get_qs('act'))
 	case 'delete':
 		$appmeetme = &$ipbx->get_application('meetme');
 
-		if($appmeetme->get($_QRY->get_qs('id')) !== false
-		&& $appmeetme->delete() === true)
+		if($appmeetme->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appmeetme->delete() === true)
 			$status = 200;
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
@@ -47,29 +69,31 @@ switch($_QRY->get_qs('act'))
 	case 'search':
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
-		if(($meetme = $appmeetme->get_meetme_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appmeetme->get_meetme_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('meetme',$meetme);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/meetme');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
-		if(($meetme = $appmeetme->get_meetme_list()) === false)
+		if(($list = $appmeetme->get_meetme_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('meetme',$meetme);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/meetme');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

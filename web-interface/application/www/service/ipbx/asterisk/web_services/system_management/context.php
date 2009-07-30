@@ -25,8 +25,19 @@ include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appcontext = &$ipbx->get_application('context');
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		if(($info = $appcontext->get($_QRY->get_qs('id'))) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		if($appcontext->add_from_json() === true)
 			$status = 200;
@@ -37,37 +48,40 @@ switch($_QRY->get_qs('act'))
 		$http->send(true);
 		break;
 	case 'delete':
-		if($appcontext->get($_QRY->get_qs('id')) !== false
-		&& $appcontext->delete() === true)
+		if($appcontext->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appcontext->delete() === true)
 			$status = 200;
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
 		break;
 	case 'search':
-		if(($context = $appcontext->get_contexts_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appcontext->get_contexts_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('context',$context);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/system_management/context');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
-		if(($context = $appcontext->get_contexts_list()) === false)
+		$act = 'list';
+
+		if(($list = $appcontext->get_contexts_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('context',$context);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/system_management/context');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/system_management/context');
 
 ?>

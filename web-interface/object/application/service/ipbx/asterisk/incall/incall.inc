@@ -65,7 +65,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -81,9 +81,14 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_rightcall($this->_info['incall']['id']);
-		$this->_get_contextnummember($this->_info['incall']['id']);
-		$this->_get_callerid($this->_info['incall']['id']);
+		if(xivo_ak('rightcall',$nocomponents,true) === false)
+			$this->_get_rightcall($this->_info['incall']['id']);
+
+		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+			$this->_get_contextnummember($this->_info['incall']['id']);
+
+		if(xivo_ak('callerid',$nocomponents,true) === false)
+			$this->_get_callerid($this->_info['incall']['id']);
 
 		return($this->_info);
 	}

@@ -23,8 +23,30 @@ $access_subcategory = 'users';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$appuser = &$ipbx->get_application('user');
+
+		$nocomponents = array('usermacro'		=> true,
+				      'hints'			=> true,
+				      'extenumbers'		=> true,
+				      'contextnummember'	=> true);
+
+		if(($info = $appuser->get($_QRY->get_qs('id'),
+					  null,
+					  false,
+					  false,
+					  $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$appuser = &$ipbx->get_application('user');
 
@@ -43,8 +65,9 @@ switch($_QRY->get_qs('act'))
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
 
-		if($appuser->get($_QRY->get_qs('id')) !== false
-		&& $appuser->edit_from_json() === true)
+		if($appuser->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appuser->edit_from_json() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[userlist,update]');
@@ -59,14 +82,15 @@ switch($_QRY->get_qs('act'))
 	case 'delete':
 		$appuser = &$ipbx->get_application('user');
 
-		if($appuser->get($_QRY->get_qs('id')) !== false
-		&& $appuser->delete() === true)
+		if($appuser->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appuser->delete() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[userlist,update]');
 		}
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
@@ -74,29 +98,31 @@ switch($_QRY->get_qs('act'))
 	case 'search':
 		$appuser = &$ipbx->get_application('user',null,false);
 
-		if(($users = $appuser->get_users_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appuser->get_users_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('users',$users);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$appuser = &$ipbx->get_application('user',null,false);
 
-		if(($users = $appuser->get_users_list()) === false)
+		if(($list = $appuser->get_users_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('users',$users);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

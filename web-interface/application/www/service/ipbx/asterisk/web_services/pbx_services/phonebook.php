@@ -25,36 +25,60 @@ include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appphonebook = &$ipbx->get_application('phonebook');
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		if(($info = $appphonebook->get($_QRY->get_qs('id'))) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$status = $appphonebook->add_from_json() === true ? 200 : 400;
 
 		$http->set_status($status);
 		$http->send(true);
 		break;
+	case 'delete':
+		if($appphonebook->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appphonebook->delete() === true)
+			$status = 200;
+		else
+			$status = 500;
+
+		$http->set_status($status);
+		$http->send(true);
+		break;
 	case 'search':
-		if(($phonebook = $appphonebook->get_phonebook_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appphonebook->get_phonebook_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('phonebook',$phonebook);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_services/phonebook');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
-		if(($phonebook = $appphonebook->get_phonebook_list()) === false)
+		$act = 'list';
+
+		if(($list = $appphonebook->get_phonebook_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('phonebook',$phonebook);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_services/phonebook');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

@@ -18,10 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-if(($data = xivo_json::encode($this->get_var('outcall'))) === false)
+if($this->get_var('act') === 'get')
+{
+	$info = $this->get_var('info');
+	unset($info['extenumbers'],$info['outcallmacro']);
+
+	$data = xivo_json::encode($info);
+}
+else
+	$data = xivo_json::encode($this->get_var('list'));
+
+if($data === false)
 {
 	$http->set_status(500);
 	$http->send(true);

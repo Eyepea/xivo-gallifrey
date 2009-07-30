@@ -70,7 +70,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -84,13 +84,26 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_groupmacro();
-		$this->_get_extenumbers($this->_info['gfeatures']['id']);
-		$this->_get_user();
-		$this->_get_rightcall($this->_info['gfeatures']['id']);
-		$this->_get_dialaction($this->_info['gfeatures']['id']);
-		$this->_get_contextnummember($this->_info['gfeatures']['id']);
-		$this->_get_callerid($this->_info['gfeatures']['id']);
+		if(xivo_ak('groupmacro',$nocomponents,true) === false)
+			$this->_get_groupmacro();
+
+		if(xivo_ak('extenumbers',$nocomponents,true) === false)
+			$this->_get_extenumbers($this->_info['gfeatures']['id']);
+
+		if(xivo_ak('user',$nocomponents,true) === false)
+			$this->_get_user();
+
+		if(xivo_ak('rightcall',$nocomponents,true) === false)
+			$this->_get_rightcall($this->_info['gfeatures']['id']);
+
+		if(xivo_ak('dialaction',$nocomponents,true) === false)
+			$this->_get_dialaction($this->_info['gfeatures']['id']);
+
+		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+			$this->_get_contextnummember($this->_info['gfeatures']['id']);
+
+		if(xivo_ak('callerid',$nocomponents,true) === false)
+			$this->_get_callerid($this->_info['gfeatures']['id']);
 
 		return($this->_info);
 	}

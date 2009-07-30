@@ -104,7 +104,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		return(false);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = false;
 		$this->_origin = false;
@@ -121,7 +121,12 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		$this->_origin['trunkfeatures'] = $this->_trunkfeatures->get_origin();
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
-		$this->_get_contextmember($this->_info['protocol']['id']);
+
+		if($this->_components === false)
+			return($this->_info);
+
+		if(xivo_ak('contextmember',$nocomponents,true) === false)
+			$this->_get_contextmember($this->_info['protocol']['id']);
 
 		return($this->_info);
 	}

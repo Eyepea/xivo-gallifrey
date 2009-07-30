@@ -23,10 +23,28 @@ $access_subcategory = 'voicemail';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$appvoicemail = &$ipbx->get_application('voicemail');
+
+		$nocomponents = array('contextmember'	=> true);
+
+		if(($info = $appvoicemail->get($_QRY->get_qs('id'),
+					       null,
+					       $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$appvoicemail = &$ipbx->get_application('voicemail');
+
 		$status = $appvoicemail->add_from_json() === true ? 200 : 400;
 
 		$http->set_status($status);
@@ -35,11 +53,12 @@ switch($_QRY->get_qs('act'))
 	case 'delete':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
-		if($appvoicemail->get($_QRY->get_qs('id')) !== false
-		&& $appvoicemail->delete() === true)
+		if($appvoicemail->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appvoicemail->delete() === true)
 			$status = 200;
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
@@ -47,29 +66,31 @@ switch($_QRY->get_qs('act'))
 	case 'search':
 		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
-		if(($voicemail = $appvoicemail->get_voicemail_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appvoicemail->get_voicemail_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('voicemail',$voicemail);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/voicemail');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
-		if(($voicemail = $appvoicemail->get_voicemail_list()) === false)
+		if(($list = $appvoicemail->get_voicemail_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('voicemail',$voicemail);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/voicemail');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

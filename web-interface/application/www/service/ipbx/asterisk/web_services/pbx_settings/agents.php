@@ -23,8 +23,25 @@ $access_subcategory = 'agents';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$appagent = &$ipbx->get_application('agent');
+
+		$nocomponents = array('contextmember'	=> true);
+
+		if(($info = $appagent->get($_QRY->get_qs('id'),
+					   null,
+					   $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$appagent = &$ipbx->get_application('agent');
 
@@ -43,31 +60,37 @@ switch($_QRY->get_qs('act'))
 	case 'delete':
 		$appagent = &$ipbx->get_application('agent');
 
-		if($appagent->get($_QRY->get_qs('id')) !== false
-		&& $appagent->delete() === true)
+		if($appagent->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appagent->delete() === true)
 		{
 			$status = 200;
+			$ipbx->discuss('module reload chan_agent.so');
 			$ipbx->discuss('xivo[agentlist,update]');
 		}
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$appagent = &$ipbx->get_application('agent',null,false);
 
-		if(($agents = $appagent->get_agents_list()) === false)
+		if(($list = $appagent->get_agents_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('agents',$agents);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
 
 ?>

@@ -65,7 +65,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -81,10 +81,17 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_meetmemacro();
-		$this->_get_extenumbers($this->_info['mfeatures']['id']);
-		$this->_get_contextnummember($this->_info['mfeatures']['id']);
-		$this->_get_contextmember($this->_info['mfeatures']['id']);
+		if(xivo_ak('meetmemacro',$nocomponents,true) === false)
+			$this->_get_meetmemacro();
+
+		if(xivo_ak('extenumbers',$nocomponents,true) === false)
+			$this->_get_extenumbers($this->_info['mfeatures']['id']);
+
+		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+			$this->_get_contextnummember($this->_info['mfeatures']['id']);
+
+		if(xivo_ak('contextmember',$nocomponents,true) === false)
+			$this->_get_contextmember($this->_info['mfeatures']['id']);
 
 		return($this->_info);
 	}

@@ -257,14 +257,13 @@ class xivo_service_abstract
 	function _load_application($name,$param=null,$components=true)
 	{
 		$name = (string) $name;
-		$components = (bool) $components;
 
 		if(isset($this->_application[$name]) === true)
 		{
 			if(is_array($param) === true)
 				$this->_application[$name]->load_init($param);
 
-			if($components === true)
+			if((bool) $components === true)
 				$this->_application[$name]->load_components();
 			return(true);
 		}

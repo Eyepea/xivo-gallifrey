@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,10 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-if(($data = xivo_json::encode($this->get_var('incall'))) === false)
+if($this->get_var('act') === 'get')
+{
+	$info = $this->get_var('info');
+	unset($info['extenumbers'],$info['exten']);
+
+	$data = xivo_json::encode($info);
+}
+else
+	$data = xivo_json::encode($this->get_var('list'));
+
+if($data === false)
 {
 	$http->set_status(500);
 	$http->send(true);

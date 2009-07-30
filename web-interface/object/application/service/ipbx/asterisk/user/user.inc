@@ -108,7 +108,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(parent::_reset());
 	}
 
-	function get($id,$disable=null,$internal=false,$where=false)
+	function get($id,$disable=null,$internal=false,$where=false,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -135,17 +135,38 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_usermacro();
-		$this->_get_hints();
-		$this->_get_extenumbers($this->_info['ufeatures']['id']);
-		$this->_get_groupmember();
-		$this->_get_queuemember();
-		$this->_get_rightcall($this->_info['ufeatures']['id']);
-		$this->_get_dialaction($this->_info['ufeatures']['id']);
-		$this->_get_contextnummember($this->_info['ufeatures']['id']);
-		$this->_get_voicemail();
-		$this->_get_phonefunckey();
-		$this->_get_autoprov();
+		if(xivo_ak('usermacro',$nocomponents,true) === false)
+			$this->_get_usermacro();
+
+		if(xivo_ak('hints',$nocomponents,true) === false)
+			$this->_get_hints();
+
+		if(xivo_ak('extenumbers',$nocomponents,true) === false)
+			$this->_get_extenumbers($this->_info['ufeatures']['id']);
+
+		if(xivo_ak('groupmember',$nocomponents,true) === false)
+			$this->_get_groupmember();
+
+		if(xivo_ak('queuemember',$nocomponents,true) === false)
+			$this->_get_queuemember();
+
+		if(xivo_ak('rightcall',$nocomponents,true) === false)
+			$this->_get_rightcall($this->_info['ufeatures']['id']);
+
+		if(xivo_ak('dialaction',$nocomponents,true) === false)
+			$this->_get_dialaction($this->_info['ufeatures']['id']);
+
+		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+			$this->_get_contextnummember($this->_info['ufeatures']['id']);
+
+		if(xivo_ak('voicemail',$nocomponents,true) === false)
+			$this->_get_voicemail();
+
+		if(xivo_ak('phonefunckey',$nocomponents,true) === false)
+			$this->_get_phonefunckey();
+
+		if(xivo_ak('autoprov',$nocomponents,true) === false)
+			$this->_get_autoprov();
 
 		return($this->_info);
 	}

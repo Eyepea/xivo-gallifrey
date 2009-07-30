@@ -23,8 +23,27 @@ $access_subcategory = 'groups';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$appgroup = &$ipbx->get_application('group');
+
+		$nocomponents = array('groupmacro'		=> true,
+				      'extenumbers'		=> true,
+				      'contextnummember'	=> true);
+
+		if(($info = $appgroup->get($_QRY->get_qs('id'),
+					   null,
+					   $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$appgroup = &$ipbx->get_application('group');
 
@@ -42,14 +61,15 @@ switch($_QRY->get_qs('act'))
 	case 'delete':
 		$appgroup = &$ipbx->get_application('group');
 
-		if($appgroup->get($_QRY->get_qs('id')) !== false
-		&& $appgroup->delete() === true)
+		if($appgroup->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appgroup->delete() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[grouplist,update]');
 		}
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
@@ -57,29 +77,31 @@ switch($_QRY->get_qs('act'))
 	case 'search':
 		$appgroup = &$ipbx->get_application('group',null,false);
 
-		if(($groups = $appgroup->get_groups_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appgroup->get_groups_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('groups',$groups);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/groups');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$appgroup = &$ipbx->get_application('group',null,false);
 
-		if(($groups = $appgroup->get_groups_list()) === false)
+		if(($list = $appgroup->get_groups_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('groups',$groups);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/groups');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

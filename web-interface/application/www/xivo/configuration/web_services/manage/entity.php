@@ -26,8 +26,19 @@ include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
 $_ETT = new xivo_entity();
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		if(($info = $_ETT->get($_QRY->get_qs('id'))) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		if(xivo::load_class('xivo_json') === false
 		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
@@ -46,38 +57,42 @@ switch($_QRY->get_qs('act'))
 		$ipbx = &$_SRE->get('ipbx');
 		$context = &$ipbx->get_module('context');
 
-		if(($info = $_ETT->get($_QRY->get_qs('id'))) !== false
-		&& $context->get_where(array('entity' => $info['name'])) === false
-		&& $_ETT->delete($info['id']) !== false)
+		if(($info = $_ETT->get($_QRY->get_qs('id'))) === false)
+			$status = 404;
+		else if($context->get_where(array('entity' => $info['name'])) !== false)
+			$status = 405;
+		else if($_ETT->delete($info['id']) !== false)
 			$status = 200;
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
 		break;
 	case 'search':
-		if(($entities = $_ETT->get_entities_search($_QRY->get_qs('search'))) === false)
+		if(($list = $_ETT->get_entities_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('entities',$entities);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/xivo/configuration/manage/entity');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
-		if(($entities = $_ETT->get_entities_list()) === false)
+		$act = 'list';
+
+		if(($list = $_ETT->get_entities_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('entities',$entities);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/xivo/configuration/manage/entity');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/xivo/configuration/manage/entity');
 
 ?>

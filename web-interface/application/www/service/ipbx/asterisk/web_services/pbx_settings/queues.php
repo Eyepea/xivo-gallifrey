@@ -23,8 +23,28 @@ $access_subcategory = 'queues';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$appqueue = &$ipbx->get_application('queue');
+
+		$nocomponents = array('queuemacro'		=> true,
+				      'extenumbers'		=> true,
+				      'contextnummember'	=> true,
+				      'contextmember'		=> true);
+
+		if(($info = $appqueue->get($_QRY->get_qs('id'),
+					   null,
+					   $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$appqueue = &$ipbx->get_application('queue');
 
@@ -42,14 +62,15 @@ switch($_QRY->get_qs('act'))
 	case 'delete':
 		$appqueue = &$ipbx->get_application('queue');
 
-		if($appqueue->get($_QRY->get_qs('id')) !== false
-		&& $appqueue->delete() === true)
+		if($appqueue->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($appqueue->delete() === true)
 		{
 			$status = 200;
 			$ipbx->discuss('xivo[queuelist,update]');
 		}
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
@@ -57,29 +78,31 @@ switch($_QRY->get_qs('act'))
 	case 'search':
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
-		if(($queues = $appqueue->get_queues_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appqueue->get_queues_search($_QRY->get_qs('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
-		if(($queues = $appqueue->get_queues_list()) === false)
+		if(($list = $appqueue->get_queues_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

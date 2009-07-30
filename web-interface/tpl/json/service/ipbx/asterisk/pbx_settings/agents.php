@@ -21,51 +21,56 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-$agents = $this->get_var('agents');
-
-if(is_array($agents) === false)
+if($this->get_var('act') === 'get')
+	$data = xivo_json::encode($this->get_var('info'));
+else
 {
-	$http->set_status(500);
-	$http->send(true);
+	$list = $this->get_var('list');
+
+	if(is_array($list) === false)
+	{
+		$http->set_status(500);
+		$http->send(true);
+	}
+	else if(($nb = count($list)) === 0)
+	{
+		$http->set_status(204);
+		$http->send(true);
+	}
+
+	$arr = $data = array();
+
+	for($i = 0;$i < $nb;$i++)
+	{
+		$ref = &$agents[$i];
+
+		$arr['id'] = $ref['afeatures']['id'];
+		$arr['firstname'] = $ref['afeatures']['firstname'];
+		$arr['lastname'] = $ref['afeatures']['lastname'];
+		$arr['number'] = $ref['afeatures']['number'];
+		$arr['passwd'] = $ref['afeatures']['passwd'];
+		$arr['context'] = $ref['afeatures']['context'];
+		$arr['language'] = $ref['afeatures']['language'];
+		$arr['silent'] = $ref['afeatures']['silent'];
+		$arr['ackcall'] = $ref['agentoptions']['ackcall'];
+		$arr['endcall'] = $ref['agentoptions']['endcall'];
+		$arr['autologoff'] = $ref['agentoptions']['autologoff'];
+		$arr['autologoffunavail'] = $ref['agentoptions']['autologoffunavail'];
+		$arr['wrapuptime'] = $ref['agentoptions']['wrapuptime'];
+		$arr['maxlogintries'] = $ref['agentoptions']['maxlogintries'];
+		$arr['updatecdr'] = $ref['agentoptions']['updatecdr'];
+		$arr['recordagentcalls'] = $ref['agentoptions']['recordagentcalls'];
+		$arr['recordformat'] = $ref['agentoptions']['recordformat'];
+		$arr['urlprefix'] = $ref['agentoptions']['urlprefix'];
+		$arr['beep'] = $ref['agentoptions']['custom_beep'];
+		$arr['goodbye'] = $ref['agentoptions']['goodbye'];
+		$arr['commented'] = $ref['agent']['commented'];
+	}
+
+	$data = xivo_json::encode($data);
 }
-else if(($nb = count($agents)) === 0)
-{
-	$http->set_status(204);
-	$http->send(true);
-}
 
-$data = $list = array();
-
-for($i = 0;$i < $nb;$i++)
-{
-	$ref = &$agents[$i];
-
-	$data['id'] = $ref['afeatures']['id'];
-	$data['firstname'] = $ref['afeatures']['firstname'];
-	$data['lastname'] = $ref['afeatures']['lastname'];
-	$data['number'] = $ref['afeatures']['number'];
-	$data['passwd'] = $ref['afeatures']['passwd'];
-	$data['context'] = $ref['afeatures']['context'];
-	$data['language'] = $ref['afeatures']['language'];
-	$data['silent'] = $ref['afeatures']['silent'];
-	$data['ackcall'] = $ref['agentoptions']['ackcall'];
-	$data['endcall'] = $ref['agentoptions']['endcall'];
-	$data['autologoff'] = $ref['agentoptions']['autologoff'];
-	$data['autologoffunavail'] = $ref['agentoptions']['autologoffunavail'];
-	$data['wrapuptime'] = $ref['agentoptions']['wrapuptime'];
-	$data['maxlogintries'] = $ref['agentoptions']['maxlogintries'];
-	$data['updatecdr'] = $ref['agentoptions']['updatecdr'];
-	$data['recordagentcalls'] = $ref['agentoptions']['recordagentcalls'];
-	$data['recordformat'] = $ref['agentoptions']['recordformat'];
-	$data['urlprefix'] = $ref['agentoptions']['urlprefix'];
-	$data['beep'] = $ref['agentoptions']['custom_beep'];
-	$data['goodbye'] = $ref['agentoptions']['goodbye'];
-	$data['commented'] = $ref['agent']['commented'];
-
-	$list[] = $data;
-}
-
-if(($list = xivo_json::encode($list)) === false)
+if($data === false)
 {
 	$http->set_status(500);
 	$http->send(true);
@@ -73,13 +78,13 @@ if(($list = xivo_json::encode($list)) === false)
 
 $sum = $this->get_var('sum');
 
-if(isset($sum{0}) === true && $sum === md5($list))
+if(isset($sum{0}) === true && $sum === md5($data))
 {
 	$http->set_status(304);
 	$http->send(true);
 }
 
 header(xivo_json::get_header());
-die($list);
+die($data);
 
 ?>

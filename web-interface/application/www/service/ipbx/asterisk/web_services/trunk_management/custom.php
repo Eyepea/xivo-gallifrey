@@ -23,8 +23,26 @@ $access_subcategory = 'custom';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+$act = $_QRY->get_qs('act');
+
+switch($act)
 {
+	case 'get':
+		$apptrunk = &$ipbx->get_application('trunk',
+						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
+
+		$nocomponents = array('contextmember'	=> true);
+
+		if(($info = $apptrunk->get($_QRY->get_qs('id'),
+					   null,
+					   $nocomponents)) === false)
+		{
+			$http->set_status(404);
+			$http->send(true);
+		}
+
+		$_HTML->set_var('info',$info);
+		break;
 	case 'add':
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
@@ -38,11 +56,12 @@ switch($_QRY->get_qs('act'))
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 
-		if($apptrunk->get($_QRY->get_qs('id')) !== false
-		&& $apptrunk->delete() === true)
+		if($apptrunk->get($_QRY->get_qs('id')) === false)
+			$status = 404;
+		else if($apptrunk->delete() === true)
 			$status = 200;
 		else
-			$status = 400;
+			$status = 500;
 
 		$http->set_status($status);
 		$http->send(true);
@@ -52,31 +71,33 @@ switch($_QRY->get_qs('act'))
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM),
 						    false);
 
-		if(($trunks = $apptrunk->get_trunks_search($_QRY->get_qs('search'),true)) === false)
+		if(($list = $apptrunk->get_trunks_search($_QRY->get_qs('search'),true)) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('trunks',$trunks);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/trunk_management/custom');
+		$_HTML->set_var('list',$list);
 		break;
 	case 'list':
 	default:
+		$act = 'list';
+
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM),
 						    false);
 
-		if(($trunks = $apptrunk->get_trunks_list(true)) === false)
+		if(($list = $apptrunk->get_trunks_list(true)) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('trunks',$trunks);
-		$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/trunk_management/custom');
+		$_HTML->set_var('list',$list);
 }
+
+$_HTML->set_var('act',$act);
+$_HTML->set_var('sum',$_QRY->get_qs('sum'));
+$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/trunk_management/custom');
 
 ?>

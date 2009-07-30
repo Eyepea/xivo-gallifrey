@@ -21,34 +21,41 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-$context = $this->get_var('context');
-
-if(is_array($context) === false)
+if($this->get_var('act') === 'get')
+	$data = xivo_json::encode($this->get_var('info'));
+else
 {
-	$http->set_status(500);
-	$http->send(true);
+	$list = $this->get_var('list');
+
+	if(is_array($list) === false)
+	{
+		$http->set_status(500);
+		$http->send(true);
+	}
+	else if(($nb = count($list)) === 0)
+	{
+		$http->set_status(204);
+		$http->send(true);
+	}
+
+	$data = array();
+
+	for($i = 0;$i < $nb;$i++)
+	{
+		$ref = &$list[$i];
+
+		$data[$i] = $ref;
+
+		if(xivo_issa('entity',$ref) === true)
+			$data[$i]['context']['entityid'] = $ref['entity']['id'];
+		
+		unset($data[$i]['entity']);
+	}
+
+	$data = xivo_json::encode($data);
 }
-else if(($nb = count($context)) === 0)
-{
-	$http->set_status(204);
-	$http->send(true);
-}
 
-$data = array();
-
-for($i = 0;$i < $nb;$i++)
-{
-	$ref = &$context[$i];
-
-	$data[$i] = $ref;
-
-	if(xivo_issa('entity',$ref) === true)
-		$data[$i]['context']['entityid'] = $ref['entity']['id'];
-	
-	unset($data[$i]['entity']);
-}
-
-if(($data = xivo_json::encode($data)) === false)
+if($data === false)
 {
 	$http->set_status(500);
 	$http->send(true);

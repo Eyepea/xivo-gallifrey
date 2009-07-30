@@ -63,7 +63,7 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -83,9 +83,14 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_contextmember($this->_info['afeatures']['id']);
-		$this->_get_usermember();
-		$this->_get_queuemember();
+		if(xivo_ak('contextmember',$nocomponents,true) === false)
+			$this->_get_contextmember($this->_info['afeatures']['id']);
+
+		if(xivo_ak('usermember',$nocomponents,true) === false)
+			$this->_get_usermember();
+
+		if(xivo_ak('queuemember',$nocomponents,true) === false)
+			$this->_get_queuemember();
 
 		return($this->_info);
 	}

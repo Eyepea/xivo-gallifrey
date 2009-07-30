@@ -62,7 +62,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		return(true);
 	}
 
-	function get($id,$disable=null)
+	function get($id,$disable=null,$nocomponents=null)
 	{
 		$this->_info = $this->_origin = array();
 
@@ -77,9 +77,14 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if($this->_components === false)
 			return($this->_info);
 
-		$this->_get_outcalltrunk();
-		$this->_get_rightcall($this->_info['outcall']['id']);
-		$this->_get_contextmember($this->_info['outcall']['id']);
+		if(xivo_ak('outcalltrunk',$nocomponents,true) === false)
+			$this->_get_outcalltrunk();
+
+		if(xivo_ak('rightcall',$nocomponents,true) === false)
+			$this->_get_rightcall($this->_info['outcall']['id']);
+
+		if(xivo_ak('contextmember',$nocomponents,true) === false)
+			$this->_get_contextmember($this->_info['outcall']['id']);
 
 		return($this->_info);
 	}
