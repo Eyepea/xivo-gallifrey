@@ -42,7 +42,7 @@ else
 
 	for($i = 0;$i < $nb;$i++)
 	{
-		$ref = &$agents[$i];
+		$ref = &$list[$i];
 
 		$arr['id'] = $ref['afeatures']['id'];
 		$arr['firstname'] = $ref['afeatures']['firstname'];
@@ -65,6 +65,7 @@ else
 		$arr['beep'] = $ref['agentoptions']['custom_beep'];
 		$arr['goodbye'] = $ref['agentoptions']['goodbye'];
 		$arr['commented'] = $ref['agent']['commented'];
+		$data[] = $arr;
 	}
 
 	$data = xivo_json::encode($data);
