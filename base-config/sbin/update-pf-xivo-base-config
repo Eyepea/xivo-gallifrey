@@ -62,7 +62,7 @@ else
 fi
 
 # list all variables with the good prefix
-TEMPLATE_VARS=$(compgen -v XIVO_ _XIVO_)
+TEMPLATE_VARS="$(compgen -v XIVO_) $(compgen -v _XIVO_)"
 
 
 #### functions used for templating ####
@@ -199,8 +199,9 @@ for P in ${LIST}; do
   if check_diff ${BASE_RESULT_DIR} ${P}; then
     echo "'${P}' configuration OK, skipping."
   else
-    do_apply ${BASE_RESULT_DIR} ${P}
-    do_restart ${P}
+    if do_apply ${BASE_RESULT_DIR} ${P}; then
+      do_restart ${P}
+    fi
   fi
 done
 
