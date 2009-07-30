@@ -48,7 +48,7 @@ switch($_QRY->get_qs('act'))
 
 		if(($info = $_ETT->get($_QRY->get_qs('id'))) !== false
 		&& $context->get_where(array('entity' => $info['name'])) === false
-		&& $_ETT->delete($info['id']) === true)
+		&& $_ETT->delete($info['id']) !== false)
 			$status = 200;
 		else
 			$status = 400;
