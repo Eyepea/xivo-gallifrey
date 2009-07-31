@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appgroup = &$ipbx->get_application('group');
 
 		$nocomponents = array('groupmacro'		=> true,

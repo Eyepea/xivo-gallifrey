@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appmeetme = &$ipbx->get_application('meetme');
 
 		$nocomponents = array('meetmemacro'		=> true,

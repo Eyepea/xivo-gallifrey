@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appincall = &$ipbx->get_application('incall');
 
 		$nocomponents = array('contextnummember'	=> true);

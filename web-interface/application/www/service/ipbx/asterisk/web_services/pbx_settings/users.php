@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appuser = &$ipbx->get_application('user');
 
 		$nocomponents = array('usermacro'		=> true,

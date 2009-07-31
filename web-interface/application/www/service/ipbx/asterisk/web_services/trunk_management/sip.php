@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
 

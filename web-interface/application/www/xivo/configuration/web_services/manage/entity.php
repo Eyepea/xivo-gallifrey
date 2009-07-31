@@ -30,7 +30,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		if(($info = $_ETT->get($_QRY->get_qs('id'))) === false)
 		{
 			$http->set_status(404);

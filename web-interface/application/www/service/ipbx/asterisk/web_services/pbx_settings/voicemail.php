@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
 		$nocomponents = array('contextmember'	=> true);

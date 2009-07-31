@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appagent = &$ipbx->get_application('agent');
 
 		$nocomponents = array('contextmember'	=> true);

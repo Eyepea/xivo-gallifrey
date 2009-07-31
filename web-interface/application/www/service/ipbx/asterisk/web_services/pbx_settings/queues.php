@@ -27,7 +27,7 @@ $act = $_QRY->get_qs('act');
 
 switch($act)
 {
-	case 'get':
+	case 'view':
 		$appqueue = &$ipbx->get_application('queue');
 
 		$nocomponents = array('queuemacro'		=> true,

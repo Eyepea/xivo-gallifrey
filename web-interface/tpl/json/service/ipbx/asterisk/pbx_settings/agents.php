@@ -21,7 +21,7 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-if($this->get_var('act') === 'get')
+if($this->get_var('act') === 'view')
 	$data = xivo_json::encode($this->get_var('info'));
 else
 {
@@ -65,6 +65,7 @@ else
 		$arr['beep'] = $ref['agentoptions']['custom_beep'];
 		$arr['goodbye'] = $ref['agentoptions']['goodbye'];
 		$arr['commented'] = $ref['agent']['commented'];
+
 		$data[] = $arr;
 	}
 

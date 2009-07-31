@@ -22,7 +22,7 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-if($this->get_var('act') === 'get')
+if($this->get_var('act') === 'view')
 {
 	$info = $this->get_var('info');
 	unset($info['register']);

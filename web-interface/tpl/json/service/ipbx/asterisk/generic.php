@@ -21,7 +21,7 @@
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 
-if($this->get_var('act') === 'get')
+if($this->get_var('act') === 'view')
 	$data = xivo_json::encode($this->get_var('info'));
 else
 	$data = xivo_json::encode($this->get_var('list'));
