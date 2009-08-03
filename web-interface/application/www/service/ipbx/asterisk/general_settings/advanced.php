@@ -99,12 +99,12 @@ if(isset($_QR['fm_send']) === true)
 		if(isset($_QR['userinternal']['guest']) === true)
 		{
 			if($appuserguest->enable() === true)
-				$info['userinternal']['guest']['ufeatures']['commented'] = false;
+				$info['userinternal']['guest']['userfeatures']['commented'] = false;
 		}
 		else
 		{
 			if($appuserguest->disable() === true)
-				$info['userinternal']['guest']['ufeatures']['commented'] = true;
+				$info['userinternal']['guest']['userfeatures']['commented'] = true;
 		}
 	}
 }

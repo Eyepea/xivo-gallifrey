@@ -620,12 +620,12 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 			$dialaction->unlinked_where($where);
 		}
 
-		if(($ufeatures = &$this->_service->get_module('userfeatures')) !== false)
+		if(($userfeatures = &$this->_service->get_module('userfeatures')) !== false)
 		{
 			$where = array();
 			$where['voicemailid'] = $this->_info['voicemail']['uniqueid'];
 
-			$ufeatures->edit_where($where,array('voicemailid' => null));
+			$userfeatures->edit_where($where,array('voicemailid' => null));
 		}
 
 		if((isset($this->_modules['usersip']) === true

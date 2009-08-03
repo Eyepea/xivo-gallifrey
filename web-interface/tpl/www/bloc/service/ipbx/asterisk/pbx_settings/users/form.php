@@ -31,8 +31,8 @@ $context_list = $this->get_var('context_list');
 $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
 
-if(($outcallerid = (string) $info['ufeatures']['outcallerid']) === ''
-|| in_array($outcallerid,$element['ufeatures']['outcallerid']['value'],true) === true):
+if(($outcallerid = (string) $info['userfeatures']['outcallerid']) === ''
+|| in_array($outcallerid,$element['userfeatures']['outcallerid']['value'],true) === true):
 	$outcallerid_custom = false;
 else:
 	$outcallerid_custom = true;
@@ -73,21 +73,21 @@ endif;
 <div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfeatures_firstname'),
-				  'name'	=> 'ufeatures[firstname]',
-				  'labelid'	=> 'ufeatures-firstname',
+				  'name'	=> 'userfeatures[firstname]',
+				  'labelid'	=> 'userfeatures-firstname',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['firstname']['default'],
-				  'value'	=> $info['ufeatures']['firstname']),
+				  'default'	=> $element['userfeatures']['firstname']['default'],
+				  'value'	=> $info['userfeatures']['firstname']),
 			    'onchange="xivo_ast_chg_user_name();"
 			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"
 			     onblur="xivo_ast_chg_user_name(); xivo_fm_set_onblur(this);"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_lastname'),
-				  'name'	=> 'ufeatures[lastname]',
-				  'labelid'	=> 'ufeatures-lastname',
+				  'name'	=> 'userfeatures[lastname]',
+				  'labelid'	=> 'userfeatures-lastname',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['lastname']['default'],
-				  'value'	=> $info['ufeatures']['lastname']),
+				  'default'	=> $element['userfeatures']['lastname']['default'],
+				  'value'	=> $info['userfeatures']['lastname']),
 			    'onchange="xivo_ast_chg_user_name();"
 			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"
 			     onblur="xivo_ast_chg_user_name(); xivo_fm_set_onblur(this);"'),
@@ -112,39 +112,39 @@ endif;
 				  'value'	=> $this->get_varra('info',array('protocol','interface')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_number'),
-				  'name'	=> 'ufeatures[number]',
-				  'labelid'	=> 'ufeatures-number',
+				  'name'	=> 'userfeatures[number]',
+				  'labelid'	=> 'userfeatures-number',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['number']['default'],
-				  'value'	=> $info['ufeatures']['number']),
+				  'default'	=> $element['userfeatures']['number']['default'],
+				  'value'	=> $info['userfeatures']['number']),
 			    'onchange="xivo_ast_chg_user_name();"
 			     onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"'),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_ringseconds'),
-				    'name'	=> 'ufeatures[ringseconds]',
-				    'labelid'	=> 'ufeatures-ringseconds',
+				    'name'	=> 'userfeatures[ringseconds]',
+				    'labelid'	=> 'userfeatures-ringseconds',
 				    'key'	=> false,
 				    'bbf'	=> array('paramkey','fm_userfeatures_ringseconds-opt'),
-				    'default'	=> $element['ufeatures']['ringseconds']['default'],
-				    'value'	=> $info['ufeatures']['ringseconds']),
-			      $element['ufeatures']['ringseconds']['value']),
+				    'default'	=> $element['userfeatures']['ringseconds']['default'],
+				    'value'	=> $info['userfeatures']['ringseconds']),
+			      $element['userfeatures']['ringseconds']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_simultcalls'),
-				    'name'	=> 'ufeatures[simultcalls]',
-				    'labelid'	=> 'ufeatures-simultcalls',
+				    'name'	=> 'userfeatures[simultcalls]',
+				    'labelid'	=> 'userfeatures-simultcalls',
 				    'key'	=> false,
-				    'default'	=> $element['ufeatures']['simultcalls']['default'],
-				    'value'	=> $info['ufeatures']['simultcalls']),
-			      $element['ufeatures']['simultcalls']['value']),
+				    'default'	=> $element['userfeatures']['simultcalls']['default'],
+				    'value'	=> $info['userfeatures']['simultcalls']),
+			      $element['userfeatures']['simultcalls']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_protocol'),
 				    'name'	=> 'protocol[protocol]',
 				    'labelid'	=> 'protocol-protocol',
 				    'key'	=> false,
 				    'bbf'	=> array('paramkey','fm_protocol_protocol-opt'),
-				    'default'	=> $element['ufeatures']['protocol']['default'],
-				    'value'	=> $info['ufeatures']['protocol']),
-			      $element['ufeatures']['protocol']['value'],
+				    'default'	=> $element['userfeatures']['protocol']['default'],
+				    'value'	=> $info['userfeatures']['protocol']),
+			      $element['userfeatures']['protocol']['value'],
 			      'onchange="xivo_ast_chg_user_protocol(this.value); xivo_ast_chg_user_name();"
 			       onfocus="xivo_ast_cpy_user_name(); xivo_fm_set_onfocus(this);"');
 
@@ -166,13 +166,13 @@ endif;
 
 	if(($moh_list = $this->get_var('moh_list')) !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_musiconhold'),
-					    'name'	=> 'ufeatures[musiconhold]',
-					    'labelid'	=> 'ufeatures-musiconhold',
+					    'name'	=> 'userfeatures[musiconhold]',
+					    'labelid'	=> 'userfeatures-musiconhold',
 					    'key'	=> 'category',
 					    'empty'	=> true,
 					    'invalid'	=> ($this->get_var('act') === 'edit'),
-					    'default'	=> ($this->get_var('act') === 'add' ? $element['ufeatures']['musiconhold']['default'] : null),
-					    'value'	=> $info['ufeatures']['musiconhold']),
+					    'default'	=> ($this->get_var('act') === 'add' ? $element['userfeatures']['musiconhold']['default'] : null),
+					    'value'	=> $info['userfeatures']['musiconhold']),
 				      $moh_list);
 	endif;
 
@@ -200,12 +200,12 @@ endif;
 <div id="sb-part-voicemail" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_voicemailid'),
-				    'name'	=> 'ufeatures[voicemailid]',
-				    'labelid'	=> 'ufeatures-voicemailid',
+				    'name'	=> 'userfeatures[voicemailid]',
+				    'labelid'	=> 'userfeatures-voicemailid',
 				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'uniqueid',
-				    'value'	=> $info['ufeatures']['voicemailid']),
+				    'value'	=> $info['userfeatures']['voicemailid']),
 			      $voicemail_list,
 			      'onchange="xivo_ast_user_voicemail_selection(this.value);"',
 			      array('add'	=> $this->bbf('fm_voicemail-opt-add'))),
@@ -327,34 +327,34 @@ endif;
 		<legend><?=$this->bbf('fld-client');?></legend>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableclient'),
-				      'name'	=> 'ufeatures[enableclient]',
-				      'labelid'	=> 'ufeatures-enableclient',
-				      'default'	=> $element['ufeatures']['enableclient']['default'],
-				      'checked'	=> $info['ufeatures']['enableclient']),
+				      'name'	=> 'userfeatures[enableclient]',
+				      'labelid'	=> 'userfeatures-enableclient',
+				      'default'	=> $element['userfeatures']['enableclient']['default'],
+				      'checked'	=> $info['userfeatures']['enableclient']),
 				'onchange="xivo_chg_attrib(\'ast_fm_user_enableclient\',
-							   \'it-ufeatures-loginclient\',
+							   \'it-userfeatures-loginclient\',
 							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_loginclient'),
-				  'name'	=> 'ufeatures[loginclient]',
-				  'labelid'	=> 'ufeatures-loginclient',
+				  'name'	=> 'userfeatures[loginclient]',
+				  'labelid'	=> 'userfeatures-loginclient',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['loginclient']['default'],
-				  'value'	=> $info['ufeatures']['loginclient'])),
+				  'default'	=> $element['userfeatures']['loginclient']['default'],
+				  'value'	=> $info['userfeatures']['loginclient'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_passwdclient'),
-				  'name'	=> 'ufeatures[passwdclient]',
-				  'labelid'	=> 'ufeatures-passwdclient',
+				  'name'	=> 'userfeatures[passwdclient]',
+				  'labelid'	=> 'userfeatures-passwdclient',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['passwdclient']['default'],
-				  'value'	=> $info['ufeatures']['passwdclient']));
+				  'default'	=> $element['userfeatures']['passwdclient']['default'],
+				  'value'	=> $info['userfeatures']['passwdclient']));
 
 	if(is_array($profileclient_list) === true && empty($profileclient_list) === false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
-					    'name'	=> 'ufeatures[profileclient]',
-					    'labelid'	=> 'ufeatures-profileclient',
-					    'default'	=> $element['ufeatures']['profileclient']['default'],
-					    'value'	=> $info['ufeatures']['profileclient']),
+					    'name'	=> 'userfeatures[profileclient]',
+					    'labelid'	=> 'userfeatures-profileclient',
+					    'default'	=> $element['userfeatures']['profileclient']['default'],
+					    'value'	=> $info['userfeatures']['profileclient']),
 				      $profileclient_list);
 	endif;
 ?>
@@ -364,75 +364,75 @@ endif;
 		<legend><?=$this->bbf('fld-services');?></legend>
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablehint'),
-				      'name'	=> 'ufeatures[enablehint]',
-				      'labelid'	=> 'ufeatures-enablehint',
-				      'default'	=> $element['ufeatures']['enablehint']['default'],
-				      'checked'	=> $info['ufeatures']['enablehint'])),
+				      'name'	=> 'userfeatures[enablehint]',
+				      'labelid'	=> 'userfeatures-enablehint',
+				      'default'	=> $element['userfeatures']['enablehint']['default'],
+				      'checked'	=> $info['userfeatures']['enablehint'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablevoicemail'),
-				      'name'	=> 'ufeatures[enablevoicemail]',
-				      'labelid'	=> 'ufeatures-enablevoicemail',
-				      'default'	=> $element['ufeatures']['enablevoicemail']['default'],
-				      'checked'	=> $info['ufeatures']['enablevoicemail'])),
+				      'name'	=> 'userfeatures[enablevoicemail]',
+				      'labelid'	=> 'userfeatures-enablevoicemail',
+				      'default'	=> $element['userfeatures']['enablevoicemail']['default'],
+				      'checked'	=> $info['userfeatures']['enablevoicemail'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablexfer'),
-				      'name'	=> 'ufeatures[enablexfer]',
-				      'labelid'	=> 'ufeatures-enablexfer',
-				      'default'	=> $element['ufeatures']['enablexfer']['default'],
-				      'checked'	=> $info['ufeatures']['enablexfer'])),
+				      'name'	=> 'userfeatures[enablexfer]',
+				      'labelid'	=> 'userfeatures-enablexfer',
+				      'default'	=> $element['userfeatures']['enablexfer']['default'],
+				      'checked'	=> $info['userfeatures']['enablexfer'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableautomon'),
-				      'name'	=> 'ufeatures[enableautomon]',
-				      'labelid'	=> 'ufeatures-enableautomon',
-				      'default'	=> $element['ufeatures']['enableautomon']['default'],
-				      'checked'	=> $info['ufeatures']['enableautomon'])),
+				      'name'	=> 'userfeatures[enableautomon]',
+				      'labelid'	=> 'userfeatures-enableautomon',
+				      'default'	=> $element['userfeatures']['enableautomon']['default'],
+				      'checked'	=> $info['userfeatures']['enableautomon'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_callrecord'),
-				      'name'	=> 'ufeatures[callrecord]',
-				      'labelid'	=> 'ufeatures-callrecord',
-				      'default'	=> $element['ufeatures']['callrecord']['default'],
-				      'checked'	=> $info['ufeatures']['callrecord'])),
+				      'name'	=> 'userfeatures[callrecord]',
+				      'labelid'	=> 'userfeatures-callrecord',
+				      'default'	=> $element['userfeatures']['callrecord']['default'],
+				      'checked'	=> $info['userfeatures']['callrecord'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_callfilter'),
-				      'name'	=> 'ufeatures[callfilter]',
-				      'labelid'	=> 'ufeatures-callfilter',
-				      'default'	=> $element['ufeatures']['callfilter']['default'],
-				      'checked'	=> $info['ufeatures']['callfilter'])),
+				      'name'	=> 'userfeatures[callfilter]',
+				      'labelid'	=> 'userfeatures-callfilter',
+				      'default'	=> $element['userfeatures']['callfilter']['default'],
+				      'checked'	=> $info['userfeatures']['callfilter'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablednd'),
-				      'name'	=> 'ufeatures[enablednd]',
-				      'labelid'	=> 'ufeatures-enablednd',
-				      'default'	=> $element['ufeatures']['enablednd']['default'],
-				      'checked'	=> $info['ufeatures']['enablednd'])),
+				      'name'	=> 'userfeatures[enablednd]',
+				      'labelid'	=> 'userfeatures-enablednd',
+				      'default'	=> $element['userfeatures']['enablednd']['default'],
+				      'checked'	=> $info['userfeatures']['enablednd'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_mobilephonenumber'),
-				  'name'	=> 'ufeatures[mobilephonenumber]',
-				  'labelid'	=> 'ufeatures-mobilephonenumber',
+				  'name'	=> 'userfeatures[mobilephonenumber]',
+				  'labelid'	=> 'userfeatures-mobilephonenumber',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['mobilephonenumber']['default'],
-				  'value'	=> $info['ufeatures']['mobilephonenumber'])),
+				  'default'	=> $element['userfeatures']['mobilephonenumber']['default'],
+				  'value'	=> $info['userfeatures']['mobilephonenumber'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_bsfilter'),
-				    'name'	=> 'ufeatures[bsfilter]',
-				    'labelid'	=> 'ufeatures-bsfilter',
+				    'name'	=> 'userfeatures[bsfilter]',
+				    'labelid'	=> 'userfeatures-bsfilter',
 				    'key'	=> false,
 				    'bbf'	=> array('paramkey','fm_userfeatures_bsfilter-opt'),
-				    'default'	=> $element['ufeatures']['bsfilter']['default'],
-				    'value'	=> $info['ufeatures']['bsfilter']),
-			      $element['ufeatures']['bsfilter']['value']);
+				    'default'	=> $element['userfeatures']['bsfilter']['default'],
+				    'value'	=> $info['userfeatures']['bsfilter']),
+			      $element['userfeatures']['bsfilter']['value']);
 
 	if($agent_list !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_agentid'),
-					    'name'	=> 'ufeatures[agentid]',
-					    'labelid'	=> 'ufeatures-agentid',
+					    'name'	=> 'userfeatures[agentid]',
+					    'labelid'	=> 'userfeatures-agentid',
 					    'empty'	=> true,
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id',
-					    'default'	=> $element['ufeatures']['agentid']['default'],
-					    'value'	=> $info['ufeatures']['agentid']),
+					    'default'	=> $element['userfeatures']['agentid']['default'],
+					    'value'	=> $info['userfeatures']['agentid']),
 				      $agent_list);
 	else:
-		echo	'<div id="fd-ufeatures-agentid" class="txt-center">',
+		echo	'<div id="fd-userfeatures-agentid" class="txt-center">',
 			$url->href_html($this->bbf('create_agent'),
 					'service/ipbx/pbx_settings/agents',
 					array('act'	=> 'addagent',
@@ -447,52 +447,52 @@ endif;
 <?php
 
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablerna'),
-				      'name'	=> 'ufeatures[enablerna]',
-				      'labelid'	=> 'ufeatures-enablerna',
-				      'default'	=> $element['ufeatures']['enablerna']['default'],
-				      'checked'	=> $info['ufeatures']['enablerna']),
+				      'name'	=> 'userfeatures[enablerna]',
+				      'labelid'	=> 'userfeatures-enablerna',
+				      'default'	=> $element['userfeatures']['enablerna']['default'],
+				      'checked'	=> $info['userfeatures']['enablerna']),
 				'onchange="xivo_chg_attrib(\'ast_fm_user_enablerna\',
-							   \'it-ufeatures-destrna\',
+							   \'it-userfeatures-destrna\',
 							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destrna'),
-				  'name'	=> 'ufeatures[destrna]',
-				  'labelid'	=> 'ufeatures-destrna',
+				  'name'	=> 'userfeatures[destrna]',
+				  'labelid'	=> 'userfeatures-destrna',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['destrna']['default'],
-				  'value'	=> $info['ufeatures']['destrna'])),
+				  'default'	=> $element['userfeatures']['destrna']['default'],
+				  'value'	=> $info['userfeatures']['destrna'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablebusy'),
-				      'name'	=> 'ufeatures[enablebusy]',
-				      'labelid'	=> 'ufeatures-enablebusy',
-				      'default'	=> $element['ufeatures']['enablebusy']['default'],
-				      'checked'	=> $info['ufeatures']['enablebusy']),
+				      'name'	=> 'userfeatures[enablebusy]',
+				      'labelid'	=> 'userfeatures-enablebusy',
+				      'default'	=> $element['userfeatures']['enablebusy']['default'],
+				      'checked'	=> $info['userfeatures']['enablebusy']),
 				'onchange="xivo_chg_attrib(\'ast_fm_user_enablebusy\',
-							   \'it-ufeatures-destbusy\',
+							   \'it-userfeatures-destbusy\',
 							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destbusy'),
-				  'name'	=> 'ufeatures[destbusy]',
-				  'labelid'	=> 'ufeatures-destbusy',
+				  'name'	=> 'userfeatures[destbusy]',
+				  'labelid'	=> 'userfeatures-destbusy',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['destbusy']['default'],
-				  'value'	=> $info['ufeatures']['destbusy'])),
+				  'default'	=> $element['userfeatures']['destbusy']['default'],
+				  'value'	=> $info['userfeatures']['destbusy'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableunc'),
-				      'name'	=> 'ufeatures[enableunc]',
-				      'labelid'	=> 'ufeatures-enableunc',
-				      'default'	=> $element['ufeatures']['enableunc']['default'],
-				      'checked'	=> $info['ufeatures']['enableunc']),
+				      'name'	=> 'userfeatures[enableunc]',
+				      'labelid'	=> 'userfeatures-enableunc',
+				      'default'	=> $element['userfeatures']['enableunc']['default'],
+				      'checked'	=> $info['userfeatures']['enableunc']),
 				'onchange="xivo_chg_attrib(\'ast_fm_user_enableunc\',
-							   \'it-ufeatures-destunc\',
+							   \'it-userfeatures-destunc\',
 							   Number(this.checked));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_destunc'),
-				  'name'	=> 'ufeatures[destunc]',
-				  'labelid'	=> 'ufeatures-destunc',
+				  'name'	=> 'userfeatures[destunc]',
+				  'labelid'	=> 'userfeatures-destunc',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['destunc']['default'],
-				  'value'	=> $info['ufeatures']['destunc']));
+				  'default'	=> $element['userfeatures']['destunc']['default'],
+				  'value'	=> $info['userfeatures']['destunc']));
 ?>
 	</fieldset>
 </div>
@@ -953,19 +953,19 @@ endif;
 				  'notag'	=> false)),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_outcallerid'),
-				    'name'	=> 'ufeatures[outcallerid-type]',
-				    'labelid'	=> 'ufeatures-outcallerid-type',
+				    'name'	=> 'userfeatures[outcallerid-type]',
+				    'labelid'	=> 'userfeatures-outcallerid-type',
 				    'key'	=> false,
 				    'bbf'	=> array('paramkey','fm_userfeatures_outcallerid-opt'),
 				    'value'	=> ($outcallerid_custom === true ? 'custom' : $outcallerid)),
-			      $element['ufeatures']['outcallerid-type']['value'],
+			      $element['userfeatures']['outcallerid-type']['value'],
 			      'onchange="xivo_chg_attrib(\'ast_fm_user_outcallerid\',
-			      				 \'fd-ufeatures-outcallerid-custom\',
+			      				 \'fd-userfeatures-outcallerid-custom\',
 							 Number((this.value === \'custom\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
-				  'name'	=> 'ufeatures[outcallerid-custom]',
-				  'labelid'	=> 'ufeatures-outcallerid-custom',
+				  'name'	=> 'userfeatures[outcallerid-custom]',
+				  'labelid'	=> 'userfeatures-outcallerid-custom',
 				  'value'	=> ($outcallerid_custom === true ? $outcallerid : ''),
 				  'size'	=> 15,
 				  'notag'	=> false)),
@@ -977,11 +977,11 @@ endif;
 				      'checked'	=> $this->get_varra('info',array('protocol','sendani')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_preprocess-subroutine'),
-				  'name'	=> 'ufeatures[preprocess_subroutine]',
-				  'labelid'	=> 'ufeatures-preprocess-subroutine',
+				  'name'	=> 'userfeatures[preprocess_subroutine]',
+				  'labelid'	=> 'userfeatures-preprocess-subroutine',
 				  'size'	=> 15,
-				  'default'	=> $element['ufeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['ufeatures']['preprocess_subroutine'])),
+				  'default'	=> $element['userfeatures']['preprocess_subroutine']['default'],
+				  'value'	=> $info['userfeatures']['preprocess_subroutine'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_insecure'),
 				    'name'	=> 'protocol[insecure]',
@@ -1171,15 +1171,15 @@ endif;
 ?>
 	<div class="fm-field fm-description">
 		<p>
-			<label id="lb-ufeatures-description" for="it-ufeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label>
+			<label id="lb-userfeatures-description" for="it-userfeatures-description"><?=$this->bbf('fm_userfeatures_description');?></label>
 		</p>
 		<?=$form->textarea(array('field'	=> false,
 					 'label'	=> false,
-					 'name'		=> 'ufeatures[description]',
-					 'id'		=> 'it-ufeatures-description',
+					 'name'		=> 'userfeatures[description]',
+					 'id'		=> 'it-userfeatures-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['ufeatures']['description']['default']),
-				   $info['ufeatures']['description']);?>
+					 'default'	=> $element['userfeatures']['description']['default']),
+				   $info['userfeatures']['description']);?>
 	</div>
 </div>

@@ -378,7 +378,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| is_array($list) === false
 		|| is_scalar($name) === false
-		|| ($ufeatures = &$this->_service->get_module('userfeatures')) === false
+		|| ($userfeatures = &$this->_service->get_module('userfeatures')) === false
 		|| $this->_queuemember === false)
 			return(false);
 
@@ -404,7 +404,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($uinfo = $ufeatures->get($list[$i])) === false)
+			if(($uinfo = $userfeatures->get($list[$i])) === false)
 			{
 				$this->_set_error('user','wrong user');
 				continue;
@@ -814,7 +814,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 		|| ($nb = count($this->_origin['user'])) === 0)
 			return($this->add_user_callgroup($gfeaturesid));
 
-		$ufeatures = &$this->_service->get_module('userfeatures');
+		$userfeatures = &$this->_service->get_module('userfeatures');
 
 		$rs = $this->get_result('user_callgroup');
 
@@ -826,7 +826,7 @@ class xivo_application_service_asterisk_group extends xivo_application_asterisk_
 
 			if(is_array($rs) === false || isset($rs[$ref['userid']]) === false)
 			{
-				if(($uinfo = $ufeatures->get($ref['userid'])) === false
+				if(($uinfo = $userfeatures->get($ref['userid'])) === false
 				|| $uinfo['protocol'] !== XIVO_SRE_IPBX_AST_PROTO_SIP
 				|| ($protocol = &$this->_service->get_protocol_module($uinfo['protocol'])) === false
 				|| ($pinfo = $protocol->get($uinfo['protocolid'])) === false

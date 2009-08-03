@@ -115,7 +115,7 @@ if(isset($error_js[0]) === true)
 				 'name'		=> 'userinternal[guest]',
 				 'labelid'	=> 'userinternal-guest',
 				 'checked'	=> ($this->get_varra('userinternal',
-				 				     array('guest','ufeatures','commented')) === false)));?>
+				 				     array('guest','userfeatures','commented')) === false)));?>
 </div>
 
 <div id="sb-part-agent" class="b-nodisplay">

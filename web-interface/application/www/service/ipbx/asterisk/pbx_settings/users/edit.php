@@ -60,7 +60,7 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 
 if(isset($_QR['fm_send']) === true
 && xivo_issa('protocol',$_QR) === true
-&& xivo_issa('ufeatures',$_QR) === true
+&& xivo_issa('userfeatures',$_QR) === true
 && isset($_QR['protocol']['protocol']) === true)
 {
 	$return = &$result;
@@ -79,9 +79,9 @@ if(isset($_QR['fm_send']) === true
 		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 
-		if(isset($_QR['ufeatures']['voicemailid']) === true
-		&& $_QR['ufeatures']['voicemailid'] === 'add')
-			$result['ufeatures']['voicemailid'] = 'add';
+		if(isset($_QR['userfeatures']['voicemailid']) === true
+		&& $_QR['userfeatures']['voicemailid'] === 'add')
+			$result['userfeatures']['voicemailid'] = 'add';
 	}
 	else
 	{
@@ -181,7 +181,7 @@ if(empty($return) === false)
 else
 	$return = null;
 
-$_HTML->set_var('id',$info['ufeatures']['id']);
+$_HTML->set_var('id',$info['userfeatures']['id']);
 $_HTML->set_var('info',$return);
 $_HTML->set_var('error',$error);
 $_HTML->set_var('fm_save',$fm_save);

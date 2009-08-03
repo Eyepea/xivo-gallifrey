@@ -100,7 +100,7 @@ Monitoring:
 ; fm_protocol_dtmfmode
 DTMF:
 
-; fm_ufeatures_number
+; fm_userfeatures_number
 Phone number:
 
 ; fm_userfeatures_ringseconds
@@ -286,16 +286,16 @@ Create a call permission
 ; fm_protocol_callerid
 Caller ID:
 
-; fm_ufeatures_outcallerid
+; fm_userfeatures_outcallerid
 Outgoing Caller ID:
 
-; fm_ufeatures_outcallerid-opt-default
+; fm_userfeatures_outcallerid-opt-default
 Default
 
-; fm_ufeatures_outcallerid-opt-anonymous
+; fm_userfeatures_outcallerid-opt-anonymous
 Anonymous
 
-; fm_ufeatures_outcallerid-opt-custom
+; fm_userfeatures_outcallerid-opt-custom
 Customize
 
 ; fm_autoprov_modact

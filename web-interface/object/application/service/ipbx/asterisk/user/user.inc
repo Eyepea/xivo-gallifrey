@@ -115,13 +115,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_userfeatures->set_dso_param('internal',$internal);
 
 		if((bool) $where === false)
-			$this->_info['ufeatures'] = $this->_userfeatures->get($id);
+			$this->_info['userfeatures'] = $this->_userfeatures->get($id);
 		else
-			$this->_info['ufeatures'] = $this->_userfeatures->get_where($id);
+			$this->_info['userfeatures'] = $this->_userfeatures->get_where($id);
 
-		if($this->_info['ufeatures'] === false
-		|| ($this->_protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false
-		|| ($this->_info['protocol'] = $this->_protocol->get($this->_info['ufeatures']['protocolid'],$disable)) === false)
+		if($this->_info['userfeatures'] === false
+		|| ($this->_protocol = &$this->_service->get_protocol_module($this->_info['userfeatures']['protocol'])) === false
+		|| ($this->_info['protocol'] = $this->_protocol->get($this->_info['userfeatures']['protocolid'],$disable)) === false)
 		{
 			$this->_userfeatures->set_dso_param('internal',$this->_param['internal']);
 			return(false);
@@ -130,7 +130,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_userfeatures->set_dso_param('internal',$this->_param['internal']);
 
 		$this->_origin['protocol'] = $this->_protocol->get_origin();
-		$this->_origin['ufeatures'] = $this->_userfeatures->get_origin();
+		$this->_origin['userfeatures'] = $this->_userfeatures->get_origin();
 
 		if($this->_components === false)
 			return($this->_info);
@@ -142,7 +142,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_get_hints();
 
 		if(xivo_ak('extenumbers',$nocomponents,true) === false)
-			$this->_get_extenumbers($this->_info['ufeatures']['id']);
+			$this->_get_extenumbers($this->_info['userfeatures']['id']);
 
 		if(xivo_ak('groupmember',$nocomponents,true) === false)
 			$this->_get_groupmember();
@@ -151,13 +151,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_get_queuemember();
 
 		if(xivo_ak('rightcall',$nocomponents,true) === false)
-			$this->_get_rightcall($this->_info['ufeatures']['id']);
+			$this->_get_rightcall($this->_info['userfeatures']['id']);
 
 		if(xivo_ak('dialaction',$nocomponents,true) === false)
-			$this->_get_dialaction($this->_info['ufeatures']['id']);
+			$this->_get_dialaction($this->_info['userfeatures']['id']);
 
 		if(xivo_ak('contextnummember',$nocomponents,true) === false)
-			$this->_get_contextnummember($this->_info['ufeatures']['id']);
+			$this->_get_contextnummember($this->_info['userfeatures']['id']);
 
 		if(xivo_ak('voicemail',$nocomponents,true) === false)
 			$this->_get_voicemail();
@@ -187,7 +187,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['usermacro'] = false;
 
 		if(isset($this->_info['protocol']['context']) === true
-		&& ($this->_info['usermacro'] = $this->_extensions->get_exten($this->_info['ufeatures']['number'],
+		&& ($this->_info['usermacro'] = $this->_extensions->get_exten($this->_info['userfeatures']['number'],
 									      $this->_info['protocol']['context'],
 									      'macro')) !== false)
 			$this->_origin['usermacro'] = $this->_extensions->get_origin();
@@ -202,8 +202,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(isset($this->_info['protocol']['context']) === true
 		&& ($this->_info['hints'] = $this->_extensions->get_hints($this->_info['protocol']['name'],
-									  $this->_info['ufeatures']['protocol'],
-									  $this->_info['ufeatures']['number'])) !== false)
+									  $this->_info['userfeatures']['protocol'],
+									  $this->_info['userfeatures']['number'])) !== false)
 			$this->_origin['hints'] = $this->_extensions->get_origin();
 
 		return($this->_info['hints']);
@@ -232,7 +232,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$where = array();
 		$where['category'] = $type;
 		$where['usertype'] = 'user';
-		$where['userid'] = $this->_info['ufeatures']['id'];
+		$where['userid'] = $this->_info['userfeatures']['id'];
 
 		if(is_object($this->_queuemember) === false
 		|| ($module = &$this->_service->get_module($type.'features')) === false
@@ -266,7 +266,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['voicemail'] = $this->_origin['vmfeatures'] = false;
 
 		if(is_object($this->_voicemail) === false
-		|| $this->_voicemail->get($this->_info['ufeatures']['voicemailid']) === false)
+		|| $this->_voicemail->get($this->_info['userfeatures']['voicemailid']) === false)
 			return(false);
 
 		$this->_info['voicemail'] = $this->_voicemail->get_info('voicemail');
@@ -284,7 +284,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['agentfeatures'] = false;
 
 		if(is_object($this->_agentfeatures) === false
-		|| $this->_agentfeatures->get($this->_info['ufeatures']['agentid']) === false)
+		|| $this->_agentfeatures->get($this->_info['userfeatures']['agentid']) === false)
 			return(false);
 
 		$this->_origin['agentfeatures'] = $this->_agentfeatures->get_origin();
@@ -301,7 +301,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		$where = array();
-		$where['iduserfeatures'] = $this->_info['ufeatures']['id'];
+		$where['iduserfeatures'] = $this->_info['userfeatures']['id'];
 
 		$this->_info['phonefunckey'] = $this->_phonefunckey->get_all_where($where,
 										   null,
@@ -321,7 +321,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		$where = array();
-		$where['iduserfeatures'] = $this->_info['ufeatures']['id'];
+		$where['iduserfeatures'] = $this->_info['userfeatures']['id'];
 
 		$this->_info['autoprov'] = $this->_autoprov->get_where($where);
 		$this->_origin['autoprov'] = $this->_autoprov->get_origin();
@@ -344,12 +344,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function get_bsfilter_list()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
-		$rs = $this->_dso->get_bsfilter($this->_info['ufeatures']['id'],
-						$this->_info['ufeatures']['context'],
-						$this->_info['ufeatures']['bsfilter']);
+		$rs = $this->_dso->get_bsfilter($this->_info['userfeatures']['id'],
+						$this->_info['userfeatures']['context'],
+						$this->_info['userfeatures']['bsfilter']);
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
@@ -445,7 +445,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$r = array();
 
 		$r['protocol'] = $this->_service->get_protocol_element();
-		$r['ufeatures'] = $this->_userfeatures->get_element();
+		$r['userfeatures'] = $this->_userfeatures->get_element();
 		$r['dialaction'] = $this->_dialaction->get_element();
 
 		if(is_object($this->_queuemember) === true)
@@ -595,10 +595,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function get_destination_list()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			$id = 0;
 		else
-			$id = $this->_info['ufeatures']['id'];
+			$id = $this->_info['userfeatures']['id'];
 
 		$this->_get_destination();
 
@@ -617,10 +617,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function get_phonefunckey_destination()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			$id = 0;
 		else
-			$id = $this->_info['ufeatures']['id'];
+			$id = $this->_info['userfeatures']['id'];
 
 		$this->_get_destination();
 
@@ -643,11 +643,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function _mk_usermacro_appdata($ufeaturesid,$timeout='')
+	function _mk_usermacro_appdata($userfeaturesid,$timeout='')
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($ufeaturesid);
+		$arr['appdata'][1] = xivo_ulongint($userfeaturesid);
 		$arr['appdata'][2] = xivo_haslen($timeout) === true ? xivo_ufloat($timeout) : '';
 
 		return($arr);
@@ -672,7 +672,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| xivo_issa('protocol',$arr) === false
-		|| xivo_issa('ufeatures',$arr) === false)
+		|| xivo_issa('userfeatures',$arr) === false)
 			return(false);
 
 		$this->_protocolname = $protocolname;
@@ -682,8 +682,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->set_protocol($arr['protocol'],$protocolname);
 
-		$arr['ufeatures']['protocol'] = $protocolname;
-		$arr['ufeatures']['protocolid'] = 0;
+		$arr['userfeatures']['protocol'] = $protocolname;
+		$arr['userfeatures']['protocolid'] = 0;
 
 		if($protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			$name = $this->get_result_var('protocol','interface');
@@ -692,24 +692,24 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$context = $this->get_result_var('protocol','context');
 
-		if(isset($arr['ufeatures']['voicemailid']) === true
-		&& $arr['ufeatures']['voicemailid'] === 'add')
+		if(isset($arr['userfeatures']['voicemailid']) === true
+		&& $arr['userfeatures']['voicemailid'] === 'add')
 		{
 			$vmaction = 'add';
-			$arr['ufeatures']['voicemailid'] = null;
+			$arr['userfeatures']['voicemailid'] = null;
 		}
 		else
 			$vmaction = $action;
 
-		$arr['ufeatures']['name'] = $name;
-		$arr['ufeatures']['context'] = $context;
+		$arr['userfeatures']['name'] = $name;
+		$arr['userfeatures']['context'] = $context;
 
-		$this->set_userfeatures($action,$arr['ufeatures']);
+		$this->set_userfeatures($action,$arr['userfeatures']);
 
-		$number = (string) $this->get_result_var('ufeatures','number');
-		$protocolname = (string) $this->get_result_var('ufeatures','protocol');
-		$simultcalls = (int) $this->get_result_var('ufeatures','simultcalls');
-		$musiconhold = (string) $this->get_result_var('ufeatures','musiconhold');
+		$number = (string) $this->get_result_var('userfeatures','number');
+		$protocolname = (string) $this->get_result_var('userfeatures','protocol');
+		$simultcalls = (int) $this->get_result_var('userfeatures','simultcalls');
+		$musiconhold = (string) $this->get_result_var('userfeatures','musiconhold');
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_SIP)
 			$this->_set_result_var('protocol','call-limit',(2 * $simultcalls));
@@ -780,7 +780,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$callerid = $this->_service->mk_callerid($callerid,$number);
 			$this->_set_result_var('protocol','callerid',$callerid);
 
-			$enablehint = (bool) $this->get_result_var('ufeatures','enablehint') === false;
+			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
 
 			if(($hints = $this->set_hints($action,$name,$protocolname,$number,$enablehint)) === false)
 				$this->_set_error('hints');
@@ -858,12 +858,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function set_userfeatures($action,$arr)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| ($action === 'edit' && xivo_issa('ufeatures',$this->_origin) === false) === true)
+		|| ($action === 'edit' && xivo_issa('userfeatures',$this->_origin) === false) === true)
 			return(false);
 		else if(is_array($arr) === false)
 		{
-			$this->_set_result('ufeatures',null);
-			$this->_set_error('ufeatures','invalid data');
+			$this->_set_result('userfeatures',null);
+			$this->_set_error('userfeatures','invalid data');
 			return(false);
 		}
 
@@ -876,7 +876,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($action === 'edit'
 		&& isset($arr['profileclient']) === false
 		&& isset($arr['enableclient']) === false)
-			$arr['profileclient'] = $this->_origin['ufeatures']['profileclient'];
+			$arr['profileclient'] = $this->_origin['userfeatures']['profileclient'];
 
 		$this->get_profileclient_list();
 
@@ -907,14 +907,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($rs = $this->_userfeatures->chk_values($arr)) === false)
 		{
-			$this->_set_result('ufeatures',$this->_userfeatures->get_filter_result());
-			$this->_set_error('ufeatures',$this->_userfeatures->get_filter_error());
+			$this->_set_result('userfeatures',$this->_userfeatures->get_filter_result());
+			$this->_set_error('userfeatures',$this->_userfeatures->get_filter_error());
 			return(false);
 		}
 		else
 		{
 			if($action === 'edit')
-				$id = $this->_origin['ufeatures']['id'];
+				$id = $this->_origin['userfeatures']['id'];
 			else
 				$id = null;
 
@@ -922,8 +922,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 								    $rs['context'],
 								    $id) === true)
 			{
-				$this->_set_result('ufeatures',$rs);
-				$this->_set_error('ufeatures','client login exists');
+				$this->_set_result('userfeatures',$rs);
+				$this->_set_error('userfeatures','client login exists');
 				return(false);
 			}
 		}
@@ -941,23 +941,23 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| $this->_agentfeatures->get_primary($rs['agentid']) === false)
 			$rs['agentid'] = null;
 
-		$this->_set_result('ufeatures',$rs);
+		$this->_set_result('userfeatures',$rs);
 
 		return(true);
 	}
 
-	function _set_usermacro($action,$ufeaturesid)
+	function _set_usermacro($action,$userfeaturesid)
 	{
 		$rs = false;
 
-		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		if(($userfeaturesid = xivo_ulongint($userfeaturesid)) === 0
 		|| ($rs = $this->get_result('usermacro')) === null
 		|| $rs === false)
 			return($rs);
 		else if(($rsmacro = $this->set_macro($action,
 						     'usermacro',
 						     $rs['exten'],
-						     $this->_mk_usermacro_appdata($ufeaturesid),
+						     $this->_mk_usermacro_appdata($userfeaturesid),
 						     $rs['context'])) === false)
 			return(false);
 
@@ -1217,28 +1217,28 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_status = 'add';
 		$this->_return = array();
-		$ufeaturesid = null;
+		$userfeaturesid = null;
 
 		if($this->get_errnb() > 0
 		|| $this->_protocolname === false
 		|| ($protocolid = $this->add_protocol()) === false
-		|| ($ufeaturesid = $this->add_userfeatures($protocolid)) === false
-		|| $this->update_protocol_setvar($protocolid,$ufeaturesid) === false
-		|| $this->add_usermacro($ufeaturesid) === false
+		|| ($userfeaturesid = $this->add_userfeatures($protocolid)) === false
+		|| $this->update_protocol_setvar($protocolid,$userfeaturesid) === false
+		|| $this->add_usermacro($userfeaturesid) === false
 		|| $this->add_hints() === false
-		|| $this->add_extenumbers($ufeaturesid) === false
-		|| $this->add_groupmember($ufeaturesid) === false
-		|| $this->add_queuemember($ufeaturesid) === false
-		|| $this->add_rightcall($ufeaturesid) === false
-		|| $this->add_dialaction($ufeaturesid) === false
-		|| $this->add_contextnummember($ufeaturesid) === false
-		|| $this->add_voicemail($ufeaturesid) === false
-		|| $this->add_phonefunckey($ufeaturesid) === false
-		|| $this->add_phone($ufeaturesid) === false)
+		|| $this->add_extenumbers($userfeaturesid) === false
+		|| $this->add_groupmember($userfeaturesid) === false
+		|| $this->add_queuemember($userfeaturesid) === false
+		|| $this->add_rightcall($userfeaturesid) === false
+		|| $this->add_dialaction($userfeaturesid) === false
+		|| $this->add_contextnummember($userfeaturesid) === false
+		|| $this->add_voicemail($userfeaturesid) === false
+		|| $this->add_phonefunckey($userfeaturesid) === false
+		|| $this->add_phone($userfeaturesid) === false)
 		{
 			$r = false;
 
-			if($ufeaturesid !== null)
+			if($userfeaturesid !== null)
 				$this->_reverse_add();
 		}
 
@@ -1259,7 +1259,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function add_userfeatures($protocolid)
 	{
 		if(($protocolid = xivo_ulongint($protocolid)) === 0
-		|| ($rs = $this->get_result('ufeatures')) === null
+		|| ($rs = $this->get_result('userfeatures')) === null
 		|| $rs === false)
 			return(false);
 
@@ -1268,24 +1268,24 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(($this->_return['userfeatures'] = $this->_userfeatures->add($rs)));
 	}
 
-	function update_protocol_setvar($protocolid,$ufeaturesid)
+	function update_protocol_setvar($protocolid,$userfeaturesid)
 	{
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			return(null);
 		else if(($protocolid = xivo_ulongint($protocolid)) === 0
-		|| ($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		|| ($userfeaturesid = xivo_ulongint($userfeaturesid)) === 0
 		|| ($protocol = &$this->_service->get_protocol_module($this->_protocolname)) === false)
 			return(false);
 
 		$val = array();
-		$val['setvar'] = 'XIVO_USERID='.$ufeaturesid;
+		$val['setvar'] = 'XIVO_USERID='.$userfeaturesid;
 
 		return($protocol->edit($protocolid,$val));
 	}
 
-	function add_usermacro($ufeaturesid)
+	function add_usermacro($userfeaturesid)
 	{
-		if(($rs = $this->_set_usermacro('add',$ufeaturesid)) !== true)
+		if(($rs = $this->_set_usermacro('add',$userfeaturesid)) !== true)
 			return($rs);
 
 		return(parent::add_macro('usermacro'));
@@ -1299,20 +1299,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(($this->_return['hints'] = $this->_extensions->add_hints($rs)));
 	}
 
-	function add_groupmember($ufeaturesid)
+	function add_groupmember($userfeaturesid)
 	{
-		return($this->_add_member_type('group',$ufeaturesid));
+		return($this->_add_member_type('group',$userfeaturesid));
 	}
 
-	function add_queuemember($ufeaturesid)
+	function add_queuemember($userfeaturesid)
 	{
-		return($this->_add_member_type('queue',$ufeaturesid));
+		return($this->_add_member_type('queue',$userfeaturesid));
 	}
 
-	function _add_member_type($type,$ufeaturesid)
+	function _add_member_type($type,$userfeaturesid)
 	{
 		if(($type !== 'group' && $type !== 'queue') === true
-		|| ($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0)
+		|| ($userfeaturesid = xivo_ulongint($userfeaturesid)) === 0)
 			return(false);
 
 		$key = $type.'member';
@@ -1326,7 +1326,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$rs[$i]['userid'] = $ufeaturesid;
+			$rs[$i]['userid'] = $userfeaturesid;
 
 			unset($rs[$i]['gfeaturesid'],$rs[$i]['qfeaturesid']);
 
@@ -1345,10 +1345,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function add_voicemail($ufeaturesid)
+	function add_voicemail($userfeaturesid)
 	{
-		if(($voicemailid = xivo_ulongint($this->get_result_var('ufeatures','voicemailid'))) === 0)
-			return($this->_add_voicemail($ufeaturesid));
+		if(($voicemailid = xivo_ulongint($this->get_result_var('userfeatures','voicemailid'))) === 0)
+			return($this->_add_voicemail($userfeaturesid));
 		else if(is_object($this->_voicemail) === false
 		|| $this->_voicemail->get($voicemailid) === false
 		|| ($rs = $this->get_result('voicemail')) === null
@@ -1358,31 +1358,31 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(($this->_return['voicemail'] = $this->_voicemail->edit(false)));
 	}
 
-	function _add_voicemail($ufeaturesid)
+	function _add_voicemail($userfeaturesid)
 	{
-		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		if(($userfeaturesid = xivo_ulongint($userfeaturesid)) === 0
 		|| ($rs = $this->get_result('voicemail')) === null
 		|| $rs === false)
 			return($rs);
 		else if(($this->_return['voicemail'] = $this->_voicemail->add()) === true
 		&& (($voicemailid = xivo_ulongint($voicemailid = $this->_voicemail->get_return('voicemail'))) === 0
-		   || $this->_userfeatures->edit($ufeaturesid,array('voicemailid' => $voicemailid)) === false) === true)
+		   || $this->_userfeatures->edit($userfeaturesid,array('voicemailid' => $voicemailid)) === false) === true)
 			return(false);
 
 		return($this->_return['voicemail']);
 	}
 
-	function add_phonefunckey($ufeaturesid)
+	function add_phonefunckey($userfeaturesid)
 	{
 		$rs = false;
 
-		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		if(($userfeaturesid = xivo_ulongint($userfeaturesid)) === 0
 		|| ($rs = $this->get_result('phonefunckey')) === null
 		|| $rs === false)
 			return($rs);
 
-		$context = $this->get_result_var('ufeatures','context');
-		$bsfilter = $this->get_result_var('ufeatures','bsfilter');
+		$context = $this->get_result_var('userfeatures','context');
+		$bsfilter = $this->get_result_var('userfeatures','bsfilter');
 
 		$id = $this->_return['phonefunckey'] = array();
 
@@ -1391,7 +1391,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
-			$ref['iduserfeatures'] = $ufeaturesid;
+			$ref['iduserfeatures'] = $userfeaturesid;
 
 			if(($ref['typeextenumbers'] !== null
 			   || $ref['typeextenumbersright'] !== null) === true
@@ -1426,21 +1426,21 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function add_phone($ufeaturesid)
+	function add_phone($userfeaturesid)
 	{
 		$rs = false;
 
-		if(($ufeaturesid = xivo_ulongint($ufeaturesid)) === 0
+		if(($userfeaturesid = xivo_ulongint($userfeaturesid)) === 0
 		|| ($rs = $this->get_result('autoprov')) === null
 		|| $rs === false)
 			return($rs);
 
-		$rs['iduserfeatures'] = $ufeaturesid;
+		$rs['iduserfeatures'] = $userfeaturesid;
 
 		if($this->_autoprov->authoritative($rs,$rs['modact']) === false)
 			$this->_return['autoprov'] = false;
 		else
-			$this->_return['autoprov'] = $ufeaturesid;
+			$this->_return['autoprov'] = $userfeaturesid;
 
 		$this->_service->discuss('dialplan reload');
 
@@ -1538,7 +1538,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_status = '';
 			return(false);
 		}
-		else if($this->_info['ufeatures']['number'] !== '')
+		else if($this->_info['userfeatures']['number'] !== '')
 		{
 			if($this->get_result('usermacro') === null
 			|| $this->get_result('extenumbers') === null)
@@ -1547,7 +1547,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$this->delete_extenumbers();
 				$this->delete_hints();
 			}
-			else if($this->edit_usermacro($this->_info['ufeatures']['id']) === false
+			else if($this->edit_usermacro($this->_info['userfeatures']['id']) === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit($protocolret);
@@ -1558,7 +1558,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$this->delete_hints();
 			else
 			{
-				if($this->_info['ufeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+				if($this->_info['userfeatures']['protocol'] === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 					$hints = $this->add_hints();
 				else
 					$hints = $this->edit_hints();
@@ -1571,8 +1571,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				}
 			}
 		}
-		else if($this->add_usermacro($this->_info['ufeatures']['id']) === false
-		|| $this->add_extenumbers($this->_info['ufeatures']['id']) === false
+		else if($this->add_usermacro($this->_info['userfeatures']['id']) === false
+		|| $this->add_extenumbers($this->_info['userfeatures']['id']) === false
 		|| ($this->_protocolname !== XIVO_SRE_IPBX_AST_PROTO_CUSTOM
 		   && $this->add_hints() === false) === true)
 		{
@@ -1603,10 +1603,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function edit_protocol()
 	{
 		if(xivo_issa('protocol',$this->_info) === false
-		|| xivo_issa('ufeatures',$this->_info) === false
+		|| xivo_issa('userfeatures',$this->_info) === false
 		|| ($protocol = &$this->_service->get_protocol_module($this->_protocolname)) === false)
 			return(false);
-		else if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
+		else if($this->_info['userfeatures']['protocol'] === $this->_protocolname)
 		{
 			if(($rs = $this->get_result('protocol')) === null)
 				return(false);
@@ -1617,7 +1617,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 		else if($this->delete_protocol() === false
 		|| $this->update_protocol_setvar($protocolid,
-						 $this->_info['ufeatures']['id']) === false)
+						 $this->_info['userfeatures']['id']) === false)
 		{
 			$protocol->delete($protocolid);
 			return(false);
@@ -1629,10 +1629,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function edit_origin_protocol($protocolid=0)
 	{
 		if(xivo_issa('protocol',$this->_origin) === false
-		|| xivo_issa('ufeatures',$this->_info) === false
-		|| ($protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false)
+		|| xivo_issa('userfeatures',$this->_info) === false
+		|| ($protocol = &$this->_service->get_protocol_module($this->_info['userfeatures']['protocol'])) === false)
 			return(false);
-		else if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
+		else if($this->_info['userfeatures']['protocol'] === $this->_protocolname)
 			return($protocol->edit_origin($this->_origin['protocol']));
 		else if(($protocolid = xivo_ulongint($protocolid)) === 0
 		|| ($proto = &$this->_service->get_protocol_module($this->_protocolname)) === false
@@ -1644,12 +1644,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_userfeatures($protocolid)
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false
+		if(xivo_issa('userfeatures',$this->_info) === false
 		|| xivo_issa('protocol',$this->_info) === false
-		|| ($rs = $this->get_result('ufeatures')) === null
+		|| ($rs = $this->get_result('userfeatures')) === null
 		|| $rs === false)
 			return(false);
-		else if($this->_info['ufeatures']['protocol'] === $this->_protocolname)
+		else if($this->_info['userfeatures']['protocol'] === $this->_protocolname)
 		{
 			$rs['protocolid'] = $this->_info['protocol']['id'];
 			$provisioning = false;
@@ -1662,14 +1662,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		else
 			return(false);
 
-		return(($this->_return['userfeatures'] = $this->_userfeatures->edit($this->_info['ufeatures']['id'],
+		return(($this->_return['userfeatures'] = $this->_userfeatures->edit($this->_info['userfeatures']['id'],
 										    $rs,
 										    $provisioning)));
 	}
 
-	function edit_usermacro($ufeaturesid)
+	function edit_usermacro($userfeaturesid)
 	{
-		if(($rs = $this->_set_usermacro('edit',$ufeaturesid)) !== true)
+		if(($rs = $this->_set_usermacro('edit',$userfeaturesid)) !== true)
 			return($rs);
 
 		return(parent::edit_macro('usermacro'));
@@ -1689,10 +1689,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_groupmember()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 		else if(xivo_issa('groupmember',$this->_info) === false)
-			return($this->add_groupmember($this->_info['ufeatures']['id']));
+			return($this->add_groupmember($this->_info['userfeatures']['id']));
 
 		$this->_return['groupmember'] = $this->delete_groupmember();
 
@@ -1704,10 +1704,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_queuemember()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 		else if(xivo_issa('queuemember',$this->_info) === false)
-			return($this->add_queuemember($this->_info['ufeatures']['id']));
+			return($this->add_queuemember($this->_info['userfeatures']['id']));
 
 		$this->_return['queuemember'] = $this->delete_queuemember();
 
@@ -1720,7 +1720,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function _edit_member_type($type)
 	{
 		if(($type !== 'group' && $type !== 'queue') === true
-		|| xivo_issa('ufeatures',$this->_info) === false)
+		|| xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
 		$key = $type.'member';
@@ -1734,7 +1734,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$rs[$i]['userid'] = $this->_info['ufeatures']['id'];
+			$rs[$i]['userid'] = $this->_info['userfeatures']['id'];
 
 			unset($rs[$i]['gfeaturesid'],$rs[$i]['qfeaturesid']);
 
@@ -1755,36 +1755,36 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_rightcall()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_rightcall($this->_info['ufeatures']['id']));
+		return(parent::edit_rightcall($this->_info['userfeatures']['id']));
 	}
 
 	function edit_dialaction()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_dialaction($this->_info['ufeatures']['id']));
+		return(parent::edit_dialaction($this->_info['userfeatures']['id']));
 	}
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_contextnummember($this->_info['ufeatures']['id']));
+		return(parent::edit_contextnummember($this->_info['userfeatures']['id']));
 	}
 
 	function edit_voicemail()
 	{
 		$rs = false;
 
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
-		else if(($voicemailid = xivo_ulongint($this->get_result_var('ufeatures','voicemailid'))) === 0)
-			return($this->_add_voicemail($this->_info['ufeatures']['id']));
+		else if(($voicemailid = xivo_ulongint($this->get_result_var('userfeatures','voicemailid'))) === 0)
+			return($this->_add_voicemail($this->_info['userfeatures']['id']));
 		else if(is_object($this->_voicemail) === false
 		|| $this->_voicemail->get($voicemailid) === false
 		|| ($rs = $this->get_result('voicemail')) === null
@@ -1796,18 +1796,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_phonefunckey()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 		else if(xivo_issa('phonefunckey',$this->_info) === false)
-			return($this->add_phonefunckey($this->_info['ufeatures']['id']));
+			return($this->add_phonefunckey($this->_info['userfeatures']['id']));
 
 		$this->_return['phonefunckey'] = $this->delete_phonefunckey();
 
 		if(($rs = $this->get_result('phonefunckey')) === null || $rs === false)
 			return($rs);
 
-		$context = $this->get_result_var('ufeatures','context');
-		$bsfilter = $this->get_result_var('ufeatures','bsfilter');
+		$context = $this->get_result_var('userfeatures','context');
+		$bsfilter = $this->get_result_var('userfeatures','bsfilter');
 
 		$id = $this->_return['phonefunckey'] = array();
 
@@ -1816,7 +1816,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nb;$i++)
 		{
 			$ref = &$rs[$i];
-			$ref['iduserfeatures'] = $this->_info['ufeatures']['id'];
+			$ref['iduserfeatures'] = $this->_info['userfeatures']['id'];
 
 			if(($ref['typeextenumbers'] !== null
 			|| $ref['typeextenumbersright'] !== null) === true
@@ -1853,12 +1853,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_phone()
 	{
-		if(($rs = xivo_issa('ufeatures',$this->_info)) === false
+		if(($rs = xivo_issa('userfeatures',$this->_info)) === false
 		|| ($rs = $this->get_result('autoprov')) === null
 		|| $rs === false)
 			return($rs);
 
-		$rs['iduserfeatures'] = $this->_info['ufeatures']['id'];
+		$rs['iduserfeatures'] = $this->_info['userfeatures']['id'];
 
 		if(xivo_issa('autoprov',$this->_info) !== false)
 			$this->_return['autoprov'] = $this->_autoprov->notification($rs,$rs['modact']);
@@ -1890,11 +1890,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$this->edit_origin_protocol($protocolid);
 					break;
 				case 'userfeatures':
-					if(isset($this->_origin['ufeatures']) === false
-					|| $this->_origin['ufeatures'] === false)
+					if(isset($this->_origin['userfeatures']) === false
+					|| $this->_origin['userfeatures'] === false)
 						$this->delete_userfeatures();
 					else
-						$this->_userfeatures->edit_origin($this->_origin['ufeatures']);
+						$this->_userfeatures->edit_origin($this->_origin['userfeatures']);
 					break;
 				case 'voicemail':
 					$this->_voicemail->reverse_edit();
@@ -1985,8 +1985,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	function delete_protocol()
 	{
 		if(xivo_issa('protocol',$this->_info) === false
-		|| xivo_issa('ufeatures',$this->_info) === false
-		|| ($protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol'])) === false)
+		|| xivo_issa('userfeatures',$this->_info) === false
+		|| ($protocol = &$this->_service->get_protocol_module($this->_info['userfeatures']['protocol'])) === false)
 			return(false);
 
 		$r = $protocol->delete($this->_info['protocol']['id']);
@@ -1999,10 +1999,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function delete_userfeatures()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
-		$r = $this->_userfeatures->delete($this->_info['ufeatures']['id']);
+		$r = $this->_userfeatures->delete($this->_info['userfeatures']['id']);
 
 		if($this->_status === 'delete')
 			$this->_return['userfeatures'] = $r;
@@ -2034,14 +2034,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(xivo_issa($key,$this->_info) === false)
 			return(null);
-		else if(xivo_issa('ufeatures',$this->_info) === false
+		else if(xivo_issa('userfeatures',$this->_info) === false
 		|| is_object($this->_queuemember) === false)
 			return(false);
 
 		$where = array();
 		$where['usertype'] = 'user';
 		$where['category'] = $type;
-		$where['userid'] = $this->_info['ufeatures']['id'];
+		$where['userid'] = $this->_info['userfeatures']['id'];
 
 		$r = $this->_queuemember->delete_where($where);
 
@@ -2055,12 +2055,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(xivo_issa('phonefunckey',$this->_info) === false)
 			return(null);
-		else if(xivo_issa('ufeatures',$this->_info) === false
+		else if(xivo_issa('userfeatures',$this->_info) === false
 		|| is_object($this->_phonefunckey) === false)
 			return(false);
 
 		$where = array();
-		$where['iduserfeatures'] = $this->_info['ufeatures']['id'];
+		$where['iduserfeatures'] = $this->_info['userfeatures']['id'];
 
 		$r = $this->_phonefunckey->delete_where($where);
 
@@ -2095,7 +2095,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$where = array();
 		$where['type'] = 'user';
-		$where['typeval'] = $this->_info['ufeatures']['id'];
+		$where['typeval'] = $this->_info['userfeatures']['id'];
 
 		$callfiltermember->delete_where($where);
 
@@ -2122,13 +2122,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					|| $this->_origin['protocol'] === false)
 						continue;
 
-					$protocol = &$this->_service->get_protocol_module($this->_info['ufeatures']['protocol']);
+					$protocol = &$this->_service->get_protocol_module($this->_info['userfeatures']['protocol']);
 					$protocol->add_origin($this->_origin['protocol']);
 					break;
 				case 'userfeatures':
-					if(isset($this->_origin['ufeatures']) === true
-					&& $this->_origin['ufeatures'] !== false)
-						$this->_userfeatures->add_origin($this->_origin['ufeatures']);
+					if(isset($this->_origin['userfeatures']) === true
+					&& $this->_origin['userfeatures'] !== false)
+						$this->_userfeatures->add_origin($this->_origin['userfeatures']);
 					break;
 				case 'usermacro':
 				case 'hints':
@@ -2171,10 +2171,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function unlinks()
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 
-		$this->_dialaction->unlinked('user',$this->_info['ufeatures']['id']);
+		$this->_dialaction->unlinked('user',$this->_info['userfeatures']['id']);
 
 		return(true);
 	}
@@ -2258,12 +2258,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function _enable_disable_userfeatures($disable=false)
 	{
-		if(xivo_issa('ufeatures',$this->_info) === false)
+		if(xivo_issa('userfeatures',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
-			$r = $this->_userfeatures->enable($this->_info['ufeatures']['id']);
+			$r = $this->_userfeatures->enable($this->_info['userfeatures']['id']);
 		else
-			$r = $this->_userfeatures->disable($this->_info['ufeatures']['id']);
+			$r = $this->_userfeatures->disable($this->_info['userfeatures']['id']);
 
 		if($this->_status === 'enable' || $this->_status === 'disable')
 			$this->_return['userfeatures'] = $r;
@@ -2307,14 +2307,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		|| isset($arr['protocol']['protocol']) === false)
 			return(false);
 
-		$issa_ufeatures = xivo_issa('ufeatures',$arr);
+		$issa_userfeatures = xivo_issa('userfeatures',$arr);
 
 		if(xivo_issa('voicemail',$arr) === true
 		&& empty($arr['voicemail']) === false
 		&& xivo_haslen($arr['voicemail'],'mailbox') === true)
 		{
-			if($issa_ufeatures === true)
-				$arr['ufeatures']['enablevoicemail'] = true;
+			if($issa_userfeatures === true)
+				$arr['userfeatures']['enablevoicemail'] = true;
 
 			if($issa_protocol === true && isset($arr['protocol']['subscribemwi']) === false)
 				$arr['protocol']['subscribemwi'] = true;
@@ -2323,28 +2323,28 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			unset($arr['voicemail']);
 
 		if($issa_protocol === true
-		&& $issa_ufeatures === true
+		&& $issa_userfeatures === true
 		&& xivo_haslen($arr['protocol'],'callerid') === false)
 		{
 			$arr['protocol']['callerid'] = '';
 
-			if(xivo_haslen($arr['ufeatures'],'firstname') === true)
-				$arr['protocol']['callerid'] = $arr['ufeatures']['firstname'].' ';
+			if(xivo_haslen($arr['userfeatures'],'firstname') === true)
+				$arr['protocol']['callerid'] = $arr['userfeatures']['firstname'].' ';
 
-			if(xivo_haslen($arr['ufeatures'],'lastname') === true)
-				$arr['protocol']['callerid'] .= $arr['ufeatures']['lastname'];
+			if(xivo_haslen($arr['userfeatures'],'lastname') === true)
+				$arr['protocol']['callerid'] .= $arr['userfeatures']['lastname'];
 
 			trim($arr['protocol']['callerid']);
 		}
 
-		if($issa_ufeatures === true
-		&& xivo_haslen($arr['ufeatures'],'agentnumber') === true
+		if($issa_userfeatures === true
+		&& xivo_haslen($arr['userfeatures'],'agentnumber') === true
 		&& is_object($this->_agentfeatures) === true
 		&& ($agentid = $this->_agentfeatures->get_primary(
-						array('number' => $arr['ufeatures']['agentnumber']))) !== false)
-			$arr['ufeatures']['agentid'] = $agentid;
+						array('number' => $arr['userfeatures']['agentnumber']))) !== false)
+			$arr['userfeatures']['agentid'] = $agentid;
 
-		unset($arr['ufeatures']['agentnumber']);
+		unset($arr['userfeatures']['agentnumber']);
 
 		return($arr);
 	}
@@ -2407,10 +2407,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(($data = $this->_get_data_from_json()) === false)
 			return(false);
-		else if(xivo_issa('userfeatures',$data) === true)
-			$data['ufeatures'] = &$data['userfeatures'];
-
-		if(($arr = $this->_prepare_import($data)) === false
+		else if(($arr = $this->_prepare_import($data)) === false
 		|| $this->set_add($arr,$arr['protocol']['protocol']) === false
 		|| $this->add() === false)
 			return(false);
@@ -2422,10 +2419,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	{
 		if(($data = $this->_get_data_from_json()) === false)
 			return(false);
-		else if(xivo_issa('userfeatures',$data) === true)
-			$data['ufeatures'] = &$data['userfeatures'];
-
-		if(($arr = $this->_prepare_import($data)) === false
+		else if(($arr = $this->_prepare_import($data)) === false
 		|| $this->set_edit($arr,$arr['protocol']['protocol']) === false
 		|| $this->edit() === false)
 			return(false);
