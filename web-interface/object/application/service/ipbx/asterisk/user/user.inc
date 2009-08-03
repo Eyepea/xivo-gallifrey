@@ -262,18 +262,18 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function _get_voicemail()
 	{
-		$this->_info['voicemail'] = $this->_info['vmfeatures'] = false;
-		$this->_origin['voicemail'] = $this->_origin['vmfeatures'] = false;
+		$this->_info['voicemail'] = $this->_info['voicemailfeatures'] = false;
+		$this->_origin['voicemail'] = $this->_origin['voicemailfeatures'] = false;
 
 		if(is_object($this->_voicemail) === false
 		|| $this->_voicemail->get($this->_info['userfeatures']['voicemailid']) === false)
 			return(false);
 
 		$this->_info['voicemail'] = $this->_voicemail->get_info('voicemail');
-		$this->_info['vmfeatures'] = $this->_voicemail->get_info('vmfeatures');
+		$this->_info['voicemailfeatures'] = $this->_voicemail->get_info('voicemailfeatures');
 
 		$this->_origin['voicemail'] = $this->_voicemail->get_origin('voicemail');
-		$this->_origin['vmfeatures'] = $this->_voicemail->get_origin('vmfeatures');
+		$this->_origin['voicemailfeatures'] = $this->_voicemail->get_origin('voicemailfeatures');
 
 		return($this->_info['voicemail']);
 	}
@@ -457,7 +457,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		&& ($vmelement = $this->_voicemail->get_elements()) !== false)
 			$r = array_merge($vmelement,$r);
 		else
-			$r['voicemail'] = $r['vmfeatures'] = false;
+			$r['voicemail'] = $r['voicemailfeatures'] = false;
 
 		if(is_object($this->_phonefunckey) === true)
 			$r['phonefunckey'] = $this->_phonefunckey->get_element();
@@ -802,8 +802,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$this->_set_result_var('protocol','mailbox',$arr['voicemail']['mailbox'].'@'.$context);
 
-			if(xivo_issa('vmfeatures',$arr) === true)
-				$this->set_voicemail($vmaction,$arr['voicemail'],$arr['vmfeatures']);
+			if(xivo_issa('voicemailfeatures',$arr) === true)
+				$this->set_voicemail($vmaction,$arr['voicemail'],$arr['voicemailfeatures']);
 			else
 				$this->set_voicemail($vmaction,$arr['voicemail']);
 		}
@@ -1069,7 +1069,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return(true);
 	}
 
-	function set_voicemail($action,$voicemail,$vmfeatures=null)
+	function set_voicemail($action,$voicemail,$voicemailfeatures=null)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| is_array($voicemail) === false
@@ -1080,8 +1080,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$rs = array();
 		$rs['voicemail'] = $voicemail;
 
-		if(is_array($vmfeatures) === true)
-			$rs['vmfeatures'] = $vmfeatures;
+		if(is_array($voicemailfeatures) === true)
+			$rs['voicemailfeatures'] = $voicemailfeatures;
 
 		if($action === 'add')
 			$r = $this->_voicemail->set_add($rs);
@@ -1095,12 +1095,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		}
 		else $this->_set_result('voicemail',$this->_voicemail->get_result('voicemail'));
 
-		if(($vmfeatureserror = $this->_voicemail->get_error('vmfeatures')) !== null)
+		if(($voicemailfeatureserror = $this->_voicemail->get_error('voicemailfeatures')) !== null)
 		{
-			$this->_set_error('vmfeatures',$vmfeatureserror);
-			$this->_set_result('vmfeatures',$this->_voicemail->get_result('vmfeatures'));
+			$this->_set_error('voicemailfeatures',$voicemailfeatureserror);
+			$this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
 		}
-		else $this->_set_result('vmfeatures',$this->_voicemail->get_result('vmfeatures'));
+		else $this->_set_result('voicemailfeatures',$this->_voicemail->get_result('voicemailfeatures'));
 
 		return($r);
 	}
@@ -2405,9 +2405,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function add_from_json()
 	{
-		if(($data = $this->_get_data_from_json()) === false)
-			return(false);
-		else if(($arr = $this->_prepare_import($data)) === false
+		if(($data = $this->_get_data_from_json()) === false
+		|| ($arr = $this->_prepare_import($data)) === false
 		|| $this->set_add($arr,$arr['protocol']['protocol']) === false
 		|| $this->add() === false)
 			return(false);
@@ -2417,9 +2416,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function edit_from_json()
 	{
-		if(($data = $this->_get_data_from_json()) === false)
-			return(false);
-		else if(($arr = $this->_prepare_import($data)) === false
+		if(($data = $this->_get_data_from_json()) === false
+		|| ($arr = $this->_prepare_import($data)) === false
 		|| $this->set_edit($arr,$arr['protocol']['protocol']) === false
 		|| $this->edit() === false)
 			return(false);

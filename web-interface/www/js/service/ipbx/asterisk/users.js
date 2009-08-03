@@ -110,7 +110,7 @@ var xivo_ast_users_elt_default = {
 	'voicemail-password': {it: false},
 	'voicemail-email': {it: false},
 	'voicemail-tz': {it: false},
-	'vmfeatures-skipcheckpass': {it: false},
+	'voicemailfeatures-skipcheckpass': {it: false},
 	'voicemail-attach': {it: false},
 	'voicemail-deletevoicemail': {it: false},
 	'protocol-subscribemwi': {it: false, fd: false},
@@ -219,8 +219,8 @@ var xivo_ast_fm_user_voicemail = {
 	'it-voicemail-tz':
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}],
-		 link: 'it-vmfeatures-skipcheckpass'},
-	'it-vmfeatures-skipcheckpass':
+		 link: 'it-voicemailfeatures-skipcheckpass'},
+	'it-voicemailfeatures-skipcheckpass':
 		{property: [{disabled: false, className: 'it-enabled'},
 			    {disabled: true, className: 'it-disabled'}],
 		 link: 'it-voicemail-attach'},
@@ -633,7 +633,7 @@ function xivo_ast_user_voicemail_set_info(obj)
 	xivo_eid('it-voicemail-password').value = obj['voicemail']['password'];
 	xivo_eid('it-voicemail-email').value = obj['voicemail']['email'];
 	xivo_eid('it-voicemail-tz').value = obj['voicemail']['tz'];
-	xivo_eid('it-vmfeatures-skipcheckpass').checked = xivo_bool(obj['vmfeatures']['skipcheckpass']);
+	xivo_eid('it-voicemailfeatures-skipcheckpass').checked = xivo_bool(obj['voicemailfeatures']['skipcheckpass']);
 	xivo_eid('it-voicemail-attach').value = obj['voicemail']['attach'];
 	xivo_eid('it-voicemail-deletevoicemail').checked = xivo_bool(obj['voicemail']['deletevoicemail']);
 }

@@ -99,10 +99,10 @@ endif;
 			      $element['voicemail']['language']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemailfeatures_skipcheckpass'),
-				      'name'	=> 'vmfeatures[skipcheckpass]',
-				      'labelid'	=> 'vmfeatures-skipcheckpass',
-				      'default'	=> $element['vmfeatures']['skipcheckpass']['default'],
-				      'checked'	=> $info['vmfeatures']['skipcheckpass'])),
+				      'name'	=> 'voicemailfeatures[skipcheckpass]',
+				      'labelid'	=> 'voicemailfeatures-skipcheckpass',
+				      'default'	=> $element['voicemailfeatures']['skipcheckpass']['default'],
+				      'checked'	=> $info['voicemailfeatures']['skipcheckpass'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail_maxmsg'),
 				    'name'	=> 'voicemail[maxmsg]',

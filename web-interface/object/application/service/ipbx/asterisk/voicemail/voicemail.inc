@@ -40,7 +40,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		$this->_dso = &$dso;
 
-		if(($this->_vmfeatures = &$this->_service->get_module('voicemailfeatures')) === false
+		if(($this->_voicemailfeatures = &$this->_service->get_module('voicemailfeatures')) === false
 		|| ($this->_voicemail = &$this->_service->get_module('voicemail')) === false)
 			return(false);
 		else if((bool) $components === true)
@@ -66,11 +66,11 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		$this->_info = $this->_origin = array();
 
 		if(($this->_info['voicemail'] = $this->_voicemail->get($id,$disable)) === false
-		|| ($this->_info['vmfeatures'] = $this->_vmfeatures->get_where(
+		|| ($this->_info['voicemailfeatures'] = $this->_voicemailfeatures->get_where(
 							array('voicemailid' => $this->_info['voicemail']['uniqueid']))) === false)
 			return(false);
 
-		$this->_origin['vmfeatures'] = $this->_vmfeatures->get_origin();
+		$this->_origin['voicemailfeatures'] = $this->_voicemailfeatures->get_origin();
 		$this->_origin['voicemail'] = $this->_voicemail->get_origin();
 
 		if($this->_components === false)
@@ -94,11 +94,11 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		if(($this->_info['voicemail'] = $this->_voicemail->get_where(
 							array('mailbox'	=> $mailbox,
 							      'context'	=> $context),$disable)) === false
-		|| ($this->_info['vmfeatures'] = $this->_vmfeatures->get_where(
+		|| ($this->_info['voicemailfeatures'] = $this->_voicemailfeatures->get_where(
 							array('voicemailid' => $this->_info['voicemail']['uniqueid']))) === false)
 			return(false);
 
-		$this->_origin['vmfeatures'] = $this->_vmfeatures->get_origin();
+		$this->_origin['voicemailfeatures'] = $this->_voicemailfeatures->get_origin();
 		$this->_origin['voicemail'] = $this->_voicemail->get_origin();
 
 		if($this->_components === false)
@@ -125,7 +125,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	{
 		$r = array();
 		$r['voicemail'] = $this->_voicemail->get_element();
-		$r['vmfeatures'] = $this->_vmfeatures->get_element();
+		$r['voicemailfeatures'] = $this->_voicemailfeatures->get_element();
 
 		return($r);
 	}
@@ -214,8 +214,8 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		$this->set_voicemail($arr['voicemail'],$setval);
 
-		if(xivo_issa('vmfeatures',$arr) === true)
-			$this->set_voicemailfeatures($arr['vmfeatures']);
+		if(xivo_issa('voicemailfeatures',$arr) === true)
+			$this->set_voicemailfeatures($arr['voicemailfeatures']);
 		else
 			$this->set_voicemailfeatures();
 
@@ -267,14 +267,14 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		$arr['voicemailid'] = 0;
 
-		if(($rs = $this->_vmfeatures->chk_values($arr)) === false)
+		if(($rs = $this->_voicemailfeatures->chk_values($arr)) === false)
 		{
-			$this->_set_result('vmfeatures',$this->_vmfeatures->get_filter_result());
-			$this->_set_error('vmfeatures',$this->_vmfeatures->get_filter_error());
+			$this->_set_result('voicemailfeatures',$this->_voicemailfeatures->get_filter_result());
+			$this->_set_error('voicemailfeatures',$this->_voicemailfeatures->get_filter_error());
 			return(false);
 		}
 
-		$this->_set_result('vmfeatures',$rs);
+		$this->_set_result('voicemailfeatures',$rs);
 
 		return(true);
 	}
@@ -345,12 +345,12 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function add_voicemailfeatures($voicemailid)
 	{
-		if(($rs = $this->get_result('vmfeatures')) === null
+		if(($rs = $this->get_result('voicemailfeatures')) === null
 		|| $rs === false
 		|| ($rs['voicemailid'] = xivo_ulongint($voicemailid)) === 0)
 			return(false);
 
-		return(($this->_return['vmfeatures'] = $this->_vmfeatures->add($rs)));
+		return(($this->_return['voicemailfeatures'] = $this->_voicemailfeatures->add($rs)));
 	}
 
 	function reverse_add($voicemailid)
@@ -372,8 +372,8 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 				case 'voicemail':
 					$this->_voicemail->delete($voicemailid);
 					break;
-				case 'vmfeatures':
-					$this->_vmfeatures->delete($val);
+				case 'voicemailfeatures':
+					$this->_voicemailfeatures->delete($val);
 					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_add();
@@ -393,7 +393,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		if($this->get_errnb() > 0
 		|| $this->edit_voicemail($chkunique) === false
-		|| $this->edit_vmfeatures() === false
+		|| $this->edit_voicemailfeatures() === false
 		|| $this->edit_contextmember() === false)
 		{
 			$r = false;
@@ -433,16 +433,16 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		return($this->_return['voicemail']);
 	}
 
-	function edit_vmfeatures()
+	function edit_voicemailfeatures()
 	{
-		if(xivo_issa('vmfeatures',$this->_info) === false
-		|| ($rs = $this->get_result('vmfeatures')) === null
+		if(xivo_issa('voicemailfeatures',$this->_info) === false
+		|| ($rs = $this->get_result('voicemailfeatures')) === null
 		|| $rs === false)
 			return(false);
 
-		$rs['voicemailid'] = $this->_info['vmfeatures']['voicemailid'];
+		$rs['voicemailid'] = $this->_info['voicemailfeatures']['voicemailid'];
 
-		return(($this->_return['vmfeatures'] = $this->_vmfeatures->edit($this->_info['vmfeatures']['id'],$rs)));
+		return(($this->_return['voicemailfeatures'] = $this->_voicemailfeatures->edit($this->_info['voicemailfeatures']['id'],$rs)));
 	}
 
 	function edit_contextmember()
@@ -503,12 +503,12 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 					else
 						$this->_voicemail->edit_origin($this->_origin['voicemail']);
 					break;
-				case 'vmfeatures':
-					if(isset($this->_origin['vmfeatures']) === false
-					|| $this->_origin['vmfeatures'] === false)
-						$this->delete_vmfeatures();
+				case 'voicemailfeatures':
+					if(isset($this->_origin['voicemailfeatures']) === false
+					|| $this->_origin['voicemailfeatures'] === false)
+						$this->delete_voicemailfeatures();
 					else
-						$this->_vmfeatures->edit_origin($this->_origin['vmfeatures']);
+						$this->_voicemailfeatures->edit_origin($this->_origin['voicemailfeatures']);
 					break;
 				case 'contextmember':
 					$this->_contextmember->reverse_edit($this->_status);
@@ -534,7 +534,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		$this->_return = array();
 
 		if($this->delete_voicemail() === false
-		|| $this->delete_vmfeatures() === false
+		|| $this->delete_voicemailfeatures() === false
 		|| $this->delete_contextmember() === false)
 		{
 			$r = false;
@@ -561,15 +561,15 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		return($r);
 	}
 
-	function delete_vmfeatures()
+	function delete_voicemailfeatures()
 	{
-		if(xivo_issa('vmfeatures',$this->_info) === false)
+		if(xivo_issa('voicemailfeatures',$this->_info) === false)
 			return(false);
 
-		$r = $this->_vmfeatures->delete($this->_info['vmfeatures']['id']);
+		$r = $this->_voicemailfeatures->delete($this->_info['voicemailfeatures']['id']);
 
 		if($this->_status === 'delete')
-			$this->_return['vmfeatures'] = $r;
+			$this->_return['voicemailfeatures'] = $r;
 
 		return($r);
 	}
@@ -593,10 +593,10 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 					&& $this->_origin['voicemail'] !== false)
 						$this->_voicemail->add_origin($this->_origin['voicemail']);
 					break;
-				case 'vmfeatures':
-					if(isset($this->_origin['vmfeatures']) === true
-					&& $this->_origin['vmfeatures'] !== false)
-						$this->_vmfeatures->add_origin($this->_origin['vmfeatures']);
+				case 'voicemailfeatures':
+					if(isset($this->_origin['voicemailfeatures']) === true
+					&& $this->_origin['voicemailfeatures'] !== false)
+						$this->_voicemailfeatures->add_origin($this->_origin['voicemailfeatures']);
 					break;
 				case 'contextmember':
 					$this->_contextmember->add_origin_list();

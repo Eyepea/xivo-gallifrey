@@ -249,10 +249,10 @@ endif;
 	endif;
 
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemailfeatures_skipcheckpass'),
-				      'name'	=> 'vmfeatures[skipcheckpass]',
-				      'labelid'	=> 'vmfeatures-skipcheckpass',
-				      'default'	=> $element['vmfeatures']['skipcheckpass']['default'],
-				      'checked'	=> $this->get_varra('info',array('vmfeatures','skipcheckpass')))),
+				      'name'	=> 'voicemailfeatures[skipcheckpass]',
+				      'labelid'	=> 'voicemailfeatures-skipcheckpass',
+				      'default'	=> $element['voicemailfeatures']['skipcheckpass']['default'],
+				      'checked'	=> $this->get_varra('info',array('voicemailfeatures','skipcheckpass')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail_attach'),
 				    'name'	=> 'voicemail[attach]',
