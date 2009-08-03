@@ -75,11 +75,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['qfeatures'] = $this->_queuefeatures->get($id)) === false
-		|| ($this->_info['queue'] = $this->_queue->get($this->_info['qfeatures']['name'],$disable)) === false)
+		if(($this->_info['queuefeatures'] = $this->_queuefeatures->get($id)) === false
+		|| ($this->_info['queue'] = $this->_queue->get($this->_info['queuefeatures']['name'],$disable)) === false)
 			return(false);
 
-		$this->_origin['qfeatures'] = $this->_queuefeatures->get_origin();
+		$this->_origin['queuefeatures'] = $this->_queuefeatures->get_origin();
 		$this->_origin['queue'] = $this->_queue->get_origin();
 
 		if($this->_components === false)
@@ -89,7 +89,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_get_queuemacro();
 
 		if(xivo_ak('extenumbers',$nocomponents,true) === false)
-			$this->_get_extenumbers($this->_info['qfeatures']['id']);
+			$this->_get_extenumbers($this->_info['queuefeatures']['id']);
 
 		if(xivo_ak('user',$nocomponents,true) === false)
 			$this->_get_user();
@@ -101,16 +101,16 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_get_agent();
 
 		if(xivo_ak('dialaction',$nocomponents,true) === false)
-			$this->_get_dialaction($this->_info['qfeatures']['id']);
+			$this->_get_dialaction($this->_info['queuefeatures']['id']);
 
 		if(xivo_ak('contextnummember',$nocomponents,true) === false)
-			$this->_get_contextnummember($this->_info['qfeatures']['id']);
+			$this->_get_contextnummember($this->_info['queuefeatures']['id']);
 
 		if(xivo_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['queue']['name']);
 
 		if(xivo_ak('callerid',$nocomponents,true) === false)
-			$this->_get_callerid($this->_info['qfeatures']['id']);
+			$this->_get_callerid($this->_info['queuefeatures']['id']);
 
 		return($this->_info);
 	}
@@ -130,8 +130,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_info['queuemacro'] = false;
 		$this->_origin['queuemacro'] = false;
 
-		if(($this->_info['queuemacro'] = $this->_extensions->get_exten($this->_info['qfeatures']['number'],
-									       $this->_info['qfeatures']['context'],
+		if(($this->_info['queuemacro'] = $this->_extensions->get_exten($this->_info['queuefeatures']['number'],
+									       $this->_info['queuefeatures']['context'],
 									       'macro')) !== false)
 			$this->_origin['queuemacro'] = $this->_extensions->get_origin();
 
@@ -174,7 +174,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$where['category'] = 'queue';
 		}
 
-		$where['queue_name'] = $this->_info['qfeatures']['name'];
+		$where['queue_name'] = $this->_info['queuefeatures']['name'];
 
 		if(is_object($this->_queuemember) === false
 		|| ($this->_info[$type] = $this->_queuemember->get_all_where($where)) === false
@@ -190,7 +190,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		$r = array();
 
-		$r['qfeatures'] = $this->_queuefeatures->get_element();
+		$r['queuefeatures'] = $this->_queuefeatures->get_element();
 		$r['queue'] = $this->_queue->get_element();
 		$r['dialaction'] = $this->_dialaction->get_element();
 		$r['callerid'] = $this->_callerid->get_element();
@@ -270,10 +270,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function get_dialaction_destination_list()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false)
+		if(xivo_issa('queuefeatures',$this->_info) === false)
 			$id = 0;
 		else
-			$id = $this->_info['qfeatures']['id'];
+			$id = $this->_info['queuefeatures']['id'];
 
 		$r = $this->get_destination_list('queue',$id);
 		$r['sounds'] = $this->_dialaction->get_sound();
@@ -281,11 +281,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($r);
 	}
 
-	function _mk_queuemacro_appdata($qfeaturesid,$timeout='')
+	function _mk_queuemacro_appdata($queuefeaturesid,$timeout='')
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_QUEUE_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($qfeaturesid);
+		$arr['appdata'][1] = xivo_ulongint($queuefeaturesid);
 		$arr['appdata'][2] = xivo_haslen($timeout) === true ? xivo_ufloat($timeout) : '';
 
 		return($arr);
@@ -309,15 +309,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('qfeatures',$arr) === false
+		|| xivo_issa('queuefeatures',$arr) === false
 		|| xivo_issa('queue',$arr) === false)
 			return(false);
 
-		$this->set_queuefeatures($arr['qfeatures']);
+		$this->set_queuefeatures($arr['queuefeatures']);
 
-		$name = strtolower($this->get_result_var('qfeatures','name'));
-		$number = (string) $this->get_result_var('qfeatures','number');
-		$context = (string) $this->get_result_var('qfeatures','context');
+		$name = strtolower($this->get_result_var('queuefeatures','name'));
+		$number = (string) $this->get_result_var('queuefeatures','number');
+		$context = (string) $this->get_result_var('queuefeatures','context');
 
 		$arr['queue']['name'] = $name;
 
@@ -360,18 +360,18 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if(is_array($arr) === false)
 		{
-			$this->_set_result('qfeatures',null);
-			$this->_set_error('qfeatures','invalid data');
+			$this->_set_result('queuefeatures',null);
+			$this->_set_error('queuefeatures','invalid data');
 			return(false);
 		}
 		else if(($rs = $this->_queuefeatures->chk_values($arr)) === false)
 		{
-			$this->_set_result('qfeatures',$this->_queuefeatures->get_filter_result());
-			$this->_set_error('qfeatures',$this->_queuefeatures->get_filter_error());
+			$this->_set_result('queuefeatures',$this->_queuefeatures->get_filter_result());
+			$this->_set_error('queuefeatures',$this->_queuefeatures->get_filter_error());
 			return(false);
 		}
 
-		$this->_set_result('qfeatures',$rs);
+		$this->_set_result('queuefeatures',$rs);
 
 		return(true);
 	}
@@ -477,18 +477,18 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($arr);
 	}
 
-	function _set_queuemacro($action,$qfeaturesid)
+	function _set_queuemacro($action,$queuefeaturesid)
 	{
 		$rs = false;
 
-		if(($qfeaturesid = xivo_ulongint($qfeaturesid)) === 0
+		if(($queuefeaturesid = xivo_ulongint($queuefeaturesid)) === 0
 		|| ($rs = $this->get_result('queuemacro')) === null
 		|| $rs === false)
 			return($rs);
 		else if(($rsmacro = $this->set_macro($action,
 						     'queuemacro',
 						     $rs['exten'],
-						     $this->_mk_queuemacro_appdata($qfeaturesid),
+						     $this->_mk_queuemacro_appdata($queuefeaturesid),
 						     $rs['context'])) === false)
 			return(false);
 
@@ -546,10 +546,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			return(null);
 		else if($action === 'edit')
 		{
-			if(xivo_issa('qfeatures',$this->_info) === false)
+			if(xivo_issa('queuefeatures',$this->_info) === false)
 				return(false);
 
-			$where['queue_name'] = $this->_info['qfeatures']['name'];
+			$where['queue_name'] = $this->_info['queuefeatures']['name'];
 		}
 
 		$tmp = $reslist = array();
@@ -629,23 +629,23 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		$this->_status = 'add';
 		$this->_return = array();
-		$qfeaturesid = null;
+		$queuefeaturesid = null;
 
 		if($this->get_errnb() > 0
-		|| ($qfeaturesid = $this->add_queuefeatures()) === false
+		|| ($queuefeaturesid = $this->add_queuefeatures()) === false
 		|| ($queuename = $this->add_queue()) === false
-		|| $this->add_queuemacro($qfeaturesid) === false
-		|| $this->add_extenumbers($qfeaturesid) === false
+		|| $this->add_queuemacro($queuefeaturesid) === false
+		|| $this->add_extenumbers($queuefeaturesid) === false
 		|| $this->add_user() === false
 		|| $this->add_agentgroup() === false
 		|| $this->add_agent() === false
-		|| $this->add_dialaction($qfeaturesid) === false
-		|| $this->add_contextnummember($qfeaturesid) === false
+		|| $this->add_dialaction($queuefeaturesid) === false
+		|| $this->add_contextnummember($queuefeaturesid) === false
 		|| $this->add_contextmember($queuename) === false
-		|| $this->add_callerid($qfeaturesid) === false)
+		|| $this->add_callerid($queuefeaturesid) === false)
 		{
 			$r = false;
-			if($qfeaturesid !== null)
+			if($queuefeaturesid !== null)
 				$this->_reverse_add();
 		}
 
@@ -656,7 +656,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function add_queuefeatures()
 	{
-		if(($rs = $this->get_result('qfeatures')) === null
+		if(($rs = $this->get_result('queuefeatures')) === null
 		|| $rs === false)
 			return(false);
 
@@ -677,9 +677,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($this->_return['queue']);
 	}
 
-	function add_queuemacro($qfeaturesid)
+	function add_queuemacro($queuefeaturesid)
 	{
-		if(($rs = $this->_set_queuemacro('add',$qfeaturesid)) !== true)
+		if(($rs = $this->_set_queuemacro('add',$queuefeaturesid)) !== true)
 			return($rs);
 
 		return(parent::add_macro('queuemacro'));
@@ -803,7 +803,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->_status = '';
 			return(false);
 		}
-		else if($this->_info['qfeatures']['number'] !== '')
+		else if($this->_info['queuefeatures']['number'] !== '')
 		{
 			if($this->get_result('queuemacro') === null
 			|| $this->get_result('extenumbers') === null)
@@ -811,7 +811,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				$this->delete_macro('queuemacro');
 				$this->delete_extenumbers();
 			}
-			else if($this->edit_queuemacro($this->_info['qfeatures']['id']) === false
+			else if($this->edit_queuemacro($this->_info['queuefeatures']['id']) === false
 			|| $this->edit_extenumbers() === false)
 			{
 				$this->_reverse_edit();
@@ -819,17 +819,17 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				return(false);
 			}
 		}
-		else if($this->add_queuemacro($this->_info['qfeatures']['id']) === false
-		|| $this->add_extenumbers($this->_info['qfeatures']['id']) === false)
+		else if($this->add_queuemacro($this->_info['queuefeatures']['id']) === false
+		|| $this->add_extenumbers($this->_info['queuefeatures']['id']) === false)
 		{
 			$this->_reverse_edit();
 			$this->_status = '';
 			return(false);
 		}
 
-		if($this->edit_user($this->_info['qfeatures']['name']) === false
-		|| $this->edit_agentgroup($this->_info['qfeatures']['name']) === false
-		|| $this->edit_agent($this->_info['qfeatures']['name']) === false
+		if($this->edit_user($this->_info['queuefeatures']['name']) === false
+		|| $this->edit_agentgroup($this->_info['queuefeatures']['name']) === false
+		|| $this->edit_agent($this->_info['queuefeatures']['name']) === false
 		|| $this->edit_dialaction() === false
 		|| $this->edit_contextnummember() === false
 		|| $this->edit_contextmember($queuename) === false
@@ -847,12 +847,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_queuefeatures()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false
-		|| ($rs = $this->get_result('qfeatures')) === null
+		if(xivo_issa('queuefeatures',$this->_info) === false
+		|| ($rs = $this->get_result('queuefeatures')) === null
 		|| $rs === false)
 			return(false);
 
-		$this->_return['queuefeatures'] = $this->_queuefeatures->edit($this->_info['qfeatures']['id'],$rs);
+		$this->_return['queuefeatures'] = $this->_queuefeatures->edit($this->_info['queuefeatures']['id'],$rs);
 
 		return($this->_return['queuefeatures']);
 	}
@@ -870,9 +870,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($this->_return['queue']);
 	}
 
-	function edit_queuemacro($qfeaturesid)
+	function edit_queuemacro($queuefeaturesid)
 	{
-		if(($rs = $this->_set_queuemacro('edit',$qfeaturesid)) !== true)
+		if(($rs = $this->_set_queuemacro('edit',$queuefeaturesid)) !== true)
 			return($rs);
 
 		return(parent::edit_macro('queuemacro'));
@@ -953,26 +953,26 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_dialaction()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false)
+		if(xivo_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_dialaction($this->_info['qfeatures']['id']));
+		return(parent::edit_dialaction($this->_info['queuefeatures']['id']));
 	}
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false)
+		if(xivo_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_contextnummember($this->_info['qfeatures']['id']));
+		return(parent::edit_contextnummember($this->_info['queuefeatures']['id']));
 	}
 
 	function edit_callerid()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false)
+		if(xivo_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_callerid($this->_info['qfeatures']['id']));
+		return(parent::edit_callerid($this->_info['queuefeatures']['id']));
 	}
 
 	function _reverse_edit()
@@ -991,11 +991,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'queuefeatures':
-					if(isset($this->_origin['qfeatures']) === false
-					|| $this->_origin['qfeatures'] === false)
+					if(isset($this->_origin['queuefeatures']) === false
+					|| $this->_origin['queuefeatures'] === false)
 						$this->delete_queuefeatures();
 					else
-						$this->_queuefeatures->edit_origin($this->_origin['qfeatures']);
+						$this->_queuefeatures->edit_origin($this->_origin['queuefeatures']);
 					break;
 				case 'queue':
 					if(isset($this->_origin['queue']) === false
@@ -1017,10 +1017,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'user':
 				case 'agentgroup':
 				case 'agent':
-					if(xivo_issa('qfeatures',$this->_info) === false)
+					if(xivo_issa('queuefeatures',$this->_info) === false)
 						continue;
 
-					$this->delete_user($this->_info['qfeatures']['name']);
+					$this->delete_user($this->_info['queuefeatures']['name']);
 
 					if(isset($this->_origin[$key]) === true
 					&& $this->_origin[$key] !== false)
@@ -1055,12 +1055,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| $this->delete_queue() === false
 		|| $this->delete_macro('queuemacro') === false
 		|| $this->delete_extenumbers() === false
-		|| $this->delete_user($this->_info['qfeatures']['name']) === false
-		|| $this->delete_agentgroup($this->_info['qfeatures']['name']) === false
-		|| $this->delete_agent($this->_info['qfeatures']['name']) === false
+		|| $this->delete_user($this->_info['queuefeatures']['name']) === false
+		|| $this->delete_agentgroup($this->_info['queuefeatures']['name']) === false
+		|| $this->delete_agent($this->_info['queuefeatures']['name']) === false
 		|| $this->delete_dialaction() === false
 		|| $this->delete_contextnummember() === false
-		|| $this->delete_contextmember($this->_info['qfeatures']['name']) === false
+		|| $this->delete_contextmember($this->_info['queuefeatures']['name']) === false
 		|| $this->delete_callerid() === false)
 		{
 			$r = false;
@@ -1076,10 +1076,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function delete_queuefeatures()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false)
+		if(xivo_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
-		$r = $this->_queuefeatures->delete($this->_info['qfeatures']['id']);
+		$r = $this->_queuefeatures->delete($this->_info['queuefeatures']['id']);
 
 		if($this->_status === 'delete')
 			$this->_return['queuefeatures'] = $r;
@@ -1120,7 +1120,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if(($type !== 'user' && $type !== 'agent' && $type !== 'agentgroup') === true
 		|| xivo_issa($type,$this->_info) === false)
 			return(null);
-		else if(xivo_issa('qfeatures',$this->_info) === false
+		else if(xivo_issa('queuefeatures',$this->_info) === false
 		|| is_scalar($name) === false
 		|| is_object($this->_queuemember) === false)
 			return(false);
@@ -1164,9 +1164,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			switch($key)
 			{
 				case 'queuefeatures':
-					if(isset($this->_origin['qfeatures']) === true
-					&& $this->_origin['qfeatures'] !== false)
-						$this->_queuefeatures->add_origin($this->_origin['qfeatures']);
+					if(isset($this->_origin['queuefeatures']) === true
+					&& $this->_origin['queuefeatures'] !== false)
+						$this->_queuefeatures->add_origin($this->_origin['queuefeatures']);
 					break;
 				case 'queue':
 					if(isset($this->_origin['queue']) === true
@@ -1210,22 +1210,18 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function unlinks()
 	{
-		if(xivo_issa('qfeatures',$this->_info) === false)
+		if(xivo_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
-		$this->_dialaction->unlinked('queue',$this->_info['qfeatures']['id']);
+		$this->_dialaction->unlinked('queue',$this->_info['queuefeatures']['id']);
 
 		return(true);
 	}
 
 	function add_from_json()
 	{
-		if(($data = $this->_get_data_from_json()) === false)
-			return(false);
-		else if(xivo_issa('queuefeatures',$data) === true)
-			$data['qfeatures'] = &$data['queuefeatures'];
-
-		if($this->set_add($data) === false
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
 		|| $this->add() === false)
 			return(false);
 
@@ -1234,12 +1230,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_from_json()
 	{
-		if(($data = $this->_get_data_from_json()) === false)
-			return(false);
-		else if(xivo_issa('queuefeatures',$data) === true)
-			$data['qfeatures'] = &$data['queuefeatures'];
-
-		if($this->set_edit($data) === false
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
 		|| $this->edit() === false)
 			return(false);
 

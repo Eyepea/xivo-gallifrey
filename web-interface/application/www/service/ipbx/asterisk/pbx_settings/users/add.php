@@ -103,13 +103,13 @@ if($qmember['list'] !== false && xivo_ak('queuemember',$result) === true)
 {
 	$qmember['slt'] = xivo_array_intersect_key($result['queuemember'],
 						   $qmember['list'],
-						   'qfeaturesid');
+						   'queuefeaturesid');
 
 	if($qmember['slt'] !== false)
 	{
 		$qmember['info'] = xivo_array_copy_intersect_key($result['queuemember'],
 								 $qmember['slt'],
-								 'qfeaturesid');
+								 'queuefeaturesid');
 		$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
 		$queuesort = new xivo_sort(array('key' => 'name'));

@@ -250,7 +250,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(($id = $module->get_primary(array('name' => $ref[$i]['queue_name']))) === false)
 				continue;
 			else if($type === 'queue')
-				$ref[$i]['qfeaturesid'] = $id;
+				$ref[$i]['queuefeaturesid'] = $id;
 			else
 				$ref[$i]['groupfeaturesid'] = $id;
 		}
@@ -1039,7 +1039,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			if(($rs = $this->_queuemember->chk_values($values)) === false)
 				continue;
 			else if($type === 'queue')
-				$rs['qfeaturesid'] = $typeid;
+				$rs['queuefeaturesid'] = $typeid;
 			else
 			{
 				$rs['groupfeaturesid'] = $typeid;
@@ -1328,7 +1328,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$rs[$i]['userid'] = $userfeaturesid;
 
-			unset($rs[$i]['groupfeaturesid'],$rs[$i]['qfeaturesid']);
+			unset($rs[$i]['groupfeaturesid'],$rs[$i]['queuefeaturesid']);
 
 			if($this->_queuemember->add($rs[$i]) === false)
 				return(false);
@@ -1736,7 +1736,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		{
 			$rs[$i]['userid'] = $this->_info['userfeatures']['id'];
 
-			unset($rs[$i]['groupfeaturesid'],$rs[$i]['qfeaturesid']);
+			unset($rs[$i]['groupfeaturesid'],$rs[$i]['queuefeaturesid']);
 
 			if($this->_queuemember->add($rs[$i]) === false)
 				return(false);

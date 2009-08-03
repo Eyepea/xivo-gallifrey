@@ -551,8 +551,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$order['number'] = SORT_ASC;
 		$order['context'] = SORT_ASC;
 
-		if(($qfeatures = &$this->_service->get_module('queuefeatures')) !== false
-		&& ($r = $qfeatures->get_all_except($id,$number,$order)) !== false)
+		if(($queuefeatures = &$this->_service->get_module('queuefeatures')) !== false
+		&& ($r = $queuefeatures->get_all_except($id,$number,$order)) !== false)
 			return($r);
 
 		return(false);

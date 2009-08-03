@@ -58,13 +58,13 @@ Add one or more agents ->
 ; bt_outagent
 <- Remove one or more agents
 
-; fm_qfeatures_name
+; fm_queuefeatures_name
 Name:
 
-; fm_qfeatures_number
+; fm_queuefeatures_number
 Number:
 
-; fm_qfeatures_context
+; fm_queuefeatures_context
 Context:
 
 ; create_context
@@ -91,49 +91,49 @@ Random
 ; fm_queue_strategy-opt-ringall
 Ring all
 
-; fm_qfeatures_timeout
+; fm_queuefeatures_timeout
 Ringing time:
 
-; fm_qfeatures_timeout-opt0
+; fm_queuefeatures_timeout-opt0
 Unlimited
 
-; fm_qfeatures_timeout-opt30
+; fm_queuefeatures_timeout-opt30
 30 seconds
 
-; fm_qfeatures_timeout-opt60
+; fm_queuefeatures_timeout-opt60
 1 minute
 
-; fm_qfeatures_timeout-opt90
+; fm_queuefeatures_timeout-opt90
 1 min. 30 sec.
 
-; fm_qfeatures_timeout-opt
+; fm_queuefeatures_timeout-opt
 %s minutes
 
-; fm_qfeatures_data-quality
+; fm_queuefeatures_data-quality
 Data quality:
 
-; fm_qfeatures_hitting-callee
+; fm_queuefeatures_hitting-callee
 Allow caller to pass calls with *:
 
-; fm_qfeatures_hitting-caller
+; fm_queuefeatures_hitting-caller
 Allow callee to pass call with *:
 
-; fm_qfeatures_retries
+; fm_queuefeatures_retries
 No retry when time has elapsed:
 
-; fm_qfeatures_ring
+; fm_queuefeatures_ring
 Ring instead of On-Hold Music:
 
-; fm_qfeatures_transfer-user
+; fm_queuefeatures_transfer-user
 Allow callee to transfer the caller:
 
-; fm_qfeatures_transfer-call
+; fm_queuefeatures_transfer-call
 Allow callee to transfer the call:
 
-; fm_qfeatures_write-caller
+; fm_queuefeatures_write-caller
 Allow callee to record the call:
 
-; fm_qfeatures_write-calling
+; fm_queuefeatures_write-calling
 Allow caller to record the call:
 
 ; fm_queue_musiconhold

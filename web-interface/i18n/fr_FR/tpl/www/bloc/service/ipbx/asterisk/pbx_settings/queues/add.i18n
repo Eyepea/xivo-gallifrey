@@ -58,10 +58,10 @@ Ajouter un ou plusieurs agents ->
 ; bt_outagent
 <- Enlever un ou plusieurs agents
 
-; fm_qfeatures_name
+; fm_queuefeatures_name
 Nom :
 
-; fm_qfeatures_number
+; fm_queuefeatures_number
 Numéro :
 
 ; fm_queue_strategy
@@ -85,7 +85,7 @@ Aléatoire
 ; fm_queue_strategy-opt(ringall)
 Tous
 
-; fm_qfeatures_context
+; fm_queuefeatures_context
 Contexte :
 
 ; create_context
@@ -106,52 +106,52 @@ Remplacer
 ; fm_callerid_mode-opt(append)
 Suffixer
 
-; fm_qfeatures_preprocess-subroutine
+; fm_queuefeatures_preprocess-subroutine
 Sous-routine de prétraitement :
 
-; fm_qfeatures_timeout
+; fm_queuefeatures_timeout
 Temps de sonnerie :
 
-; fm_qfeatures_timeout-opt(0)
+; fm_queuefeatures_timeout-opt(0)
 Illimité
 
-; fm_qfeatures_timeout-opt-seconds
+; fm_queuefeatures_timeout-opt-seconds
 %s secondes
 
-; fm_qfeatures_timeout-opt-minute
+; fm_queuefeatures_timeout-opt-minute
 1 minute
 
-; fm_qfeatures_timeout-opt-minute-seconds
+; fm_queuefeatures_timeout-opt-minute-seconds
 %s min. %s sec.
 
-; fm_qfeatures_timeout-opt-minutes
+; fm_queuefeatures_timeout-opt-minutes
 %s minutes
 
-; fm_qfeatures_data-quality
+; fm_queuefeatures_data-quality
 Qualité des données :
 
-; fm_qfeatures_hitting-callee
+; fm_queuefeatures_hitting-callee
 Autorise l'appelant à sortir avec * :
 
-; fm_qfeatures_hitting-caller
+; fm_queuefeatures_hitting-caller
 Autorise l'appelé à sortir avec * :
 
-; fm_qfeatures_retries
+; fm_queuefeatures_retries
 Aucun rappel pour le temps dépassé :
 
-; fm_qfeatures_ring
+; fm_queuefeatures_ring
 Sonnerie au lieu de musique d'attente :
 
-; fm_qfeatures_transfer-user
+; fm_queuefeatures_transfer-user
 Autorise l'appelé à transférer l'appelant :
 
-; fm_qfeatures_transfer-call
+; fm_queuefeatures_transfer-call
 Autorise l'appelant à transférer l'appel :
 
-; fm_qfeatures_write-caller
+; fm_queuefeatures_write-caller
 Autorise l'appelé à enregistrer l'appel :
 
-; fm_qfeatures_write-calling
+; fm_queuefeatures_write-calling
 Autorise l'appelant à enregistrer l'appel :
 
 ; fm_queue_announce

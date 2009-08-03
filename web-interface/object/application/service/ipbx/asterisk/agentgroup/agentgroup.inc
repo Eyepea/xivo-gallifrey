@@ -105,7 +105,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$where['userid'] = $this->_info['agentgroup']['id'];
 
 		if(is_object($this->_queuemember) === false
-		|| ($qfeatures = &$this->_service->get_module('queuefeatures')) === false
+		|| ($queuefeatures = &$this->_service->get_module('queuefeatures')) === false
 		|| ($this->_info['queuemember'] = $this->_queuemember->get_all_where($where)) === false
 		|| ($nb = count($this->_info['queuemember'])) === 0)
 		{
@@ -121,8 +121,8 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		{
 			$where['name'] = $ref[$i]['queue_name'];
 
-			if(($id = $qfeatures->get_primary($where)) !== false)
-				$ref[$i]['qfeaturesid'] = $id;
+			if(($id = $queuefeatures->get_primary($where)) !== false)
+				$ref[$i]['queuefeaturesid'] = $id;
 		}
 
 		$this->_origin['queuemember'] = $this->_queuemember->get_origin_list();
@@ -263,7 +263,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 	{
 		if(is_array($list) === false
 		|| is_array($select) === false
-		|| ($qfeatures = &$this->_service->get_module('queuefeatures')) === false
+		|| ($queuefeatures = &$this->_service->get_module('queuefeatures')) === false
 		|| is_object($this->_queuemember) === false)
 			return(false);
 
@@ -287,7 +287,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 			if(isset($tmp[$qname]) === true
 			|| isset($list[$qname]) === false
 			|| ($interface = $this->mk_agent_interface(0,true)) === false
-			|| ($typeid = $qfeatures->get_primary(array('name' => $qname))) === false)
+			|| ($typeid = $queuefeatures->get_primary(array('name' => $qname))) === false)
 				continue;
 
 			$info['queue_name'] = $qname;
@@ -299,7 +299,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 			if(($rs = $this->_queuemember->chk_values($values)) === false)
 				continue;
 
-			$rs['qfeaturesid'] = $typeid;
+			$rs['queuefeaturesid'] = $typeid;
 			$tmp[$qname] = 1;
 			$reslist[] = $rs;
 		}
@@ -400,7 +400,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		{
 			$rs[$i]['userid'] = $agentgroupid;
 
-			unset($rs[$i]['qfeaturesid']);
+			unset($rs[$i]['queuefeaturesid']);
 
 			if(($interface = $this->mk_agent_interface($agentgroupid,true)) === false)
 				return(false);
@@ -542,7 +542,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		{
 			$rs[$i]['userid'] = $agentgroupid;
 
-			unset($rs[$i]['qfeaturesid']);
+			unset($rs[$i]['queuefeaturesid']);
 
 			if(($interface = $this->mk_agent_interface($agentgroupid,true)) === false)
 				return(false);

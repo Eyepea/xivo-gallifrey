@@ -66,7 +66,7 @@ switch($act)
 							    true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('qfeatures',$_QR) === true
+		&& xivo_issa('queuefeatures',$_QR) === true
 		&& xivo_issa('queue',$_QR) === true)
 		{
 			if($appqueue->set_add($_QR) === false
@@ -221,7 +221,7 @@ switch($act)
 							    true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('qfeatures',$_QR) === true
+		&& xivo_issa('queuefeatures',$_QR) === true
 		&& xivo_issa('queue',$_QR) === true)
 		{
 			$return = &$result;
@@ -322,7 +322,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['qfeatures']['id']);
+		$_HTML->set_var('id',$info['queuefeatures']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$return['dialaction']);
@@ -380,14 +380,14 @@ switch($act)
 		if(($values = xivo_issa_val('queues',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
 
-		$qfeatures = &$ipbx->get_module('queuefeatures');
+		$queuefeatures = &$ipbx->get_module('queuefeatures');
 		$queue = &$ipbx->get_module('queue');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $qfeatures->get($values[$i])) !== false)
+			if(($info = $queuefeatures->get($values[$i])) !== false)
 				$queue->disable($info['name'],$disable);
 		}
 
