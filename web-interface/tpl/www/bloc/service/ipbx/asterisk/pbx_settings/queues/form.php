@@ -470,7 +470,7 @@ endif;
 							       'multiple'	=> true,
 							       'size'		=> 5,
 							       'field'		=> false,
-							       'browse'		=> 'afeatures',
+							       'browse'		=> 'agentfeatures',
 							       'key'		=> 'identity',
 							       'altkey'		=> 'id'),
 							 $agent['list']);?>
@@ -502,7 +502,7 @@ endif;
 							       'multiple'	=> true,
 							       'size'		=> 5,
 							       'field'		=> false,
-							       'browse'		=> 'afeatures',
+							       'browse'		=> 'agentfeatures',
 							       'key'		=> 'identity',
 							       'altkey'		=> 'id'),
 							 $agent['slt']);?>

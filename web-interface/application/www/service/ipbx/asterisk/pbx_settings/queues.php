@@ -142,7 +142,7 @@ switch($act)
 
 			if($agent['slt'] !== false)
 			{
-				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+				$agentsort = new xivo_sort(array('browse'	=> 'agentfeatures',
 								 'key'		=> 'identity'));
 
 				$agent['list'] = xivo_array_diff_key($agent['list'],$agent['slt']);
@@ -299,7 +299,7 @@ switch($act)
 
 			if($agent['slt'] !== false)
 			{
-				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+				$agentsort = new xivo_sort(array('browse'	=> 'agentfeatures',
 								 'key'		=> 'identity'));
 
 				$agent['list'] = xivo_array_diff_key($agent['list'],$agent['slt']);

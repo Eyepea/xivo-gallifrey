@@ -40,44 +40,44 @@ endif;
 <div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_firstname'),
-				  'name'	=> 'afeatures[firstname]',
-				  'labelid'	=> 'afeatures-firstname',
+				  'name'	=> 'agentfeatures[firstname]',
+				  'labelid'	=> 'agentfeatures-firstname',
 				  'size'	=> 15,
-				  'default'	=> $element['afeatures']['firstname']['default'],
-				  'value'	=> $info['afeatures']['firstname'])),
+				  'default'	=> $element['agentfeatures']['firstname']['default'],
+				  'value'	=> $info['agentfeatures']['firstname'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_lastname'),
-				  'name'	=> 'afeatures[lastname]',
-				  'labelid'	=> 'afeatures-lastname',
+				  'name'	=> 'agentfeatures[lastname]',
+				  'labelid'	=> 'agentfeatures-lastname',
 				  'size'	=> 15,
-				  'default'	=> $element['afeatures']['lastname']['default'],
-				  'value'	=> $info['afeatures']['lastname'])),
+				  'default'	=> $element['agentfeatures']['lastname']['default'],
+				  'value'	=> $info['agentfeatures']['lastname'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_number'),
-				  'name'	=> 'afeatures[number]',
-				  'labelid'	=> 'afeatures-number',
+				  'name'	=> 'agentfeatures[number]',
+				  'labelid'	=> 'agentfeatures-number',
 				  'size'	=> 15,
-				  'default'	=> $element['afeatures']['number']['default'],
-				  'value'	=> $info['afeatures']['number'])),
+				  'default'	=> $element['agentfeatures']['number']['default'],
+				  'value'	=> $info['agentfeatures']['number'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_passwd'),
-				  'name'	=> 'afeatures[passwd]',
-				  'labelid'	=> 'afeatures-passwd',
+				  'name'	=> 'agentfeatures[passwd]',
+				  'labelid'	=> 'agentfeatures-passwd',
 				  'size'	=> 15,
-				  'default'	=> $element['afeatures']['passwd']['default'],
-				  'value'	=> $info['afeatures']['passwd']));
+				  'default'	=> $element['agentfeatures']['passwd']['default'],
+				  'value'	=> $info['agentfeatures']['passwd']));
 
 		if($context_list !== false):
 			echo	$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_context'),
-						    'name'	=> 'afeatures[context]',
-						    'labelid'	=> 'afeatures-context',
+						    'name'	=> 'agentfeatures[context]',
+						    'labelid'	=> 'agentfeatures-context',
 						    'key'	=> 'identity',
 						    'altkey'	=> 'name',
-						    'default'	=> $element['afeatures']['context']['default'],
-						    'value'	=> $info['afeatures']['context']),
+						    'default'	=> $element['agentfeatures']['context']['default'],
+						    'value'	=> $info['agentfeatures']['context']),
 					      $context_list);
 		else:
-			echo	'<div id="fd-afeatures-context" class="txt-center">',
+			echo	'<div id="fd-agentfeatures-context" class="txt-center">',
 				$url->href_html($this->bbf('create_context'),
 						'service/ipbx/system_management/context',
 						'act=add'),
@@ -85,21 +85,21 @@ endif;
 		endif;
 
 	echo	$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_language'),
-				    'name'	=> 'afeatures[language]',
-				    'labelid'	=> 'afeatures-language',
+				    'name'	=> 'agentfeatures[language]',
+				    'labelid'	=> 'agentfeatures-language',
 				    'key'	=> false,
-				    'default'	=> $element['afeatures']['language']['default'],
-				    'value'	=> $info['afeatures']['language']),
-			      $element['afeatures']['language']['value']),
+				    'default'	=> $element['agentfeatures']['language']['default'],
+				    'value'	=> $info['agentfeatures']['language']),
+			      $element['agentfeatures']['language']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_numgroup'),
-				    'name'	=> 'afeatures[numgroup]',
-				    'labelid'	=> 'afeatures-numgroup',
+				    'name'	=> 'agentfeatures[numgroup]',
+				    'labelid'	=> 'agentfeatures-numgroup',
 				    'browse'	=> 'agentgroup',
 				    'key'	=> 'name',
 				    'altkey'	=> 'id',
 				    'default'	=> $this->get_var('group'),
-				    'value'	=> $info['afeatures']['numgroup']),
+				    'value'	=> $info['agentfeatures']['numgroup']),
 			      $this->get_var('agentgroup_list'));
 
 	if(($moh_list = $this->get_var('moh_list')) !== false):
@@ -282,10 +282,10 @@ endif;
 <div id="sb-part-last" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_agentfeatures_silent'),
-				      'name'	=> 'afeatures[silent]',
-				      'labelid'	=> 'afeatures-silent',
-				      'default'	=> $element['afeatures']['silent']['default'],
-				      'checked'	=> $info['afeatures']['silent'])),
+				      'name'	=> 'agentfeatures[silent]',
+				      'labelid'	=> 'agentfeatures-silent',
+				      'default'	=> $element['agentfeatures']['silent']['default'],
+				      'checked'	=> $info['agentfeatures']['silent'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_ackcall'),
 				    'name'	=> 'agentoptions[ackcall]',
@@ -385,15 +385,15 @@ endif;
 ?>
 	<div class="fm-field fm-description">
 		<p>
-			<label id="lb-afeatures-description" for="it-afeatures-description"><?=$this->bbf('fm_agentfeatures_description');?></label>
+			<label id="lb-agentfeatures-description" for="it-agentfeatures-description"><?=$this->bbf('fm_agentfeatures_description');?></label>
 		</p>
 		<?=$form->textarea(array('field'	=> false,
 					 'label'	=> false,
-					 'name'		=> 'afeatures[description]',
-					 'id'		=> 'it-afeatures-description',
+					 'name'		=> 'agentfeatures[description]',
+					 'id'		=> 'it-agentfeatures-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['afeatures']['description']['default']),
-				   $info['afeatures']['description']);?>
+					 'default'	=> $element['agentfeatures']['description']['default']),
+				   $info['agentfeatures']['description']);?>
 	</div>
 </div>

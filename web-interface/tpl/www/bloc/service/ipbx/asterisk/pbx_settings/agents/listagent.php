@@ -76,7 +76,7 @@ $page = $url->pager($pager['pages'],
 
 			$ref = &$list[$i];
 
-			if($ref['afeatures']['commented'] === true):
+			if($ref['agentfeatures']['commented'] === true):
 				$icon = 'disable';
 			elseif($ref['agent']['commented'] === true):
 				$icon = 'unavailable';
@@ -89,7 +89,7 @@ $page = $url->pager($pager['pages'],
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
 			<?=$form->checkbox(array('name'		=> 'agents[]',
-						 'value'	=> $ref['afeatures']['id'],
+						 'value'	=> $ref['agentfeatures']['id'],
 						 'label'	=> false,
 						 'id'		=> 'it-agents-'.$i,
 						 'checked'	=> false,
@@ -99,7 +99,7 @@ $page = $url->pager($pager['pages'],
 			<label for="it-agents-<?=$i?>" id="lb-agents-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_htmlen(xivo_trunc($ref['afeatures']['fullname'],25,'...',false));
+					xivo_htmlen(xivo_trunc($ref['agentfeatures']['fullname'],25,'...',false));
 ?>
 			</label>
 		</td>
@@ -112,8 +112,8 @@ $page = $url->pager($pager['pages'],
 						       'border="0"'),
 					'service/ipbx/pbx_settings/agents',
 					array('act'	=> 'editagent',
-					      'group'	=> $ref['afeatures']['numgroup'],
-					      'id'	=> $ref['afeatures']['id']),
+					      'group'	=> $ref['agentfeatures']['numgroup'],
+					      'id'	=> $ref['agentfeatures']['id']),
 					null,
 					$this->bbf('opt_modify')),"\n",
 			$url->href_html($url->img_html('img/site/button/delete.gif',
@@ -121,8 +121,8 @@ $page = $url->pager($pager['pages'],
 						       'border="0"'),
 					'service/ipbx/pbx_settings/agents',
 					array('act'	=> 'deleteagent',
-					      'group'	=> $ref['afeatures']['numgroup'],
-					      'id'	=> $ref['afeatures']['id'],
+					      'group'	=> $ref['agentfeatures']['numgroup'],
+					      'id'	=> $ref['agentfeatures']['id'],
 					      'page'	=> $pager['page']),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 					$this->bbf('opt_delete'));

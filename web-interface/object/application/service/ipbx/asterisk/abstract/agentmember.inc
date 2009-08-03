@@ -109,7 +109,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 				continue;
 
 			$tmp[$aid] = 1;
-			$reslist[] = $rs['afeatures'];
+			$reslist[] = $rs['agentfeatures'];
 		}
 
 		if($this->get_errnb() > 0 || isset($reslist[0]) === false)
@@ -126,18 +126,18 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 	{
 		$info = array();
 
-		if(($info['afeatures'] = $this->_agentfeatures->get($id,$disable)) === false
+		if(($info['agentfeatures'] = $this->_agentfeatures->get($id,$disable)) === false
 		|| ($info['agent'] = $this->_agent->get_agent(
-							$info['afeatures']['agentid'])) === false
+							$info['agentfeatures']['agentid'])) === false
 		|| ($info['agentoptions'] = $this->_agentoptions->get_agentoptions(
 							($info['agent']['var_metric']-1))) === false)
 			return(false);
 
-		$id = $info['afeatures']['id'];
+		$id = $info['agentfeatures']['id'];
 
 		$this->_agentinfo[$id] = $info;
 
-		$this->_agentorigin[$id]['afeatures'] = $this->_agentfeatures->get_origin();
+		$this->_agentorigin[$id]['agentfeatures'] = $this->_agentfeatures->get_origin();
 		$this->_agentorigin[$id]['agent'] = $this->_agent->get_origin();
 		$this->_agentorigin[$id]['agentoptions'] = $this->_agentoptions->get_origin();
 
@@ -215,7 +215,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 			$this->_return[$aid] = array();
 			$return = &$this->_return[$aid];
 
-			if(($return['afeatures'] = $this->_agentfeatures->edit($aid,$info)) === false
+			if(($return['agentfeatures'] = $this->_agentfeatures->edit($aid,$info)) === false
 			|| ($return['agent'] = $this->_agent->edit_group($origin['agent']['id'],
 									 $this->_defgroup)) === false
 			|| ($return['agentoptions'] = $this->_agentoptions->edit_var_metric(
@@ -264,9 +264,9 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 
 			$ref = &$this->_agentorigin[$key];
 
-			if(isset($val['afeatures'],$ref['afeatures']) === true
-			&& $val['afeatures'] !== false)
-				$this->_agentfeatures->edit_origin($ref['afeatures']);
+			if(isset($val['agentfeatures'],$ref['agentfeatures']) === true
+			&& $val['agentfeatures'] !== false)
+				$this->_agentfeatures->edit_origin($ref['agentfeatures']);
 
 			if(isset($val['agent'],$ref['agent']) === true && $val['agent'] !== false)
 				$this->_agent->edit_origin($ref['agent']);

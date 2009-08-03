@@ -44,14 +44,14 @@ else
 	{
 		$ref = &$list[$i];
 
-		$arr['id'] = $ref['afeatures']['id'];
-		$arr['firstname'] = $ref['afeatures']['firstname'];
-		$arr['lastname'] = $ref['afeatures']['lastname'];
-		$arr['number'] = $ref['afeatures']['number'];
-		$arr['passwd'] = $ref['afeatures']['passwd'];
-		$arr['context'] = $ref['afeatures']['context'];
-		$arr['language'] = $ref['afeatures']['language'];
-		$arr['silent'] = $ref['afeatures']['silent'];
+		$arr['id'] = $ref['agentfeatures']['id'];
+		$arr['firstname'] = $ref['agentfeatures']['firstname'];
+		$arr['lastname'] = $ref['agentfeatures']['lastname'];
+		$arr['number'] = $ref['agentfeatures']['number'];
+		$arr['passwd'] = $ref['agentfeatures']['passwd'];
+		$arr['context'] = $ref['agentfeatures']['context'];
+		$arr['language'] = $ref['agentfeatures']['language'];
+		$arr['silent'] = $ref['agentfeatures']['silent'];
 		$arr['ackcall'] = $ref['agentoptions']['ackcall'];
 		$arr['endcall'] = $ref['agentoptions']['endcall'];
 		$arr['autologoff'] = $ref['agentoptions']['autologoff'];

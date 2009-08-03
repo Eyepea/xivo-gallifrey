@@ -83,7 +83,7 @@ switch($act)
 			{
 				$amember['list'] = xivo_array_diff_key($amember['list'],$amember['slt']);
 
-				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+				$agentsort = new xivo_sort(array('browse'	=> 'agentfeatures',
 								 'key'		=> 'identity'));
 
 				uasort($amember['slt'],array(&$agentsort,'str_usort'));
@@ -184,7 +184,7 @@ switch($act)
 			{
 				$amember['list'] = xivo_array_diff_key($amember['list'],$amember['slt']);
 
-				$agentsort = new xivo_sort(array('browse'	=> 'afeatures',
+				$agentsort = new xivo_sort(array('browse'	=> 'agentfeatures',
 								 'key'		=> 'identity'));
 
 				uasort($amember['slt'],array(&$agentsort,'str_usort'));
@@ -322,7 +322,7 @@ switch($act)
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('afeatures',$_QR) === true
+		&& xivo_issa('agentfeatures',$_QR) === true
 		&& xivo_issa('agentoptions',$_QR) === true)
 		{
 			if($appagent->set_add($_QR) === false
@@ -336,10 +336,12 @@ switch($act)
 				$ipbx->discuss('module reload chan_agent.so');
 				$ipbx->discuss('xivo[agentlist,update]');
 
-				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
+				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 			}
 		}
+
+		xivo::load_class('xivo_sort');
 
 		if($umember['list'] !== false && xivo_ak('usermember',$result) === true)
 		{
@@ -371,7 +373,6 @@ switch($act)
 
 				$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
 
-				xivo::load_class('xivo_sort');
 				$queuesort = new xivo_sort(array('key'	=> 'name'));
 
 				uasort($qmember['slt'],array(&$queuesort,'str_usort'));
@@ -431,7 +432,7 @@ switch($act)
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('afeatures',$_QR) === true
+		&& xivo_issa('agentfeatures',$_QR) === true
 		&& xivo_issa('agentoptions',$_QR) === true)
 		{
 			$return = &$result;
@@ -447,7 +448,7 @@ switch($act)
 				$ipbx->discuss('module reload chan_agent.so');
 				$ipbx->discuss('xivo[agentlist,update]');
 
-				$param['group'] = $appagent->get_result_var('afeatures','numgroup');
+				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
 				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 			}
 		}
@@ -495,7 +496,7 @@ switch($act)
 		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									array('name' => SORT_ASC));
 
-		$_HTML->set_var('id',$info['afeatures']['id']);
+		$_HTML->set_var('id',$info['agentfeatures']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('element',$appagent->get_elements());
@@ -518,7 +519,7 @@ switch($act)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$param['act'] = 'listagent';
-		$param['numgroup'] = $appagent->get_info_var('afeatures','numgroup');
+		$param['numgroup'] = $appagent->get_info_var('agentfeatures','numgroup');
 		$param['page'] = $page;
 
 		$appagent->delete();
