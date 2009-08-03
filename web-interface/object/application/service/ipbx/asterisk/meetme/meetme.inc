@@ -69,13 +69,13 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		$this->_info = $this->_origin = array();
 
-		if(($this->_info['mfeatures'] = $this->_meetmefeatures->get($id)) === false
+		if(($this->_info['meetmefeatures'] = $this->_meetmefeatures->get($id)) === false
 		|| ($this->_info['meetmeroom'] = $this->_meetmeroom->get_meetmeroom(
-						$this->_info['mfeatures']['meetmeid'],
+						$this->_info['meetmefeatures']['meetmeid'],
 						$disable)) === false)
 			return(false);
 
-		$this->_origin['mfeatures'] = $this->_meetmefeatures->get_origin();
+		$this->_origin['meetmefeatures'] = $this->_meetmefeatures->get_origin();
 		$this->_origin['meetmeroom'] = $this->_meetmeroom->get_origin();
 
 		if($this->_components === false)
@@ -85,13 +85,13 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$this->_get_meetmemacro();
 
 		if(xivo_ak('extenumbers',$nocomponents,true) === false)
-			$this->_get_extenumbers($this->_info['mfeatures']['id']);
+			$this->_get_extenumbers($this->_info['meetmefeatures']['id']);
 
 		if(xivo_ak('contextnummember',$nocomponents,true) === false)
-			$this->_get_contextnummember($this->_info['mfeatures']['id']);
+			$this->_get_contextnummember($this->_info['meetmefeatures']['id']);
 
 		if(xivo_ak('contextmember',$nocomponents,true) === false)
-			$this->_get_contextmember($this->_info['mfeatures']['id']);
+			$this->_get_contextmember($this->_info['meetmefeatures']['id']);
 
 		return($this->_info);
 	}
@@ -106,8 +106,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->_info['meetmemacro'] = false;
 		$this->_origin['meetmemacro'] = false;
 
-		if(($this->_info['meetmemacro'] = $this->_extensions->get_exten($this->_info['mfeatures']['number'],
-										$this->_info['mfeatures']['context'],
+		if(($this->_info['meetmemacro'] = $this->_extensions->get_exten($this->_info['meetmefeatures']['number'],
+										$this->_info['meetmefeatures']['context'],
 										'macro')) !== false)
 			$this->_origin['meetmemacro'] = $this->_extensions->get_origin();
 
@@ -119,7 +119,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$r = array();
 
 		$r['meetmeroom'] = $this->_meetmeroom->get_element();
-		$r['mfeatures'] = $this->_meetmefeatures->get_element();
+		$r['meetmefeatures'] = $this->_meetmefeatures->get_element();
 
 		return($r);
 	}
@@ -180,11 +180,11 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		return($r);
 	}
 
-	function _mk_meetmemacro_appdata($mfeaturesid)
+	function _mk_meetmemacro_appdata($meetmefeaturesid)
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_MEETME_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($mfeaturesid);
+		$arr['appdata'][1] = xivo_ulongint($meetmefeaturesid);
 
 		return($arr);
 	}
@@ -208,19 +208,19 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		if(($action !== 'add' && $action !== 'edit') === true
 		|| xivo_issa('meetmeroom',$arr) === false
-		|| xivo_issa('mfeatures',$arr) === false)
+		|| xivo_issa('meetmefeatures',$arr) === false)
 			return(false);
 
 		$this->set_meetmeroom($arr['meetmeroom']);
 
 		$number = (string) $this->get_result_var('meetmeroom','number');
 
-		$arr['mfeatures']['meetmeid'] = 0;
-		$arr['mfeatures']['number'] = $number;
+		$arr['meetmefeatures']['meetmeid'] = 0;
+		$arr['meetmefeatures']['number'] = $number;
 
-		$this->set_meetmefeatures($arr['mfeatures']);
+		$this->set_meetmefeatures($arr['meetmefeatures']);
 
-		$context = (string) $this->get_result_var('mfeatures','context');
+		$context = (string) $this->get_result_var('meetmefeatures','context');
 
 		if(($rsmeetmemacro = $this->chk_macro('meetmemacro',
 						      $number,
@@ -241,8 +241,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		if(is_array($arr) === false)
 		{
-			$this->_set_result('mfeatures',null);
-			$this->_set_error('mfeatures','invalid data');
+			$this->_set_result('meetmefeatures',null);
+			$this->_set_error('meetmefeatures','invalid data');
 			return(false);
 		}
 
@@ -253,12 +253,12 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		if(($rs = $this->_meetmefeatures->chk_values($arr)) === false)
 		{
-			$this->_set_result('mfeatures',$this->_meetmefeatures->get_filter_result());
-			$this->_set_error('mfeatures',$this->_meetmefeatures->get_filter_error());
+			$this->_set_result('meetmefeatures',$this->_meetmefeatures->get_filter_result());
+			$this->_set_error('meetmefeatures',$this->_meetmefeatures->get_filter_error());
 			return(false);
 		}
 
-		$this->_set_result('mfeatures',$rs);
+		$this->_set_result('meetmefeatures',$rs);
 
 		return(true);
 	}
@@ -279,18 +279,18 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		return($r);
 	}
 
-	function _set_meetmemacro($action,$mfeaturesid)
+	function _set_meetmemacro($action,$meetmefeaturesid)
 	{
 		$rs = false;
 
-		if(($mfeaturesid = xivo_ulongint($mfeaturesid)) === 0
+		if(($meetmefeaturesid = xivo_ulongint($meetmefeaturesid)) === 0
 		|| ($rs = $this->get_result('meetmemacro')) === null
 		|| $rs === false)
 			return($rs);
 		else if(($rsmacro = $this->set_macro($action,
 						     'meetmemacro',
 						     $rs['exten'],
-						     $this->_mk_meetmemacro_appdata($mfeaturesid),
+						     $this->_mk_meetmemacro_appdata($meetmefeaturesid),
 						     $rs['context'])) === false)
 			return(false);
 
@@ -302,9 +302,9 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	function set_contextmember()
 	{
 		$rs = array();
-		$rs['mfeatures-exitcontext']['context'] = (string) $this->get_result_var('mfeatures','exitcontext');
-		$rs['mfeatures-exitcontext']['typeval'] = 0;
-		$rs['mfeatures-exitcontext']['varname'] = 'exitcontext';
+		$rs['meetmefeatures-exitcontext']['context'] = (string) $this->get_result_var('meetmefeatures','exitcontext');
+		$rs['meetmefeatures-exitcontext']['typeval'] = 0;
+		$rs['meetmefeatures-exitcontext']['varname'] = 'exitcontext';
 
 		return(parent::set_contextmember($rs));
 	}
@@ -319,11 +319,11 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		if($this->get_errnb() > 0
 		|| ($meetmeroomid = $this->add_meetmeroom()) === false
-		|| ($mfeaturesid = $this->add_meetmefeatures($meetmeroomid)) === false
-		|| $this->add_extenumbers($mfeaturesid) === false
-		|| $this->add_meetmemacro($mfeaturesid) === false
-		|| $this->add_contextnummember($mfeaturesid) === false
-		|| $this->add_contextmember($mfeaturesid) === false)
+		|| ($meetmefeaturesid = $this->add_meetmefeatures($meetmeroomid)) === false
+		|| $this->add_extenumbers($meetmefeaturesid) === false
+		|| $this->add_meetmemacro($meetmefeaturesid) === false
+		|| $this->add_contextnummember($meetmefeaturesid) === false
+		|| $this->add_contextmember($meetmefeaturesid) === false)
 		{
 			$r = false;
 			if($meetmeroomid !== null)
@@ -347,18 +347,18 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	function add_meetmefeatures($meetmeid)
 	{
 		if(($meetmeid = xivo_ulongint($meetmeid)) === 0
-		|| ($rs = $this->get_result('mfeatures')) === null
+		|| ($rs = $this->get_result('meetmefeatures')) === null
 		|| $rs === false)
 			return(false);
 
 		$rs['meetmeid'] = $meetmeid;
 
-		return(($this->_return['mfeatures'] = $this->_meetmefeatures->add($rs)));
+		return(($this->_return['meetmefeatures'] = $this->_meetmefeatures->add($rs)));
 	}
 
-	function add_meetmemacro($mfeaturesid)
+	function add_meetmemacro($meetmefeaturesid)
 	{
-		if(($rs = $this->_set_meetmemacro('add',$mfeaturesid)) !== true)
+		if(($rs = $this->_set_meetmemacro('add',$meetmefeaturesid)) !== true)
 			return($rs);
 
 		return(parent::add_macro('meetmemacro'));
@@ -382,7 +382,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				case 'meetmeroom':
 					$this->_meetmeroom->delete_meetmeroom($this->_status,$val);
 					break;
-				case 'mfeatures':
+				case 'meetmefeatures':
 					$this->_meetmefeatures->delete($val);
 					break;
 				case 'meetmemacro':
@@ -414,7 +414,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		|| $this->edit_meetmeroom() === false
 		|| $this->edit_meetmefeatures() === false
 		|| $this->edit_extenumbers() === false
-		|| $this->edit_meetmemacro($this->_info['mfeatures']['id']) === false
+		|| $this->edit_meetmemacro($this->_info['meetmefeatures']['id']) === false
 		|| $this->edit_contextnummember() === false
 		|| $this->edit_contextmember() === false)
 		{
@@ -439,19 +439,19 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_meetmefeatures()
 	{
-		if(xivo_issa('mfeatures',$this->_info) === false
-		|| ($rs = $this->get_result('mfeatures')) === null
+		if(xivo_issa('meetmefeatures',$this->_info) === false
+		|| ($rs = $this->get_result('meetmefeatures')) === null
 		|| $rs === false)
 			return(false);
 
-		$rs['meetmeid'] = $this->_info['mfeatures']['meetmeid'];
+		$rs['meetmeid'] = $this->_info['meetmefeatures']['meetmeid'];
 
-		return(($this->_return['mfeatures'] = $this->_meetmefeatures->edit($this->_info['mfeatures']['id'],$rs)));
+		return(($this->_return['meetmefeatures'] = $this->_meetmefeatures->edit($this->_info['meetmefeatures']['id'],$rs)));
 	}
 
-	function edit_meetmemacro($mfeaturesid)
+	function edit_meetmemacro($meetmefeaturesid)
 	{
-		if(($rs = $this->_set_meetmemacro('edit',$mfeaturesid)) !== true)
+		if(($rs = $this->_set_meetmemacro('edit',$meetmefeaturesid)) !== true)
 			return($rs);
 
 		return(parent::edit_macro('meetmemacro'));
@@ -459,18 +459,18 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('mfeatures',$this->_info) === false)
+		if(xivo_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_contextnummember($this->_info['mfeatures']['id']));
+		return(parent::edit_contextnummember($this->_info['meetmefeatures']['id']));
 	}
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('mfeatures',$this->_info) === false)
+		if(xivo_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 
-		return(parent::edit_contextmember($this->_info['mfeatures']['id']));
+		return(parent::edit_contextmember($this->_info['meetmefeatures']['id']));
 	}
 
 	function _reverse_edit()
@@ -495,12 +495,12 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 					else
 						$this->_meetmeroom->edit_origin($this->_origin['meetmeroom']);
 					break;
-				case 'mfeatures':
-					if(isset($this->_origin['mfeatures']) === false
-					|| $this->_origin['mfeatures'] === false)
+				case 'meetmefeatures':
+					if(isset($this->_origin['meetmefeatures']) === false
+					|| $this->_origin['meetmefeatures'] === false)
 						$this->delete_meetmefeatures();
 					else
-						$this->_meetmefeatures->edit_origin($this->_origin['mfeatures']);
+						$this->_meetmefeatures->edit_origin($this->_origin['meetmefeatures']);
 					break;
 				case 'meetmemacro':
 					if(isset($this->_origin['meetmemacro']) === false
@@ -565,13 +565,13 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function delete_meetmefeatures()
 	{
-		if(xivo_issa('mfeatures',$this->_info) === false)
+		if(xivo_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 
-		$r = $this->_meetmefeatures->delete($this->_info['mfeatures']['id']);
+		$r = $this->_meetmefeatures->delete($this->_info['meetmefeatures']['id']);
 
 		if($this->_status === 'delete')
-			$this->_return['mfeatures'] = $r;
+			$this->_return['meetmefeatures'] = $r;
 
 		return($r);
 	}
@@ -595,10 +595,10 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 					&& $this->_origin['meetmeroom'] !== false)
 						$this->_meetmeroom->add_origin($this->_origin['meetmeroom']);
 					break;
-				case 'mfeatures':
-					if(isset($this->_origin['mfeatures']) === true
-					&& $this->_origin['mfeatures'] !== false)
-						$this->_meetmefeatures->add_origin($this->_origin['mfeatures']);
+				case 'meetmefeatures':
+					if(isset($this->_origin['meetmefeatures']) === true
+					&& $this->_origin['meetmefeatures'] !== false)
+						$this->_meetmefeatures->add_origin($this->_origin['meetmefeatures']);
 					break;
 				case 'meetmemacro':
 					if(isset($this->_origin['meetmemacro']) === true
@@ -624,13 +624,13 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function unlinks()
 	{
-		if(xivo_issa('mfeatures',$this->_info) === false)
+		if(xivo_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
 			$where = array();
 			$where['type'] = 'meetme';
-			$where['typeval'] = $this->_info['mfeatures']['id'];
+			$where['typeval'] = $this->_info['meetmefeatures']['id'];
 
 			$dialaction->unlinked_where($where);
 		}
@@ -732,12 +732,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function add_from_json()
 	{
-		if(($data = $this->_get_data_from_json()) === false)
-			return(false);
-		else if(xivo_issa('meetmefeatures',$data) === true)
-			$data['mfeatures'] = &$data['meetmefeatures'];
-
-		if($this->set_add($data) === false
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
 		|| $this->add() === false)
 			return(false);
 
@@ -746,12 +742,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_from_json()
 	{
-		if(($data = $this->_get_data_from_json()) === false)
-			return(false);
-		else if(xivo_issa('meetmefeatures',$data) === true)
-			$data['mfeatures'] = &$data['meetmefeatures'];
-
-		if($this->set_edit($data) === false
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
 		|| $this->edit() === false)
 			return(false);
 

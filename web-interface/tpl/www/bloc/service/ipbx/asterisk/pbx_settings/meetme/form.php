@@ -36,11 +36,11 @@ endif;
 <div id="sb-part-first">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_name'),
-				  'name'	=> 'mfeatures[name]',
-				  'labelid'	=> 'mfeatures-name',
+				  'name'	=> 'meetmefeatures[name]',
+				  'labelid'	=> 'meetmefeatures-name',
 				  'size'	=> 15,
-				  'default'	=> $element['mfeatures']['name']['default'],
-				  'value'	=> $info['mfeatures']['name'])),
+				  'default'	=> $element['meetmefeatures']['name']['default'],
+				  'value'	=> $info['meetmefeatures']['name'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmeroom_number'),
 				  'name'	=> 'meetmeroom[number]',
@@ -65,22 +65,22 @@ endif;
 				  'value'	=> $info['meetmeroom']['admin-pin'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_mode'),
-				    'name'	=> 'mfeatures[mode]',
-				    'labelid'	=> 'mfeatures-mode',
+				    'name'	=> 'meetmefeatures[mode]',
+				    'labelid'	=> 'meetmefeatures-mode',
 				    'bbf'	=> 'fm_meetmefeatures_mode-',
 				    'key'	=> false,
-				    'default'	=> $element['mfeatures']['mode']['default'],
-				    'value'	=> $info['mfeatures']['mode']),
-			      $element['mfeatures']['mode']['value']);
+				    'default'	=> $element['meetmefeatures']['mode']['default'],
+				    'value'	=> $info['meetmefeatures']['mode']),
+			      $element['meetmefeatures']['mode']['value']);
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_context'),
-				    'name'	=> 'mfeatures[context]',
-				    'labelid'	=> 'mfeatures-context',
+				    'name'	=> 'meetmefeatures[context]',
+				    'labelid'	=> 'meetmefeatures-context',
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'default'	=> $element['mfeatures']['context']['default'],
-				    'value'	=> $info['mfeatures']['context']),
+				    'default'	=> $element['meetmefeatures']['context']['default'],
+				    'value'	=> $info['meetmefeatures']['context']),
 			      $context_list);
 else:
 	echo	'<div id="fd-meetmefeatures-context" class="txt-center">',
@@ -92,90 +92,90 @@ endif;
 
 if($moh_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_musiconhold'),
-				    'name'	=> 'mfeatures[musiconhold]',
-				    'labelid'	=> 'mfeatures-musiconhold',
+				    'name'	=> 'meetmefeatures[musiconhold]',
+				    'labelid'	=> 'meetmefeatures-musiconhold',
 				    'key'	=> 'category',
 				    'empty'	=> true,
 				    'invalid'	=> ($this->get_var('act') === 'edit'),
-				    'default'	=> ($this->get_var('act') === 'add' ? $element['mfeatures']['musiconhold']['default'] : null),
-				    'value'	=> $info['mfeatures']['musiconhold']),
+				    'default'	=> ($this->get_var('act') === 'add' ? $element['meetmefeatures']['musiconhold']['default'] : null),
+				    'value'	=> $info['meetmefeatures']['musiconhold']),
 			      $moh_list);
 endif;
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_preprocess-subroutine'),
-				  'name'	=> 'mfeatures[preprocess_subroutine]',
-				  'labelid'	=> 'mfeatures-preprocess-subroutine',
+				  'name'	=> 'meetmefeatures[preprocess_subroutine]',
+				  'labelid'	=> 'meetmefeatures-preprocess-subroutine',
 				  'size'	=> 15,
-				  'default'	=> $element['mfeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['mfeatures']['preprocess_subroutine']));
+				  'default'	=> $element['meetmefeatures']['preprocess_subroutine']['default'],
+				  'value'	=> $info['meetmefeatures']['preprocess_subroutine']));
 ?>
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
 <?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_poundexit'),
-				      'name'	=> 'mfeatures[poundexit]',
-				      'labelid'	=> 'mfeatures-poundexit',
-				      'default'	=> $element['mfeatures']['poundexit']['default'],
-				      'checked' => $info['mfeatures']['poundexit'])),
+				      'name'	=> 'meetmefeatures[poundexit]',
+				      'labelid'	=> 'meetmefeatures-poundexit',
+				      'default'	=> $element['meetmefeatures']['poundexit']['default'],
+				      'checked' => $info['meetmefeatures']['poundexit'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_quiet'),
-				      'name'	=> 'mfeatures[quiet]',
-				      'labelid'	=> 'mfeatures-quiet',
-				      'default'	=> $element['mfeatures']['quiet']['default'],
-				      'checked' => $info['mfeatures']['quiet'])),
+				      'name'	=> 'meetmefeatures[quiet]',
+				      'labelid'	=> 'meetmefeatures-quiet',
+				      'default'	=> $element['meetmefeatures']['quiet']['default'],
+				      'checked' => $info['meetmefeatures']['quiet'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_record'),
-				      'name'	=> 'mfeatures[record]',
-				      'labelid'	=> 'mfeatures-record',
-				      'default'	=> $element['mfeatures']['record']['default'],
-				      'checked' => $info['mfeatures']['record'])),
+				      'name'	=> 'meetmefeatures[record]',
+				      'labelid'	=> 'meetmefeatures-record',
+				      'default'	=> $element['meetmefeatures']['record']['default'],
+				      'checked' => $info['meetmefeatures']['record'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_adminmode'),
-				      'name'	=> 'mfeatures[adminmode]',
-				      'labelid'	=> 'mfeatures-adminmode',
-				      'default'	=> $element['mfeatures']['adminmode']['default'],
-				      'checked' => $info['mfeatures']['adminmode'])),
+				      'name'	=> 'meetmefeatures[adminmode]',
+				      'labelid'	=> 'meetmefeatures-adminmode',
+				      'default'	=> $element['meetmefeatures']['adminmode']['default'],
+				      'checked' => $info['meetmefeatures']['adminmode'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_announceusercount'),
-				      'name'	=> 'mfeatures[announceusercount]',
-				      'labelid'	=> 'mfeatures-announceusercount',
-				      'default'	=> $element['mfeatures']['announceusercount']['default'],
-				      'checked' => $info['mfeatures']['announceusercount'])),
+				      'name'	=> 'meetmefeatures[announceusercount]',
+				      'labelid'	=> 'meetmefeatures-announceusercount',
+				      'default'	=> $element['meetmefeatures']['announceusercount']['default'],
+				      'checked' => $info['meetmefeatures']['announceusercount'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_announcejoinleave'),
-				      'name'	=> 'mfeatures[announcejoinleave]',
-				      'labelid'	=> 'mfeatures-announcejoinleave',
-				      'default'	=> $element['mfeatures']['announcejoinleave']['default'],
-				      'checked' => $info['mfeatures']['announcejoinleave'])),
+				      'name'	=> 'meetmefeatures[announcejoinleave]',
+				      'labelid'	=> 'meetmefeatures-announcejoinleave',
+				      'default'	=> $element['meetmefeatures']['announcejoinleave']['default'],
+				      'checked' => $info['meetmefeatures']['announcejoinleave'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_alwayspromptpin'),
-				      'name'	=> 'mfeatures[alwayspromptpin]',
-				      'labelid'	=> 'mfeatures-alwayspromptpin',
-				      'default'	=> $element['mfeatures']['alwayspromptpin']['default'],
-				      'checked' => $info['mfeatures']['alwayspromptpin'])),
+				      'name'	=> 'meetmefeatures[alwayspromptpin]',
+				      'labelid'	=> 'meetmefeatures-alwayspromptpin',
+				      'default'	=> $element['meetmefeatures']['alwayspromptpin']['default'],
+				      'checked' => $info['meetmefeatures']['alwayspromptpin'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_starmenu'),
-				      'name'	=> 'mfeatures[starmenu]',
-				      'labelid'	=> 'mfeatures-starmenu',
-				      'default'	=> $element['mfeatures']['starmenu']['default'],
-				      'checked' => $info['mfeatures']['starmenu']));
+				      'name'	=> 'meetmefeatures[starmenu]',
+				      'labelid'	=> 'meetmefeatures-starmenu',
+				      'default'	=> $element['meetmefeatures']['starmenu']['default'],
+				      'checked' => $info['meetmefeatures']['starmenu']));
 
 if($context_list !== false):
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_enableexitcontext'),
-				      'name'	=> 'mfeatures[enableexitcontext]',
-				      'labelid'	=> 'mfeatures-enableexitcontext',
-				      'default'	=> $element['mfeatures']['enableexitcontext']['default'],
-				      'checked' => $info['mfeatures']['enableexitcontext'])),
+				      'name'	=> 'meetmefeatures[enableexitcontext]',
+				      'labelid'	=> 'meetmefeatures-enableexitcontext',
+				      'default'	=> $element['meetmefeatures']['enableexitcontext']['default'],
+				      'checked' => $info['meetmefeatures']['enableexitcontext'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_exitcontext'),
-				    'name'	=> 'mfeatures[exitcontext]',
-				    'labelid'	=> 'mfeatures-exitcontext',
+				    'name'	=> 'meetmefeatures[exitcontext]',
+				    'labelid'	=> 'meetmefeatures-exitcontext',
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'empty'	=> true,
-				    'default'	=> $element['mfeatures']['exitcontext']['default'],
-				    'value'	=> $info['mfeatures']['exitcontext']),
+				    'default'	=> $element['meetmefeatures']['exitcontext']['default'],
+				    'value'	=> $info['meetmefeatures']['exitcontext']),
 			      $context_list);
 endif;
 ?>

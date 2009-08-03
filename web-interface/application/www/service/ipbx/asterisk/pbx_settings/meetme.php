@@ -35,7 +35,7 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true
 		&& xivo_issa('meetmeroom',$_QR) === true
-		&& xivo_issa('mfeatures',$_QR) === true)
+		&& xivo_issa('meetmefeatures',$_QR) === true)
 		{
 			if($appmeetme->set_add($_QR) === false
 			|| $appmeetme->add() === false)
@@ -67,7 +67,7 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true
 		&& xivo_issa('meetmeroom',$_QR) === true
-		&& xivo_issa('mfeatures',$_QR) === true)
+		&& xivo_issa('meetmefeatures',$_QR) === true)
 		{
 			$return = &$result;
 
