@@ -407,7 +407,8 @@ class Siemens(PhoneVendorMixin):
                     if phonefwversion is None:
                         raise LookupError, "Unable to get phone firmware version"
                     else:
-                        raise ValueError, "Unable to upgrade: Firmware version differs. (current: %r, phone: %r)" \
+                        raise ValueError, "Unable to upgrade: Phone firmware is greater than " \
+                                          "or equal to current firmware. (current: %r, phone: %r)" \
                                           % (self.SIEMENS_FIRMWARE, phonefwversion)
 
                 request = http.request(self.phone['ipv4'], 'settings_admin_special.html', params)
