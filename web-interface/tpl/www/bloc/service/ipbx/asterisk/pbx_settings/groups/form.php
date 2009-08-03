@@ -37,19 +37,19 @@ endif;
 
 <div id="sb-part-first" class="b-nodisplay">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_gfeatures_name'),
-				  'name'	=> 'gfeatures[name]',
-				  'labelid'	=> 'gfeatures-name',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_name'),
+				  'name'	=> 'groupfeatures[name]',
+				  'labelid'	=> 'groupfeatures-name',
 				  'size'	=> 15,
-				  'default'	=> $element['gfeatures']['name']['default'],
-				  'value'	=> $info['gfeatures']['name'])),
+				  'default'	=> $element['groupfeatures']['name']['default'],
+				  'value'	=> $info['groupfeatures']['name'])),
 
-		$form->text(array('desc'	=> $this->bbf('fm_gfeatures_number'),
-				  'name'	=> 'gfeatures[number]',
-				  'labelid'	=> 'gfeatures-number',
+		$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_number'),
+				  'name'	=> 'groupfeatures[number]',
+				  'labelid'	=> 'groupfeatures-number',
 				  'size'	=> 15,
-				  'default'	=> $element['gfeatures']['number']['default'],
-				  'value' => $info['gfeatures']['number'])),
+				  'default'	=> $element['groupfeatures']['number']['default'],
+				  'value' => $info['groupfeatures']['number'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_strategy'),
 				    'name'	=> 'queue[strategy]',
@@ -61,30 +61,30 @@ endif;
 			      $element['queue']['strategy']['value']);
 
 if($context_list !== false):
-	echo	$form->select(array('desc'	=> $this->bbf('fm_gfeatures_context'),
-				    'name'	=> 'gfeatures[context]',
-				    'labelid'	=> 'gfeatures-context',
+	echo	$form->select(array('desc'	=> $this->bbf('fm_groupfeatures_context'),
+				    'name'	=> 'groupfeatures[context]',
+				    'labelid'	=> 'groupfeatures-context',
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'default'	=> $element['gfeatures']['context']['default'],
-				    'value'	=> $info['gfeatures']['context']),
+				    'default'	=> $element['groupfeatures']['context']['default'],
+				    'value'	=> $info['groupfeatures']['context']),
 			      $context_list);
 else:
-	echo	'<div id="fd-gfeatures-context" class="txt-center">',
+	echo	'<div id="fd-groupfeatures-context" class="txt-center">',
 		$url->href_html($this->bbf('create_context'),
 				'service/ipbx/system_management/context',
 				'act=add'),
 		'</div>';
 endif;
 
-	echo	$form->select(array('desc'	=> $this->bbf('fm_gfeatures_timeout'),
-				    'name'	=> 'gfeatures[timeout]',
-				    'labelid'	=> 'gfeatures-timeout',
-				    'bbf'	=> array('mixkey','fm_gfeatures_timeout-opt'),
+	echo	$form->select(array('desc'	=> $this->bbf('fm_groupfeatures_timeout'),
+				    'name'	=> 'groupfeatures[timeout]',
+				    'labelid'	=> 'groupfeatures-timeout',
+				    'bbf'	=> array('mixkey','fm_groupfeatures_timeout-opt'),
 				    'key'	=> false,
-				    'default'	=> $element['gfeatures']['timeout']['default'],
-				    'value'	=> $info['gfeatures']['timeout']),
-			      $element['gfeatures']['timeout']['value']),
+				    'default'	=> $element['groupfeatures']['timeout']['default'],
+				    'value'	=> $info['groupfeatures']['timeout']),
+			      $element['groupfeatures']['timeout']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_timeout'),
 				    'name'	=> 'queue[timeout]',
@@ -126,12 +126,12 @@ endif;
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
 				  'value'	=> $info['callerid']['callerdisplay'])),
 
-		$form->text(array('desc'	=> $this->bbf('fm_gfeatures_preprocess-subroutine'),
-				  'name'	=> 'gfeatures[preprocess_subroutine]',
-				  'labelid'	=> 'gfeatures-preprocess-subroutine',
+		$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_preprocess-subroutine'),
+				  'name'	=> 'groupfeatures[preprocess_subroutine]',
+				  'labelid'	=> 'groupfeatures-preprocess-subroutine',
 				  'size'	=> 15,
-				  'default'	=> $element['gfeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['gfeatures']['preprocess_subroutine']));
+				  'default'	=> $element['groupfeatures']['preprocess_subroutine']['default'],
+				  'value'	=> $info['groupfeatures']['preprocess_subroutine']));
 ?>
 </div>
 
@@ -195,29 +195,29 @@ endif;
 
 <div id="sb-part-application" class="b-nodisplay">
 <?php
-	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_gfeatures_transfer-user'),
-				      'name'	=> 'gfeatures[transfer_user]',
-				      'labelid'	=> 'gfeatures-transfer-user',
-				      'default'	=> $element['gfeatures']['transfer_user']['default'],
-				      'checked'	=> $info['gfeatures']['transfer_user'])),
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_transfer-user'),
+				      'name'	=> 'groupfeatures[transfer_user]',
+				      'labelid'	=> 'groupfeatures-transfer-user',
+				      'default'	=> $element['groupfeatures']['transfer_user']['default'],
+				      'checked'	=> $info['groupfeatures']['transfer_user'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_gfeatures_transfer-call'),
-				      'name'	=> 'gfeatures[transfer_call]',
-				      'labelid'	=> 'gfeatures-transfer-call',
-				      'default'	=> $element['gfeatures']['transfer_call']['default'],
-				      'checked'	=> $info['gfeatures']['transfer_call'])),
+		$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_transfer-call'),
+				      'name'	=> 'groupfeatures[transfer_call]',
+				      'labelid'	=> 'groupfeatures-transfer-call',
+				      'default'	=> $element['groupfeatures']['transfer_call']['default'],
+				      'checked'	=> $info['groupfeatures']['transfer_call'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_gfeatures_write-caller'),
-				      'name'	=> 'gfeatures[write_caller]',
-				      'labelid'	=> 'gfeatures-write-caller',
-				      'default'	=> $element['gfeatures']['write_caller']['default'],
-				      'checked' => $info['gfeatures']['write_caller'])),
+		$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_write-caller'),
+				      'name'	=> 'groupfeatures[write_caller]',
+				      'labelid'	=> 'groupfeatures-write-caller',
+				      'default'	=> $element['groupfeatures']['write_caller']['default'],
+				      'checked' => $info['groupfeatures']['write_caller'])),
 
-		$form->checkbox(array('desc'	=> $this->bbf('fm_gfeatures_write-calling'),
-				      'name'	=> 'gfeatures[write_calling]',
-				      'labelid'	=> 'gfeatures-write-calling',
-				      'default'	=> $element['gfeatures']['write_calling']['default'],
-				      'checked'	=> $info['gfeatures']['write_calling']));
+		$form->checkbox(array('desc'	=> $this->bbf('fm_groupfeatures_write-calling'),
+				      'name'	=> 'groupfeatures[write_calling]',
+				      'labelid'	=> 'groupfeatures-write-calling',
+				      'default'	=> $element['groupfeatures']['write_calling']['default'],
+				      'checked'	=> $info['groupfeatures']['write_calling']));
 ?>
 </div>
 

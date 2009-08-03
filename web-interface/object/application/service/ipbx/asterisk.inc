@@ -537,8 +537,8 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$order['number'] = SORT_ASC;
 		$order['context'] = SORT_ASC;
 
-		if(($gfeatures = &$this->_service->get_module('groupfeatures')) !== false
-		&& ($r = $gfeatures->get_all_except($id,$number,$order)) !== false)
+		if(($groupfeatures = &$this->_service->get_module('groupfeatures')) !== false
+		&& ($r = $groupfeatures->get_all_except($id,$number,$order)) !== false)
 			return($r);
 
 		return(false);

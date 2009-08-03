@@ -85,13 +85,13 @@ if($gmember['list'] !== false && xivo_ak('groupmember',$result) === true)
 {
 	$gmember['slt'] = xivo_array_intersect_key($result['groupmember'],
 						   $gmember['list'],
-						   'gfeaturesid');
+						   'groupfeaturesid');
 
 	if($gmember['slt'] !== false)
 	{
 		$gmember['info'] = xivo_array_copy_intersect_key($result['groupmember'],
 								 $gmember['slt'],
-								 'gfeaturesid');
+								 'groupfeaturesid');
 		$gmember['list'] = xivo_array_diff_key($gmember['list'],$gmember['slt']);
 
 		$groupsort = new xivo_sort(array('key' => 'name'));

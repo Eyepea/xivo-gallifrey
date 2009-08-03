@@ -16,10 +16,10 @@ Droits d'appels
 ; smenu_dialaction
 Non réponse
 
-; fm_gfeatures_name
+; fm_groupfeatures_name
 Nom :
 
-; fm_gfeatures_number
+; fm_groupfeatures_number
 Numéro :
 
 ; fm_queue_strategy
@@ -43,31 +43,31 @@ Aléatoire
 ; fm_queue_strategy-opt-ringall
 Tous
 
-; fm_gfeatures_context
+; fm_groupfeatures_context
 Contexte :
 
 ; create_context
 Créer un contexte
 
-; fm_gfeatures_timeout
+; fm_groupfeatures_timeout
 Temps de sonnerie :
 
-; fm_gfeatures_timeout-opt0
+; fm_groupfeatures_timeout-opt0
 Illimité
 
-; fm_gfeatures_timeout-opt
+; fm_groupfeatures_timeout-opt
 %s secondes
 
-; fm_gfeatures_transfer-user
+; fm_groupfeatures_transfer-user
 Autorise l'appelé à transférer l'appelant :
 
-; fm_gfeatures_transfer-call
+; fm_groupfeatures_transfer-call
 Autorise l'appelant à transférer l'appel :
 
-; fm_gfeatures_write-caller
+; fm_groupfeatures_write-caller
 Autorise l'appelé à enregistrer l'appel :
 
-; fm_gfeatures_write-calling
+; fm_groupfeatures_write-calling
 Autorise l'appelant à enregistrer l'appel :
 
 ; fm_queue_timeout
@@ -94,7 +94,7 @@ Remplacer
 ; fm_callerid_mode-opt(append)
 Suffixer
 
-; fm_gfeatures_preprocess-subroutine
+; fm_groupfeatures_preprocess-subroutine
 Sous-routine de prétraitement :
 
 ; bt_inuser

@@ -50,7 +50,7 @@ switch($act)
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('gfeatures',$_QR) === true
+		&& xivo_issa('groupfeatures',$_QR) === true
 		&& xivo_issa('queue',$_QR) === true)
 		{
 			if($appgroup->set_add($_QR) === false
@@ -147,7 +147,7 @@ switch($act)
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('gfeatures',$_QR) === true
+		&& xivo_issa('groupfeatures',$_QR) === true
 		&& xivo_issa('queue',$_QR) === true)
 		{
 			$return = &$result;
@@ -203,7 +203,7 @@ switch($act)
 				$return['callerid'] = null;
 		}
 
-		$_HTML->set_var('id',$info['gfeatures']['id']);
+		$_HTML->set_var('id',$info['groupfeatures']['id']);
 		$_HTML->set_var('info',$return);
 		$_HTML->set_var('fm_save',$fm_save);
 		$_HTML->set_var('dialaction',$return['dialaction']);
@@ -264,14 +264,14 @@ switch($act)
 		if(($values = xivo_issa_val('groups',$_QR)) === false)
 			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/groups'),$param);
 
-		$gfeatures = &$ipbx->get_module('groupfeatures');
+		$groupfeatures = &$ipbx->get_module('groupfeatures');
 		$queue = &$ipbx->get_module('queue');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $gfeatures->get($values[$i])) !== false)
+			if(($info = $groupfeatures->get($values[$i])) !== false)
 				$queue->disable($info['name'],$disable);
 		}
 

@@ -13,10 +13,10 @@ Call permissions
 ; smenu_dialaction
 No answer
 
-; fm_gfeatures_name
+; fm_groupfeatures_name
 Name:
 
-; fm_gfeatures_number
+; fm_groupfeatures_number
 Number:
 
 ; fm_queue_strategy
@@ -40,19 +40,19 @@ Random
 ; fm_queue_strategy-opt-ringall
 Ring all
 
-; fm_gfeatures_context
+; fm_groupfeatures_context
 Context:
 
 ; create_context
 Create a context
 
-; fm_gfeatures_timeout
+; fm_groupfeatures_timeout
 Ring time:
 
-; fm_gfeatures_timeout-opt0
+; fm_groupfeatures_timeout-opt0
 Unlimited
 
-; fm_gfeatures_timeout-opt
+; fm_groupfeatures_timeout-opt
 %s seconds
 
 ; fm_queue_timeout
