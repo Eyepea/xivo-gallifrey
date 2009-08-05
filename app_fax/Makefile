@@ -35,7 +35,7 @@ LDFLAGS ?= -Xlinker -x
 Z_LIBS := $(MY_LDFLAGS) $(LDFLAGS) $(ADD_LDFLAGS)
 
 
-BINARIES = app_rxfax.so app_txfax.so
+BINARIES = app_fax.so
 
 # Use make DESTDIR=/path/to/sysroot PREFIX=/usr/local if you want to
 # install this module in a non-standard location.
