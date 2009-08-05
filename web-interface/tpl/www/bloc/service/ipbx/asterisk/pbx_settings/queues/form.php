@@ -735,6 +735,12 @@ endif;
 				    'value'	=> $info['queue']['leavewhenempty']),
 			      $element['queue']['leavewhenempty']['value']),
 
+		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_ringinuse'),
+				      'name'	=> 'queue[ringinuse]',
+				      'labelid'	=> 'queue-ringinuse',
+				      'default'	=> $element['queue']['ringinuse']['default'],
+				      'checked'	=> $info['queue']['ringinuse'])),
+
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_eventwhencalled'),
 				      'name'	=> 'queue[eventwhencalled]',
 				      'labelid'	=> 'queue-eventwhencalled',

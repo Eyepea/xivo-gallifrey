@@ -674,6 +674,7 @@ CREATE TABLE queue (
  leavewhenempty varchar(6),
  eventmemberstatus tinyint(1) NOT NULL DEFAULT 0,
  eventwhencalled tinyint(1) NOT NULL DEFAULT 0,
+ ringinuse tinyint(1) NOT NULL DEFAULT 0,
  reportholdtime tinyint(1) NOT NULL DEFAULT 0,
  memberdelay integer unsigned,
  weight integer unsigned,

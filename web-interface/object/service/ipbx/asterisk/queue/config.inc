@@ -116,6 +116,11 @@ $array['element']['leavewhenempty']['value'] = array('no','yes','strict');
 $array['element']['leavewhenempty']['default'] = 'no';
 $array['element']['leavewhenempty']['setdef'] = true;
 
+$array['element']['ringinuse'] = array();
+$array['element']['ringinuse']['value'] = array(0,1);
+$array['element']['ringinuse']['default'] = 1;
+$array['element']['ringinuse']['set'] = true;
+
 $array['element']['eventwhencalled'] = array();
 $array['element']['eventwhencalled']['value'] = array(0,1);
 $array['element']['eventwhencalled']['default'] = 1;
@@ -221,6 +226,7 @@ $array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'key' => ar
 $array['filter']['monitor-type'] = array('set' => false,'chk' => 2,'key' => array('no','mixmonitor'));
 $array['filter']['joinempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
 $array['filter']['leavewhenempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
+$array['filter']['ringinuse'] = array('bool' => true);
 $array['filter']['eventwhencalled'] = array('bool' => true);
 $array['filter']['eventmemberstatus'] = array('bool' => true);
 $array['filter']['reportholdtime'] = array('bool' => true);

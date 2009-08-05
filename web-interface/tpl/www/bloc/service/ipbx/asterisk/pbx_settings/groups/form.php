@@ -93,7 +93,13 @@ endif;
 				    'key'	=> false,
 				    'default'	=> $element['queue']['timeout']['default'],
 				    'value'	=> (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),
-			      $element['queue']['timeout']['value']);
+			      $element['queue']['timeout']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_ringinuse'),
+				      'name'	=> 'queue[ringinuse]',
+				      'labelid'	=> 'queue-ringinuse',
+				      'default'	=> $element['queue']['ringinuse']['default'],
+				      'checked'	=> $info['queue']['ringinuse']));
 
 if($moh_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_musiconhold'),
