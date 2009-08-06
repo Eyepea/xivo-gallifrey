@@ -187,7 +187,7 @@ static int nv_detectfax_exec(struct ast_channel *chan, void *data)
 		if (waitdur > 0)
 			timeout = time(NULL) + (time_t)waitdur;
 
-		while (ast_waitfor(chan, 100) > -1) {
+		while (ast_waitfor(chan, 50) > -1) {
 			if (waitdur > 0 && time(NULL) > timeout) {
 				res = 0;
 				break;
