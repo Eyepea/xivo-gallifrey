@@ -754,6 +754,7 @@ static int sndfax_exec(struct ast_channel *chan, void *data)
 {
 	int res = 0;
 	char *parse;
+	struct ast_module_user *u;
 	fax_session session;
 
 	AST_DECLARE_APP_ARGS(args,
@@ -784,12 +785,17 @@ static int sndfax_exec(struct ast_channel *chan, void *data)
 	}
 
 	/* Done parsing */
+
+	u = ast_module_user_add(chan);
+
 	session.direction = 1;
 	session.file_name = args.file_name;
 	session.chan = chan;
 	session.finished = 0;
 
 	res = transmit(&session);
+
+	ast_module_user_remove(u);
 
 	return res;
 }
@@ -798,6 +804,7 @@ static int rcvfax_exec(struct ast_channel *chan, void *data)
 {
 	int res = 0;
 	char *parse;
+	struct ast_module_user *u;
 	fax_session session;
 
 	AST_DECLARE_APP_ARGS(args,
@@ -828,12 +835,17 @@ static int rcvfax_exec(struct ast_channel *chan, void *data)
 	}
 
 	/* Done parsing */
+
+	u = ast_module_user_add(chan);
+
 	session.direction = 0;
 	session.file_name = args.file_name;
 	session.chan = chan;
 	session.finished = 0;
 
 	res = transmit(&session);
+
+	ast_module_user_remove(u);
 
 	return res;
 }
