@@ -58,7 +58,7 @@ def in_callerid(agi, cursor, args):
             if add:
                 callerid_num = add + callerid_num
 
-        agi.set_variable('CALLERID(all)', '"" <%s>' % callerid_num)
+        agi.set_variable('CALLERID(num)', "%s" % callerid_num)
 
         return
 
