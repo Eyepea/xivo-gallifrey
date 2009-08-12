@@ -1,8 +1,8 @@
-Index: asterisk-1.4.24/channels/chan_sip.c
+Index: asterisk-1.4.26/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.24.orig/channels/chan_sip.c	2009-05-27 12:58:03.000000000 +0200
-+++ asterisk-1.4.24/channels/chan_sip.c	2009-05-27 12:58:29.000000000 +0200
-@@ -1428,6 +1428,7 @@
+--- asterisk-1.4.26.orig/channels/chan_sip.c	2009-07-22 18:12:35.000000000 +0200
++++ asterisk-1.4.26/channels/chan_sip.c	2009-07-22 18:17:21.000000000 +0200
+@@ -1433,6 +1433,7 @@
  static int function_sipchaninfo_read(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len);
  static int sip_dtmfmode(struct ast_channel *chan, void *data);
  static int sip_addheader(struct ast_channel *chan, void *data);
@@ -10,7 +10,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  static int sip_do_reload(enum channelreloadreason reason);
  static int sip_reload(int fd, int argc, char *argv[]);
  static int acf_channel_read(struct ast_channel *chan, char *funcname, char *preparse, char *buf, size_t buflen);
-@@ -18709,6 +18710,26 @@
+@@ -18928,6 +18929,26 @@
  "Adding the wrong headers may jeopardize the SIP dialog.\n"
  "Always returns 0\n";
  
@@ -37,7 +37,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  
  /*! \brief Set the DTMFmode for an outbound SIP call (application) */
  static int sip_dtmfmode(struct ast_channel *chan, void *data)
-@@ -18799,6 +18820,38 @@
+@@ -19018,6 +19039,38 @@
  	return 0;
  }
  
@@ -76,7 +76,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  /*! \brief Transfer call before connect with a 302 redirect
  \note	Called by the transfer() dialplan application through the sip_transfer()
  	pbx interface function if the call is in ringing state 
-@@ -19109,6 +19162,7 @@
+@@ -19328,6 +19381,7 @@
  	/* Register dialplan applications */
  	ast_register_application(app_dtmfmode, sip_dtmfmode, synopsis_dtmfmode, descrip_dtmfmode);
  	ast_register_application(app_sipaddheader, sip_addheader, synopsis_sipaddheader, descrip_sipaddheader);
@@ -84,7 +84,7 @@ Index: asterisk-1.4.24/channels/chan_sip.c
  
  	/* Register dialplan functions */
  	ast_custom_function_register(&sip_header_function);
-@@ -19148,6 +19202,7 @@
+@@ -19367,6 +19421,7 @@
  	/* Unregister dial plan applications */
  	ast_unregister_application(app_dtmfmode);
  	ast_unregister_application(app_sipaddheader);

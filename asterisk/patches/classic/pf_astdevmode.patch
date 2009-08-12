@@ -1,8 +1,8 @@
-Index: asterisk-1.4.24/main/channel.c
+Index: asterisk-1.4.26/main/channel.c
 ===================================================================
---- asterisk-1.4.24.orig/main/channel.c	2009-05-27 12:58:33.000000000 +0200
-+++ asterisk-1.4.24/main/channel.c	2009-05-27 12:58:46.000000000 +0200
-@@ -2518,6 +2518,7 @@
+--- asterisk-1.4.26.orig/main/channel.c	2009-07-22 18:21:23.000000000 +0200
++++ asterisk-1.4.26/main/channel.c	2009-07-22 18:55:12.000000000 +0200
+@@ -2576,6 +2576,7 @@
  	case AST_CONTROL_ANSWER:
  	case AST_CONTROL_HANGUP:
  	case AST_CONTROL_CONNECTEDLINE:
@@ -10,7 +10,7 @@ Index: asterisk-1.4.24/main/channel.c
  		return 0;
  
  	case AST_CONTROL_CONGESTION:
-@@ -2610,6 +2611,7 @@
+@@ -2678,6 +2679,7 @@
  	case AST_CONTROL_RING:
  	case AST_CONTROL_HOLD:
  	case AST_CONTROL_UNHOLD:

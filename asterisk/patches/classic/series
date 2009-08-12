@@ -8,7 +8,6 @@ astvarrundir
 make-clean-fixes
 safe_asterisk-config
 safe_asterisk-nobg
-h323-no-deps-on-asterisk
 h323-workaround-openh323-segfault
 
 # new features
@@ -36,7 +35,7 @@ pf_macro_loop_verbose.patch
 # patch for 1.4.22 but only pushed in trunk
 chan-sip_sipremoveheader_issue14246-trunk
 
-pf_sip_mwi_for_thomson_st2030s.patch
+pf_sip_mwi_for_thomson_st20XXs.patch
 
 passerted_issue8824.patch
 deadlock_chan_local_issue14112.patch
@@ -53,4 +52,4 @@ atxfer_ami_event.patch
 pf_sip_fix_masquerade.patch
 pf_sip_fix_local_attended.patch
 pf_voicemail_date_language.patch
-
+pf_silly_build_fix

@@ -2,11 +2,11 @@
  -- Faidon Liambotis <paravoid@debian.org>
  -- Guillaume Knispel <gknispel@proformatique.com>
 
-Index: asterisk-1.4.22/main/asterisk.c
+Index: asterisk-1.4.26/main/asterisk.c
 ===================================================================
---- asterisk-1.4.22.orig/main/asterisk.c	2008-10-17 16:43:20.000000000 +0200
-+++ asterisk-1.4.22/main/asterisk.c	2008-10-17 16:43:23.000000000 +0200
-@@ -144,6 +144,10 @@
+--- asterisk-1.4.26.orig/main/asterisk.c	2009-07-22 18:59:33.000000000 +0200
++++ asterisk-1.4.26/main/asterisk.c	2009-07-22 18:59:37.000000000 +0200
+@@ -145,6 +145,10 @@
  	ast_verbose("This is free software, with components licensed under the GNU General Public\n"); \
  	ast_verbose("License version 2 and other licenses; you are welcome to redistribute it under\n"); \
  	ast_verbose("certain conditions. Type 'core show license' for details.\n"); \

@@ -1,0 +1,13 @@
+Index: asterisk-1.4.26.1/main/Makefile
+===================================================================
+--- asterisk-1.4.26.1.orig/main/Makefile	2009-08-12 10:57:08.000000000 +0200
++++ asterisk-1.4.26.1/main/Makefile	2009-08-12 10:58:09.000000000 +0200
+@@ -133,7 +133,7 @@
+ 		mv $(ASTTOPDIR)/include/asterisk/build.h.tmp $(ASTTOPDIR)/include/asterisk/build.h ; \
+ 	fi
+ 	@rm -f $(ASTTOPDIR)/include/asterisk/build.h.tmp
+-	@$(CC) -c -o buildinfo.o $(ASTCFLAGS) buildinfo.c
++	@$(CC) -c -o buildinfo.o $(ASTCFLAGS) -I $(ASTTOPDIR)/include buildinfo.c
+ 	$(ECHO_PREFIX) echo "   [LD] $(OBJS) editline/libedit.a db1-ast/libdb1.a $(AST_EMBED_LDSCRIPTS) -> $@"
+ ifneq ($(findstring chan_h323,$(MENUSELECT_CHANNELS)),)
+ 	$(CMD_PREFIX) $(CC) $(STATIC_BUILD) -o $@ $(ASTLINK) $(AST_EMBED_LDFLAGS) $(ASTLDFLAGS) $(OBJS) editline/libedit.a db1-ast/libdb1.a $(AST_EMBED_LDSCRIPTS) buildinfo.o $(AST_LIBS) $(AST_EMBED_LIBS)

@@ -2,14 +2,16 @@ An extra little sleep that seems to work around a problem when
 running the test between two PRI channels.
 
 Upstream bug: http://bugs.digium.com/12442
---- asterisk-1.4.19~dfsg.orig/apps/app_test.c
-+++ asterisk-1.4.19~dfsg/apps/app_test.c
-@@ -297,6 +297,8 @@ static int testclient_exec(struct ast_ch
+Index: asterisk-1.4.26/apps/app_test.c
+===================================================================
+--- asterisk-1.4.26.orig/apps/app_test.c	2009-03-26 22:07:32.000000000 +0100
++++ asterisk-1.4.26/apps/app_test.c	2009-07-22 18:12:02.000000000 +0200
+@@ -296,6 +296,8 @@
  					res = 0;
  				else
  					res = -1;
 +
 +				sleep(1);
  			}
- 			if (option_debug && !res ) {
- 				/* Step 12: Hangup! */
+ 			if (!res) {
+ 				res = ast_safe_sleep(chan, 1000);
