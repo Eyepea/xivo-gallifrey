@@ -29,10 +29,8 @@ def outgoing_user_set_features(agi, cursor, args):
     # FIXME: this is only for the callrecord feature, which is likely to change
     srcnum = agi.get_variable('XIVO_SRCNUM')
 
-    feature_list = objects.FeatureList(agi, cursor)
-
     try:
-        outcall = objects.Outcall(agi, cursor, feature_list, int(dstid))
+        outcall = objects.Outcall(agi, cursor, int(dstid))
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
@@ -49,15 +47,14 @@ def outgoing_user_set_features(agi, cursor, args):
 
     if not outcall.internal:
         try:
-            user = objects.User(agi, cursor, int(userid), feature_list)
+            user = objects.User(agi, cursor, int(userid))
 
             callerid = user.outcallerid
 
             if user.enableautomon:
                 options += "W"
 
-            if user.callrecord:
-                callrecord = True
+            callrecord = user.callrecord
         except (ValueError, LookupError):
             pass
 
@@ -84,7 +81,7 @@ def outgoing_user_set_features(agi, cursor, args):
         if callerid == 'anonymous':
             agi.appexec('SetCallerPres', 'prohib')
 
-    if callrecord and feature_list.incallrec:
+    if callrecord and objects.FeatureList(agi, cursor).callrecord:
         # BUGBUG the context is missing in the filename TODO use ids
         callrecordfile = "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time()))
     else:

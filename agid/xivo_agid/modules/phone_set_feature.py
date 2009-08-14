@@ -19,7 +19,7 @@ __license__ = """
 from xivo_agid import agid
 from xivo_agid import objects
 
-def user_set_feature(agi, cursor, args):
+def phone_set_feature(agi, cursor, args):
     userid  = agi.get_variable('XIVO_USERID')
     xlen    = len(args)
 
@@ -28,7 +28,7 @@ def user_set_feature(agi, cursor, args):
 
     feature = args[0]
 
-    if feature in ("vm", "dnd", "callrecord", "callfilter"):
+    if feature in ("vm", "dnd", "callrecord", "incallfilter"):
         if xlen > 1 and args[1] != '':
             try:
                 if xlen == 2:
@@ -41,7 +41,8 @@ def user_set_feature(agi, cursor, args):
                 agi.dp_break(str(e))
         else:
             try:
-                user = objects.User(agi, cursor, int(userid))
+                userid = int(userid)
+                user = objects.User(agi, cursor, userid)
             except (ValueError, LookupError), e:
                 agi.dp_break(str(e))
 
@@ -68,8 +69,8 @@ def user_set_feature(agi, cursor, args):
             agi.set_variable('XIVO_DNDENABLED', user.enablednd)
         elif feature == "callrecord":
             agi.set_variable('XIVO_CALLRECORDENABLED', user.callrecord)
-        elif feature == "callfilter":
-            agi.set_variable('XIVO_INCALLFILTERENABLED', user.callfilter)
+        elif feature == "incallfilter":
+            agi.set_variable('XIVO_INCALLFILTERENABLED', user.incallfilter)
         agi.set_variable('XIVO_USERID_OWNER', user.id)
     elif feature in ("unc", "rna", "busy"):
         if xlen < 2:
@@ -82,13 +83,29 @@ def user_set_feature(agi, cursor, args):
         else:
             arg = None
 
+        if xlen > 3 and args[3] != '':
+            try:
+                if xlen == 4:
+                    context = objects.User(agi, cursor, xid=int(userid)).context
+                else:
+                    context = args[4]
+
+                user = objects.User(agi, cursor, exten=args[3], context=context)
+            except (ValueError, LookupError), e:
+                agi.dp_break(str(e))
+        else:
+            try:
+                user = objects.User(agi, cursor, int(userid))
+            except (ValueError, LookupError), e:
+                agi.dp_break(str(e))
+
         try:
-            user = objects.User(agi, cursor, int(userid))
             user.set_feature(feature, enabled, arg)
-        except (ValueError, LookupError), e:
-            agi.dp_break(str(e))
         except objects.DBUpdateException, e:
             agi.verbose(str(e))
+
+        agi.set_variable("XIVO_%sENABLED" % feature.upper(), getattr(user, "enable%s" % feature))
+        agi.set_variable('XIVO_USERID_OWNER', user.id)
     elif feature == "bsfilter":
         try:
             user = objects.User(agi, cursor, int(userid))
@@ -160,4 +177,4 @@ def user_set_feature(agi, cursor, args):
     else:
         agi.dp_break("Unknown feature %r" % feature)
 
-agid.register(user_set_feature)
+agid.register(phone_set_feature)

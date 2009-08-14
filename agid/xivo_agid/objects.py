@@ -32,26 +32,53 @@ class DBUpdateException(Exception):
     pass
 
 
-class FeatureList:
+class ExtenFeatures:
+    FORWARDS = (('fwdbusy', 'busy'),
+                ('fwdrna', 'rna'),
+                ('fwdunc', 'unc'))
+
+    SERVICES = (('enablevm', 'enablevoicemail'),
+                ('callrecord', 'callrecord'),
+                ('incallfilter', 'incallfilter'),
+                ('enablednd', 'enablednd'))
+
     def __init__(self, agi, cursor):
-        cursor.query("SELECT ${columns} FROM extensions "
-                     'WHERE name IN ("fwdunc", "fwdrna", "fwdbusy", "enablevm", "incallfilter", "incallrec", "enablednd") '
-                     "AND commented = 0",
-                     ('name',))
-        res = cursor.fetchall()
+        self.agi = agi
+        self.cursor = cursor
+
+        self.featureslist = tuple(x[0] for x in (self.FORWARDS + self.SERVICES))
+
+        self.cursor.query("SELECT ${columns} FROM extensions "
+                          "WHERE name IN (" + ", ".join(["%s"] * len(self.featureslist)) + ") "
+                          "AND commented = 0",
+                          ('name',),
+                          self.featureslist)
+        res = self.cursor.fetchall()
 
         if not res:
-            raise LookupError("Unable to find features in table extensions")
+            enabled_features = []
+        else:
+            enabled_features = [row['name'] for row in res]
 
-        enabled_features = set([row['name'] for row in res])
+        for feature in self.featureslist:
+            setattr(self, feature, (feature in enabled_features))
 
-        self.fwdunc = 'fwdunc' in enabled_features
-        self.fwdrna = 'fwdrna' in enabled_features
-        self.fwdbusy = 'fwdbusy' in enabled_features
-        self.enablevm = 'enablevm' in enabled_features
-        self.incallfilter = 'incallfilter' in enabled_features
-        self.incallrec = 'incallrec' in enabled_features
-        self.enablednd = 'enablednd' in enabled_features
+    def get_feature_by_exten(self, exten):
+        self.cursor.query("SELECT ${columns} FROM extensions "
+                          "WHERE name IN (" + ", ".join(["%s"] * len(self.featureslist)) + ") "
+                          "AND (exten = %s "
+                          "OR (SUBSTR(exten,1,1) = '_' "
+                              "AND SUBSTR(exten, 2, %s) LIKE %s)) "
+                          "AND commented = 0",
+                          ('name',),
+                          self.featureslist + (exten, len(exten), "%s%%" % exten))
+
+        res = self.cursor.fetchone()
+
+        if not res:
+            raise LookupError("Unable to find feature by exten (exten = %r)" % exten)
+
+        return res['name']
 
 
 class BossSecretaryFilterMember:
@@ -319,7 +346,7 @@ class VMBox:
 
 
 class User:
-    def __init__(self, agi, cursor, xid=None, feature_list=None, exten=None, context=None, name=None, protocol=None):
+    def __init__(self, agi, cursor, xid=None, exten=None, context=None, name=None, protocol=None):
         self.agi = agi
         self.cursor = cursor
 
@@ -327,7 +354,7 @@ class User:
                    'firstname', 'lastname', 'name',
                    'ringseconds', 'simultcalls', 'enablevoicemail',
                    'voicemailid', 'enablexfer', 'enableautomon',
-                   'callrecord', 'callfilter', 'enablednd',
+                   'callrecord', 'incallfilter', 'enablednd',
                    'enableunc', 'destunc', 'enablerna', 'destrna',
                    'enablebusy', 'destbusy', 'musiconhold',
                    'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber')
@@ -384,7 +411,7 @@ class User:
         self.enablexfer = res['enablexfer']
         self.enableautomon = res['enableautomon']
         self.callrecord = res['callrecord']
-        self.callfilter = res['callfilter']
+        self.incallfilter = res['incallfilter']
         self.enablednd = res['enablednd']
         self.enableunc = res['enableunc']
         self.destunc = res['destunc']
@@ -417,16 +444,16 @@ class User:
         else:
             self.filter = None
 
-        if not feature_list:
-            feature_list = FeatureList(agi, cursor)
+        self.vmbox = None
 
-        if feature_list.enablevm and self.enablevoicemail and self.voicemailid:
+        if self.enablevoicemail and self.voicemailid:
             try:
                 self.vmbox = VMBox(agi, cursor, self.voicemailid)
             except LookupError:
                 self.vmbox = None
-        else:
-            self.vmbox = None
+
+        if not self.vmbox:
+            self.enablevoicemail = 0
 
     def reset(self):
         self.cursor.query("UPDATE userfeatures "
@@ -477,7 +504,7 @@ class User:
             feature = "enablevoicemail"
         elif feature == "dnd":
             feature = "enablednd"
-        elif feature not in ("callrecord", "callfilter"):
+        elif feature not in ("callrecord", "incallfilter"):
             raise ValueError("invalid feature")
 
         enabled = int(not getattr(self, feature))
@@ -728,6 +755,31 @@ class Agent:
 
 
 class DialAction:
+    @staticmethod
+    def set_agi_variables(agi, event, category, action, actionarg1, actionarg2, isda=True):
+        xtype = ("%s_%s" % (category, event)).upper()
+        agi.set_variable("XIVO_FWD_%s_ACTION" % xtype, action)
+
+        # Sometimes, it's useful to know whether these variables were
+        # set manually, or by this object.
+        if isda:
+            agi.set_variable("XIVO_FWD_%s_ISDA" % xtype, "1")
+
+        if actionarg1:
+            actionarg1 = actionarg1.replace('|', ';')
+        else:
+            actionarg1 = ""
+
+        if actionarg2:
+            actionarg2 = actionarg2
+        else:
+            actionarg2 = ""
+
+        agi.set_variable("XIVO_FWD_%s_ACTIONARG1" % xtype,
+                         actionarg1)
+        agi.set_variable("XIVO_FWD_%s_ACTIONARG2" % xtype,
+                         actionarg2)
+
     def __init__(self, agi, cursor, event, category, categoryval):
         self.agi = agi
         self.cursor = cursor
@@ -753,27 +805,13 @@ class DialAction:
             self.actionarg2 = res['actionarg2']
 
     def set_variables(self):
-        xtype = ("%s_%s" % (self.category, self.event)).upper()
-        self.agi.set_variable('XIVO_FWD_%s_ACTION' % xtype, self.action)
-
-        # Sometimes, it's useful to know whether these variables were
-        # set manually, or by this object.
-        self.agi.set_variable('XIVO_FWD_%s_ISDA' % xtype, "1")
-
-        if self.actionarg1:
-            actionarg1 = self.actionarg1.replace('|', ';')
-        else:
-            actionarg1 = ""
-
-        if self.actionarg2:
-            actionarg2 = self.actionarg2
-        else:
-            actionarg2 = ""
-
-        self.agi.set_variable('XIVO_FWD_%s_ACTIONARG1' % xtype,
-                              actionarg1)
-        self.agi.set_variable('XIVO_FWD_%s_ACTIONARG2' % xtype,
-                              actionarg2)
+        DialAction.set_agi_variables(self.agi,
+                                     self.category,
+                                     self.event,
+                                     self.action,
+                                     self.actionarg1,
+                                     self.actionarg2,
+                                     True)
 
 
 class Trunk:
@@ -883,7 +921,7 @@ class DID:
 
 
 class Outcall:
-    def __init__(self, agi, cursor, feature_list=None, xid=None, exten=None, context=None):
+    def __init__(self, agi, cursor, xid=None, exten=None, context=None):
         self.agi = agi
         self.cursor = cursor
 
@@ -924,9 +962,6 @@ class Outcall:
         self.internal = res['internal']
         self.preprocess_subroutine = res['preprocess_subroutine']
         self.hangupringtime = res['hangupringtime']
-
-        if not feature_list:
-            feature_list = FeatureList(agi, cursor)
 
         cursor.query("SELECT ${columns} FROM outcalltrunk "
                      "WHERE outcallid = %s "

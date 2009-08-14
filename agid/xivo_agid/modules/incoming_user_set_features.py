@@ -31,18 +31,18 @@ def incoming_user_set_features(agi, cursor, args):
     srcnum = agi.get_variable('XIVO_SRCNUM')
     dstnum = agi.get_variable('XIVO_DSTNUM')
 
-    feature_list = objects.FeatureList(agi, cursor)
+    feature_list = objects.ExtenFeatures(agi, cursor)
 
     if userid:
         try:
-            caller = objects.User(agi, cursor, int(userid), feature_list)
+            caller = objects.User(agi, cursor, int(userid))
         except (ValueError, LookupError):
             caller = None
     else:
         caller = None
 
     try:
-        user = objects.User(agi, cursor, int(dstid), feature_list)
+        user = objects.User(agi, cursor, int(dstid))
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
@@ -103,7 +103,7 @@ def incoming_user_set_features(agi, cursor, args):
     if caller and caller.enableautomon:
         options += "W"
 
-    if feature_list.incallfilter and user.callfilter:
+    if feature_list.incallfilter and user.incallfilter:
         options += "p"
 
     agi.set_variable('XIVO_CALLOPTIONS', options)
@@ -124,28 +124,24 @@ def incoming_user_set_features(agi, cursor, args):
 
     agi.set_variable('XIVO_ENABLEDND', enablednd)
 
-    enablevoicemail = 0
     mailbox         = ""
     mailbox_context = ""
     useremail       = ""
 
-    if feature_list.enablevm:
-        enablevoicemail = user.enablevoicemail
+    if user.vmbox:
+        mailbox         = user.vmbox.mailbox
+        mailbox_context = user.vmbox.context
 
-        if user.vmbox:
-            mailbox         = user.vmbox.mailbox
-            mailbox_context = user.vmbox.context
+        if user.vmbox.email:
+            useremail = user.vmbox.email
 
-            if user.vmbox.email:
-                useremail = user.vmbox.email
-
-    agi.set_variable('XIVO_ENABLEVOICEMAIL', enablevoicemail)
+    agi.set_variable('XIVO_ENABLEVOICEMAIL', user.enablevoicemail)
     agi.set_variable('XIVO_MAILBOX', mailbox)
     agi.set_variable('XIVO_MAILBOX_CONTEXT', mailbox_context)
     agi.set_variable('XIVO_USEREMAIL', useremail)
 
-    enableunc       = ""
-    unc_action      = ""
+    enableunc       = 0
+    unc_action      = 'none'
     unc_actionarg1  = ""
     unc_actionarg2  = ""
 
@@ -158,45 +154,66 @@ def incoming_user_set_features(agi, cursor, args):
             unc_actionarg2  = user.context
 
     agi.set_variable('XIVO_ENABLEUNC', enableunc)
-    agi.set_variable('XIVO_FWD_USER_UNC_ACTION', unc_action)
-    agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG1', unc_actionarg1)
-    agi.set_variable('XIVO_FWD_USER_UNC_ACTIONARG2', unc_actionarg2)
+    objects.DialAction.set_agi_variables(agi,
+                                         'unc',
+                                         'user',
+                                         unc_action,
+                                         unc_actionarg1,
+                                         unc_actionarg2)
 
-    enablebusy = ""
+    setbusy         = False
+    enablebusy      = 0
+    busy_action     = 'none'
+    busy_actionarg1 = ""
+    busy_actionarg2 = ""
 
     if feature_list.fwdbusy:
         enablebusy = user.enablebusy
 
         if enablebusy:
-            agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'extension')
-            agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG1', user.destbusy)
-            agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', user.context)
+            busy_action     = 'extension'
+            busy_actionarg1 = user.destbusy
+            busy_actionarg2 = user.context
         else:
+            setbusy = True
             objects.DialAction(agi, cursor, 'busy', 'user', user.id).set_variables()
-    else:
-        agi.set_variable('XIVO_FWD_USER_BUSY_ACTION', 'none')
-        agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG1', "")
-        agi.set_variable('XIVO_FWD_USER_BUSY_ACTIONARG2', "")
 
     agi.set_variable('XIVO_ENABLEBUSY', enablebusy)
 
-    enablerna = ""
+    if not setbusy:
+        objects.DialAction.set_agi_variables(agi,
+                                             'busy',
+                                             'user',
+                                             busy_action,
+                                             busy_actionarg1,
+                                             busy_actionarg2)
+
+    setrna         = False
+    enablerna      = 0
+    rna_action     = 'none'
+    rna_actionarg1 = ""
+    rna_actionarg2 = ""
 
     if feature_list.fwdrna:
         enablerna = user.enablerna
 
-        if user.enablerna:
-            agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTION', 'extension')
-            agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG1', user.destrna)
-            agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG2', user.context)
+        if enablerna:
+            rna_action     = 'extension'
+            rna_actionarg1 = user.destrna
+            rna_actionarg2 = user.context
         else:
-            objects.DialAction(agi, cursor, 'noanswer', 'user', user.id).set_variables()
-    else:
-        agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTION', 'none')
-        agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG1', "")
-        agi.set_variable('XIVO_FWD_USER_NOANSWER_ACTIONARG2', "")
+            setrna = True
+            objects.DialAction(agi, cursor, 'noanwser', 'user', user.id).set_variables()
 
     agi.set_variable('XIVO_ENABLERNA', enablerna)
+
+    if not setrna:
+        objects.DialAction.set_agi_variables(agi,
+                                             'noanwser',
+                                             'user',
+                                             rna_action,
+                                             rna_actionarg1,
+                                             rna_actionarg2)
 
     objects.DialAction(agi, cursor, 'congestion', 'user', user.id).set_variables()
     objects.DialAction(agi, cursor, 'chanunavail', 'user', user.id).set_variables()
@@ -204,7 +221,7 @@ def incoming_user_set_features(agi, cursor, args):
     if user.musiconhold:
         agi.set_variable('CHANNEL(musicclass)', user.musiconhold)
 
-    if feature_list.incallrec and user.callrecord:
+    if feature_list.callrecord and user.callrecord:
         # BUGBUG the context is missing in the filename TODO use ids
         callrecordfile = "user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time()))
     else:
