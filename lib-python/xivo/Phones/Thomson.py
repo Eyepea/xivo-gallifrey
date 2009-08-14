@@ -161,7 +161,9 @@ class Thomson(PhoneVendorMixin):
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            exten, supervise = funckey[key]
+            value = funckey[key]
+            exten = value['exten']
+            supervise = int(value.get('supervision', 0))
             fk_config_lines.append("FeatureKeyExt%02d=%s/<sip:%s>" % (int(key), 'LS'[supervise], exten))
         return "\n".join(fk_config_lines)
 

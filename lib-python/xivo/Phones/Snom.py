@@ -97,8 +97,15 @@ class Snom(PhoneVendorMixin):
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            exten, supervise = funckey[key] # pylint: disable-msg=W0612
-            fk_config_lines.append("fkey%01d: blf <sip:%s@%s;phone=user>" % (int(key), exten, cls.ASTERISK_IPV4))
+            value = funckey[key]
+            exten = value['exten']
+
+            if value.get('supervision'):
+                xtype = "dest"
+            else:
+                xtype = "speed"
+
+            fk_config_lines.append("fkey%01d: %s <sip:%s@%s>" % (int(key), xtype, exten, cls.ASTERISK_IPV4))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
@@ -206,16 +213,29 @@ class Snom(PhoneVendorMixin):
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
+        for model in cls.SNOM_MODELS:
+            for line in (
+                'class "Snom%s" {\n' % model,
+                '    match if option vendor-class-identifier = "snom%s";\n' % model,
+                '    log("boot Snom %s");\n' % model,
+                '    option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer'],
+                '    option bootfile-name "snom.php?mac={mac}";\n',
+                '}\n',
+                '\n'):
+                yield line
+
         for line in (
             'subclass "phone-mac-address-prefix" 1:00:04:13 {\n',
-            '    log("class Snom prefix 1:00:04:13");\n',
-            '    option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer'],
-            '    option bootfile-name "snom.php?mac={mac}";\n',
-            '    next-server %s;\n' % addresses['bootServer'],
+            '    if not exists vendor-class-identifier {\n',
+            '        log("class Snom prefix 1:00:04:13");\n',
+            '        option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer'],
+            '        option bootfile-name "snom.php?mac={mac}";\n',
+            '    }\n',
             '}\n',
             '\n'):
             yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
-        return ()
+        for model in cls.SNOM_MODELS:
+            yield '        allow members of "Snom%s";\n' % model

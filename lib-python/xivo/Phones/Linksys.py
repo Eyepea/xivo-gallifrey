@@ -180,7 +180,8 @@ class Linksys(PhoneVendorMixin):
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            exten, supervise = funckey[key]
+            value = funckey[key]
+            exten = value['exten']
 
             key = int(key)
             unit = int(math.ceil(math.modf(key)[1] / 32))
@@ -191,13 +192,20 @@ class Linksys(PhoneVendorMixin):
             if key == 0:
                 key = 32
 
-            if supervise:
+            if value.get('supervision'):
                 blf = "+blf"
             else:
                 blf = ""
 
             fk_config_lines.append('<Unit_%d_Key_%d ua="na">fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_%d_Key_%d>'
-                                   % (unit, key, blf, exten, cls.ASTERISK_IPV4, exten, unit, key))
+                                   % (unit,
+                                      key,
+                                      blf,
+                                      exten,
+                                      cls.ASTERISK_IPV4,
+                                      self.xml_escape(value.get('label', exten)),
+                                      unit,
+                                      key))
         return "\n".join(fk_config_lines)
 
     def do_reinitprov(self):
@@ -269,7 +277,6 @@ class Linksys(PhoneVendorMixin):
                 '    log("boot Linksys %s");\n' % identifier,
                 '    option tftp-server-name "%s";\n' % addresses['bootServer'],
                 '    option bootfile-name "Linksys/%s.cfg";\n' % model,
-                '    next-server %s;\n' % addresses['bootServer'],
                 '}\n',
                 '\n'):
                 yield line
@@ -277,8 +284,10 @@ class Linksys(PhoneVendorMixin):
         for macaddr_prefix in cls.LINKSYS_MACADDR_PREFIX:
             for line in (
                 'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
-                '    log("class Linksys prefix %s");\n' % macaddr_prefix,
-                '    option tftp-server-name "%s";\n' % addresses['bootServer'],
+                '    if not exists vendor-class-identifier {\n',
+                '        log("class Linksys prefix %s");\n' % macaddr_prefix,
+                '        option tftp-server-name "%s";\n' % addresses['bootServer'],
+                '    }\n',
                 '}\n',
                 '\n'):
                 yield line

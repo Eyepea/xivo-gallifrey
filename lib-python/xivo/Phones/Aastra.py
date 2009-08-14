@@ -110,7 +110,8 @@ class Aastra(PhoneVendorMixin):
         fk_config_lines = []
         unit = 1
         for key in sorted_keys:
-            exten, supervise = funckey[key] # pylint: disable-msg=W0612
+            value = funckey[key]
+            exten = value['exten']
 
             key = int(key)
 
@@ -131,13 +132,13 @@ class Aastra(PhoneVendorMixin):
             else:
                 keytype = "soft"
 
-            if supervise:
+            if value.get('supervision'):
                 xtype = "blf"
             else:
                 xtype = "speeddial"
 
             fk_config_lines.append("%skey%d type: %s" % (keytype, key, xtype))
-            fk_config_lines.append("%skey%d label: %s" % (keytype, key, exten))
+            fk_config_lines.append("%skey%d label: %s" % (keytype, key, value.get('label', exten)))
             fk_config_lines.append("%skey%d value: %s" % (keytype, key, exten))
             fk_config_lines.append("%skey%d line: 1" % (keytype, key))
         return "\n".join(fk_config_lines)
@@ -279,7 +280,6 @@ class Aastra(PhoneVendorMixin):
             for line in (
                 '    log("boot Aastra %s");\n' % model,
                 '    option tftp-server-name "http://%s/provisioning/Aastra";\n' % addresses['bootServer'],
-                '    next-server %s;\n' % addresses['bootServer'],
                 '}\n',
                 '\n'):
                 yield line
@@ -290,7 +290,6 @@ class Aastra(PhoneVendorMixin):
                 '    if not exists vendor-class-identifier {\n',
                 '        log("class Aastra prefix %s");\n' % macaddr_prefix,
                 '        option tftp-server-name "http://%s/provisioning/Aastra";\n' % addresses['bootServer'],
-                '        next-server %s;\n' % addresses['bootServer'],
                 '    }\n',
                 '}\n',
                 '\n'    ):
