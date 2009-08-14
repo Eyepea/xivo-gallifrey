@@ -2465,7 +2465,7 @@ class XivoCTICommand(BaseCommand):
                                         if qv.get('Paused') == '1':
                                             self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
                             # features-related actions
-                            elif params[0] in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd',
+                            elif params[0] in ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
                                                'enableunc', 'enablebusy', 'enablerna'] and len(params) > 1:
                                 if params[1] == 'false':
                                     booltonum = '0'
@@ -3962,7 +3962,7 @@ class XivoCTICommand(BaseCommand):
                     log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
                     function = event.get('Function')
                     if function in ['busy', 'rna', 'unc', 'vm', 'dnd',
-                                    'callrecord', 'callfilter', 'bsfilter']:
+                                    'callrecord', 'incallfilter', 'bsfilter']:
                             repstr = { function : { 'enabled' : bool(int(event.get('Status'))),
                                                     'number' : event.get('Value') } }
                             userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
@@ -5047,7 +5047,7 @@ class XivoCTICommand(BaseCommand):
             params = [srcnum, phoneid, context]
             query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND name = %s AND context = %s'
             
-            for key in ['enablevoicemail', 'callrecord', 'callfilter', 'enablednd']:
+            for key in ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd']:
                     try:
                             columns = (key,)
                             cursor.query(query, columns, params)
