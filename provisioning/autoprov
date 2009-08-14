@@ -75,7 +75,7 @@ from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
 from xivo import daemonize
 
-from xivo.xivo_helpers import speed_dial_key_extension
+from xivo.xivo_helpers import clean_extension, speed_dial_key_extension, fkey_extension
 
 log = logging.getLogger('autoprov') # pylint: disable-msg=C0103
 
@@ -248,6 +248,24 @@ class SQLBackEnd:
         confdico = replace_keys(confdico, mapping)
         confdico['name'] = name_from_first_last(confdico['firstname'],
                                                 confdico['lastname'])
+
+        confdico['extenfeatures'] = {'enablednd':   None,
+                                     'fwdunc':      None,
+                                     'parkext':     None,
+                                     'pickup':      None,
+                                     'pickupexten': None}
+
+        res = self.sql_select_all(
+                     ("SELECT ${columns} FROM %s "
+                     "WHERE type IN ('extenfeatures', 'featuremap', 'generalfeatures') "
+                     "AND typeval IN (" + ", ".join(["%%s"] * len(confdico['extenfeatures'])) + ")")
+                     % (XNUM_TABLE,),
+                     ('typeval', 'exten'),
+                     confdico['extenfeatures'].keys())
+
+        if res:
+            confdico['extenfeatures'].update(dict([x['typeval'], clean_extension(x['exten'])] for x in res))
+
         function_key_list = self.sql_select_all(
             ("SELECT ${columns} "
              "FROM %s "
@@ -257,7 +275,9 @@ class SQLBackEnd:
              "LEFT OUTER JOIN %s AS extenumright "
              "ON  %s.typeextenumbersright = extenumright.type "
              "AND %s.typevalextenumbersright = extenumright.typeval "
-             "WHERE iduserfeatures=%s")
+             "LEFT OUTER JOIN %s "
+             "AND %s.typevalextenumbersright = %s.id "
+             "WHERE iduserfeatures=%%s")
              % (FK_TABLE,
                 XNUM_TABLE,
                 FK_TABLE,
@@ -265,27 +285,65 @@ class SQLBackEnd:
                 XNUM_TABLE,
                 FK_TABLE,
                 FK_TABLE,
-                '%s'),
-            [FK_TABLE+x for x in ('.fknum', '.exten', '.supervision')]
+                UF_TABLE,
+                FK_TABLE,
+                FK_TABLE,
+                UF_TABLE),
+            [FK_TABLE+x for x in ('.fknum',
+                                  '.exten',
+                                  '.supervision',
+                                  '.iduserfeatures',
+                                  '.label',
+                                  '.typeextenumbersright')]
             + ['extenumleft.exten', 'extenumright.exten',
-               'extenumleft.type', 'extenumleft.typeval'],
+               'extenumleft.type', 'extenumleft.typeval']
+            + [UF_TABLE+x for x in ('.firstname', '.lastname', '.id')],
             (confdico['iduserfeatures'],))
+
         funckey = {}
         for fk in function_key_list:
-            # SPECIAL CASE:
-            isbsfilter = \
-                (fk['extenumleft.type'],
-                 fk['extenumleft.typeval']) \
-                == ('extenfeatures', 'bsfilter')
-            funckey[fk[FK_TABLE+'.fknum']] = (
-                speed_dial_key_extension(
-                    fk['extenumleft.exten'],
-                    fk['extenumright.exten'],
-                    fk[FK_TABLE+'.exten'],
-                    confdico['number'],
-                    isbsfilter),
-                bool(int(fk[FK_TABLE+'.supervision']))
-            )
+            isbsfilter = False
+            label = fk[FK_TABLE+'.label']
+            supervision = bool(int(fk[FK_TABLE+'.supervision']))
+
+            # SPECIAL CASES:
+            if fk['extenumleft.type'] == 'extenfeatures':
+                if fk['extenumleft.typeval'] == 'bsfilter':
+                    isbsfilter = True
+                elif fk['extenumleft.typeval'] == 'progfunckey':
+                    funckey[fk[FK_TABLE+'.fknum']] = {
+                        'exten':
+                            fkey_extension(
+                                fk['extenumleft.exten'],
+                                fk[FK_TABLE+'.iduserfeatures'],
+                                fk['extenumright.exten'],
+                                fk[FK_TABLE+'.exten']),
+                        'label':        label,
+                        'supervision':  supervision 
+                    }
+                    continue
+
+            if label is None \
+               and fk[FK_TABLE+'.typeextenumbersright'] == 'user' \
+               and fk[UF_TABLE+'.id']:
+                label = name_from_first_last(fk[UF_TABLE+'.firstname'],
+                                             fk[UF_TABLE+'.lastname'])
+
+                if isbsfilter:
+                    label = "BS:%s" % label
+
+            funckey[fk[FK_TABLE+'.fknum']] = {
+                'exten':
+                    speed_dial_key_extension(
+                        fk['extenumleft.exten'],
+                        fk['extenumright.exten'],
+                        fk[FK_TABLE+'.exten'],
+                        confdico['number'],
+                        isbsfilter),
+                'label':        label,
+                'supervision':  supervision
+            }
+
         confdico['funckey'] = funckey
         return confdico
 
