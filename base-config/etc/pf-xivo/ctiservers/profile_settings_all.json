@@ -21,5 +21,5 @@
         "berightback": {"delaymsec":60000, "newstate":"available"}
         },
 
-"services" : ["enablevm","incallrec","incallfilter","enablednd","fwdrna","fwdbusy","fwdunc"]
+"services" : ["enablevm","callrecord","incallfilter","enablednd","fwdrna","fwdbusy","fwdunc"]
 }
