@@ -53,3 +53,6 @@ pf_sip_fix_masquerade.patch
 pf_sip_fix_local_attended.patch
 pf_voicemail_date_language.patch
 pf_silly_build_fix
+
+deb_bridge-1.4-backport
+
