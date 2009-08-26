@@ -614,11 +614,11 @@ sha1sum: da52d7aa7fe51a8a0aaca702148e2f2dbb324850
 [aft_echocan]
 brand: Sangoma
 model: Echo Canceller for all cards
-version: 3.3.15
-files: wanpipe-3.3.15.tgz
+version: 3.5.6
+files: wanpipe-3.5.6.tgz
 
-[wanpipe-3.3.15.tgz]
-url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.3.15.tgz
-size: 12891379
-md5sum: bc5f5416cb3e303e776b5e6a3ee54851
-sha1sum: 131bf260e727e232f547c3107ce4de6a23cc3936
+[wanpipe-3.5.6.tgz]
+url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.6.tgz
+size: 13624372
+md5sum: aac079dac5fc56c413e0c4f24a8a502d
+sha1sum: c50c95015de8bd37c7b12964bf51d94b8d1ce07e
