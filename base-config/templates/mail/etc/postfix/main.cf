@@ -1,5 +1,5 @@
 ## Network options
-inet_protocols = all
+inet_protocols = inet4
 inet_interfaces = all
 myorigin = /etc/mailname
 mydomain = #_XIVO_SMTP_MYDOMAIN#
