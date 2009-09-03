@@ -66,11 +66,10 @@ from xivo_ctiservers.cti_sheetmanager import SheetManager
 from xivo_ctiservers import xivo_commandsets
 from xivo_ctiservers import xivo_ldap
 from xivo_ctiservers.xivo_commandsets import BaseCommand
+from xivo_ctiservers.client_connection import ClientConnection
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
-
-from xivo_ctiservers.client_connection import ClientConnection
 
 log = logging.getLogger('xivocti')
 
@@ -4873,14 +4872,12 @@ class XivoCTICommand(BaseCommand):
     
     def __find_channel_by_agentnum__(self, astid, agent_number):
         chans = []
-        for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
-            techref = uinfo.get('techlist')[0]
-            for v, vv in self.uniqueids[astid].iteritems(): ## XXX
-                if 'channel' in vv:
-                    if techref == self.__phoneid_from_channel__(astid, vv['channel']):
-                        chans.append(vv['channel'])
+        agent_channel = 'Agent/%s' % agent_number
+        for v, vv in self.uniqueids[astid].iteritems():
+            if 'channel' in vv and vv['channel'] == agent_channel:
+                chans.append(agent_channel)
+                break
         return chans
-    
     
     def __login_agent__(self, astid, agent_id, agentphonenumber = None):
         """
