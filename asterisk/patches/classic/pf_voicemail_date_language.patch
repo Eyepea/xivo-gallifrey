@@ -7,10 +7,10 @@
 	The date language is appropriately set in the main body of
 	voicemail-issued e-mails.
 
-Index: asterisk-1.4.26/apps/app_voicemail.c
+Index: asterisk-1.4.26.2/apps/app_voicemail.c
 ===================================================================
---- asterisk-1.4.26.orig/apps/app_voicemail.c	2009-06-26 22:03:42.000000000 +0200
-+++ asterisk-1.4.26/apps/app_voicemail.c	2009-07-22 18:55:23.000000000 +0200
+--- asterisk-1.4.26.2.orig/apps/app_voicemail.c	2009-08-10 22:14:34.000000000 +0200
++++ asterisk-1.4.26.2/apps/app_voicemail.c	2009-09-11 20:53:42.000000000 +0200
 @@ -65,6 +65,9 @@
  #include <sys/types.h>
  #include <sys/mman.h>
@@ -32,7 +32,7 @@ Index: asterisk-1.4.26/apps/app_voicemail.c
  static char emaildateformat[32] = "%A, %B %d, %Y at %r";
  
  
-@@ -3197,7 +3204,17 @@
+@@ -3197,7 +3204,22 @@
  	fprintf(p, "Date: %s" ENDL, date);
  
  	/* Set date format for voicemail mail */
@@ -40,8 +40,13 @@ Index: asterisk-1.4.26/apps/app_voicemail.c
 +	if (*emaildatelocale) {
 +		locale_t loc;
 +		loc = newlocale(LC_TIME_MASK, emaildatelocale, NULL);
-+		strftime_l(date, sizeof(date), emaildateformat, &tm, loc);
-+		freelocale(loc);
++		if (loc) {
++			strftime_l(date, sizeof(date), emaildateformat, &tm, loc);
++			freelocale(loc);
++		} else {
++			ast_log(LOG_WARNING, "failed to instantiate locale %s for LC_TIME_MASK (locale not installed?)\n", emaildatelocale);
++			strftime(date, sizeof(date), emaildateformat, &tm);
++		}
 +	} else
 +		strftime(date, sizeof(date), emaildateformat, &tm);
 +#else
@@ -50,7 +55,7 @@ Index: asterisk-1.4.26/apps/app_voicemail.c
  
  	if (*fromstring) {
  		struct ast_channel *ast;
-@@ -8387,6 +8404,14 @@
+@@ -8387,6 +8409,14 @@
  			ast_copy_string(emaildateformat, emaildateformatstr, sizeof(emaildateformat));
  		}
  
