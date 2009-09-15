@@ -268,25 +268,30 @@ INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*33.',1,'Macro','agentdy
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*665.',1,'Macro','queue|${EXTEN:4}|','callqueue');
+INSERT INTO extensions VALUES (NULL,1,'xivo-features','*26',1,'Macro','callrecord','callrecord');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*666.',1,'Macro','user|${EXTEN:4}|','calluser');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*36',1,'Directory','${CONTEXT}','directoryaccess');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*25',1,'Macro','enablednd','enablednd');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*90',1,'Macro','enablevm','enablevm');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*91',1,'Macro','enablevmbox','enablevmbox');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*91.',1,'Macro','enablevmbox|${EXTEN:3}','enablevmboxslt');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*90.',1,'Macro','enablevm|${EXTEN:3}','enablevmslt');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*23.',1,'Macro','fwdbusy|${EXTEN:3}','fwdbusy');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*22.',1,'Macro','fwdrna|${EXTEN:3}','fwdrna');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*21.',1,'Macro','fwdunc|${EXTEN:3}','fwdunc');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*23.',1,'Macro','feature_forward|busy|${EXTEN:3}','fwdbusy');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*22.',1,'Macro','feature_forward|rna|${EXTEN:3}','fwdrna');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*21.',1,'Macro','feature_forward|unc|${EXTEN:3}','fwdunc');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundoall','fwdundoall');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*23',1,'Macro','fwdundobusy','fwdundobusy');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*22',1,'Macro','fwdundorna','fwdundorna');
-INSERT INTO extensions VALUES (NULL,0,'xivo-features','*21',1,'Macro','fwdundounc','fwdundounc');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*48378',1,'Macro','guestprov','guestprov');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
-INSERT INTO extensions VALUES (NULL,1,'xivo-features','*26',1,'Macro','incallrec','incallrec');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*735.',1,'Macro','phoneprogfunckey|${EXTEN:0:4}|${EXTEN:4}','phoneprogfunckey');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}%${CONTEXT}@PICKUPMARK','pickup');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*56.',1,'Macro','groupmember|queue|add|${EXTEN:3}','queueaddmember');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*57.',1,'Macro','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*99.',1,'Macro','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*93.',1,'Macro','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
@@ -324,7 +329,11 @@ INSERT INTO extenumbers VALUES (NULL,'_*33.','269371911e5bac9176919fa42e66814882
 INSERT INTO extenumbers VALUES (NULL,'_*31.','678fe23ee0d6aa64460584bebbed210e270d662f','','extenfeatures','agentstaticlogin');
 INSERT INTO extenumbers VALUES (NULL,'_*32.','3ae0f1ff0ef4907faa2dad5da7bb891c9dbf45ad','','extenfeatures','agentstaticlogoff');
 INSERT INTO extenumbers VALUES (NULL,'_*37.','249b00b17a5983bbb2af8ed0af2ab1a74abab342','','extenfeatures','bsfilter');
+INSERT INTO extenumbers VALUES (NULL,'_*664.','9dfe780f1dc7fccbfc841b41a38933d4dab56369','','extenfeatures','callgroup');
 INSERT INTO extenumbers VALUES (NULL,'*34','668a8d2d8fe980b663e2cdcecb977860e1b272f3','','extenfeatures','calllistening');
+INSERT INTO extenumbers VALUES (NULL,'_*665.','7e2df45aedebded219eaa5fb84d6db7e8e24fc66','','extenfeatures','callqueue');
+INSERT INTO extenumbers VALUES (NULL,'*26','f8aeb70618cc87f1143c7dff23cdc0d3d0a48a0c','','extenfeatures','callrecord');
+INSERT INTO extenumbers VALUES (NULL,'_*666.','d7b68f456ddb50215670c5bfca921176a21c4270','','extenfeatures','calluser');
 INSERT INTO extenumbers VALUES (NULL,'*36','f9b69fe3c361ddfc2ae49e048460ea197ea850c8','','extenfeatures','directoryaccess');
 INSERT INTO extenumbers VALUES (NULL,'*25','c0d236c38bf8d5d84a2e154203cd2a18b86c6b2a','','extenfeatures','enablednd');
 INSERT INTO extenumbers VALUES (NULL,'*90','2fc9fcda52bd8293da1bfa68cbdb8974fafd409e','','extenfeatures','enablevm');
@@ -335,14 +344,15 @@ INSERT INTO extenumbers VALUES (NULL,'_*23.','a1968a70f1d265b8aa263e73c79259961c
 INSERT INTO extenumbers VALUES (NULL,'_*22.','00638af9e028d4cd454c00f43caf5626baa7d84c','','extenfeatures','fwdrna');
 INSERT INTO extenumbers VALUES (NULL,'_*21.','52c97d56ebcca524ccf882590e94c52f6db24649','','extenfeatures','fwdunc');
 INSERT INTO extenumbers VALUES (NULL,'*20','934aca632679075488681be0e9904cf9102f8766','','extenfeatures','fwdundoall');
-INSERT INTO extenumbers VALUES (NULL,'*23','572a822ffb7c680bd0f92cfde0b64530bd362696','','extenfeatures','fwdundobusy');
-INSERT INTO extenumbers VALUES (NULL,'*22','724827dabea7a207bfef4d948984a2e4da9de3ab','','extenfeatures','fwdundorna');
-INSERT INTO extenumbers VALUES (NULL,'*21','8fa35a886d3149c94d23ba4e69c041c1fe6468b9','','extenfeatures','fwdundounc');
+INSERT INTO extenumbers VALUES (NULL,'_*51.','fd3d50358d246ab2fbc32e14056e2f559d054792','','extenfeatures','groupaddmember');
+INSERT INTO extenumbers VALUES (NULL,'_*52.','069a278d266d0cf2aa7abf42a732fc5ad109a3e6','','extenfeatures','groupremovemember');
 INSERT INTO extenumbers VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','guestprov');
 INSERT INTO extenumbers VALUES (NULL,'*27','663b9615ba92c21f80acac52d60b28a8d1fb1c58','','extenfeatures','incallfilter');
-INSERT INTO extenumbers VALUES (NULL,'*26','f8aeb70618cc87f1143c7dff23cdc0d3d0a48a0c','','extenfeatures','incallrec');
+INSERT INTO extenumbers VALUES (NULL,'_*735.','32e9b3597f8b9cd2661f0c3d3025168baafca7e6','','extenfeatures','phoneprogfunckey');
 INSERT INTO extenumbers VALUES (NULL,'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');
 INSERT INTO extenumbers VALUES (NULL,'_*8.','b349d094036a97a7e0631ba60de759a9597c1c3a','','extenfeatures','pickup');
+INSERT INTO extenumbers VALUES (NULL,'_*56.','95d84232b10af6f6905dcd22f4261a4550461c7d','','extenfeatures','queueaddmember');
+INSERT INTO extenumbers VALUES (NULL,'_*57.','3ad1e945e85735f6417e5a0aba7fde3bc9d2ffec','','extenfeatures','queueremovemember');
 INSERT INTO extenumbers VALUES (NULL,'*9','e28d0f359da60dcf86340435478b19388b1b1d05','','extenfeatures','recsnd');
 INSERT INTO extenumbers VALUES (NULL,'_*99.','6c92223f2ea0cfd9fad3db2f288ebdc9c64dc8f5','','extenfeatures','vmboxmsgslt');
 INSERT INTO extenumbers VALUES (NULL,'_*93.','7d891f90799fd6cb5bc85c4bd227a3357096be8f','','extenfeatures','vmboxpurgeslt');
@@ -633,11 +643,14 @@ CREATE TABLE phonefunckey (
  typevalextenumbers varchar(255),
  typeextenumbersright varchar(64),
  typevalextenumbersright varchar(255),
+ label varchar(32),
  supervision tinyint(1) NOT NULL DEFAULT 0,
+ progfunckey tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(iduserfeatures,fknum)
 );
 
 CREATE INDEX phonefunckey__idx__exten ON phonefunckey(exten);
+CREATE INDEX phonefunckey__idx__progfunckey ON phonefunckey(progfunckey);
 CREATE INDEX phonefunckey__idx__typeextenumbers_typevalextenumbers ON phonefunckey(typeextenumbers,typevalextenumbers);
 CREATE INDEX phonefunckey__idx__typeextenumbersright_typevalextenumbersright ON phonefunckey(typeextenumbersright,typevalextenumbersright);
 
@@ -1197,7 +1210,7 @@ CREATE TABLE userfeatures (
  enablexfer tinyint(1) NOT NULL DEFAULT 0,
  enableautomon tinyint(1) NOT NULL DEFAULT 0,
  callrecord tinyint(1) NOT NULL DEFAULT 0,
- callfilter tinyint(1) NOT NULL DEFAULT 0,
+ incallfilter tinyint(1) NOT NULL DEFAULT 0,
  enablednd tinyint(1) NOT NULL DEFAULT 0,
  enableunc tinyint(1) NOT NULL DEFAULT 0,
  destunc varchar(128) NOT NULL DEFAULT '',
@@ -1231,7 +1244,7 @@ CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,n
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 
 INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
-				 30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,0,'');
+                                 30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,0,'');
 
 
 DROP TABLE useriax;
@@ -1384,11 +1397,11 @@ CREATE INDEX usersip__idx__lastms ON usersip(lastms);
 CREATE UNIQUE INDEX usersip__uidx__name ON usersip(name);
 
 INSERT INTO usersip VALUES (1,'guest','friend','guest','guest','','xivo-initconfig',NULL,
-			    NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
-			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
-			    NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-			    'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',0);
+                            NULL,'default',NULL,NULL,NULL,NULL,0,NULL,0,'Guest',
+                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
+                            NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
+                            'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',0);
 
 
 DROP TABLE voicemail;
