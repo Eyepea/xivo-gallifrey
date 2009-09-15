@@ -25,18 +25,28 @@ from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
 
-cursor.query("SELECT ${columns} FROM extensions "
-             "WHERE commented = 0 "
-             "AND name = %s "
-             "AND context = %s",
-             ('exten',),
-             ('vmusermsg', 'xivo-features'))
-res = cursor.fetchone()
+xfeatures = {'bsfilter':    {},
+             'callgroup':   {},
+             'callqueue':   {},
+             'calluser':    {},
+             'fwdbusy':     {},
+             'fwdrna':      {},
+             'fwdunc':      {},
+             'progfunckey': {},
+             'vmusermsg':   {}}
+
+cursor.query("SELECT ${columns} FROM extenumbers "
+             "INNER JOIN extensions ON "
+             "extenumbers.typeval = extensions.name "
+             "AND extensions.context = 'xivo-features' "
+             "WHERE extenumbers.type = 'extenfeatures' "
+             "AND extenumbers.typeval IN (" + ", ".join(["%s"] * len(xfeatures)) + ")",
+             ('extenumbers.typeval', 'extenumbers.exten', 'extensions.commented'),
+             xfeatures.keys())
+res = cursor.fetchall()
 
 if res:
-    vmexten = res['exten']
-else:
-    vmexten = None
+    xfeatures.update(dict([x[0], {'exten': x[1], 'commented': x[2]}] for x in res))
 
 cursor.query("SELECT ${columns} FROM voicemenu "
              "WHERE commented = 0 "
@@ -45,8 +55,8 @@ cursor.query("SELECT ${columns} FROM voicemenu "
 res = cursor.fetchall()
 
 for (context,) in res:
-        print "[voicemenu-" + context + "]"
-        print "switch = Realtime/voicemenu-%s@extensions" % context
+    print "[voicemenu-" + context + "]"
+    print "switch = Realtime/voicemenu-%s@extensions" % context
 
 
 cursor.query("SELECT ${columns} FROM context "
@@ -77,31 +87,41 @@ for (context,) in res:
                  "ON userfeatures.voicemailid = voicemail.uniqueid "
                  "AND voicemail.commented = 0 "
                  "WHERE userfeatures.context = %s "
-                 "AND IFNULL(userfeatures.number,'') != '' "
                  "AND userfeatures.internal = 0 "
                  "AND userfeatures.enablehint = 1",
-             ('userfeatures.number', 'userfeatures.protocol',
-              'userfeatures.name', 'userfeatures.enablevoicemail',
-              'voicemail.uniqueid'),
+             ('userfeatures.id', 'userfeatures.number',
+              'userfeatures.protocol', 'userfeatures.name',
+              'userfeatures.enablevoicemail', 'voicemail.uniqueid'),
              (context,))
     res2 = cursor.fetchall()
 
-    for e in res2:
-        if e[0] and e[1] and e[2]:
-            e[1] = e[1].upper()
+    for row in res2:
+        xid         = row['userfeatures.id']
+        number      = row['userfeatures.number']
+        protocol    = row['userfeatures.protocol'].upper()
+        name        = row['userfeatures.name']
 
-            if e[1] == "IAX":
-                e[1] = "IAX2"
+        if protocol == 'IAX':
+            protocol = 'IAX2'
 
-            print "exten = %s,hint,%s/%s" % (e[0], e[1], e[2])
+        if number:
+            print "exten = %s,hint,%s/%s" % (number, protocol, name)
 
-            if vmexten and int(e[3]) and e[4]:
-                print "exten = %s%s,hint,%s/%s" % (vmexten, e[0], e[1], e[2])
+        if not xfeatures['calluser'].get('commented', 1):
+            print "exten = %s,hint,%s/%s" % (xivo_helpers.fkey_extension(
+                                                    xfeatures['calluser']['exten'],
+                                                    (xid,)),
+                                             protocol,
+                                             name)
+
+        if not xfeatures['vmusermsg'].get('commented', 1) \
+            and int(row['userfeatures.enablevoicemail']) \
+            and row['voicemail.uniqueid']:
+            print "exten = %s%s,hint,%s/%s" % (xfeatures['vmusermsg']['exten'], number, protocol, name)
 
     cursor.query("SELECT ${columns} FROM userfeatures "
                  "INNER JOIN phonefunckey "
-                 "ON userfeatures.context = %s "
-                 "AND userfeatures.id = phonefunckey.iduserfeatures "
+                 "ON userfeatures.id = phonefunckey.iduserfeatures "
                  "AND phonefunckey.typeextenumbers IS NULL "
                  "AND phonefunckey.typevalextenumbers IS NULL "
                  "AND phonefunckey.typeextenumbersright IN ('user', 'group', 'queue', 'meetme') "
@@ -109,46 +129,97 @@ for (context,) in res:
                  "LEFT OUTER JOIN extenumbers "
                  "ON phonefunckey.typeextenumbersright = extenumbers.type "
                  "AND phonefunckey.typevalextenumbersright = extenumbers.typeval "
-                 "WHERE IFNULL(userfeatures.number,'') != '' ",
-                 ('extenumbers.exten', 'extenumbers.type'),
-                 context)
+                 "WHERE userfeatures.context = %s",
+                 ('phonefunckey.typeextenumbersright',
+                  'phonefunckey.typevalextenumbersright',
+                  'extenumbers.exten'),
+                 (context,))
     res2 = cursor.fetchall()
 
-    by_type = {}
-    for row in res2:
-        xtype = row['extenumbers.type']
-        exten = xivo_helpers.speed_dial_key_extension(None, row['extenumbers.exten'], None)
-        the_set = by_type.setdefault(xtype, set())
-        the_set.add(exten)
+    xset = set()
 
-    for xtype, exten_set in by_type.iteritems():
-        for exten in exten_set:
-            print "exten = %s,hint,%s:%s" % (exten, xtype, exten)
+    for row in res2:
+        xtype       = row['phonefunckey.typeextenumbersright']
+        calltype    = "call%s" % xtype
+
+        if row['extenumbers.exten'] is not None:
+            exten = xivo_helpers.clean_extension(row['extenumbers.exten'])
+        elif xfeatures.has_key(calltype) and \
+            not xfeatures[calltype].get('commented', 1):
+            exten = xivo_helpers.fkey_extension(
+                            xfeatures[calltype]['exten'],
+                            (row['phonefunckey.typevalextenumbersright'],))
+        else:
+            continue
+
+        if xtype == 'meetme':
+            xset.add((exten, "MeetMe:%s" % exten))
+        else:
+            xset.add((exten, "Custom:%s" % exten))
+
+    for hint in xset:
+        print "exten = %s,hint,%s" % hint
 
     # Ewww. The following query is a closure of one in provisioning/autoprov
-    cursor.query("SELECT ${columns} FROM userfeatures INNER JOIN phonefunckey "
-                 "ON userfeatures.context = %s "
-                 "AND userfeatures.id = phonefunckey.iduserfeatures "
+    cursor.query("SELECT ${columns} FROM userfeatures "
+                 "INNER JOIN phonefunckey "
+                 "ON userfeatures.id = phonefunckey.iduserfeatures "
                  "AND phonefunckey.typeextenumbers = 'extenfeatures' "
                  "AND phonefunckey.typevalextenumbers = 'bsfilter' "
                  "AND phonefunckey.typeextenumbersright = 'user' "
                  "AND phonefunckey.supervision = 1 "
-                 "LEFT OUTER JOIN extenumbers AS extenumleft "
-                 "ON extenumleft.type = 'extenfeatures' "
-                 "AND extenumleft.typeval = 'bsfilter' "
-                 "LEFT OUTER JOIN extenumbers AS extenumright "
+                 "INNER JOIN extenumbers AS extenumright "
                  "ON phonefunckey.typeextenumbersright = extenumright.type "
                  "AND phonefunckey.typevalextenumbersright = extenumright.typeval "
-                 "WHERE IFNULL(userfeatures.number,'') != ''",
-                 ('extenumleft.exten', 'phonefunckey.exten', 'extenumright.exten', 'userfeatures.number'),
+                 "WHERE userfeatures.context = %s "
+                 "AND IFNULL(userfeatures.number,'') != ''",
+                 ('extenumright.exten', 'userfeatures.number'),
                  (context,))
     res2 = cursor.fetchall()
-    extens = set(xivo_helpers.speed_dial_key_extension(row['extenumleft.exten'],
+    extens = set(xivo_helpers.speed_dial_key_extension(xfeatures['bsfilter'].get('exten'),
                                                        row['extenumright.exten'],
-                                                       row['phonefunckey.exten'],
+                                                       None,
                                                        row['userfeatures.number'],
                                                        True)
              for row in res2)
+
+    for exten in extens:
+        print "exten = %s,hint,Custom:%s" % (exten, exten)
+
+    cursor.query("SELECT ${columns} FROM userfeatures "
+                 "INNER JOIN phonefunckey "
+                 "ON userfeatures.id = phonefunckey.iduserfeatures "
+                 "AND phonefunckey.typeextenumbers IS NOT NULL "
+                 "AND phonefunckey.typevalextenumbers IS NOT NULL "
+                 "AND phonefunckey.supervision = 1 "
+                 "AND phonefunckey.progfunckey = 1 "
+                 "INNER JOIN extenumbers AS extenumleft "
+                 "ON phonefunckey.typeextenumbers = extenumleft.type "
+                 "AND phonefunckey.typevalextenumbers = extenumleft.typeval "
+                 "WHERE userfeatures.context = %s",
+                 ('phonefunckey.iduserfeatures',
+                  'phonefunckey.exten',
+                  'phonefunckey.typeextenumbers',
+                  'phonefunckey.typevalextenumbers',
+                  'phonefunckey.typeextenumbersright',
+                  'phonefunckey.typevalextenumbersright',
+                  'extenumleft.exten'),
+                 (context,))
+    res2 = cursor.fetchall()
+
+    for row in res2:
+        exten = row['phonefunckey.exten']
+
+        if exten is None:
+            if row['phonefunckey.typevalextenumbersright'] is None:
+                continue
+            else:
+                exten = "*%s" % row['phonefunckey.typevalextenumbersright']
+
+        extens = set(xivo_helpers.fkey_extension(xfeatures['progfunckey'].get('exten'),
+                                                 (row['phonefunckey.iduserfeatures'],
+                                                  row['extenumleft.exten'],
+                                                  exten)))
 
     for exten in extens:
         print "exten = %s,hint,Custom:%s" % (exten, exten)
@@ -171,9 +242,24 @@ for (context,) in res:
     for option in config.iter_options(section_name):
         print "%s = %s" % (option.get_name(), option.get_value().replace('%%CONTEXT%%', context))
 
-if vmexten:
+cfeatures = []
+
+if not xfeatures['vmusermsg'].get('commented', 1):
+    vmusermsgexten = xfeatures['vmusermsg']['exten']
+
+    for line in (
+        "1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % len(vmusermsgexten),
+        "n,Macro(pickup,0)",
+        "n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})",
+        "n,Hangup()"):
+        cfeatures.append("_%s.," % vmusermsgexten + line)
+
+for x in ('busy', 'rna', 'unc'):
+    fwdtype = "fwd%s" % x
+    if not xfeatures[fwdtype].get('commented', 1):
+        cfeatures.append("%s,1,Macro(feature_forward|%s|)"
+                         % (xivo_helpers.clean_extension(xfeatures[fwdtype]['exten']), x))
+
+if cfeatures:
     print "[xivo-features]"
-    print "exten = _%s.,1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % (vmexten, len(vmexten))
-    print "exten = _%s.,n,Macro(pickup,0)" % vmexten
-    print "exten = _%s.,n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})" % vmexten
-    print "exten = _%s.,n,Hangup()" % vmexten
+    print "exten = " + "\nexten = ".join(cfeatures)
