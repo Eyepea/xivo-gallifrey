@@ -89,7 +89,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=(xivo_haslen($ref['number']) === true ? $ref['number'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="2">
 <?php

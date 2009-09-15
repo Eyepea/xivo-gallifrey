@@ -20,8 +20,7 @@
 
 if(isset($access_category,$access_subcategory) === false)
 {
-	$http->set_authent_basic('Access Restricted');
-	$http->set_status(401);
+	$http->set_status(403);
 	$http->send(true);
 }
 
@@ -30,7 +29,13 @@ $_AWS = new xivo_accesswebservice();
 
 $http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
 
-if(empty($http_access) === true)
+if($http_access === null)
+{
+	$http->set_authent_basic('Access Restricted');
+	$http->set_status(401);
+	$http->send(true);
+}
+else if(empty($http_access) === true)
 {
 	$http->set_status(403);
 	$http->send(true);

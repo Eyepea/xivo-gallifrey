@@ -102,8 +102,8 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 
 	function chk_user_access($user,$passwd,$host=null)
 	{
-		if(xivo_haslen($user) === false
-		|| xivo_haslen($passwd) === false)
+		if(xivo_has_len($user) === false
+		|| xivo_has_len($passwd) === false)
 			return(false);
 
 		$where = array();
@@ -118,7 +118,7 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 		{
 			if($user !== $rs[$i]['login'] || $passwd !== $rs[$i]['passwd'])
 				continue;
-			else if(xivo_haslen($rs[$i]['host']) === false
+			else if(xivo_has_len($rs[$i]['host']) === false
 			|| xivo_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true)
 				return($rs[$i]['id']);
 		}
@@ -128,7 +128,7 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 
 	function chk_host_access($host)
 	{
-		if(xivo_haslen($host) === false
+		if(xivo_has_len($host) === false
 		|| ($rs = $this->get_all(false,false)) === false
 		|| ($nb = count($rs)) === 0)
 			return(false);
@@ -136,8 +136,8 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(xivo_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true
-			&& xivo_haslen($rs[$i]['login']) === false
-			&& xivo_haslen($rs[$i]['passwd']) === false)
+			&& xivo_has_len($rs[$i]['login']) === false
+			&& xivo_has_len($rs[$i]['passwd']) === false)
 				return($rs[$i]['id']);
 		}
 

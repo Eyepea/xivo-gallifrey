@@ -30,28 +30,26 @@ $select['name'] = 'phonefunckey[typeval][]';
 $select['label'] = false;
 $select['key'] = 'callfilteridentity';
 $select['altkey'] = 'id';
-$select['id'] = 'it-phonefunckey-bosssecretary-typeval';
+$select['id'] = 'it-phonefunckey-extenfeatures-bsfilter-typeval';
 
 if($fkdata['ex'] === false):
 	$incr = xivo_uint($fkdata['incr']);
 	$select['id'] .= '-'.$incr;
 
-	if($fkdata['type'] === 'bosssecretary'):
+	if($fkdata['type'] === 'extenfeatures-bsfilter'):
 		$select['invalid'] = true;
-		$select['value'] = $fkdata['bosssecretary'];
+		$select['value'] = $fkdata['typeval'];
 	endif;
 
 	$selectoptattr = '';
 
-	$hrefstyle = 'id="fd-phonefunckey-bosssecretary-typeval-'.$incr.'"';
+	$hrefstyle = 'id="fd-phonefunckey-extenfeatures-bsfilter-typeval-'.$incr.'"';
 else:
 	$select['disabled'] = true;
 
-	$selectoptattr = ' onfocus="xivo_fm_set_onfocus(this);"'.
-			 ' onblur="xivo_fm_set_onblur(this);"'.
-			 ' style="display: none;"';
+	$selectoptattr = 'style="display: none;"';
 
-	$hrefstyle = 'id="fd-phonefunckey-bosssecretary-typeval" style="display: none;"';
+	$hrefstyle = 'id="fd-phonefunckey-extenfeatures-bsfilter-typeval" style="display: none;"';
 endif;
 
 if(empty($list) === false):

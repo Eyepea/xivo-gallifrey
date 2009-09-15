@@ -32,9 +32,9 @@ class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk
 		{
 			$val = explode(',',$data['var_val'],3);
 
-			$data['number'] = xivo_haslen($val,0) === true ? $val[0] : '';
-			$data['passwd'] = xivo_haslen($val,1) === true ? $val[1] : '';
-			$data['fullname'] = xivo_haslen($val,2) === true ? $val[2] : '';
+			$data['number'] = xivo_has_len($val,0) === true ? $val[0] : '';
+			$data['passwd'] = xivo_has_len($val,1) === true ? $val[1] : '';
+			$data['fullname'] = xivo_has_len($val,2) === true ? $val[2] : '';
 		}
 
 		return(parent::_prepare($data));

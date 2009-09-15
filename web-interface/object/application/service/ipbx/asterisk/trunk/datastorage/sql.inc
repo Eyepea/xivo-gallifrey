@@ -34,7 +34,7 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_servi
 	{
 		$this->_cnt = 0;
 
-		$search = xivo_haslen($value);
+		$search = xivo_has_len($value);
 
 		$arr = array();
 
@@ -184,7 +184,7 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_servi
 	{
 		$this->_cnt = 0;
 
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(false);
 
 		return($this->get_all($protocols,$disable,$order,$limit,$value));

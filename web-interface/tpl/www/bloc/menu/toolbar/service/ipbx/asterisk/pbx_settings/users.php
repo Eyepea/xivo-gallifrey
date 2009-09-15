@@ -24,21 +24,22 @@ $dhtml = &$this->get_module('dhtml');
 
 $act = $this->get_var('act');
 
-if(($search = (string) $this->get_var('search')) === ''):
-	$searchjs = '';
-else:
-	$searchjs = 'xivo_fm[\'fm-users-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
-endif;
+$search = (string) $this->get_var('search');
+$context = (string) $this->get_var('context');
 
-if(($context = (string) $this->get_var('context')) === ''):
-	$contextjs = '';
-else:
-	$contextjs = 'xivo_fm[\'fm-users-list\'][\'context\'].value = \''.$dhtml->escape($context).'\';';
-endif;
+$toolbar_js = array();
+$toolbar_js[] = 'var xivo_toolbar_fm_search = \''.$dhtml->escape($search).'\';';
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-users-list\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'users[]\';';
+$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
-$escaped_fm_search = $dhtml->escape($this->bbf('toolbar_fm_search'));
+$dhtml->write_js($toolbar_js);
+
+$context_js = $dhtml->escape($context);
 
 ?>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
+
 <form action="#" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
@@ -50,47 +51,36 @@ $escaped_fm_search = $dhtml->escape($this->bbf('toolbar_fm_search'));
 	<div class="fm-field">
 <?php
 		echo	$form->text(array('name'	=> 'search',
-					  'id'		=> 'it-search',
+					  'id'		=> 'it-toolbar-search',
 					  'size'	=> 20,
 					  'field'	=> false,
 					  'value'	=> $search,
-					  'default'	=> $this->bbf('toolbar_fm_search')),
-				    'onfocus="this.value = this.value === \''.$escaped_fm_search.'\'
-				    			   ? \'\'
-							   : this.value;
-					      xivo_fm_set_onfocus(this);"'),
+					  'default'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->image(array('name'	=> 'submit',
-					   'id'		=> 'it-subsearch',
+					   'id'		=> 'it-toolbar-subsearch',
 					   'src'	=> $url->img('img/menu/top/toolbar/bt-search.gif'),
 					   'field'	=> false,
 					   'alt'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->select(array('name'	=> 'context',
-					    'id'	=> 'it-context',
+					    'id'	=> 'it-toolbar-context',
 					    'field'	=> false,
 					    'empty'	=> $this->bbf('toolbar_fm_context'),
 					    'value'	=> $context),
 				      $this->get_var('contexts'),
-				      'style="margin-left: 20px;"
-				       onchange="this.form[\'search\'].value = this.form[\'search\'].value === \''.$escaped_fm_search.'\'
-				    			   ? \'\'
-							   : this.form[\'search\'].value;
-						 this.form.submit();"');
+				      'style="margin-left: 20px;"');
 ?>
 	</div>
 </form>
 <?php
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
-			       'border="0"
-				onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'add-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-add"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="add-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-add-menu">
 		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),
 				       'service/ipbx/pbx_settings/users',
 				       'act=add');?></li>
@@ -103,49 +93,71 @@ $escaped_fm_search = $dhtml->escape($this->bbf('toolbar_fm_search'));
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
-			       'border="0"
-				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
-
+			       'id="toolbar-bt-advanced"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="advanced-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-advanced-menu">
 		<li>
-			<a href="#"
-			   onclick="xivo_fm['fm-users-list']['act'].value = 'enables';
-				    <?=$searchjs,$contextjs?>
-				    xivo_fm['fm-users-list'].submit();">
-				<?=$this->bbf('toolbar_adv_menu_enable');?></a>
+			<a href="#" id="toolbar-advanced-menu-enable"><?=$this->bbf('toolbar_adv_menu_enable');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="xivo_fm['fm-users-list']['act'].value = 'disables';
-				    <?=$searchjs,$contextjs?>
-				    xivo_fm['fm-users-list'].submit();">
-				<?=$this->bbf('toolbar_adv_menu_disable');?></a>
+			<a href="#" id="toolbar-advanced-menu-disable"><?=$this->bbf('toolbar_adv_menu_disable');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="xivo_fm_checked_all('fm-users-list','users[]');
-				    return(false);">
-				<?=$this->bbf('toolbar_adv_menu_select-all');?></a>
+			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="this.tmp = xivo_fm['fm-users-list']['act'].value;
-				    xivo_fm['fm-users-list']['act'].value = 'deletes';
-				    <?=$searchjs,$contextjs?>
-				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
-			    		   ? xivo_fm['fm-users-list'].submit()
-					   : xivo_fm['fm-users-list']['act'] = this.tmp);">
-				<?=$this->bbf('toolbar_adv_menu_delete');?></a>
+			<a href="#" id="toolbar-advanced-menu-delete"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>
+
+<script type="text/javascript">
+xivo.dom.set_onload(function()
+{
+	xivo.dom.remove_event('click',
+			      xivo_eid('toolbar-advanced-menu-delete'),
+			      xivo_toolbar_fn_adv_menu_delete);
+
+	xivo.dom.add_event('click',
+			   xivo_eid('toolbar-advanced-menu-delete'),
+			   function(e)
+			   {
+				if(xivo_is_function(e.preventDefault) === true)
+					e.preventDefault();
+
+				if(confirm(xivo_toolbar_adv_menu_delete_confirm) === true)
+				{
+					if(xivo_is_undef(xivo_fm[xivo_toolbar_form_name]['search']) === false)
+						xivo_fm[xivo_toolbar_form_name]['search'].value = xivo_toolbar_fm_search;
+
+					if(xivo_is_undef(xivo_fm[xivo_toolbar_form_name]['context']) === false)
+						xivo_fm[xivo_toolbar_form_name]['context'].value = '<?=$context_js?>';
+
+					xivo_fm[xivo_toolbar_form_name]['act'].value = 'deletes';
+					xivo_fm[xivo_toolbar_form_name].submit();
+				}
+			   });
+});
+</script>
 <?php
 
 endif;
 
 ?>
+<script type="text/javascript">
+xivo.dom.set_onload(function()
+{
+	xivo.dom.add_event('change',
+			   xivo_eid('it-toolbar-context'),
+			   function(e)
+			   {
+			   	if(xivo_toolbar_fm_search === ''
+				&& xivo_has_len(xivo_fm_text_helper['it-toolbar-search']) === false)
+			   		this.form['search'].value = '';
+
+				this.form.submit();
+			   });
+});
+</script>

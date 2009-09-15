@@ -87,7 +87,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 				if(xivo_service_asterisk::chk_context($actionarg2) === false)
 					return(false);
 				else if($actionarg1 === 'no-password'
-				|| xivo_haslen($actionarg1) === false)
+				|| xivo_has_len($actionarg1) === false)
 					$actionarg1 = 'no-password';
 				else if(xivo_digit($actionarg1) === false
 				|| strlen($actionarg1) > 40)
@@ -115,7 +115,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 				$r['actionarg1'] = $actionarg1;
 				return($r);
 			case 'vmauthenticate':
-				if((xivo_haslen($actionarg2) === true
+				if((xivo_has_len($actionarg2) === true
 				   && $actionarg2 !== 's') === true
 				|| ($rs = $this->chk_dest_voicemail($actionarg1)) === false)
 					return(false);
@@ -149,7 +149,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	{
 		if(($sounds = &$this->_sre->get_module('sounds')) === false)
 			return(false);
-		else if(is_bool($getinfo) === true || xivo_haslen($getinfo) === false)
+		else if(is_bool($getinfo) === true || xivo_has_len($getinfo) === false)
 			$getinfo = 'pathnoext';
 
 		if(($list = $sounds->get_list($dir,$getinfo)) === false
@@ -160,7 +160,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$r['action'] = 'sound';
 		$r['actionarg1'] = $actionarg1;
 
-		if(xivo_haslen($actionarg2) === false)
+		if(xivo_has_len($actionarg2) === false)
 			return($r);
 
 		$r['actionarg2'] = '';
@@ -179,7 +179,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 	function chk_dest_custom($val)
 	{
-		if(preg_match('/^(?!system\()[a-z]{3,}\((.*)\)$/i',$val,$match) !== 1)
+		if(preg_match('/^(?!(try)?system\()[a-z]{3,}\((.*)\)$/i',$val,$match) !== 1)
 			return(false);
 		else if($match[1] === '' || ctype_print($match[1]) === true)
 			return(true);
@@ -187,9 +187,24 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return(false);
 	}
 
+	function chk_dest_agent($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
+	{
+		$actionarg2 = xivo_has_len($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+
+		return($this->_chk_dest('agentfeatures',
+					'agent',
+					$actionarg1,
+					$actionarg2,
+					$id,
+					$disable,
+					false,
+					$chkcontext,
+					$context));
+	}
+
 	function chk_dest_user($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
-		$actionarg2 = xivo_haslen($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+		$actionarg2 = xivo_has_len($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
 
 		return($this->_chk_dest('userfeatures',
 					'user',
@@ -229,7 +244,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	function _chk_dest_group_queue($action,$actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		$actionarg1 = intval($actionarg1);
-		$actionarg2 = xivo_haslen($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+		$actionarg2 = xivo_has_len($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
 
 		if($action !== 'group' && $action !== 'queue')
 			return(false);
@@ -285,7 +300,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$r['actionarg1'] = $info['uniqueid'];
 		$r['actionarg2'] = '';
 
-		if(xivo_haslen($actionarg2) === false)
+		if(xivo_has_len($actionarg2) === false)
 			return($r);
 
 		if(strpos($actionarg2,'b') !== false)
@@ -337,7 +352,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		if(($module = $this->_sre->get_module($type)) === false
 		|| ($info = $module->get(intval($actionarg1),$disable)) === false
 		|| ($id !== null && $id === $info['id']) === true
-		|| ((bool) $chknumber === true && xivo_haslen($info['number']) === false) === true
+		|| ((bool) $chknumber === true && xivo_has_len($info['number']) === false) === true
 		|| ((bool) $chkcontext === true && $info['context'] !== $context) === true)
 			return(false);
 

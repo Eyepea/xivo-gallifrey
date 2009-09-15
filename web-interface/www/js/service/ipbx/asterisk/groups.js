@@ -25,4 +25,4 @@ function xivo_ast_group_onload()
 	xivo_ast_dialaction_onload();
 }
 
-xivo_winload.push('xivo_ast_group_onload();');
+xivo.dom.set_onload(xivo_ast_group_onload);

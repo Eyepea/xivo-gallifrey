@@ -40,7 +40,7 @@ $info = $this->get_var('info');
 							  'border="0"'),
 					   '#',
 					   null,
-					   'onclick="xivo_table_list(\''.$type.'\',this); return(xivo_free_focus());"',
+					   'onclick="xivo.dom.make_table_list(\''.$type.'\',this); return(xivo.dom.free_focus());"',
 					   $this->bbf('col_'.$type.'-add'));?>
 		</th>
 	</tr>
@@ -91,7 +91,7 @@ if($count > 0):
 							  'border="0"'),
 					   '#',
 					   null,
-					   'onclick="xivo_table_list(\''.$type.'\',this,1); return(xivo_free_focus());"',
+					   'onclick="xivo.dom.make_table_list(\''.$type.'\',this,1); return(xivo.dom.free_focus());"',
 					   $this->bbf('opt_'.$type.'-delete'));?>
 		</td>
 	</tr>
@@ -123,8 +123,7 @@ endif;
 									 'unique'	=> true,
 									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
 					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
-					 $trunkslist,
-					 'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+					 $trunkslist);?>
 		</td>
 		<td>
 			<?=$form->text(array('field'	=> false,
@@ -133,8 +132,7 @@ endif;
 					     'label'	=> false,
 					     'disabled'	=> true,
 					     'size'	=> 15,
-					     'default'	=> $element['handynumbers']['exten']['default']),
-				       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+					     'default'	=> $element['handynumbers']['exten']['default']));?>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -142,7 +140,7 @@ endif;
 							  'border="0"'),
 					   '#',
 					   null,
-					   'onclick="xivo_table_list(\''.$type.'\',this,1); return(xivo_free_focus());"',
+					   'onclick="xivo.dom.make_table_list(\''.$type.'\',this,1); return(xivo.dom.free_focus());"',
 					   $this->bbf('opt_'.$type.'-delete'));?>
 		</td>
 	</tr>

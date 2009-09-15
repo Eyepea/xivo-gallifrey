@@ -129,7 +129,6 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function _get_phonebook($action,$search=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -289,7 +288,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			|| ($type === 'number'
 			   && is_scalar($val) === false) === true)
 				continue;
-			else if($type === 'number' && xivo_haslen($val) === false)
+			else if($type === 'number' && xivo_has_len($val) === false)
 			{
 				unset($list[$key]);
 				continue;

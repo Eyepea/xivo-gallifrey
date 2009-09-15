@@ -16,13 +16,173 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+var xivo_smenu = {
+	'click': {'id': '','class': ''},
+	'bak': {},
+	'before': {'id': '','class': ''},
+	'class': 'moc',
+	'display': {},
+	'part': 'sb-part-first',
+	'tab': 'smenu-tab-1',
+	'last': false};
+
+function xivo_smenu_click(obj,cname,part,last)
+{
+	if(xivo_is_empty(obj.id) === true)
+		return(false);
+
+	var disobj = click = before = '';
+	var num = 0;
+	var id = obj.id;
+
+	if(xivo_smenu['display'] !== '' && (disobj = xivo_eid(xivo_smenu['display'])) !== false)
+		disobj.style.display = 'none';
+
+	if((disobj = xivo_eid(part)) !== false)
+	{
+		xivo_smenu['display'] = part;
+		disobj.style.display = 'block';
+	}
+
+	if(xivo_smenu['click']['id'] !== '' && (click = xivo_eid(xivo_smenu['click']['id'])) !== false)
+		click.className = xivo_smenu['click']['class'];
+
+	if(xivo_is_undef(xivo_smenu['bak'][id]) === false)
+	{
+		xivo_smenu['click']['id'] = id;
+		xivo_smenu['click']['class'] = xivo_smenu['bak'][id];
+	}
+
+	if(xivo_smenu['before']['id'] !== '' && (before = xivo_eid(xivo_smenu['before']['id'])) !== false)
+		before.className = xivo_smenu['before']['class'];
+
+	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
+
+	if(rs !== null)
+	{
+		var vid = rs[1];
+		var num = Number(rs[2]);
+		var nid = vid+(num-1);
+		var get = '';
+
+		if(num > 1 && (get = xivo_eid(nid)) !== false)
+		{
+			if(xivo_is_undef(xivo_smenu['bak'][nid]) === true)
+				xivo_smenu['bak'][nid] = get.className;
+
+			xivo_smenu['before']['id'] = nid;
+			xivo_smenu['before']['class'] = get.className;
+			get.className = cname+'-before';
+		}
+		else
+			xivo_smenu['before']['id'] = xivo_smenu['before']['class'] = '';
+	}
+
+	obj.className = Boolean(last) === false ? cname : cname+'-last';
+
+	xivo.dom.free_focus();
+}
+
+function xivo_smenu_fmsubmit(obj)
+{
+	if(xivo_is_object(obj) === false
+	|| obj.nodeName.toLowerCase() !== 'form'
+	|| xivo_is_undef(obj['fm_smenu-tab']) === true
+	|| xivo_is_undef(obj['fm_smenu-part']) === true
+	|| xivo_smenu['click']['id'] === ''
+	|| xivo_smenu['display'] === '')
+		return(false);
+
+	obj['fm_smenu-tab'].value = xivo_smenu['click']['id'];
+	obj['fm_smenu-part'].value = xivo_smenu['display'];
+
+	return(true);
+}
+
+function xivo_smenu_out(obj,cname,last)
+{
+	if((ul = xivo.dom.etag('ul',obj,0)) !== false)
+		ul.style.display = 'none';
+
+	if(xivo_is_empty(obj.id) === true || xivo_smenu['click']['id'] === obj.id)
+		return(false);
+
+	var num = 0;
+	var id = obj.id;
+
+	if(Boolean(last) === true)
+	{
+		obj.className = cname+'-last';
+		return(true);
+	}
+
+	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
+
+	if(rs !== null)
+	{
+		var vid = rs[1];
+		var num = Number(rs[2]);
+		var nid = vid+(num+1);
+
+		if(xivo_smenu['click']['id'] === nid)
+		{
+			obj.className = cname+'-before';
+			return(true);
+		}
+	}
+
+	obj.className = cname;
+
+	return(true);
+}
+
+function xivo_smenu_over(obj,cname,last)
+{
+	if((ul = xivo.dom.etag('ul',obj,0)) !== false)
+		ul.style.display = 'block';
+
+	if(xivo_is_empty(obj.id) === true || xivo_smenu['click']['id'] === obj.id)
+		return(false);
+
+	var num = 0;
+	var id = obj.id;
+
+	if(xivo_is_undef(xivo_smenu['bak'][id]) === true)
+		xivo_smenu['bak'][id] = obj.className;
+
+	if(Boolean(last) === true)
+	{
+		obj.className = cname+'-last';
+		return(true);
+	}
+
+	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
+
+	if(rs !== null)
+	{
+		var vid = rs[1];
+		var num = Number(rs[2]);
+		var nid = vid+(num+1);
+
+		if(xivo_smenu['click']['id'] === nid)
+		{
+			obj.className = cname+'-before';
+			return(true);
+		}
+	}
+
+	obj.className = cname;
+
+	return(true);
+}
+
 function xivo_submenu_onload()
 {
-	if(xivo_eid(xivo_smenu['tab']) == false)
+	if(xivo_eid(xivo_smenu['tab']) === false)
 		return(false);
 
 	xivo_smenu['bak'][xivo_smenu['tab']] = xivo_eid(xivo_smenu['tab']).className;
 	xivo_smenu_click(xivo_eid(xivo_smenu['tab']),xivo_smenu['class'],xivo_smenu['part'],xivo_smenu['last']);
 }
 
-xivo_winload.push('xivo_submenu_onload();');
+xivo.dom.set_onload(xivo_submenu_onload);

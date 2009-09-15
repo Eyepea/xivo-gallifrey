@@ -24,14 +24,9 @@ $dhtml = &$this->get_module('dhtml');
 
 $act = $this->get_var('act');
 $dir = $this->get_var('dir');
+$search = (string) $this->get_var('search');
 
 $param = array('act' => 'add');
-
-if(($search = (string) $this->get_var('search')) === ''):
-	$searchjs = '';
-else:
-	$searchjs = 'xivo_fm[\'fm-files-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
-endif;
 
 if($act !== 'listdir' && $act !== 'adddir'):
 	$param['dir'] = $dir;
@@ -39,13 +34,23 @@ else:
 	$dir = '';
 endif;
 
+$toolbar_js = array();
+$toolbar_js[] = 'var xivo_toolbar_fm_search = \''.$dhtml->escape($search).'\';';
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-files-list\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'files[]\';';
+$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
+
+$dhtml->write_js($toolbar_js);
+
 if($dir === '' && $search === ''):
 	$dirjs = '';
 else:
-	$dirjs = 'xivo_fm[\'fm-files-list\'][\'dir\'].value = \''.$dhtml->escape($dir).'\';';
+	$dirjs = $dhtml->escape($dir);
 endif;
 
 ?>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
+
 <form action="#" method="post" id="fm-sounds-toolbar" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
@@ -59,15 +64,11 @@ endif;
 
 if($act === 'list'):
 		echo	$form->text(array('name'	=> 'search',
-					  'id'		=> 'it-search',
+					  'id'		=> 'it-toolbar-search',
 					  'size'	=> 20,
 					  'field'	=> false,
 					  'value'	=> $search,
-					  'default'	=> $this->bbf('toolbar_fm_search')),
-				    'onfocus="this.value = this.value === \''.$dhtml->escape($this->bbf('toolbar_fm_search')).'\'
-				    			   ? \'\'
-							   : this.value;
-					      xivo_fm_set_onfocus(this);"'),
+					  'default'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->image(array('name'	=> 'submit',
 					   'id'		=> 'it-subsearch',
@@ -77,32 +78,24 @@ if($act === 'list'):
 endif;
 
 		echo	$form->select(array('name'	=> 'dir',
-					    'id'	=> 'it-dir',
+					    'id'	=> 'it-toolbar-directory',
 					    'key'	=> false,
 					    'field'	=> false,
 					    'empty'	=> $this->bbf('toolbar_fm_directory'),
 					    'value'	=> $dir),
 				      $this->get_var('list_dirs'),
-				      'style="margin-left: 20px;"
-				       onchange="'.($act === 'list' ? 'this.form[\'search\'].value = \'\';' : '').'
-						 this.form[\'act\'].value = this.value === \'\'
-									    ? \'listdir\'
-									    : \'list\';
-						 return(this.form.submit());"');
+				      'style="margin-left: 20px;"');
 ?>
 	</div>
 </form>
 <?php
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
-			       'border="0"
-				onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'add-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-add"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="add-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-add-menu">
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-directory'),
 				       'service/ipbx/pbx_services/sounds',
 				       'act=adddir');?></li>
@@ -115,34 +108,73 @@ endif;
 if($act === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
-			       'border="0"
-			        onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-advanced"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="advanced-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-advanced-menu">
 		<li>
-			<a href="#"
-			   onclick="xivo_fm_checked_all('fm-files-list','files[]');
-				    return(false);">
-			<?=$this->bbf('toolbar_adv_menu_select-all');?></a>
+			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="this.tmp = xivo_fm['fm-files-list']['act'].value;
-				    xivo_fm['fm-files-list']['act'].value = 'deletes';
-				    <?=$searchjs,$dirjs?>
-				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
-			    		   ? xivo_fm['fm-files-list'].submit()
-					   : xivo_fm['fm-files-list']['act'] = this.tmp);">
-			<?=$this->bbf('toolbar_adv_menu_delete');?></a>
+			<a href="#" id="toolbar-advanced-menu-delete"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>
+
+<script type="text/javascript">
+xivo.dom.set_onload(function()
+{
+	xivo.dom.remove_event('click',
+			      xivo_eid('toolbar-advanced-menu-delete'),
+			      xivo_toolbar_fn_adv_menu_delete);
+
+	xivo.dom.add_event('click',
+			   xivo_eid('toolbar-advanced-menu-delete'),
+			   function(e)
+			   {
+				if(xivo_is_function(e.preventDefault) === true)
+					e.preventDefault();
+
+				if(confirm(xivo_toolbar_adv_menu_delete_confirm) === true)
+				{
+					if(xivo_is_undef(xivo_fm[xivo_toolbar_form_name]['search']) === false)
+						xivo_fm[xivo_toolbar_form_name]['search'].value = xivo_toolbar_fm_search;
+
+					if(xivo_is_undef(xivo_fm[xivo_toolbar_form_name]['dir']) === false)
+						xivo_fm[xivo_toolbar_form_name]['dir'].value = '<?=$dirjs;?>';
+
+					xivo_fm[xivo_toolbar_form_name]['act'].value = 'deletes';
+					xivo_fm[xivo_toolbar_form_name].submit();
+				}
+			   });
+});
+</script>
 <?php
 
 endif;
 
 ?>
+<script type="text/javascript">
+xivo.dom.set_onload(function()
+{
+	xivo.dom.add_event('change',
+			   xivo_eid('it-toolbar-directory'),
+			   function()
+			   {
+<?php
+	if($act === 'list'):
+?>
+				this.form['search'].value = '';
+<?php
+	endif;
+?>
+				this.form['act'].value = 'list';
+
+				if(this.value === '')
+					this.form['act'].value += 'dir';
+
+				this.form.submit();
+			   });
+});
+</script>

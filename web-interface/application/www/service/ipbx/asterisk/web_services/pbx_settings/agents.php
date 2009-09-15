@@ -23,7 +23,7 @@ $access_subcategory = 'agents';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
@@ -32,7 +32,7 @@ switch($act)
 
 		$nocomponents = array('contextmember'	=> true);
 
-		if(($info = $appagent->get($_QRY->get_qs('id'),
+		if(($info = $appagent->get($_QRY->get('id'),
 					   null,
 					   $nocomponents)) === false)
 		{
@@ -40,7 +40,7 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		$appagent = &$ipbx->get_application('agent');
@@ -60,7 +60,7 @@ switch($act)
 	case 'delete':
 		$appagent = &$ipbx->get_application('agent');
 
-		if($appagent->get($_QRY->get_qs('id')) === false)
+		if($appagent->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appagent->delete() === true)
 		{
@@ -86,11 +86,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
 
 ?>

@@ -171,7 +171,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 			}
 		}
 
-		if(xivo_haslen($lang) === true)
+		if(xivo_has_len($lang) === true)
 			$infos['language'] = $lang;
 
 		$this->_set_info($r,$infos);

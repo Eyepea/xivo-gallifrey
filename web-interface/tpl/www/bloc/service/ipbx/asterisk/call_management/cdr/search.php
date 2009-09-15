@@ -34,7 +34,7 @@ else:
 	$dcontext = (string) $info['dcontext'];
 endif;
 
-if(xivo_haslen($info['amaflags']) === false):
+if(xivo_has_len($info['amaflags']) === false):
 	$amaflags = null;
 else:
 	$amaflags = xivo_uint($info['amaflags']);
@@ -119,7 +119,9 @@ $dhtml->write_js($js_result);
 		<li id="smenu-tab-3"
 		    class="moo-last"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-result',1);
-		    	     location.href = xivo_firstchild(xivo_firstchild(xivo_firstchild(this)));"
+		    	     location.href = xivo.dom.node.firstchild(
+			     			xivo.dom.node.firstchild(
+							xivo.dom.node.firstchild(this)));"
 		    onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
 			<div class="tab">
 				<span class="span-center"><?=$url->href_html($this->bbf('smenu_exportcsv'),
@@ -466,13 +468,13 @@ endif;
 			$ref = &$result[$i];
 			$mod = ($i % 2) + 1;
 
-			if(xivo_haslen($ref['src']) === false):
+			if(xivo_has_len($ref['src']) === false):
 				$src = '-';
 			else:
 				$src = xivo_htmlen(xivo_trunc($ref['src'],15,'...'));
 			endif;
 
-			if(xivo_haslen($ref['dst']) === false):
+			if(xivo_has_len($ref['dst']) === false):
 				$dst = '-';
 			else:
 				$dst = xivo_htmlen(xivo_trunc($ref['dst'],15,'...'));
@@ -527,38 +529,38 @@ endif;
 		<td colspan="4" class="td-single">
 		<dl>
 		<?php
-			if(xivo_haslen($ref['channel']) === true):
+			if(xivo_has_len($ref['channel']) === true):
 				echo	'<dt>',$this->bbf('entry_channel'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['channel']),'">',
 					xivo_htmlen(xivo_trunc($ref['channel'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['disposition']) === true):
+			if(xivo_has_len($ref['disposition']) === true):
 				echo	'<dt>',$this->bbf('entry_disposition'),'</dt>',
 					'<dd>',$this->bbf('entry_disposition',$ref['disposition']),'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['amaflagsmeta']) === true):
+			if(xivo_has_len($ref['amaflagsmeta']) === true):
 				echo	'<dt>',$this->bbf('entry_amaflagsmeta'),'</dt>',
 					'<dd>',$this->bbf('ast_amaflag_name_info',$ref['amaflagsmeta']),'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['clid']) === true):
+			if(xivo_has_len($ref['clid']) === true):
 				echo	'<dt>',$this->bbf('entry_clid'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['clid']),'">',
 					xivo_htmlen(xivo_trunc($ref['clid'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['accountcode']) === true):
+			if(xivo_has_len($ref['accountcode']) === true):
 				echo	'<dt>',$this->bbf('entry_accountcode'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['accountcode']),'">',
 					xivo_htmlen(xivo_trunc($ref['accountcode'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['userfield']) === true):
+			if(xivo_has_len($ref['userfield']) === true):
 				echo	'<dt>',$this->bbf('entry_userfield'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['userfield']),'">',
 					xivo_htmlen(xivo_trunc($ref['userfield'],20,'...',false)),
@@ -568,14 +570,14 @@ endif;
 		</dl>
 		<dl>
 		<?php
-			if(xivo_haslen($ref['dcontext']) === true):
+			if(xivo_has_len($ref['dcontext']) === true):
 				echo	'<dt>',$this->bbf('entry_dcontext'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['dcontext']),'">',
 					xivo_htmlen(xivo_trunc($ref['dcontext'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['dstchannel']) === true):
+			if(xivo_has_len($ref['dstchannel']) === true):
 				echo	'<dt>',$this->bbf('entry_dstchannel'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['dstchannel']),'">',
 					xivo_htmlen(xivo_trunc($ref['dstchannel'],20,'...',false)),
@@ -585,21 +587,21 @@ endif;
 			echo	'<dt>',$this->bbf('entry_billsec'),'</dt>',
 				'<dd>',$this->bbf($bbf_billsec,$billsec),'<br /></dd>';
 
-			if(xivo_haslen($ref['lastapp']) === true):
+			if(xivo_has_len($ref['lastapp']) === true):
 				echo	'<dt>',$this->bbf('entry_lastapp'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['lastapp']),'">',
 					xivo_htmlen(xivo_trunc($ref['lastapp'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['lastdata']) === true):
+			if(xivo_has_len($ref['lastdata']) === true):
 				echo	'<dt>',$this->bbf('entry_lastdata'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['lastdata']),'">',
 					xivo_htmlen(xivo_trunc($ref['lastdata'],25,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_haslen($ref['uniqueid']) === true):
+			if(xivo_has_len($ref['uniqueid']) === true):
 				echo	'<dt>',$this->bbf('entry_uniqueid'),'</dt>',
 					'<dd title="',xivo_htmlen($ref['uniqueid']),'">',
 					xivo_htmlen(xivo_trunc($ref['uniqueid'],20,'...',false)),

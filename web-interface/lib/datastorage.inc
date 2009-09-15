@@ -116,7 +116,7 @@ class xivo_datastorage
 
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(xivo_haslen($arr['query'][$i],0) === false)
+				if(xivo_has_len($arr['query'][$i],0) === false)
 					continue;
 				else if(isset($arr['query'][$i][1]) === true)
 					$r[$arr['query'][$i][0]] = $arr['query'][$i][1];

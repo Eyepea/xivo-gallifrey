@@ -47,7 +47,7 @@ class xivo_service_asterisk_callerid extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 		else if(isset($arr['callerdisplay']) === true
-		&& xivo_haslen($arr['callerdisplay']) === false)
+		&& xivo_has_len($arr['callerdisplay']) === false)
 		{
 			$arr['mode'] = null;
 			$arr['callerdisplay'] = '';
@@ -61,7 +61,7 @@ class xivo_service_asterisk_callerid extends xivo_service_asterisk_abstract
 		if(is_array($arr) === false)
 			return(false);
 		else if(isset($arr['callerdisplay']) === true
-		&& xivo_haslen($arr['callerdisplay']) === false)
+		&& xivo_has_len($arr['callerdisplay']) === false)
 		{
 			$arr['mode'] = null;
 			$arr['callerdisplay'] = '';

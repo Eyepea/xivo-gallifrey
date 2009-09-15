@@ -16,59 +16,58 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var xivo_elt_dialaction = new Array();
-xivo_elt_dialaction['answer'] = new Array();
-xivo_elt_dialaction['noanswer'] = new Array();
-xivo_elt_dialaction['congestion'] = new Array();
-xivo_elt_dialaction['busy'] = new Array();
-xivo_elt_dialaction['chanunavail'] = new Array();
-xivo_elt_dialaction['inschedule'] = new Array();
-xivo_elt_dialaction['outschedule'] = new Array();
+var xivo_elt_dialaction = {
+			'answer':	{},
+			'noanswer':	{},
+			'congestion':	{},
+			'busy':		{},
+			'chanunavail':	{},
+			'inschedule':	{},
+			'outschedule':	{}};
 
-var xivo_fm_dialaction = new Array();
-xivo_fm_dialaction = xivo_clone(xivo_elt_dialaction);
+var xivo_fm_dialaction = xivo_clone(xivo_elt_dialaction);
 
-var xivo_dialaction_actiontype = new Array();
-xivo_dialaction_actiontype['none'] = ['actiontype'];
-xivo_dialaction_actiontype['endcall'] = ['action','actiontype','busy-actionarg1','congestion-actionarg1'];
-xivo_dialaction_actiontype['user'] = ['actiontype','actionarg1','actionarg2'];
-xivo_dialaction_actiontype['group'] = ['actiontype','actionarg1','actionarg2'];
-xivo_dialaction_actiontype['queue'] = ['actiontype','actionarg1','actionarg2'];
-xivo_dialaction_actiontype['meetme'] = ['actiontype','actionarg1'];
-xivo_dialaction_actiontype['voicemail'] = ['actiontype',
-					   'actionarg1',
-					   'actionarg2-b',
-					   'actionarg2-s',
-					   'actionarg2-u',
-					   'actionarg2-j'];
-xivo_dialaction_actiontype['schedule'] = ['actiontype','actionarg1'];
-xivo_dialaction_actiontype['voicemenu'] = ['actiontype','actionarg1'];
-xivo_dialaction_actiontype['extension'] = ['actiontype','actionarg1','actionarg2'];
-xivo_dialaction_actiontype['application'] = ['action',
-					     'actiontype',
-					     'callbackdisa-actionarg1',
-					     'callbackdisa-actionarg2',
-					     'disa-actionarg1',
-					     'disa-actionarg2',
-					     'directory-actionarg1',
-					     'faxtomail-actionarg1',
-					     'voicemailmain-actionarg1'];
-xivo_dialaction_actiontype['custom'] = ['actiontype','actionarg1'];
-xivo_dialaction_actiontype['sound'] = ['actiontype',
-				       'actionarg1',
-				       'actionarg2-skip',
-				       'actionarg2-noanswer',
-				       'actionarg2-j'];
+var xivo_dialaction_actiontype = {
+			'none':		['actiontype'],
+			'endcall':	['action','actiontype','busy-actionarg1','congestion-actionarg1'],
+			'user':		['actiontype','actionarg1','actionarg2'],
+			'group':	['actiontype','actionarg1','actionarg2'],
+			'queue':	['actiontype','actionarg1','actionarg2'],
+			'meetme':	['actiontype','actionarg1'],
+			'voicemail':	['actiontype',
+					 'actionarg1',
+					 'actionarg2-b',
+					 'actionarg2-s',
+					 'actionarg2-u',
+					 'actionarg2-j'],
+			'schedule':	['actiontype','actionarg1'],
+			'voicemenu':	['actiontype','actionarg1'],
+			'extension':	['actiontype','actionarg1','actionarg2'],
+			'application':	['action',
+					 'actiontype',
+					 'callbackdisa-actionarg1',
+					 'callbackdisa-actionarg2',
+					 'disa-actionarg1',
+					 'disa-actionarg2',
+					 'directory-actionarg1',
+					 'faxtomail-actionarg1',
+					 'voicemailmain-actionarg1'],
+			'custom':	['actiontype','actionarg1'],
+			'sound':	['actiontype',
+					 'actionarg1',
+					 'actionarg2-skip',
+					 'actionarg2-noanswer',
+					 'actionarg2-j']};
 
-var xivo_dialaction_actionarg = new Array();
-xivo_dialaction_actionarg['endcall'] = new Array();
+var xivo_dialaction_actionarg = {};
+xivo_dialaction_actionarg['endcall'] = {};
 xivo_dialaction_actionarg['endcall']['hangup'] = [{display: false, name: 'busy-actionarg1'},
 						  {display: false, name: 'congestion-actionarg1'}];
 xivo_dialaction_actionarg['endcall']['busy'] = [{display: true, name: 'busy-actionarg1'},
 						{display: false, name: 'congestion-actionarg1'}];
 xivo_dialaction_actionarg['endcall']['congestion'] = [{display: false, name: 'busy-actionarg1'},
 						      {display: true, name: 'congestion-actionarg1'}];
-xivo_dialaction_actionarg['application'] = new Array();
+xivo_dialaction_actionarg['application'] = {};
 xivo_dialaction_actionarg['application']['callbackdisa'] = [{display: true, name: 'callbackdisa-actionarg1'},
 							    {display: true, name: 'callbackdisa-actionarg2'},
 							    {display: false, name: 'disa-actionarg1'},
@@ -107,13 +106,12 @@ xivo_dialaction_actionarg['application']['voicemailmain'] = [{display: false, na
 
 function xivo_ast_build_dialaction_array(dialevent)
 {
-	if(xivo_is_undef(xivo_elt_dialaction[dialevent]) == true
-	|| xivo_is_array(xivo_elt_dialaction[dialevent]) == false
-	|| xivo_is_undef(xivo_fm_dialaction[dialevent]) == true)
+	if(xivo_is_undef(xivo_elt_dialaction[dialevent]) === true
+	|| xivo_type_object(xivo_elt_dialaction[dialevent]) === false
+	|| xivo_is_undef(xivo_fm_dialaction[dialevent]) === true)
 		return(false);
 
-	xivo_elt_dialaction[dialevent]['links'] = new Array();
-	xivo_elt_dialaction[dialevent]['links']['link'] = new Array();
+	xivo_elt_dialaction[dialevent]['links'] = {'link': []};
 
 	var i = 0;
 
@@ -127,14 +125,12 @@ function xivo_ast_build_dialaction_array(dialevent)
 		for(var j = 0;j < nb;j++)
 		{
 			var key = 'fd-dialaction-'+dialevent+'-'+property+'-'+ref[j];
-			xivo_elt_dialaction[dialevent][key] = new Array();
-			xivo_elt_dialaction[dialevent][key]['style'] = {display: 'none'};
-			xivo_elt_dialaction[dialevent]['links']['link'][i++] = new Array(key,0,1);
+			xivo_elt_dialaction[dialevent][key] = {'style': {display: 'none'}};
+			xivo_elt_dialaction[dialevent]['links']['link'][i++] = [key,0,1];
 
 			var key = 'it-dialaction-'+dialevent+'-'+property+'-'+ref[j];
-			xivo_elt_dialaction[dialevent][key] = new Array();
-			xivo_elt_dialaction[dialevent][key]['property'] = {disabled: true, className: 'it-disabled'};
-			xivo_elt_dialaction[dialevent]['links']['link'][i++] = new Array(key,0,1);
+			xivo_elt_dialaction[dialevent][key] = {'property': {disabled: true, className: 'it-disabled'}};
+			xivo_elt_dialaction[dialevent]['links']['link'][i++] = [key,0,1];
 		}
 	}
 }
@@ -143,7 +139,7 @@ function xivo_ast_register_dialaction(dialevent,actiontype)
 {
 	if(xivo_is_undef(xivo_dialaction_actiontype[actiontype]) === true)
 		return(false);
-	else if(xivo_is_array(xivo_fm_dialaction[dialevent][actiontype]) === true)
+	else if(xivo_type_object(xivo_fm_dialaction[dialevent][actiontype]) === true)
 		return(true);
 
 	var ref = xivo_dialaction_actiontype[actiontype];
@@ -169,9 +165,9 @@ function xivo_ast_register_dialaction(dialevent,actiontype)
 
 function xivo_ast_chg_dialaction(dialevent,actiontype)
 {
-	if(xivo_is_array(xivo_elt_dialaction[dialevent]) === false
+	if(xivo_type_object(xivo_elt_dialaction[dialevent]) === false
 	|| xivo_is_undef(actiontype.value) === true
-	|| (xivo_is_undef(actiontype.disabled) === false && actiontype.disabled == true) === true
+	|| (xivo_is_undef(actiontype.disabled) === false && actiontype.disabled === true) === true
 	|| xivo_ast_register_dialaction(dialevent,actiontype.value) === false)
 		return(false);
 
@@ -181,8 +177,8 @@ function xivo_ast_chg_dialaction(dialevent,actiontype)
 
 function xivo_ast_chg_dialaction_actionarg(dialevent,actiontype)
 {
-	if(xivo_is_array(xivo_fm_dialaction[dialevent]) === false
-	|| xivo_is_array(xivo_dialaction_actionarg[actiontype]) === false
+	if(xivo_type_object(xivo_fm_dialaction[dialevent]) === false
+	|| xivo_type_object(xivo_dialaction_actionarg[actiontype]) === false
 	|| (action = xivo_eid('it-dialaction-'+dialevent+'-'+actiontype+'-action')) === false
 	|| xivo_is_undef(action.value) === true
 	|| xivo_is_array(xivo_dialaction_actionarg[actiontype][action.value]) === false
@@ -208,7 +204,7 @@ function xivo_ast_chg_dialaction_actionarg(dialevent,actiontype)
 
 function xivo_ast_dialaction_onload()
 {
-	for(dialevent in xivo_fm_dialaction)
+	for(var dialevent in xivo_fm_dialaction)
 	{
 		if((action = xivo_eid('it-dialaction-'+dialevent+'-actiontype')) !== false)
 			xivo_ast_chg_dialaction(dialevent,action);

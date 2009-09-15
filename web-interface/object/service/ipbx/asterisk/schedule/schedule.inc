@@ -65,7 +65,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 		$data['timehourbeg'] = sprintf('%02u',$hour[0]);
 
-		if(xivo_haslen($hour,1) === true)
+		if(xivo_has_len($hour,1) === true)
 			$data['timeminbeg'] = sprintf('%02u',$hour[1]);
 		else
 			$data['timeminbeg'] = '00';
@@ -80,7 +80,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 		$data['timehourend'] = sprintf('%02u',$hour[0]);
 
-		if(xivo_haslen($hour,1) === true)
+		if(xivo_has_len($hour,1) === true)
 			$data['timeminend'] = sprintf('%02u',$hour[1]);
 		else
 			$data['timeminend'] = '00';

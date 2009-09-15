@@ -118,10 +118,10 @@ $array['element']['callrecord']['value'] = array(0,1);
 $array['element']['callrecord']['default'] = 0;
 $array['element']['callrecord']['set'] = true;
 
-$array['element']['callfilter'] = array();
-$array['element']['callfilter']['value'] = array(0,1);
-$array['element']['callfilter']['default'] = 0;
-$array['element']['callfilter']['set'] = true;
+$array['element']['incallfilter'] = array();
+$array['element']['incallfilter']['value'] = array(0,1);
+$array['element']['incallfilter']['default'] = 0;
+$array['element']['incallfilter']['set'] = true;
 
 $array['element']['enablednd'] = array();
 $array['element']['enablednd']['value'] = array(0,1);
@@ -226,7 +226,7 @@ $array['filter']['enablevoicemail'] = array('bool' => true);
 $array['filter']['enablexfer'] = array('bool' => true);
 $array['filter']['enableautomon'] = array('bool' => true);
 $array['filter']['callrecord'] = array('bool' => true);
-$array['filter']['callfilter'] = array('bool' => true);
+$array['filter']['incallfilter'] = array('bool' => true);
 $array['filter']['enablednd'] = array('bool' => true);
 $array['filter']['enablerna'] = array('bool' => true);
 $array['filter']['destrna'] = array('set' => false,'chk' => 2,'regexp' => '/^\+?[0-9\*#]+$/','maxlen' => 128);

@@ -22,14 +22,19 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-if(($search = (string) $this->get_var('search')) === ''):
-	$search = $this->bbf('toolbar_fm_search');
-	$searchjs = '';
-else:
-	$searchjs = ' xivo_fm[\'fm-voicemail-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
-endif;
+$search = (string) $this->get_var('search');
+
+$toolbar_js = array();
+$toolbar_js[] = 'var xivo_toolbar_fm_search = \''.$dhtml->escape($search).'\';';
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-voicemail-list\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'voicemails[]\';';
+$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
+
+$dhtml->write_js($toolbar_js);
 
 ?>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
+
 <form action="#" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
@@ -41,15 +46,11 @@ endif;
 	<div class="fm-field">
 <?php
 		echo	$form->text(array('name'	=> 'search',
-					  'id'		=> 'it-search',
+					  'id'		=> 'it-toolbar-search',
 					  'size'	=> 20,
 					  'field'	=> false,
 					  'value'	=> $search,
-					  'default'	=> $this->bbf('toolbar_fm_search')),
-				    'onfocus="this.value = this.value === \''.$dhtml->escape($this->bbf('toolbar_fm_search')).'\'
-							   ? \'\'
-							   : this.value;
-					      xivo_fm_set_onfocus(this);"'),
+					  'default'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->image(array('name'	=> 'submit',
 					   'id'		=> 'it-subsearch',
@@ -62,7 +63,8 @@ endif;
 <?php
 	echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
 					       $this->bbf('toolbar_opt_add'),
-					       'border="0"'),
+					       'id="toolbar-bt-add"
+					        border="0"'),
 				'service/ipbx/pbx_settings/voicemail',
 				'act=add',
 				null,
@@ -71,43 +73,22 @@ endif;
 if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
-			       'border="0"
-				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-advanced"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="advanced-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-advanced-menu">
 		<li>
-			<a href="#"
-			   onclick="xivo_fm['fm-voicemail-list']['act'].value = 'enables';
-				    <?=$searchjs?>
-				    xivo_fm['fm-voicemail-list'].submit();">
-				<?=$this->bbf('toolbar_adv_menu_enable');?></a>
+			<a href="#" id="toolbar-advanced-menu-enable"><?=$this->bbf('toolbar_adv_menu_enable');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="xivo_fm['fm-voicemail-list']['act'].value = 'disables';
-				    <?=$searchjs?>
-				    xivo_fm['fm-voicemail-list'].submit();">
-				<?=$this->bbf('toolbar_adv_menu_disable');?></a>
+			<a href="#" id="toolbar-advanced-menu-disable"><?=$this->bbf('toolbar_adv_menu_disable');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="xivo_fm_checked_all('fm-voicemail-list','voicemails[]');
-				    return(false);">
-				<?=$this->bbf('toolbar_adv_menu_select-all');?></a>
+			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="this.tmp = xivo_fm['fm-voicemail-list']['act'].value;
-				    xivo_fm['fm-voicemail-list']['act'].value = 'deletes';
-				    <?=$searchjs?>
-				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
-					   ? xivo_fm['fm-voicemail-list'].submit()
-					   : xivo_fm['fm-voicemail-list']['act'] = this.tmp);">
-				<?=$this->bbf('toolbar_adv_menu_delete');?></a>
+			<a href="#" id="toolbar-advanced-menu-delete"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>

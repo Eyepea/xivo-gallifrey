@@ -136,8 +136,8 @@ Enable online call recording:
 ; fm_userfeatures_callrecord
 Call recording:
 
-; fm_userfeatures_callfilter
-Call filtering:
+; fm_userfeatures_incallfilter
+Incoming call filtering:
 
 ; fm_userfeatures_enablednd
 Do not disturb:
@@ -379,15 +379,6 @@ Reach the voicemail
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundoall
 Disable all forwarding
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundorna
-Disable forwarding on no-answer
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundobusy
-Disable forwarding on busy
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundounc
-Disable unconditionnal forwarding
-
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-recsnd
 Sound recording
 
@@ -400,8 +391,8 @@ Enable voicemail
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablednd
 Do not disturb
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallrec
-Incoming call recording
+; fm_phonefunckey_extension-typeval-opt-extenfeatures-callrecord
+Call recording
 
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallfilter
 Incoming call filtering

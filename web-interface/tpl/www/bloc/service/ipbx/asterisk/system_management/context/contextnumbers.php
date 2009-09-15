@@ -18,21 +18,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$form = &$this->get_module('form');
-	$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$url = &$this->get_module('url');
 
-	$element = $this->get_var('element');
-	$type = $this->get_var('type');
-	$list = $this->get_var('list');
-	$nb = $this->get_var('count');
-	$err = $this->get_varra('error',array('contextnumbers',$type));
+$element = $this->get_var('element');
+$type = $this->get_var('type');
+$list = $this->get_var('list');
+$nb = $this->get_var('count');
+$err = $this->get_varra('error',array('contextnumbers',$type));
+
 ?>
 <table cellspacing="0" cellpadding="0" border="0">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_contextnumbers_'.$type.'-numberbeg');?></th>
 		<th class="th-center"><?=$this->bbf('col_contextnumbers_'.$type.'-numberend');?></th>
-		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',$this->bbf('col_contextnumbers_'.$type.'-add'),'border="0"'),'#',null,'onclick="xivo_context_entity_enable_add(\''.$type.'\',this); return(xivo_free_focus());"',$this->bbf('col_contextnumbers_'.$type.'-add'));?></th>
+		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+								       $this->bbf('col_contextnumbers_'.$type.'-add'),
+								       'border="0"'),
+							'#',
+							null,
+							'onclick="xivo_context_entity_enable_add(\''.$type.'\',this);
+								  return(xivo.dom.free_focus());"',
+							$this->bbf('col_contextnumbers_'.$type.'-add'));?></th>
 	</tr>
 	</thead>
 	<tbody id="contextnumbers-<?=$type?>">
@@ -66,7 +74,14 @@ if($list !== false):
 					     'value'	=> $ref['numberend'],
 					     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 		</td>
-		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_'.$type.'-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-'.$type.'\',this,1); return(xivo_free_focus());"',$this->bbf('opt_contextnumbers_'.$type.'-delete'));?></td>
+		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+								       $this->bbf('opt_contextnumbers_'.$type.'-delete'),
+								       'border="0"'),
+							'#',
+							null,
+							'onclick="xivo.dom.make_table_list(\'contextnumbers-'.$type.'\',this,1);
+								  return(xivo.dom.free_focus());"',
+							$this->bbf('opt_contextnumbers_'.$type.'-delete'));?></td>
 	</tr>
 <?php
 	endfor;
@@ -89,8 +104,7 @@ endif;
 					     'label'	=> false,
 					     'disabled'	=> true,
 					     'size'	=> 15,
-					     'default'	=> $element['contextnumbers']['numberbeg']['default']),
-				       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+					     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
 		</td>
 		<td>
 			<?=$form->text(array('field'	=> false,
@@ -99,10 +113,16 @@ endif;
 					     'label'	=> false,
 					     'disabled'	=> true,
 					     'size'	=> 15,
-					     'default'	=> $element['contextnumbers']['numberend']['default']),
-				       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+					     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 		</td>
-		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',$this->bbf('opt_contextnumbers_'.$type.'-delete'),'border="0"'),'#',null,'onclick="xivo_table_list(\'contextnumbers-'.$type.'\',this,1); return(xivo_free_focus());"',$this->bbf('opt_contextnumbers_'.$type.'-delete'));?></td>
+		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+								       $this->bbf('opt_contextnumbers_'.$type.'-delete'),
+								       'border="0"'),
+							'#',
+							null,
+							'onclick="xivo.dom.make_table_list(\'contextnumbers-'.$type.'\',this,1);
+								  return(xivo.dom.free_focus());"',
+							$this->bbf('opt_contextnumbers_'.$type.'-delete'));?></td>
 	</tr>
 	</tbody>
 </table>

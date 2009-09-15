@@ -117,9 +117,9 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=$this->bbf('user_protocol-'.$ref['protocol']);?></td>
-		<td><?=(xivo_haslen($ref['name']) === true ? $ref['name'] : '-')?></td>
-		<td><?=(xivo_haslen($ref['number']) === true ? $ref['number'] : '-')?></td>
-		<td><?=(xivo_haslen($ref['provisioningid']) === true ? $ref['provisioningid'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['name']) === true ? $ref['name'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['provisioningid']) === true ? $ref['provisioningid'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

@@ -57,7 +57,7 @@ class xivo_sysinfo
 	function argin_separator()
 	{
 		if(($sep = ini_get('arg_separator.input')) !== false
-		&& xivo_haslen($sep) === true
+		&& xivo_has_len($sep) === true
 		&& $sep !== '&amp;')
 			return($sep);
 
@@ -67,7 +67,7 @@ class xivo_sysinfo
 	function argout_separator()
 	{
 		if(($sep = ini_get('arg_separator.output')) !== false
-		&& xivo_haslen($sep) === true
+		&& xivo_has_len($sep) === true
 		&& $sep !== '&amp;')
 			return($sep);
 

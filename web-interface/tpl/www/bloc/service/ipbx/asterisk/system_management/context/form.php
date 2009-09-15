@@ -41,36 +41,31 @@ if(xivo_issa('contextnumbers',$info) === true):
 	if(xivo_issa('user',$info['contextnumbers']) === true
 	&& ($user_nb = count($info['contextnumbers']['user'])) > 0):
 		$user_list = $info['contextnumbers']['user'];
-		$context_js[] = 'xivo_tlist[\'contextnumbers-user\'] = new Array();';
-		$context_js[] = 'xivo_tlist[\'contextnumbers-user\'][\'cnt\'] = '.$user_nb.';';
+		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-user\','.$user_nb.');';
 	endif;
 
 	if(xivo_issa('group',$info['contextnumbers']) === true
 	&& ($group_nb = count($info['contextnumbers']['group'])) > 0):
 		$group_list = $info['contextnumbers']['group'];
-		$context_js[] = 'xivo_tlist[\'contextnumbers-group\'] = new Array();';
-		$context_js[] = 'xivo_tlist[\'contextnumbers-group\'][\'cnt\'] = '.$group_nb.';';
+		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-group\','.$group_nb.');';
 	endif;
 
 	if(xivo_issa('queue',$info['contextnumbers']) === true
 	&& ($queue_nb = count($info['contextnumbers']['queue'])) > 0):
 		$queue_list = $info['contextnumbers']['queue'];
-		$context_js[] = 'xivo_tlist[\'contextnumbers-queue\'] = new Array();';
-		$context_js[] = 'xivo_tlist[\'contextnumbers-queue\'][\'cnt\'] = '.$queue_nb.';';
+		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-queue\','.$queue_nb.');';
 	endif;
 
 	if(xivo_issa('meetme',$info['contextnumbers']) === true
 	&& ($meetme_nb = count($info['contextnumbers']['meetme'])) > 0):
 		$meetme_list = $info['contextnumbers']['meetme'];
-		$context_js[] = 'xivo_tlist[\'contextnumbers-meetme\'] = new Array();';
-		$context_js[] = 'xivo_tlist[\'contextnumbers-meetme\'][\'cnt\'] = '.$meetme_nb.';';
+		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-meetme\','.$meetme_nb.');';
 	endif;
 
 	if(xivo_issa('incall',$info['contextnumbers']) === true
 	&& ($incall_nb = count($info['contextnumbers']['incall'])) > 0):
 		$incall_list = $info['contextnumbers']['incall'];
-		$context_js[] = 'xivo_tlist[\'contextnumbers-incall\'] = new Array();';
-		$context_js[] = 'xivo_tlist[\'contextnumbers-incall\'][\'cnt\'] = '.$incall_nb.';';
+		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-incall\','.$incall_nb.');';
 	endif;
 
 	if(isset($context_js[0]) === true):
@@ -146,7 +141,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-contextlist',
 		   				  'it-context');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incontext');?>">
 		   	<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incontext'),
@@ -154,7 +149,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-context',
 		   				  'it-contextlist');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcontext');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outcontext'),
@@ -176,14 +171,14 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-context',1);
-			   	    return(xivo_free_focus());"
+			   	    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcontext');?>">
 			   	<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcontext'),
 						  'class="bt-uplist" id="bt-upcontext" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-context',-1);
-			   	    return(xivo_free_focus());"
+			   	    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcontext');?>">
 			   	<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcontext'),
@@ -215,7 +210,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 <div id="sb-part-user" class="b-nodisplay">
 	<div class="sb-list">
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/contextnumbers',
 			    array('type'	=> 'user',
 				  'count'	=> $user_nb,
 				  'list'	=> $user_list));
@@ -226,7 +221,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 <div id="sb-part-group" class="b-nodisplay">
 	<div class="sb-list">
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/contextnumbers',
 			    array('type'	=> 'group',
 				  'count'	=> $group_nb,
 				  'list'	=> $group_list));
@@ -237,7 +232,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 <div id="sb-part-queue" class="b-nodisplay">
 	<div class="sb-list">
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/contextnumbers',
 			    array('type'	=> 'queue',
 				  'count'	=> $queue_nb,
 				  'list'	=> $queue_list));
@@ -248,7 +243,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 <div id="sb-part-meetme" class="b-nodisplay">
 	<div class="sb-list">
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/entity',
+	$this->file_include('bloc/service/ipbx/asterisk/system_management/context/contextnumbers',
 			    array('type'	=> 'meetme',
 				  'count'	=> $meetme_nb,
 				  'list'	=> $meetme_list));
@@ -270,7 +265,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 								'#',
 								null,
 								'onclick="xivo_context_entity_enable_add(\'incall\',this);
-									  return(xivo_free_focus());"',
+									  return(xivo.dom.free_focus());"',
 								$this->bbf('col_contextnumbers_incall-add'));?></th>
 		</tr>
 		</thead>
@@ -320,8 +315,8 @@ if($incall_list !== false):
 									       'border="0"'),
 								'#',
 								null,
-								'onclick="xivo_table_list(\'contextnumbers-incall\',this,1);
-									  return(xivo_free_focus());"',
+								'onclick="xivo.dom.make_table_list(\'contextnumbers-incall\',this,1);
+									  return(xivo.dom.free_focus());"',
 								$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 
@@ -346,8 +341,7 @@ endif;
 						     'label'	=> false,
 						     'disabled'	=> true,
 						     'size'	=> 15,
-						     'default'	=> $element['contextnumbers']['numberend']['default']),
-					       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+						     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 			</td>
 			<td>
 				<?=$form->text(array('field'	=> false,
@@ -356,8 +350,7 @@ endif;
 						     'label'	=> false,
 						     'disabled'	=> true,
 						     'size'	=> 15,
-						     'default'	=> $element['contextnumbers']['numberend']['default']),
-					       'onfocus="xivo_fm_set_onfocus(this);" onblur="xivo_fm_set_onblur(this);"');?>
+						     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 			</td>
 			<td>
 				<?=$form->select(array('field'		=> false,
@@ -367,16 +360,14 @@ endif;
 						       'key'		=> false,
 						       'disabled'	=> true,
 						       'default'	=> $element['contextnumbers']['didlength']['default']),
-						 $element['contextnumbers']['didlength']['value'],
-						 'onfocus="xivo_fm_set_onfocus(this);"
-						  onblur="xivo_fm_set_onblur(this);"');?></td>
+						 $element['contextnumbers']['didlength']['value']);?></td>
 			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 									       $this->bbf('opt_contextnumbers_incall-delete'),
 									       'border="0"'),
 								'#',
 								null,
-								'onclick="xivo_table_list(\'contextnumbers-incall\',this,1);
-									  return(xivo_free_focus());"',
+								'onclick="xivo.dom.make_table_list(\'contextnumbers-incall\',this,1);
+									  return(xivo.dom.free_focus());"',
 								$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 		</tbody>

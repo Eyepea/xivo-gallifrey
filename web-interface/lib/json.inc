@@ -40,7 +40,7 @@ class xivo_json
 
 	function decode($data,$assoc=false)
 	{
-		if(xivo_haslen($data) === false)
+		if(xivo_has_len($data) === false)
 			return(false);
 
 		xivo_json::load_extension();

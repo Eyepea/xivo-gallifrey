@@ -157,8 +157,8 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	{
 		if(($id = xivo_uint($id)) === 0)
 		{
-			if(xivo_haslen($exten) === false
-			|| xivo_haslen($context) === false)
+			if(xivo_has_len($exten) === false
+			|| xivo_has_len($context) === false)
 				return(false);
 
 			$id = count($this->_exten) + 1;
@@ -240,7 +240,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$where['exten'] = $this->_sre->clean_extension($exten);
 		$where['context'] = $context;
 
-		if(xivo_haslen($app) === true)
+		if(xivo_has_len($app) === true)
 		{
 			if(($app = $this->get_app_displayname($app)) === false)
 				return(false);
@@ -310,8 +310,8 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	{
 		if(($id = xivo_uint($id)) === 0)
 		{
-			if(xivo_haslen($exten) === false
-			|| xivo_haslen($context) === false)
+			if(xivo_has_len($exten) === false
+			|| xivo_has_len($context) === false)
 				return(false);
 
 			$id = count($this->_context) + 1;
@@ -357,10 +357,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$where = array();
 		$where['context'] = $context;
 
-		if(xivo_haslen($exten) === true)
+		if(xivo_has_len($exten) === true)
 			$where['exten'] = $this->_sre->clean_extension($exten);
 
-		if(xivo_haslen($app) === true)
+		if(xivo_has_len($app) === true)
 		{
 			if(($app = $this->get_app_displayname($app)) === false)
 				return(false);

@@ -68,7 +68,7 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 
 		xivo::load_class('xivo_sort');
@@ -113,15 +113,15 @@ switch($act)
 		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									array('name'	=> SORT_ASC));
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appagentgroup->get_elements());
-		$_HTML->set_var('amember',$amember);
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember',$qmember);
-		$_HTML->set_var('agentgroup_list',$agentgroup_list);
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appagentgroup->get_elements());
+		$_TPL->set_var('amember',$amember);
+		$_TPL->set_var('queues',$queues);
+		$_TPL->set_var('qmember',$qmember);
+		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
@@ -129,7 +129,7 @@ switch($act)
 
 		if(isset($_QR['group']) === false
 		|| ($info = $appagentgroup->get($_QR['group'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$amember = $qmember = array();
 		$amember['list'] = $qmember['list'] = false;
@@ -169,7 +169,7 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 
 		xivo::load_class('xivo_sort');
@@ -213,16 +213,16 @@ switch($act)
 		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									array('name'	=> SORT_ASC));
 
-		$_HTML->set_var('id',$info['agentgroup']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appagentgroup->get_elements());
-		$_HTML->set_var('amember',$amember);
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember',$qmember);
-		$_HTML->set_var('agentgroup_list',$agentgroup_list);
+		$_TPL->set_var('id',$info['agentgroup']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appagentgroup->get_elements());
+		$_TPL->set_var('amember',$amember);
+		$_TPL->set_var('queues',$queues);
+		$_TPL->set_var('qmember',$qmember);
+		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
@@ -233,17 +233,17 @@ switch($act)
 		if(isset($_QR['group']) === false
 		|| ($info = $appagentgroup->get($_QR['group'])) === false
 		|| (string) $info['agentgroup']['id'] === (string) XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$appagentgroup->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('agentgroups',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$appagentgroup = &$ipbx->get_application('agentgroup');
 
@@ -256,14 +256,14 @@ switch($act)
 				$appagentgroup->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('agentgroups',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$appagentgroup = &$ipbx->get_application('agentgroup');
 
@@ -282,14 +282,14 @@ switch($act)
 		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'addagent':
 		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
 
 		if(($agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									    array('name' => SORT_ASC))) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$param['act'] = 'listagent';
 
@@ -337,7 +337,7 @@ switch($act)
 				$ipbx->discuss('xivo[agentlist,update]');
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 			}
 		}
 
@@ -379,19 +379,19 @@ switch($act)
 			}
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appagent->get_elements());
-		$_HTML->set_var('umember',$umember);
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember',$qmember);
-		$_HTML->set_var('moh_list',$appagent->get_musiconhold());
-		$_HTML->set_var('beep_list',$appagent->get_beep());
-		$_HTML->set_var('goodbye_list',$appagent->get_goodbye());
-		$_HTML->set_var('context_list',$appagent->get_context_list());
-		$_HTML->set_var('agentgroup_list',$agentgroup_list);
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appagent->get_elements());
+		$_TPL->set_var('umember',$umember);
+		$_TPL->set_var('queues',$queues);
+		$_TPL->set_var('qmember',$qmember);
+		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
+		$_TPL->set_var('beep_list',$appagent->get_beep());
+		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
+		$_TPL->set_var('context_list',$appagent->get_context_list());
+		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'editagent':
@@ -399,7 +399,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info = $appagent->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$param['act'] = 'listagent';
 		$param['group'] = $info['agentgroup']['id'];
@@ -449,7 +449,7 @@ switch($act)
 				$ipbx->discuss('xivo[agentlist,update]');
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 			}
 		}
 
@@ -496,27 +496,27 @@ switch($act)
 		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									array('name' => SORT_ASC));
 
-		$_HTML->set_var('id',$info['agentfeatures']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appagent->get_elements());
-		$_HTML->set_var('umember',$umember);
-		$_HTML->set_var('queues',$queues);
-		$_HTML->set_var('qmember',$qmember);
-		$_HTML->set_var('moh_list',$appagent->get_musiconhold());
-		$_HTML->set_var('beep_list',$appagent->get_beep());
-		$_HTML->set_var('goodbye_list',$appagent->get_goodbye());
-		$_HTML->set_var('context_list',$appagent->get_context_list());
-		$_HTML->set_var('agentgroup_list',$agentgroup_list);
+		$_TPL->set_var('id',$info['agentfeatures']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appagent->get_elements());
+		$_TPL->set_var('umember',$umember);
+		$_TPL->set_var('queues',$queues);
+		$_TPL->set_var('qmember',$qmember);
+		$_TPL->set_var('moh_list',$appagent->get_musiconhold());
+		$_TPL->set_var('beep_list',$appagent->get_beep());
+		$_TPL->set_var('goodbye_list',$appagent->get_goodbye());
+		$_TPL->set_var('context_list',$appagent->get_context_list());
+		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'deleteagent':
 		$appagent = &$ipbx->get_application('agent');
 
 		if(isset($_QR['id']) === false || $appagent->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$param['act'] = 'listagent';
 		$param['numgroup'] = $appagent->get_info_var('agentfeatures','numgroup');
@@ -527,14 +527,14 @@ switch($act)
 		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'deleteagents':
 		$param['act'] = 'listagent';
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('agents',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$appagent = &$ipbx->get_application('agent');
 
@@ -549,7 +549,7 @@ switch($act)
 		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'enableagents':
 	case 'disableagents':
@@ -557,7 +557,7 @@ switch($act)
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('agents',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 
 		$appagent = &$ipbx->get_application('agent',null,false);
 
@@ -576,7 +576,7 @@ switch($act)
 		$ipbx->discuss('module reload chan_agent.so');
 		$ipbx->discuss('xivo[agentlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		break;
 	case 'listagent':
 		$prevpage = $page - 1;
@@ -598,7 +598,7 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 
 		$appagentgroup = &$ipbx->get_application('agentgroup',null,false);
@@ -606,9 +606,9 @@ switch($act)
 		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									array('name' => SORT_ASC));
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
-		$_HTML->set_var('agentgroup_list',$agentgroup_list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 		break;
 	default:
 		$act = 'list';
@@ -630,24 +630,24 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/agents'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/agents'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
-		$_HTML->set_var('agentgroup_list',$appagentgroup->get_agentgroups_list(null,$order));
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		$_TPL->set_var('agentgroup_list',$appagentgroup->get_agentgroups_list(null,$order));
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('group',$group);
+$_TPL->set_var('act',$act);
+$_TPL->set_var('group',$group);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

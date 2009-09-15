@@ -85,7 +85,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		$info['type'] = $this->_param['type'];
 		$info['typeval'] = 0;
 
-		if(xivo_haslen($number) === false)
+		if(xivo_has_len($number) === false)
 		{
 			$info['number'] = '';
 			$chkerror = 'invalid context';

@@ -88,10 +88,10 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 		$arr['var_val'] = $rs['number'].',';
 
-		if(xivo_haslen($rs,'pin') === true)
+		if(xivo_has_len($rs,'pin') === true)
 			$arr['var_val'] .= $rs['pin'];
 
-		if(xivo_haslen($rs,'admin-pin') === true)
+		if(xivo_has_len($rs,'admin-pin') === true)
 			$arr['var_val'] .= ','.$rs['admin-pin'];
 
 		$arr['var_val'] = rtrim($arr['var_val'],',');

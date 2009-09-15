@@ -299,7 +299,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 			$arr['commented'] = true;
 		else if(isset($arr['commented']) === true)
 			$arr['commented'] = (bool) $arr['commented'];
-		else if($var_val_exists === true && xivo_haslen($arr['var_val']) === true)
+		else if($var_val_exists === true && xivo_has_len($arr['var_val']) === true)
 			$arr['commented'] = false;
 		else if($var_val_exists === true && $arr['var_val'] === '')
 			$arr['commented'] = true;
@@ -485,7 +485,7 @@ class xivo_service_asterisk_realstatic extends xivo_service_asterisk_abstract
 
 	function get_all_val_by_category($category='',$disable=null)
 	{
-		if(xivo_haslen($category) === false)
+		if(xivo_has_len($category) === false)
 		{
 			if(isset($this->_category) === true)
 				$category = $this->_category;

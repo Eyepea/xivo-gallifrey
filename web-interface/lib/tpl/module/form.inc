@@ -60,6 +60,8 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['bbf'] = false;
 		$this->_param['bbf_opt'] = false;
 		$this->_param['browse'] = false;
+		$this->_param['jump'] = 0;
+		$this->_param['jump_strict'] = true;
 		$this->_param['invalid'] = false;
 
 		if(isset($v['name']) === true)
@@ -203,6 +205,12 @@ class xivo_tpl_form extends xivo_tpl_module
 			if(isset($v['browse'][0]) === true)
 				$this->_param['browse'] = $v['browse'];
 		}
+
+		if(isset($v['jump']) === true)
+			$this->_param['jump'] = xivo_uint($v['jump']);
+
+		if(isset($v['jump_strict']) === true)
+			$this->_param['jump_strict'] = (bool) $v['jump_strict'];
 
 		if(isset($v['invalid']) === true)
 			$this->_param['invalid'] = (bool) $v['invalid'];
@@ -707,6 +715,14 @@ class xivo_tpl_form extends xivo_tpl_module
 		if($this->_param['null'] === true || ($arr !== '' && $arr !== false) === true)
 		{
 			$arr = (array) $arr;
+
+			if($this->_param['jump'] > 0)
+			{
+				$jumparr = array();
+				$this->_mk_slt_option_jump($this->_param['jump'],$arr,$jumparr);
+				$arr = $jumparr;
+			}
+
 			$this->_mk_slt_option($arr);
 		}
 
@@ -799,7 +815,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	{
 		if(is_array($render) === false)
 			return(null);
-		else if(xivo_haslen($render,'value') === false)
+		else if(xivo_has_len($render,'value') === false)
 		{
 			$render['value'] = ' ';
 			return($this->_set_slt_option_render($render));
@@ -927,6 +943,31 @@ class xivo_tpl_form extends xivo_tpl_module
 			     'timevalue'	=> $time));
 	}
 
+	function _mk_slt_option_jump($jump,$arr,&$ret)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		foreach($arr as $key => $val)
+		{
+			if(is_array($val) === false)
+			{
+				if($this->_param['jump_strict'] === false)
+					$ret[$key] = $val;
+				else if($this->_param['jump'] === $jump)
+					$ret[$key] = $val;
+				else
+					return(true);
+			}
+			else if($jump === 0)
+				$ret[$key] = $val;
+			else if($this->_mk_slt_option_jump($jump-1,$val,&$ret) === true
+			&& $this->_param['jump_strict'] === true
+			&& $this->_param['jump'] === $jump)
+				$ret[$key] = $val;
+		}
+	}
+
 	function _mk_slt_optgroup_render($render)
 	{
 		if(is_array($this->_param['optgroup']) === false)
@@ -934,7 +975,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$param = &$this->_param['optgroup'];
 
-		if(is_scalar($render) === true && xivo_haslen($render) === false)
+		if(is_scalar($render) === true && xivo_has_len($render) === false)
 			$render = ' ';
 		else if(is_array($param['bbf']) === true)
 		{
@@ -1064,6 +1105,8 @@ class xivo_tpl_form extends xivo_tpl_module
 			return(null);
 		}
 
+		$optgroup = $this->_param['optgroup'];
+
 		reset($arr);
 
 		while(list($key) = each($arr))
@@ -1082,14 +1125,23 @@ class xivo_tpl_form extends xivo_tpl_module
 				}
 			}
 
-			if($this->_param['optgroup'] === true && $prevkey !== null)
-				$key = $prevkey;
+			if($this->_param['optgroup'] === true)
+			{
+				if($prevkey !== null)
+					$key = $prevkey;
+			}
+			else
+				$this->_param['optgroup'] = $optgroup;
 
 			if(is_array($ref) === true)
 			{
-				if(is_array($this->_param['optgroup']) === true)
-					$this->_mk_slt_optgroup($key,$ref);
-				else if(($render = $this->_mk_slt_option_param_array($key,$ref)) !== false)
+				if(is_array($this->_param['optgroup']) === true
+				&& $this->_mk_slt_optgroup($key,$ref) !== false)
+					continue;
+				else
+					$this->_param['optgroup'] = false;
+
+				if(($render = $this->_mk_slt_option_param_array($key,$ref)) !== false)
 					$this->_mk_slt_option_render($render);
 				else if(isset($this->_param['bbf_opt']['argvalue']) === true
 				&& ($render = $this->_mk_slt_option_param($key,$ref)) !== false)
@@ -1130,23 +1182,28 @@ class xivo_tpl_form extends xivo_tpl_module
 			$render = $key;
 		else if($param['key'] === false && is_scalar($arr) === true)
 			$render = $arr;
-		else if(is_scalar($param['key']) === true)
-			$prevkey = $key;
 
 		if($render !== false
 		&& ($label = $this->_mk_slt_optgroup_render($render)) !== null
 		&& $param['unique'] === true
-		&& xivo_haslen($this->_render) === true)
+		&& xivo_has_len($this->_render) === true)
 		{
 			$this->_optgroup[] = $this->_render;
 			$this->_render = '';
 		}
 
-		$this->_param['optgroup'] = true;
-		$this->_mk_slt_option($arr,$prevkey);
-		$this->_param['optgroup'] = $param;
+		if($render === false && $label === null)
+			return(false);
+		else if(empty($arr) === true)
+			$this->_mk_slt_option_render($this->_mk_slt_option_param($prevkey,$arr));
+		else
+		{
+			$this->_param['optgroup'] = true;
+			$this->_mk_slt_option($arr,$prevkey);
+			$this->_param['optgroup'] = $param;
+		}
 
-		if($render === false || isset($label) === false)
+		if($render === false || $label === null)
 			return(null);
 		else if($label === true && $param['unique'] === false)
 			$this->_render .= '</optgroup>'."\n";

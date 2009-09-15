@@ -51,25 +51,43 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		$data['group'] = '';
 		$data['queue'] = '';
 		$data['meetme'] = '';
-		$data['extension'] = '';
-		$data['bosssecretary'] = '';
 		$data['custom'] = '';
+		$data['extension'] = false;
 		$data['supervision'] = (bool) $data['supervision'];
+		$data['progfunckey'] = (bool) $data['progfunckey'];
 
 		switch($data['typeextenumbers'])
 		{
 			case 'extenfeatures':
-				if($data['typevalextenumbers'] === 'bsfilter')
+				switch($data['typevalextenumbers'])
 				{
-					$data['type'] = 'bosssecretary';
-					$data['bosssecretary'] = $data['typeval'] = $data['typevalextenumbersright'];
-					return($data);
+					case 'bsfilter':
+						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
+						$data['typeval'] = $data['typevalextenumbersright'];
+						return($data);
+					case 'extenfeatures-agentstaticlogin':
+					case 'extenfeatures-agentstaticlogoff':
+					case 'extenfeatures-agentdynamiclogin':
+					case 'groupaddmember':
+					case 'groupremovemember':
+					case 'queueaddmember':
+					case 'queueremovemember':
+						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
+						$data['typeval'] = $data['typevalextenumbersright'];
+						return($data);
 				}
 			case 'featuremap':
 			case 'generalfeatures':
-				$data['type'] = 'extension';
-				$data['typeval'] = $data['typevalextenumbers'];
-				$data['extension'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
+				if($data['type'] === '')
+					$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
+
+				if(xivo_issa($data['type'],$this->_conf['type']) === true)
+				{
+					$data['extension'] = (bool) xivo_ak('extension',$this->_conf['type'][$data['type']],true);
+
+					if((bool) xivo_ak('destination',$this->_conf['type'][$data['type']],true) === true)
+						$data['typeval'] = $data['exten'];
+				}
 				return($data);
 		}
 
@@ -84,7 +102,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				return($data);
 		}
 
-		if(xivo_haslen($data['exten']) === true || $data['type'] === '')
+		if(xivo_has_len($data['exten']) === true || $data['type'] === '')
 		{
 			$data['type'] = 'custom';
 			$data['custom'] = $data['typeval'] = $data['exten'];
@@ -95,56 +113,14 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 	function get_type_list()
 	{
-		if(is_array($this->_type_list) === true)
-			return($this->_type_list);
-
-		if(isset($this->_conf['type']) === false
-		|| is_array($this->_conf['type']) === false
-		|| empty($this->_conf['type']) === true)
-			return(false);
-
-		$this->_type_list = array();
-		$r = &$this->_type_list;
-
-		foreach($this->_conf['type'] as $key => $val)
-		{
-			if(is_array($val) === false
-			|| empty($val) === true)
-			{
-				if(is_array($val) === false)
-					$r[$key] = $val;
-				continue;
-			}
-			else if(isset($r[$key]) === false)
-				$r[$key] = array();
-
-			foreach($val as $key1 => $val1)
-			{
-				if(is_array($val1) === false
-				|| empty($val1) === true)
-				{
-					if(is_array($val1) === false)
-						$r[$key][$key1.'-'.$val1] = $val1;
-					continue;
-				}
-
-				foreach($val1 as $key2 => $val2)
-				{
-					if(is_bool($val2) === true)
-						$r[$key][$key1.'-'.$key2] = $val2;
-				}
-			}
-		}
-
-		return($this->_type_list);
+		return($this->_conf['type']);
 	}
 
 	function mk_values_array($arr)
 	{
 		if(is_array($arr) === false
 		|| isset($arr['fknum'],$arr['type'],$arr['typeval'],$arr['iduserfeatures']) === false
-		|| $this->chk_element_value('type',$arr['type']) === false
-		|| xivo_haslen($arr['typeval']) === false)
+		|| ($type_info = $this->_chk_exists_cfg('type',$arr['type'],true)) === false)
 			return(false);
 
 		$r = array();
@@ -155,36 +131,76 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		$r['typevalextenumbers'] = '';
 		$r['typeextenumbersright'] = '';
 		$r['typevalextenumbersright'] = '';
-		$r['supervision'] = 0;
+
+		if(isset($arr['label']) === true)
+			$r['label'] = $arr['label'];
+		else
+			$r['label'] = '';
+
+		if(isset($type_info['supervisable']) === true
+		&& (bool) $type_info['supervisable'] === true
+		&& isset($arr['supervision']) === true)
+			$r['supervision'] = intval((bool) $arr['supervision']);
+		else
+			$r['supervision'] = 0;
+
+		if(isset($type_info['progfunckey']) === true)
+			$r['progfunckey'] = intval((bool) $type_info['progfunckey']);
+		else
+			$r['progfunckey'] = 0;
+
+		$type = explode('-',$arr['type'],2);
 
 		switch($arr['type'])
 		{
-			case 'extension':
-				$val = explode('-',$arr['typeval'],2);
-
-				if(xivo_haslen($val,0) === false
-				|| xivo_haslen($val,1) === false)
+			case 'extenfeatures-agentstaticlogin':
+			case 'extenfeatures-agentstaticlogoff':
+			case 'extenfeatures-agentdynamiclogin':
+			case 'extenfeatures-groupaddmember':
+			case 'extenfeatures-groupremovemember':
+			case 'extenfeatures-queueaddmember':
+			case 'extenfeatures-queueremovemember':
+				if(xivo_has_len($arr['typeval']) === false)
 					return(false);
 
-				$r['typeextenumbers'] = $val[0];
-				$r['typevalextenumbers'] = $val[1];
-				break;
-			case 'bosssecretary':
 				$r['typeextenumbers'] = 'extenfeatures';
-				$r['typevalextenumbers'] = 'bsfilter';
+				$r['typevalextenumbers'] = $type[1];
+				$r['typeextenumbersright'] = substr($type[1],0,5);
+				$r['typevalextenumbersright'] = $arr['typeval'];
+				return($r);
+			case 'extenfeatures-bsfilter':
+				if(xivo_has_len($arr['typeval']) === false)
+					return(false);
+
+				$r['typeextenumbers'] = 'extenfeatures';
+				$r['typevalextenumbers'] = $type[1];
 				$r['typeextenumbersright'] = 'user';
 				$r['typevalextenumbersright'] = $arr['typeval'];
+				return($r);
+		}
 
-				if(isset($arr['supervision']) === true)
-					$r['supervision'] = $arr['supervision'];
+		switch($type[0])
+		{
+			case 'extenfeatures':
+			case 'generalfeatures':
+			case 'featuremap':
+				if(isset($type_info['destination']) === true
+				&& (bool) $type_info['destination'] === true)
+					$r['exten'] = $arr['typeval'];
+
+				$r['typeextenumbers'] = $type[0];
+				$r['typevalextenumbers'] = $type[1];
 				break;
 			case 'custom':
+				if(xivo_has_len($arr['typeval']) === false)
+					return(false);
+
 				$r['exten'] = $arr['typeval'];
 				break;
-			case 'user':
-				if(isset($arr['supervision']) === true)
-					$r['supervision'] = $arr['supervision'];
 			default:
+				if(xivo_has_len($arr['typeval']) === false)
+					return(false);
+
 				$r['typeextenumbersright'] = $arr['type'];
 				$r['typevalextenumbersright'] = $arr['typeval'];
 		}
@@ -197,27 +213,50 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		switch($type)
 		{
 			case 'extenfeatures':
-				if($typeval === 'bsfilter')
-					return(true);
+				switch($typeval)
+				{
+					case 'bsfilter':
+						return(true);
+					case 'agentstaticlogin':
+					case 'agentstaticlogoff':
+					case 'groupaddmember':
+					case 'groupremovemember':
+					case 'queueaddmember':
+					case 'queueremovemember':
+						if($typeright !== substr($typeval,0,5))
+							return(false);
+						break;
+				}
 			case 'featuremap':
 			case 'generalfeatures':
-				if(($extentype = $this->_chk_exists_cfg('type','extension',true)) === false
-				|| xivo_issa($type,$extentype) === false
-				|| isset($extentype[$type][$typeval]) === false)
+				if($this->_chk_exists_cfg('type',$type.'-'.$typeval) === false)
 					return(false);
-				return(true);
+				else if(xivo_has_len($typeright) === false)
+					return(true);
+				break;
+			default:
+				if(xivo_has_len($type) === true)
+					return(false);
 		}
 
 		switch($typeright)
 		{
+			case 'agent':
+				if($type !== 'extenfeatures'
+				|| ($typeval !== 'agentstaticlogin'
+				   && $typeval !== 'agentstaticlogoff'
+				   && $typeval !== 'agentdynamiclogin') === true)
+					return(false);
+
+				return($this->chk_dest_agent($typevalright,null,null,$disable,false,true,$context));
 			case 'user':
-				return($this->chk_dest_user($typevalright,null,$id,$disable,true,true,$context));
+				return($this->chk_dest_user($typevalright,null,$id,$disable,false,true,$context));
 			case 'group':
-				return($this->chk_dest_group($typevalright,null,null,$disable,true,true,$context));
+				return($this->chk_dest_group($typevalright,null,null,$disable,false,true,$context));
 			case 'queue':
-				return($this->chk_dest_queue($typevalright,null,null,$disable,true,true,$context));
+				return($this->chk_dest_queue($typevalright,null,null,$disable,false,true,$context));
 			case 'meetme':
-				return($this->chk_dest_meetme($typevalright,null,null,$disable,true,true,$context));
+				return($this->chk_dest_meetme($typevalright,null,null,$disable,false,true,$context));
 		}
 
 		return(false);

@@ -21,7 +21,7 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $callback = isset($_QR['callback']) === true ? $_QR['callback'] : '';
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 
 switch($act)
 {
@@ -37,14 +37,14 @@ switch($act)
 		else if(($callback = $dhtml->chk_function_name($callback)) === false)
 			$dhtml->ajs_die('Error/Invalid callback function');
 
-		$_HTML->set_var('info',$info);
-		$_HTML->set_var('callback',$callback);
+		$_TPL->set_var('info',$info);
+		$_TPL->set_var('callback',$callback);
 		break;
 	default:
 		$dhtml->ajs_die('Error/404');
 }
 
-$json = &$_HTML->get_module('json');
+$json = &$_TPL->get_module('json');
 $json->display();
 
 ?>

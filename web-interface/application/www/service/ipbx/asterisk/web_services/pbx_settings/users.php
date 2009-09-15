@@ -23,7 +23,7 @@ $access_subcategory = 'users';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
@@ -35,7 +35,7 @@ switch($act)
 				      'extenumbers'		=> true,
 				      'contextnummember'	=> true);
 
-		if(($info = $appuser->get($_QRY->get_qs('id'),
+		if(($info = $appuser->get($_QRY->get('id'),
 					  null,
 					  false,
 					  false,
@@ -45,7 +45,7 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		$appuser = &$ipbx->get_application('user');
@@ -65,7 +65,7 @@ switch($act)
 	case 'edit':
 		$appuser = &$ipbx->get_application('user');
 
-		if($appuser->get($_QRY->get_qs('id')) === false)
+		if($appuser->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appuser->edit_from_json() === true)
 		{
@@ -82,7 +82,7 @@ switch($act)
 	case 'delete':
 		$appuser = &$ipbx->get_application('user');
 
-		if($appuser->get($_QRY->get_qs('id')) === false)
+		if($appuser->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appuser->delete() === true)
 		{
@@ -98,13 +98,13 @@ switch($act)
 	case 'search':
 		$appuser = &$ipbx->get_application('user',null,false);
 
-		if(($list = $appuser->get_users_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appuser->get_users_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:
@@ -118,11 +118,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

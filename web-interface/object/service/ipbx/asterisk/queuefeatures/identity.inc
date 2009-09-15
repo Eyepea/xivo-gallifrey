@@ -20,19 +20,9 @@
 
 class xivo_service_asterisk_queuefeatures_identity
 {
-	var $_sre	= null;
-
-	function xivo_service_asterisk_queuefeatures_identity(&$sre)
+	function _prepare_identity(&$data,$full=true)
 	{
-		if(is_object($sre) === false)
-			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
-
-		$this->_sre = &$sre;
-	}
-
-	function _prepare_identity(&$data)
-	{
-		if(xivo_haslen($data['context']) === false)
+		if(xivo_has_len($data['context']) === false)
 			$data['context'] = 'default';
 
 		$data['identity'] = trim($data['name']);
@@ -40,7 +30,9 @@ class xivo_service_asterisk_queuefeatures_identity
 		if($data['identity'] === '')
 			$data['identity'] = '-';
 
-		if(xivo_haslen($data['number']) === true)
+		if((bool) $full === false)
+			return($data);
+		else if(xivo_has_len($data['number']) === true)
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
 		else
 			$data['identity'] .= ' ('.$data['context'].')';
@@ -48,7 +40,7 @@ class xivo_service_asterisk_queuefeatures_identity
 		return($data);
 	}
 
-	function mk_identity($arr)
+	function mk_identity($arr,$full=true)
 	{
 		if(is_array($arr) === false || isset($arr['name']) === false)
 			return(false);
@@ -59,7 +51,7 @@ class xivo_service_asterisk_queuefeatures_identity
 		if(isset($arr['context']) === false)
 			$arr['context'] = '';
 
-		$this->_prepare_identity($arr);
+		$this->_prepare_identity($arr,$full);
 
 		return($arr['identity']);
 	}

@@ -21,6 +21,6 @@
 require_once('xivo.php');
 
 xivo_user::logoff();
-$_QRY->go($_HTML->url('index'));
+$_QRY->go($_TPL->url('index'));
 
 ?>

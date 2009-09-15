@@ -21,7 +21,7 @@
 $form = &$this->get_module('form');
 
 ?>
-<div class="b-infos b-form">
+<div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
@@ -61,3 +61,18 @@ $form = &$this->get_module('form');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
+<!-- script type="text/javascript">
+	function xivo_http_requestor(xsptr)
+	{
+		var xivo_tata = new xivo.http(
+			'/service/ipbx/ui.php/pbx_settings/users/?' + xivo_sess_str,
+			{'callbackcomplete':	function(xhr) { xsptr.set(xhr,xsptr.get_search_value()); },
+			 'cache':		false},
+			{'act':		'search',
+			 'search':	xsptr.get_search_value()},
+			true);
+	}
+
+	var tutu = new xivo.suggest({'requestor': xivo_http_requestor},
+				    'it-userfeatures-firstname');
+</script -->

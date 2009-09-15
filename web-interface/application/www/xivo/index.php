@@ -8,23 +8,23 @@ if(isset($_QR['service'],$_QR['action']) === true)
 	{
 		case 'start':
 			$monitoring->start_service($_QR['service']);
-			$_QRY->go($_HTML->url('xivo'));
+			$_QRY->go($_TPL->url('xivo'));
 			break;
 		case 'stop':
 			$monitoring->stop_service($_QR['service']);
-			$_QRY->go($_HTML->url('xivo'));
+			$_QRY->go($_TPL->url('xivo'));
 			break;
 		case 'restart':
 			$monitoring->restart_service($_QR['service']);
-			$_QRY->go($_HTML->url('xivo'));
+			$_QRY->go($_TPL->url('xivo'));
 			break;
 		case 'monitor':
 			$monitoring->enable_monitor($_QR['service']);
-			$_QRY->go($_HTML->url('xivo'));
+			$_QRY->go($_TPL->url('xivo'));
 			break;
 		case 'unmonitor':
 			$monitoring->disable_monitor($_QR['service']);
-			$_QRY->go($_HTML->url('xivo'));
+			$_QRY->go($_TPL->url('xivo'));
 			break;
 		default:
 	}
@@ -48,20 +48,20 @@ if(is_array($mon_grpundef) === true)
 if(is_array($devinfo) === true)
 	usort($devinfo,array(&$sort,'strnat_usort'));
 
-$_HTML->set_var('sysinfo',$monitoring->get_system());
-$_HTML->set_var('uptime',$_SYSINFO->uptime());
-$_HTML->set_var('cpuinfo',$_SYSINFO->cpuinfo());
-$_HTML->set_var('devinfo',$devinfo);
-$_HTML->set_var('meminfo',$_SYSINFO->meminfo(true));
-$_HTML->set_var('netinfo',$_SYSINFO->netinfo());
-$_HTML->set_var('mon_telephony',$mon_telephony);
-$_HTML->set_var('mon_grpundef',$mon_grpundef);
+$_TPL->set_var('sysinfo',$monitoring->get_system());
+$_TPL->set_var('uptime',$_SYSINFO->uptime());
+$_TPL->set_var('cpuinfo',$_SYSINFO->cpuinfo());
+$_TPL->set_var('devinfo',$devinfo);
+$_TPL->set_var('meminfo',$_SYSINFO->meminfo(true));
+$_TPL->set_var('netinfo',$_SYSINFO->netinfo());
+$_TPL->set_var('mon_telephony',$mon_telephony);
+$_TPL->set_var('mon_grpundef',$mon_grpundef);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 
-$_HTML->set_bloc('main','xivo/index');
-$_HTML->set_struct('xivo/index');
-$_HTML->display('simple');
+$_TPL->set_bloc('main','xivo/index');
+$_TPL->set_struct('xivo/index');
+$_TPL->display('simple');
 
 ?>

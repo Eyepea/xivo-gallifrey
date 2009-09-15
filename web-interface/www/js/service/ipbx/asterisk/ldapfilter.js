@@ -38,7 +38,7 @@ function xivo_chg_additionaltype(type)
 	var display = 'none';
 	var disabled = true;
 
-	if(type == 'custom')
+	if(type === 'custom')
 	{
 		display = 'block';
 		disabled = false;
@@ -50,8 +50,8 @@ function xivo_chg_additionaltype(type)
 
 function xivo_ldapfilter_onload()
 {
-	if(xivo_eid('it-ldapfilter-additionaltype') != false)
+	if(xivo_eid('it-ldapfilter-additionaltype') !== false)
 		xivo_chg_additionaltype(xivo_eid('it-ldapfilter-additionaltype').value);
 }
 
-xivo_winload.push('xivo_ldapfilter_onload();');
+xivo.dom.set_onload(xivo_ldapfilter_onload);

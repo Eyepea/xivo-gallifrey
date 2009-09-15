@@ -37,16 +37,16 @@ switch($act)
 			if(($result = $_LDAPSVR->chk_values($_QR)) === false)
 				$result = $_LDAPSVR->get_filter_result();
 			else if($_LDAPSVR->add($result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+				$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$_LDAPSVR->get_element());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('element',$_LDAPSVR->get_element());
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $_LDAPSVR->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$return = &$info;
 
@@ -60,12 +60,12 @@ switch($act)
 			if(($result = $_LDAPSVR->chk_values($_QR)) === false)
 				$result = $_LDAPSVR->get_filter_result();
 			else if($_LDAPSVR->edit($info['id'],$result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+				$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
-		$_HTML->set_var('id',$info['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$_LDAPSVR->get_element());
+		$_TPL->set_var('id',$info['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('element',$_LDAPSVR->get_element());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -74,13 +74,13 @@ switch($act)
 		&& ($id = intval($_QR['id'])) > 0)
 			$_LDAPSVR->delete($id);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+		$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$nb = count($values);
 
@@ -90,7 +90,7 @@ switch($act)
 				$_LDAPSVR->delete($id);
 		}
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+		$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		break;
 	case 'enables':
 	case 'disables':
@@ -98,14 +98,14 @@ switch($act)
 		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 			$_LDAPSVR->disable(intval($values[$i]),$disable);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+		$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -125,22 +125,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('xivo/configuration/manage/ldapserver'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 $menu->set_toolbar('toolbar/xivo/configuration/manage/ldapserver');
 
-$_HTML->set_bloc('main','xivo/configuration/manage/ldapserver/'.$act);
-$_HTML->set_struct('xivo/configuration');
-$_HTML->display('index');
+$_TPL->set_bloc('main','xivo/configuration/manage/ldapserver/'.$act);
+$_TPL->set_struct('xivo/configuration');
+$_TPL->display('index');
 
 ?>

@@ -23,7 +23,7 @@ $access_subcategory = 'meetme';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
@@ -35,7 +35,7 @@ switch($act)
 				      'contextnummember'	=> true,
 				      'contextmember'		=> true);
 
-		if(($info = $appmeetme->get($_QRY->get_qs('id'),
+		if(($info = $appmeetme->get($_QRY->get('id'),
 					    null,
 					    $nocomponents)) === false)
 		{
@@ -43,7 +43,7 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		$appmeetme = &$ipbx->get_application('meetme');
@@ -56,7 +56,7 @@ switch($act)
 	case 'delete':
 		$appmeetme = &$ipbx->get_application('meetme');
 
-		if($appmeetme->get($_QRY->get_qs('id')) === false)
+		if($appmeetme->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appmeetme->delete() === true)
 			$status = 200;
@@ -69,13 +69,13 @@ switch($act)
 	case 'search':
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
-		if(($list = $appmeetme->get_meetme_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appmeetme->get_meetme_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:
@@ -89,11 +89,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

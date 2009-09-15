@@ -41,7 +41,7 @@ class xivo_curl
 		$option = (array) $option;
 		$open = (bool) $open;
 
-		if(xivo_haslen($url) === false)
+		if(xivo_has_len($url) === false)
 			$url = $this->_url;
 
 		if($this->_chk_url($url) === false)
@@ -528,7 +528,7 @@ class xivo_curl
 	function create()
 	{
 		if(is_resource($this->_link) === true
-		|| xivo_haslen($this->_url) === false
+		|| xivo_has_len($this->_url) === false
 		|| ($this->_link = curl_init($this->_url)) === false)
 		{
 			$this->halt();
@@ -603,7 +603,7 @@ class xivo_curl
 
 	function get_version($name='')
 	{
-		if(xivo_haslen($name) === true)
+		if(xivo_has_len($name) === true)
 			$name = strtolower($name);
 		else
 			$name = '';

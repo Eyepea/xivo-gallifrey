@@ -71,7 +71,7 @@
 				$icon = 'enable';
 			endif;
 
-			if($ref['linked'] === false && xivo_haslen($ref['member_identity']) === false):
+			if($ref['linked'] === false && xivo_has_len($ref['member_identity']) === false):
 				$ref['member_identity'] = '-';
 			elseif($ref['type'] === 'bosssecretary'):
 				$ref['member_identity'] = $this->bbf('callfilter_type-opt-bosssecretary',$ref['member_identity']);

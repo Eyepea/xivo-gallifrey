@@ -43,7 +43,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		if(xivo_haslen($data,'exten') === true)
+		if(xivo_has_len($data,'exten') === true)
 			$data['exten'] = $this->_sre->display_extension($data['exten']);
 
 		return($data);
@@ -53,7 +53,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(xivo_haslen($arr,'exten') === false
+		else if(xivo_has_len($arr,'exten') === false
 		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(false);
 
@@ -70,7 +70,7 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 
 		unset($arr['extenhash']);
 
-		if(xivo_haslen($arr,'exten') === true)
+		if(xivo_has_len($arr,'exten') === true)
 		{
 			if(($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 				return(false);
@@ -85,8 +85,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 	function exists_type($arr)
 	{
 		if(is_array($arr) === false
-		|| xivo_haslen($arr,'exten') === false
-		|| xivo_haslen($arr,'type') === false
+		|| xivo_has_len($arr,'exten') === false
+		|| xivo_has_len($arr,'type') === false
 		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(null);
 
@@ -95,8 +95,8 @@ class xivo_service_asterisk_extenumbers extends xivo_service_asterisk_abstract
 		$where = array();
 		$where['extenhash'] = $extenhash;
 
-		$typeval = xivo_haslen($arr,'typeval') === true ? $arr['typeval'] : '';
-		$context = xivo_haslen($arr,'context') === true ? $arr['context'] : '';
+		$typeval = xivo_has_len($arr,'typeval') === true ? $arr['typeval'] : '';
+		$context = xivo_has_len($arr,'context') === true ? $arr['context'] : '';
 
 		$keytype = $arr['type'].'-'.$typeval;
 

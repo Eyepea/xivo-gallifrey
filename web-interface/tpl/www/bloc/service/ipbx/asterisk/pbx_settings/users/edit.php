@@ -21,7 +21,7 @@
 $form = &$this->get_module('form');
 
 ?>
-<div class="b-infos b-form">
+<div id="sr-users" class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>
 		<span class="span-center"><?=$this->bbf('title_content_name');?></span>
@@ -45,7 +45,8 @@ $form = &$this->get_module('form');
 			$form->hidden(array('name'	=> 'fm_send',
 					    'value'	=> 1)),
 
-			$form->hidden(array('name'	=> 'id',
+			$form->hidden(array('id'	=> 'xivo_user_id',
+					    'name'	=> 'id',
 					    'value'	=> $this->get_var('id')));
 
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/form');

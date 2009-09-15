@@ -122,7 +122,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		{
 			$refdata[$i] = $refinfo[$i]['app'];
 
-			if(xivo_haslen($refinfo[$i]['appdata']) === true)
+			if(xivo_has_len($refinfo[$i]['appdata']) === true)
 				$refdata[$i] .= '|'.$refinfo[$i]['appdata'];
 		}
 
@@ -152,7 +152,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			$reforig[$event] = $this->_extensions->get_origin();
 			$refdata[$event] = $refinfo[$event]['app'];
 
-			if(xivo_haslen($refinfo[$event]['appdata']) === true)
+			if(xivo_has_len($refinfo[$event]['appdata']) === true)
 				$refdata[$event] .= '|'.$refinfo[$event]['appdata'];
 		}
 
@@ -269,7 +269,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function _real_application($val,$astapp=true)
 	{
-		if(xivo_haslen($val) === false)
+		if(xivo_has_len($val) === false)
 			return(false);
 
 		$expcomma = explode(',',$val,2);
@@ -373,7 +373,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		$number = (string) $this->get_result_var('voicemenu','number');
 		$context = (string) $this->get_result_var('voicemenu','context');
 
-		if($this->_errnb === 0 && xivo_haslen($number) === true)
+		if($this->_errnb === 0 && xivo_has_len($number) === true)
 		{
 			if(($rsvoicemenumacro = $this->chk_macro('voicemenumacro',
 								 $number,
@@ -532,7 +532,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 		foreach($arr as $event => $eventdata)
 		{
-			if(xivo_haslen($eventdata) === false)
+			if(xivo_has_len($eventdata) === false)
 				continue;
 			else if(($rs = $this->_real_application($eventdata,false)) === false)
 			{

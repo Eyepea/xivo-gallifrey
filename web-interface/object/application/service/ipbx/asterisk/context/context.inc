@@ -155,7 +155,6 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _get_contexts($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -163,6 +162,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			case 'search':
 				$rs = $this->_context->search($search,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_context->get_all($disable,true,$order,$limit);
 		}
@@ -182,7 +182,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		{
 			$info['context'] = $rs[$i];
 
-			if(xivo_haslen($info['context']['entity']) === false
+			if(xivo_has_len($info['context']['entity']) === false
 			|| is_object($this->_entity) === false
 			|| ($info['entity'] = $this->_entity->get_where(
 			   					array('name' => $info['context']['entity']))) === false)
@@ -304,7 +304,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function set_contextnumbers($context,$arr)
 	{
-		if(xivo_haslen($context) === false)
+		if(xivo_has_len($context) === false)
 		{
 			$this->_set_result('contextnumbers',false);
 			$this->_set_error('contextnumbers','wrong context');
@@ -361,7 +361,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 				if($key === 'incall')
 				{
-					if(xivo_haslen($value,'didlength') === false)
+					if(xivo_has_len($value,'didlength') === false)
 					{
 						$errlist['incall'][$i] = 'wrong didlength';
 						$reslist['incall'][$i++] = $infotmp;
@@ -373,7 +373,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					$infotmp['didlength'] = $value['didlength'];
 				}
 
-				if(xivo_haslen($value,'numberend') === true
+				if(xivo_has_len($value,'numberend') === true
 				&& $value['numberbeg'] !== $value['numberend'])
 				{
 					if(xivo_is_max_digit($value['numberbeg'],$value['numberend'],true) !== true)
@@ -387,7 +387,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					$infotmp['numberend'] = $value['numberend'];
 				}
-				else if(xivo_haslen($infotmp['numberbeg']) === false)
+				else if(xivo_has_len($infotmp['numberbeg']) === false)
 				{
 					$nb--;
 					continue;
@@ -543,7 +543,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function set_contextinclude($context,$arr)
 	{
-		if(xivo_haslen($context) === false)
+		if(xivo_has_len($context) === false)
 		{
 			$this->_set_result('contextinclude',false);
 			$this->_set_error('contextinclude','wrong context');
@@ -949,7 +949,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	function _update_context_contextnummember($name,$context,$newcontext)
 	{
 		if(xivo_issa('contextnummember',$this->_return) === false
-		|| xivo_haslen($name) === false)
+		|| xivo_has_len($name) === false)
 			return(false);
 
 		$ref = &$this->_return['contextnummember'];
@@ -1050,7 +1050,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	function _update_context_contextmember($name,$context,$newcontext)
 	{
 		if(xivo_issa('contextmember',$this->_return) === false
-		|| xivo_haslen($name) === false)
+		|| xivo_has_len($name) === false)
 			return(false);
 
 		$ref = &$this->_return['contextmember'];

@@ -25,7 +25,7 @@ if($cat === '')
 	$cat = false;
 
 if(($infos = $musiconhold->get_category($cat)) === false)
-	$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),'act=list');
+	$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),'act=list');
 
 if(($files = $infos['dir']['files']) !== false)
 {
@@ -35,7 +35,7 @@ if(($files = $infos['dir']['files']) !== false)
 	usort($files,array(&$sort,'strnat_usort'));
 }
 
-$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-$_HTML->set_var('list',$files);
+$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+$_TPL->set_var('list',$files);
 
 ?>

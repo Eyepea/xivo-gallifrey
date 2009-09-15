@@ -20,28 +20,39 @@
 
 class xivo_service_asterisk_agentfeatures_identity
 {
-	function _prepare_identity(&$data)
+	function _prepare_identity(&$data,$full=true)
 	{
+		if(xivo_has_len($data['context']) === false)
+			$data['context'] = 'default';
+
 		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
 
 		if($data['fullname'] === '')
 			$data['fullname'] = '-';
 
-		$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
+		if((bool) $full === false)
+			$data['identity'] = $data['fullname'];
+		else if(xivo_has_len($data['number']) === true)
+			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
+		else
+			$data['identity'] = $data['fullname'].' ('.$data['context'].')';
 
 		return($data);
 	}
 
-	function mk_identity($arr)
+	function mk_identity($arr,$full=true)
 	{
 		if(is_array($arr) === false
-		|| isset($arr['firstname'],
-			 $arr['lastname'],
-			 $arr['number'],
-			 $arr['context']) === false)
+		|| isset($arr['firstname'],$arr['lastname']) === false)
 			return(false);
 
-		$this->_prepare_identity($arr);
+		if(isset($arr['number']) === false)
+			$arr['number'] = '';
+
+		if(isset($arr['context']) === false)
+			$arr['context'] = '';
+
+		$this->_prepare_identity($arr,$full);
 
 		return($arr['identity']);
 	}

@@ -79,7 +79,7 @@
 				$host = $ref['ldapserver']['host'];
 				$port = $ref['ldapserver']['port'];
 
-				if(xivo_haslen($ref['ldapserver']['securitylayer']) === true)
+				if(xivo_has_len($ref['ldapserver']['securitylayer']) === true)
 					$securitylayer = $this->bbf('securitylayer_'.$ref['ldapserver']['securitylayer']);
 			endif;
 ?>

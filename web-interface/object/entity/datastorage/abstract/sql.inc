@@ -36,7 +36,7 @@ class xivo_entity_abstract_sql extends xivo_datastorage_helper_table
 	{
 		$this->_cnt = 0;
 
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(false);
 
 		$this->_dso->new_select($this->_table);

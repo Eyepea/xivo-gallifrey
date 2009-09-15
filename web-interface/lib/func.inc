@@ -119,7 +119,7 @@ function xivo_empty($val,$str=true)
 	return(true);
 }
 
-function xivo_haslen($val,$key=null)
+function xivo_has_len($val,$key=null)
 {
 	if($key !== null &&
 	is_array($val) === true
@@ -552,7 +552,7 @@ function xivo_array_startswith_key($arr,$str,$sub=false)
 {
 	$sub = (bool) $sub;
 
-	if(is_array($arr) === false || xivo_haslen($str) === false)
+	if(is_array($arr) === false || xivo_has_len($str) === false)
 		return(false);
 
 	$len = strlen($str);
@@ -759,7 +759,7 @@ function xivo_svar_dump(&$a,$t=false)
 
 function xivo_msg($msg='')
 {
-	if(xivo_haslen($msg) === true)
+	if(xivo_has_len($msg) === true)
 		$msg = ': '.$msg;
 	else
 		$msg = '';
@@ -1099,7 +1099,7 @@ function xivo_replacef($search,$replace,$subject)
 {
 	if(is_scalar($subject) === false)
 		return(false);
-	else if(xivo_haslen($search) === false)
+	else if(xivo_has_len($search) === false)
 		return($subject);
 	else if(strpos($search,'%') !== false)
 		return(false);

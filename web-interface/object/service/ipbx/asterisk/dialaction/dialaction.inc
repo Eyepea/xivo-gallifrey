@@ -193,19 +193,19 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 			case 'endcall:hangup':
 				return($this->chk_dest_endcall('hangup'));
 			case 'user':
-				if(xivo_haslen($actionarg2) === true
+				if(xivo_has_len($actionarg2) === true
 				&& xivo_is_unumber($actionarg2) === false)
 					return(false);
 
 				return($this->chk_dest_user($actionarg1,$actionarg2,$id,$disable));
 			case 'group':
-				if(xivo_haslen($actionarg2) === true
+				if(xivo_has_len($actionarg2) === true
 				&& xivo_is_unumber($actionarg2) === false)
 					return(false);
 
 				return($this->chk_dest_group($actionarg1,$actionarg2,$id,$disable));
 			case 'queue':
-				if(xivo_haslen($actionarg2) === true
+				if(xivo_has_len($actionarg2) === true
 				&& xivo_is_unumber($actionarg2) === false)
 					return(false);
 

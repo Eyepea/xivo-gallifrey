@@ -188,12 +188,11 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function _get_trunks($action,$search='',$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		if(is_array($protocols) === true && empty($protocols) === false)
 			$protocols = array_values($protocols);
-		else if($protocols === true && xivo_haslen($this->_param['protocol']) === true)
+		else if($protocols === true && xivo_has_len($this->_param['protocol']) === true)
 			$protocols = array($this->_param['protocol']);
 		else
 			$protocols = null;
@@ -203,6 +202,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			case 'search':
 				$rs = $this->_dso->search($search,$protocols,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_dso->get_all($protocols,$disable,$order,$limit);
 		}
@@ -397,7 +397,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			}
 
 			if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_IAX
-			&& xivo_haslen($arr,'timezone') === true)
+			&& xivo_has_len($arr,'timezone') === true)
 			{
 				$this->get_timezones();
 

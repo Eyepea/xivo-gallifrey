@@ -96,7 +96,7 @@ $page = $url->pager($pager['pages'],
 						 'field'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
-		    onclick="location.href = xivo_firstchild(this);">
+		    onclick="location.href = xivo.dom.node.firstchild(this);">
 			<?=$url->href_html($ref['name'],
 					   'service/ipbx/pbx_services/sounds',
 					   array('act'	=> 'download',

@@ -18,19 +18,18 @@
 
 function xivo_calendar_calc(d)
 {
-	if((d instanceof Date) == false)
+	if((d instanceof Date) === false)
 		d = new Date();
 
-	var r = new Array();
+	var r = {'slt':
+			{'year':	d.getFullYear(),
+			'month':	d.getMonth(),
+			'realmonth':	d.getMonth() + 1,
+			'day':		d.getDate()}};
 
-	r['slt'] = new Array();
-	r['slt']['year'] = d.getFullYear();
-	r['slt']['month'] = d.getMonth();
-	r['slt']['realmonth'] = d.getMonth()+1;
-	r['slt']['day'] = d.getDate();
-	r['slt']['str'] = r['slt']['year'];
-	r['slt']['str'] += '-'+xivo_leadzero(r['slt']['realmonth']);
-	r['slt']['str'] += '-'+xivo_leadzero(r['slt']['day']);
+	r['slt']['str'] = r['slt']['year'] + '-' +
+			  xivo_leadzero(r['slt']['realmonth']) + '-' +
+			  xivo_leadzero(r['slt']['day']);
 
 	r['time'] = d.getTime();
 
@@ -39,7 +38,7 @@ function xivo_calendar_calc(d)
 	d.setDate(1);
 	var day = d.getDay();
 
-	if(day == 0)
+	if(day === 0)
 		day = -5;
 	else
 		day -= ((day - 1) * 2);
@@ -53,15 +52,15 @@ function xivo_calendar_calc(d)
 	{
 		d.setDate(dateb + i);
 
-		r['cal'][i] = new Array();
+		r['cal'][i] = {
+				'year':		d.getFullYear(),
+				'month':	d.getMonth(),
+				'realmonth':	d.getMonth() + 1,
+				'day':		d.getDate()};
 
-		r['cal'][i]['year'] = d.getFullYear();
-		r['cal'][i]['month'] = d.getMonth();
-		r['cal'][i]['realmonth'] = d.getMonth()+1;
-		r['cal'][i]['day'] = d.getDate();
-		r['cal'][i]['str'] = r['cal'][i]['year'];
-		r['cal'][i]['str'] += '-'+xivo_leadzero(r['cal'][i]['realmonth']);
-		r['cal'][i]['str'] += '-'+xivo_leadzero(r['cal'][i]['day']);
+		r['cal'][i]['str'] = r['cal'][i]['year'] + '-' +
+				     xivo_leadzero(r['cal'][i]['realmonth']) + '-' +
+				     xivo_leadzero(r['cal'][i]['day']);
 
 		d.setTime(time);
 	}
@@ -71,30 +70,30 @@ function xivo_calendar_calc(d)
 
 function xivo_calendar_html(disid,inid,str)
 {
-	if(xivo_is_undef(xivo_date_month) == true
-	|| xivo_is_undef(xivo_date_day) == true
-	|| xivo_is_array(xivo_date_month) == false
-	|| xivo_is_array(xivo_date_day) == false
-	|| xivo_eid(disid) == false
-	|| xivo_eid(inid) == false)
+	if(xivo_is_undef(xivo_date_month) === true
+	|| xivo_is_undef(xivo_date_day) === true
+	|| xivo_type_object(xivo_date_month) === false
+	|| xivo_is_array(xivo_date_day) === false
+	|| xivo_eid(disid) === false
+	|| xivo_eid(inid) === false)
 		return(false);
 
 	var t = new Date();
 	var d = new Date();
 	var rstr = '';
 
-	if(xivo_is_undef(str) == false && xivo_is_string(str) == true)
+	if(xivo_is_undef(str) === false && xivo_is_string(str) === true)
 	{
 		var result = str.match(/^(2[0-9]{3})(?:-(0?[1-9]|1[0-2])(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/);
 
-		if(result != null && xivo_is_undef(result[1]) == false && result[1] != '')
+		if(result !== null && xivo_is_undef(result[1]) === false && result[1] !== '')
 		{
 			d.setYear(result[1]);
-			if(xivo_is_undef(result[2]) == false && result[2] != '')
+			if(xivo_is_undef(result[2]) === false && result[2] !== '')
 			{
 				d.setMonth(result[2]-1);
 
-				if(xivo_is_undef(result[3]) == false && result[3] != '')
+				if(xivo_is_undef(result[3]) === false && result[3] !== '')
 					d.setDate(result[3]);
 				else
 					d.setDate(1);
@@ -103,10 +102,12 @@ function xivo_calendar_html(disid,inid,str)
 				d.setMonth(0);
 		}
 
-		if(d == 'Invalid Date')
+		if(d === 'Invalid Date')
 			d = new Date();
-		else if(result != null && xivo_is_undef(result[3]) == false && result[3] != '')
-			rstr = d.getFullYear()+'-'+xivo_leadzero(d.getMonth()+1)+'-'+xivo_leadzero(d.getDate());
+		else if(result !== null && xivo_is_undef(result[3]) === false && result[3] !== '')
+			rstr =	d.getFullYear() + '-' +
+				xivo_leadzero(d.getMonth()+1) + '-' +
+				xivo_leadzero(d.getDate());
 		else
 			rstr = '';
 	}
@@ -120,7 +121,7 @@ function xivo_calendar_html(disid,inid,str)
 	var prev = new Date();
 	prev.setTime(arr['time']);
 
-	if(prev.getMonth() == 0)
+	if(prev.getMonth() === 0)
 	{
 		prev.setYear(prev.getFullYear()-1);
 		prev.setMonth(11);
@@ -131,7 +132,7 @@ function xivo_calendar_html(disid,inid,str)
 	var next = new Date();
 	next.setTime(arr['time']);
 
-	if(next.getMonth() == 11)
+	if(next.getMonth() === 11)
 	{
 		next.setYear(next.getFullYear()+1);
 		next.setMonth(0);
@@ -182,19 +183,19 @@ function xivo_calendar_html(disid,inid,str)
 
 		classname += ' cal-day-'+mod;
 
-		if(rstr == arr['cal'][i]['str'])
+		if(rstr === arr['cal'][i]['str'])
 			classname += ' cal-day-slt';
 
 		onclick = 'onclick="xivo_calendar_select(\''+disid+'\',\''+inid+'\',\''+arr['cal'][i]['str']+'\');"';
 
-		if(mod == 0)
+		if(mod === 0)
 			r += '<tr>';
 
 			r += '<td '+onmov+' '+onmoo+' class="'+classname+'" '+onclick+'>';
 			r += arr['cal'][i]['day'];
 			r += '<\/td>';
 
-		if(mod == 6)
+		if(mod === 6)
 			r += '<\/tr>';
 	}
 
@@ -205,7 +206,7 @@ function xivo_calendar_html(disid,inid,str)
 
 function xivo_calendar_select(disid,inid,str)
 {
-	if(xivo_is_undef(str) == false)
+	if(xivo_is_undef(str) === false)
 		xivo_eid(inid).value = str;
 
 	xivo_eid(disid).style.display = 'none';
@@ -220,14 +221,14 @@ function xivo_calendar_prevnext(disid,inid,str)
 
 function xivo_calendar_display(disid,inid,display)
 {
-	if((disobj = xivo_eid(disid)) == false
-	|| (inobj = xivo_eid(inid)) == false
-	|| xivo_is_undef(inobj.value) == true)
+	if((disobj = xivo_eid(disid)) === false
+	|| (inobj = xivo_eid(inid)) === false
+	|| xivo_is_undef(inobj.value) === true)
 		return(false);
 
-	if(xivo_is_undef(display) == true)
+	if(xivo_is_undef(display) === true)
 	{
-		if(disobj.style.display == 'block')
+		if(disobj.style.display === 'block')
 			display = false;
 		else
 			display = true;
@@ -235,7 +236,7 @@ function xivo_calendar_display(disid,inid,display)
 	else
 		display = new Boolean(display);
 
-	if(display == false)
+	if(display === false)
 		disobj.style.display = 'none';
 	else
 	{
@@ -248,17 +249,17 @@ function xivo_calendar_display(disid,inid,display)
 
 function xivo_calendar_body(disid,inid)
 {
-	if((body = xivo_eid('bc-body')) == false)
+	if((body = xivo_eid('bc-body')) === false)
 		return(false);
 
-	if(xivo_is_undef(disid) == true
-	|| xivo_is_undef(inid) == true)
+	if(xivo_is_undef(disid) === true
+	|| xivo_is_undef(inid) === true)
 		body.onclick = null;
 	else
 	{
 		body.onclick = function ()
 		{
-			if(xivo_eid(disid).style.display == 'block')
+			if(xivo_eid(disid).style.display === 'block')
 				xivo_calendar_select(disid,inid);
 		}
 	}

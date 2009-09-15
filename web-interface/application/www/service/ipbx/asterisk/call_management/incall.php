@@ -51,7 +51,7 @@ switch($act)
 				$result['dialaction'] = $appincall->get_dialaction_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		}
 
 		if(xivo_issa('incall',$result) === false || empty($result['incall']) === true)
@@ -80,17 +80,17 @@ switch($act)
 				$result['callerid'] = null;
 		}
 
-		$_HTML->set_var('rightcall',$rightcall);
-		$_HTML->set_var('incall',$result['incall']);
-		$_HTML->set_var('dialaction',$result['dialaction']);
-		$_HTML->set_var('dialaction_from','incall');
-		$_HTML->set_var('callerid',$result['callerid']);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appincall->get_elements());
-		$_HTML->set_var('destination_list',$appincall->get_dialaction_destination_list());
-		$_HTML->set_var('context_list',$appincall->get_context_list());
+		$_TPL->set_var('rightcall',$rightcall);
+		$_TPL->set_var('incall',$result['incall']);
+		$_TPL->set_var('dialaction',$result['dialaction']);
+		$_TPL->set_var('dialaction_from','incall');
+		$_TPL->set_var('callerid',$result['callerid']);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appincall->get_elements());
+		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
+		$_TPL->set_var('context_list',$appincall->get_context_list());
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
@@ -100,7 +100,7 @@ switch($act)
 		$appincall = &$ipbx->get_application('incall');
 
 		if(isset($_QR['id']) === false || ($info = $appincall->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -121,7 +121,7 @@ switch($act)
 				$result['dialaction'] = $appincall->get_dialaction_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		}
 
 		if(xivo_issa('incall',$return) === false || empty($return['incall']) === true)
@@ -150,18 +150,18 @@ switch($act)
 				$return['callerid'] = null;
 		}
 
-		$_HTML->set_var('id',$info['incall']['id']);
-		$_HTML->set_var('rightcall',$rightcall);
-		$_HTML->set_var('incall',$return['incall']);
-		$_HTML->set_var('dialaction',$return['dialaction']);
-		$_HTML->set_var('dialaction_from','incall');
-		$_HTML->set_var('callerid',$return['callerid']);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appincall->get_elements());
-		$_HTML->set_var('destination_list',$appincall->get_dialaction_destination_list());
-		$_HTML->set_var('context_list',$appincall->get_context_list());
+		$_TPL->set_var('id',$info['incall']['id']);
+		$_TPL->set_var('rightcall',$rightcall);
+		$_TPL->set_var('incall',$return['incall']);
+		$_TPL->set_var('dialaction',$return['dialaction']);
+		$_TPL->set_var('dialaction_from','incall');
+		$_TPL->set_var('callerid',$return['callerid']);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appincall->get_elements());
+		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
+		$_TPL->set_var('context_list',$appincall->get_context_list());
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/incall.js');
@@ -173,17 +173,17 @@ switch($act)
 		$appincall = &$ipbx->get_application('incall');
 
 		if(isset($_QR['id']) === false || $appincall->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
 		$appincall->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
 		$appincall = &$ipbx->get_application('incall');
 
@@ -195,14 +195,14 @@ switch($act)
 				$appincall->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('incalls',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
 		$appincall = &$ipbx->get_application('incall',null,false);
 
@@ -218,7 +218,7 @@ switch($act)
 				$appincall->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -244,22 +244,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/call_management/incall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
-		$_HTML->set_var('search',$search);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		$_TPL->set_var('search',$search);
 }
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/incall');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/incall/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_var('act',$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/incall/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

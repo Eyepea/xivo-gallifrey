@@ -25,18 +25,18 @@ include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appphonebook = &$ipbx->get_application('phonebook');
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
 	case 'view':
-		if(($info = $appphonebook->get($_QRY->get_qs('id'))) === false)
+		if(($info = $appphonebook->get($_QRY->get('id'))) === false)
 		{
 			$http->set_status(404);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		$status = $appphonebook->add_from_json() === true ? 200 : 400;
@@ -45,7 +45,7 @@ switch($act)
 		$http->send(true);
 		break;
 	case 'delete':
-		if($appphonebook->get($_QRY->get_qs('id')) === false)
+		if($appphonebook->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appphonebook->delete() === true)
 			$status = 200;
@@ -56,13 +56,13 @@ switch($act)
 		$http->send(true);
 		break;
 	case 'search':
-		if(($list = $appphonebook->get_phonebook_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appphonebook->get_phonebook_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:
@@ -74,11 +74,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/generic');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

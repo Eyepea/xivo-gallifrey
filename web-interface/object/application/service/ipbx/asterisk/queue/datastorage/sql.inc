@@ -50,7 +50,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_servi
 
 		$this->_dso->new_group('name',$this->_table['queuefeatures']);
 
-		if(xivo_haslen($value) === true)
+		if(xivo_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('name',$value,true,$this->_table['queuefeatures']);
@@ -77,7 +77,7 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_servi
 	{
 		$this->_cnt = 0;
 
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(false);
 
 		return($this->get_all($disable,$order,$limit,$value));

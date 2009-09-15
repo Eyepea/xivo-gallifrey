@@ -16,32 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var xivo_ast_defapplication = new Array();
-xivo_ast_defapplication['macro|endcall|hangup'] = {displayname: 'HangUp'};
-xivo_ast_defapplication['macro|endcall|busy'] = {displayname: 'Busy'};
-xivo_ast_defapplication['macro|endcall|congestion'] = {displayname: 'Congestion'};
-xivo_ast_defapplication['macro|user'] = {displayname: 'CallUser',
-					 identityfunc: 'xivo_ast_defapplication_get_user_identity'};
-xivo_ast_defapplication['macro|group'] = {displayname: 'CallGroup',
-					  identityfunc: 'xivo_ast_defapplication_get_group_identity'};
-xivo_ast_defapplication['macro|queue'] = {displayname: 'CallQueue',
-					  identityfunc: 'xivo_ast_defapplication_get_queue_identity'};
-xivo_ast_defapplication['macro|meetme'] = {displayname: 'CallMeetMe',
-					   identityfunc: 'xivo_ast_defapplication_get_meetme_identity'};
-xivo_ast_defapplication['macro|voicemail'] = {displayname: 'VoiceMail',
-					      identityfunc: 'xivo_ast_defapplication_get_voicemail_identity'};
-xivo_ast_defapplication['macro|schedule'] = {displayname: 'GotoSchedule',
-					     identityfunc: 'xivo_ast_defapplication_get_schedule_identity'};
-xivo_ast_defapplication['macro|voicemenu'] = {displayname: 'GotoVoiceMenu',
-					      identityfunc: 'xivo_ast_defapplication_get_voicemenu_identity'};
-xivo_ast_defapplication['macro|extension'] = {displayname: 'CallExten'};
-xivo_ast_defapplication['macro|callbackdisa'] = {displayname: 'CallBackDISA'};
-xivo_ast_defapplication['macro|disa'] = {displayname: 'DISA'};
-xivo_ast_defapplication['macro|directory'] = {displayname: 'Directory'};
-xivo_ast_defapplication['macro|faxtomail'] = {displayname: 'FaxToMail'};
-xivo_ast_defapplication['macro|voicemailmain'] = {displayname: 'VoiceMailMain'};
-xivo_ast_defapplication['macro|playsound'] = {displayname: 'PlaySound'};
-
 function xivo_ast_defapplication_endcall(dialevent,targetid)
 {
 	var optargs = valargs = '';
@@ -58,7 +32,7 @@ function xivo_ast_defapplication_endcall(dialevent,targetid)
 		if(xivo_is_ufloat(endcallarg1.value) === false)
 			return(false);
 
-		optargs = valargs = new Array(endcallarg1.value);
+		optargs = valargs = [endcallarg1.value];
 	}
 
 	return(xivo_ast_set_defapplication('macro|endcall|'+endcall.value,targetid,optargs,valargs));
@@ -72,8 +46,8 @@ function xivo_ast_defapplication_user(dialevent,targetid)
 	|| (userarg2 = xivo_eid('it-dialaction-'+dialevent+'-user-actionarg2')) === false)
 		return(false);
 
-	var optargs = new Array('\''+userarg1.options[userarg1.selectedIndex].text+'\'');
-	var valargs = new Array(userarg1.value);
+	var optargs = ['\''+userarg1.options[userarg1.selectedIndex].text+'\''];
+	var valargs = [userarg1.value];
 
 	if(userarg2.value.length > 0)
 	{
@@ -87,7 +61,7 @@ function xivo_ast_defapplication_user(dialevent,targetid)
 	return(xivo_ast_set_defapplication('macro|user',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_user_identity(id)
+function xivo_ast_defapplication_get_user_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-user-actionarg1',id,true));
 }
@@ -100,8 +74,8 @@ function xivo_ast_defapplication_group(dialevent,targetid)
 	|| (grouparg2 = xivo_eid('it-dialaction-'+dialevent+'-group-actionarg2')) === false)
 		return(false);
 
-	var optargs = new Array('\''+grouparg1.options[grouparg1.selectedIndex].text+'\'');
-	var valargs = new Array(grouparg1.value);
+	var optargs = ['\''+grouparg1.options[grouparg1.selectedIndex].text+'\''];
+	var valargs = [grouparg1.value];
 
 	if(grouparg2.value.length > 0)
 	{
@@ -115,7 +89,7 @@ function xivo_ast_defapplication_group(dialevent,targetid)
 	return(xivo_ast_set_defapplication('macro|group',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_group_identity(id)
+function xivo_ast_defapplication_get_group_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-group-actionarg1',id,true));
 }
@@ -128,8 +102,8 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 	|| (queuearg2 = xivo_eid('it-dialaction-'+dialevent+'-queue-actionarg2')) === false)
 		return(false);
 
-	var optargs = new Array('\''+queuearg1.options[queuearg1.selectedIndex].text+'\'');
-	var valargs = new Array(queuearg1.value);
+	var optargs = ['\''+queuearg1.options[queuearg1.selectedIndex].text+'\''];
+	var valargs = [queuearg1.value];
 
 	if(queuearg2.value.length > 0)
 	{
@@ -143,7 +117,7 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 	return(xivo_ast_set_defapplication('macro|queue',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_queue_identity(id)
+function xivo_ast_defapplication_get_queue_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id,true));
 }
@@ -155,13 +129,13 @@ function xivo_ast_defapplication_meetme(dialevent,targetid)
 	|| xivo_is_undef(meetme.options[meetme.selectedIndex]) === true)
 		return(false);
 
-	var optargs = new Array('\''+meetme.options[meetme.selectedIndex].text+'\'');
-	var valargs = new Array(meetme.value);
+	var optargs = ['\''+meetme.options[meetme.selectedIndex].text+'\''];
+	var valargs = [meetme.value];
 
 	return(xivo_ast_set_defapplication('macro|meetme',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_meetme_identity(id)
+function xivo_ast_defapplication_get_meetme_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-meetme-actionarg1',id,true));
 }
@@ -177,8 +151,8 @@ function xivo_ast_defapplication_voicemail(dialevent,targetid)
 	|| (option_j = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-j')) === false)
 		return(false);
 
-	var optargs = new Array('\''+voicemail.options[voicemail.selectedIndex].text+'\'');
-	var valargs = new Array(voicemail.value);
+	var optargs = ['\''+voicemail.options[voicemail.selectedIndex].text+'\''];
+	var valargs = [voicemail.value];
 
 	var options = '';
 
@@ -203,7 +177,7 @@ function xivo_ast_defapplication_voicemail(dialevent,targetid)
 	return(xivo_ast_set_defapplication('macro|voicemail',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_voicemail_identity(id)
+function xivo_ast_defapplication_get_voicemail_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemail-actionarg1',id,true));
 }
@@ -215,13 +189,13 @@ function xivo_ast_defapplication_schedule(dialevent,targetid)
 	|| xivo_is_undef(schedule.options[schedule.selectedIndex]) === true)
 		return(false);
 
-	var optargs = new Array('\''+schedule.options[schedule.selectedIndex].text+'\'');
-	var valargs = new Array(schedule.value);
+	var optargs = ['\''+schedule.options[schedule.selectedIndex].text+'\''];
+	var valargs = [schedule.value];
 
 	return(xivo_ast_set_defapplication('macro|schedule',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_schedule_identity(id)
+function xivo_ast_defapplication_get_schedule_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-schedule-actionarg1',id,true));
 }
@@ -233,13 +207,13 @@ function xivo_ast_defapplication_voicemenu(dialevent,targetid)
 	|| xivo_is_undef(voicemenu.options[voicemenu.selectedIndex]) === true)
 		return(false);
 
-	var optargs = new Array('\''+voicemenu.options[voicemenu.selectedIndex].text+'\'');
-	var valargs = new Array(voicemenu.value);
+	var optargs = ['\''+voicemenu.options[voicemenu.selectedIndex].text+'\''];
+	var valargs = [voicemenu.value];
 
 	return(xivo_ast_set_defapplication('macro|voicemenu',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_voicemenu_identity(id)
+function xivo_ast_defapplication_get_voicemenu_identity(dialevent,id)
 {
 	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemenu-actionarg1',id,true));
 }
@@ -257,7 +231,7 @@ function xivo_ast_defapplication_extension(dialevent,targetid)
 	|| actionarg2value.length < 1)
 		return(false);
 
-	var optargs = valargs = new Array(actionarg1value,actionarg2value);
+	var optargs = valargs = [actionarg1value,actionarg2value];
 
 	return(xivo_ast_set_defapplication('macro|extension',targetid,optargs,valargs));
 }
@@ -286,7 +260,7 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 			else if(applicationarg1value.length < 1)
 				applicationarg1value = 'no-password';
 
-			var optargs = valargs = new Array(applicationarg1value,applicationarg2value);
+			var optargs = valargs = [applicationarg1value,applicationarg2value];
 			break;
 		case 'directory':
 		case 'faxtomail':
@@ -299,7 +273,7 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 			if(applicationarg1value.length < 1)
 				return(false);
 
-			var optargs = valargs = new Array(applicationarg1value);
+			var optargs = valargs = [applicationarg1value];
 			break;
 		default:
 			return(false);
@@ -326,8 +300,8 @@ function xivo_ast_defapplication_sound(dialevent,targetid)
 	if(optfilenamevalue.length < 1)
 		return(false);
 
-	var optargs = new Array(optfilenamevalue);
-	var valargs = new Array(valfilenamevalue);
+	var optargs = [optfilenamevalue];
+	var valargs = [valfilenamevalue];
 
 	var options = '';
 
@@ -408,3 +382,29 @@ function xivo_ast_get_defapplication_identityfunc(app)
 
 	return(false);
 }
+
+var xivo_ast_defapplication = {
+	'macro|endcall|hangup':		{displayname: 'HangUp'},
+	'macro|endcall|busy':		{displayname: 'Busy'},
+	'macro|endcall|congestion':	{displayname: 'Congestion'},
+	'macro|user':			{displayname: 'CallUser',
+					 identityfunc: xivo_ast_defapplication_get_user_identity},
+	'macro|group':			{displayname: 'CallGroup',
+					 identityfunc: xivo_ast_defapplication_get_group_identity},
+	'macro|queue':			{displayname: 'CallQueue',
+					 identityfunc: xivo_ast_defapplication_get_queue_identity},
+	'macro|meetme':			{displayname: 'CallMeetMe',
+					 identityfunc: xivo_ast_defapplication_get_meetme_identity},
+	'macro|voicemail':		{displayname: 'VoiceMail',
+					 identityfunc: xivo_ast_defapplication_get_voicemail_identity},
+	'macro|schedule':		{displayname: 'GotoSchedule',
+					 identityfunc: xivo_ast_defapplication_get_schedule_identity},
+	'macro|voicemenu':		{displayname: 'GotoVoiceMenu',
+					 identityfunc: xivo_ast_defapplication_get_voicemenu_identity},
+	'macro|extension':		{displayname: 'CallExten'},
+	'macro|callbackdisa':		{displayname: 'CallBackDISA'},
+	'macro|disa':			{displayname: 'DISA'},
+	'macro|directory':		{displayname: 'Directory'},
+	'macro|faxtomail':		{displayname: 'FaxToMail'},
+	'macro|voicemailmain':		{displayname: 'VoiceMailMain'},
+	'macro|playsound':		{displayname: 'PlaySound'}};

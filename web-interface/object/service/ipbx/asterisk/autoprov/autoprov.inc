@@ -211,7 +211,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		foreach($arr as $key => $val)
 		{
-			if(xivo_haslen($val) === true)
+			if(xivo_has_len($val) === true)
 				$data .= $key.'='.$val."\r\n";
 		}
 

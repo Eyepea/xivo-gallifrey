@@ -22,22 +22,16 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
 $fkelem = $this->get_varra('element','phonefunckey');
-$list = $this->get_var('fkdest_list');
 $fkerror = $this->get_varra('error','phonefunckey');
-$fkinfo = $this->get_varra('info','phonefunckey');
+$fkinfo = $this->get_var('fkidentity_list');
 
 if(empty($fkinfo) === false):
 	$nb = count($fkinfo);
+	$dhtml = &$this->get_module('dhtml');
+	$dhtml->write_js('xivo.dom.set_table_list(\'phonefunckey\','.$nb.');');
 else:
 	$nb = 0;
 endif;
-
-$phonefunckey_js = array();
-$phonefunckey_js[] = 'xivo_tlist[\'phonefunckey\'] = new Array();';
-$phonefunckey_js[] = 'xivo_tlist[\'phonefunckey\'][\'cnt\'] = '.$nb.';';
-
-$dhtml = &$this->get_module('dhtml');
-$dhtml->write_js($phonefunckey_js);
 
 ?>
 <div class="sb-list">
@@ -47,16 +41,15 @@ $dhtml->write_js($phonefunckey_js);
 		<th class="th-left"><?=$this->bbf('col_phonefunckey-fknum');?></th>
 		<th class="th-center"><?=$this->bbf('col_phonefunckey-type');?></th>
 		<th class="th-center"><?=$this->bbf('col_phonefunckey-typeval');?></th>
+		<th class="th-center"><?=$this->bbf('col_phonefunckey-label');?></th>
 		<th class="th-center"><?=$this->bbf('col_phonefunckey-supervision');?></th>
 		<th class="th-right"><?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 								       $this->bbf('col_phonefunckey-add'),
 								       'border="0"'),
 							'#',
 							null,
-							'onclick="xivo_table_list(\'phonefunckey\',this,0,true);
-							          xivo_chgphonefunckey(xivo_eid(\'it-phonefunckey-type-\'+
-							 					xivo_tlist[\'phonefunckey\'][\'idcnt\']));
-								  return(xivo_free_focus());"',
+							'onclick="xivo_phonefunckey_add(this);
+								  return(xivo.dom.free_focus());"',
 							$this->bbf('col_phonefunckey-add'));?></th>
 	</tr>
 	</thead>
@@ -67,11 +60,10 @@ $fknumelem = array();
 $fknumelem['options'] = $fkelem['fknum']['value'];
 $fknumelem['default'] = $fkelem['fknum']['default'];
 
-$typeelem = array();
-$typeelem['options'] = $fkelem['type']['value'];
-$typeelem['default'] = $fkelem['type']['default'];
-
 $fkdata = array();
+
+$labelem = array();
+$labelem['default'] = $fkelem['label']['default'];
 
 $supelem = array();
 $supelem['options'] = $fkelem['supervision']['value'];
@@ -79,20 +71,19 @@ $supelem['default'] = $fkelem['supervision']['default'];
 
 if($nb > 0):
 	for($i = 0;$i < $nb;$i++):
-		$ref = &$fkinfo[$i];
+		$ref = &$fkinfo[$i]['phonefunckey'];
 
 		$fknumelem['value'] = $ref['fknum'];
 
 		$this->set_var('fknumelem',$fknumelem);
 
-		$typeelem['value'] = $ref['type'];
-
-		$this->set_var('typeelem',$typeelem);
-
 		$fkdata['ex'] = false;
 		$fkdata['type'] = $ref['type'];
+		$fkdata['typeval'] = $ref['typeval'];
+		$fkdata['extension'] = $ref['extension'];
+		$fkdata['result'] = &$fkinfo[$i]['result'];
 
-		if(isset($ref[$ref['type']]) === true):
+		if(array_key_exists($ref['type'],$ref) === true):
 			$fkdata[$ref['type']] = $ref[$ref['type']];
 		endif;
 
@@ -100,8 +91,11 @@ if($nb > 0):
 
 		$this->set_var('fkdata',$fkdata);
 
+		$labelem['value'] = $ref['label'];
+
 		$supelem['value'] = $ref['supervision'];
 
+		$this->set_var('labelem',$labelem);
 		$this->set_var('supelem',$supelem);
 
 		if(isset($fkerror[$i]) === true):
@@ -125,9 +119,36 @@ if($nb > 0):
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/group');
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/queue');
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/meetme');
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension');
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension',
+				    array('fktype'	=> 'extension',
+				    	  'fktypeval'	=> ''));
+
+		if($fkdata['extension'] === true):
+			$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension',
+					array('fktype'		=> $fkdata['type'],
+					      'fktypeval'	=> $fkdata['typeval']));
+		endif;
+
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+				    array('agenttype'	=> 'extenfeatures-agentstaticlogin'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+				    array('agenttype'	=> 'extenfeatures-agentstaticlogoff'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+				    array('agenttype'	=> 'extenfeatures-agentdynamiclogin'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+				    array('grouptype'	=> 'extenfeatures-groupaddmember'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+				    array('grouptype'	=> 'extenfeatures-groupremovemember'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+				    array('grouptype'	=> 'extenfeatures-queueaddmember'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+				    array('grouptype'	=> 'extenfeatures-queueremovemember'));
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/bosssecretary');
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/custom');
+
+		echo	'</td><td>';
+
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/label');
 
 		echo	'</td><td>';
 
@@ -139,7 +160,7 @@ if($nb > 0):
 						       'border="0"'),
 					'#',
 					null,
-					'onclick="xivo_table_list(\'phonefunckey\',this,1); return(xivo_free_focus());"',
+					'onclick="xivo.dom.make_table_list(\'phonefunckey\',this,1); return(xivo.dom.free_focus());"',
 					$this->bbf('opt_phonefunckey-delete')),
 			'</td></tr>';
 	endfor;
@@ -148,7 +169,7 @@ endif;
 	</tbody>
 	<tfoot>
 	<tr id="no-phonefunckey"<?=($nb > 0 ? ' class="b-nodisplay"' : '')?>>
-		<td colspan="5" class="td-single"><?=$this->bbf('no_phonefunckey');?></td>
+		<td colspan="6" class="td-single"><?=$this->bbf('no_phonefunckey');?></td>
 	</tr>
 	</tfoot>
 </table>
@@ -156,9 +177,9 @@ endif;
 	<tbody id="ex-phonefunckey">
 	<tr class="fm-field">
 <?php
-	$this->set_var('typeelem',$typeelem);
 	$this->set_var('fknumelem',$fknumelem);
 	$this->set_var('fkdata',array('ex' => true));
+	$this->set_var('labelem',$labelem);
 	$this->set_var('supelem',$supelem);
 
 	echo	'<td class="td-left txt-center">';
@@ -176,8 +197,26 @@ endif;
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/queue');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/meetme');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension');
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+			    array('agenttype'	=> 'extenfeatures-agentstaticlogin'));
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+			    array('agenttype'	=> 'extenfeatures-agentstaticlogoff'));
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+			    array('agenttype'	=> 'extenfeatures-agentdynamiclogin'));
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+			    array('grouptype'	=> 'extenfeatures-groupaddmember'));
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+			    array('grouptype'	=> 'extenfeatures-groupremovemember'));
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+			    array('grouptype'	=> 'extenfeatures-queueaddmember'));
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-groups',
+			    array('grouptype'	=> 'extenfeatures-queueremovemember'));
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/bosssecretary');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/custom');
+
+	echo	'</td><td>';
+
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/label');
 
 	echo	'</td><td>';
 
@@ -189,8 +228,8 @@ endif;
 					       'border="0"'),
 				'#',
 				null,
-				'onclick="xivo_table_list(\'phonefunckey\',this,1);
-					  return(xivo_free_focus());"',
+				'onclick="xivo.dom.make_table_list(\'phonefunckey\',this,1);
+					  return(xivo.dom.free_focus());"',
 				$this->bbf('opt_phonefunckey-delete'));
 ?>
 		</td>

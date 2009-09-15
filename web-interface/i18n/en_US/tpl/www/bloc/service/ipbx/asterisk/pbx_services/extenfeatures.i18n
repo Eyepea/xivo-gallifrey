@@ -58,10 +58,10 @@ Do not disturb:
 ; fm_extenfeatures_enablednd
 Extension:
 
-; fm_extenfeatures_enable-incallrec
-Incoming call recording:
+; fm_extenfeatures_enable-callrecord
+Call recording:
 
-; fm_extenfeatures_incallrec
+; fm_extenfeatures_callrecord
 Extension:
 
 ; fm_extenfeatures_enable-incallfilter
@@ -80,24 +80,6 @@ Extension:
 Disable all forwarding:
 
 ; fm_extenfeatures_fwdundoall
-Extension:
-
-; fm_extenfeatures_enable-fwdundorna
-Disable forwarding on no-answer:
-
-; fm_extenfeatures_fwdundorna
-Extension:
-
-; fm_extenfeatures_enable-fwdundobusy
-Disable forwarding on busy:
-
-; fm_extenfeatures_fwdundobusy
-Extension:
-
-; fm_extenfeatures_enable-fwdundounc
-Disable unconditionnal forwarding:
-
-; fm_extenfeatures_fwdundounc
 Extension:
 
 ; fm_extenfeatures_enable-fwdrna

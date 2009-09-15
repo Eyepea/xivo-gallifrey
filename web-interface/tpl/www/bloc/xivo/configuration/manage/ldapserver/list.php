@@ -78,7 +78,7 @@ $page = $url->pager($pager['pages'],
 				$icon = 'enable';
 			endif;
 
-			if(xivo_haslen($ref['securitylayer']) === false):
+			if(xivo_has_len($ref['securitylayer']) === false):
 				$securitylayer = '-';
 			else:
 				$securitylayer = $this->bbf('securitylayer_'.$ref['securitylayer']);

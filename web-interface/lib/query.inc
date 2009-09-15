@@ -98,7 +98,7 @@ class xivo_query
 		{
 			$q = $this->qstring_raw_str();
 
-			if($this->get_qr(XIVO_SESS_NAME) === XIVO_SESS_ID)
+			if($this->get_qs(XIVO_SESS_NAME) === XIVO_SESS_ID)
 				$query = false;
 		}
 		else if(is_array($query) === true)
@@ -108,16 +108,26 @@ class xivo_query
 
 		if($query !== false)
 		{
-			if(xivo_haslen($q) === true)
+			if(xivo_has_len($q) === true)
 				$q .= XIVO_SEP_ARG_OUT;
 
 			$q .= XIVO_SESS_STR;
 		}
 
-		if(xivo_haslen($q) === true)
+		if(xivo_has_len($q) === true)
 			$location .= '?'.$q;
 
 		die(header('Location: '.$location));
+	}
+
+	function get($name,$default=null)
+	{
+		if(($r = $this->get_qr($name)) !== null)
+			return($r);
+		else if(($r = $this->get_qs($name)) !== null)
+			return($r);
+
+		return($default);
 	}
 
 	function get_qr($name)

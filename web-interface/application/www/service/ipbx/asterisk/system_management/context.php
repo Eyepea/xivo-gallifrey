@@ -46,7 +46,7 @@ switch($act)
 		{
 			if(xivo_issa('contextnumbers',$_QR) === true
 			&& isset($_QR['context']['entity']) === true
-			&& xivo_haslen($_QR['context']['entity']) === true)
+			&& xivo_has_len($_QR['context']['entity']) === true)
 			{
 				if(xivo_issa('user',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
@@ -84,7 +84,7 @@ switch($act)
 				$error = $appcontext->get_error();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		}
 
 		if($contextinc['list'] !== false && xivo_issa('contextinclude',$result) === true)
@@ -101,14 +101,14 @@ switch($act)
 				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('error',$error);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appcontext->get_elements());
-		$_HTML->set_var('contextinc',$contextinc);
-		$_HTML->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appcontext->get_elements());
+		$_TPL->set_var('contextinc',$contextinc);
+		$_TPL->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/context.js');
 		break;
@@ -116,7 +116,7 @@ switch($act)
 		$appcontext = &$ipbx->get_application('context');
 
 		if(isset($_QR['id']) === false || ($info = $appcontext->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
@@ -139,7 +139,7 @@ switch($act)
 
 			if(xivo_issa('contextnumbers',$_QR) === true
 			&& isset($_QR['context']['entity']) === true
-			&& xivo_haslen($_QR['context']['entity']) === true)
+			&& xivo_has_len($_QR['context']['entity']) === true)
 			{
 				if(xivo_issa('user',$_QR['contextnumbers']) === true
 				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
@@ -177,7 +177,7 @@ switch($act)
 				$error = $appcontext->get_error();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		}
 
 		if($contextinc['list'] !== false && xivo_issa('contextinclude',$return) === true)
@@ -194,15 +194,15 @@ switch($act)
 				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
 		}
 
-		$_HTML->set_var('id',$info['context']['name']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('error',$error);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appcontext->get_elements());
-		$_HTML->set_var('contextinc',$contextinc);
-		$_HTML->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
+		$_TPL->set_var('id',$info['context']['name']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appcontext->get_elements());
+		$_TPL->set_var('contextinc',$contextinc);
+		$_TPL->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/context.js');
 		break;
@@ -212,17 +212,17 @@ switch($act)
 		$appcontext = &$ipbx->get_application('context');
 
 		if(isset($_QR['id']) === false || $appcontext->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('contexts',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext = &$ipbx->get_application('context');
 
@@ -234,14 +234,14 @@ switch($act)
 				$appcontext->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('contexts',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext = &$ipbx->get_application('context');
 
@@ -257,7 +257,7 @@ switch($act)
 				$appcontext->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -279,22 +279,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/system_management/context'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/system_management/context');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/context/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/context/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

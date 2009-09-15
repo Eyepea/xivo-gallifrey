@@ -18,6 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$_ERR = &xivo_gct::get('xivo_tracerror');
+
+if((($report_type = $_ERR->get_param('report_type')) & XIVO_TE_RTYPE_SCREEN) !== 0)
+	$_ERR->set_param('report_type',($report_type ^ XIVO_TE_RTYPE_SCREEN));
+
 xivo::load_class('xivo_http');
 $http = new xivo_http();
 

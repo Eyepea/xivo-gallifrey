@@ -63,7 +63,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 	function quote_identifier($name)
 	{
-		if(($r = $this->_get_scalar($name,true)) !== '')
+		if(($r = $this->_get_scalar($name,true)) !== '' && is_object($name) === false)
 			$r = '"'.str_replace('"','""',$r).'"';
 
 		return($r);
@@ -341,7 +341,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		&& is_float($val) === false
 		&& is_bool($val) === false)
 			return($val);
-		else if(xivo_haslen($this->_fix_leftjoin_column) === false)
+		else if(xivo_has_len($this->_fix_leftjoin_column) === false)
 			return($val);
 
 		return(sprintf('SUBSTR(%s,0,0)||%s',$this->_fix_leftjoin_column,$val));

@@ -57,7 +57,7 @@ switch($act)
 				$result = $appoutcall->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
@@ -84,22 +84,22 @@ switch($act)
 			}
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
-		$_HTML->set_var('outcalltrunk',$outcalltrunk);
-		$_HTML->set_var('rightcall',$rightcall);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('context_list',$appoutcall->get_context_list());
-		$_HTML->set_var('element',$appoutcall->get_elements());
-		$_HTML->set_var('info',$result);
+		$_TPL->set_var('outcalltrunk',$outcalltrunk);
+		$_TPL->set_var('rightcall',$rightcall);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('context_list',$appoutcall->get_context_list());
+		$_TPL->set_var('element',$appoutcall->get_elements());
+		$_TPL->set_var('info',$result);
 		break;
 	case 'edit':
 		$appoutcall = &$ipbx->get_application('outcall');
 
 		if(isset($_QR['id']) === false || ($info = $appoutcall->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -129,7 +129,7 @@ switch($act)
 				$result = $appoutcall->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 
 		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
@@ -156,17 +156,17 @@ switch($act)
 			}
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
-		$_HTML->set_var('id',$info['outcall']['id']);
-		$_HTML->set_var('outcalltrunk',$outcalltrunk);
-		$_HTML->set_var('rightcall',$rightcall);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('context_list',$appoutcall->get_context_list());
-		$_HTML->set_var('element',$appoutcall->get_elements());
-		$_HTML->set_var('info',$return);
+		$_TPL->set_var('id',$info['outcall']['id']);
+		$_TPL->set_var('outcalltrunk',$outcalltrunk);
+		$_TPL->set_var('rightcall',$rightcall);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('context_list',$appoutcall->get_context_list());
+		$_TPL->set_var('element',$appoutcall->get_elements());
+		$_TPL->set_var('info',$return);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -174,17 +174,17 @@ switch($act)
 		$appoutcall = &$ipbx->get_application('outcall');
 
 		if(isset($_QR['id']) === false || $appoutcall->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$appoutcall->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$appoutcall = &$ipbx->get_application('outcall');
 
@@ -196,14 +196,14 @@ switch($act)
 				$appoutcall->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
 
@@ -219,7 +219,7 @@ switch($act)
 				$appoutcall->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -241,22 +241,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/call_management/outcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/outcall');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/outcall/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_var('act',$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/outcall/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

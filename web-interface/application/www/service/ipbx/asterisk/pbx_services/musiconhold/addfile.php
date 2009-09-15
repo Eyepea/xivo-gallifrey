@@ -44,14 +44,14 @@ else
 	if($musiconhold->add_file($filename,$fileuploaded['tmp_name']) === true)
 	{
 		$param['cat'] = $info['category'];
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);
 	}
 	else
 		$fm_save = false;
 }
 
-$_HTML->set_var('info',$info);
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('option',$musiconhold->get_option());
+$_TPL->set_var('info',$info);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('option',$musiconhold->get_option());
 
 ?>

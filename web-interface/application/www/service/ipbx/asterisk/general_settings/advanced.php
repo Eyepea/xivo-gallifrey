@@ -109,23 +109,23 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('error',$error);
-$_HTML->set_var('generalagents',$info['generalagents']);
-$_HTML->set_var('generalqueues',$info['generalqueues']);
-$_HTML->set_var('generalmeetme',$info['generalmeetme']);
-$_HTML->set_var('userinternal',$info['userinternal']);
-$_HTML->set_var('element',$element);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('generalagents',$info['generalagents']);
+$_TPL->set_var('generalqueues',$info['generalqueues']);
+$_TPL->set_var('generalmeetme',$info['generalmeetme']);
+$_TPL->set_var('userinternal',$info['userinternal']);
+$_TPL->set_var('element',$element);
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/advanced');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/advanced');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

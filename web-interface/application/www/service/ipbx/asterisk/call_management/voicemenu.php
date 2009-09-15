@@ -45,11 +45,11 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('dialplan reload');
-				$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 			}
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction-application.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ipbxapplication.js');
@@ -65,24 +65,24 @@ switch($act)
 		if(xivo_issa('voicemenuevent-data',$result) === false)
 			$result['voicemenuevent-data'] = null;
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('error',$error);
-		$_HTML->set_var('voicemenuevent',&$result['voicemenuevent-data']);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appvoicemenu->get_elements());
-		$_HTML->set_var('voicemail_list',$appvoicemenu->get_voicemail_list());
-		$_HTML->set_var('destination_list',$appvoicemenu->get_destination_list());
-		$_HTML->set_var('sound_list',$appvoicemenu->get_sound());
-		$_HTML->set_var('moh_list',$appvoicemenu->get_musiconhold());
-		$_HTML->set_var('context_list',$appvoicemenu->get_context_list());
-		$_HTML->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('voicemenuevent',&$result['voicemenuevent-data']);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appvoicemenu->get_elements());
+		$_TPL->set_var('voicemail_list',$appvoicemenu->get_voicemail_list());
+		$_TPL->set_var('destination_list',$appvoicemenu->get_destination_list());
+		$_TPL->set_var('sound_list',$appvoicemenu->get_sound());
+		$_TPL->set_var('moh_list',$appvoicemenu->get_musiconhold());
+		$_TPL->set_var('context_list',$appvoicemenu->get_context_list());
+		$_TPL->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
 		break;
 	case 'edit':
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
 		if(isset($_QR['id']) === false
 		|| ($info = $appvoicemenu->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
@@ -101,7 +101,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('dialplan reload');
-				$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 			}
 		}
 
@@ -111,24 +111,24 @@ switch($act)
 		if(xivo_issa('voicemenuevent-data',$return) === false)
 			$return['voicemenuevent-data'] = null;
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction-application.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ipbxapplication.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/voicemenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['voicemenu']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('error',$error);
-		$_HTML->set_var('voicemenuevent',&$return['voicemenuevent-data']);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appvoicemenu->get_elements());
-		$_HTML->set_var('voicemail_list',$appvoicemenu->get_voicemail_list());
-		$_HTML->set_var('destination_list',$appvoicemenu->get_destination_list());
-		$_HTML->set_var('moh_list',$appvoicemenu->get_musiconhold());
-		$_HTML->set_var('context_list',$appvoicemenu->get_context_list());
-		$_HTML->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
+		$_TPL->set_var('id',$info['voicemenu']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('voicemenuevent',&$return['voicemenuevent-data']);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appvoicemenu->get_elements());
+		$_TPL->set_var('voicemail_list',$appvoicemenu->get_voicemail_list());
+		$_TPL->set_var('destination_list',$appvoicemenu->get_destination_list());
+		$_TPL->set_var('moh_list',$appvoicemenu->get_musiconhold());
+		$_TPL->set_var('context_list',$appvoicemenu->get_context_list());
+		$_TPL->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -136,18 +136,18 @@ switch($act)
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
 		if(isset($_QR['id']) === false || $appvoicemenu->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 
 		$appvoicemenu->delete();
 
 		$ipbx->discuss('dialplan reload');
-		$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('voicemenus',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
@@ -160,14 +160,14 @@ switch($act)
 		}
 
 		$ipbx->discuss('dialplan reload');
-		$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('voicemenus',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
@@ -184,7 +184,7 @@ switch($act)
 		}
 
 		$ipbx->discuss('dialplan reload');
-		$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -206,21 +206,21 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/call_management/voicemenu'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/voicemenu');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/voicemenu/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_var('act',$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/voicemenu/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

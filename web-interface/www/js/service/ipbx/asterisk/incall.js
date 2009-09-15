@@ -16,18 +16,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var xivo_fm_ast_faxdetectenable = new Array();
+var xivo_fm_ast_faxdetectenable = {};
 
-xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout'] = new Array();
-xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout']['property'] = new Array(
-								{disabled: true, className: 'it-disabled'},
-								{disabled: false, className: 'it-enabled'});
+xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout'] = {'property':
+								[{disabled: true, className: 'it-disabled'},
+								 {disabled: false, className: 'it-enabled'}]};
 xivo_fm_ast_faxdetectenable['it-incall-faxdetecttimeout']['link'] = 'it-incall-faxdetectemail';
 
-xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail'] = new Array();
-xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail']['property'] = new Array(
-								{readOnly: true, className: 'it-readonly'},
-								{readOnly: false, className: 'it-enabled'});
+
+xivo_fm_ast_faxdetectenable['it-incall-faxdetectemail'] = {'property':
+								[{disabled: true, className: 'it-disabled'},
+								 {disabled: false, className: 'it-enabled'}]};
 
 xivo_attrib_register('fm_ast_faxdetectenable',xivo_fm_ast_faxdetectenable);
 
@@ -40,12 +39,12 @@ function xivo_ast_enable_faxdetect()
 	|| dialaction_answer_actiontype.value !== 'application'
 	|| dialaction_answer_application_action.value !== 'faxtomail')
 	{
-		enable = faxdetectenable.checked;
+		var enable = faxdetectenable.checked;
 		faxdetectenable.disabled = false;
 	}
 	else
 	{
-		enable = false;
+		var enable = false;
 		faxdetectenable.disabled = true;
 	}
 
@@ -74,4 +73,4 @@ function xivo_ast_incall_onload()
 	xivo_ast_enable_faxdetect();
 }
 
-xivo_winload.push('xivo_ast_incall_onload();');
+xivo.dom.set_onload(xivo_ast_incall_onload);

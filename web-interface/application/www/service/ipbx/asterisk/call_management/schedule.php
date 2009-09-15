@@ -43,7 +43,7 @@ switch($act)
 				$result['dialaction'] = $appschedule->get_dialaction_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		}
 
 		if(empty($result) === false
@@ -51,15 +51,15 @@ switch($act)
 		    || empty($result['dialaction']) === true) === true)
 			$result['dialaction'] = null;
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('dialaction',$result['dialaction']);
-		$_HTML->set_var('dialaction_from','schedule');
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appschedule->get_elements());
-		$_HTML->set_var('context_list',$appschedule->get_context_list());
-		$_HTML->set_var('destination_list',$appschedule->get_dialaction_destination_list());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('dialaction',$result['dialaction']);
+		$_TPL->set_var('dialaction_from','schedule');
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appschedule->get_elements());
+		$_TPL->set_var('context_list',$appschedule->get_context_list());
+		$_TPL->set_var('destination_list',$appschedule->get_dialaction_destination_list());
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
 		break;
@@ -68,7 +68,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info = $appschedule->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -85,7 +85,7 @@ switch($act)
 				$result['dialaction'] = $appschedule->get_dialaction_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		}
 
 		if(empty($return) === false
@@ -93,16 +93,16 @@ switch($act)
 		    || empty($return['dialaction']) === true) === true)
 			$return['dialaction'] = null;
 
-		$_HTML->set_var('id',$info['schedule']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('dialaction',$return['dialaction']);
-		$_HTML->set_var('dialaction_from','schedule');
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appschedule->get_elements());
-		$_HTML->set_var('destination_list',$appschedule->get_dialaction_destination_list());
-		$_HTML->set_var('context_list',$appschedule->get_context_list());
+		$_TPL->set_var('id',$info['schedule']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('dialaction',$return['dialaction']);
+		$_TPL->set_var('dialaction_from','schedule');
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appschedule->get_elements());
+		$_TPL->set_var('destination_list',$appschedule->get_dialaction_destination_list());
+		$_TPL->set_var('context_list',$appschedule->get_context_list());
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/schedule.js');
 		break;
@@ -112,17 +112,17 @@ switch($act)
 		$appschedule = &$ipbx->get_application('schedule');
 
 		if(isset($_QR['id']) === false || $appschedule->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 
 		$appschedule->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('schedules',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 
 		$appschedule = &$ipbx->get_application('schedule');
 
@@ -134,14 +134,14 @@ switch($act)
 				$appschedule->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('schedules',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 
 		$appschedule = &$ipbx->get_application('schedule');
 
@@ -157,7 +157,7 @@ switch($act)
 				$appschedule->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -180,21 +180,21 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/call_management/schedule'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/schedule');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/schedule/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_var('act',$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/schedule/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

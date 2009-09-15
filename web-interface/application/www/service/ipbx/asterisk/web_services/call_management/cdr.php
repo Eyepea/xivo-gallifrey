@@ -23,7 +23,7 @@ $access_subcategory = 'cdr';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-switch($_QRY->get_qs('act'))
+switch($_QRY->get('act'))
 {
 	case 'search':
 	default:
@@ -46,8 +46,8 @@ switch($_QRY->get_qs('act'))
 			$http->send(true);
 		}
 
-		$_HTML->set_var('result',$result);
-		$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');	
+		$_TPL->set_var('result',$result);
+		$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');	
 }
 
 ?>

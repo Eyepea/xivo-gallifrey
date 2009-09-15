@@ -285,7 +285,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			{
 				$res[$i] = $rs;
 
-				if(xivo_haslen($value) === false)
+				if(xivo_has_len($value) === false)
 					$err[$i] = 'empty value';
 				else if(($value = $this->set_chk_value($arr['var_name'],$value,true)) === false)
 				{

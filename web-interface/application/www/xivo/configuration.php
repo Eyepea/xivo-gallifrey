@@ -63,17 +63,17 @@ if(($disableldapserver = $_LDAPSVR->get_nb(null,true)) !== false)
 
 $ldapserverstat['total'] = $ldapserverstat['enable'] + $ldapserverstat['disable'];
 
-$_HTML->set_var('userstat',$userstat);
-$_HTML->set_var('entitystat',$entitystat);
-$_HTML->set_var('serverstat',$serverstat);
-$_HTML->set_var('ldapserverstat',$ldapserverstat);
+$_TPL->set_var('userstat',$userstat);
+$_TPL->set_var('entitystat',$entitystat);
+$_TPL->set_var('serverstat',$serverstat);
+$_TPL->set_var('ldapserverstat',$ldapserverstat);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 
-$_HTML->set_bloc('main','xivo/configuration/index');
-$_HTML->set_struct('xivo/configuration');
-$_HTML->display('index');
+$_TPL->set_bloc('main','xivo/configuration/index');
+$_TPL->set_struct('xivo/configuration');
+$_TPL->display('index');
 
 ?>

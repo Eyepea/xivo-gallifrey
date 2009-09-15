@@ -360,7 +360,7 @@ class xivo_filter
 
 	function chk_cast($type,$value)
 	{
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(null);
 
 		switch($type)
@@ -581,7 +581,7 @@ class xivo_filter
 		if(is_array($strlist) === false
 		|| ($nb = count($strlist)) === 0)
 			return(false);
-		else if(xivo_haslen($value) === false)
+		else if(xivo_has_len($value) === false)
 			return(null);
 
 		$strlist = array_values($strlist);
@@ -651,7 +651,7 @@ class xivo_filter
 
 		if(isset($arr['bool']) === true)
 		{
-			if($set === false && $chk === 2 && xivo_haslen($value) === false)
+			if($set === false && $chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			return($this->chk_bool($value));
@@ -705,7 +705,7 @@ class xivo_filter
 
 		if(isset($arr['key']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			$arrkey = $this->chk_array_key($arr['key'],$value);
@@ -721,7 +721,7 @@ class xivo_filter
 
 		if(isset($arr['nokey']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			$noarrkey = $this->chk_array_key($arr['nokey'],$value);
@@ -741,7 +741,7 @@ class xivo_filter
 
 		if(isset($arr['str']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			$strlist = $this->chk_str_in_strlist($arr['str'],$value);
@@ -757,7 +757,7 @@ class xivo_filter
 
 		if(isset($arr['ustr']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			$strlist = $this->chk_str_in_strlist($arr['ustr'],$value,true);
@@ -773,7 +773,7 @@ class xivo_filter
 
 		if(isset($arr['char']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			$charlist = $this->chk_char_in_charlist($arr['char'],$value);
@@ -789,7 +789,7 @@ class xivo_filter
 
 		if(isset($arr['uchar']) === true)
 		{
-			if($chk === 2 && xivo_haslen($value) === false)
+			if($chk === 2 && xivo_has_len($value) === false)
 				return('');
 
 			$charlist = $this->chk_char_in_charlist($arr['uchar'],$value,true);

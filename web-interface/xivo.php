@@ -35,13 +35,10 @@ $_QRY = &xivo_gct::get('xivo_query');
 $_SRE = &xivo_gct::get('xivo_service');
 $_USR = &xivo_gct::get('_USR');
 
-if(defined('XIVO_TPL_SPACE') === true)
-	$tpl_space = XIVO_TPL_SPACE;
-else
-{
-	$tpl_space = 'www';
+if(defined('XIVO_TPL_SPACE') === false)
 	define('XIVO_TPL_SPACE','www');
-}
+
+$tpl_space = XIVO_TPL_SPACE;
 
 if(isset($_CF['tpl'][$tpl_space]) === false)
 	$tpl_space = false;
@@ -50,11 +47,12 @@ switch($tpl_space)
 {
 	case 'www':
 		xivo::load_class('xivo_tpl');
-		$_HTML = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL);
+		$_TPL = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL);
 		break;
+	case 'ui':
 	case 'json':
 		xivo::load_class('xivo_tpl');
-		$_HTML = &new xivo_tpl($_CF['tpl']['json'],array('json','url','dhtml'),$_URL);
+		$_TPL = &new xivo_tpl($_CF['tpl'][$tpl_space],array('json','url','dhtml'),$_URL);
 
 		if(xivo::load_class('xivo_json') === false)
 		{
@@ -68,7 +66,7 @@ switch($tpl_space)
 		xivo_die('Invalid TPL SPACE');
 }
 
-if(($prepend = $_HTML->get_prepend()) !== false)
+if(($prepend = $_TPL->get_prepend()) !== false)
 	include($prepend);
 
 ?>

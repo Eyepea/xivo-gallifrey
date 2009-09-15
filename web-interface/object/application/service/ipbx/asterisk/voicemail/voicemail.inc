@@ -142,7 +142,6 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function _get_voicemail($action,$disable=null,$search='',$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		$rs = false;
@@ -246,7 +245,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 			$this->_set_error('voicemail',$this->_voicemail->get_filter_error());
 			return(false);
 		}
-		else if(xivo_haslen($rs,'tz') === true
+		else if(xivo_has_len($rs,'tz') === true
 		&& ($this->get_timezones() === false
 		   || isset($this->_timezones[$rs['tz']]) === false) === true)
 		{

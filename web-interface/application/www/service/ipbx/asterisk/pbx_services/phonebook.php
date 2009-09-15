@@ -44,7 +44,7 @@ switch($act)
 				$result = $appphonebook->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
 		if(xivo_issa('phonebook',$result) === false || empty($result['phonebook']) === true)
@@ -56,19 +56,19 @@ switch($act)
 		if(xivo_issa('phonebooknumber',$result) === false || empty($result['phonebooknumber']) === true)
 			$result['phonebooknumber'] = null;
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appphonebook->get_elements());
-		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appphonebook->get_elements());
+		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'edit':
 		$appphonebook = &$ipbx->get_application('phonebook');
 
 		if(isset($_QR['id']) === false || ($info = $appphonebook->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -84,7 +84,7 @@ switch($act)
 				$result = $appphonebook->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
 		if(xivo_issa('phonebook',$return) === false || empty($return['phonebook']) === true)
@@ -96,32 +96,32 @@ switch($act)
 		if(xivo_issa('phonebooknumber',$return) === false || empty($return['phonebooknumber']) === true)
 			$return['phonebooknumber'] = null;
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['phonebook']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('phonebookaddress',$return['phonebookaddress']);
-		$_HTML->set_var('phonebooknumber',$return['phonebooknumber']);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appphonebook->get_elements());
-		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('id',$info['phonebook']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('phonebookaddress',$return['phonebookaddress']);
+		$_TPL->set_var('phonebooknumber',$return['phonebooknumber']);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appphonebook->get_elements());
+		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
 
 		if(isset($_QR['id']) === false || $appphonebook->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 
 		$appphonebook->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('phonebook',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 
 		$nb = count($values);
 
@@ -131,16 +131,16 @@ switch($act)
 				$appphonebook->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		break;
 	case 'import':
 		if(isset($_QR['fm_send']) === true)
 		{
 			$appphonebook->import_csv();
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
-		$_HTML->set_var('import_file',$appphonebook->get_config_import_file());
+		$_TPL->set_var('import_file',$appphonebook->get_config_import_file());
 		break;
 	case 'list':
 	default:
@@ -167,24 +167,24 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/phonebook'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
-		$_HTML->set_var('total',$total);
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
-		$_HTML->set_var('search',$search);
+		$_TPL->set_var('total',$total);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		$_TPL->set_var('search',$search);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_services/phonebook');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/phonebook/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/phonebook/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

@@ -42,26 +42,26 @@ switch($act)
 				$result = $appldapfilter->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
 		if(xivo_issa('ldapfilter',$result) === true)
 		{
 			if(xivo_ak('attrdisplayname',$result['ldapfilter']) === true
-			&& xivo_haslen($result['ldapfilter'],'attrdisplayname') === true)
+			&& xivo_has_len($result['ldapfilter'],'attrdisplayname') === true)
 				$result['ldapfilter']['attrdisplayname'] = explode(',',$result['ldapfilter']['attrdisplayname']);
 
 			if(xivo_ak('attrphonenumber',$result['ldapfilter']) === true
-			&& xivo_haslen($result['ldapfilter'],'attrphonenumber') === true)
+			&& xivo_has_len($result['ldapfilter'],'attrphonenumber') === true)
 				$result['ldapfilter']['attrphonenumber'] = explode(',',$result['ldapfilter']['attrphonenumber']);
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appldapfilter->get_elements());
-		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appldapfilter->get_elements());
+		$_TPL->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ldapfilter.js');
 		break;
@@ -69,7 +69,7 @@ switch($act)
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
 
 		if(isset($_QR['id']) === false || ($info = $appldapfilter->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -85,27 +85,27 @@ switch($act)
 				$result = $appldapfilter->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
 		if(xivo_issa('ldapfilter',$return) === true)
 		{
 			if(xivo_ak('attrdisplayname',$return['ldapfilter']) === true
-			&& xivo_haslen($return['ldapfilter'],'attrdisplayname') === true)
+			&& xivo_has_len($return['ldapfilter'],'attrdisplayname') === true)
 				$return['ldapfilter']['attrdisplayname'] = explode(',',$return['ldapfilter']['attrdisplayname']);
 
 			if(xivo_ak('attrphonenumber',$return['ldapfilter']) === true
-			&& xivo_haslen($return['ldapfilter'],'attrphonenumber') === true)
+			&& xivo_has_len($return['ldapfilter'],'attrphonenumber') === true)
 				$return['ldapfilter']['attrphonenumber'] = explode(',',$return['ldapfilter']['attrphonenumber']);
 		}
 
-		$_HTML->set_var('id',$info['ldapfilter']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appldapfilter->get_elements());
-		$_HTML->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
+		$_TPL->set_var('id',$info['ldapfilter']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appldapfilter->get_elements());
+		$_TPL->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ldapfilter.js');
 		break;
@@ -115,17 +115,17 @@ switch($act)
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
 
 		if(isset($_QR['id']) === false || $appldapfilter->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
 		$appldapfilter->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('ldapfilters',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
 
@@ -137,14 +137,14 @@ switch($act)
 				$appldapfilter->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		break;
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('ldapfilters',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
 
@@ -160,7 +160,7 @@ switch($act)
 				$appldapfilter->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -182,22 +182,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/system_management/ldapfilter'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/system_management/ldapfilter');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/ldapfilter/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/ldapfilter/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

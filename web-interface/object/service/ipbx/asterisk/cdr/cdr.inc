@@ -47,11 +47,11 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 
 		$search = array();
 
-		if(xivo_haslen($arr,'dbeg') === true)
+		if(xivo_has_len($arr,'dbeg') === true)
 		{
 			$date = array('dbeg' => null,'dend' => null);
 
-			if(xivo_haslen($arr,'dend') === true
+			if(xivo_has_len($arr,'dend') === true
 			&& ($date = xivo_filter::chk_between_date($arr['dbeg'],$arr['dend'])) === false)
 				return(false);
 			else if(($date['dbeg'] = xivo_filter::chk_date($arr['dbeg'])) === false)
@@ -68,41 +68,41 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 				$search['dend'] = $date['dend']['date'];
 		}
 
-		if(xivo_haslen($arr,'channel') === true)
+		if(xivo_has_len($arr,'channel') === true)
 			$search['channel'] = $this->_search_channel($arr['channel']);
 
-		if(xivo_haslen($arr,'disposition') === true)
+		if(xivo_has_len($arr,'disposition') === true)
 			$search['disposition'] = $arr['disposition'];
 
-		if(xivo_haslen($arr,'amaflags') === true)
+		if(xivo_has_len($arr,'amaflags') === true)
 			$search['amaflags'] = $arr['amaflags'];
 
-		if(xivo_haslen($arr,'dcontext') === true)
+		if(xivo_has_len($arr,'dcontext') === true)
 			$search['dcontext'] = $arr['dcontext'];
 
-		if(xivo_haslen($arr,'src') === true && isset($arr['srcformat']) === true)
+		if(xivo_has_len($arr,'src') === true && isset($arr['srcformat']) === true)
 			$search['src'] = array('pattern' => $arr['src'],'type' => $arr['srcformat']);
 
-		if(xivo_haslen($arr,'dst') === true && isset($arr['dstformat']) === true)
+		if(xivo_has_len($arr,'dst') === true && isset($arr['dstformat']) === true)
 			$search['dst'] = array('pattern' => $arr['dst'],'type' => $arr['dstformat']);
 
-		if(xivo_haslen($arr,'clid') === true && isset($arr['clidformat']) === true)
+		if(xivo_has_len($arr,'clid') === true && isset($arr['clidformat']) === true)
 			$search['clid'] = array('pattern' => $arr['clid'],'type' => $arr['clidformat']);
 
-		if(xivo_haslen($arr,'accountcode') === true && isset($arr['accountcodeformat']) === true)
+		if(xivo_has_len($arr,'accountcode') === true && isset($arr['accountcodeformat']) === true)
 			$search['accountcode'] = array('pattern' => $arr['accountcode'],'type' => $arr['accountcodeformat']);
 
-		if(xivo_haslen($arr,'userfield') === true && isset($arr['userfieldformat']) === true)
+		if(xivo_has_len($arr,'userfield') === true && isset($arr['userfieldformat']) === true)
 			$search['userfield'] = array('pattern' => $arr['userfield'],'type' => $arr['userfieldformat']);
 
-		if(xivo_haslen($arr,'dubeg') === true && isset($arr['dubegunit']) === true)
+		if(xivo_has_len($arr,'dubeg') === true && isset($arr['dubegunit']) === true)
 		{
 			if($arr['dubegunit'] === 'minutes')
 				$dubeg = $arr['dubeg'] * 60;
 			else
 				$dubeg = $arr['dubeg'];
 
-			if(xivo_haslen($arr,'duend') === true && isset($arr['duendunit']) === true)
+			if(xivo_has_len($arr,'duend') === true && isset($arr['duendunit']) === true)
 			{
 				if($arr['duendunit'] === 'minutes')
 					$duend = $arr['duend'] * 60;

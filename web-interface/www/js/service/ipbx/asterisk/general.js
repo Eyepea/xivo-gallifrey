@@ -16,39 +16,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-xivo_fm_format = new Array();
-xivo_fm_format['it-voicemail-attachformat'] = new Array();
-xivo_fm_format['it-voicemail-attachformat']['property'] = new Array({disabled: false, className: 'it-enabled'},
-								    {disabled: true, className: 'it-disabled'});
+xivo_fm_voicemail_format = {
+		'it-voicemail-attachformat':
+			{property:	[{disabled: false, className: 'it-enabled'},
+					 {disabled: true, className: 'it-disabled'}]}};
 
-xivo_attrib_register('fm_format',xivo_fm_format);
+xivo_attrib_register('fm_voicemail_format',xivo_fm_voicemail_format);
 
-function xivo_informat()
+function xivo_voicemail_format(action)
 {
-	xivo_fm_move_selected('it-voicemail-formatlist','it-voicemail-format');
-	xivo_fm_copy_select('it-voicemail-format','it-voicemail-attachformat');
-
-	if(xivo_is_undef('it-voicemail-attachformat') == true)
-		return(false);
-	else if(xivo_eid('it-voicemail-attachformat').length == 0)
-		xivo_chg_attrib('fm_format','it-voicemail-attachformat',1);
+	if(action === 'out')
+	{
+		xivo_fm_move_selected('it-voicemail-format','it-voicemail-formatlist');
+		xivo_fm_copy_select('it-voicemail-format','it-voicemail-attachformat');
+	}
 	else
-		xivo_chg_attrib('fm_format','it-voicemail-attachformat',0);
+	{
+		xivo_fm_move_selected('it-voicemail-formatlist','it-voicemail-format');
+		xivo_fm_copy_select('it-voicemail-format','it-voicemail-attachformat');
+	}
 
-	return(true);
-}
-
-function xivo_outformat()
-{
-	xivo_fm_move_selected('it-voicemail-format','it-voicemail-formatlist');
-	xivo_fm_copy_select('it-voicemail-format','it-voicemail-attachformat');
-
-	if(xivo_is_undef('it-voicemail-attachformat') == true)
+	if(xivo_eid('it-voicemail-attachformat') === false)
 		return(false);
-	else if(xivo_eid('it-voicemail-attachformat').length == 0)
-		xivo_chg_attrib('fm_format','it-voicemail-attachformat',1);
-	else
-		xivo_chg_attrib('fm_format','it-voicemail-attachformat',0);
+
+	xivo_chg_attrib('fm_voicemail_format',
+			'it-voicemail-attachformat',
+			Number((xivo_eid('it-voicemail-attachformat').length === 0)));
 
 	return(true);
 }

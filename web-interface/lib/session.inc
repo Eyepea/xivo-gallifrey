@@ -60,9 +60,9 @@ class xivo_session
 
 		$_QR = &xivo_gat::get('_QR');
 
-		if(xivo_haslen($_COOKIE,XIVO_SESS_NAME) === true)
+		if(xivo_has_len($_COOKIE,XIVO_SESS_NAME) === true)
 			$id = substr($_COOKIE[XIVO_SESS_NAME],0,32);
-		else if(xivo_haslen($_QR,XIVO_SESS_NAME) === true)
+		else if(xivo_has_len($_QR,XIVO_SESS_NAME) === true)
 			$id = substr($_QR[XIVO_SESS_NAME],0,32);
 		else
 			$id = false;

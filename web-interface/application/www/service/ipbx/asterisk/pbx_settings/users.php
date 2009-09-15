@@ -48,19 +48,19 @@ switch($act)
 		$appuser = &$ipbx->get_application('user');
 
 		if(isset($_QR['id']) === false || $appuser->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 		$appuser->delete();
 
 		$ipbx->discuss('xivo[userlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('users',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 		$appuser = &$ipbx->get_application('user');
 
@@ -74,14 +74,14 @@ switch($act)
 
 		$ipbx->discuss('xivo[userlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('users',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 		$appuser = &$ipbx->get_application('user',null,false);
 
@@ -99,7 +99,7 @@ switch($act)
 
 		$ipbx->discuss('xivo[userlist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		break;
 	case 'import':
 		$appuser = &$ipbx->get_application('user');
@@ -109,10 +109,10 @@ switch($act)
 		{
 			$appuser->import_csv();
 			$ipbx->discuss('xivo[userlist,update]');
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		}
 
-		$_HTML->set_var('import_file',$appuser->get_config_import_file());
+		$_TPL->set_var('import_file',$appuser->get_config_import_file());
 		break;
 	case 'list':
 	default:
@@ -143,25 +143,25 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
-		$_HTML->set_var('search',$search);
-		$_HTML->set_var('context',$context);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		$_TPL->set_var('search',$search);
+		$_TPL->set_var('context',$context);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('contexts',$contexts);
+$_TPL->set_var('act',$act);
+$_TPL->set_var('contexts',$contexts);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

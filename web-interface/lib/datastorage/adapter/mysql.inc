@@ -111,8 +111,8 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 	function quote_identifier($name)
 	{
-		if(($r = $this->_get_scalar($name,true)) !== '')
-			$r = '`'.str_replace('`','``',$name).'`';
+		if(($r = $this->_get_scalar($name,true)) !== '' && is_object($name) === false)
+			$r = '`'.str_replace('`','``',$r).'`';
 
 		return($r);
 	}

@@ -40,8 +40,8 @@ class xivo_application_service_asterisk_context_sql extends xivo_application_ser
 
 	function _update_user_mailbox($protocol,$context,$newcontext)
 	{
-		if(xivo_haslen($context) === false
-		|| xivo_haslen($newcontext) === false)
+		if(xivo_has_len($context) === false
+		|| xivo_has_len($newcontext) === false)
 			return(false);
 
 		switch($protocol)

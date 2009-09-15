@@ -38,7 +38,7 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'userfeatures-enablexfer': {it: false},
 	'userfeatures-enableautomon': {it: false},
 	'userfeatures-callrecord': {it: false},
-	'userfeatures-callfilter': {it: false},
+	'userfeatures-incallfilter': {it: false},
 	'userfeatures-enablednd': {it: false},
 	'userfeatures-enablerna': {it: false},
 	'userfeatures-destrna': {it: false},

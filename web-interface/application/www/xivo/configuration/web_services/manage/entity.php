@@ -26,18 +26,18 @@ include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
 $_ETT = new xivo_entity();
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
 	case 'view':
-		if(($info = $_ETT->get($_QRY->get_qs('id'))) === false)
+		if(($info = $_ETT->get($_QRY->get('id'))) === false)
 		{
 			$http->set_status(404);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		if(xivo::load_class('xivo_json') === false
@@ -57,7 +57,7 @@ switch($act)
 		$ipbx = &$_SRE->get('ipbx');
 		$context = &$ipbx->get_module('context');
 
-		if(($info = $_ETT->get($_QRY->get_qs('id'))) === false)
+		if(($info = $_ETT->get($_QRY->get('id'))) === false)
 			$status = 404;
 		else if($context->get_where(array('entity' => $info['name'])) !== false)
 			$status = 405;
@@ -70,13 +70,13 @@ switch($act)
 		$http->send(true);
 		break;
 	case 'search':
-		if(($list = $_ETT->get_entities_search($_QRY->get_qs('search'))) === false)
+		if(($list = $_ETT->get_entities_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:
@@ -88,11 +88,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/xivo/configuration/manage/entity');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/xivo/configuration/manage/entity');
 
 ?>

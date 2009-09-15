@@ -53,25 +53,25 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		$r = array('str' => '','arr' => array());
 
 		if($this->_load_uri() === false
-		|| xivo_haslen($arr,'username') === false
-		|| xivo_haslen($arr,'host') === false)
+		|| xivo_has_len($arr,'username') === false
+		|| xivo_has_len($arr,'host') === false)
 			return(false);
 
 		$uri['user'] = $arr['username'];
 		$uri['host'] = $arr['host'];
 
-		if(xivo_haslen($arr,'password') === true)
+		if(xivo_has_len($arr,'password') === true)
 		{
 			$uri['passwd'] = $arr['password'];
 
-			if(xivo_haslen($arr,'authuser') === true)
+			if(xivo_has_len($arr,'authuser') === true)
 				$uri['passwd'] .= ':'.$arr['authuser'];
 		}
 
-		if(xivo_haslen($arr,'port') === true)
+		if(xivo_has_len($arr,'port') === true)
 			$uri['port'] = $arr['port'];
 
-		if(xivo_haslen($arr,'contact') === true)
+		if(xivo_has_len($arr,'contact') === true)
 		{
 			$arr['contact'] = (string) $arr['contact'];
 

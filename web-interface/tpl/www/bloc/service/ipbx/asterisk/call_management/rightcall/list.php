@@ -88,7 +88,7 @@
 ?>
 			</label>
 		</td>
-		<td><?=(xivo_haslen($ref['passwd']) === true ? $ref['passwd'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['passwd']) === true ? $ref['passwd'] : '-')?></td>
 		<td><?=$this->bbf('rightcall_authorization-'.intval((bool) $ref['authorization']));?></td>
 		<td class="td-right" colspan="2">
 <?php

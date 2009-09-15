@@ -131,18 +131,18 @@ if($info['ldapfilter']['list'] !== false
 	}
 }
 
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('info',$info);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('info',$info);
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/phonebook');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/phonebook');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

@@ -108,12 +108,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(($ref = &$r));
 	}
 
-	function identity($module,$arr)
+	function identity($module,$arr,$full=true)
 	{
 		if(($identity = &$this->get_identity($module)) === false)
 			return(false);
 
-		return($identity->mk_identity($arr));
+		return($identity->mk_identity($arr,$full));
 	}
 
 	function load_realstatic_class($module)
@@ -515,11 +515,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			return($name);
-		else if(xivo_haslen($number) === true)
+		else if(xivo_has_len($number) === true)
 		{
 			if(($channel = $this->get_channel(XIVO_SRE_IPBX_AST_CHAN_LOCAL)) !== false)
 			{
-				if(xivo_haslen($context) === false)
+				if(xivo_has_len($context) === false)
 					$context = 'default';
 
 				$r = $channel.'/'.$number.'@'.$context;
@@ -530,7 +530,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$chan = $channel;
 
-		if(xivo_haslen($channel) === true)
+		if(xivo_has_len($channel) === true)
 		{
 			if(($channel = $this->chk_channel_by_interface($chan)) === false
 			&& ($channel = $this->get_channel($chan)) === false)

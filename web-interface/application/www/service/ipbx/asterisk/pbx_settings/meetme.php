@@ -44,23 +44,23 @@ switch($act)
 				$result = $appmeetme->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appmeetme->get_elements());
-		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
-		$_HTML->set_var('context_list',$appmeetme->get_context_list());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appmeetme->get_elements());
+		$_TPL->set_var('moh_list',$appmeetme->get_musiconhold());
+		$_TPL->set_var('context_list',$appmeetme->get_context_list());
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'edit':
 		$appmeetme = &$ipbx->get_application('meetme');
 
 		if(isset($_QR['id']) === false || ($info = $appmeetme->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -78,17 +78,17 @@ switch($act)
 				$result = $appmeetme->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
-		$_HTML->set_var('id',$info['meetmeroom']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appmeetme->get_elements());
-		$_HTML->set_var('moh_list',$appmeetme->get_musiconhold());
-		$_HTML->set_var('context_list',$appmeetme->get_context_list());
+		$_TPL->set_var('id',$info['meetmeroom']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appmeetme->get_elements());
+		$_TPL->set_var('moh_list',$appmeetme->get_musiconhold());
+		$_TPL->set_var('context_list',$appmeetme->get_context_list());
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 		break;
 	case 'delete':
@@ -97,17 +97,17 @@ switch($act)
 		$appmeetme = &$ipbx->get_application('meetme');
 
 		if(isset($_QR['id']) === false || $appmeetme->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$appmeetme->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('meetme',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$appmeetme = &$ipbx->get_application('meetme');
 
@@ -119,14 +119,14 @@ switch($act)
 				$appmeetme->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
 	case 'disables':
 	case 'enables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('meetme',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
@@ -142,7 +142,7 @@ switch($act)
 				$appmeetme->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -164,22 +164,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/meetme'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/meetme');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/meetme/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/meetme/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

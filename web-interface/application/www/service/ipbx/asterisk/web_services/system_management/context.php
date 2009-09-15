@@ -25,18 +25,18 @@ include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appcontext = &$ipbx->get_application('context');
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
 	case 'view':
-		if(($info = $appcontext->get($_QRY->get_qs('id'))) === false)
+		if(($info = $appcontext->get($_QRY->get('id'))) === false)
 		{
 			$http->set_status(404);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		if($appcontext->add_from_json() === true)
@@ -48,7 +48,7 @@ switch($act)
 		$http->send(true);
 		break;
 	case 'delete':
-		if($appcontext->get($_QRY->get_qs('id')) === false)
+		if($appcontext->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appcontext->delete() === true)
 			$status = 200;
@@ -59,13 +59,13 @@ switch($act)
 		$http->send(true);
 		break;
 	case 'search':
-		if(($list = $appcontext->get_contexts_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appcontext->get_contexts_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:
@@ -77,11 +77,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/system_management/context');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/system_management/context');
 
 ?>

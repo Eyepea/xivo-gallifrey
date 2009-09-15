@@ -78,19 +78,19 @@ $page = $url->pager($pager['pages'],
 				$icon = 'enable';
 			endif;
 
-			if(xivo_haslen($ref['login']) === false):
+			if(xivo_has_len($ref['login']) === false):
 				$login = '-';
 			else:
 				$login = xivo_htmlen(xivo_trunc($ref['login'],20,'...',false));
 			endif;
 
-			if(xivo_haslen($ref['passwd']) === false):
+			if(xivo_has_len($ref['passwd']) === false):
 				$passwd = '-';
 			else:
 				$passwd = xivo_htmlen(xivo_trunc($ref['passwd'],20,'...',false));
 			endif;
 
-			if(xivo_haslen($ref['host']) === false):
+			if(xivo_has_len($ref['host']) === false):
 				$host = '-';
 			else:
 				$host = xivo_htmlen(xivo_trunc($ref['host'],20,'...',false));

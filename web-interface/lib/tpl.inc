@@ -363,7 +363,7 @@ class xivo_tpl
 	{
 		$ext = (string) $ext;
 
-		if(xivo_haslen($page) === false)
+		if(xivo_has_len($page) === false)
 			return(false);
 		else if($ext === '')
 			$ext = XIVO_TPL_FILE_EXT;

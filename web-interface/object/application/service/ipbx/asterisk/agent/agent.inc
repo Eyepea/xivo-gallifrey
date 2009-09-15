@@ -176,9 +176,14 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		return($this->_agentoptions->get_goodbye());
 	}
 
+	function get_agents_search($search,$disable=null,$order=null,$limit=null,$assoc=false)
+	{
+		return($this->_get_agents('search',$search,$disable,$order,$limit,$assoc));
+	}
+
 	function get_agents_group($group,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		return($this->_get_agents('group',$group,$disable,$order,$limit,$assoc));
+		return($this->_get_agents('group',null,$group,$disable,$order,$limit,$assoc));
 	}
 
 	function get_agents_list($disable=null,$order=null,$limit=null,$assoc=false)
@@ -186,12 +191,16 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		return($this->_get_agents('list',null,$disable,$order,$limit,$assoc));
 	}
 
-	function _get_agents($action,$group=null,$disable=null,$order=null,$limit=null,$assoc=false)
+	function _get_agents($action,$search='',$group=null,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
 		$group = strval($group);
+		$search = strval($search);
 
 		switch($action)
 		{
+			case 'search':
+				$rs = $this->_agentfeatures->search($search,$disable,$order,$limit);
+				break;
 			case 'group':
 				$where = array();
 				$where['numgroup'] = $group;
@@ -396,7 +405,7 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 
 		if(($nb = count($slt)) === 0)
 			return(null);
-		else if(xivo_haslen($number) === false)
+		else if(xivo_has_len($number) === false)
 		{
 			$error = true;
 			$number = 0;

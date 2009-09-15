@@ -79,7 +79,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('xivo[queuelist,update]');
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 			}
 		}
 
@@ -159,31 +159,31 @@ switch($act)
 				$result['callerid'] = null;
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('dialaction',$result['dialaction']);
-		$_HTML->set_var('dialaction_from','queue');
-		$_HTML->set_var('element',$appqueue->get_elements());
-		$_HTML->set_var('user',$user);
-		$_HTML->set_var('agentgroup',$agentgroup);
-		$_HTML->set_var('agent',$agent);
-		$_HTML->set_var('pannounce',$pannounce);
-		$_HTML->set_var('destination_list',$appqueue->get_dialaction_destination_list());
-		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
-		$_HTML->set_var('announce_list',$appqueue->get_announce());
-		$_HTML->set_var('context_list',$appqueue->get_context_list());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('dialaction',$result['dialaction']);
+		$_TPL->set_var('dialaction_from','queue');
+		$_TPL->set_var('element',$appqueue->get_elements());
+		$_TPL->set_var('user',$user);
+		$_TPL->set_var('agentgroup',$agentgroup);
+		$_TPL->set_var('agent',$agent);
+		$_TPL->set_var('pannounce',$pannounce);
+		$_TPL->set_var('destination_list',$appqueue->get_dialaction_destination_list());
+		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
+		$_TPL->set_var('announce_list',$appqueue->get_announce());
+		$_TPL->set_var('context_list',$appqueue->get_context_list());
 		break;
 	case 'edit':
 		$appqueue = &$ipbx->get_application('queue');
 
 		if(isset($_QR['id']) === false || ($info = $appqueue->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -236,7 +236,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('xivo[queuelist,update]');
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 			}
 		}
 
@@ -316,26 +316,26 @@ switch($act)
 				$return['callerid'] = null;
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['queuefeatures']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('dialaction',$return['dialaction']);
-		$_HTML->set_var('dialaction_from','queue');
-		$_HTML->set_var('element',$appqueue->get_elements());
-		$_HTML->set_var('user',$user);
-		$_HTML->set_var('agentgroup',$agentgroup);
-		$_HTML->set_var('agent',$agent);
-		$_HTML->set_var('pannounce',$pannounce);
-		$_HTML->set_var('destination_list',$appqueue->get_dialaction_destination_list());
-		$_HTML->set_var('moh_list',$appqueue->get_musiconhold());
-		$_HTML->set_var('announce_list',$appqueue->get_announce());
-		$_HTML->set_var('context_list',$appqueue->get_context_list());
+		$_TPL->set_var('id',$info['queuefeatures']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('dialaction',$return['dialaction']);
+		$_TPL->set_var('dialaction_from','queue');
+		$_TPL->set_var('element',$appqueue->get_elements());
+		$_TPL->set_var('user',$user);
+		$_TPL->set_var('agentgroup',$agentgroup);
+		$_TPL->set_var('agent',$agent);
+		$_TPL->set_var('pannounce',$pannounce);
+		$_TPL->set_var('destination_list',$appqueue->get_dialaction_destination_list());
+		$_TPL->set_var('moh_list',$appqueue->get_musiconhold());
+		$_TPL->set_var('announce_list',$appqueue->get_announce());
+		$_TPL->set_var('context_list',$appqueue->get_context_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -343,19 +343,19 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 
 		if(isset($_QR['id']) === false || $appqueue->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$appqueue->delete();
 
 		$ipbx->discuss('xivo[queuelist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('queues',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$appqueue = &$ipbx->get_application('queue');
 
@@ -369,7 +369,7 @@ switch($act)
 
 		$ipbx->discuss('xivo[queuelist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 		break;
 	case 'disables':
 	case 'enables':
@@ -378,7 +378,7 @@ switch($act)
 		$invdisable = $disable === false;
 
 		if(($values = xivo_issa_val('queues',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$queuefeatures = &$ipbx->get_module('queuefeatures');
 		$queue = &$ipbx->get_module('queue');
@@ -393,7 +393,7 @@ switch($act)
 
 		$ipbx->discuss('xivo[queuelist,update]');
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -415,22 +415,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

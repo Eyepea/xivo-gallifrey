@@ -28,7 +28,7 @@ class xivo_application_service_asterisk_voicemail_sql extends xivo_application_s
 	{
 		$this->_cnt = 0;
 
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(false);
 
 		$this->_dso->new_select($this->_table['voicemail']);

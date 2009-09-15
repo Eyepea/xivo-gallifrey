@@ -37,17 +37,17 @@ switch($act)
 			if(($result = $_ETT->chk_values($_QR)) === false)
 				$result = $_ETT->get_filter_result();
 			else if($_ETT->add($result) !== false)
-				$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+				$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('element',$_ETT->get_element());
-		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('element',$_ETT->get_element());
+		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $_ETT->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
 		$return = &$info;
 
@@ -79,14 +79,14 @@ switch($act)
 				break;
 			}
 
-			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
 		while(false);
 
-		$_HTML->set_var('id',$info['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('element',$_ETT->get_element());
-		$_HTML->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('id',$info['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('element',$_ETT->get_element());
+		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -99,13 +99,13 @@ switch($act)
 		&& $context->get_where(array('entity' => $info['name'])) === false)
 			$_ETT->delete($info['id']);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+		$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('entity',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
 		$ipbx = &$_SRE->get('ipbx');
 		$context = &$ipbx->get_module('context');
@@ -119,7 +119,7 @@ switch($act)
 				$_ETT->delete($info['id']);
 		}
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+		$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		break;
 	case 'enables':
 	case 'disables':
@@ -127,14 +127,14 @@ switch($act)
 		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('entity',$_QR)) === false)
-			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 			$_ETT->disable(intval($values[$i]),$disable);
 
-		$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+		$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -154,22 +154,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('xivo/configuration/manage/entity'),$param);
+			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 $menu->set_toolbar('toolbar/xivo/configuration/manage/entity');
 
-$_HTML->set_bloc('main','xivo/configuration/manage/entity/'.$act);
-$_HTML->set_struct('xivo/configuration');
-$_HTML->display('index');
+$_TPL->set_bloc('main','xivo/configuration/manage/entity/'.$act);
+$_TPL->set_struct('xivo/configuration');
+$_TPL->display('index');
 
 ?>

@@ -107,7 +107,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 	{
 		if($this->_dso->is_single_primary() === true)
 		{
-			if(xivo_haslen($id) === false)
+			if(xivo_has_len($id) === false)
 				return(false);
 			else
 				return($this->_dso->mk_primary_key_value($id));

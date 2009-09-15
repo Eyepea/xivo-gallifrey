@@ -88,7 +88,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if(($option = $this->get_option_value('file')) === false)
 			return(false);
 
-		if(xivo_haslen($option,'name') === true)
+		if(xivo_has_len($option,'name') === true)
 			$this->_fileoption['name'] = $option['name'];
 
 		if(xivo_issa('mime',$option) === true)
@@ -483,7 +483,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		{
 			$val['category'] = $key;
 
-			if(($val['mode'] === 'custom' && xivo_haslen($val,'directory') === false) === true
+			if(($val['mode'] === 'custom' && xivo_has_len($val,'directory') === false) === true
 			|| $this->_chk_dir($key,true) !== false)
 				$r[] = $val;
 		}

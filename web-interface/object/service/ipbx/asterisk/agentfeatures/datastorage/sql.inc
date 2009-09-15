@@ -23,6 +23,43 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 class xivo_service_asterisk_agentfeatures_sql extends xivo_service_asterisk_abstract_sql
 {
 	var $_unique = array('agentid','number');
+
+	function search($value,$disable=null,$order=null,$limit=null)
+	{
+		$this->_cnt = 0;
+
+		$this->_dso->new_select($this->_table);
+		$this->_dso->wherecontain('firstname',$value);
+		$this->_dso->orwherecontain('lastname',$value);
+		$this->_dso->orwherecontain('number',$value);
+
+		if(($concat = $this->_dso->concat(array((object) 'firstname',
+							' ',
+							(object) 'lastname'))) !== false)
+			$this->_dso->orwherecontain((object) $concat,$value,true);
+
+		if($this->_dso->aggregate_where() === false)
+			return(false);
+
+		$arr = array();
+
+		if($disable !== null && isset($this->_disable) === true)
+			$this->_dso->andwhere(array($this->_disable => intval((bool) $disable)));
+
+		$this->_dso->new_order($order);
+		$this->_dso->limit($limit);
+
+		$r = $this->_dso->select_all();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if(($this->_cnt = $this->_dso->select_count()) === false
+		|| isset($r[0]) === false)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

@@ -24,14 +24,14 @@ if(isset($_SERVER['REMOTE_ADDR']) === false
 || $phonebook->chk_host_access($_SERVER['REMOTE_ADDR']) === false)
 	xivo_die('Error/403');
 
-define('XIVO_PHONEBOOK_URL',$_HTML->url('service/ipbx/web_services/phonebook/search',true));
+define('XIVO_PHONEBOOK_URL',$_TPL->url('service/ipbx/web_services/phonebook/search',true));
 
 $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']) : false;
 
 if($vendor === false)
 	xivo_die('Error/Invalid Vendor');
 
-if(isset($_QR['name']) === false || xivo_haslen($_QR['name']) === false)
+if(isset($_QR['name']) === false || xivo_has_len($_QR['name']) === false)
 	xivo_die('Error/Invalid name');
 
 $rs = array();

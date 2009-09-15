@@ -98,7 +98,7 @@ class xivo_sysinfo_linux
 			$name = substr($data[0],0,$pos);
 			$data[0] = substr($data[0],$pos + 1);
 
-			if(xivo_haslen($data[0]) === false)
+			if(xivo_has_len($data[0]) === false)
 				array_shift($data);
 
 			$arr[$name] = array(

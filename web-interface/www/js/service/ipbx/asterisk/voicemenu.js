@@ -16,34 +16,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-xivo_ast_voicemenuevent_type = new Array();
-xivo_ast_voicemenuevent_type['0'] = '0';
-xivo_ast_voicemenuevent_type['1'] = '1';
-xivo_ast_voicemenuevent_type['2'] = '2';
-xivo_ast_voicemenuevent_type['3'] = '3';
-xivo_ast_voicemenuevent_type['4'] = '4';
-xivo_ast_voicemenuevent_type['5'] = '5';
-xivo_ast_voicemenuevent_type['6'] = '6';
-xivo_ast_voicemenuevent_type['7'] = '7';
-xivo_ast_voicemenuevent_type['8'] = '8';
-xivo_ast_voicemenuevent_type['9'] = '9';
-xivo_ast_voicemenuevent_type['*'] = 'star';
-xivo_ast_voicemenuevent_type['#'] = 'sharp';
-xivo_ast_voicemenuevent_type['a'] = 'a';
-xivo_ast_voicemenuevent_type['o'] = 'o';
-xivo_ast_voicemenuevent_type['t'] = 't';
-xivo_ast_voicemenuevent_type['T'] = 'tt';
-xivo_ast_voicemenuevent_type['i'] = 'i';
-xivo_ast_voicemenuevent_type['h'] = 'h';
+xivo_ast_voicemenuevent_type = {
+				'0':	'0',
+				'1':	'1',
+				'2':	'2',
+				'3':	'3',
+				'4':	'4',
+				'5':	'5',
+				'6':	'6',
+				'7':	'7',
+				'8':	'8',
+				'9':	'9',
+				'*':	'star',
+				'#':	'sharp',
+				'a':	'a',
+				'o':	'o',
+				't':	't',
+				'T':	'tt',
+				'i':	'i',
+				'h':	'h'};
 
 function xivo_ast_voicemenu_flow_display()
 {
-	if((from = xivo_eid('it-voicemenu-flow-hidden')) == false
-	|| (to = xivo_eid('it-voicemenu-flow')) == false
-	|| (from.type != 'select-one'
-	   && from.type != 'select-multiple') == true
-	|| (to.type != 'select-one'
-	   && to.type != 'select-multiple') == true)
+	if((from = xivo_eid('it-voicemenu-flow-hidden')) === false
+	|| (to = xivo_eid('it-voicemenu-flow')) === false
+	|| (from.type !== 'select-one'
+	   && from.type !== 'select-multiple') === true
+	|| (to.type !== 'select-one'
+	   && to.type !== 'select-multiple') === true)
 		return(false);
 
 	nextoption:
@@ -52,7 +52,7 @@ function xivo_ast_voicemenu_flow_display()
 	{
 		for(property in xivo_ast_defapplication)
 		{
-			if((defapplication = xivo_ast_voicemenu_get_defapplication(property,from.options[i].value)) === false)
+			if((defapplication = xivo_ast_voicemenu_get_defapplication(property,from.options[i].value,'voicemenuflow')) === false)
 				continue;
 
 			to.options[j++] = new Option(j+'. '+defapplication['text'],defapplication['value']);
@@ -65,7 +65,7 @@ function xivo_ast_voicemenu_flow_display()
 
 		for(property in xivo_ast_application)
 		{
-			if((application = xivo_ast_voicemenu_get_application(property,from.options[i].value)) === false)
+			if((application = xivo_ast_voicemenu_get_application(property,from.options[i].value,'voicemenuflow')) === false)
 				continue;
 
 			to.options[j++] = new Option(j+'. '+application['text'],application['value']);
@@ -93,12 +93,12 @@ function xivo_ast_voicemenu_event_display()
 
 		for(property in xivo_ast_defapplication)
 		{
-			if((defapplication = xivo_ast_voicemenu_get_defapplication(property,itevent.value)) === false)
+			if((defapplication = xivo_ast_voicemenu_get_defapplication(property,itevent.value,'voicemenuevent')) === false)
 				continue;
 
 			itevent.value = defapplication['value'];
 
-			infoevent.innerHTML = '<a href="#" onclick="return(xivo_free_focus());" title="'+
+			infoevent.innerHTML = '<a href="#" onclick="return(xivo.dom.free_focus());" title="'+
 					      xivo_htmlsc(defapplication['text'])+'">'+
 					      xivo_htmlsc(xivo_trunc(defapplication['text'],40,'...',false))+'</a>';
 
@@ -110,7 +110,7 @@ function xivo_ast_voicemenu_event_display()
 
 		for(property in xivo_ast_application)
 		{
-			if((application = xivo_ast_voicemenu_get_application(property,itevent.value)) === false)
+			if((application = xivo_ast_voicemenu_get_application(property,itevent.value,'voicemenuevent')) === false)
 				continue;
 
 			itevent.value = application['value'];
@@ -118,7 +118,7 @@ function xivo_ast_voicemenu_event_display()
 			if(application['error'] === true)
 				infoevent.parentNode.className = 'l-infos-error';
 
-			infoevent.innerHTML = '<a href="#" onclick="return(xivo_free_focus());" title="'+
+			infoevent.innerHTML = '<a href="#" onclick="return(xivo.dom.free_focus());" title="'+
 					      xivo_htmlsc(application['text'])+'">'+
 					      xivo_htmlsc(xivo_trunc(application['text'],40,'...',false))+'</a>';
 
@@ -127,7 +127,7 @@ function xivo_ast_voicemenu_event_display()
 	}
 }
 
-function xivo_ast_voicemenu_get_defapplication(application,value)
+function xivo_ast_voicemenu_get_defapplication(application,value,dialevent)
 {
 	if(xivo_strcasecmp(value,application,application.length) !== 0
 	|| ((lastchar = value.charAt(application.length)) !== ','
@@ -136,10 +136,10 @@ function xivo_ast_voicemenu_get_defapplication(application,value)
 	|| (displayname = xivo_ast_get_defapplication_displayname(application)) === false)
 		return(false);
 
-	var r = new Array();
-	r['text'] = displayname;
-	r['value'] = value.substring(0,application.length);
-	r['error'] = false;
+	var r = {
+		'text':		displayname,
+		'value':	value.substring(0,application.length),
+		'error':	false};
 
 	if(lastchar === '')
 	{
@@ -164,9 +164,9 @@ function xivo_ast_voicemenu_get_defapplication(application,value)
 
 	if((identityfunc = xivo_ast_get_defapplication_identityfunc(application)) !== false)
 	{
-		args = optarg.split(',');
+		var args = optarg.split(',');
 
-		if((identity = eval(identityfunc+'('+optarg.split(',')[0]+');')) !== false)
+		if((identity = identityfunc.apply(null,[dialevent,args[0]])) !== false)
 		{
 			args[0] = '\''+identity+'\'';
 			optarg = args.join(',');
@@ -180,7 +180,7 @@ function xivo_ast_voicemenu_get_defapplication(application,value)
 	return(r);
 }
 
-function xivo_ast_voicemenu_get_application(application,value)
+function xivo_ast_voicemenu_get_application(application,value,dialevent)
 {
 	if(xivo_strcasecmp(value,application,application.length) !== 0
 	|| ((lastchar = value.charAt(application.length)) !== ','
@@ -189,10 +189,10 @@ function xivo_ast_voicemenu_get_application(application,value)
 	|| (displayname = xivo_ast_get_application_displayname(application)) === false)
 		return(false);
 
-	var r = new Array();
-	r['text'] = displayname;
-	r['value'] = value.substring(0,application.length);
-	r['error'] = false;
+	var r = {
+		'text':		displayname,
+		'value':	value.substring(0,application.length),
+		'error':	false};
 
 	if(lastchar === '')
 	{
@@ -220,9 +220,9 @@ function xivo_ast_voicemenu_get_application(application,value)
 
 	if((identityfunc = xivo_ast_get_application_identityfunc(application)) !== false)
 	{
-		args = optarg.split(',');
+		var args = optarg.split(',');
 
-		if((identity = eval(identityfunc+'('+optarg.split(',')[0]+');')) !== false)
+		if((identity = identityfunc.apply(null,[args[0]])) !== false)
 		{
 			args[0] = '\''+identity+'\'';
 			optarg = args.join(',');
@@ -238,7 +238,7 @@ function xivo_ast_voicemenu_get_application(application,value)
 
 function xivo_ast_voicemenuevent_get_eventname(eventtype)
 {
-	eventtype = String(eventtype);
+	eventtype = xivo_string(eventtype);
 
 	if(xivo_is_undef(xivo_ast_voicemenuevent_type[eventtype]) === false)
 		return(xivo_ast_voicemenuevent_type[eventtype]);
@@ -320,7 +320,7 @@ function xivo_ast_voicemenuevent_defapplication(action)
 	else if((html = target.innerHTML) === '-')
 		return(true);
 
-	target.innerHTML = '<a href="#" onclick="return(xivo_free_focus());" title="'+
+	target.innerHTML = '<a href="#" onclick="return(xivo.dom.free_focus());" title="'+
 			   xivo_htmlsc(html)+'">'+
 			   xivo_htmlsc(xivo_trunc(html,40,'...',false))+'</a>';
 
@@ -329,14 +329,14 @@ function xivo_ast_voicemenuevent_defapplication(action)
 
 function xivo_ast_voicemenu_onload()
 {
-	xivo_elt_dialaction['voicemenuflow'] = new Array();
-	xivo_elt_dialaction['voicemenuevent'] = new Array();
-	xivo_fm_dialaction['voicemenuflow'] = new Array();
-	xivo_fm_dialaction['voicemenuevent'] = new Array();
+	xivo_elt_dialaction['voicemenuflow']	= {};
+	xivo_elt_dialaction['voicemenuevent']	= {};
+	xivo_fm_dialaction['voicemenuflow']	= {};
+	xivo_fm_dialaction['voicemenuevent']	= {};
 
 	xivo_ast_build_dialaction_array('voicemenuevent');
 
-	xivo_dialaction_actiontype['ipbxapplication'] = new Array('actiontype');
+	xivo_dialaction_actiontype['ipbxapplication'] = ['actiontype'];
 	xivo_ast_build_dialaction_array('voicemenuflow');
 
 	xivo_ast_chg_ipbxapplication(null);
@@ -349,4 +349,4 @@ function xivo_ast_voicemenu_onload()
 	xivo_ast_voicemenu_event_display();
 }
 
-xivo_winload.push('xivo_ast_voicemenu_onload();');
+xivo.dom.set_onload(xivo_ast_voicemenu_onload);

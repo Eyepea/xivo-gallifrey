@@ -88,7 +88,7 @@ $page = $url->pager($pager['pages'],
 						 'field'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
-		    onclick="location.href = xivo_lastchild(this);">
+		    onclick="location.href = xivo.dom.node.lastchild(this);">
 <?php
 			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
 				$url->href_html(xivo_trunc($ref['agentgroup']['name'],40,'...',false),

@@ -88,10 +88,10 @@ class xivo_monit
 		if(xivo_issa('general',$this->_conf) === false)
 			return(null);
 
-		if(xivo_haslen($this->_conf['general'],'url') === true)
+		if(xivo_has_len($this->_conf['general'],'url') === true)
 			$this->_url = rtrim($this->_conf['general']['url'],'/').'/';
 
-		if(xivo_haslen($this->_conf['general'],'statusurl') === true)
+		if(xivo_has_len($this->_conf['general'],'statusurl') === true)
 			$this->_statusurl = $this->_conf['general']['statusurl'];
 	}
 
@@ -102,7 +102,7 @@ class xivo_monit
 
 	function get_service($name=null)
 	{
-		if(xivo_haslen($name) === false)
+		if(xivo_has_len($name) === false)
 			return($this->_service);
 		else if(isset($this->_service[$name]) === true)
 			return($this->_service[$name]);
@@ -168,7 +168,7 @@ class xivo_monit
 
 	function get_group($name=null)
 	{
-		if(xivo_haslen($name) === false)
+		if(xivo_has_len($name) === false)
 			return($this->_group);
 		else if(isset($this->_group[$name]) === true)
 			return($this->_group[$name]);

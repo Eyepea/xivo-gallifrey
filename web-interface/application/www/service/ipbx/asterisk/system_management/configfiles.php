@@ -30,17 +30,17 @@ switch($act)
 {
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $configfiles->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/system_management/configfiles'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'),$param);
 
 		if(isset($_QR['fm_send'],$_QR['content']) === true)
 		{
 			if($configfiles->edit($info['name'],$_QRY->get_uqr('content')) !== false)
-				$_QRY->go($_HTML->url('service/ipbx/system_management/configfiles'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'),$param);
 
 			$info['content'] = $_QR['content'];
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	default:
 		$act = 'list';
@@ -54,18 +54,18 @@ switch($act)
 			usort($files,array(&$sort,'strnat_usort'));
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$files);
+		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('list',$files);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/configfiles/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/configfiles/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

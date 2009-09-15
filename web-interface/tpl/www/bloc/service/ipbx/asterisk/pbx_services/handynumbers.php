@@ -42,18 +42,17 @@ if(($smenu_tab = $this->get_var('fm_smenu_tab')) !== '' && ($smenu_part = $this-
 	endif;
 endif;
 
-if($info['emergency'] !== false):
+if(empty($info['emergency']) === false):
 	$egency_nb = count($info['emergency']);
-	$handynumbers_js[] = 'xivo_tlist[\'emergency\'] = new Array();';
-	$handynumbers_js[] = 'xivo_tlist[\'emergency\'][\'cnt\'] = '.$egency_nb.';';
+	$handynumbers_js[] = 'xivo.dom.set_table_list(\'emergency\','.$egency_nb.');';
 else:
 	$egency_nb = 0;
 endif;
 
-if($info['special'] !== false):
+
+if(empty($info['special']) === false):
 	$special_nb = count($info['special']);
-	$handynumbers_js[] = 'xivo_tlist[\'special\'] = new Array();';
-	$handynumbers_js[] = 'xivo_tlist[\'special\'][\'cnt\'] = '.$special_nb.';';
+	$handynumbers_js[] = 'xivo.dom.set_table_list(\'special\','.$special_nb.');';
 else:
 	$special_nb = 0;
 endif;

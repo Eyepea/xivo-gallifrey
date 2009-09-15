@@ -18,20 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
-	$cat = $this->get_var('cat');
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
+$cat = $this->get_var('cat');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_services/musiconhold',
-			    array('act' => $act,'cat' => $cat));
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_services/musiconhold',
+		    array('act' => $act,'cat' => $cat));
+
 ?>
 <div class="b-list">
 <?php
@@ -63,7 +64,7 @@
 	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
 		<td class="td-left txt-left curpointer"
 		    colspan="2"
-		    onclick="location.href = xivo_firstchild(this);">
+		    onclick="location.href = xivo.dom.node.firstchild(this);">
 		    	<?=$url->href_html($ref,
 					   'service/ipbx/pbx_services/musiconhold',
 					   array('act'	=> 'download',

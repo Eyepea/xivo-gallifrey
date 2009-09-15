@@ -38,7 +38,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		if(isset($param['table']) === true)
 			$this->_table = (string) $param['table'];
 
-		if(isset($this->_table) === false || xivo_haslen($this->_table) === false)
+		if(isset($this->_table) === false || xivo_has_len($this->_table) === false)
 			trigger_error('Missing or invalid table',E_USER_ERROR);
 
 		if(isset($param['primary']) === true)
@@ -56,9 +56,9 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		else if(isset($this->_autoincrement) === true)
 			$this->_autoincrement = (bool) $this->_autoincrement;
 
-		if(xivo_haslen($param,'disable') === true)
+		if(xivo_has_len($param,'disable') === true)
 			$this->_disable = (string) $param['disable'];
-		else if(isset($this->_disable) === false || xivo_haslen($this->_disable) === false)
+		else if(isset($this->_disable) === false || xivo_has_len($this->_disable) === false)
 			$this->_disable = null;
 
 		if(isset($param['forcecolumn']) === true)
@@ -69,7 +69,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 	function _mk_key($list,$next=false)
 	{
-		if(xivo_haslen($list) === true)
+		if(xivo_has_len($list) === true)
 			return(array(strval($list) => ''));
 		else if(is_array($list) === false || empty($list) === true)
 			return(null);
@@ -94,10 +94,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 			}
 			else if($noassoc === true && is_int($key) === true)
 			{
-				if(xivo_haslen($val) === true)
+				if(xivo_has_len($val) === true)
 					$r[strval($val)] = '';
 			}
-			else if(xivo_haslen($key) === true)
+			else if(xivo_has_len($key) === true)
 			{
 				if(is_null($val) === true || is_bool($val) === true)
 					$r[strval($key)] = '';
@@ -195,7 +195,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 			$key = &$keys[$i];
 
 			if(($noassoc === true && is_int($key) === true) === false
-			&& xivo_haslen($key) === true)
+			&& xivo_has_len($key) === true)
 				$r[strval($key)] = $column[$key];
 		}
 

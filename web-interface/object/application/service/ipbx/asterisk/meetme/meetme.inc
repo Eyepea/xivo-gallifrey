@@ -136,7 +136,6 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function _get_meetme($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -144,6 +143,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			case 'search':
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}

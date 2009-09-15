@@ -16,43 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var xivo_ast_application = new Array();
-xivo_ast_application['macro|vmauthenticate'] = {displayname: 'VMAuthenticate',
-						identityfunc: 'xivo_ast_application_get_vmauthenticate_identity'};
-xivo_ast_application['absolutetimeout'] = {displayname: 'AbsoluteTimeout'};
-xivo_ast_application['agi'] = {displayname: 'AGI'};
-xivo_ast_application['answer'] = {displayname: 'Answer'};
-xivo_ast_application['authenticate'] = {displayname: 'Authenticate'};
-xivo_ast_application['background'] = {displayname: 'BackGround'};
-xivo_ast_application['digittimeout'] = {displayname: 'DigitTimeout'};
-xivo_ast_application['goto'] = {displayname: 'Goto'};
-xivo_ast_application['gotoif'] = {displayname: 'GotoIf'};
-xivo_ast_application['macro'] = {displayname: 'Macro'};
-xivo_ast_application['mixmonitor'] = {displayname: 'MixMonitor'};
-xivo_ast_application['monitor'] = {displayname: 'Monitor'};
-xivo_ast_application['noop'] = {displayname: 'NoOp'};
-xivo_ast_application['playback'] = {displayname: 'Playback'};
-xivo_ast_application['record'] = {displayname: 'Record'};
-xivo_ast_application['responsetimeout'] = {displayname: 'ResponseTimeout'};
-xivo_ast_application['read'] = {displayname: 'Read'};
-xivo_ast_application['set'] = {displayname: 'Set'};
-xivo_ast_application['setcallerid'] = {displayname: 'SetCallerID'};
-xivo_ast_application['setcidname'] = {displayname: 'SetCIDName'};
-xivo_ast_application['setcidnum'] = {displayname: 'SetCIDNum'};
-xivo_ast_application['setlanguage'] = {displayname: 'SetLanguage'};
-xivo_ast_application['stopmonitor'] = {displayname: 'StopMonitor'};
-xivo_ast_application['wait'] = {displayname: 'Wait'};
-xivo_ast_application['waitexten'] = {displayname: 'WaitExten'};
-xivo_ast_application['waitforring'] = {displayname: 'WaitForRing'};
-xivo_ast_application['waitmusiconhold'] = {displayname: 'WaitMusicOnHold'};
-
 function xivo_ast_application_absolutetimeout()
 {
 	if((timeout = xivo_eid('it-ipbxapplication-absolutetimeout-timeout')) === false
 	|| xivo_is_ufloat(timeout.value) === false)
 		return(false);
 
-	var args = new Array(timeout.value);
+	var args = [timeout.value];
 
 	return(xivo_fm_select_add_ast_application('absolutetimeout',args));
 }
@@ -68,7 +38,7 @@ function xivo_ast_application_agi()
 	if(agicommandvalue.length < 1)
 		return(false);
 
-	var args = new Array(agicommandvalue);
+	var args = [agicommandvalue];
 
 	if(agiargs.value.length > 0)
 		args.push(agiargs.value.replace(/,/g,'|'));
@@ -81,7 +51,7 @@ function xivo_ast_application_answer()
 	if((delay = xivo_eid('it-ipbxapplication-answer-delay')) === false)
 		return(false);
 
-	var args = new Array();
+	var args = [];
 
 	var delayvalue = xivo_ast_application_sanitize_arg(delay.value);
 
@@ -105,14 +75,14 @@ function xivo_ast_application_authenticate()
 	if(passwordvalue.length < 1)
 		return(false);
 
-	var args = new Array(passwordvalue);
+	var args = [passwordvalue];
 
 	var options = '';
 
-	if(option_a.checked == true)
+	if(option_a.checked === true)
 		options += 'a';
 
-	if(option_j.checked == true)
+	if(option_j.checked === true)
 		options += 'j';
 
 	switch(passwordinterpreter.value)
@@ -120,7 +90,7 @@ function xivo_ast_application_authenticate()
 		case 'astdb':
 			options += 'd';
 
-			if(option_r.checked == true)
+			if(option_r.checked === true)
 				options += 'r';
 			break;
 		case 'file':
@@ -149,17 +119,17 @@ function xivo_ast_application_background()
 	if(filenamevalue.length < 1)
 		return(false);
 
-	var args = new Array(filenamevalue);
+	var args = [filenamevalue];
 
 	var options = '';
 
-	if(option_s.checked == true)
+	if(option_s.checked === true)
 		options += 's';
 
-	if(option_n.checked == true)
+	if(option_n.checked === true)
 		options += 'n';
 
-	if(option_m.checked == true)
+	if(option_m.checked === true)
 		options += 'm';
 
 	var languagevalue = xivo_ast_application_sanitize_arg(language.value);
@@ -188,7 +158,7 @@ function xivo_ast_application_digittimeout()
 	|| xivo_is_ufloat(timeout.value) === false)
 		return(false);
 
-	var args = new Array(timeout.value);
+	var args = [timeout.value];
 
 	return(xivo_fm_select_add_ast_application('digittimeout',args));
 }
@@ -205,7 +175,7 @@ function xivo_ast_application_goto()
 	if(priorityvalue.length < 1)
 		return(false);
 
-	var args = new Array();
+	var args = [];
 
 	args.push(xivo_ast_application_sanitize_arg(context.value));
 	args.push(xivo_ast_application_sanitize_arg(exten.value));
@@ -232,7 +202,7 @@ function xivo_ast_application_gotoif()
 	if(iftruevalue.length < 1 && iffalsevalue.length < 1)
 		return(false);
 
-	var args = new Array(conditionvalue+'?'+iftruevalue+':'+iffalsevalue);
+	var args = [conditionvalue+'?'+iftruevalue+':'+iffalsevalue];
 
 	return(xivo_fm_select_add_ast_application('gotoif',args));
 }
@@ -248,7 +218,7 @@ function xivo_ast_application_macro()
 	if(macronamevalue.length < 1)
 		return(false);
 
-	var args = new Array(macronamevalue);
+	var args = [macronamevalue];
 
 	if(macroargs.value.length > 0)
 		args.push(macroargs.value.replace(/,/g,'|'));
@@ -276,25 +246,25 @@ function xivo_ast_application_mixmonitor()
 	if(filenamevalue.length < 1 || fileformatvalue.length < 2)
 		return(false);
 
-	var args = new Array(filenamevalue+'.'+fileformatvalue);
+	var args = [filenamevalue+'.'+fileformatvalue];
 
 	var options = '';
 
-	if(option_a.checked == true)
+	if(option_a.checked === true)
 		options += 'a';
 
-	if(option_b.checked == true)
+	if(option_b.checked === true)
 		options += 'b';
 
-	if(option_v.checked == true
+	if(option_v.checked === true
 	&& option_v_volume.value > -5 && option_v_volume.value < 5)
 		options += 'v('+option_v_volume.value+')';
 
-	if(option_vv.checked == true
+	if(option_vv.checked === true
 	&& option_vv_volume.value > -5 && option_vv_volume.value < 5)
 		options += 'V('+option_vv_volume.value+')';
 
-	if(option_w.checked == true
+	if(option_w.checked === true
 	&& option_w_volume.value > -5 && option_w_volume.value < 5)
 		options += 'W('+option_w_volume.value+')';
 
@@ -317,16 +287,16 @@ function xivo_ast_application_monitor()
 	if(fileformatvalue.length < 2)
 		return(false);
 
-	var args = new Array(fileformatvalue);
+	var args = [fileformatvalue];
 
 	var basenamevalue = xivo_ast_application_sanitize_arg(basename.value);
 
 	var options = '';
 
-	if(option_m.checked == true)
+	if(option_m.checked === true)
 		options += 'm';
 
-	if(option_b.checked == true)
+	if(option_b.checked === true)
 		options += 'b';
 
 	if(options.length > 0)
@@ -345,7 +315,7 @@ function xivo_ast_application_noop()
 	if((data = xivo_eid('it-ipbxapplication-noop-data')) === false)
 		return(false);
 
-	var args = new Array();
+	var args = [];
 
 	if(data.value.length > 0)
 		args.push(data.value);
@@ -366,17 +336,17 @@ function xivo_ast_application_playback()
 	if(filenamevalue.length < 1)
 		return(false);
 
-	var args = new Array(filenamevalue);
+	var args = [filenamevalue];
 
 	var options = '';
 
-	if(option_skip.checked == true)
+	if(option_skip.checked === true)
 		options += 'skip';
 
-	if(option_noanswer.checked == true)
+	if(option_noanswer.checked === true)
 		options += 'noanswer';
 
-	if(option_j.checked == true)
+	if(option_j.checked === true)
 		options += 'j';
 
 	if(options.length > 0)
@@ -406,17 +376,17 @@ function xivo_ast_application_read()
 	if(variablevalue.length < 1)
 		return(false);
 
-	var args = new Array(variablevalue);
+	var args = [variablevalue];
 
 	var options = '';
 
-	if(option_s.checked == true)
+	if(option_s.checked === true)
 		options += 's';
 
-	if(option_i.checked == true)
+	if(option_i.checked === true)
 		options += 'i';
 
-	if(option_n.checked == true)
+	if(option_n.checked === true)
 		options += 'n';
 
 	if(timeout.value.length > 0)
@@ -472,23 +442,23 @@ function xivo_ast_application_record()
 	if(filenamevalue.length < 1 || fileformatvalue.length < 2)
 		return(false);
 
-	var args = new Array(filenamevalue+'.'+fileformatvalue);
+	var args = [filenamevalue+'.'+fileformatvalue];
 
 	var options = '';
 
-	if(option_a.checked == true)
+	if(option_a.checked === true)
 		options += 'a';
 
-	if(option_n.checked == true)
+	if(option_n.checked === true)
 		options += 'n';
 
-	if(option_q.checked == true)
+	if(option_q.checked === true)
 		options += 'q';
 
-	if(option_s.checked == true)
+	if(option_s.checked === true)
 		options += 's';
 
-	if(option_t.checked == true)
+	if(option_t.checked === true)
 		options += 't';
 
 	if(options.length > 0)
@@ -514,7 +484,7 @@ function xivo_ast_application_responsetimeout()
 	|| xivo_is_ufloat(timeout.value) === false)
 		return(false);
 
-	var args = new Array(timeout.value);
+	var args = [timeout.value];
 
 	return(xivo_fm_select_add_ast_application('responsetimeout',args));
 }
@@ -532,9 +502,9 @@ function xivo_ast_application_set()
 	if(namevalue.length < 1)
 		return(false);
 
-	var args = new Array(namevalue+'='+valuevalue);
+	var args = [namevalue+'='+valuevalue];
 
-	if(option_g.checked == true)
+	if(option_g.checked === true)
 		args.push('g');
 
 	return(xivo_fm_select_add_ast_application('set',args));
@@ -550,7 +520,7 @@ function xivo_ast_application_setcallerid()
 	if(calleridvalue.length < 1)
 		return(false);
 
-	var args = new Array(calleridvalue);
+	var args = [calleridvalue];
 
 	return(xivo_fm_select_add_ast_application('setcallerid',args));
 }
@@ -560,7 +530,7 @@ function xivo_ast_application_setcidname()
 	if((name = xivo_eid('it-ipbxapplication-setcidname-name')) === false)
 		return(false);
 
-	var args = new Array(xivo_ast_application_sanitize_arg(name.value));
+	var args = [xivo_ast_application_sanitize_arg(name.value)];
 
 	return(xivo_fm_select_add_ast_application('setcidname',args));
 }
@@ -575,7 +545,7 @@ function xivo_ast_application_setcidnum()
 	if(numbervalue.length < 1)
 		return(false);
 
-	var args = new Array(numbervalue);
+	var args = [numbervalue];
 
 	return(xivo_fm_select_add_ast_application('setcidnum',args));
 }
@@ -590,7 +560,7 @@ function xivo_ast_application_setlanguage()
 	if(languagevalue.length < 1)
 		return(false);
 
-	var args = new Array(languagevalue);
+	var args = [languagevalue];
 
 	return(xivo_fm_select_add_ast_application('setlanguage',args));
 }
@@ -613,10 +583,10 @@ function xivo_ast_application_vmauthenticate()
 	if(mailboxvalue.length < 1)
 		return(false);
 
-	var optargs = new Array('\''+mailbox.options[mailbox.selectedIndex].text+'\'');
-	var valargs = new Array(mailboxvalue);
+	var optargs = ['\''+mailbox.options[mailbox.selectedIndex].text+'\''];
+	var valargs = [mailboxvalue];
 
-	if(option_s.checked == true)
+	if(option_s.checked === true)
 	{
 		optargs.push('s');
 		valargs.push('s');
@@ -636,7 +606,7 @@ function xivo_ast_application_wait()
 	|| xivo_is_ufloat(seconds.value) === false)
 		return(false);
 
-	var args = new Array(seconds.value);
+	var args = [seconds.value];
 
 	return(xivo_fm_select_add_ast_application('wait',args));
 }
@@ -653,9 +623,9 @@ function xivo_ast_application_waitexten()
 	else
 		var musiconholdvalue = '';
 
-	var args = new Array(seconds.value);
+	var args = [seconds.value];
 
-	if(option_m.checked == true)
+	if(option_m.checked === true)
 	{
 		if(musiconholdvalue.length > 0)
 			args.push('m('+musiconholdvalue+')');
@@ -672,7 +642,7 @@ function xivo_ast_application_waitforring()
 	|| xivo_is_ufloat(timeout.value) === false)
 		return(false);
 
-	var args = new Array(timeout.value);
+	var args = [timeout.value];
 
 	return(xivo_fm_select_add_ast_application('waitforring',args));
 }
@@ -683,7 +653,7 @@ function xivo_ast_application_waitmusiconhold()
 	|| xivo_is_ufloat(delay.value) === false)
 		return(false);
 
-	var args = new Array(delay.value);
+	var args = [delay.value];
 
 	return(xivo_fm_select_add_ast_application('waitmusiconhold',args));
 }
@@ -752,3 +722,34 @@ function xivo_ast_chg_ipbxapplication(app)
 	if(app !== null && (appid = xivo_eid('fd-ipbxapplication-'+app)) !== false)
 		appid.style.display = 'block';
 }
+
+var xivo_ast_application = {
+	'macro|vmauthenticate':
+				{displayname:	'VMAuthenticate',
+				 identityfunc:	xivo_ast_application_get_vmauthenticate_identity},
+	'absolutetimeout':	{displayname:	'AbsoluteTimeout'},
+	'agi':			{displayname:	'AGI'},
+	'answer':		{displayname:	'Answer'},
+	'authenticate':		{displayname:	'Authenticate'},
+	'background':		{displayname:	'BackGround'},
+	'digittimeout':		{displayname:	'DigitTimeout'},
+	'goto':			{displayname:	'Goto'},
+	'gotoif':		{displayname:	'GotoIf'},
+	'macro':		{displayname:	'Macro'},
+	'mixmonitor':		{displayname:	'MixMonitor'},
+	'monitor':		{displayname:	'Monitor'},
+	'noop':			{displayname:	'NoOp'},
+	'playback':		{displayname:	'Playback'},
+	'record':		{displayname:	'Record'},
+	'responsetimeout':	{displayname:	'ResponseTimeout'},
+	'read':			{displayname:	'Read'},
+	'set':			{displayname:	'Set'},
+	'setcallerid':		{displayname:	'SetCallerID'},
+	'setcidname':		{displayname:	'SetCIDName'},
+	'setcidnum':		{displayname:	'SetCIDNum'},
+	'setlanguage':		{displayname:	'SetLanguage'},
+	'stopmonitor':		{displayname:	'StopMonitor'},
+	'wait':			{displayname:	'Wait'},
+	'waitexten':		{displayname:	'WaitExten'},
+	'waitforring':		{displayname:	'WaitForRing'},
+	'waitmusiconhold':	{displayname:	'WaitMusicOnHold'}};

@@ -20,9 +20,9 @@
 
 class xivo_service_asterisk_meetmefeatures_identity
 {
-	function _prepare_identity(&$data)
+	function _prepare_identity(&$data,$full=true)
 	{
-		if(xivo_haslen($data['context']) === false)
+		if(xivo_has_len($data['context']) === false)
 			$data['context'] = 'default';
 
 		$data['identity'] = trim($data['name']);
@@ -30,7 +30,9 @@ class xivo_service_asterisk_meetmefeatures_identity
 		if($data['identity'] === '')
 			$data['identity'] = '-';
 
-		if(xivo_haslen($data['number']) === true)
+		if((bool) $full === false)
+			return($data);
+		else if(xivo_has_len($data['number']) === true)
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
 		else
 			$data['identity'] .= ' ('.$data['context'].')';
@@ -38,7 +40,7 @@ class xivo_service_asterisk_meetmefeatures_identity
 		return($data);
 	}
 
-	function mk_identity($arr)
+	function mk_identity($arr,$full=true)
 	{
 		if(is_array($arr) === false || isset($arr['name']) === false)
 			return(false);
@@ -49,7 +51,7 @@ class xivo_service_asterisk_meetmefeatures_identity
 		if(isset($arr['context']) === false)
 			$arr['context'] = '';
 
-		$this->_prepare_identity($arr);
+		$this->_prepare_identity($arr,$full);
 
 		return($arr['identity']);
 	}

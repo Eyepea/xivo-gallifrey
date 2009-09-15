@@ -64,9 +64,9 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		$where = array();
 		$where['type'] = $this->_param['type'];
 
-		if(xivo_haslen($typeval) === true)
+		if(xivo_has_len($typeval) === true)
 			$where['typeval'] = $typeval;
-		else if(xivo_haslen($varname) === true)
+		else if(xivo_has_len($varname) === true)
 			$where['varname'] = $varname;
 		else
 			return(false);
@@ -101,7 +101,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		{
 			$context = '';
 
-			if(xivo_haslen($list[$i],'context') === false)
+			if(xivo_has_len($list[$i],'context') === false)
 				continue;
 			else if(($context = $this->_context->get_primary($list[$i]['context'])) === false)
 			{
@@ -109,12 +109,12 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 				continue;
 			}
 
-			if(xivo_haslen($list[$i],'typeval') === true)
+			if(xivo_has_len($list[$i],'typeval') === true)
 				$info['typeval'] = $list[$i]['typeval'];
 			else
 				$info['typeval'] = '';
 
-			if(xivo_haslen($list[$i],'varname') === true)
+			if(xivo_has_len($list[$i],'varname') === true)
 				$info['varname'] = $list[$i]['varname'];
 			else
 				$info['varname'] = '';
@@ -152,7 +152,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
 
-		$typevalhaslen = xivo_haslen($typeval);
+		$typevalhaslen = xivo_has_len($typeval);
 
 		$this->_return = array();
 
@@ -162,8 +162,8 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		{
 			if($typevalhaslen === true)
 				$rs[$i]['typeval'] = $typeval;
-			else if(xivo_haslen($rs[$i],'typeval') === false
-			&& xivo_haslen($rs[$i],'varname') === false)
+			else if(xivo_has_len($rs[$i],'typeval') === false
+			&& xivo_has_len($rs[$i],'varname') === false)
 				return(false);
 
 			if(($this->_return[] = $this->_contextmember->add($rs[$i])) === false)
@@ -197,7 +197,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 
 		$nb = count($rs);
 
-		if(xivo_haslen($this->_origin[0],'typeval') === true)
+		if(xivo_has_len($this->_origin[0],'typeval') === true)
 			$typeval = $this->_origin[0]['typeval'];
 		else
 			$typeval = '';
@@ -224,9 +224,9 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		$where = array();
 		$where['type'] = $this->_origin[0]['type'];
 
-		if(xivo_haslen($this->_origin[0],'typeval') === true)
+		if(xivo_has_len($this->_origin[0],'typeval') === true)
 			$where['typeval'] = $this->_origin[0]['typeval'];
-		else if(xivo_haslen($this->_origin[0],'varname') === true)
+		else if(xivo_has_len($this->_origin[0],'varname') === true)
 			$where['varname'] = $this->_origin[0]['varname'];
 		else
 			return(false);

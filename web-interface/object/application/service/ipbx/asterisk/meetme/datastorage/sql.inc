@@ -41,7 +41,7 @@ class xivo_application_service_asterisk_meetme_sql extends xivo_application_serv
 			$this->_dso->where($commented,$this->_table['meetme']);
 		}
 
-		if(xivo_haslen($value) === true)
+		if(xivo_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('name',$value,true,$this->_table['meetmefeatures']);
@@ -68,7 +68,7 @@ class xivo_application_service_asterisk_meetme_sql extends xivo_application_serv
 	{
 		$this->_cnt = 0;
 
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(false);
 
 		return($this->get_all($disable,$order,$limit,$value));

@@ -18,10 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$dir = isset($_QR['dir']) === true ? strval($_QR['dir']) : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
-$search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
+$act	= $_QRY->get('act','');
+$dir	= strval($_QRY->get('dir',''));
+$page	= xivo_uint($_QRY->get('page'),1);
+$search	= strval($_QRY->get('search'));
 
 $param = array();
 $param['act'] = 'list';
@@ -45,52 +45,52 @@ switch($act)
 
 		if(isset($_QR['fm_send']) === true)
 		{
-			if(($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get_qr('dirname'))) !== false
+			if(($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get('dirname'))) !== false
 			&& $sounds->add_dir($info['dirname']) === true)
-				$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 			else
 				$fm_save = false;
 		}
 
-		$_HTML->set_var('info',$info);
-		$_HTML->set_var('fm_save',$fm_save);
+		$_TPL->set_var('info',$info);
+		$_TPL->set_var('fm_save',$fm_save);
 		break;
 	case 'editdir':
 		$param['act'] = 'listdir';
 
 		if(isset($_QR['id']) === false || ($info = $sounds->get_dir($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$id = $info['dirname'];
 		$fm_save = null;
 
 		if(isset($_QR['fm_send']) === true)
 		{
-			if(($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get_qr('dirname'))) !== false
+			if(($info['dirname'] = $sounds->chk_value('dirname',$_QRY->get('dirname'))) !== false
 			&& $sounds->edit_dir($id,$info['dirname']) === true)
-				$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 			else
 				$fm_save = false;
 		}
 
-		$_HTML->set_var('id',$id);
-		$_HTML->set_var('info',$info);
-		$_HTML->set_var('fm_save',$fm_save);
+		$_TPL->set_var('id',$id);
+		$_TPL->set_var('info',$info);
+		$_TPL->set_var('fm_save',$fm_save);
 		break;
 	case 'deletedir':
 		$param['act'] = 'listdir';
 		$param['page'] = $page;
 
 		if(isset($_QR['id']) === false || ($info = $sounds->get_dir($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$sounds->delete_dir($info['dirname']);
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 		break;
 	case 'add':
 		if($list_dirs === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 		$param['dir'] = $dir;
 
@@ -121,28 +121,28 @@ switch($act)
 			if($sounds->add($filename,$fileuploaded['tmp_name']) === true)
 			{
 				$param['dir'] = $info['dirname'];
-				$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 			}
 			else
 				$fm_save = false;
 		}
 
-		$_HTML->set_var('info',$info);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('option',$sounds->get_option());
+		$_TPL->set_var('info',$info);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('option',$sounds->get_option());
 		break;
 	case 'edit':
 		$info = array();
 
 		if(($info['directory'] = $sounds->get_dir($dir)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 		$dir = $info['dirname'] = $info['directory']['dirname'];
 
 		$param['dir'] = $dir;
 
 		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['dirname'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$info['filename'] = $info['file']['basename'];
 		$id = $info['file']['filename'];
@@ -164,7 +164,7 @@ switch($act)
 				if($sounds->edit($filename,$newfilename) === true)
 				{
 					$param['dir'] = $info['dirname'];
-					$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+					$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 				}
 				else
 					$fm_save = false;
@@ -175,9 +175,9 @@ switch($act)
 				$fm_save = false;
 		}
 
-		$_HTML->set_var('id',$id);
-		$_HTML->set_var('info',$info);
-		$_HTML->set_var('fm_save',$fm_save);
+		$_TPL->set_var('id',$id);
+		$_TPL->set_var('info',$info);
+		$_TPL->set_var('fm_save',$fm_save);
 		break;
 	case 'delete':
 		$param['dir'] = $dir;
@@ -186,16 +186,16 @@ switch($act)
 		$info = array();
 
 		if(($info['directory'] = $sounds->get_dir($dir)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$file = xivo_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
 
 		$sounds->delete($file);
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 		break;
 	case 'deletes':
 		$param['dir'] = $dir;
@@ -204,10 +204,10 @@ switch($act)
 		$info = array();
 
 		if(($info['directory'] = $sounds->get_dir($dir)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 		if(($values = xivo_issa_val('files',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$nb = count($values);
 
@@ -221,7 +221,7 @@ switch($act)
 			$sounds->delete($file);
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 		break;
 	case 'download':
 		$param['dir'] = $dir;
@@ -230,15 +230,15 @@ switch($act)
 		$info = array();
 
 		if(($info['directory'] = $sounds->get_dir($dir)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$file = new xivo_file();
 
 		if(($file->download($info['file']['path'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		die();
 		break;
@@ -249,7 +249,7 @@ switch($act)
 			$dir = false;
 
 		if(($dirs = $sounds->get_dir($dir,true,$search)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_services/sounds'),'act=listdir');
+			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
 		if(($dirs = $dirs['files']) !== false)
 		{
@@ -259,9 +259,9 @@ switch($act)
 			usort($dirs,array(&$sort,'strnat_usort'));
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$dirs);
-		$_HTML->set_var('search',$search);
+		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('list',$dirs);
+		$_TPL->set_var('search',$search);
 		break;
 	case 'listdir':
 	default:
@@ -278,22 +278,22 @@ switch($act)
 			usort($dirs,array(&$sort,'strnat_usort'));
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$dirs);
+		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('list',$dirs);
 		break;
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('dir',$dir);
-$_HTML->set_var('list_dirs',$list_dirs);
+$_TPL->set_var('act',$act);
+$_TPL->set_var('dir',$dir);
+$_TPL->set_var('list_dirs',$list_dirs);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_services/sounds');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/sounds/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/sounds/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

@@ -40,9 +40,7 @@ if($fkdata['ex'] === false):
 	$inputtxtoptattr = '';
 else:
 	$inputtxt['disabled'] = true;
-	$inputtxtoptattr = ' onfocus="xivo_fm_set_onfocus(this);"'.
-			   ' onblur="xivo_fm_set_onblur(this);"'.
-			   ' style="display: none;"';
+	$inputtxtoptattr = 'style="display: none;"';
 endif;
 
 echo	$form->text($inputtxt,$inputtxtoptattr);

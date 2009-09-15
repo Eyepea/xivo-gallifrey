@@ -53,7 +53,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		$data['enablexfer'] = (bool) $data['enablexfer'];
 		$data['enableautomon'] = (bool) $data['enableautomon'];
 		$data['callrecord'] = (bool) $data['callrecord'];
-		$data['callfilter'] = (bool) $data['callfilter'];
+		$data['incallfilter'] = (bool) $data['incallfilter'];
 		$data['enablednd'] = (bool) $data['enablednd'];
 		$data['enablerna'] = (bool) $data['enablerna'];
 		$data['enablebusy'] = (bool) $data['enablebusy'];
@@ -124,8 +124,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function loginclient_exists($loginclient,$context,$id=null)
 	{
-		if(xivo_haslen($loginclient) === false
-		|| xivo_haslen($context) === false)
+		if(xivo_has_len($loginclient) === false
+		|| xivo_has_len($context) === false)
 			return(null);
 
 		$arr = array();

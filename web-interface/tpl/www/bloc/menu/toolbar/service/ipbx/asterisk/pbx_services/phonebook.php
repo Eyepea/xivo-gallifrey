@@ -22,15 +22,19 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$act = $this->get_var('act');
+$search = (string) $this->get_var('search');
 
-if(($search = (string) $this->get_var('search')) === ''):
-	$searchjs = '';
-else:
-	$searchjs = ' xivo_fm[\'fm-phonebook-list\'][\'search\'].value = \''.$dhtml->escape($search).'\';';
-endif;
+$toolbar_js = array();
+$toolbar_js[] = 'var xivo_toolbar_fm_search = \''.$dhtml->escape($search).'\';';
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-phonebook-list\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'phonebook[]\';';
+$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
+
+$dhtml->write_js($toolbar_js);
 
 ?>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
+
 <form action="#" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
@@ -42,15 +46,11 @@ endif;
 	<div class="fm-field">
 <?php
 		echo	$form->text(array('name'	=> 'search',
-					  'id'		=> 'it-search',
+					  'id'		=> 'it-toolbar-search',
 					  'size'	=> 20,
 					  'field'	=> false,
 					  'value'	=> $search,
-					  'default'	=> $this->bbf('toolbar_fm_search')),
-				    'onfocus="this.value = this.value === \''.$dhtml->escape($this->bbf('toolbar_fm_search')).'\'
-							   ? \'\'
-							   : this.value;
-					      xivo_fm_set_onfocus(this);"'),
+					  'default'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->image(array('name'	=> 'submit',
 					   'id'		=> 'it-subsearch',
@@ -63,44 +63,33 @@ endif;
 <?php
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
-			       'border="0"
-				onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'add-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-add"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="add-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
-		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),'service/ipbx/pbx_services/phonebook','act=add');?></li>
-		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),'service/ipbx/pbx_services/phonebook','act=import');?></li>
+	<ul id="toolbar-add-menu">
+		<li><?=$url->href_html($this->bbf('toolbar_add_menu_add'),
+				       'service/ipbx/pbx_services/phonebook',
+				       'act=add');?></li>
+		<li><?=$url->href_html($this->bbf('toolbar_add_menu_import-file'),
+				       'service/ipbx/pbx_services/phonebook',
+				       'act=import');?></li>
 	</ul>
 </div><?php
 
-if($act === 'list'):
+if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
-			       'border="0"
-				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-advanced"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="advanced-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-advanced-menu">
 		<li>
-			<a href="#"
-			   onclick="xivo_fm_checked_all('fm-phonebook-list','phonebook[]');
-				    return(false);">
-				<?=$this->bbf('toolbar_adv_menu_select-all');?></a>
+			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="this.tmp = xivo_fm['fm-phonebook-list']['act'].value;
-				    xivo_fm['fm-phonebook-list']['act'].value = 'deletes';<?=$searchjs?>
-				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
-					   ? xivo_fm['fm-phonebook-list'].submit()
-					   : xivo_fm['fm-phonebook-list']['act'] = this.tmp);">
-				<?=$this->bbf('toolbar_adv_menu_delete');?></a>
+			<a href="#" id="toolbar-advanced-menu-delete"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>

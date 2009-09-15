@@ -210,7 +210,6 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function _get_queues($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -218,6 +217,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			case 'search':
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}
@@ -286,7 +286,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_QUEUE_MACRO;
 		$arr['appdata'][1] = xivo_ulongint($queuefeaturesid);
-		$arr['appdata'][2] = xivo_haslen($timeout) === true ? xivo_ufloat($timeout) : '';
+		$arr['appdata'][2] = xivo_has_len($timeout) === true ? xivo_ufloat($timeout) : '';
 
 		return($arr);
 	}

@@ -88,7 +88,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 
 	function chk_sound($value)
 	{
-		if(xivo_haslen($value) === false)
+		if(xivo_has_len($value) === false)
 			return(true);
 		else if(is_string($value) === false)
 			return(false);

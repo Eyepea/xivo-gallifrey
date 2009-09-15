@@ -21,9 +21,21 @@
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
+$toolbar_js = array();
+$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-accesswebservice-list\';';
+$toolbar_js[] = 'var xivo_toolbar_form_list = \'accesswebservice[]\';';
+$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
+
+$dhtml->write_js($toolbar_js);
+
+?>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
+<?php
+
 echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
 				       $this->bbf('toolbar_opt_add'),
-				       'border="0"'),
+				       'id="toolbar-bt-add"
+					border="0"'),
 			'xivo/configuration/manage/accesswebservice',
 			'act=add',
 			null,
@@ -32,34 +44,22 @@ echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
 if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
-			       'border="0"
-				onmouseover="xivo_eid(\'advanced-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'advanced-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-advanced"
+			        border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="advanced-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-advanced-menu">
 		<li>
-			<a href="#"
-			   onclick="xivo_fm['fm-accesswebservice-list']['act'].value = 'enables';
-				    xivo_fm['fm-accesswebservice-list'].submit();">
-				<?=$this->bbf('toolbar_adv_menu_enable');?></a>
+			<a href="#" id="toolbar-advanced-menu-enable"><?=$this->bbf('toolbar_adv_menu_enable');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="xivo_fm['fm-accesswebservice-list']['act'].value = 'disables';
-				    xivo_fm['fm-accesswebservice-list'].submit();">
-				<?=$this->bbf('toolbar_adv_menu_disable');?></a>
+			<a href="#" id="toolbar-advanced-menu-disable"><?=$this->bbf('toolbar_adv_menu_disable');?></a>
 		</li>
 		<li>
-			<a href="#"
-			   onclick="this.tmp = xivo_fm['fm-accesswebservice-list']['act'].value;
-				    xivo_fm['fm-accesswebservice-list']['act'].value = 'deletes';
-				    return(confirm('<?=$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm'));?>')
-					   ? xivo_fm['fm-accesswebservice-list'].submit()
-					   : xivo_fm['fm-accesswebservice-list']['act'] = this.tmp);">
-				<?=$this->bbf('toolbar_adv_menu_delete');?></a>
+			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
+		</li>
+		<li>
+			<a href="#" id="toolbar-advanced-menu-delete"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>

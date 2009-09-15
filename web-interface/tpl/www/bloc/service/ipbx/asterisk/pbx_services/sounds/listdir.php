@@ -67,7 +67,7 @@
 	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
 		<td class="td-left txt-left curpointer"
 		    colspan="2"
-		    onclick="location.href = xivo_firstchild(this);">
+		    onclick="location.href = xivo.dom.node.firstchild(this);">
 		    	<?=$url->href_html($ref['dirname'],
 					   'service/ipbx/pbx_services/sounds',
 					   array('act'	=> 'list',

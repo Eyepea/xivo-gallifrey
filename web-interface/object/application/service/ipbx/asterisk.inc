@@ -210,7 +210,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	function set_macro($action,$name,$exten,$arr,$context)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_haslen($name) === false)
+		|| xivo_has_len($name) === false)
 			return(false);
 		else if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
 			$r = $this->_extensions->chk_exten($exten,$context,'macro',$arr);

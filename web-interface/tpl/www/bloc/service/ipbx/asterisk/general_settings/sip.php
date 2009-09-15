@@ -405,14 +405,14 @@ endif;
 			<a href="#"
 			   onclick="xivo_fm_select_add_host_ipv4_subnet('it-localnet',
 			   						prompt('<?=$dhtml->escape($this->bbf('localnet_add'));?>'));
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_add-localnet');?>">
 			   	<?=$url->img_html('img/site/button/mini/blue/add.gif',
 						  $this->bbf('bt_add-localnet'),
 						  'class="bt-addlist" id="bt-add-localnet" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_select_delete_entry('it-localnet');
-			   	    return(xivo_free_focus());"
+			   	    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_delete-localnet');?>">
 			   	<?=$url->img_html('img/site/button/mini/orange/delete.gif',
 						  $this->bbf('bt_del-localnet'),
@@ -634,7 +634,7 @@ endif;
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-codeclist',
 		   				  'it-codec');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
 		   	<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incodec'),
@@ -642,7 +642,7 @@ endif;
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-codec',
 		   				  'it-codeclist');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outcodec'),
@@ -661,14 +661,14 @@ endif;
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-codec',1);
-			   	    return(xivo_free_focus());"
+			   	    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
 			   	<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-codec',-1);
-			            return(xivo_free_focus());"
+			            return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
 			   	<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcodec'),

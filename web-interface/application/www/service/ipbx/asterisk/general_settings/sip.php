@@ -43,7 +43,7 @@ $element = $appgeneralsip->get_element();
 if(xivo_issa('allow',$element) === true
 && xivo_issa('value',$element['allow']) === true
 && isset($info['allow']) === true
-&& xivo_haslen($info['allow'],'var_val') === true)
+&& xivo_has_len($info['allow'],'var_val') === true)
 {
 	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
 	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']['var_val']);
@@ -51,24 +51,24 @@ if(xivo_issa('allow',$element) === true
 
 if(xivo_issa('localnet',$info) === true
 && array_key_exists('var_val',$info['localnet']) === true
-&& xivo_haslen($info['localnet']['var_val']) === false)
+&& xivo_has_len($info['localnet']['var_val']) === false)
 	$info['localnet'] = null;
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('info',$info);
-$_HTML->set_var('element',$element);
-$_HTML->set_var('moh_list',$appgeneralsip->get_musiconhold());
-$_HTML->set_var('context_list',$appgeneralsip->get_context_list());
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('info',$info);
+$_TPL->set_var('element',$element);
+$_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
+$_TPL->set_var('context_list',$appgeneralsip->get_context_list());
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/sip');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/sip');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

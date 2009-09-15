@@ -98,24 +98,24 @@ if(($trunkslist = $apptrunk->get_trunks_list(null,null,null,null,true)) !== fals
 	uasort($trunkslist,array(&$trunksort,'str_usort'));
 }
 
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('fm_smenu_tab',$fm_smenu_tab);
-$_HTML->set_var('fm_smenu_part',$fm_smenu_part);
-$_HTML->set_var('element',$apphnumbersemergency->get_elements());
-$_HTML->set_var('info',$return);
-$_HTML->set_var('error',$error);
-$_HTML->set_var('trunkslist',$trunkslist);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('fm_smenu_tab',$fm_smenu_tab);
+$_TPL->set_var('fm_smenu_part',$fm_smenu_part);
+$_TPL->set_var('element',$apphnumbersemergency->get_elements());
+$_TPL->set_var('info',$return);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('trunkslist',$trunkslist);
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/handynumbers');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/handynumbers');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

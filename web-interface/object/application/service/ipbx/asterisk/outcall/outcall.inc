@@ -137,7 +137,6 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _get_outcalls($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -145,6 +144,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 			case 'search':
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}

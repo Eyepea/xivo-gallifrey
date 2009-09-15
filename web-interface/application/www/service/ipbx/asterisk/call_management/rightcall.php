@@ -72,7 +72,7 @@ switch($act)
 			|| $apprightcall->add() === false)
 				$result = $apprightcall->get_result();
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
 		xivo::load_class('xivo_sort');
@@ -134,23 +134,23 @@ switch($act)
 		else
 			$rcallexten = null;
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('rcalluser',$rcalluser);
-		$_HTML->set_var('rcallgroup',$rcallgroup);
-		$_HTML->set_var('rcallincall',$rcallincall);
-		$_HTML->set_var('rcalloutcall',$rcalloutcall);
-		$_HTML->set_var('rcallexten',$rcallexten);
-		$_HTML->set_var('context_list',$apprightcall->get_context_list());
-		$_HTML->set_var('element',$apprightcall->get_elements());
-		$_HTML->set_var('info',$result);
+		$_TPL->set_var('rcalluser',$rcalluser);
+		$_TPL->set_var('rcallgroup',$rcallgroup);
+		$_TPL->set_var('rcallincall',$rcallincall);
+		$_TPL->set_var('rcalloutcall',$rcalloutcall);
+		$_TPL->set_var('rcallexten',$rcallexten);
+		$_TPL->set_var('context_list',$apprightcall->get_context_list());
+		$_TPL->set_var('element',$apprightcall->get_elements());
+		$_TPL->set_var('info',$result);
 		break;
 	case 'edit':
 		$apprightcall = &$ipbx->get_application('rightcall');
 
 		if(isset($_QR['id']) === false || ($info = $apprightcall->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
 		$result = null;
 		$return = &$info;
@@ -198,7 +198,7 @@ switch($act)
 			|| $apprightcall->edit() === false)
 				$result = $apprightcall->get_result();
 			else
-				$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
 		xivo::load_class('xivo_sort');
@@ -265,18 +265,18 @@ switch($act)
 			uasort($rcallexten,array(&$extensort,'str_usort'));
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['rightcall']['id']);
-		$_HTML->set_var('rcalluser',$rcalluser);
-		$_HTML->set_var('rcallgroup',$rcallgroup);
-		$_HTML->set_var('rcallincall',$rcallincall);
-		$_HTML->set_var('rcalloutcall',$rcalloutcall);
-		$_HTML->set_var('rcallexten',$rcallexten);
-		$_HTML->set_var('context_list',$apprightcall->get_context_list());
-		$_HTML->set_var('element',$apprightcall->get_elements());
-		$_HTML->set_var('info',$return);
+		$_TPL->set_var('id',$info['rightcall']['id']);
+		$_TPL->set_var('rcalluser',$rcalluser);
+		$_TPL->set_var('rcallgroup',$rcallgroup);
+		$_TPL->set_var('rcallincall',$rcallincall);
+		$_TPL->set_var('rcalloutcall',$rcalloutcall);
+		$_TPL->set_var('rcallexten',$rcallexten);
+		$_TPL->set_var('context_list',$apprightcall->get_context_list());
+		$_TPL->set_var('element',$apprightcall->get_elements());
+		$_TPL->set_var('info',$return);
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -284,17 +284,17 @@ switch($act)
 		$apprightcall = &$ipbx->get_application('rightcall');
 
 		if(isset($_QR['id']) === false || $apprightcall->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
 		$apprightcall->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
 		$apprightcall = &$ipbx->get_application('rightcall');
 
@@ -306,7 +306,7 @@ switch($act)
 				$apprightcall->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	case 'disables':
 	case 'enables':
@@ -314,7 +314,7 @@ switch($act)
 		$disable = $act === 'disables';
 
 		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
 		$rightcall = &$ipbx->get_module('rightcall');
 
@@ -323,7 +323,7 @@ switch($act)
 		for($i = 0;$i < $nb;$i++)
 			$rightcall->disable($values[$i],$disable);
 
-		$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -345,21 +345,21 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/call_management/rightcall'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/rightcall');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/rightcall/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_var('act',$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_management/rightcall/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

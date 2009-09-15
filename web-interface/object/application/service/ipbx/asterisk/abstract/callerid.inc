@@ -94,7 +94,7 @@ class xivo_application_service_asterisk_callerid_abstract extends xivo_applicati
 			return(false);
 		}
 		else if(isset($rs['callerdisplay']) === true
-		&& xivo_haslen($rs['callerdisplay']) === false)
+		&& xivo_has_len($rs['callerdisplay']) === false)
 		{
 			$rs['mode'] = null;
 			$rs['callerdisplay'] = '';

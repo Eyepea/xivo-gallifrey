@@ -142,7 +142,6 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function _get_incalls($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -150,6 +149,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 			case 'search':
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}
@@ -320,7 +320,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		if($this->get_errnb() < 1
 		&& (bool) $this->get_result_var('incall','faxdetectenable') === true
-		&& xivo_haslen($this->get_result_var('incall','faxdetectemail')) === false)
+		&& xivo_has_len($this->get_result_var('incall','faxdetectemail')) === false)
 			$this->_set_result_var('incall','faxdetectenable',false);
 
 		return(($this->get_errnb() < 1));
@@ -754,7 +754,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	{
 		if(($data = $this->_get_data_from_json()) === false
 		|| xivo_issa('incall',$data) === false
-		|| xivo_haslen($data['incall'],'exten') === false)
+		|| xivo_has_len($data['incall'],'exten') === false)
 			return(false);
 
 		$data['dialaction'] = array();

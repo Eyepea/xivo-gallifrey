@@ -98,8 +98,8 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=xivo_htmlen(xivo_trunc($ref['displayname'],25,'...',false));?></td>
-		<td><?=(xivo_haslen($ref['phonenumber']) === true ? $ref['phonenumber'] : '-')?></td>
-		<td><?=(xivo_haslen($ref['email']) === true ? $ref['email'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['phonenumber']) === true ? $ref['phonenumber'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['email']) === true ? $ref['email'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

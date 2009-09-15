@@ -104,7 +104,7 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=$ref['agent']['number']?></td>
-		<td><?=(xivo_haslen($ref['agent']['passwd']) === true ? $ref['agent']['passwd'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['agent']['passwd']) === true ? $ref['agent']['passwd'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

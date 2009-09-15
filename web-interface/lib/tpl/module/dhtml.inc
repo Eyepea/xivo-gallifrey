@@ -70,7 +70,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 
 	function ajs_die($err='')
 	{
-		if(xivo_haslen($err) === true)
+		if(xivo_has_len($err) === true)
 			$err = 'xivo_ajs_set_error(\''.$this->escape($err).'\');';
 		else
 			$err = '';
@@ -99,7 +99,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(xivo_haslen($files,$i) === false)
+			if(xivo_has_len($files,$i) === false)
 				continue;
 			else if($files[$i]{0} === XIVO_SEP_DIR)
 				$file = $files[$i];

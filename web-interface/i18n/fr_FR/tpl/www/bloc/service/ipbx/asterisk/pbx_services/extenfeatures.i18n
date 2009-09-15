@@ -4,17 +4,23 @@ Gestion des extensions
 ; smenu_general
 Général
 
+; smenu_calls
+Appels
+
 ; smenu_transfers
 Transferts
-
-; smenu_voicemail
-Messagerie vocale
 
 ; smenu_forwards
 Renvois
 
-; smenu_agents
-Agents
+; smenu_voicemail
+Messagerie vocale
+
+; smenu_agent
+Agent
+
+; smenu_groups
+Groupes
 
 ; smenu_parking
 Parking
@@ -40,8 +46,8 @@ Statut du téléphone :
 ; fm_extenfeatures_enable-enablednd
 Ne pas déranger :
 
-; fm_extenfeatures_enable-incallrec
-Enregistrement des appels entrants :
+; fm_extenfeatures_enable-callrecord
+Enregistrement des appels :
 
 ; fm_extenfeatures_enable-incallfilter
 Active le filtrage des appels entrants :
@@ -61,8 +67,14 @@ Accès à l'annuaire :
 ; fm_extenfeatures_enable-bsfilter
 Filtrage Patron - Secrétaire :
 
-; fm_extenfeatures_enable-guestprov
-Initialisation d'un téléphone :
+; fm_extenfeatures_enable-callgroup
+Appeler un groupe à l'aide de son identifiant :
+
+; fm_extenfeatures_enable-callqueue
+Appeler une file d'attente à l'aide de son identifiant :
+
+; fm_extenfeatures_enable-calluser
+Appeler un utilisateur à l'aide de son identifiant :
 
 ; fm_featuremap_blindxfer
 Transfert direct :
@@ -93,6 +105,18 @@ Fichier son d'un transfert échoué :
 
 ; fm_generalfeatures_xferfailsound-opt-default
 Défaut
+
+; fm_extenfeatures_enable-fwdundoall
+Désactive tous les renvois :
+
+; fm_extenfeatures_enable-fwdrna
+Active/Désactive le renvoi sur non réponse :
+
+; fm_extenfeatures_enable-fwdbusy
+Active/Désactive le renvoi sur occupation :
+
+; fm_extenfeatures_enable-fwdunc
+Active/Désactive le renvoi inconditionnel :
 
 ; fm_extenfeatures_enable-enablevm
 Active la messagerie vocale de l'utilisateur :
@@ -127,27 +151,6 @@ Supprime les messages vocaux de l'utilisateur précisé :
 ; fm_extenfeatures_enable-vmboxpurgeslt
 Supprime les messages de la boîte vocale précisée :
 
-; fm_extenfeatures_enable-fwdundoall
-Désactive tous les renvois :
-
-; fm_extenfeatures_enable-fwdundorna
-Désactive le renvoi sur non réponse :
-
-; fm_extenfeatures_enable-fwdundobusy
-Désactive le renvoi sur occupation :
-
-; fm_extenfeatures_enable-fwdundounc
-Désactive le renvoi inconditionnel :
-
-; fm_extenfeatures_enable-fwdrna
-Active le renvoi sur non réponse :
-
-; fm_extenfeatures_enable-fwdbusy
-Active le renvoi sur occupation :
-
-; fm_extenfeatures_enable-fwdunc
-Active le renvoi inconditionnel :
-
 ; fm_extenfeatures_enable-agentstaticlogin
 Connecte un agent statique :
 
@@ -156,6 +159,24 @@ Déconnecte un agent statique :
 
 ; fm_extenfeatures_enable-agentdynamiclogin
 Connecte un agent dynamique :
+
+; fm_extenfeatures_enable-groupaddmember
+Ajoute un membre dans un groupe :
+
+; fm_extenfeatures_enable-groupremovemember
+Enlève un membre d'un groupe :
+
+; fm_extenfeatures_enable-queueaddmember
+Ajoute un membre dans une file d'attente :
+
+; fm_extenfeatures_enable-queueremovemember
+Enlève un membre d'une file d'attente :
+
+; fm_extenfeatures_enable-phoneprogfunckey
+Programmation des touches de fonction :
+
+; fm_extenfeatures_enable-guestprov
+Initialisation d'un téléphone :
 
 ; fm_generalfeatures_parkext
 Extension :

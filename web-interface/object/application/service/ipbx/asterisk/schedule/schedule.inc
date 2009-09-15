@@ -95,7 +95,6 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function _get_schedules($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -103,6 +102,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 			case 'search':
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
 				break;
+			case 'list':
 			default:
 				$rs = $this->_dso->get_all($disable,$order,$limit);
 		}
@@ -261,7 +261,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$r['schedule']['timehourend'] = '';
 		$r['schedule']['timeminend'] = '';
 
-		if(xivo_haslen($timebeg) === true)
+		if(xivo_has_len($timebeg) === true)
 		{
 			$timebeg = explode(':',$timebeg);
 			$r['schedule']['timehourbeg'] = $timebeg[0];
@@ -270,7 +270,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 				$r['schedule']['timeminbeg'] = $timebeg[1];
 		}
 
-		if(xivo_haslen($timeend) === true)
+		if(xivo_has_len($timeend) === true)
 		{
 			$timeend = explode(':',$timeend);
 			$r['schedule']['timehourend'] = $timeend[0];

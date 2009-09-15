@@ -119,7 +119,7 @@ function xivo_ast_build_trunks_elt()
 					else
 						xivo_ast_trunks_elt[it_key] = xivo_clone(key['it']);
 
-					xivo_ast_trunks_elt['links']['link'][i++] = new Array(it_key,0,1);
+					xivo_ast_trunks_elt['links']['link'][i++] = [it_key,0,1];
 				}
 			}
 
@@ -138,7 +138,7 @@ function xivo_ast_build_trunks_elt()
 					else
 						xivo_ast_trunks_elt[fd_key] = xivo_clone(key['fd']);
 
-					xivo_ast_trunks_elt['links']['link'][i++] = new Array(fd_key,0,1);
+					xivo_ast_trunks_elt['links']['link'][i++] = [fd_key,0,1];
 				}
 			}
 		}
@@ -156,7 +156,7 @@ function xivo_ast_build_trunks_elt()
 			else
 				xivo_ast_trunks_elt[it_key] = xivo_clone(key['it']);
 
-			xivo_ast_trunks_elt['links']['link'][i++] = new Array(it_key,0,1);
+			xivo_ast_trunks_elt['links']['link'][i++] = [it_key,0,1];
 		}
 
 		if(fd_trunktype === false && xivo_is_undef(key['fd']) === false)
@@ -172,13 +172,13 @@ function xivo_ast_build_trunks_elt()
 			else
 				xivo_ast_trunks_elt[fd_key] = xivo_clone(key['fd']);
 
-			xivo_ast_trunks_elt['links']['link'][i++] = new Array(fd_key,0,1);
+			xivo_ast_trunks_elt['links']['link'][i++] = [fd_key,0,1];
 		}
 
 		if(changed === false && xivo_type_object(key) === true)
 		{
 			xivo_ast_trunks_elt[property] = xivo_clone(key);
-			xivo_ast_trunks_elt['links']['link'][i++] = new Array(property,0,1);
+			xivo_ast_trunks_elt['links']['link'][i++] = [property,0,1];
 		}
 	}
 }
@@ -267,4 +267,4 @@ function xivo_ast_trunk_onload()
 				Number(codec_active.checked === false));
 }
 
-xivo_winload.push('xivo_ast_trunk_onload();');
+xivo.dom.set_onload(xivo_ast_trunk_onload);

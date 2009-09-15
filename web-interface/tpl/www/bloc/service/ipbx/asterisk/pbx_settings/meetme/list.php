@@ -97,8 +97,8 @@
 			</label>
 		</td>
 		<td><?=$ref['number']?></td>
-		<td><?=(xivo_haslen($ref['pin']) === true ? $ref['pin'] : '-')?></td>
-		<td><?=(xivo_haslen($ref['admin-pin']) === true ? $ref['admin-pin'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['pin']) === true ? $ref['pin'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['admin-pin']) === true ? $ref['admin-pin'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

@@ -19,7 +19,7 @@
 #
 
 if(isset($_QR['id']) === false || ($info = $appuser->get($_QR['id'])) === false)
-	$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+	$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 $return = &$info;
 
@@ -86,7 +86,7 @@ if(isset($_QR['fm_send']) === true
 	else
 	{
 		$ipbx->discuss('xivo[userlist,update]');
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/users'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
 }
 
@@ -181,33 +181,36 @@ if(empty($return) === false)
 else
 	$return = null;
 
-$_HTML->set_var('id',$info['userfeatures']['id']);
-$_HTML->set_var('info',$return);
-$_HTML->set_var('error',$error);
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('voicemail',$return['voicemail']);
-$_HTML->set_var('dialaction',$return['dialaction']);
-$_HTML->set_var('dialaction_from','user');
-$_HTML->set_var('groups',$groups);
-$_HTML->set_var('gmember',$gmember);
-$_HTML->set_var('queues',$queues);
-$_HTML->set_var('qmember',$qmember);
-$_HTML->set_var('rightcall',$rightcall);
-$_HTML->set_var('element',$element);
-$_HTML->set_var('voicemail_list',$appuser->get_voicemail_list());
-$_HTML->set_var('agent_list',$appuser->get_agent_list());
-$_HTML->set_var('destination_list',$appuser->get_destination_list());
-$_HTML->set_var('moh_list',$appuser->get_musiconhold());
-$_HTML->set_var('tz_list',$appuser->get_timezones());
-$_HTML->set_var('context_list',$appuser->get_context_list());
-$_HTML->set_var('autoprov_list',$appuser->get_autoprov_list());
-$_HTML->set_var('bsfilter_list',$appuser->get_bsfilter_list());
-$_HTML->set_var('fkdest_list',$appuser->get_phonefunckey_destination());
-$_HTML->set_var('fktype_list',$appuser->get_phonefunckey_type());
-$_HTML->set_var('profileclient_list',$appuser->get_profileclient_list());
+$_TPL->set_var('id',$info['userfeatures']['id']);
+$_TPL->set_var('info',$return);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('voicemail',$return['voicemail']);
+$_TPL->set_var('dialaction',$return['dialaction']);
+$_TPL->set_var('dialaction_from','user');
+$_TPL->set_var('groups',$groups);
+$_TPL->set_var('gmember',$gmember);
+$_TPL->set_var('queues',$queues);
+$_TPL->set_var('qmember',$qmember);
+$_TPL->set_var('rightcall',$rightcall);
+$_TPL->set_var('element',$element);
+$_TPL->set_var('voicemail_list',$appuser->get_voicemail_list());
+$_TPL->set_var('agent_list',$appuser->get_agent_list());
+$_TPL->set_var('destination_list',$appuser->get_destination_list());
+$_TPL->set_var('moh_list',$appuser->get_musiconhold());
+$_TPL->set_var('tz_list',$appuser->get_timezones());
+$_TPL->set_var('context_list',$appuser->get_context_list());
+$_TPL->set_var('autoprov_list',$appuser->get_autoprov_list());
+$_TPL->set_var('bsfilter_list',$appuser->get_bsfilter_list());
+$_TPL->set_var('fkidentity_list',$appuser->get_phonefunckey_identity());
+$_TPL->set_var('fktype_list',$appuser->get_phonefunckey_type());
+$_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/xivo_ajs.js');
+$dhtml->set_js('js/xivo_uri.js');
+$dhtml->set_js('js/xivo_suggest.js');
+$dhtml->set_js('js/xivo_http.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
@@ -215,5 +218,6 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+$dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');
 
 ?>

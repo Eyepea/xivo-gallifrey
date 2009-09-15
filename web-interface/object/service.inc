@@ -41,6 +41,8 @@ class xivo_service
 	{
 		if($this->is_valid($name) === true)
 			return(null);
+		else if((bool) xivo_ak($name,$this->_ini,true) === false)
+			return(false);
 		else if(xivo_issa($name,$this->_conf) === false
 		|| ($init = $this->_load_init_file($name)) === false
 		|| xivo_issa('general',$init) === false
@@ -119,7 +121,7 @@ class xivo_service
 
 	function _set($name,&$obj)
 	{
-		if(xivo_haslen($name) === false || is_object($obj) === false)
+		if(xivo_has_len($name) === false || is_object($obj) === false)
 			return(false);
 
 		return(xivo_gct::set($obj,XIVO_SRE_CLASS_PRE.$name));
@@ -139,7 +141,7 @@ class xivo_service
 	{
 		$r = false;
 
-		if(xivo_haslen($name) === true)
+		if(xivo_has_len($name) === true)
 			$r = &xivo_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$name);
 
 		return(($ref = &$r));

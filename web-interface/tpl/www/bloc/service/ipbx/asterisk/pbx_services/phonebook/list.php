@@ -94,13 +94,13 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			if(isset($ref['phonebooknumber']['office']) === false
-			|| xivo_haslen($ref['phonebooknumber']['office'],'number') === false):
+			|| xivo_has_len($ref['phonebooknumber']['office'],'number') === false):
 				$ref['phonebooknumber']['office'] = array();
 				$ref['phonebooknumber']['office']['number'] = '-';
 			endif;
 
 			if(isset($ref['phonebooknumber']['mobile']) === false
-			|| xivo_haslen($ref['phonebooknumber']['mobile'],'number') === false):
+			|| xivo_has_len($ref['phonebooknumber']['mobile'],'number') === false):
 				$ref['phonebooknumber']['mobile'] = array();
 				$ref['phonebooknumber']['mobile']['number'] = '-';
 			endif;
@@ -121,10 +121,10 @@ $page = $url->pager($pager['pages'],
 				<?=xivo_htmlen(xivo_trunc($ref['phonebook']['displayname'],30,'...',false));?>
 			</label>
 		</td>
-		<td><?=(xivo_haslen($ref['phonebook']['society']) === true ? $ref['phonebook']['society'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['phonebook']['society']) === true ? $ref['phonebook']['society'] : '-')?></td>
 		<td><?=$ref['phonebooknumber']['office']['number']?></td>
 		<td><?=$ref['phonebooknumber']['mobile']['number']?></td>
-		<td><?=(xivo_haslen($ref['phonebook']['email']) === true ? $ref['phonebook']['email'] : '-')?></td>
+		<td><?=(xivo_has_len($ref['phonebook']['email']) === true ? $ref['phonebook']['email'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

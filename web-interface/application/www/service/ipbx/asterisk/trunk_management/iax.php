@@ -51,7 +51,7 @@ switch($act)
 					$result['register'] = $result['register']['arr'];
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		}
 
 		$element = $apptrunk->get_elements();
@@ -69,16 +69,16 @@ switch($act)
 		if(empty($result) === false)
 			$result['protocol']['allow'] = $allow;
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$element);
-		$_HTML->set_var('context_list',$apptrunk->get_context_list());
-		$_HTML->set_var('timezone_list',$apptrunk->get_timezones());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$element);
+		$_TPL->set_var('context_list',$apptrunk->get_context_list());
+		$_TPL->set_var('timezone_list',$apptrunk->get_timezones());
 		break;
 	case 'edit':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -86,7 +86,7 @@ switch($act)
 
 		if(isset($_QR['id']) === false
 		|| ($info = $apptrunk->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -113,7 +113,7 @@ switch($act)
 					$result['register'] = $result['register']['arr'];
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		}
 
 		$element = $apptrunk->get_elements();
@@ -131,17 +131,17 @@ switch($act)
 		if(empty($return) === false)
 			$return['protocol']['allow'] = $allow;
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['trunkfeatures']['id']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$element);
-		$_HTML->set_var('context_list',$apptrunk->get_context_list());
-		$_HTML->set_var('timezone_list',$apptrunk->get_timezones());
+		$_TPL->set_var('id',$info['trunkfeatures']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$element);
+		$_TPL->set_var('context_list',$apptrunk->get_context_list());
+		$_TPL->set_var('timezone_list',$apptrunk->get_timezones());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -150,17 +150,17 @@ switch($act)
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_IAX));
 
 		if(isset($_QR['id']) === false || $apptrunk->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 
 		$apptrunk->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('trunks',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_IAX));
@@ -173,14 +173,14 @@ switch($act)
 				$apptrunk->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('trunks',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_IAX));
@@ -197,7 +197,7 @@ switch($act)
 				$apptrunk->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -221,22 +221,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/trunk_management/iax'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/trunk_management/iax'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/trunk_management/iax');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/trunk_management/iax/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/trunk_management/iax/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

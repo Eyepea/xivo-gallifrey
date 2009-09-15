@@ -36,13 +36,13 @@ if(($list_cats = $musiconhold->get_all_by_category()) !== false)
 	usort($list_cats,array(&$sort,'strnat_usort'));
 }
 
-$_HTML->set_var('list_cats',$list_cats);
+$_TPL->set_var('list_cats',$list_cats);
 
 switch($act)
 {
 	case 'add':
 	case 'edit':
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/musiconhold.js');
 	case 'delete':
 	case 'deletes':
@@ -68,23 +68,23 @@ switch($act)
 		$action = 'enables';
 		break;
 	default:
-		$_QRY->go($_HTML->url('service/ipbx'));
+		$_QRY->go($_TPL->url('service/ipbx'));
 }
 
 include(dirname(__FILE__).'/musiconhold/'.$action.'.php');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('cat',$cat);
-$_HTML->set_var('element',$element);
-$_HTML->set_var('info',$info);
+$_TPL->set_var('act',$act);
+$_TPL->set_var('cat',$cat);
+$_TPL->set_var('element',$element);
+$_TPL->set_var('info',$info);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_services/musiconhold');
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/musiconhold/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/musiconhold/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

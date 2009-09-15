@@ -125,7 +125,7 @@ class xivo_application_service_asterisk_realstatic_voicemail_general extends xiv
 
 		if(isset($arr['format'],$arr['attachformat']) === true
 		&& is_array($arr['format']) === true
-		&& xivo_haslen($arr['attachformat']) === true
+		&& xivo_has_len($arr['attachformat']) === true
 		&& ($format = (int) array_search($arr['attachformat'],$arr['format'],true)) !== 0)
 		{
 			unset($arr['format'][$format]);

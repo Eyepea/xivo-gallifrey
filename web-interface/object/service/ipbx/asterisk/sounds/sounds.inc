@@ -83,7 +83,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if(($option = $this->get_option_value('file')) === false)
 			return(false);
 
-		if(xivo_haslen($option,'name') === true)
+		if(xivo_has_len($option,'name') === true)
 			$this->_fileoption['name'] = $option['name'];
 
 		if(xivo_issa('mime',$option) === true)
@@ -400,7 +400,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		if(($match_file = $this->_get_option_file_name()) === false)
 			return(false);
 
-		if(xivo_haslen($search) === true
+		if(xivo_has_len($search) === true
 		&& isset($this->_fileoption['extensionregexp']) === true
 		&& preg_match('/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']+$/',
 			      $search) === 1)

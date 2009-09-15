@@ -46,24 +46,24 @@ switch($act)
 				$result = $appvoicemail->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('info',$result);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appvoicemail->get_elements());
-		$_HTML->set_var('tz_list',$appvoicemail->get_timezones());
-		$_HTML->set_var('context_list',$appvoicemail->get_context_list());
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appvoicemail->get_elements());
+		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
+		$_TPL->set_var('context_list',$appvoicemail->get_context_list());
 		break;
 	case 'edit':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
 		if(isset($_QR['id']) === false
 		|| ($info = $appvoicemail->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -79,18 +79,18 @@ switch($act)
 				$result = $appvoicemail->get_result();
 			}
 			else
-				$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		}
 
-		$dhtml = &$_HTML->get_module('dhtml');
+		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		$_HTML->set_var('id',$info['voicemail']['uniqueid']);
-		$_HTML->set_var('info',$return);
-		$_HTML->set_var('fm_save',$fm_save);
-		$_HTML->set_var('element',$appvoicemail->get_elements());
-		$_HTML->set_var('tz_list',$appvoicemail->get_timezones());
-		$_HTML->set_var('context_list',$appvoicemail->get_context_list());
+		$_TPL->set_var('id',$info['voicemail']['uniqueid']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appvoicemail->get_elements());
+		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
+		$_TPL->set_var('context_list',$appvoicemail->get_context_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -98,17 +98,17 @@ switch($act)
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
 		if(isset($_QR['id']) === false || $appvoicemail->get($_QR['id']) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail->delete();
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
@@ -120,14 +120,14 @@ switch($act)
 				$appvoicemail->delete();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
 
 		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
 
@@ -143,7 +143,7 @@ switch($act)
 				$appvoicemail->enable();
 		}
 
-		$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -169,22 +169,22 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_HTML->url('service/ipbx/pbx_settings/voicemail'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
-		$_HTML->set_var('list',$list);
-		$_HTML->set_var('search',$search);
+		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+		$_TPL->set_var('search',$search);
 }
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/voicemail');
 
-$_HTML->set_var('act',$act);
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/voicemail/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_var('act',$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/voicemail/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

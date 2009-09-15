@@ -86,7 +86,7 @@ endif;
 				    'default'	=> $element['callfilter']['bosssecretary']['default'],
 				    'value'	=> $info['callfilter']['bosssecretary']),
 			      $element['callfilter']['bosssecretary']['value'],
-			      'onchange="xivo_chgmode(\'bosssecretary\',this);"'),
+			      'onchange="xivo_callfilter_chg_mode(\'bosssecretary\',this);"'),
 
 		$form->select(array('desc'	=> $this->bbf('fm_callfilter_ringseconds'),
 				    'name'	=> 'callfilter[ringseconds]',
@@ -170,7 +170,7 @@ endif;
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-callfiltermember-secretarylist',
 							  'it-callfiltermember-secretary');
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_insecretary');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_insecretary'),
@@ -178,7 +178,7 @@ endif;
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-callfiltermember-secretary',
 							  'it-callfiltermember-secretarylist');
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outsecretary');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outsecretary'),
@@ -198,14 +198,14 @@ endif;
 			<div class="bt-updown">
 				<a href="#"
 				   onclick="xivo_fm_order_selected('it-callfiltermember-secretary',1);
-					    return(xivo_free_focus());"
+					    return(xivo.dom.free_focus());"
 				   title="<?=$this->bbf('bt_upsecretary');?>">
 					<?=$url->img_html('img/site/button/row-up.gif',
 							  $this->bbf('bt_upsecretary'),
 							  'class="bt-uplist" id="bt-upsecretary" border="0"');?></a><br />
 				<a href="#"
 				   onclick="xivo_fm_order_selected('it-callfiltermember-secretary',-1);
-					    return(xivo_free_focus());"
+					    return(xivo.dom.free_focus());"
 				   title="<?=$this->bbf('bt_downsecretary');?>">
 					<?=$url->img_html('img/site/button/row-down.gif',
 							  $this->bbf('bt_downsecretary'),

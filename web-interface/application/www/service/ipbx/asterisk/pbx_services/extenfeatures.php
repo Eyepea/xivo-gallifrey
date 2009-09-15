@@ -117,24 +117,24 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('error',$error);
-$_HTML->set_var('extenfeatures',$info['extenfeatures']);
-$_HTML->set_var('generalfeatures',$info['generalfeatures']);
-$_HTML->set_var('featuremap',$info['featuremap']);
-$_HTML->set_var('sound_list',$appgeneralfeatures->get_sound());
-$_HTML->set_var('element',$element);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('extenfeatures',$info['extenfeatures']);
+$_TPL->set_var('generalfeatures',$info['generalfeatures']);
+$_TPL->set_var('featuremap',$info['featuremap']);
+$_TPL->set_var('sound_list',$appgeneralfeatures->get_sound());
+$_TPL->set_var('element',$element);
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/extenfeatures.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/extenfeatures');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_services/extenfeatures');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

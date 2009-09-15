@@ -53,13 +53,13 @@ class xivo_service_asterisk_extenumbers_sql extends xivo_service_asterisk_abstra
 
 		$where = array();
 
-		if(xivo_haslen($context) === true)
+		if(xivo_has_len($context) === true)
 			$where['context'] = $context;
 
-		if(xivo_haslen($type) === true)
+		if(xivo_has_len($type) === true)
 			$where['type'] = $type;
 
-		if(xivo_haslen($typeval) === true)
+		if(xivo_has_len($typeval) === true)
 			$where['typeval'] = $typeval;
 
 		if(empty($where) === false)

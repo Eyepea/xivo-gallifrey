@@ -26,21 +26,18 @@ $fknumelem = $this->get_var('fknumelem');
 $select = array();
 $select['field'] = false;
 $select['name'] = 'phonefunckey[fknum][]';
-$select['id'] = false;
+$select['id'] = 'it-phonefunckey-fknum';
 $select['label'] = false;
 $select['key'] = false;
 $select['default'] = $fknumelem['default'];
 
 if($fkdata['ex'] === false):
-	$selectoptattr = '';
+	$select['id'] .= '-'.xivo_uint($fkdata['incr']);
 	$select['value'] = $fknumelem['value'];
 else:
 	$select['disabled'] = true;
-
-	$selectoptattr = 'onfocus="xivo_fm_set_onfocus(this);" '.
-			 'onblur="xivo_fm_set_onblur(this);"';
 endif;
 
-echo	$form->select($select,$fknumelem['options'],$selectoptattr);
+echo	$form->select($select,$fknumelem['options']);
 
 ?>

@@ -23,7 +23,7 @@ $access_subcategory = 'outcall';
 
 include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-$act = $_QRY->get_qs('act');
+$act = $_QRY->get('act');
 
 switch($act)
 {
@@ -32,7 +32,7 @@ switch($act)
 
 		$nocomponents = array('contextmember'	=> true);
 
-		if(($info = $appoutcall->get($_QRY->get_qs('id'),
+		if(($info = $appoutcall->get($_QRY->get('id'),
 					     null,
 					     $nocomponents)) === false)
 		{
@@ -40,7 +40,7 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('info',$info);
+		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
 		$appoutcall = &$ipbx->get_application('outcall');
@@ -52,7 +52,7 @@ switch($act)
 	case 'delete':
 		$appoutcall = &$ipbx->get_application('outcall');
 
-		if($appoutcall->get($_QRY->get_qs('id')) === false)
+		if($appoutcall->get($_QRY->get('id')) === false)
 			$status = 404;
 		else if($appoutcall->delete() === true)
 			$status = 200;
@@ -65,13 +65,13 @@ switch($act)
 	case 'search':
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
 
-		if(($list = $appoutcall->get_outcalls_search($_QRY->get_qs('search'))) === false)
+		if(($list = $appoutcall->get_outcalls_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 		break;
 	case 'list':
 	default:
@@ -85,11 +85,11 @@ switch($act)
 			$http->send(true);
 		}
 
-		$_HTML->set_var('list',$list);
+		$_TPL->set_var('list',$list);
 }
 
-$_HTML->set_var('act',$act);
-$_HTML->set_var('sum',$_QRY->get_qs('sum'));
-$_HTML->display('/service/ipbx/'.$ipbx->get_name().'/call_management/outcall');
+$_TPL->set_var('act',$act);
+$_TPL->set_var('sum',$_QRY->get('sum'));
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_management/outcall');
 
 ?>

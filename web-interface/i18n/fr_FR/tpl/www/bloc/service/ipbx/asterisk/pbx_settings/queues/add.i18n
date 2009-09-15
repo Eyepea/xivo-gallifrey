@@ -274,6 +274,9 @@ Oui
 ; fm_queue_leavewhenempty-opt(strict)
 Strict
 
+; fm_queue_ringinuse
+Appeler un membre déjà en communication :
+
 ; fm_queue_eventwhencalled
 Activer les événements (AMI) :
 

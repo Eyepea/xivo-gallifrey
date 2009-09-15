@@ -135,15 +135,15 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 		$arr['var_val'] = $rs['number'].',';
 
-		if(xivo_haslen($rs,'passwd') === true)
+		if(xivo_has_len($rs,'passwd') === true)
 			$arr['var_val'] .= $rs['passwd'];
 
 		$agentname = ',';
 
-		if(xivo_haslen($rs,'firstname') === true)
+		if(xivo_has_len($rs,'firstname') === true)
 			$agentname .= $rs['firstname'].' ';
 
-		if(xivo_haslen($rs,'lastname') === true)
+		if(xivo_has_len($rs,'lastname') === true)
 			$agentname .= $rs['lastname'];
 
 		$arr['var_val'] .= rtrim($agentname,' ');

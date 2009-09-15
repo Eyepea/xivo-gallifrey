@@ -95,7 +95,6 @@ class xivo_entity extends xivo_libdatastorage_abstract
 
 	function _get_entities($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false)
 	{
-		$action = (string) $action;
 		$search = strval($search);
 
 		switch($action)
@@ -104,6 +103,7 @@ class xivo_entity extends xivo_libdatastorage_abstract
 				$rs = $this->_dso->search($search,$disable,$order,$limit);
 				$this->_cnt = $this->_dso->get_cnt();
 				break;
+			case 'list':
 			default:
 				$rs = $this->get_all($disable,true,$order,$limit,$assoc);
 		}

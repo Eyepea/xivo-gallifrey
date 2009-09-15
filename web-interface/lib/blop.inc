@@ -327,7 +327,7 @@ class blop
 
 	function chk_extension_loaded($ext)
 	{
-		if(xivo_haslen($ext) === false)
+		if(xivo_has_len($ext) === false)
 			return(false);
 
 		return(extension_loaded($ext));
@@ -335,7 +335,7 @@ class blop
 
 	function load_extension($ext)
 	{
-		if(xivo_haslen($ext) === false
+		if(xivo_has_len($ext) === false
 		|| preg_match('/^[a-z0-9_-]+$/',$ext) !== 1)
 			return(false);
 		else if(extension_loaded($ext) === true)

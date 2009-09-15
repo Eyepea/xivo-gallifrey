@@ -106,7 +106,7 @@ class xivo_datastorage_adapter_abstract
 
 	function quote_identifier($name)
 	{
-		return((xivo_haslen($name) === true ? $name : ''));
+		return((xivo_has_len($name) === true ? $name : ''));
 	}
 
 	function escape($str)
@@ -186,7 +186,7 @@ class xivo_datastorage_adapter_abstract
 
 	function get_where()
 	{
-		if(xivo_haslen($this->_where) === false)
+		if(xivo_has_len($this->_where) === false)
 			return(null);
 
 		return($this->_where);

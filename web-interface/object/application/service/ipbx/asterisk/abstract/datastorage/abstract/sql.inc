@@ -63,7 +63,7 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_he
 	function _get_table($module)
 	{
 		if(isset($this->_table[$module]) === true
-		&& xivo_haslen($this->_table[$module]) === true)
+		&& xivo_has_len($this->_table[$module]) === true)
 			return($this->_table[$module]);
 		else if(($table = $this->get_modconf_key($module,'table')) === false)
 			return(false);

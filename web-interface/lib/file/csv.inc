@@ -245,7 +245,7 @@ class xivo_file_csv
 	{
 		if($chr === null)
 			$chr = ',';
-		else if(xivo_haslen($chr,0) === true)
+		else if(xivo_has_len($chr,0) === true)
 			$chr = $chr{0};
 		else
 			$chr = false;
@@ -257,7 +257,7 @@ class xivo_file_csv
 	{
 		if($chr === null)
 			$chr = '"';
-		else if(xivo_haslen($chr,0) === true)
+		else if(xivo_has_len($chr,0) === true)
 			$chr = $chr{0};
 		else
 			$chr = false;

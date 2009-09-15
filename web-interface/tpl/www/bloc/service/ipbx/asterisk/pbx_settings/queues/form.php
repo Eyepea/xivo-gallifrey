@@ -266,7 +266,7 @@ endif;
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-pannouncelist',
 		   				  'it-queue-periodic-announce');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inpannounce');?>">
 		   	<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inpannounce'),
@@ -274,7 +274,7 @@ endif;
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-queue-periodic-announce',
 		   				  'it-pannouncelist');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outpannounce');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outpannounce'),
@@ -294,14 +294,14 @@ endif;
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',1);
-			   	    return(xivo_free_focus());"
+			   	    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_uppannounce');?>">
 			   	<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_uppannounce'),
 						  'class="bt-uplist" id="bt-uppannounce" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',-1);
-			   	    return(xivo_free_focus());"
+			   	    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downpannounce');?>">
 			   	<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downpannounce'),
@@ -357,7 +357,7 @@ endif;
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-userlist',
 							  'it-user');
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inuser');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inuser'),
@@ -365,7 +365,7 @@ endif;
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-user',
 							  'it-userlist');
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outuser');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outuser'),
@@ -424,7 +424,7 @@ endif;
 				<a href="#"
 				   onclick="xivo_fm_move_selected('it-agentgrouplist',
 								  'it-agentgroup');
-					    return(xivo_free_focus());"
+					    return(xivo.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inagentgroup');?>">
 					<?=$url->img_html('img/site/button/row-left.gif',
 							  $this->bbf('bt_inagentgroup'),
@@ -432,7 +432,7 @@ endif;
 				<a href="#"
 				   onclick="xivo_fm_move_selected('it-agentgroup',
 								  'it-agentgrouplist');
-					    return(xivo_free_focus());"
+					    return(xivo.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outagentgroup');?>">
 					<?=$url->img_html('img/site/button/row-right.gif',
 							  $this->bbf('bt_outagentgroup'),
@@ -480,7 +480,7 @@ endif;
 					<a href="#"
 					   onclick="xivo_fm_move_selected('it-agentlist',
 									  'it-agent');
-						    return(xivo_free_focus());"
+						    return(xivo.dom.free_focus());"
 					   title="<?=$this->bbf('bt_inagent');?>">
 						<?=$url->img_html('img/site/button/row-left.gif',
 								  $this->bbf('bt_inagent'),
@@ -488,7 +488,7 @@ endif;
 					<a href="#"
 					   onclick="xivo_fm_move_selected('it-agent',
 									  'it-agentlist');
-						    return(xivo_free_focus());"
+						    return(xivo.dom.free_focus());"
 					   title="<?=$this->bbf('bt_outagent');?>">
 						<?=$url->img_html('img/site/button/row-right.gif',
 								  $this->bbf('bt_outagent'),

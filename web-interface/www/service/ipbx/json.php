@@ -25,7 +25,7 @@ require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
-$application = $_HTML->get_application('service/ipbx/'.$ipbx->get_name().'/web_services/',3);
+$application = $_TPL->get_application('service/ipbx/'.$ipbx->get_name().'/web_services/',3);
 
 if($application === false)
 {

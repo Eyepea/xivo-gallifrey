@@ -83,35 +83,14 @@ endif;
 				    'bbf'	=> array('concatkey','fm_outcall_mode-opt-'),
 				    'default'	=> $element['outcall']['mode']['default'],
 				    'value'	=> ''),
-			      $element['outcall']['mode']['value'],
-			      'onchange="xivo_chgmode(this);
-			       (this.value === \'wizard\'
-				? xivo_exten_wizard(\'it-outcall-prefix\',
-						    \'it-outcall-numlen\',
-						    \'it-outcall-exten\')
-				: xivo_wizard_exten(\'it-outcall-prefix\',
-						    \'it-outcall-numlen\',
-						    \'it-outcall-exten\'));"
-			        onfocus="xivo_fm_set_onfocus(this);"
-			        onblur="xivo_fm_set_onblur(this);"'),
+			      $element['outcall']['mode']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_outcall_prefix'),
 				  'name'	=> 'outcall[prefix]',
 				  'labelid'	=> 'outcall-prefix',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['prefix']['default'],
-				  'value'	=> ''),
-			      'onchange="xivo_wizard_exten(this.id,
-							   \'it-outcall-numlen\',
-							   \'it-outcall-exten\');"
-			       onfocus="xivo_wizard_exten(this.id,
-							  \'it-outcall-numlen\',
-							  \'it-outcall-exten\');
-					xivo_fm_set_onfocus(this);"
-			       onblur="xivo_wizard_exten(this.id,
-							 \'it-outcall-numlen\',
-							 \'it-outcall-exten\');
-				       xivo_fm_set_onblur(this);"'),
+				  'value'	=> '')),
 
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_numlen'),
 				    'name'	=> 'outcall[numlen]',
@@ -120,36 +99,14 @@ endif;
 				    'empty'	=> true,
 				    'default'	=> $element['outcall']['numlen']['default'],
 				    'value'	=> ''),
-			      $element['outcall']['numlen']['value'],
-			      'onchange="xivo_wizard_exten(\'it-outcall-prefix\',
-							   this.id,
-							   \'it-outcall-exten\');"
-			       onfocus="xivo_wizard_exten(\'it-outcall-prefix\',
-							  this.id,
-							  \'it-outcall-exten\');
-					xivo_fm_set_onfocus(this);"
-			       onblur="xivo_wizard_exten(\'it-outcall-prefix\',
-							 this.id,
-							 \'it-outcall-exten\');
-				       xivo_fm_set_onblur(this);"'),
+			      $element['outcall']['numlen']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_outcall_exten'),
 				  'name'	=> 'outcall[exten]',
 				  'labelid'	=> 'outcall-exten',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['exten']['default'],
-				  'value'	=> $info['outcall']['exten']),
-			    'onchange="xivo_exten_wizard(\'it-outcall-prefix\',
-							 \'it-outcall-numlen\',
-							 this.id);"
-			     onfocus="xivo_exten_wizard(\'it-outcall-prefix\',
-							\'it-outcall-numlen\',
-							this.id);
-				      xivo_fm_set_onfocus(this);"
-			     onblur="xivo_exten_wizard(\'it-outcall-prefix\',
-						       \'it-outcall-numlen\',
-						       this.id);
-				     xivo_fm_set_onblur(this);"'),
+				  'value'	=> $info['outcall']['exten'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_setcallerid'),
 				      'name'	=> 'outcall[setcallerid]',
@@ -218,14 +175,14 @@ if($outcalltrunk['list'] !== false):
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-outcalltrunklist','it-outcalltrunk');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inoutcalltrunk');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inoutcalltrunk'),
 					  'class="bt-inlist" id="bt-inoutcalltrunk" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-outcalltrunk','it-outcalltrunklist');
-			    return(xivo_free_focus());"
+			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outoutcalltrunk');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outoutcalltrunk'),
@@ -245,14 +202,14 @@ if($outcalltrunk['list'] !== false):
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-outcalltrunk',1);
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upoutcalltrunk');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upoutcalltrunk'),
 						  'class="bt-uplist" id="bt-upoutcalltrunk" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-outcalltrunk',-1);
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downoutcalltrunk');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downoutcalltrunk'),
@@ -294,14 +251,14 @@ endif;
 
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist');
-				    return(xivo_free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outrightcall'),

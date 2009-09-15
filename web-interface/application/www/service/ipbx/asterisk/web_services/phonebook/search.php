@@ -39,17 +39,17 @@ if($vendor !== 'polycom')
 else
 	$displaypath = '/struct/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook/polycom';
 
-$_HTML->set_var('path',$path);
-$_HTML->set_var('vendor',$vendor);
+$_TPL->set_var('path',$path);
+$_TPL->set_var('vendor',$vendor);
 
-if(isset($_QR['name']) === false || xivo_haslen($_QR['name']) === false)
+if(isset($_QR['name']) === false || xivo_has_len($_QR['name']) === false)
 {
 	if($vendor === 'aastra' || $vendor === 'polycom' || $vendor === 'snom')
-		$_HTML->set_var('act','input');
+		$_TPL->set_var('act','input');
 	else
-		$_HTML->set_var('act','directory');
+		$_TPL->set_var('act','directory');
 
-	$_HTML->display($displaypath);
+	$_TPL->display($displaypath);
 
 	die();
 }
@@ -62,7 +62,7 @@ if(($rsp = $phonebook->get_phonebook_search($_QR['name'])) !== false)
 if(($rsu = $phonebook->get_user_search($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsu);
 
-$url = $_HTML->url('service/ipbx/web_services/phonebook/local').
+$url = $_TPL->url('service/ipbx/web_services/phonebook/local').
        '?'.'name='.$_QR['name'].'&vendor='.$vendor;
 
 if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($url,false)) !== false)
@@ -78,10 +78,10 @@ else
 
 if(($nb = count($rs)) === 0 || $nb <= $nbbypage)
 {
-	$_HTML->set_var('list',$rs);
-	$_HTML->set_var('prevpos',0);
-	$_HTML->set_var('act','directory');
-	$_HTML->display($displaypath);
+	$_TPL->set_var('list',$rs);
+	$_TPL->set_var('prevpos',0);
+	$_TPL->set_var('act','directory');
+	$_TPL->display($displaypath);
 	die();
 }
 
@@ -120,8 +120,8 @@ usort($rs,array(&$sort,'str_usort'));
 
 if($directory === true)
 {
-	$_HTML->set_var('list',array_slice($rs,$beg,$nbbypage));
-	$_HTML->set_var('act','directory');
+	$_TPL->set_var('list',array_slice($rs,$beg,$nbbypage));
+	$_TPL->set_var('act','directory');
 }
 else
 {
@@ -138,16 +138,16 @@ else
 		}
 	}
 
-	$_HTML->set_var('list',$res);
-	$_HTML->set_var('act','menu');
+	$_TPL->set_var('list',$res);
+	$_TPL->set_var('act','menu');
 }
 
-$_HTML->set_var('node',$node);
-$_HTML->set_var('maxnode',$maxnode);
-$_HTML->set_var('pos',$beg);
-$_HTML->set_var('prevpos',$prevpos);
-$_HTML->set_var('name',$_QR['name']);
-$_HTML->display($displaypath);
+$_TPL->set_var('node',$node);
+$_TPL->set_var('maxnode',$maxnode);
+$_TPL->set_var('pos',$beg);
+$_TPL->set_var('prevpos',$prevpos);
+$_TPL->set_var('name',$_QR['name']);
+$_TPL->display($displaypath);
 die();
 
 ?>

@@ -79,6 +79,9 @@ Désactivé
 ; fm_queue_timeout-opt
 %s secondes
 
+; fm_queue_ringinuse
+Appeler un membre déjà en communication :
+
 ; fm_queue_musiconhold
 Musique d'attente :
 

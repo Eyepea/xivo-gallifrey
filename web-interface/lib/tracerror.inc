@@ -37,58 +37,85 @@ class xivo_tracerror
 		$param = (array) $param;
 
 		if(($this->_conf = xivo_gat::get_file(XIVO_PATH_LIBCONF.XIVO_SEP_DIR.'tracerror')) === false)
-			die('Failed to load tracerror Array');
+			die('Failed to load tracerror configuration array');
 
-		if(isset($param['level']) === true
-		&& ($param['level'] = $this->_chk_level($param['level'])) !== false)
-			$this->_param['level'] = $param['level'];
-		else
-			$this->_param['level'] = XIVO_TE_ERR_ALL;
+		if(isset($param['level']) === false
+		|| $this->set_param('level',$param['level']) === false)
+			$this->set_param('level',XIVO_TE_ERR_ALL);
 
-		if(isset($param['report_type']) === true
-		&& ($param['report_type'] = $this->_chk_report_type($param['report_type'])) !== false)
-			$this->_param['report_type'] = (int) $param['report_type'];
-		else
-			$this->_param['report_type'] = XIVO_TE_RTYPE_LOG;
+		if(isset($param['report_type']) === false
+		|| $this->set_param('report_type',$param['report_type']) === false)
+			$this->set_param('report_type',XIVO_TE_RTYPE_LOG);
 
-		if(isset($param['report_mode']) === true
-		&& $this->_chk_report_mode($param['report_mode']) === true)
-			$this->_param['report_mode'] = (int) $param['report_mode'];
-		else
-			$this->_param['report_mode'] = XIVO_TE_RMODE_REALTIME;
+		if(isset($param['report_mode']) === false
+		|| $this->set_param('report_mode',$param['report_mode']) === false)
+			$this->set_param('report_mode',XIVO_TE_RMODE_REALTIME);
 
-		if(isset($param['report_func'],$this->_conf['rfunc'][$param['report_func']]) === true)
-			$this->_param['report_func'] = (int) $param['report_func'];
-		else
-			$this->_param['report_func'] = 1;
+		if(isset($param['report_func']) === false
+		|| $this->set_param('report_func',$param['report_func']) === false)
+			$this->set_param('report_func',1);
 
-		if(isset($param['email']) === true && ($param['email'] = $this->_chk_email($param['email'])) !== false)
-			$this->_param['email'] = $param['email'];
-		else
+		if(isset($param['email']) === false
+		|| $this->set_param('email',$param['email']) === false)
 			$this->_param['email'] = false;
 
-		if(isset($param['file']) === true
-		&& ($param['file'] = $this->_chk_file($param['file'])) !== false)
-			$this->_param['file'] = $param['file'];
-		else if(($param['file'] = $this->_chk_file(ini_get('error_log'))) !== false)
-			$this->_param['file'] = $param['file'];
-		else
+		if((isset($param['file']) === false
+		   || $this->set_param('file',$param['file']) === false) === true
+		&& $this->set_param('file',ini_get('error_log')) === false)
 			$this->_param['file'] = false;
-
-		if(($this->_param['report_type'] & XIVO_TE_RTYPE_SCREEN) !== 0)
-			ini_set('display_errors',true);
-
-		ini_set('error_reporting',$this->_param['level']);
 	}
 
 	function get_param($name)
 	{
-		$name = (string) $name;
-
 		if(isset($this->_param[$name]) === true)
 			return($this->_param[$name]);
 
 		return(null);
+	}
+
+	function set_param($name,$value)
+	{
+		switch($name)
+		{
+			case 'level':
+				if(($value = $this->_chk_level($value)) === false)
+					return(false);
+
+				ini_set('error_reporting',$value);
+				break;
+			case 'report_type':
+				if(($value = $this->_chk_report_type($value)) === false)
+					return(false);
+
+				ini_set('display_errors',(bool) ($value & XIVO_TE_RTYPE_SCREEN));
+				break;
+			case 'report_mode':
+				if($this->_chk_report_mode($value) === false)
+					return(false);
+
+				$value = (int) $value;
+				break;
+			case 'report_func':
+				if(isset($this->_conf['rfunc'][$value]) === false)
+					return(false);
+
+				$value = (int) $value;
+				break;
+			case 'email':
+				if(($value = $this->_chk_email($value)) === false)
+					return(false);
+				break;
+			case 'file':
+				if(($value = $this->_chk_file($value)) === false)
+					return(false);
+				break;
+			default:
+				return(false);
+		}
+
+		$this->_param[$name] = $value;
+
+		return(true);
 	}
 
 	function notice($msg,$context='',$report_type=null)
@@ -247,13 +274,9 @@ class xivo_tracerror
 		if(is_array($msg) === true || is_object($msg) === true || is_bool($msg) === true || is_null($msg) === true)
 		{
 			if($this->_param['report_func'] === 2 || (is_bool($msg) === true || is_null($msg) === true) === true)
-			{
 				$tomsg = xivo_svar_dump($msg);
-			}
 			else
-			{
 				$tomsg = xivo_sprint_r($msg);
-			}
 
 			if(($report_type & XIVO_TE_RTYPE_LOG) !== 0 || $this->_sapi !== 'default')
 				$tomsg_log = $tomsg;

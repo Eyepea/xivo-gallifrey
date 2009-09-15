@@ -20,36 +20,43 @@
 
 class xivo_uri
 {
-	var $_encode	= array();
-	var $_host	= array('ip_litteral'	=> 1,
-				'ipv4'		=> 2,
-				'reg_name'	=> 3);
-	var $_regexp	= array();
+	var $_encode		= array();
+	var $_host		= array('ipliteral'	=> 1,
+					'ipv4'		=> 2,
+					'reg_name'	=> 3);
+	var $_regexp		= array();
+	var $_reipvfutureport	= '';
 
 	function xivo_uri()
 	{
-		$gen_delims = ':\/\?#\[\]@';
-		$sub_delims = '\!\$&\'\(\)\*\+,;=';
-		$reserved = $gen_delims.$sub_delims;
-		$unreserved = 'a-zA-Z0-9-\._~';
-
-		$this->_regexp = array();
-		$this->_regexp['scheme'] = '[a-zA-Z][a-zA-Z0-9\+\-\.]*';
-		$this->_regexp['user'] = $this->_regexp['host'] = '['.$unreserved.$sub_delims.'%]+';
-		$this->_regexp['passwd'] = '['.$unreserved.$sub_delims.'%:]+';
-		$this->_regexp['port'] = '[0-9]+';
-		$this->_regexp['path'] = '['.$unreserved.$sub_delims.'%:@\/]+';
-		$this->_regexp['query'] = '['.$unreserved.$sub_delims.'%:@\/\?]+';
-		$this->_regexp['ipv_future'] = 'v[\da-fA-F]+\.['.$unreserved.$sub_delims.':]+';
+		$gen_delims	= ':\/\?#\[\]@';
+		$sub_delims	= '\!\$&\'\(\)\*\+,;=';
+		$reserved	= $gen_delims.$sub_delims;
+		$unreserved	= 'a-zA-Z0-9-\._~';
+		$ipvfuture	= 'v[\da-fA-F]+\.['.$unreserved.$sub_delims.':]+';
+		$port		= '[0-9]{0,5}';
 
 		$this->_encode = array();
-		$this->_encode['user'] = '[^'.$unreserved.$sub_delims.']';
-		$this->_encode['passwd'] = '[^'.$unreserved.$sub_delims.':]';
-		$this->_encode['reg_name'] = '[^'.$unreserved.$sub_delims.']';
-		$this->_encode['path'] = '[^'.$unreserved.$sub_delims.':@\/]';
-		$this->_encode['query_key'] = '[^'.$unreserved.'\!\$\'\(\)\*,;:@\/\? ]';
-		$this->_encode['query_val'] = '[^'.$unreserved.'\!\$\'\(\)\*,;:@\/\? =]';
-		$this->_encode['fragment'] = '[^'.$unreserved.$sub_delims.':@\/\?]';
+		$this->_encode['user']		= '/([^'.$unreserved.$sub_delims.']+)/';
+		$this->_encode['passwd']	= '/([^'.$unreserved.$sub_delims.':]+)/';
+		$this->_encode['reg_name']	= '/([^'.$unreserved.$sub_delims.']+)/';
+		$this->_encode['path']		= '/([^'.$unreserved.$sub_delims.':@\/]+)/';
+		$this->_encode['query_key']	= '/([^'.$unreserved.'\!\$\'\(\)\*,;:@\/\? ]+)/';
+		$this->_encode['query_val']	= '/([^'.$unreserved.'\!\$\'\(\)\*,;:@\/\? =]+)/';
+		$this->_encode['fragment']	= '/([^'.$unreserved.$sub_delims.':@\/\?])/';
+
+		$this->_regexp = array();
+		$this->_regexp['rfc3986']	= '@^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$@';
+		$this->_regexp['scheme']	= '/^[a-zA-Z][a-zA-Z0-9\+\-\.]*$/';
+		$this->_regexp['user']		= '/^['.$unreserved.$sub_delims.'%]+$/';
+		$this->_regexp['host']		= $this->_regexp['user'];
+		$this->_regexp['passwd']	= '/^['.$unreserved.$sub_delims.'%:]+$/';
+		$this->_regexp['port']		= '/^'.$port.'$/';
+		$this->_regexp['path']		= '/^['.$unreserved.$sub_delims.'%:@\/]+$/';
+		$this->_regexp['query']		= '/^['.$unreserved.$sub_delims.'%:@\/\?]+$/';
+		$this->_regexp['ipvfuture']	= '/^'.$ipvfuture.'$/';
+
+		$this->_reipvfutureport		= '/^\[([\da-fA-F:\.]+|'.$ipvfuture.')\](\:'.$port.')?$/';
 	}
 
 	function build_uri($arr,$encode=true,$type_host=null)
@@ -59,7 +66,7 @@ class xivo_uri
 
 		if(is_array($arr) === false)
 			return(false);
-		else if(xivo_haslen($arr,'scheme') === true)
+		else if(xivo_has_len($arr,'scheme') === true)
 		{
 			if($this->valid_scheme($arr['scheme']) === false)
 				return(false);
@@ -67,13 +74,28 @@ class xivo_uri
 			$scheme = $arr['scheme'];
 		}
 
-		if(xivo_haslen($arr,'host') === true)
+		if(xivo_issa('authority',$arr) === true)
+		{
+			if(isset($arr['authority']['host']) === true)
+				$arr['host']	= $arr['authority']['host'];
+
+			if(isset($arr['authority']['port']) === true)
+				$arr['port']	= $arr['authority']['port'];
+
+			if(isset($arr['authority']['user']) === true)
+				$arr['user']	= $arr['authority']['user'];
+
+			if(isset($arr['authority']['passwd']) === true)
+				$arr['passwd']	= $arr['authority']['passwd'];
+		}
+
+		if(xivo_has_len($arr,'host') === true)
 		{
 			$arr['host'] = (string) $arr['host'];
 
 			switch((empty($type_host) === true ? $this->get_host_type($arr['host']) : $type_host))
 			{
-				case $this->_host['ip_litteral']:
+				case $this->_host['ipliteral']:
 					if($this->valid_ipliteral($arr['host']) === false)
 						return(false);
 					break;
@@ -91,7 +113,7 @@ class xivo_uri
 			$hostport = $arr['host'];
 		}
 
-		if(xivo_haslen($arr,'port') === true)
+		if(xivo_has_len($arr,'port') === true)
 		{
 			if($this->valid_port($arr['port']) === false)
 				return(false);
@@ -99,7 +121,7 @@ class xivo_uri
 			$hostport .= ':'.$arr['port'];
 		}
 
-		if(xivo_haslen($arr,'user') === true)
+		if(xivo_has_len($arr,'user') === true)
 		{
 			$arr['user'] = (string) $arr['user'];
 			if($encode === true)
@@ -108,7 +130,7 @@ class xivo_uri
 			$userinfo = $arr['user'];
 		}
 
-		if(xivo_haslen($arr,'passwd') === true)
+		if(xivo_has_len($arr,'passwd') === true)
 		{
 			$arr['passwd'] = (string) $arr['passwd'];
 			if($encode === true)
@@ -124,7 +146,7 @@ class xivo_uri
 		else if($hostport !== '')
 			$authority = $hostport;
 
-		if(xivo_haslen($arr,'path') === true)
+		if(xivo_has_len($arr,'path') === true)
 		{
 			$arr['path'] = (string) $arr['path'];
 
@@ -149,7 +171,7 @@ class xivo_uri
 		if(xivo_issa('query',$arr) === true)
 			$query = $this->build_query($arr['query'],$encode);
 
-		if(xivo_haslen($arr,'fragment') === true)
+		if(xivo_has_len($arr,'fragment') === true)
 		{
 			$arr['fragment'] = (string) $arr['fragment'];
 			if($encode === true)
@@ -238,7 +260,8 @@ class xivo_uri
 				return(false);
 			else if(isset($authority,$uri['scheme']) === false
 			&& ($pos = strpos($uri['path'],':')) !== false
-			&& ($poslash = strpos($uri['path'],'/')) !== false && $pos < $poslash)
+			&& ($poslash = strpos($uri['path'],'/')) !== false
+			&& $pos < $poslash)
 				return(false);
 
 			if($decode === true)
@@ -251,7 +274,7 @@ class xivo_uri
 			{
 				$ref = &$uri['query'][$i];
 
-				if(xivo_haslen($ref,0) === true)
+				if(xivo_has_len($ref,0) === true)
 				{
 					if($this->valid_query($ref[0]) === false)
 						return(false);
@@ -259,7 +282,7 @@ class xivo_uri
 						$ref[0] = urldecode($ref[0]);
 				}
 
-				if(xivo_haslen($ref,1) === false)
+				if(xivo_has_len($ref,1) === false)
 					continue;
 				else if($this->valid_query($ref[1]) === false)
 					return(false);
@@ -281,24 +304,24 @@ class xivo_uri
 
 	function uri_split($uri)
 	{
-		if(preg_match('@^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$@',$uri,$match) !== 1)
+		if(preg_match($this->_regexp['rfc3986'],$uri,$match) !== 1)
 			return(false);
 
 		$r = array();
 
-		if(xivo_haslen($match,2) === true)
+		if(xivo_has_len($match,2) === true)
 			$r['scheme'] = $match[2];
 
-		if(xivo_haslen($match,4) === true)
+		if(xivo_has_len($match,4) === true)
 			$r['authority'] = $match[4];
 
-		if(xivo_haslen($match,5) === true)
+		if(xivo_has_len($match,5) === true)
 			$r['path'] = $match[5];
 
-		if(xivo_haslen($match,7) === true)
+		if(xivo_has_len($match,7) === true)
 			$r['query'] = $match[7];
 
-		if(xivo_haslen($match,9) === true)
+		if(xivo_has_len($match,9) === true)
 			$r['fragment'] = $match[9];
 
 		return($r);
@@ -338,9 +361,7 @@ class xivo_uri
 			return($r);
 		else if($hostport{0} === '[')
 		{
-			if(preg_match('/^\[([\da-fA-F:\.]+|'.
-				      $this->_regexp['ipv_future'].
-				      ')\](\:[0-9]{0,5})?$/',$hostport,$match) !== 1)
+			if(preg_match($this->_reipvfutureport,$hostport,$match) !== 1)
 				return(false);
 
 			$r['host'] = '['.$match[1].']';
@@ -375,8 +396,8 @@ class xivo_uri
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if($assignments[$i] === '' ||
-			($sa = explode('=',$assignments[$i],2)) === false)
+			if($assignments[$i] === ''
+			|| ($sa = explode('=',$assignments[$i],2)) === false)
 				continue;
 
 			$r[] = $sa;
@@ -390,8 +411,9 @@ class xivo_uri
 
 	function build_query($query,$encode=true)
 	{
-		$r = '';
 		$encode = (bool) $encode;
+
+		$r = '';
 
 		if(is_array($query) === false)
 			return($r);
@@ -408,19 +430,19 @@ class xivo_uri
 			$ref = &$query[$i];
 			$r[$i] = '';
 
-			if(xivo_haslen($ref,0) === true)
+			if(is_array($ref) === false)
+				continue;
+
+			if(xivo_has_len($ref,0) === true)
 			{
 				$ref[0] = (string) $ref[0];
 				if($encode === true)
-				{
-					$key = $this->encode($ref[0],'query_key');
-					$r[$i] = str_replace(' ','+',$key);
-				}
+					$r[$i] = $this->encode($ref[0],'query_key');
 				else
 					$r[$i] = $ref[0];
 			}
 
-			if(xivo_haslen($ref,1) === false)
+			if(xivo_has_len($ref,1) === false)
 			{
 				if($r[$i] === '')
 					unset($r[$i]);
@@ -430,12 +452,9 @@ class xivo_uri
 			$ref[1] = (string) $ref[1];
 
 			if($encode === true)
-			{
-				$val = $this->encode($ref[1],'query_val');
-				$r[$i] .= '='.str_replace(' ','+',$val);
-			}
+				$r[$i] .= '='.$this->encode($ref[1],'query_val');
 			else
-				$r[$i] .= '='.urlencode($ref[1]);
+				$r[$i] .= '='.$ref[1];
 		}
 
 		return(implode('&',$r));
@@ -443,10 +462,13 @@ class xivo_uri
 
 	function get_host_type($host)
 	{
-		if(xivo_haslen($host) === false)
+		if(xivo_has_len($host) === false)
 			return($this->_host['reg_name']);
-		else if($host{0} === '[')
-			return($this->_host['ip_litteral']);
+
+		$host = (string) $host;
+
+		if($host{0} === '[')
+			return($this->_host['ipliteral']);
 		else if($this->valid_ipv4($host) === true)
 			return($this->_host['ipv4']);
 		else
@@ -459,42 +481,38 @@ class xivo_uri
 
 		if(isset($this->_encode[$type]) === false)
 			return(urlencode($str));
-		else if(preg_match_all('/'.$this->_encode[$type].'+/',$str,$match,PREG_OFFSET_CAPTURE) === 0)
-			return($str);
 
-		$match = $match[0];
-		$nb = count($match);
+		$rs = preg_split($this->_encode[$type],$str,-1,PREG_SPLIT_DELIM_CAPTURE);
+		xivo_print_r($rs);
+
+		if(($nb = count($rs)) === 1)
+		{
+			if($type === 'query_key' || $type === 'query_val')
+				return(str_replace(' ','+',$rs[0]));
+
+			return($rs[0]);
+		}
 
 		$r = '';
-		$len = strlen($str);
 
-		if($match[0][1] > 0)
-			$r = substr($str,0,$match[0][1]);
-		
-		for($i = 0;$i < $nb;$i++)
+		for($i = 0;$i < $nb;$i += 2)
 		{
-			$r .= urlencode($match[$i][0]);
-			$mlen = strlen($match[$i][0]);
+			$r .= $rs[$i];
 
-			if(isset($match[$i+1]) === true)
-			{
-				$pos = $match[$i][1] + $mlen;
-				$r .= substr($str,$pos,$match[$i+1][1] - $pos);
-				continue;
-			}
-
-			if(($match[$i][1] + $mlen) < $len)
-				$r .= substr($str,$match[$i][1] + $mlen);
+			if(($i + 1) < $nb)
+				$r .= urlencode($rs[$i + 1]);
 		}
+
+		if($type === 'query_key' || $type === 'query_val')
+			return(str_replace(' ','+',$r));
 
 		return($r);
 	}
 
 	function valid_scheme($scheme)
 	{
-		$scheme = (string) $scheme;
-
-		if(preg_match('/^'.$this->_regexp['scheme'].'$/',$scheme) === 1)
+		if(is_scalar($scheme) === true 
+		&& preg_match($this->_regexp['scheme'],$scheme) === 1)
 			return(true);
 
 		return(false);
@@ -507,7 +525,8 @@ class xivo_uri
 
 	function valid_ipv6($ip)
 	{
-		$ip = (string) $ip;
+		if(is_scalar($ip) === false)
+			return(false);
 
 		if(($pos = strpos($ip,'::')) === false)
 			return(($this->_valid_rightipv6($ip) === 8));
@@ -533,9 +552,7 @@ class xivo_uri
 
 	function _valid_rightipv6($ip)
 	{
-		$ip = (string) $ip;
-
-		if($ip === '')
+		if(((string) $ip) === '')
 			return(0);
 
 		$arr = explode(':',$ip,9);
@@ -572,9 +589,7 @@ class xivo_uri
 
 	function _valid_leftipv6($ip)
 	{
-		$ip = (string) $ip;
-
-		if($ip === '')
+		if(((string) $ip) === '')
 			return(0);
 
 		$arr = explode(':',$ip,8);
@@ -595,7 +610,8 @@ class xivo_uri
 
 	function valid_ipvfuture($ip)
 	{
-		if(preg_match('/^'.$this->_regexp['ipv_future'].'$/',$ip) === 1)
+		if(is_scalar($ip) === true
+		&& preg_match($this->_regexp['ipvfuture'],$ip) === 1)
 			return(true);
 
 		return(false);
@@ -603,6 +619,9 @@ class xivo_uri
 
 	function valid_ipliteral($ip)
 	{
+		if(is_scalar($ip) === false)
+			return(false);
+
 		$ip = (string) $ip;
 
 		if(($len = strlen($ip)) < 2 || $ip{0} !== '[' || $ip{$len - 1} !== ']')
@@ -621,10 +640,11 @@ class xivo_uri
 		switch($this->get_host_type($host))
 		{
 			case $this->_host['reg_name']:
-				if(preg_match('/^'.$this->_regexp['host'].'$/',$host) === 1)
+				if(is_scalar($host) === true
+				&& preg_match($this->_regexp['host'],$host) === 1)
 					return(true);
 				break;
-			case $this->_host['ip_litteral']:
+			case $this->_host['ipliteral']:
 				if($this->valid_ipliteral($host) === true)
 					return(true);
 				break;
@@ -637,16 +657,29 @@ class xivo_uri
 
 	function valid_authority($host='',$user='',$passwd='',$port='')
 	{
-		$host = (string) $host;
-		$user = (string) $user;
-		$passwd = (string) $passwd;
-		$port = (string) $port;
+		if(is_scalar($host) === false
+		|| is_scalar($user) === false
+		|| is_scalar($passwd) === false
+		|| is_scalar($port) === false)
+			return(false);
 
-		if(($host !== '' && $this->valid_host($host) === false) === true
-		|| ($user !== '' && $this->valid_user($user) === false) === true
-		|| ($passwd !== '' && $this->valid_passwd($passwd) === false) === true
-		|| ($port !== '' && $this->valid_port($port) === false) === true
-		|| ($host === '' && $user === '' && $passwd === '' && $port === '') === true)
+		$host	= (string) $host;
+		$user	= (string) $user;
+		$passwd = (string) $passwd;
+		$port	= (string) $port;
+
+		if(($host !== ''
+		   && $this->valid_host($host) === false) === true
+		|| ($user !== ''
+		   && $this->valid_user($user) === false) === true
+		|| ($passwd !== ''
+		   && $this->valid_passwd($passwd) === false) === true
+		|| ($port !== ''
+		   && $this->valid_port($port) === false) === true
+		|| ($host === ''
+		   && $user === ''
+		   && $passwd === ''
+		   && $port === '') === true)
 			return(false);
 
 		return(true);
@@ -654,7 +687,8 @@ class xivo_uri
 
 	function valid_user($user)
 	{
-		if(preg_match('/^'.$this->_regexp['user'].'$/',$user) === 1)
+		if(is_scalar($user) === true
+		&& preg_match($this->_regexp['user'],$user) === 1)
 			return(true);
 
 		return(false);
@@ -662,7 +696,8 @@ class xivo_uri
 
 	function valid_passwd($passwd)
 	{
-		if(preg_match('/^'.$this->_regexp['passwd'].'$/',$passwd) === 1)
+		if(is_scalar($passwd) === true
+		&& preg_match($this->_regexp['passwd'],$passwd) === 1)
 			return(true);
 
 		return(false);
@@ -670,7 +705,8 @@ class xivo_uri
 
 	function valid_port($port)
 	{
-		if(preg_match('/^'.$this->_regexp['port'].'$/',$port) === 1)
+		if(is_scalar($port) === true
+		&& preg_match($this->_regexp['port'],$port) === 1)
 			return(true);
 
 		return(false);
@@ -678,7 +714,8 @@ class xivo_uri
 
 	function valid_path($path)
 	{
-		if(preg_match('/^'.$this->_regexp['path'].'$/',$path) === 1)
+		if(is_scalar($path) === true
+		&& preg_match($this->_regexp['path'],$path) === 1)
 			return(true);
 
 		return(false);
@@ -686,7 +723,8 @@ class xivo_uri
 
 	function valid_query($query)
 	{
-		if(preg_match('/^'.$this->_regexp['query'].'$/',$query) === 1)
+		if(is_scalar($query) === true
+		&& preg_match($this->_regexp['query'],$query) === 1)
 			return(true);
 
 		return(false);

@@ -194,7 +194,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	function _parse_xivoserver_recv($recv)
 	{
 		if(xivo::load_class('xivo::file::csv') === false
-		|| xivo_haslen($recv) === false)
+		|| xivo_has_len($recv) === false)
 			return(false);
 
 		$recv = explode("\n",str_replace("\r",'',$recv));
@@ -243,7 +243,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function get_phonebook_search_from_ldapfilter($query,$disable=null)
 	{
-		if(xivo_haslen($query) === false
+		if(xivo_has_len($query) === false
 		|| $this->_load_ldapfilter() === false
 		|| ($rs = $this->_appldapfilter->get_servers_list($disable)) === false
 		|| ($nb = count($rs)) === 0)
@@ -263,7 +263,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
                         $ldapfilter['attrdisplayname'] = xivo_array_change_value_case($ldapfilter['attrdisplayname'],CASE_LOWER);
                         $ldapfilter['attrphonenumber'] = xivo_array_change_value_case($ldapfilter['attrphonenumber'],CASE_LOWER);
 
-			if(xivo_haslen($ldapfilter['filter']) === true)
+			if(xivo_has_len($ldapfilter['filter']) === true)
 			{
 				$ldapserver['user'] = $ldapfilter['user'];
 				$ldapserver['passwd'] = $ldapfilter['passwd'];

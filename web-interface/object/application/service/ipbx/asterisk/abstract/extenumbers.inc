@@ -59,7 +59,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(xivo_haslen($typeval) === false)
+		if(xivo_has_len($typeval) === false)
 			return(false);
 
 		$where = array();
@@ -120,7 +120,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 	function add($typeval)
 	{
-		if(($rs = xivo_haslen($typeval)) === false
+		if(($rs = xivo_has_len($typeval)) === false
 		|| ($rs = $this->get_result()) === null
 		|| $rs === false)
 			return($rs);

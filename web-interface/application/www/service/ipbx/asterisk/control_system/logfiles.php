@@ -32,12 +32,12 @@ switch($act)
 		$param['page'] = $page;
 
 		if(isset($_QR['id']) === false || ($info = $logfiles->get($_QR['id'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/control_system/logfiles'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/control_system/logfiles'),$param);
 
 		$file = new xivo_file();
 
 		if(($file->download($info['file'])) === false)
-			$_QRY->go($_HTML->url('service/ipbx/control_system/logfiles'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/control_system/logfiles'),$param);
 
 		die();
 		break;
@@ -53,18 +53,18 @@ switch($act)
 			usort($files,array(&$sort,'strnat_usort'));
 		}
 
-		$_HTML->set_var('pager',xivo_calc_page($page,20,$total));
-		$_HTML->set_var('list',$files);
+		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('list',$files);
 }
 
-$_HTML->set_var('act',$act);
+$_TPL->set_var('act',$act);
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/control_system/logfiles/'.$act);
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/control_system/logfiles/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

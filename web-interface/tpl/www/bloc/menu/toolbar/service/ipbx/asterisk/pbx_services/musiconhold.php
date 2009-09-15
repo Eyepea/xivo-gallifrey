@@ -33,6 +33,8 @@ else:
 endif;
 
 ?>
+<script type="text/javascript" src="<?=$this->file_time($this->url('js/xivo_toolbar.js'));?>"></script>
+
 <form action="#" method="post" accept-charset="utf-8">
 <?php
 	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
@@ -44,7 +46,7 @@ endif;
 	<div class="fm-field">
 <?php
 		echo	$form->select(array('name'	=> 'cat',
-					    'id'	=> 'it-cat',
+					    'id'	=> 'it-toolbar-category',
 					    'key'	=> true,
 					    'altkey'	=> 'category',
 					    'field'	=> false,
@@ -61,14 +63,11 @@ endif;
 <?php
 	echo	$url->img_html('img/menu/top/toolbar/bt-add.gif',
 			       $this->bbf('toolbar_opt_add'),
-			       'border="0"
-				onmouseover="xivo_eid(\'add-menu\').style.display = \'block\';"
-				onmouseout="xivo_eid(\'add-menu\').style.display = \'none\';"');
+			       'id="toolbar-bt-add"
+				border="0"');
 ?>
 <div class="sb-advanced-menu">
-	<ul id="add-menu"
-	    onmouseover="this.style.display = 'block';"
-	    onmouseout="this.style.display = 'none';">
+	<ul id="toolbar-add-menu">
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-category'),
 				       'service/ipbx/pbx_services/musiconhold',
 				       'act=add');?></li>
@@ -77,3 +76,20 @@ endif;
 				       $param);?></li>
 	</ul>
 </div>
+
+<script type="text/javascript">
+xivo.dom.set_onload(function()
+{
+	xivo.dom.add_event('change',
+			   xivo_eid('it-toolbar-category'),
+			   function()
+			   {
+				this.form['act'].value = 'list';
+
+			   	if(this.value !== '')
+					this.form['act'].value += 'file';
+
+				this.form.submit();
+			   });
+});
+</script>

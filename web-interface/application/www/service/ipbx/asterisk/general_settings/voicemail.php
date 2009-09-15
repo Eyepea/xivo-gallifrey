@@ -62,31 +62,31 @@ $element['zonemessages'] = $appzonemessages->get_elements();
 if(xivo_issa('format',$element['voicemail']) === true
 && xivo_issa('value',$element['voicemail']['format']) === true
 && isset($info['voicemail']['format']) === true
-&& xivo_haslen($info['voicemail']['format'],'var_val') === true)
+&& xivo_has_len($info['voicemail']['format'],'var_val') === true)
 {
 	$info['voicemail']['format']['var_val'] = explode('|',$info['voicemail']['format']['var_val']);
 	$element['voicemail']['format']['value'] = array_diff($element['voicemail']['format']['value'],
 							      $info['voicemail']['format']['var_val']);
 }
 
-$dhtml = &$_HTML->get_module('dhtml');
+$dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-$_HTML->set_var('fm_save',$fm_save);
-$_HTML->set_var('element',$element);
-$_HTML->set_var('error',$error);
-$_HTML->set_var('voicemail',$info['voicemail']);
-$_HTML->set_var('zonemessages',$info['zonemessages']);
-$_HTML->set_var('timezone_list',$appzonemessages->get_timezones());
-$_HTML->set_var('context_list',$appgeneralvoicemail->get_context_list());
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('element',$element);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('voicemail',$info['voicemail']);
+$_TPL->set_var('zonemessages',$info['zonemessages']);
+$_TPL->set_var('timezone_list',$appzonemessages->get_timezones());
+$_TPL->set_var('context_list',$appgeneralvoicemail->get_context_list());
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/voicemail');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/general_settings/voicemail');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>

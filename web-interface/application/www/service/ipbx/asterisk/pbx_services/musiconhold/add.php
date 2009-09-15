@@ -36,13 +36,13 @@ do
 	}
 
 	if($musiconhold->add_category($result) !== false)
-		$_QRY->go($_HTML->url('service/ipbx/pbx_services/musiconhold'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);
 	else
 		$fm_save = false;
 }
 while(false);
 
-$_HTML->set_var('fm_save',$fm_save);
+$_TPL->set_var('fm_save',$fm_save);
 
 $element = $musiconhold->get_element();
 

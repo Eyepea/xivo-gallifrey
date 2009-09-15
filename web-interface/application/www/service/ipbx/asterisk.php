@@ -86,19 +86,19 @@ if(($disablevoicemail = $appvoicemail->get_nb(null,true)) !== false)
 
 $voicemailstat['total'] = $voicemailstat['enable'] + $voicemailstat['disable'];
 
-$menu = &$_HTML->get_module('menu');
+$menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
-$_HTML->set_var('userstat',$userstat);
-$_HTML->set_var('groupstat',$groupstat);
-$_HTML->set_var('queuestat',$queuestat);
-$_HTML->set_var('meetmestat',$meetmestat);
-$_HTML->set_var('voicemailstat',$voicemailstat);
-$_HTML->set_var('activecalls',$activecalls);
+$_TPL->set_var('userstat',$userstat);
+$_TPL->set_var('groupstat',$groupstat);
+$_TPL->set_var('queuestat',$queuestat);
+$_TPL->set_var('meetmestat',$meetmestat);
+$_TPL->set_var('voicemailstat',$voicemailstat);
+$_TPL->set_var('activecalls',$activecalls);
 
-$_HTML->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/index');
-$_HTML->set_struct('service/ipbx/'.$ipbx->get_name());
-$_HTML->display('index');
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/index');
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
 
 ?>
