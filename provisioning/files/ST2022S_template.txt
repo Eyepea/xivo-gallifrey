@@ -5,12 +5,13 @@ regid1={{user_phone_ident}}
 regpwd1={{user_phone_passwd}}
 DisplayNumFlag1=1
 DisplayNum1={{user_phone_number}}
-VoiceMailTelNum=*98{{user_phone_number}}
+VoiceMailTelNum={{exten_voicemail}}{{user_phone_number}}
 subscribe_event={{user_subscribe_mwi}}
+sw_park_srv_addr0={{exten_park}}@{{asterisk_ipv4}}
 
 [sys]
 config_sn={{config_sn}}
-Current_Max_Multiline={{simultcalls}}
+Current_Max_Multiline={{user_simultcalls}}
 Phonebook1_url=http://{{asterisk_ipv4}}/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH&id={{user_phone_ident}}
 Phonebook1_name=Annuaire entreprise
 

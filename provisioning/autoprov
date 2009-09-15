@@ -75,7 +75,7 @@ from xivo.moresynchro import RWLock
 from xivo.moresynchro import ListLock
 from xivo import daemonize
 
-from xivo.xivo_helpers import clean_extension, speed_dial_key_extension, fkey_extension
+from xivo.xivo_helpers import speed_dial_key_extension, fkey_extension
 
 log = logging.getLogger('autoprov') # pylint: disable-msg=C0103
 
@@ -182,9 +182,34 @@ class SQLBackEnd:
         or None
         """
         return self.sql_select_one(
-                "SELECT ${columns} FROM %s WHERE macaddr=%s" % (TABLE, '%s'),
+                "SELECT ${columns} FROM %s WHERE macaddr = %s" % (TABLE, '%s'),
                 ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
                 (macaddr,))
+
+    def get_extensions(self):
+        extensions = {'callgroup':      None,
+                      'callqueue':      None,
+                      'calluser':       None,
+                      'enablednd':      None,
+                      'fwdunc':         None,
+                      'parkext':        None,
+                      'pickup':         None,
+                      'pickupexten':    None,
+                      'progfunckey':    None,
+                      'vmusermsg':      None}
+
+        res = self.sql_select_all(
+                     ("SELECT ${columns} FROM %s "
+                     "WHERE type IN ('extenfeatures', 'featuremap', 'generalfeatures') "
+                     "AND typeval IN (" + ", ".join(["%%s"] * len(extensions)) + ")")
+                     % (XNUM_TABLE,),
+                     ('typeval', 'exten'),
+                     extensions.keys())
+
+        if res:
+            extensions.update(dict([x['typeval'], x['exten']] for x in res))
+
+        return extensions
 
     def config_by_something_proto(self, something_column, something_content, proto):
         """
@@ -236,8 +261,8 @@ class SQLBackEnd:
         confdico = self.sql_select_one(
             ("SELECT ${columns} "
               "FROM %s LEFT OUTER JOIN %s "
-                    "ON %s.protocolid=%s.id AND %s.protocol=%s "
-              "WHERE %s." + something_column + "=%s")
+                    "ON %s.protocolid = %s.id AND %s.protocol = %s "
+              "WHERE %s." + something_column + " = %s")
               % (UF_TABLE, SIP_TABLE,
                  UF_TABLE, SIP_TABLE, UF_TABLE, '%s',
                  UF_TABLE, '%s'),
@@ -248,23 +273,7 @@ class SQLBackEnd:
         confdico = replace_keys(confdico, mapping)
         confdico['name'] = name_from_first_last(confdico['firstname'],
                                                 confdico['lastname'])
-
-        confdico['extenfeatures'] = {'enablednd':   None,
-                                     'fwdunc':      None,
-                                     'parkext':     None,
-                                     'pickup':      None,
-                                     'pickupexten': None}
-
-        res = self.sql_select_all(
-                     ("SELECT ${columns} FROM %s "
-                     "WHERE type IN ('extenfeatures', 'featuremap', 'generalfeatures') "
-                     "AND typeval IN (" + ", ".join(["%%s"] * len(confdico['extenfeatures'])) + ")")
-                     % (XNUM_TABLE,),
-                     ('typeval', 'exten'),
-                     confdico['extenfeatures'].keys())
-
-        if res:
-            confdico['extenfeatures'].update(dict([x['typeval'], clean_extension(x['exten'])] for x in res))
+        confdico['extensions'] = self.get_extensions()
 
         function_key_list = self.sql_select_all(
             ("SELECT ${columns} "
@@ -276,8 +285,8 @@ class SQLBackEnd:
              "ON  %s.typeextenumbersright = extenumright.type "
              "AND %s.typevalextenumbersright = extenumright.typeval "
              "LEFT OUTER JOIN %s "
-             "AND %s.typevalextenumbersright = %s.id "
-             "WHERE iduserfeatures=%%s")
+             "ON %s.typevalextenumbersright = %s.id "
+             "WHERE iduserfeatures = %%s")
              % (FK_TABLE,
                 XNUM_TABLE,
                 FK_TABLE,
@@ -287,40 +296,64 @@ class SQLBackEnd:
                 FK_TABLE,
                 UF_TABLE,
                 FK_TABLE,
-                FK_TABLE,
                 UF_TABLE),
             [FK_TABLE+x for x in ('.fknum',
                                   '.exten',
                                   '.supervision',
+                                  '.progfunckey',
                                   '.iduserfeatures',
                                   '.label',
-                                  '.typeextenumbersright')]
+                                  '.typeextenumbersright',
+                                  '.typevalextenumbersright')]
             + ['extenumleft.exten', 'extenumright.exten',
-               'extenumleft.type', 'extenumleft.typeval']
+               'extenumleft.type', 'extenumleft.typeval',
+               'extenumright.type', 'extenumright.typeval']
             + [UF_TABLE+x for x in ('.firstname', '.lastname', '.id')],
             (confdico['iduserfeatures'],))
 
         funckey = {}
         for fk in function_key_list:
             isbsfilter = False
+            fknum = fk[FK_TABLE+'.fknum']
             label = fk[FK_TABLE+'.label']
-            supervision = bool(int(fk[FK_TABLE+'.supervision']))
+            exten = fk[FK_TABLE+'.exten']
+
+            fkey = {'exten':        None,
+                    'label':        label,
+                    'supervision':  bool(int(fk[FK_TABLE+'.supervision']))}
 
             # SPECIAL CASES:
-            if fk['extenumleft.type'] == 'extenfeatures':
+            if fk['extenumleft.type'] is None:
+                # group, meetme, queue or user without number
+                if fk['extenumright.type'] is None \
+                    and fk[FK_TABLE+'.typeextenumbersright'] in ('group',
+                                                                 'queue',
+                                                                 'user'):
+                    fkey['exten'] = \
+                        fkey_extension(
+                            confdico['extensions'].get('call' + fk[FK_TABLE+'.typeextenumbersright']),
+                            (fk[FK_TABLE+'.typevalextenumbersright'],))
+
+                    funckey[fknum] = fkey
+                continue
+            elif fk['extenumleft.type'] == 'extenfeatures':
                 if fk['extenumleft.typeval'] == 'bsfilter':
                     isbsfilter = True
-                elif fk['extenumleft.typeval'] == 'progfunckey':
-                    funckey[fk[FK_TABLE+'.fknum']] = {
-                        'exten':
-                            fkey_extension(
-                                fk['extenumleft.exten'],
-                                fk[FK_TABLE+'.iduserfeatures'],
-                                fk['extenumright.exten'],
-                                fk[FK_TABLE+'.exten']),
-                        'label':        label,
-                        'supervision':  supervision 
-                    }
+                elif bool(fk[FK_TABLE+'.progfunckey']):
+                    if exten is None:
+                        if fk[FK_TABLE+'.typevalextenumbersright'] is None:
+                            continue
+                        else:
+                            exten = '*' + fk[FK_TABLE+'.typevalextenumbersright']
+
+                    fkey['exten'] = \
+                        fkey_extension(
+                            confdico['extensions'].get('progfunckey'),
+                            (fk[FK_TABLE+'.iduserfeatures'],
+                             fk['extenumleft.exten'],
+                             exten))
+
+                    funckey[fknum] = fkey
                     continue
 
             if label is None \
@@ -330,19 +363,19 @@ class SQLBackEnd:
                                              fk[UF_TABLE+'.lastname'])
 
                 if isbsfilter:
-                    label = "BS:%s" % label
+                    fkey['label'] = "BS:%s" % label
+                else:
+                    fkey['label'] = label
 
-            funckey[fk[FK_TABLE+'.fknum']] = {
-                'exten':
-                    speed_dial_key_extension(
-                        fk['extenumleft.exten'],
-                        fk['extenumright.exten'],
-                        fk[FK_TABLE+'.exten'],
-                        confdico['number'],
-                        isbsfilter),
-                'label':        label,
-                'supervision':  supervision
-            }
+            fkey['exten'] = \
+                speed_dial_key_extension(
+                    fk['extenumleft.exten'],
+                    fk['extenumright.exten'],
+                    exten,
+                    confdico['number'],
+                    isbsfilter)
+
+            funckey[fknum] = fkey
 
         confdico['funckey'] = funckey
         return confdico
@@ -366,6 +399,16 @@ class SQLBackEnd:
         """
         return self.config_by_something_proto(
                     'provisioningid', provcode, proto)
+
+    def config_by_name_proto(self, name, proto):
+        """
+        Lookup the configuration information on the phone in the
+        database, by protocol name and protocol.
+
+        Right now proto must evaluate to 'sip'
+        """
+        return self.config_by_something_proto(
+                    'name', name, proto)
 
     def save_phone(self, phone):
         """
@@ -393,7 +436,7 @@ class SQLBackEnd:
         """
         return self.sql_select_one(
             ("SELECT ${columns} FROM %s "
-             "WHERE iduserfeatures=%s AND proto=%s")
+             "WHERE iduserfeatures = %s AND proto = %s")
              % ( TABLE, '%s', '%s' ),
             ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
             (iduserfeatures, TECH_SIP))
@@ -404,7 +447,7 @@ class SQLBackEnd:
         iduserfeatures.
         """
         self.sql_modify(
-            "DELETE FROM %s WHERE iduserfeatures=%s" % ( TABLE, '%s'),
+            "DELETE FROM %s WHERE iduserfeatures = %s" % ( TABLE, '%s'),
             None,
             (iduserfeatures,))
 
@@ -558,7 +601,8 @@ def __provisioning(mode, ctx, phone):
             prov_inst.action_upgradefw()
         elif "iduserfeatures" in phone and phone["iduserfeatures"] == "0":
             log.info("__provisioning(): reinitializing provisioning to GUEST for phone %r", phone)
-            prov_inst.generate_reinitprov()
+            config = ctx.dbinfos.config_by_name_proto('guest', phone["proto"])
+            prov_inst.generate_reinitprov(config)
             __save_phone(ctx, phone, None)
             prov_inst.action_reinit()
         else:
@@ -970,7 +1014,7 @@ def main(log_level, foreground):
                 RWLock()
             )
             log.info("Orphan phones cleanup")
-            clean_at_startup(http_server.my_ctx)
+            clean_at_startup(http_server.my_ctx) # pylint: disable-msg=E1101
             root_logger.setLevel(log_level)
             log.info("Will now serve incoming HTTP requests")
             http_server.serve_forever()
