@@ -103,7 +103,7 @@ def incoming_user_set_features(agi, cursor, args):
     if caller and caller.enableautomon:
         options += "W"
 
-    if feature_list.incallfilter and user.incallfilter:
+    if feature_list.incallfilter and user.incallfilter: # pylint: disable-msg=E1101
         options += "p"
 
     agi.set_variable('XIVO_CALLOPTIONS', options)
@@ -117,7 +117,7 @@ def incoming_user_set_features(agi, cursor, args):
 
     agi.set_variable('XIVO_RINGSECONDS', ringseconds)
 
-    if feature_list.enablednd:
+    if feature_list.enablednd: # pylint: disable-msg=E1101
         enablednd = user.enablednd
     else:
         enablednd = 0
@@ -145,7 +145,7 @@ def incoming_user_set_features(agi, cursor, args):
     unc_actionarg1  = ""
     unc_actionarg2  = ""
 
-    if feature_list.fwdunc:
+    if feature_list.fwdunc: # pylint: disable-msg=E1101
         enableunc = user.enableunc
 
         if enableunc:
@@ -159,7 +159,8 @@ def incoming_user_set_features(agi, cursor, args):
                                          'user',
                                          unc_action,
                                          unc_actionarg1,
-                                         unc_actionarg2)
+                                         unc_actionarg2,
+                                         False)
 
     setbusy         = False
     enablebusy      = 0
@@ -167,7 +168,7 @@ def incoming_user_set_features(agi, cursor, args):
     busy_actionarg1 = ""
     busy_actionarg2 = ""
 
-    if feature_list.fwdbusy:
+    if feature_list.fwdbusy: # pylint: disable-msg=E1101
         enablebusy = user.enablebusy
 
         if enablebusy:
@@ -186,7 +187,8 @@ def incoming_user_set_features(agi, cursor, args):
                                              'user',
                                              busy_action,
                                              busy_actionarg1,
-                                             busy_actionarg2)
+                                             busy_actionarg2,
+                                             False)
 
     setrna         = False
     enablerna      = 0
@@ -194,7 +196,7 @@ def incoming_user_set_features(agi, cursor, args):
     rna_actionarg1 = ""
     rna_actionarg2 = ""
 
-    if feature_list.fwdrna:
+    if feature_list.fwdrna: # pylint: disable-msg=E1101
         enablerna = user.enablerna
 
         if enablerna:
@@ -203,17 +205,18 @@ def incoming_user_set_features(agi, cursor, args):
             rna_actionarg2 = user.context
         else:
             setrna = True
-            objects.DialAction(agi, cursor, 'noanwser', 'user', user.id).set_variables()
+            objects.DialAction(agi, cursor, 'noanswer', 'user', user.id).set_variables()
 
     agi.set_variable('XIVO_ENABLERNA', enablerna)
 
     if not setrna:
         objects.DialAction.set_agi_variables(agi,
-                                             'noanwser',
+                                             'noanswer',
                                              'user',
                                              rna_action,
                                              rna_actionarg1,
-                                             rna_actionarg2)
+                                             rna_actionarg2,
+                                             False)
 
     objects.DialAction(agi, cursor, 'congestion', 'user', user.id).set_variables()
     objects.DialAction(agi, cursor, 'chanunavail', 'user', user.id).set_variables()
@@ -221,7 +224,7 @@ def incoming_user_set_features(agi, cursor, args):
     if user.musiconhold:
         agi.set_variable('CHANNEL(musicclass)', user.musiconhold)
 
-    if feature_list.callrecord and user.callrecord:
+    if feature_list.callrecord and user.callrecord: # pylint: disable-msg=E1101
         # BUGBUG the context is missing in the filename TODO use ids
         callrecordfile = "user-%s-%s-%s.wav" % (srcnum, dstnum, int(time.time()))
     else:

@@ -33,20 +33,30 @@ class DBUpdateException(Exception):
 
 
 class ExtenFeatures:
-    FORWARDS = (('fwdbusy', 'busy'),
-                ('fwdrna', 'rna'),
-                ('fwdunc', 'unc'))
+    FEATURES    = {
+        'agents':   (('agentdynamiclogin',),
+                     ('agentstaticlogin',),
+                     ('agentstaticlogoff',)),
 
-    SERVICES = (('enablevm', 'enablevoicemail'),
-                ('callrecord', 'callrecord'),
-                ('incallfilter', 'incallfilter'),
-                ('enablednd', 'enablednd'))
+        'groups':   (('groupaddmember',),
+                     ('groupremovemember',),
+                     ('queueaddmember',),
+                     ('queueremovemember',)),
+
+        'forwards': (('fwdbusy',    'busy'),
+                     ('fwdrna',     'rna'),
+                     ('fwdunc',     'unc')),
+
+        'services': (('enablevm',       'enablevoicemail'),
+                     ('callrecord',     'callrecord'),
+                     ('incallfilter',   'incallfilter'),
+                     ('enablednd',      'enablednd'))}
 
     def __init__(self, agi, cursor):
         self.agi = agi
         self.cursor = cursor
 
-        self.featureslist = tuple(x[0] for x in (self.FORWARDS + self.SERVICES))
+        self.featureslist = tuple(x[0] for x in self.FEATURES.itervalues())
 
         self.cursor.query("SELECT ${columns} FROM extensions "
                           "WHERE name IN (" + ", ".join(["%s"] * len(self.featureslist)) + ") "
@@ -805,13 +815,18 @@ class DialAction:
             self.actionarg2 = res['actionarg2']
 
     def set_variables(self):
+        category_no_isda = ('none',
+                            'endcall:busy',
+                            'endcall:congestion',
+                            'endcall:hangup')
+
         DialAction.set_agi_variables(self.agi,
-                                     self.category,
                                      self.event,
+                                     self.category,
                                      self.action,
                                      self.actionarg1,
                                      self.actionarg2,
-                                     True)
+                                     (self.category not in category_no_isda))
 
 
 class Trunk:

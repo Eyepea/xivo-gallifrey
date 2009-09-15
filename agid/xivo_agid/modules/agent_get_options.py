@@ -20,9 +20,16 @@ from xivo_agid import agid
 from xivo_agid import objects
 
 def agent_get_options(agi, cursor, args):
+    agi.set_variable('XIVO_AGENTEXISTS', 0)
+
     try:
-        agent = objects.Agent(agi, cursor, number=args[0])
-    except LookupError, e:
+        number = str(args[0])
+
+        if number.startswith('*'):
+            agent = objects.Agent(agi, cursor, xid=number[1:])
+        else:
+            agent = objects.Agent(agi, cursor, number=number)
+    except (LookupError, IndexError), e:
         agi.verbose(str(e))
         return
 
@@ -34,6 +41,7 @@ def agent_get_options(agi, cursor, args):
     agi.set_variable('XIVO_AGENTEXISTS', 1)
     agi.set_variable('XIVO_AGENTPASSWD', agent.passwd)
     agi.set_variable('_XIVO_AGENTID', agent.id)
+    agi.set_variable('_XIVO_AGENTNUM', agent.number)
     agi.set_variable('_XIVO_AGENTLANGUAGE', agent.language)
     agi.set_variable('_XIVO_AGENTOPTIONS', options)
 

@@ -62,16 +62,19 @@ def phone_progfunckey(agi, cursor, args):
         agi.verbose(str(e))
 
     if feature:
-        forwards = dict(extenfeatures.FORWARDS)
+        forwards = dict(extenfeatures.FEATURES['forwards'])
+        services = dict(extenfeatures.FEATURES['services'])
 
         if forwards.has_key(feature):
-            uattr = "enable%s" % forwards[feature]
+            enabled = int(bool(getattr(user, "enable%s" % forwards[feature], 0)))
+        elif services.has_key(feature):
+            enabled = int(bool(getattr(user, services[feature], 0)))
         else:
-            uattr = dict(extenfeatures.SERVICES)[feature]
+            enabled = -1
 
     agi.set_variable('XIVO_PHONE_CONTEXT', user.context)
     agi.set_variable('XIVO_PHONE_PROGFUNCKEY', ''.join(fklist[1:]))
     agi.set_variable('XIVO_PHONE_PROGFUNCKEY_FEATURE', feature)
-    agi.set_variable('XIVO_PHONE_PROGFUNCKEY_FEATURE_ENABLED', int(bool(getattr(user, uattr, 0))))
+    agi.set_variable('XIVO_PHONE_PROGFUNCKEY_FEATURE_ENABLED', enabled)
 
 agid.register(phone_progfunckey)

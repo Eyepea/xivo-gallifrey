@@ -29,20 +29,20 @@ def phone_get_features(agi, cursor, args):
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
-    for fwd in feature_list.FORWARDS:
+    for fwd in feature_list.FEATURES['forwards']:
         fwdupper    = fwd[1].upper()
         enable      = 0
         dest        = ""
 
         if getattr(feature_list, fwd[0], 0) \
             and getattr(user, "enable%s" % fwd[1], 0):
-                enable  = 1
-                dest    = getattr(user, "dest%s" % fwd[1], "")
+            enable  = 1
+            dest    = getattr(user, "dest%s" % fwd[1], "")
 
         agi.set_variable("XIVO_ENABLE%s" % fwdupper, enable)
         agi.set_variable("XIVO_DEST%s" % fwdupper, dest)
 
-    for service in feature_list.SERVICES:
+    for service in feature_list.FEATURES['services']:
         enable = bool(getattr(feature_list, service[0], 0) and getattr(user, service[1], 0))
         agi.set_variable("XIVO_%s" % service[1].upper(), int(enable))
 
