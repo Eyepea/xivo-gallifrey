@@ -48,6 +48,9 @@ def clean_extension(exten):
     """
     Return an extension from an Asterisk extension pattern.
     """
+    if exten is None:
+        return ""
+
     exten = str(exten)
 
     if exten[0] == '_':

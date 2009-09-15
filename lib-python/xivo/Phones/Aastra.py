@@ -31,7 +31,7 @@ import math
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
+from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Aastra") # pylint: disable-msg=C0103
 
@@ -49,6 +49,13 @@ class Aastra(PhoneVendorMixin):
     AASTRA_COMMON_HTTP_PASS = '22222'
 
     AASTRA_COMMON_DIR = None
+
+    AASTRA_DP_SYNTAX_FROM_ASTERISK = (('_', ''),
+                                      ('X', 'x'),
+                                      ('Z', '[1-9]'),
+                                      ('N', '[2-9]'),
+                                      ('.', '+'),
+                                      ('!', '+'))
 
     @classmethod
     def setup(cls, config):
@@ -102,6 +109,19 @@ class Aastra(PhoneVendorMixin):
                             close_fds = True)
         except OSError:
             log.exception("error when trying to call curl")
+
+    @staticmethod
+    def __format_extension(exten):
+        if exten is None:
+            return ""
+
+        for (key, val) in Aastra.AASTRA_DP_SYNTAX_FROM_ASTERISK:
+            exten = exten.replace(key, val)
+
+        if exten.find('#') != -1:
+            exten = '"' + exten + '"'
+
+        return exten
 
     @staticmethod
     def __format_function_keys(funckey, model):
@@ -184,19 +204,22 @@ class Aastra(PhoneVendorMixin):
         tmp_filename = os.path.join(self.AASTRA_COMMON_DIR, macaddr + '.cfg.tmp')
         cfg_filename = tmp_filename[:-4]
 
+        provinfo['subscribemwi'] = str(int(bool(int(provinfo.get('subscribemwi', 0)))))
+
+        exten_pickup_prefix = self.__format_extension(
+                clean_extension(provinfo['extensions']['pickupexten']))
+
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'], model)
 
-        txt = xivo_config.txtsubst(template_lines,
-                { 'user_display_name':  provinfo['name'],
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'user_subscribe_mwi': provinfo['subscribemwi'],
-                  'asterisk_ipv4':      self.ASTERISK_IPV4,
-                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
-                  'function_keys': function_keys_config_lines,
-                },
+        txt = xivo_config.txtsubst(
+                template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { 'exten_pickup_prefix':    exten_pickup_prefix,
+                      'function_keys':          function_keys_config_lines
+                    },
+                    format_extension=self.__format_extension),
                 cfg_filename,
                 'utf8')
 
@@ -205,30 +228,18 @@ class Aastra(PhoneVendorMixin):
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
 
-    def do_reinitprov(self):
+    def do_reinitprov(self, provinfo):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__generate(
-                { 'name':           "guest",
-                  'ident':          "guest",
-                  'number':         "guest",
-                  'passwd':         "guest",
-                  'subscribemwi':   "0",
-                  'funckey':        {},
-                })
+        self.__generate(provinfo)
 
     def do_autoprov(self, provinfo):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        if bool(int(provinfo.get('subscribemwi', 0))):
-            provinfo['subscribemwi'] = '1'
-        else:
-            provinfo['subscribemwi'] = '0'
-
         self.__generate(provinfo)
 
     # Introspection entry points

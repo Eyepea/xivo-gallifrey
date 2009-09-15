@@ -40,8 +40,10 @@ from cookielib import CookieJar
 from xivo import network
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
+from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Siemens") # pylint: disable-msg=C0103
+
 
 class SiemensHTTP:
 
@@ -489,16 +491,15 @@ class Siemens(PhoneVendorMixin):
         tmp_filename = os.path.join(self.SIEMENS_COMMON_DIR, "%s.tmp" % phone_file)
         cfg_filename = tmp_filename[:-4]
 
-        txt = xivo_config.txtsubst(template_lines,
-                { 'user_display_name':  provinfo['name'],
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'user_subscribe_mwi': provinfo['subscribemwi'],
-                  'config_sha1sum':     provinfo['sha1sum'],
-                  'asterisk_ipv4':      self.ASTERISK_IPV4,
-                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
-                },
+        provinfo['subscribemwi'] = str(int(bool(int(provinfo.get('subscribemwi', 0)))))
+
+        txt = xivo_config.txtsubst(
+                template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { 'config_sha1sum': provinfo['sha1sum'],
+                    },
+                    format_extension=clean_extension),
                 cfg_filename,
                 'utf8')
 
@@ -580,29 +581,22 @@ class Siemens(PhoneVendorMixin):
             provinfo['sha1sum'] = '1'
             self.__generate(provinfo)
 
-    def do_reinitprov(self):
+    def do_reinitprov(self, provinfo):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__action_prov({'name':         'guest',
-                            'ident':        'guest',
-                            'number':       'guest',
-                            'passwd':       'guest',
-                            'subscribemwi': '0',
-                            'sha1sum':      self.__get_config_sha1sum()})
+        provinfo['sha1sum'] = self.__get_config_sha1sum()
+
+        self.__action_prov(provinfo)
 
     def do_autoprov(self, provinfo):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        if bool(int(provinfo.get('subscribemwi', 0))):
-            provinfo['subscribemwi'] = '1'
-        else:
-            provinfo['subscribemwi'] = '0'
-
         provinfo['sha1sum'] = self.__get_config_sha1sum()
+
         self.__action_prov(provinfo)
 
     # Introspection entry points

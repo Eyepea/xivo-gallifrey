@@ -293,6 +293,24 @@ class PhoneVendorMixin(object):
     TEMPLATES_DIR = None
     NTP_SERVER_IPV4 = None
     TFTPROOT = None
+    PROVI_VARS = {'config':
+                        {'asterisk_ipv4':   None,
+                         'ntp_server_ipv4': None},
+                  'user':
+                        {'display_name':    'name',
+                         'phone_ident':     'ident',
+                         'phone_number':    'number',
+                         'simultcalls':     'simultcalls',
+                         'dtmfmode':        'dtmfmode',
+                         'subscribe_mwi':   'subscribemwi'},
+                  'exten':
+                        {'dnd':             'enablednd',
+                         'forward_unc':     'fwdunc',
+                         'park':            'parkext',
+                         'pickup':          'pickup',
+                         'pickup_group':    'pickupexten',
+                         'voicemail':       'vmusermsg'}
+                 }
 
     @classmethod
     def setup(cls, config):
@@ -306,7 +324,42 @@ class PhoneVendorMixin(object):
         cls.TEMPLATES_DIR = config['templates_dir']
         cls.NTP_SERVER_IPV4 = config['ntp_server_ipv4']
         cls.TFTPROOT = config['tftproot']
-    
+
+        cls.PROVI_VARS['config']['asterisk_ipv4'] = cls.ASTERISK_IPV4
+        cls.PROVI_VARS['config']['ntp_server_ipv4'] = cls.NTP_SERVER_IPV4
+
+    @classmethod
+    def set_provisioning_variables(cls, provinfo, vars, format_var=None, format_extension=None):
+        for key in cls.PROVI_VARS['config'].keys():
+            if vars.has_key(key):
+                continue
+            elif not format_var:
+                vars[key] = cls.PROVI_VARS['config'][key]
+            else:
+                vars[key] = format_var(cls.PROVI_VARS['config'][key])
+
+        for key, value in cls.PROVI_VARS['user'].iteritems():
+            key = "user_%s" % key
+
+            if vars.has_key(key) or not provinfo.has_key(value):
+                continue
+            elif not format_var:
+                vars[key] = provinfo[value]
+            else:
+                vars[key] = format_var(provinfo[value])
+
+        for key, value in cls.PROVI_VARS['exten'].iteritems():
+            key = "exten_%s" % key
+
+            if vars.has_key(key):
+                continue
+            elif not format_extension or not provinfo['extensions'].has_key(value):
+                vars[key] = provinfo['extensions'][value]
+            else:
+                vars[key] = format_extension(provinfo['extensions'][value])
+
+        return vars
+
     def __init__(self, phone):
         """
         Constructor.
@@ -351,22 +404,22 @@ class PhoneVendorMixin(object):
         """
         This function upgrade the phone firmware.
         """
-        log.info("Sending UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
+        log.info("Sending UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
 
         if hasattr(self, 'do_upgradefw'):
             self.do_upgradefw()
         else:
-            log.error("Missing UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
+            log.error("Missing UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
             return
-        log.debug("Sent UPGRADE FIRMWARE command. (phone: '%s', vendor: '%s')", self.phone['macaddr'], self.phone['vendor'])
+        log.debug("Sent UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
 
-    def generate_reinitprov(self):
+    def generate_reinitprov(self, provinfo):
         """
         This function put the configuration for the phone back in guest
         state.
         """
         log.info("About to GUEST'ify the phone %s", self.phone['macaddr'])
-        self.do_reinitprov()
+        self.do_reinitprov(provinfo)
         log.debug("Phone GUEST'ified %s", self.phone['macaddr'])
     
     def generate_autoprov(self, provinfo):

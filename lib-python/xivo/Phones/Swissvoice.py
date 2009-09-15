@@ -30,7 +30,7 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
+from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Swissvoice") # pylint: disable-msg=C0103
 
@@ -111,7 +111,7 @@ class Swissvoice(PhoneVendorMixin):
         "Entry point to send the reboot command to the phone."
         self.__action(self.SWISSVOICE_COMMON_HTTP_USER, self.SWISSVOICE_COMMON_HTTP_PASS)
 
-    def do_reinitprov(self):
+    def do_reinitprov(self, provinfo):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
@@ -163,17 +163,17 @@ class Swissvoice(PhoneVendorMixin):
         cfg_filename = cfg_tmp_filename[:-4]
         inf_filename = inf_tmp_filename[:-4]
 
-        txt = xivo_config.txtsubst(cfg_template_lines,
-                { 'user_display_name':  provinfo['name'],
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'http_user':          self.SWISSVOICE_COMMON_HTTP_USER,
-                  'http_pass':          self.SWISSVOICE_COMMON_HTTP_PASS,
-                  'dtmfmode':           self.SWISSVOICE_DTMF.get(provinfo['dtmfmode'], "off"),
-                  'asterisk_ipv4' :     self.ASTERISK_IPV4,
-                  'ntp_server_ipv4' :   self.NTP_SERVER_IPV4,
-                },
+
+
+        txt = xivo_config.txtsubst(
+                cfg_template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { 'http_user':          self.SWISSVOICE_COMMON_HTTP_USER,
+                      'http_pass':          self.SWISSVOICE_COMMON_HTTP_PASS,
+                      'user_dtmfmode':      self.SWISSVOICE_DTMF.get(provinfo['dtmfmode'], "off"),
+                    },
+                    format_extension=clean_extension),
                 cfg_filename,
                 'utf8')
 
@@ -182,8 +182,13 @@ class Swissvoice(PhoneVendorMixin):
         tmp_file.close()
         os.rename(cfg_tmp_filename, cfg_filename)
 
-        txt = xivo_config.txtsubst(inf_template_lines,
-                { 'macaddr': macaddr },
+        txt = xivo_config.txtsubst(
+                inf_template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { 'macaddr':    macaddr
+                    },
+                    format_extension=clean_extension),
                 inf_filename,
                 'utf8')
 

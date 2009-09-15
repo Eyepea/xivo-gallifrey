@@ -30,7 +30,7 @@ import subprocess
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
+from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Snom") # pylint: disable-msg=C0103
 
@@ -119,7 +119,7 @@ class Snom(PhoneVendorMixin):
         "Entry point to send the reboot command to the phone."
         self.__action("REBOOT", self.SNOM_COMMON_HTTP_USER, self.SNOM_COMMON_HTTP_PASS)
 
-    def do_reinitprov(self):
+    def do_reinitprov(self, provinfo):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
@@ -166,17 +166,15 @@ class Snom(PhoneVendorMixin):
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
 
-        txt = xivo_config.txtsubst(template_lines,
-                { 'user_display_name':  provinfo['name'],
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'asterisk_ipv4':      self.ASTERISK_IPV4,
-                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
-                  'http_user':          self.SNOM_COMMON_HTTP_USER,
-                  'http_pass':          self.SNOM_COMMON_HTTP_PASS,
-                  'function_keys':      function_keys_config_lines,
-                },
+        txt = xivo_config.txtsubst(
+                template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { 'http_user':          self.SNOM_COMMON_HTTP_USER,
+                      'http_pass':          self.SNOM_COMMON_HTTP_PASS,
+                      'function_keys':      function_keys_config_lines,
+                    },
+                    format_extension=clean_extension),
                 htm_filename,
                 'utf8')
 

@@ -33,7 +33,7 @@ from xml.sax.saxutils import escape
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
+from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Linksys") # pylint: disable-msg=C0103
 
@@ -153,19 +153,27 @@ class Linksys(PhoneVendorMixin):
         tmp_filename = os.path.join(self.LINKSYS_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")
         cfg_filename = tmp_filename[:-4]
 
+        if bool(int(provinfo.get('subscribemwi', 0))):
+            provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
+        else:
+            provinfo['vmailaddr'] = ""
+
+        exten_pickup_prefix = \
+                clean_extension(provinfo['extensions']['pickupexten']) + "#"
+
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
 
-        txt = xivo_config.txtsubst(template_lines,
-                { 'user_display_name':  self.xml_escape(provinfo['name']),
-                  'user_phone_ident':   self.xml_escape(provinfo['ident']),
-                  'user_phone_number':  self.xml_escape(provinfo['number']),
-                  'user_phone_passwd':  self.xml_escape(provinfo['passwd']),
-                  'user_vmail_addr':    self.xml_escape(provinfo['vmailaddr']),
-                  'asterisk_ipv4':      self.ASTERISK_IPV4,
-                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
-                  'function_keys':      function_keys_config_lines,
-                },
+        txt = xivo_config.txtsubst(
+                template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
+                      'exten_pickup_prefix':    exten_pickup_prefix,
+                      'function_keys':          function_keys_config_lines
+                    },
+                    self.xml_escape,
+                    clean_extension),
                 cfg_filename,
                 'utf8')
 
@@ -203,35 +211,23 @@ class Linksys(PhoneVendorMixin):
                                       blf,
                                       exten,
                                       cls.ASTERISK_IPV4,
-                                      self.xml_escape(value.get('label', exten)),
+                                      Linksys.xml_escape(value.get('label', exten)),
                                       unit,
                                       key))
         return "\n".join(fk_config_lines)
 
-    def do_reinitprov(self):
+    def do_reinitprov(self, provinfo):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__generate(
-                { 'name':       "guest",
-                  'ident':      "guest",
-                  'number':     "guest",
-                  'passwd':     "guest",
-                  'vmailaddr':  "",
-                  'funckey':    {},
-                })
+        self.__generate(provinfo)
 
     def do_autoprov(self, provinfo):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        if bool(int(provinfo.get('subscribemwi', 0))):
-            provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
-        else:
-            provinfo['vmailaddr'] = ""
-
         self.__generate(provinfo)
 
     # Introspection entry points

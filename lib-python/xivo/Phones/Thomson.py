@@ -31,7 +31,7 @@ import telnetlib
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
-
+from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Thomson") # pylint: disable-msg=C0103
 
@@ -193,27 +193,25 @@ class Thomson(PhoneVendorMixin):
         tmp_filename = self.THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
         txt_filename = tmp_filename[:-4]
 
-        multilines = str(provinfo['simultcalls'])
+        provinfo['subscribemwi'] = str(int(bool(int(provinfo.get('subscribemwi', 0)))))
+        provinfo['simultcalls'] = str(provinfo['simultcalls'])
+
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
 
-        txt = xivo_config.txtsubst(txt_template_lines,
-                { 'user_display_name':  provinfo['name'],
 # THOMSON BUG #1
 # provinfo['number'] is volontarily not set in "TEL1Number" because Thomson
 # phones authentify with their telnumber.. :/
-                  'user_phone_ident':   provinfo['ident'],
-                  'user_phone_number':  provinfo['number'],
-                  'user_phone_passwd':  provinfo['passwd'],
-                  'user_subscribe_mwi': provinfo['subscribemwi'],
-                  'asterisk_ipv4':      self.ASTERISK_IPV4,
-                  'ntp_server_ipv4':    self.NTP_SERVER_IPV4,
-                  'simultcalls':        multilines,
-                  # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
-                  'config_sn':          self.__generate_timestamp(),
-                  # </WARNING>
-                  'function_keys':      function_keys_config_lines,
-                },
+        txt = xivo_config.txtsubst(
+                txt_template_lines,
+                PhoneVendorMixin.set_provisioning_variables(
+                    provinfo,
+                    { # <WARNING: THIS FIELD MUST STAY IN LOWER CASE IN THE TEMPLATE AND MAC SPECIFIC FILE>
+                      'config_sn':          self.__generate_timestamp(),
+                      # </WARNING>
+                      'function_keys':      function_keys_config_lines,
+                    },
+                    format_extension=clean_extension),
                 txt_filename,
                 'utf8')
 
@@ -249,20 +247,12 @@ class Thomson(PhoneVendorMixin):
 #               self.__action(('sys set rel 0', 'ffs format', 'ffs commit', 'ffs commit', 'reboot', 'quit'))
         self.__action(('reboot',))
 
-    def do_reinitprov(self):
+    def do_reinitprov(self, provinfo):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__generate(
-                { 'name':           "guest",
-                  'ident':          "guest",
-                  'number':         "guest",
-                  'passwd':         "guest",
-                  'simultcalls':    "10",
-                  'subscribemwi':   "0",
-                  'funckey':        {},
-                })
+        self.__generate(provinfo)
 
     def do_autoprov(self, provinfo):
         """
