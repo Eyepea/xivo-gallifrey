@@ -25,15 +25,15 @@ from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
 
-xfeatures = {'bsfilter':    {},
-             'callgroup':   {},
-             'callqueue':   {},
-             'calluser':    {},
-             'fwdbusy':     {},
-             'fwdrna':      {},
-             'fwdunc':      {},
-             'progfunckey': {},
-             'vmusermsg':   {}}
+xfeatures = {'bsfilter':            {},
+             'callgroup':           {},
+             'callqueue':           {},
+             'calluser':            {},
+             'fwdbusy':             {},
+             'fwdrna':              {},
+             'fwdunc':              {},
+             'phoneprogfunckey':    {},
+             'vmusermsg':           {}}
 
 cursor.query("SELECT ${columns} FROM extenumbers "
              "INNER JOIN extensions ON "
@@ -207,6 +207,8 @@ for (context,) in res:
                  (context,))
     res2 = cursor.fetchall()
 
+    extens = set()
+
     for row in res2:
         exten = row['phonefunckey.exten']
 
@@ -216,10 +218,10 @@ for (context,) in res:
             else:
                 exten = "*%s" % row['phonefunckey.typevalextenumbersright']
 
-        extens = set(xivo_helpers.fkey_extension(xfeatures['progfunckey'].get('exten'),
-                                                 (row['phonefunckey.iduserfeatures'],
-                                                  row['extenumleft.exten'],
-                                                  exten)))
+        extens.add(xivo_helpers.fkey_extension(xfeatures['phoneprogfunckey'].get('exten'),
+                                               (row['phonefunckey.iduserfeatures'],
+                                                row['extenumleft.exten'],
+                                                exten)))
 
     for exten in extens:
         print "exten = %s,hint,Custom:%s" % (exten, exten)
