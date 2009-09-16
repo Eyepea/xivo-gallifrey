@@ -187,16 +187,16 @@ class SQLBackEnd:
                 (macaddr,))
 
     def get_extensions(self):
-        extensions = {'callgroup':      None,
-                      'callqueue':      None,
-                      'calluser':       None,
-                      'enablednd':      None,
-                      'fwdunc':         None,
-                      'parkext':        None,
-                      'pickup':         None,
-                      'pickupexten':    None,
-                      'progfunckey':    None,
-                      'vmusermsg':      None}
+        extensions = {'callgroup':          None,
+                      'callqueue':          None,
+                      'calluser':           None,
+                      'enablednd':          None,
+                      'fwdunc':             None,
+                      'parkext':            None,
+                      'pickup':             None,
+                      'pickupexten':        None,
+                      'phoneprogfunckey':   None,
+                      'vmusermsg':          None}
 
         res = self.sql_select_all(
                      ("SELECT ${columns} FROM %s "
@@ -324,7 +324,7 @@ class SQLBackEnd:
 
             # SPECIAL CASES:
             if fk['extenumleft.type'] is None:
-                # group, meetme, queue or user without number
+                # group, queue or user without number
                 if fk['extenumright.type'] is None \
                     and fk[FK_TABLE+'.typeextenumbersright'] in ('group',
                                                                  'queue',
@@ -335,7 +335,7 @@ class SQLBackEnd:
                             (fk[FK_TABLE+'.typevalextenumbersright'],))
 
                     funckey[fknum] = fkey
-                continue
+                    continue
             elif fk['extenumleft.type'] == 'extenfeatures':
                 if fk['extenumleft.typeval'] == 'bsfilter':
                     isbsfilter = True
@@ -348,7 +348,7 @@ class SQLBackEnd:
 
                     fkey['exten'] = \
                         fkey_extension(
-                            confdico['extensions'].get('progfunckey'),
+                            confdico['extensions'].get('phoneprogfunckey'),
                             (fk[FK_TABLE+'.iduserfeatures'],
                              fk['extenumleft.exten'],
                              exten))
