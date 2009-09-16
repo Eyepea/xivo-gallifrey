@@ -314,6 +314,7 @@ INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*21.',1,'Macro','featu
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*20',1,'Macro','fwdundoall','fwdundoall');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*51.',1,'Macro','groupmember|group|add|${EXTEN:3}','groupaddmember');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*52.',1,'Macro','groupmember|group|remove|${EXTEN:3}','groupremovemember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*50.',1,'Macro','groupmember|group|toggle|${EXTEN:3}','grouptogglemember');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*48378',1,'Macro','guestprov','guestprov');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*27',1,'Macro','incallfilter','incallfilter');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*10',1,'Macro','phonestatus','phonestatus');
@@ -321,6 +322,7 @@ INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*735.',1,'Macro','phon
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*8.',1,'Pickup','${EXTEN:2}%${CONTEXT}@PICKUPMARK','pickup');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*56.',1,'Macro','groupmember|queue|add|${EXTEN:3}','queueaddmember');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*57.',1,'Macro','groupmember|queue|remove|${EXTEN:3}','queueremovemember');
+INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*55.',1,'Macro','groupmember|queue|toggle|${EXTEN:3}','queuetogglemember');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','*9',1,'Macro','recsnd|wav','recsnd');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*99.',1,'Macro','vmboxmsg|${EXTEN:3}','vmboxmsgslt');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*93.',1,'Macro','vmboxpurge|${EXTEN:3}','vmboxpurgeslt');
@@ -385,13 +387,15 @@ INSERT INTO `extenumbers` VALUES (NULL,'_*21.','52c97d56ebcca524ccf882590e94c52f
 INSERT INTO `extenumbers` VALUES (NULL,'*20','934aca632679075488681be0e9904cf9102f8766','','extenfeatures','fwdundoall');
 INSERT INTO `extenumbers` VALUES (NULL,'_*51.','fd3d50358d246ab2fbc32e14056e2f559d054792','','extenfeatures','groupaddmember');
 INSERT INTO `extenumbers` VALUES (NULL,'_*52.','069a278d266d0cf2aa7abf42a732fc5ad109a3e6','','extenfeatures','groupremovemember');
+INSERT INTO `extenumbers` VALUES (NULL,'_*50.','53f7e7fa7fbbabb1245ed8dedba78da442a8659f','','extenfeatures','grouptogglemember');
 INSERT INTO `extenumbers` VALUES (NULL,'*48378','e27276ceefcc71a5d2def28c9b59a6410959eb43','','extenfeatures','guestprov');
 INSERT INTO `extenumbers` VALUES (NULL,'*27','663b9615ba92c21f80acac52d60b28a8d1fb1c58','','extenfeatures','incallfilter');
 INSERT INTO `extenumbers` VALUES (NULL,'_*735.','32e9b3597f8b9cd2661f0c3d3025168baafca7e6','','extenfeatures','phoneprogfunckey');
 INSERT INTO `extenumbers` VALUES (NULL,'*10','eecefbd85899915e6fc2ff5a8ea44c2c83597cd6','','extenfeatures','phonestatus');
 INSERT INTO `extenumbers` VALUES (NULL,'_*8.','b349d094036a97a7e0631ba60de759a9597c1c3a','','extenfeatures','pickup');
 INSERT INTO `extenumbers` VALUES (NULL,'_*56.','95d84232b10af6f6905dcd22f4261a4550461c7d','','extenfeatures','queueaddmember');
-INSERT INTO `extenumbers` VALUES (NULL,'_*57.','3ad1e945e85735f6417e5a0aba7fde3bc9d2ffec','','extenfeatures','queueremovemember');
+INSERT INTO `extenumbers` VALUES (NULL,'_*57.','3ad1e945e85735f6417e5a0aba7fde3bc9d2ffec','','extenfeatures','queuetogglemember');
+INSERT INTO `extenumbers` VALUES (NULL,'_*55.','f8085e23f56e5433006483dee5fe3db8c94a0a06','','extenfeatures','queueremovemember');
 INSERT INTO `extenumbers` VALUES (NULL,'*9','e28d0f359da60dcf86340435478b19388b1b1d05','','extenfeatures','recsnd');
 INSERT INTO `extenumbers` VALUES (NULL,'_*99.','6c92223f2ea0cfd9fad3db2f288ebdc9c64dc8f5','','extenfeatures','vmboxmsgslt');
 INSERT INTO `extenumbers` VALUES (NULL,'_*93.','7d891f90799fd6cb5bc85c4bd227a3357096be8f','','extenfeatures','vmboxpurgeslt');
