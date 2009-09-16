@@ -640,12 +640,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					break;
 				case 'extenfeatures-groupaddmember':
 				case 'extenfeatures-groupremovemember':
+				case 'extenfeatures-grouptogglemember':
 				case 'group':
 					$res = xivo_array_startswith_key($ref,'groupfeatures.',true);
 					$res['identity'] = $this->_service->identity('groupfeatures',$res,false);
 					break;
 				case 'extenfeatures-queueaddmember':
 				case 'extenfeatures-queueremovemember':
+				case 'extenfeatures-queuetogglemember':
 				case 'queue':
 					$res = xivo_array_startswith_key($ref,'queuefeatures.',true);
 					$res['identity'] = $this->_service->identity('queuefeatures',$res,false);

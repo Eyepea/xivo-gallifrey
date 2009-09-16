@@ -352,54 +352,44 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 		$this->_dso->leftjoin($this->_table['userfeatures'],
 				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['userfeatures'].'.id',
 				      null,
-				      '*');
+				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['userfeatures'],
-				       array('typeextenumbersright' => 'user'),
-				       null,
-				       true,
-				       $this->_table['phonefunckey']);
+				       $this->_table['phonefunckey'].'.typeextenumbersright = %s',
+				       'user');
 
 		$this->_dso->leftjoin($this->_table['agentfeatures'],
 				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['agentfeatures'].'.id',
 				      null,
-				      '*');
+				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['agentfeatures'],
-				       array('typeextenumbersright' => 'agent'),
-				       null,
-				       true,
-				       $this->_table['phonefunckey']);
+				       $this->_table['phonefunckey'].'.typeextenumbersright = %s',
+				       'agent');
 
 		$this->_dso->leftjoin($this->_table['groupfeatures'],
 				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['groupfeatures'].'.id',
 				      null,
-				      '*');
+				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['groupfeatures'],
-				       array('typeextenumbersright' => 'group'),
-				       null,
-				       true,
-				       $this->_table['phonefunckey']);
+				       $this->_table['phonefunckey'].'.typeextenumbersright = %s',
+				       'group');
 		$this->_dso->andjoinwhere($this->_table['groupfeatures'],
 					  array('deleted' => 0));
 
 		$this->_dso->leftjoin($this->_table['queuefeatures'],
 				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['queuefeatures'].'.id',
 				      null,
-				      '*');
+				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['queuefeatures'],
-				       array('typeextenumbersright' => 'queue'),
-				       null,
-				       true,
-				       $this->_table['phonefunckey']);
+				       $this->_table['phonefunckey'].'.typeextenumbersright = %s',
+				       'queue');
 
 		$this->_dso->leftjoin($this->_table['meetmefeatures'],
 				      $this->_table['phonefunckey'].'.typevalextenumbersright = '.$this->_table['meetmefeatures'].'.id',
 				      null,
-				      '*');
+				      array('id','*'));
 		$this->_dso->joinwhere($this->_table['meetmefeatures'],
-				       array('typeextenumbersright' => 'meetme'),
-				       null,
-				       true,
-				       $this->_table['phonefunckey']);
+				       $this->_table['phonefunckey'].'.typeextenumbersright = %s',
+				       'meetme');
 
 		$this->_dso->new_order(array('fknum' => SORT_ASC),null,$this->_table['phonefunckey']);
 

@@ -383,6 +383,12 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 			if(xivo_has_len($key) === false || xivo_has_len($val) === false)
 				continue;
+			else if($val === '*')
+			{
+				$this->_column[] = sprintf('%s.%s',$this->quote_identifier($table),
+								   $val);
+				continue;
+			}
 			else if($object === true || preg_match('/^[a-zA-Z0-9_\-\.]+$/',$val) === 0)
 			{
 				if($noassoc === true && is_int($key) === true)
@@ -609,7 +615,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if($jointablecond === false || isset($this->_table[$jointablecond]) === false)
 			$jointablecond = $join;
 
-		if(($where = $this->_mk_where($cond,$val,$condand,$jointablecond)) === false
+		if(($where = $this->_mk_where($cond,$val,$condand,$jointablecond,$join)) === false
 		|| ($join !== false && isset($this->_join[$join]) === false) === true)
 			return(false);
 		else if($join === false)
@@ -633,12 +639,12 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		return(true);
 	}
 
-	function _mk_where($cond,$val='',$condand=true,$join=false)
+	function _mk_where($cond,$val='',$condand=true,$jointablecond=false,$join=false)
 	{
 		if(is_array($cond) === true)
 		{
-			if($join !== false)
-				$val = $join;
+			if($jointablecond !== false)
+				$val = $jointablecond;
 
 			if(($condsep = $this->_mk_sep($cond,true,$val,true)) === false)
 				return(false);

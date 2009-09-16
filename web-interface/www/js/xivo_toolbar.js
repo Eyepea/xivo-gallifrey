@@ -34,7 +34,7 @@ var xivo_toolbar_fn_adv_menu_delete = function(e)
 
 xivo.dom.set_onload(function()
 {
-	if(xivo_toolbar_fm_search === '')
+	if(typeof(xivo_toolbar_fm_search) === 'undefined' || xivo_has_len(xivo_toolbar_fm_search) === false)
 		xivo_fm_set_events_text_helper('it-toolbar-search');
 
 	xivo.dom.add_event('mouseover',

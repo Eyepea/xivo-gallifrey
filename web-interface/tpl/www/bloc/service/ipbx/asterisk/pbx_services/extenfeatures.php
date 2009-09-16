@@ -841,6 +841,30 @@ if(isset($error_js[0]) === true)
 
 	<div id="sb-part-group" class="b-nodisplay">
 <?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-grouptogglemember'),
+				      'name'	=> 'extenfeatures[grouptogglemember][enable]',
+				      'labelid'	=> 'extenfeatures-enable-grouptogglemember',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('grouptogglemember','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[grouptogglemember][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-grouptogglemember',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('grouptogglemember','exten')),
+				  'default'	=> $element['extenfeatures']['grouptogglemember']['default'])),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-grouptogglemember]',
+				    'labelid'	=> 'extenfeatures-list-grouptogglemember',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)));
+?>
+		</div>
+<?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-groupaddmember'),
 				      'name'	=> 'extenfeatures[groupaddmember][enable]',
 				      'labelid'	=> 'extenfeatures-enable-groupaddmember',
@@ -883,6 +907,30 @@ if(isset($error_js[0]) === true)
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-groupremovemember]',
 				    'labelid'	=> 'extenfeatures-list-groupremovemember',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)));
+?>
+		</div>
+<?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-queuetogglemember'),
+				      'name'	=> 'extenfeatures[queuetogglemember][enable]',
+				      'labelid'	=> 'extenfeatures-enable-queuetogglemember',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('queuetogglemember','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[queuetogglemember][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-queuetogglemember',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('queuetogglemember','exten')),
+				  'default'	=> $element['extenfeatures']['queuetogglemember']['default'])),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-queuetogglemember]',
+				    'labelid'	=> 'extenfeatures-list-queuetogglemember',
 				    'key'	=> false,
 				    'empty'	=> true),
 			      array('*',range(3,11)));

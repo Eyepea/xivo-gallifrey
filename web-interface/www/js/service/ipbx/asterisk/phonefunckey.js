@@ -150,8 +150,10 @@ var xivo_phonefunckey_suggest_type = {
 	'extenfeatures-agentdynamiclogin':	xivo_phonefunckey_suggest_event_agent,
 	'extenfeatures-groupaddmember':		xivo_phonefunckey_suggest_event_group,
 	'extenfeatures-groupremovemember':	xivo_phonefunckey_suggest_event_group,
+	'extenfeatures-grouptogglemember':	xivo_phonefunckey_suggest_event_group,
 	'extenfeatures-queueaddmember':		xivo_phonefunckey_suggest_event_queue,
-	'extenfeatures-queueremovemember':	xivo_phonefunckey_suggest_event_queue};
+	'extenfeatures-queueremovemember':	xivo_phonefunckey_suggest_event_queue,
+	'extenfeatures-queuetogglemember':	xivo_phonefunckey_suggest_event_queue};
 
 function xivo_build_phonefunckey_array(id)
 {

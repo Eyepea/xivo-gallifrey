@@ -70,8 +70,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					case 'extenfeatures-agentdynamiclogin':
 					case 'groupaddmember':
 					case 'groupremovemember':
+					case 'grouptogglemember':
 					case 'queueaddmember':
 					case 'queueremovemember':
+					case 'queuetogglemember':
 						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 						$data['typeval'] = $data['typevalextenumbersright'];
 						return($data);
@@ -158,8 +160,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures-agentdynamiclogin':
 			case 'extenfeatures-groupaddmember':
 			case 'extenfeatures-groupremovemember':
+			case 'extenfeatures-grouptogglemember':
 			case 'extenfeatures-queueaddmember':
 			case 'extenfeatures-queueremovemember':
+			case 'extenfeatures-queuetogglemember':
 				if(xivo_has_len($arr['typeval']) === false)
 					return(false);
 
@@ -221,8 +225,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 					case 'agentstaticlogoff':
 					case 'groupaddmember':
 					case 'groupremovemember':
+					case 'grouptogglemember':
 					case 'queueaddmember':
 					case 'queueremovemember':
+					case 'queuetogglemember':
 						if($typeright !== substr($typeval,0,5))
 							return(false);
 						break;
