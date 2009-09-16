@@ -27,8 +27,8 @@ def groupmember(agi, cursor, args):
         agi.dp_break("Invalid number of arguments (args: %r)" % args)
     elif args[0] not in ('group', 'queue'):
         agi.dp_break("Invalid type (args: %r, excepted: 'group' or 'queue')" % args[0])
-    elif args[1] not in ('add','remove'):
-        agi.dp_break("Invalid action (args: %r, excepted: 'add' or 'remove')" % args[1])
+    elif args[1] not in ('add', 'remove', 'toggle'):
+        agi.dp_break("Invalid action (args: %r, excepted: 'add', 'remove' or 'toggle')" % args[1])
 
     if xlen > 3 and args[3] != '':
         try:

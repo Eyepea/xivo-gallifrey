@@ -40,8 +40,10 @@ class ExtenFeatures:
 
         'groups':   (('groupaddmember',),
                      ('groupremovemember',),
+                     ('grouptogglemember',),
                      ('queueaddmember',),
-                     ('queueremovemember',)),
+                     ('queueremovemember',),
+                     ('queuetogglemember',)),
 
         'forwards': (('fwdbusy',    'busy'),
                      ('fwdrna',     'rna'),
@@ -56,7 +58,13 @@ class ExtenFeatures:
         self.agi = agi
         self.cursor = cursor
 
-        self.featureslist = tuple(x[0] for x in self.FEATURES.itervalues())
+        featureslist = []
+
+        for xtype in self.FEATURES.itervalues():
+            for x in xtype:
+                featureslist.append(x[0])
+
+        self.featureslist = tuple(featureslist)
 
         self.cursor.query("SELECT ${columns} FROM extensions "
                           "WHERE name IN (" + ", ".join(["%s"] * len(self.featureslist)) + ") "

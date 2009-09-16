@@ -53,6 +53,7 @@ def phone_progfunckey(agi, cursor, args):
         agi.dp_break("Wrong userid. (userid: %r, excepted: %r)" % (fklist[0], userid))
 
     feature = ""
+    enabled = -1
 
     try:
         extenfeatures = objects.ExtenFeatures(agi, cursor)
@@ -69,8 +70,6 @@ def phone_progfunckey(agi, cursor, args):
             enabled = int(bool(getattr(user, "enable%s" % forwards[feature], 0)))
         elif services.has_key(feature):
             enabled = int(bool(getattr(user, services[feature], 0)))
-        else:
-            enabled = -1
 
     agi.set_variable('XIVO_PHONE_CONTEXT', user.context)
     agi.set_variable('XIVO_PHONE_PROGFUNCKEY', ''.join(fklist[1:]))
