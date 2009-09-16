@@ -298,10 +298,14 @@ class PhoneVendorMixin(object):
                          'ntp_server_ipv4': None},
                   'user':
                         {'display_name':    'name',
+                         'dtmfmode':        'dtmfmode',
+                         'firstname':       'firstname',
+                         'lastname':        'lastname',
+                         'mailbox':         'mailbox',
                          'phone_ident':     'ident',
+                         'phone_passwd':    'passwd',
                          'phone_number':    'number',
                          'simultcalls':     'simultcalls',
-                         'dtmfmode':        'dtmfmode',
                          'subscribe_mwi':   'subscribemwi'},
                   'exten':
                         {'dnd':             'enablednd',
