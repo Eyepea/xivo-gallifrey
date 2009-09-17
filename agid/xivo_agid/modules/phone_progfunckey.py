@@ -19,7 +19,7 @@ __license__ = """
 from xivo_agid import agid
 from xivo_agid import objects
 
-from xivo import xivo_helpers
+from xivo.xivo_helpers import split_extension
 
 def phone_progfunckey(agi, cursor, args):
     userid  = agi.get_variable('XIVO_USERID')
@@ -45,7 +45,7 @@ def phone_progfunckey(agi, cursor, args):
             agi.dp_break(str(e))
 
     try:
-        fklist = xivo_helpers.split_extension(args[0])
+        fklist = split_extension(args[0])
     except ValueError, e:
         agi.dp_break(str(e))
 
@@ -53,27 +53,17 @@ def phone_progfunckey(agi, cursor, args):
         agi.dp_break("Wrong userid. (userid: %r, excepted: %r)" % (fklist[0], userid))
 
     feature = ""
-    enabled = -1
 
     try:
         extenfeatures = objects.ExtenFeatures(agi, cursor)
-        feature = extenfeatures.get_feature_by_exten(fklist[1])
+        feature = extenfeatures.get_name_by_exten(fklist[1])
     except LookupError, e:
         feature = ""
         agi.verbose(str(e))
 
-    if feature:
-        forwards = dict(extenfeatures.FEATURES['forwards'])
-        services = dict(extenfeatures.FEATURES['services'])
-
-        if forwards.has_key(feature):
-            enabled = int(bool(getattr(user, "enable%s" % forwards[feature], 0)))
-        elif services.has_key(feature):
-            enabled = int(bool(getattr(user, services[feature], 0)))
-
     agi.set_variable('XIVO_PHONE_CONTEXT', user.context)
     agi.set_variable('XIVO_PHONE_PROGFUNCKEY', ''.join(fklist[1:]))
+    agi.set_variable('XIVO_PHONE_PROGFUNCKEY_STATE', 'NOTHING')
     agi.set_variable('XIVO_PHONE_PROGFUNCKEY_FEATURE', feature)
-    agi.set_variable('XIVO_PHONE_PROGFUNCKEY_FEATURE_ENABLED', enabled)
 
 agid.register(phone_progfunckey)

@@ -59,13 +59,15 @@ def groupmember(agi, cursor, args):
 
     try:
         if args[0] == 'group':
-            name = objects.Group(agi, cursor, xid, number, context).name
+            obj = objects.Group(agi, cursor, xid, number, context)
         else:
-            name = objects.Queue(agi, cursor, xid, number, context).name
+            obj = objects.Queue(agi, cursor, xid, number, context)
     except LookupError, e:
         agi.dp_break(str(e))
 
-    agi.set_variable('XIVO_GROUPMEMBER_NAME', name)
+    agi.set_variable('XIVO_GROUPMEMBER_ID', obj.id)
+    agi.set_variable('XIVO_GROUPMEMBER_NAME', obj.name)
+    agi.set_variable('XIVO_GROUPMEMBER_NUMBER', obj.number)
     agi.set_variable('XIVO_GROUPMEMBER_ACTION', args[1])
     agi.set_variable('XIVO_GROUPMEMBER_USER_INTERFACE', user.interface)
 

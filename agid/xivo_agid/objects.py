@@ -36,7 +36,8 @@ class ExtenFeatures:
     FEATURES    = {
         'agents':   (('agentdynamiclogin',),
                      ('agentstaticlogin',),
-                     ('agentstaticlogoff',)),
+                     ('agentstaticlogoff',),
+                     ('agentstaticlogtoggle',)),
 
         'groups':   (('groupaddmember',),
                      ('groupremovemember',),
@@ -81,7 +82,7 @@ class ExtenFeatures:
         for feature in self.featureslist:
             setattr(self, feature, (feature in enabled_features))
 
-    def get_feature_by_exten(self, exten):
+    def get_name_by_exten(self, exten):
         self.cursor.query("SELECT ${columns} FROM extensions "
                           "WHERE name IN (" + ", ".join(["%s"] * len(self.featureslist)) + ") "
                           "AND (exten = %s "
@@ -97,6 +98,23 @@ class ExtenFeatures:
             raise LookupError("Unable to find feature by exten (exten = %r)" % exten)
 
         return res['name']
+
+    def get_exten_by_name(self, name, commented=None):
+        query   = "SELECT ${columns} FROM extensions WHERE name = %s"
+        params  = [name]
+
+        if commented is not None:
+            params.append(int(bool(commented)))
+            query += " AND commented = %s"
+
+        self.cursor.query(query, ('exten',), params)
+
+        res = self.cursor.fetchone()
+
+        if not res:
+            raise LookupError("Unable to find feature by name (name = %r)" % name)
+
+        return res['exten']
 
 
 class BossSecretaryFilterMember:
@@ -473,49 +491,51 @@ class User:
         if not self.vmbox:
             self.enablevoicemail = 0
 
-    def reset(self):
+    def disable_forwards(self):
         self.cursor.query("UPDATE userfeatures "
-                          "SET enableunc = 0, "
-                          "    destunc = '', "
+                          "SET enablebusy = 0, "
                           "    enablerna = 0, "
-                          "    destrna = '', "
-                          "    enablebusy = 0, "
-                          "    destbusy = '' "
+                          "    enableunc = 0 "
                           "WHERE id = %s",
                           parameters = (self.id,))
 
         if self.cursor.rowcount != 1:
             raise DBUpdateException("Unable to perform the requested update")
         else:
-            self.enableunc = False
-            self.destunc = ""
-            self.enablerna = False
-            self.destrna = ""
-            self.enablebusy = False
-            self.destbusy = ""
+            self.enablebusy = 0
+            self.enablerna  = 0
+            self.enableunc  = 0
 
     def set_feature(self, feature, enabled, arg):
         enabled = int(bool(enabled))
 
-        if enabled:
+        if enabled and arg is not "":
             dest = arg
         else:
-            dest = ""
+            dest = None
 
         if feature not in ("unc", "rna", "busy"):
             raise ValueError("invalid feature")
 
-        self.cursor.query("UPDATE userfeatures "
-                          "SET enable%s = %%s, "
-                          "    dest%s = %%s "
-                          "WHERE id = %%s" % (feature, feature),
-                          parameters = (enabled, dest, self.id))
+        if dest is not None:
+            self.cursor.query("UPDATE userfeatures "
+                              "SET enable%s = %%s, "
+                              "    dest%s = %%s "
+                              "WHERE id = %%s" % (feature, feature),
+                              parameters = (enabled, dest, self.id))
+        else:
+            self.cursor.query("UPDATE userfeatures "
+                              "SET enable%s = %%s "
+                              "WHERE id = %%s" % feature,
+                              parameters = (enabled, self.id))
 
         if self.cursor.rowcount != 1:
             raise DBUpdateException("Unable to perform the requested update")
         else:
             setattr(self, "enable%s" % feature, enabled)
-            setattr(self, "dest%s" % feature, enabled)
+
+            if dest is not None:
+                setattr(self, "dest%s" % feature, dest)
 
     def toggle_feature(self, feature):
         if feature == "vm":

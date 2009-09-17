@@ -28,7 +28,7 @@ def fwdundoall(agi, cursor, args):
         agi.dp_break(str(e))
 
     try:
-        user.reset()
+        user.disable_forwards()
     except objects.DBUpdateException, e:
         agi.verbose(str(e))
 
