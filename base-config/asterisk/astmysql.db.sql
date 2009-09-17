@@ -296,6 +296,7 @@ CREATE INDEX `extensions__idx__name` ON `extensions`(`name`);
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*33.',1,'Macro','agentdynamiclogin|${EXTEN:3}','agentdynamiclogin');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*31.',1,'Macro','agentstaticlogin|${EXTEN:3}','agentstaticlogin');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*32.',1,'Macro','agentstaticlogoff|${EXTEN:3}','agentstaticlogoff');
+INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','_*30.',1,'Macro','agentstaticlogtoggle|${EXTEN:3}','agentstaticlogtoggle');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
 INSERT INTO `extensions` VALUES (NULL,0,'xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
 INSERT INTO `extensions` VALUES (NULL,1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
@@ -369,6 +370,7 @@ INSERT INTO `extenumbers` VALUES (NULL,'*3','68631b4b53ba2a27a969ca63bdcdc00805c
 INSERT INTO `extenumbers` VALUES (NULL,'_*33.','269371911e5bac9176919fa42e66814882c496e1','','extenfeatures','agentdynamiclogin');
 INSERT INTO `extenumbers` VALUES (NULL,'_*31.','678fe23ee0d6aa64460584bebbed210e270d662f','','extenfeatures','agentstaticlogin');
 INSERT INTO `extenumbers` VALUES (NULL,'_*32.','3ae0f1ff0ef4907faa2dad5da7bb891c9dbf45ad','','extenfeatures','agentstaticlogoff');
+INSERT INTO `extenumbers` VALUES (NULL,'_*30.','7758898081b262cc0e42aed23cf601fba8969b08','','extenfeatures','agentstaticlogtoggle');
 INSERT INTO `extenumbers` VALUES (NULL,'_*37.','249b00b17a5983bbb2af8ed0af2ab1a74abab342','','extenfeatures','bsfilter');
 INSERT INTO `extenumbers` VALUES (NULL,'_*664.','9dfe780f1dc7fccbfc841b41a38933d4dab56369','','extenfeatures','callgroup');
 INSERT INTO `extenumbers` VALUES (NULL,'*34','668a8d2d8fe980b663e2cdcecb977860e1b272f3','','extenfeatures','calllistening');
