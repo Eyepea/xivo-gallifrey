@@ -53,7 +53,7 @@ def clean_extension(exten):
 
     exten = str(exten)
 
-    if exten[0] == '_':
+    if exten.startswith('_'):
         exten = exten[1:]
         e = position_of_asterisk_pattern_char(exten)
         if e is not None:
