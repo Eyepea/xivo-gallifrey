@@ -39,6 +39,12 @@ $array['exten']['agentstaticlogoff']['appdata'] = array();
 $array['exten']['agentstaticlogoff']['appdata'][0] = 'agentstaticlogoff';
 $array['exten']['agentstaticlogoff']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
 
+$array['exten']['agentstaticlogtoggle'] = array();
+$array['exten']['agentstaticlogtoggle']['app'] = 'Macro';
+$array['exten']['agentstaticlogtoggle']['appdata'] = array();
+$array['exten']['agentstaticlogtoggle']['appdata'][0] = 'agentstaticlogtoggle';
+$array['exten']['agentstaticlogtoggle']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+
 $array['exten']['bsfilter'] = array();
 $array['exten']['bsfilter']['app'] = 'Macro';
 $array['exten']['bsfilter']['appdata'] = array();
@@ -251,6 +257,9 @@ $array['element']['agentstaticlogin']['default'] = '*31.';
 $array['element']['agentstaticlogoff'] = array();
 $array['element']['agentstaticlogoff']['default'] = '*32.';
 
+$array['element']['agentstaticlogtoggle'] = array();
+$array['element']['agentstaticlogtoggle']['default'] = '*30.';
+
 $array['element']['bsfilter'] = array();
 $array['element']['bsfilter']['default'] = '*37.';
 
@@ -360,6 +369,7 @@ $array['filter'] = array();
 $array['filter']['agentdynamiclogin'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['agentstaticlogin'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['agentstaticlogoff'] = array('minlen' => 1,'maxlen' => 40);
+$array['filter']['agentstaticlogtoggle'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['bsfilter'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['callgroup'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['calllistening'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');

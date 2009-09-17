@@ -130,6 +130,8 @@ if($nb > 0):
 		endif;
 
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+				    array('agenttype'	=> 'extenfeatures-agentstaticlogtoggle'));
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
 				    array('agenttype'	=> 'extenfeatures-agentstaticlogin'));
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
 				    array('agenttype'	=> 'extenfeatures-agentstaticlogoff'));
@@ -201,6 +203,8 @@ endif;
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/queue');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/meetme');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension');
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
+			    array('agenttype'	=> 'extenfeatures-agentstaticlogtoggle'));
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',
 			    array('agenttype'	=> 'extenfeatures-agentstaticlogin'));
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension-agent',

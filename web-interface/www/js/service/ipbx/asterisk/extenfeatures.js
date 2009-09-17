@@ -59,6 +59,8 @@ var xivo_list_elt_extenfeatures = {
 							 'it-extenfeatures-list-vmuserpurgeslt'],
 	'it-extenfeatures-enable-vmboxpurgeslt':	['it-extenfeatures-vmboxpurgeslt',
 							 'it-extenfeatures-list-vmboxpurgeslt'],
+	'it-extenfeatures-enable-agentstaticlogtoggle':	['it-extenfeatures-agentstaticlogtoggle',
+							 'it-extenfeatures-list-agentstaticlogtoggle'],
 	'it-extenfeatures-enable-agentstaticlogin':	['it-extenfeatures-agentstaticlogin',
 							 'it-extenfeatures-list-agentstaticlogin'],
 	'it-extenfeatures-enable-agentstaticlogoff':	['it-extenfeatures-agentstaticlogoff',

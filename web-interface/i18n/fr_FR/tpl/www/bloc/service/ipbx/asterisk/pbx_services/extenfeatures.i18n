@@ -151,6 +151,9 @@ Supprime les messages vocaux de l'utilisateur précisé :
 ; fm_extenfeatures_enable-vmboxpurgeslt
 Supprime les messages de la boîte vocale précisée :
 
+; fm_extenfeatures_enable-agentstaticlogtoggle
+Connecte/déconnecte un agent statique :
+
 ; fm_extenfeatures_enable-agentstaticlogin
 Connecte un agent statique :
 

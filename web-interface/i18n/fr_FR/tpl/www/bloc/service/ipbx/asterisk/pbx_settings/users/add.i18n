@@ -553,6 +553,9 @@ Supprime les messages vocaux de l'utilisateur
 ; fm_phonefunckey_type-optgroup-extension-agent
 Agent
 
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogtoggle)
+Connecte/déconnecte un agent statique
+
 ; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogin)
 Connecte un agent statique
 

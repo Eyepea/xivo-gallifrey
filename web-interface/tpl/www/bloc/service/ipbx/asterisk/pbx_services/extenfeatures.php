@@ -259,7 +259,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-pickup',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('pickup','exten')),
-				  'default'	=> $element['extenfeatures']['pickup']['default'])),
+				  'default'	=> $element['extenfeatures']['pickup']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['pickup']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-pickup]',
@@ -309,7 +310,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-bsfilter',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('bsfilter','exten')),
-				  'default'	=> $element['extenfeatures']['bsfilter']['default'])),
+				  'default'	=> $element['extenfeatures']['bsfilter']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['bsfilter']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-bsfilter]',
@@ -336,7 +338,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-callgroup',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('callgroup','exten')),
-				  'default'	=> $element['extenfeatures']['callgroup']['default'])),
+				  'default'	=> $element['extenfeatures']['callgroup']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['callgroup']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-callgroup]',
@@ -360,7 +363,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-callqueue',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('callqueue','exten')),
-				  'default'	=> $element['extenfeatures']['callqueue']['default'])),
+				  'default'	=> $element['extenfeatures']['callqueue']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['callqueue']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-callqueue]',
@@ -384,7 +388,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-calluser',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('calluser','exten')),
-				  'default'	=> $element['extenfeatures']['calluser']['default'])),
+				  'default'	=> $element['extenfeatures']['calluser']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['calluser']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-calluser]',
@@ -765,6 +770,31 @@ if(isset($error_js[0]) === true)
 
 	<div id="sb-part-agent" class="b-nodisplay">
 <?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-agentstaticlogtoggle'),
+				      'name'	=> 'extenfeatures[agentstaticlogtoggle][enable]',
+				      'labelid'	=> 'extenfeatures-enable-agentstaticlogtoggle',
+				      'checked'	=> ((bool) $this->get_varra('extenfeatures',array('agentstaticlogtoggle','commented')) === false)));
+?>
+		<div class="fm-field">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[agentstaticlogtoggle][exten]',
+				  'field'	=> false,
+				  'labelid'	=> 'extenfeatures-agentstaticlogtoggle',
+				  'size'	=> 15,
+				  'value'	=> $this->get_varra('extenfeatures',array('agentstaticlogtoggle','exten')),
+				  'default'	=> $element['extenfeatures']['agentstaticlogtoggle']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['agentstaticlogtoggle']))),
+
+		$form->select(array('field'	=> false,
+				    'name'	=> 'extenfeatures[list-agentstaticlogtoggle]',
+				    'labelid'	=> 'extenfeatures-list-agentstaticlogtoggle',
+				    'key'	=> false,
+				    'empty'	=> true),
+			      array('*',range(3,11)));
+?>
+		</div>
+<?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-agentstaticlogin'),
 				      'name'	=> 'extenfeatures[agentstaticlogin][enable]',
 				      'labelid'	=> 'extenfeatures-enable-agentstaticlogin',
@@ -778,7 +808,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-agentstaticlogin',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('agentstaticlogin','exten')),
-				  'default'	=> $element['extenfeatures']['agentstaticlogin']['default'])),
+				  'default'	=> $element['extenfeatures']['agentstaticlogin']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['agentstaticlogin']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-agentstaticlogin]',
@@ -802,7 +833,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-agentstaticlogoff',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('agentstaticlogoff','exten')),
-				  'default'	=> $element['extenfeatures']['agentstaticlogoff']['default'])),
+				  'default'	=> $element['extenfeatures']['agentstaticlogoff']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['agentstaticlogoff']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-agentstaticlogoff]',
@@ -854,7 +886,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-grouptogglemember',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('grouptogglemember','exten')),
-				  'default'	=> $element['extenfeatures']['grouptogglemember']['default'])),
+				  'default'	=> $element['extenfeatures']['grouptogglemember']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['grouptogglemember']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-grouptogglemember]',
@@ -878,7 +911,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-groupaddmember',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('groupaddmember','exten')),
-				  'default'	=> $element['extenfeatures']['groupaddmember']['default'])),
+				  'default'	=> $element['extenfeatures']['groupaddmember']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['groupaddmember']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-groupaddmember]',
@@ -902,7 +936,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-groupremovemember',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('groupremovemember','exten')),
-				  'default'	=> $element['extenfeatures']['groupremovemember']['default'])),
+				  'default'	=> $element['extenfeatures']['groupremovemember']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['groupremovemember']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-groupremovemember]',
@@ -926,7 +961,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-queuetogglemember',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('queuetogglemember','exten')),
-				  'default'	=> $element['extenfeatures']['queuetogglemember']['default'])),
+				  'default'	=> $element['extenfeatures']['queuetogglemember']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['queuetogglemember']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-queuetogglemember]',
@@ -950,7 +986,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-queueaddmember',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('queueaddmember','exten')),
-				  'default'	=> $element['extenfeatures']['queueaddmember']['default'])),
+				  'default'	=> $element['extenfeatures']['queueaddmember']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['queueaddmember']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-queueaddmember]',
@@ -974,7 +1011,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-queueremovemember',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('queueremovemember','exten')),
-				  'default'	=> $element['extenfeatures']['queueremovemember']['default'])),
+				  'default'	=> $element['extenfeatures']['queueremovemember']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['queueremovemember']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-queueremovemember]',
@@ -1055,7 +1093,8 @@ if(isset($error_js[0]) === true)
 				  'labelid'	=> 'extenfeatures-phoneprogfunckey',
 				  'size'	=> 15,
 				  'value'	=> $this->get_varra('extenfeatures',array('phoneprogfunckey','exten')),
-				  'default'	=> $element['extenfeatures']['phoneprogfunckey']['default'])),
+				  'default'	=> $element['extenfeatures']['phoneprogfunckey']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['phoneprogfunckey']))),
 
 		$form->select(array('field'	=> false,
 				    'name'	=> 'extenfeatures[list-phoneprogfunckey]',

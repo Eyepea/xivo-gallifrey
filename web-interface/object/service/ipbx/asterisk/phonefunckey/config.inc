@@ -70,18 +70,21 @@ $array['type']['extenfeatures-callrecord'] = array();
 $array['type']['extenfeatures-callrecord']['category'] = 'extension-general';
 $array['type']['extenfeatures-callrecord']['name'] = 'extenfeatures-callrecord';
 $array['type']['extenfeatures-callrecord']['extension'] = true;
+$array['type']['extenfeatures-callrecord']['supervisable'] = true;
 $array['type']['extenfeatures-callrecord']['progfunckey'] = true;
 
 $array['type']['extenfeatures-incallfilter'] = array();
 $array['type']['extenfeatures-incallfilter']['category'] = 'extension-general';
 $array['type']['extenfeatures-incallfilter']['name'] = 'extenfeatures-incallfilter';
 $array['type']['extenfeatures-incallfilter']['extension'] = true;
+$array['type']['extenfeatures-incallfilter']['supervisable'] = true;
 $array['type']['extenfeatures-incallfilter']['progfunckey'] = true;
 
 $array['type']['extenfeatures-enablednd'] = array();
 $array['type']['extenfeatures-enablednd']['category'] = 'extension-general';
 $array['type']['extenfeatures-enablednd']['name'] = 'extenfeatures-enablednd';
 $array['type']['extenfeatures-enablednd']['extension'] = true;
+$array['type']['extenfeatures-enablednd']['supervisable'] = true;
 $array['type']['extenfeatures-enablednd']['progfunckey'] = true;
 
 $array['type']['generalfeatures-pickupexten'] = array();
@@ -153,6 +156,7 @@ $array['type']['extenfeatures-enablevm'] = array();
 $array['type']['extenfeatures-enablevm']['category'] = 'extension-voicemail';
 $array['type']['extenfeatures-enablevm']['name'] = 'extenfeatures-enablevm';
 $array['type']['extenfeatures-enablevm']['extension'] = true;
+$array['type']['extenfeatures-enablevm']['supervisable'] = true;
 $array['type']['extenfeatures-enablevm']['progfunckey'] = true;
 
 $array['type']['extenfeatures-enablevmbox'] = array();
@@ -169,6 +173,14 @@ $array['type']['extenfeatures-vmuserpurge'] = array();
 $array['type']['extenfeatures-vmuserpurge']['category'] = 'extension-voicemail';
 $array['type']['extenfeatures-vmuserpurge']['name'] = 'extenfeatures-vmuserpurge';
 $array['type']['extenfeatures-vmuserpurge']['extension'] = true;
+
+$array['type']['extenfeatures-agentstaticlogtoggle'] = array();
+$array['type']['extenfeatures-agentstaticlogtoggle']['category'] = 'extension-agent';
+$array['type']['extenfeatures-agentstaticlogtoggle']['name'] = 'extenfeatures-agentstaticlogtoggle';
+$array['type']['extenfeatures-agentstaticlogtoggle']['extension'] = false;
+$array['type']['extenfeatures-agentstaticlogtoggle']['supervisable'] = true;
+$array['type']['extenfeatures-agentstaticlogtoggle']['destination'] = true;
+$array['type']['extenfeatures-agentstaticlogtoggle']['progfunckey'] = true;
 
 $array['type']['extenfeatures-agentstaticlogin'] = array();
 $array['type']['extenfeatures-agentstaticlogin']['category'] = 'extension-agent';
@@ -190,7 +202,7 @@ $array['type']['extenfeatures-agentdynamiclogin'] = array();
 $array['type']['extenfeatures-agentdynamiclogin']['category'] = 'extension-agent';
 $array['type']['extenfeatures-agentdynamiclogin']['name'] = 'extenfeatures-agentdynamiclogin';
 $array['type']['extenfeatures-agentdynamiclogin']['extension'] = false;
-$array['type']['extenfeatures-agentdynamiclogin']['supervisable'] = false;
+$array['type']['extenfeatures-agentdynamiclogin']['supervisable'] = true;
 $array['type']['extenfeatures-agentdynamiclogin']['destination'] = true;
 $array['type']['extenfeatures-agentdynamiclogin']['progfunckey'] = true;
 

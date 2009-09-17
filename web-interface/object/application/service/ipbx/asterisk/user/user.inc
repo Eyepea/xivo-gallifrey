@@ -656,9 +656,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$res = xivo_array_startswith_key($ref,'meetmefeatures.',true);
 					$res['identity'] = $this->_service->identity('meetmefeatures',$res,false);
 					break;
+				case 'extenfeatures-agentdynamiclogin':
 				case 'extenfeatures-agentstaticlogin':
 				case 'extenfeatures-agentstaticlogoff':
-				case 'extenfeatures-agentdynamiclogin':
+				case 'extenfeatures-agentstaticlogtoggle':
 					$res = xivo_array_startswith_key($ref,'agentfeatures.',true);
 					$res['identity'] = $this->_service->identity('agentfeatures',$res,false);
 					break;

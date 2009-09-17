@@ -65,9 +65,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 						$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 						$data['typeval'] = $data['typevalextenumbersright'];
 						return($data);
+					case 'extenfeatures-agentdynamiclogin':
 					case 'extenfeatures-agentstaticlogin':
 					case 'extenfeatures-agentstaticlogoff':
-					case 'extenfeatures-agentdynamiclogin':
+					case 'extenfeatures-agentstaticlogtoggle':
 					case 'groupaddmember':
 					case 'groupremovemember':
 					case 'grouptogglemember':
@@ -155,9 +156,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 
 		switch($arr['type'])
 		{
+			case 'extenfeatures-agentdynamiclogin':
 			case 'extenfeatures-agentstaticlogin':
 			case 'extenfeatures-agentstaticlogoff':
-			case 'extenfeatures-agentdynamiclogin':
+			case 'extenfeatures-agentstaticlogtoggle':
 			case 'extenfeatures-groupaddmember':
 			case 'extenfeatures-groupremovemember':
 			case 'extenfeatures-grouptogglemember':
@@ -221,8 +223,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				{
 					case 'bsfilter':
 						return(true);
+					case 'agentdynamiclogin':
 					case 'agentstaticlogin':
 					case 'agentstaticlogoff':
+					case 'agentstaticlogtoggle':
 					case 'groupaddmember':
 					case 'groupremovemember':
 					case 'grouptogglemember':
@@ -249,9 +253,10 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 		{
 			case 'agent':
 				if($type !== 'extenfeatures'
-				|| ($typeval !== 'agentstaticlogin'
+				|| ($typeval !== 'agentdynamiclogin'
+				   && $typeval !== 'agentstaticlogin'
 				   && $typeval !== 'agentstaticlogoff'
-				   && $typeval !== 'agentdynamiclogin') === true)
+				   && $typeval !== 'agentstaticlogtoggle') === true)
 					return(false);
 
 				return($this->chk_dest_agent($typevalright,null,null,$disable,false,true,$context));
