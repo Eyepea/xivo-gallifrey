@@ -340,11 +340,8 @@ class SQLBackEnd:
                 if fk['extenumleft.typeval'] == 'bsfilter':
                     isbsfilter = True
                 elif bool(fk[FK_TABLE+'.progfunckey']):
-                    if exten is None:
-                        if fk[FK_TABLE+'.typevalextenumbersright'] is None:
-                            continue
-                        else:
-                            exten = '*' + fk[FK_TABLE+'.typevalextenumbersright']
+                    if exten is None and fk[FK_TABLE+'.typevalextenumbersright'] is not None:
+                        exten = '*' + fk[FK_TABLE+'.typevalextenumbersright']
 
                     fkey['exten'] = \
                         fkey_extension(
