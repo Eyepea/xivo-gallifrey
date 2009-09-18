@@ -212,11 +212,8 @@ for (context,) in res:
     for row in res2:
         exten = row['phonefunckey.exten']
 
-        if exten is None:
-            if row['phonefunckey.typevalextenumbersright'] is None:
-                continue
-            else:
-                exten = "*%s" % row['phonefunckey.typevalextenumbersright']
+        if exten is None and row['phonefunckey.typevalextenumbersright'] is not None:
+            exten = "*%s" % row['phonefunckey.typevalextenumbersright']
 
         extens.add(xivo_helpers.fkey_extension(xfeatures['phoneprogfunckey'].get('exten'),
                                                (row['phonefunckey.iduserfeatures'],
