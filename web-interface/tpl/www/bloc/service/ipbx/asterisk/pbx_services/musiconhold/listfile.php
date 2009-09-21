@@ -65,10 +65,10 @@ $page = $url->pager($pager['pages'],
 		<td class="td-left txt-left curpointer"
 		    colspan="2"
 		    onclick="location.href = xivo.dom.node.firstchild(this);">
-		    	<?=$url->href_html($ref,
+			<?=$url->href_html($ref,
 					   'service/ipbx/pbx_services/musiconhold',
 					   array('act'	=> 'download',
-					         'cat'	=> $cat,
+						 'cat'	=> $cat,
 						 'id'	=> $ref,
 						 'page'	=> $pager['page']));?>
 		</td>

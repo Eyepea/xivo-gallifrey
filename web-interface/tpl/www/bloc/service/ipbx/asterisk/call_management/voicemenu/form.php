@@ -61,7 +61,7 @@ endif;
 	else:
 		echo	'<div id="fd-voicemenu-context" class="txt-center">',
 			$url->href_html($this->bbf('create_context'),
-		     			'service/ipbx/system_management/context',
+					'service/ipbx/system_management/context',
 					'act=add'),
 			'</div>';
 	endif;
@@ -111,7 +111,7 @@ endif;
 				    'name'	=> 'ipbxapplications',
 				    'labelid'	=> 'dialaction-voicemenuflow-ipbxapplication-action',
 				    'optgroup'	=> array('key'		=> 'category',
-				 			 'unique'	=> true,
+							 'unique'	=> true,
 							 'bbf'		=> 'fm_ipbxapplications-optgroup-'),
 				    'empty'	=> true,
 				    'key'	=> true,
@@ -264,7 +264,7 @@ endif;
 			   onclick="xivo_fm_order_selected('it-voicemenu-flow',1,true); return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_voicemenu-application');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
-			   			  $this->bbf('bt_up_voicemenu-application'),
+						  $this->bbf('bt_up_voicemenu-application'),
 						  'class="bt-uplist" id="bt-voicemenu-application-up" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-voicemenu-flow',-1,true); return(xivo.dom.free_focus());"

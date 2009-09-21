@@ -96,7 +96,7 @@ endif;
 		<div class="bt-adddelete">
 			<a href="#"
 			   onclick="xivo_fm_select_add_exten('it-exten',
-			   				     prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>'));
+							     prompt('<?=$dhtml->escape($this->bbf('rightcallexten_add-extension'));?>'));
 				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_addexten');?>">
 				<?=$url->img_html('img/site/button/mini/blue/add.gif',

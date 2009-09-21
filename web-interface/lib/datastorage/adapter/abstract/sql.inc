@@ -271,8 +271,8 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		else if(is_array($table) === true)
 		{
 			$this->_join[$table[0]] = sprintf('%s %s AS %s',$type,
-								        $this->quote_identifier($table[1]),
-								        $this->quote_identifier($table[0]));
+									$this->quote_identifier($table[1]),
+									$this->quote_identifier($table[0]));
 			$table = $table[0];
 		}
 		else

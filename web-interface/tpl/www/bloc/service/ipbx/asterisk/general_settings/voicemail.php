@@ -176,9 +176,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-message-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'value'	=> $this->get_varra('voicemail',array('minmessage','var_val')),
 				    'default'	=> $element['voicemail']['minmessage']['default']),
 			      $element['voicemail']['minmessage']['value']),
@@ -189,9 +189,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-message-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'value'	=> $this->get_varra('voicemail',array('maxmessage','var_val')),
 				    'default'	=> $element['voicemail']['maxmessage']['default']),
 			      $element['voicemail']['maxmessage']['value']),
@@ -240,13 +240,13 @@ endif;
 		<a href="#"
 		   onclick="xivo_voicemail_format('in'); return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_informat');?>">
-		   	<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_informat'),
 					  'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_voicemail_format('out'); return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outformat');?>">
-		   	<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outformat'),
 					  'class="bt-outlist" id="bt-outformat" border="0"');?></a>
 	</div>
@@ -338,9 +338,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-maxgreet-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'value'	=> $this->get_varra('voicemail',array('maxgreet','var_val')),
 				    'default'	=> $element['voicemail']['maxgreet']['default']),
 			      $element['voicemail']['maxgreet']['value']),
@@ -351,9 +351,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-skipms-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'millisecond',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%M%s')),
 				    'value'	=> $this->get_varra('voicemail',array('skipms','var_val')),
 				    'default'	=> $element['voicemail']['skipms']['default']),
 			      $element['voicemail']['skipms']['value']),

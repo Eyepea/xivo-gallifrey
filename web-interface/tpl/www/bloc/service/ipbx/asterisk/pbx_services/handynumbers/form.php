@@ -119,7 +119,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'disabled'	=> true,
 					       'optgroup'	=> array('key'		=> true,
-					       				 'altkey'	=> 'protocol',
+									 'altkey'	=> 'protocol',
 									 'unique'	=> true,
 									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
 					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),

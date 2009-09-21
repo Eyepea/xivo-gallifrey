@@ -34,7 +34,7 @@ $array['element']['type']['value'] = array('agent',
 					   'meetme',
 					   'outcall',
 					   'queue',
-				 	   'rightcall',
+					   'rightcall',
 					   'schedule',
 					   'trunksip',
 					   'trunkiax',
@@ -53,7 +53,7 @@ $array['element']['varname']['default'] = '';
 $array['filter'] = array();
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(
-				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['type'] = array('agent',
 				 'callfilter',

@@ -68,7 +68,7 @@
 							  'border="0"'),
 					   'service/ipbx/system_management/configfiles',
 					   array('act'	=> 'edit',
-					   	 'id'	=> $name),
+						 'id'	=> $name),
 					   'id="ah-files-'.$i.'"',
 					   $this->bbf('opt_modify'));?>
 		</td>

@@ -105,7 +105,7 @@ else:
 		$url->href_html($this->bbf('add_announce'),
 				'service/ipbx/pbx_services/sounds',
 				array('act'	=> 'list',
-		      		      'dir'	=> 'acd')),
+				      'dir'	=> 'acd')),
 		'</div>';
 endif;
 
@@ -145,9 +145,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_queue_announce-frequency-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'default'	=> $element['queue']['announce-frequency']['default'],
 				    'value'	=> $info['queue']['announce-frequency']),
 			      $element['queue']['announce-frequency']['value']),
@@ -265,15 +265,15 @@ endif;
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-pannouncelist',
-		   				  'it-queue-periodic-announce');
+						  'it-queue-periodic-announce');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inpannounce');?>">
-		   	<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inpannounce'),
 					  'class="bt-inlist" id="bt-inpannounce" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-queue-periodic-announce',
-		   				  'it-pannouncelist');
+						  'it-pannouncelist');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outpannounce');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
@@ -294,16 +294,16 @@ endif;
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_uppannounce');?>">
-			   	<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_uppannounce'),
 						  'class="bt-uplist" id="bt-uppannounce" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',-1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downpannounce');?>">
-			   	<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downpannounce'),
 						  'class="bt-downlist" id="bt-downpannounce" border="0"');?></a>
 		</div>
@@ -325,9 +325,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_queue_announce-frequency-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'default'	=> $element['queue']['periodic-announce-frequency']['default'],
 				    'value'	=> $info['queue']['periodic-announce-frequency']),
 			      $element['queue']['periodic-announce-frequency']['value']);
@@ -387,7 +387,7 @@ endif;
 	<div class="clearboth"></div>
 <?php
 	else:
-		echo 	'<div class="txt-center">',
+		echo	'<div class="txt-center">',
 			$url->href_html($this->bbf('create_user'),
 					'service/ipbx/pbx_settings/users',
 					'act=add'),
@@ -537,9 +537,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_queuefeatures_timeout-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'default'	=> $element['queuefeatures']['timeout']['default'],
 				    'value'	=> $info['queuefeatures']['timeout']),
 			      $element['queuefeatures']['timeout']['value']),

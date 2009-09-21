@@ -26,10 +26,10 @@ $form = &$this->get_module('form');
 $apparg_responsetimeout = $this->get_var('apparg_responsetimeout');
 
 echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_responsetimeout-timeout'),
-		          'name'	=> 'ipbxapplication[responsetimeout][timeout]',
-		          'labelid'	=> 'ipbxapplication-responsetimeout-timeout',
-		          'size'	=> 10,
-		          'default'	=> $apparg_responsetimeout['timeout']['default'])),
+			  'name'	=> 'ipbxapplication[responsetimeout][timeout]',
+			  'labelid'	=> 'ipbxapplication-responsetimeout-timeout',
+			  'size'	=> 10,
+			  'default'	=> $apparg_responsetimeout['timeout']['default'])),
 
 	$form->button(array('name'	=> 'add-ipbxapplication-responsetimeout',
 			    'id'	=> 'it-add-ipbxapplication-responsetimeout',

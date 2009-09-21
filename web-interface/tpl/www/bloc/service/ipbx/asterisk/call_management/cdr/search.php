@@ -119,8 +119,8 @@ $dhtml->write_js($js_result);
 		<li id="smenu-tab-3"
 		    class="moo-last"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-result',1);
-		    	     location.href = xivo.dom.node.firstchild(
-			     			xivo.dom.node.firstchild(
+			     location.href = xivo.dom.node.firstchild(
+						xivo.dom.node.firstchild(
 							xivo.dom.node.firstchild(this)));"
 		    onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
 			<div class="tab">
@@ -164,11 +164,11 @@ $dhtml->write_js($js_result);
 ?>
 <a href="#"
    onclick="xivo_eid('cal-dend').style.display = 'none';
-   	    xivo_calendar_display('cal-dbeg','it-dbeg');"
+	    xivo_calendar_display('cal-dbeg','it-dbeg');"
    onmouseover="xivo_calendar_body();"
    onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');"
    title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',
-   								 $this->bbf('bt_showcalendar'),
+								 $this->bbf('bt_showcalendar'),
 								 'id="bt-showcalbeg"
 								  border="0"
 								  style="vertical-align: bottom;padding-left: 2px;"');?>
@@ -251,7 +251,7 @@ if($context_list !== false):
 
 			      $context_list,
 			      'onchange="xivo_chg_attrib(\'fm_dcontext\',
-			      				 \'fd-dcontext-custom\',
+							 \'fd-dcontext-custom\',
 							 Number(this.value === \'custom\'));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
@@ -509,11 +509,11 @@ endif;
 ?>
 	<tr class="sb-content l-infos-<?=$mod?>on2 curpointer"
 	    onmouseover="this.tmp = this.className;
-	    		 this.className = 'sb-content l-infos-over curpointer';"
+			 this.className = 'sb-content l-infos-over curpointer';"
 	    onmouseout="this.className = this.tmp;"
 	    onclick="this.entryline = xivo_eid('cdr-infos-<?=$i?>').style.display;
 		     xivo_eid('cdr-infos-<?=$i?>').style.display = this.entryline === '' || this.entryline === 'none'
-		     						   ? 'table-row'
+								   ? 'table-row'
 								   : 'none';">
 		<td class="td-left">
 			<a href="#" onclick="return(false);"><?=xivo_i18n::strftime_l(

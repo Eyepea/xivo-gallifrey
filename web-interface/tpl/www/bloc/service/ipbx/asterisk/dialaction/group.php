@@ -38,7 +38,7 @@ if(empty($list) === false):
 				    'altkey'	=> 'id',
 				    'invalid'	=> ($linked === false && $action === 'group'),
 				    'default'	=> $element['dialaction']['actionarg1']['default'],
-				    'value' 	=> $this->get_varra('dialaction',array($event,'group','actionarg1'))),
+				    'value'	=> $this->get_varra('dialaction',array($event,'group','actionarg1'))),
 			      $list),
 		$form->text(array('desc'	=> $this->bbf('fm_dialaction_group-actionarg2'),
 				  'name'	=> 'dialaction['.$event.'][actionarg2]',

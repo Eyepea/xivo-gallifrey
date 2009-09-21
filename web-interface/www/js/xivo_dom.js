@@ -369,7 +369,7 @@ xivo.dom.node.empty = function(node)
 	if(node.nodeType === 8
 	|| (node.nodeType === 3
 	   && node.data.match(/[^\n\r\t ]/) === null) === true)
-	   	return(true);
+		return(true);
 
 	return(false);
 }
@@ -400,9 +400,9 @@ xivo.dom.node.firstchild = function(node)
 {
 	var child = node.firstChild;
 
- 	while(child)
-  	{
- 		if(xivo.dom.node.empty(child) === false)
+	while(child)
+	{
+		if(xivo.dom.node.empty(child) === false)
 			return(child);
 
 		child = child.nextSibling;
@@ -415,9 +415,9 @@ xivo.dom.node.lastchild = function(node)
 {
 	var child = node.lastChild;
 
- 	while(child)
-  	{
- 		if(xivo.dom.node.empty(child) === false)
+	while(child)
+	{
+		if(xivo.dom.node.empty(child) === false)
 			return(child);
 
 		child = child.previousSibling;

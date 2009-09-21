@@ -1328,7 +1328,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 		if(empty($search) === true
 		&& ($search = $this->get_select()) === null)
-		   	return(false);
+			return(false);
 		else if($free === true)
 		{
 			if(xivo_has_len($search) === true)

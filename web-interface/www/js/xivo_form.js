@@ -173,7 +173,7 @@ function xivo_fm_set_disable_submit_onenter(form)
 		   || tag[i].type === 'password'
 		   || tag[i].type === 'checkbox'
 		   || tag[i].type === 'radio')
-		   	xivo.dom.add_event('keypress',
+			xivo.dom.add_event('keypress',
 					   tag[i],
 					   xivo_fm_disable_submit_onenter);
 	}
@@ -574,20 +574,20 @@ function xivo_fm_field_name_counter(obj,cnt)
 
 function xivo_fm_mk_acl(tree)
 {
-        var ref = tree.form[tree.name];
-        var value = tree.value;
-        var len = value.length;
-        var nb = ref.length
-        var sub = 0;
-        var rs = false;
+	var ref = tree.form[tree.name];
+	var value = tree.value;
+	var len = value.length;
+	var nb = ref.length
+	var sub = 0;
+	var rs = false;
 
-        for(var i = 0;i < nb;i++)
-        {
-                sub = ref[i].value.substring(0,len);
+	for(var i = 0;i < nb;i++)
+	{
+		sub = ref[i].value.substring(0,len);
 
-                if(value === sub)
-                        ref[i].checked = Boolean(tree.checked);
-        }
+		if(value === sub)
+			ref[i].checked = Boolean(tree.checked);
+	}
 }
 
 function xivo_fm_readonly(list,enable)
@@ -862,7 +862,7 @@ function xivo_fm_disable_submit_onenter(e)
 
 	if(keyCode === 13)
 	{
-   		if(xivo_is_function(e.preventDefault) === true)
+		if(xivo_is_function(e.preventDefault) === true)
 			e.preventDefault();
 		return(false);
 	}

@@ -169,7 +169,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			$this->_fileoption['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
 						     XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.
 						     '\.(?:'.implode('|',array_map('preg_quote',
-						     				   $refextlist)).')$/';
+										   $refextlist)).')$/';
 		else
 			unset($this->_fileoption['extensionlist']);
 

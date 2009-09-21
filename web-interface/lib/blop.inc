@@ -357,7 +357,7 @@ class blop
 
 	function load_class($class,$dir='',$file='',$lib=true)
 	{
-	       	$class = (string) $class;
+		$class = (string) $class;
 
 		if(is_array($dir) === true)
 			$dir = implode(DIRECTORY_SEPARATOR,$dir);
@@ -409,7 +409,7 @@ class blop
 			return(false);
 
 		return(class_exists($class));
-        }
+	}
 
 	function load_init($file,$name='')
 	{
@@ -462,7 +462,7 @@ class blop
 
 		if($name !== '')
 		{
-		       	if(isset($r[$name]) === true)
+			if(isset($r[$name]) === true)
 				$r = &$r[$name];
 			else
 				$r = false;

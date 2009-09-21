@@ -56,7 +56,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if($this->_discuss === false
 		|| (is_object($this->_discuss) === false
 		   && ($this->_discuss = &$this->get_module('ami')) === false) === true)
-		   	return(($this->_discuss = false));
+			return(($this->_discuss = false));
 
 		return($this->_discuss->cmd($cmd,$recv));
 	}

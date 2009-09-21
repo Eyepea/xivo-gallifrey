@@ -26,10 +26,10 @@ $form = &$this->get_module('form');
 $apparg_record = $this->get_var('apparg_record');
 
 echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_record-filename'),
-		          'name'	=> 'ipbxapplication[record][filename]',
-		          'labelid'	=> 'ipbxapplication-record-filename',
-		          'size'	=> 15,
-		          'default'	=> $apparg_record['filename']['default'])),
+			  'name'	=> 'ipbxapplication[record][filename]',
+			  'labelid'	=> 'ipbxapplication-record-filename',
+			  'size'	=> 15,
+			  'default'	=> $apparg_record['filename']['default'])),
 
 	$form->select(array('desc'	=> $this->bbf('fm_ipbxapplication_record-fileformat'),
 			    'name'	=> 'ipbxapplication[record][fileformat]',
@@ -40,16 +40,16 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_record-filename'
 		      $apparg_record['fileformat']['value']),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_record-silence'),
-		          'name'	=> 'ipbxapplication[record][silence]',
-		          'labelid'	=> 'ipbxapplication-record-silence',
-		          'size'	=> 10,
-		          'default'	=> $apparg_record['silence']['default'])),
+			  'name'	=> 'ipbxapplication[record][silence]',
+			  'labelid'	=> 'ipbxapplication-record-silence',
+			  'size'	=> 10,
+			  'default'	=> $apparg_record['silence']['default'])),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_record-maxduration'),
-		          'name'	=> 'ipbxapplication[record][maxduration]',
-		          'labelid'	=> 'ipbxapplication-record-maxduration',
-		          'size'	=> 10,
-		          'default'	=> $apparg_record['maxduration']['default'])),
+			  'name'	=> 'ipbxapplication[record][maxduration]',
+			  'labelid'	=> 'ipbxapplication-record-maxduration',
+			  'size'	=> 10,
+			  'default'	=> $apparg_record['maxduration']['default'])),
 
 	$form->checkbox(array('desc'	=> $this->bbf('fm_ipbxapplication_record-a'),
 			      'name'	=> 'ipbxapplication[record][a]',

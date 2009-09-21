@@ -26,8 +26,8 @@ $this->file_include('bloc/menu/top/user/loginbox');
 <div id="toolbox">
 <div id="logo"><?=$url->img_html('img/menu/top/logo.gif',XIVO_SOFT_LABEL);?></div>
 <div class="nav">
-         <ul>
-	 	<li onmouseout="this.className='moo';"
+	 <ul>
+		<li onmouseout="this.className='moo';"
 		    onmouseover="this.className='mov';">
 			<span class="span-left">&nbsp;</span>
 			<span class="span-center"><?=$this->bbf('mn_top_services');?></span>
@@ -55,7 +55,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_configuration'));?>
 		</li>
-                <li onmouseout="this.className='moo';"
+		<li onmouseout="this.className='moo';"
 		    onmouseover="this.className='mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_preferences').'</span>
@@ -65,7 +65,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_preferences'));?>
 		</li>
-                <li onmouseout="this.className='moo';"
+		<li onmouseout="this.className='moo';"
 		    onmouseover="this.className='mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_help').'</span>
@@ -75,7 +75,7 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_help'));?>
 		</li>
-                <li onmouseout="this.className='moo';"
+		<li onmouseout="this.className='moo';"
 		    onmouseover="this.className='mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_contact').'</span>

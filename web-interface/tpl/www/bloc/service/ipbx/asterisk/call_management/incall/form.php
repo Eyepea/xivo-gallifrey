@@ -141,14 +141,14 @@ endif;
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall'); return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
-			   	<?=$url->img_html('img/site/button/row-left.gif',
-			   			  $this->bbf('bt_inrightcall'),
+				<?=$url->img_html('img/site/button/row-left.gif',
+						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist'); return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
-			   	<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outrightcall'),
 						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 		</div>

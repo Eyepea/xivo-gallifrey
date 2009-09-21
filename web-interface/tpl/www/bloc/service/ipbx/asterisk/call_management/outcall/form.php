@@ -147,9 +147,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_outcall_hangupringtime-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'mixkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'default'	=> $element['outcall']['hangupringtime']['default'],
 				    'value'	=> $info['outcall']['hangupringtime']),
 			      $element['outcall']['hangupringtime']['value']);

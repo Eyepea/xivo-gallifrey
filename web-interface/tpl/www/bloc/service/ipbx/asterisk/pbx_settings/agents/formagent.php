@@ -323,9 +323,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_agentoptions_wrapuptime-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'millisecond',
-							 		'format'	=> '%s')),
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%s')),
 				    'value'	=> $info['agentoptions']['wrapuptime'],
 				    'default'	=> $element['agentoptions']['wrapuptime']['default']),
 			      $element['agentoptions']['wrapuptime']['value']),

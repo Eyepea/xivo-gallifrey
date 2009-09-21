@@ -40,7 +40,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 				      'cfilterm1.typeval = user1.id',
 				      null,
 				      array('member_id' => 'id',
-				            'member_context' => 'context',
+					    'member_context' => 'context',
 					    'member_firstname' => 'firstname',
 					    'member_lastname' => 'lastname',
 					    'member_number' => 'number',
@@ -102,7 +102,7 @@ class xivo_application_service_asterisk_callfilter_sql extends xivo_application_
 				       $this->_table['callfiltermember'].'.typeval = '.$this->_table['userfeatures'].'.id',
 				       null,
 				       array('member_context' => 'context',
-				             'member_firstname' => 'firstname',
+					     'member_firstname' => 'firstname',
 					     'member_lastname' => 'lastname',
 					     'member_number' => 'number',
 					     'member_name' => 'name'));

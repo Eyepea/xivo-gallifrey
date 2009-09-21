@@ -46,7 +46,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 				      $this->_table['dialaction'].'.actionarg1 = '.$this->_table['userfeatures'].'.id',
 				      null,
 				      array('userfirstname'	=> 'firstname',
-				      	    'userlastname'	=> 'lastname',
+					    'userlastname'	=> 'lastname',
 					    'usernumber'	=> 'number',
 					    'usercontext'	=> 'context',
 					    'username'		=> 'name'));

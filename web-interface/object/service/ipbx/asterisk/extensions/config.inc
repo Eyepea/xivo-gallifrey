@@ -101,7 +101,7 @@ $array['app']['background']['arg'][1] = array('set'	=> false,
 $array['app']['background']['arg'][2] = array('set'	=> false,
 					      'chk'	=> 2,
 					      'regexp'	=> '/^(?:[a-zA-Z]{2,3}(?:[_-][a-zA-Z]{2,3})?'.
-					      		   '|'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.')$/');
+							   '|'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.')$/');
 $array['app']['background']['arg'][3] = array('set'	=> false,
 					      'chk'	=> 2,
 					      'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN_CONTEXT.'$/');
@@ -435,8 +435,8 @@ $array['app']['waitexten']['arg'][0] = array('set'	=> false,
 $array['app']['waitexten']['arg'][1] = array('set'	=> false,
 					     'chk'	=> 2,
 					     'regexp'	=> '/^m(\((?:[a-z0-9_-]{1,20}'.
-					     		   '|(?:[a-z0-9_-]*'.
-							   	XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
+							   '|(?:[a-z0-9_-]*'.
+								XIVO_SRE_IPBX_AST_REGEXP_DIALPLAN.
 								'[a-z0-9_-]*)+)\))?$/');
 
 $array['app']['waitforring'] = array();
@@ -449,11 +449,11 @@ $array['app']['waitforsilence'] = array();
 $array['app']['waitforsilence']['displayname'] = 'WaitForSilence';
 $array['app']['waitforsilence']['arg'] = array();
 $array['app']['waitforsilence']['arg'][0] = array('cast'	=> 'uint',
-					      	  'between'	=> array(0,60000));
+						  'between'	=> array(0,60000));
 $array['app']['waitforsilence']['arg'][1] = array('set'		=> false,
 						  'chk'		=> 2,
 						  'cast'	=> 'uint',
-					      	  'between'	=> array(0,10));
+						  'between'	=> array(0,10));
 */
 $array['app']['waitmusiconhold'] = array();
 $array['app']['waitmusiconhold']['displayname'] = 'WaitMusicOnHold';

@@ -289,7 +289,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 				       $this->_table['callfiltermember'].'.callfilterid = '.$this->_table['callfilter'].'.id',
 				       null,
 				       array('callfilterid'	=> 'id',
-				             'callfiltername'	=> 'name'));
+					     'callfiltername'	=> 'name'));
 
 		$this->_dso->joinwhere($this->_table['callfilter'],array('type' => 'bosssecretary'));
 		$this->_dso->andjoinwhere($this->_table['callfilter'],$this->_table['callfilter'].'.bosssecretary IS NOT NULL');

@@ -64,7 +64,7 @@ $dhtml->write_js($toolbar_js);
 	echo	$url->href_html($url->img_html('img/menu/top/toolbar/bt-add.gif',
 					       $this->bbf('toolbar_opt_add'),
 					       'id="toolbar-bt-add"
-					        border="0"'),
+						border="0"'),
 				'service/ipbx/pbx_settings/voicemail',
 				'act=add',
 				null,
@@ -74,7 +74,7 @@ if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
 			       'id="toolbar-bt-advanced"
-			        border="0"');
+				border="0"');
 ?>
 <div class="sb-advanced-menu">
 	<ul id="toolbar-advanced-menu">

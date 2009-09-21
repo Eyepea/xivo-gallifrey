@@ -75,7 +75,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		if(isset($v['size']) === true)
 		{
- 			if($v['size'] !== false)
+			if($v['size'] !== false)
 				$this->_param['size'] = xivo_uint($v['size']);
 			else
 				$this->_param['size'] = false;

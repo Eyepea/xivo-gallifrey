@@ -121,7 +121,7 @@ if($nb > 0):
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/meetme');
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension',
 				    array('fktype'	=> 'extension',
-				    	  'fktypeval'	=> ''));
+					  'fktypeval'	=> ''));
 
 		if($fkdata['extension'] === true):
 			$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/extension',

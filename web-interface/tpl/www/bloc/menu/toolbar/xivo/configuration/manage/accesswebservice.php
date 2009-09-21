@@ -45,7 +45,7 @@ if($this->get_var('act') === 'list'):
 	echo	$url->img_html('img/menu/top/toolbar/bt-more.gif',
 			       $this->bbf('toolbar_opt_advanced'),
 			       'id="toolbar-bt-advanced"
-			        border="0"');
+				border="0"');
 ?>
 <div class="sb-advanced-menu">
 	<ul id="toolbar-advanced-menu">

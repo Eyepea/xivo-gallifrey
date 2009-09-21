@@ -721,7 +721,7 @@ function xivo_ast_user_onload()
 				   protocol,
 				   function()
 				   {
-				   	xivo_ast_chg_user_protocol(this.value);
+					xivo_ast_chg_user_protocol(this.value);
 					xivo_ast_chg_user_name();
 					xivo_fm_set_onfocus(this);
 				   });
@@ -751,8 +751,8 @@ function xivo_ast_user_onload()
 	{
 		var outcallerid_type_fn = function()
 					  {
-					  	xivo_chg_attrib('ast_fm_user_outcallerid',
-							        'fd-userfeatures-outcallerid-custom',
+						xivo_chg_attrib('ast_fm_user_outcallerid',
+								'fd-userfeatures-outcallerid-custom',
 								Number(outcallerid_type.value === 'custom'));
 					  };
 

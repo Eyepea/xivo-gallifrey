@@ -60,7 +60,7 @@ class xivo_i18n_abstract_sql
 		$this->_dso->where(array('locale' => $arr['locale'],
 					 'path'	=> $arr['path']));
 
- 		if(($r = $this->_dso->select_single()) !== false)
+		if(($r = $this->_dso->select_single()) !== false)
 		{
 			$r['filectime'] = $r['dcreate'];
 

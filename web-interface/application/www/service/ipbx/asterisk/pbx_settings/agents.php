@@ -302,10 +302,10 @@ switch($act)
 		$umember['list'] = $appuser->get_users_list(null,
 							    null,
 							    array('firstname'	=> SORT_ASC,
-							          'lastname'	=> SORT_ASC,
-							          'number'	=> SORT_ASC,
-							          'context'	=> SORT_ASC,
-							          'name'	=> SORT_ASC),
+								  'lastname'	=> SORT_ASC,
+								  'number'	=> SORT_ASC,
+								  'context'	=> SORT_ASC,
+								  'name'	=> SORT_ASC),
 							    null,
 							    true);
 
@@ -413,10 +413,10 @@ switch($act)
 		$umember['list'] = $appuser->get_users_list(null,
 							    null,
 							    array('firstname'	=> SORT_ASC,
-							          'lastname'	=> SORT_ASC,
-							          'number'	=> SORT_ASC,
-							          'context'	=> SORT_ASC,
-							          'name'	=> SORT_ASC),
+								  'lastname'	=> SORT_ASC,
+								  'number'	=> SORT_ASC,
+								  'context'	=> SORT_ASC,
+								  'name'	=> SORT_ASC),
 							    null,
 							    true);
 

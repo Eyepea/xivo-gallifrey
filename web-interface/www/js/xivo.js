@@ -636,7 +636,7 @@ function xivo_strcmp(str1,str2,len)
 		str2 = str2.substring(0,len);
 	}
 
- 	if(str1 > str2)
+	if(str1 > str2)
 		return(1);
 	else if(str1 === str2)
 		return(0);
@@ -659,7 +659,7 @@ function xivo_strcasecmp(str1,str2,len)
 		str2 = str2.substring(0,len);
 	}
 
- 	if(str1 > str2)
+	if(str1 > str2)
 		return(1);
 	else if(str1 === str2)
 		return(0);
@@ -739,12 +739,12 @@ function xivo_debug(obj)
 
 	var r = '';
 
-  	for(var property in obj)
+	for(var property in obj)
 	{
 		if(property === 'selectionStart' || property === 'selectionEnd')
 			continue;
 
-    		if(typeof(obj[property]) !== 'object')
+		if(typeof(obj[property]) !== 'object')
 		{
 			if(typeof(obj[property]) !== 'function')
 				r += property+':'+obj[property]+'\n';

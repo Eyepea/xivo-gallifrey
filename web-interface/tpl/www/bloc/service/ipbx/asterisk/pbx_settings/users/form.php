@@ -547,9 +547,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_protocol_qualifyfreq-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'millisecond',
-							 		'format'	=> '%M%s%ms')),
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['iax']['qualifyfreqok']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','qualifyfreqok'))),
 			      $element['protocol']['iax']['qualifyfreqok']['value']),
@@ -560,9 +560,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_protocol_qualifyfreq-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'millisecond',
-							 		'format'	=> '%M%s%ms')),
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['iax']['qualifyfreqnotok']['default'],
 				    'value'	=> $this->get_varra('info',array('protocol','qualifyfreqnotok'))),
 			      $element['protocol']['iax']['qualifyfreqnotok']['value']),
@@ -713,15 +713,15 @@ endif;
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-codeclist',
-		   				  'it-codec');
+						  'it-codec');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
-		   	<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-codec',
-		   				  'it-codeclist');
+						  'it-codeclist');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
@@ -744,16 +744,16 @@ endif;
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-codec',1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
-			   	<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-codec',-1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
-			   	<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcodec'),
 						  'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
 		</div>
@@ -836,16 +836,16 @@ endif;
 		<div class="inout-list">
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
-			            return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
-			   	<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist');
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
-			   	<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outrightcall'),
 						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 		</div>

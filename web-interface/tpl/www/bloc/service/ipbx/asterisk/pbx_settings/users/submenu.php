@@ -35,13 +35,13 @@
 				<ul>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-voicemail');
-					       		return(false);"><?=$this->bbf('smenu_voicemail');?></a></li>
+							return(false);"><?=$this->bbf('smenu_voicemail');?></a></li>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-dialaction');
-					       		return(false);"><?=$this->bbf('smenu_dialaction');?></a></li>
+							return(false);"><?=$this->bbf('smenu_dialaction');?></a></li>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-service');
-					       		return(false);"><?=$this->bbf('smenu_services');?></a></li>
+							return(false);"><?=$this->bbf('smenu_services');?></a></li>
 				</ul>
 			</div>
 		</li>
@@ -89,10 +89,10 @@
 				<ul>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-rightcall',1);
-					       		return(false);"><?=$this->bbf('smenu_rightcalls');?></a></li>
+							return(false);"><?=$this->bbf('smenu_rightcalls');?></a></li>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-t38',1);
-					       		return(false);"><?=$this->bbf('smenu_t38');?></a></li>
+							return(false);"><?=$this->bbf('smenu_t38');?></a></li>
 				</ul>
 			</div>
 		</li>

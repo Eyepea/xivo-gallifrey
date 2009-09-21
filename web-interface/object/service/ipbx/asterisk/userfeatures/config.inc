@@ -203,7 +203,7 @@ $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph
 $array['filter']['number'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(
-				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['agentid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');

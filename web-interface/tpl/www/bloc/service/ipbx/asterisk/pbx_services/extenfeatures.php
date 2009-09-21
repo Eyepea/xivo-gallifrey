@@ -85,13 +85,13 @@ if(isset($error_js[0]) === true)
 				<ul>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-call');
-					       		return(false);"><?=$this->bbf('smenu_calls');?></a></li>
+							return(false);"><?=$this->bbf('smenu_calls');?></a></li>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-transfer');
-					       		return(false);"><?=$this->bbf('smenu_transfers');?></a></li>
+							return(false);"><?=$this->bbf('smenu_transfers');?></a></li>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-forward');
-					       		return(false);"><?=$this->bbf('smenu_forwards');?></a></li>
+							return(false);"><?=$this->bbf('smenu_forwards');?></a></li>
 				</ul>
 			</div>
 		</li>
@@ -139,7 +139,7 @@ if(isset($error_js[0]) === true)
 				<ul>
 					<li><a href="#"
 					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-parking',1);
-					       		return(false);"><?=$this->bbf('smenu_parking');?></a></li>
+							return(false);"><?=$this->bbf('smenu_parking');?></a></li>
 				</ul>
 			</div>
 		</li>
@@ -1049,9 +1049,9 @@ if(isset($error_js[0]) === true)
 				    'key'	=> false,
 				    'bbf'	=> 'fm_generalfeatures_parkingtime-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'second',
-							 		'format'	=> '%M%s')),
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
 				    'value'	=> $this->get_varra('generalfeatures',array('parkingtime','var_val')),
 				    'default'	=> $element['generalfeatures']['parkingtime']['default']),
 			      $element['generalfeatures']['parkingtime']['value']),

@@ -140,15 +140,15 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-contextlist',
-		   				  'it-context');
+						  'it-context');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incontext');?>">
-		   	<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incontext'),
 					  'class="bt-inlist" id="bt-incontext" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-context',
-		   				  'it-contextlist');
+						  'it-contextlist');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcontext');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
@@ -171,16 +171,16 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-context',1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcontext');?>">
-			   	<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcontext'),
 						  'class="bt-uplist" id="bt-upcontext" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-context',-1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcontext');?>">
-			   	<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcontext'),
 						  'class="bt-downlist" id="bt-downcontext" border="0"');?></a>
 		</div>
@@ -308,7 +308,7 @@ if($incall_list !== false):
 						       'key'		=> false,
 						       'value'		=> $ref['didlength'],
 						       'default'	=> $element['contextnumbers']['didlength']['default']),
-					         $element['contextnumbers']['didlength']['value']);?>
+						 $element['contextnumbers']['didlength']['value']);?>
 			</td>
 			<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 									       $this->bbf('opt_contextnumbers_incall-delete'),

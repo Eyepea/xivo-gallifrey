@@ -185,7 +185,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 			if(xivo_has_len($info['context']['entity']) === false
 			|| is_object($this->_entity) === false
 			|| ($info['entity'] = $this->_entity->get_where(
-			   					array('name' => $info['context']['entity']))) === false)
+								array('name' => $info['context']['entity']))) === false)
 				$info['entity'] = false;
 
 			if($info['entity'] === false
@@ -449,8 +449,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 							else if(xivo_digit($number) === false)
 							{
 								if($this->_contextnumbers->chk_pattern_in_interval($numberbeg,
-												   		   $exten_pattern,
-												   		   $numberend) === true)
+														   $exten_pattern,
+														   $numberend) === true)
 									unset($contextnummember[$key][$k]);
 								continue;
 							}
@@ -1280,10 +1280,10 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 							array('context'		=> $newcontext),
 							null,null,false)) === false
 		    || ($ref['voicemail']['usersip'] = $this->_dso->update_usersip_mailbox(
-		    					$newcontext,
+							$newcontext,
 							$newcontext)) === false
 		    || ($ref['voicemail']['useriax'] = $this->_dso->update_useriax_mailbox(
-		    					$newcontext,
+							$newcontext,
 							$newcontext)) === false) === true)
 			return(false);
 		else if(isset($data['dialout']) === true

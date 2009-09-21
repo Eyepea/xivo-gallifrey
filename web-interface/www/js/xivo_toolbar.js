@@ -1,6 +1,6 @@
 var xivo_toolbar_fn_adv_menu_enable = function(e)
 {
-   	if(xivo_is_function(e.preventDefault) === true)
+	if(xivo_is_function(e.preventDefault) === true)
 		e.preventDefault();
 
 	xivo_fm[xivo_toolbar_form_name]['act'].value = 'enables';
@@ -9,7 +9,7 @@ var xivo_toolbar_fn_adv_menu_enable = function(e)
 
 var xivo_toolbar_fn_adv_menu_disable = function(e)
 {
-   	if(xivo_is_function(e.preventDefault) === true)
+	if(xivo_is_function(e.preventDefault) === true)
 		e.preventDefault();
 
 	xivo_fm[xivo_toolbar_form_name]['act'].value = 'disables';
@@ -18,7 +18,7 @@ var xivo_toolbar_fn_adv_menu_disable = function(e)
 
 var xivo_toolbar_fn_adv_menu_delete = function(e)
 {
-   	if(xivo_is_function(e.preventDefault) === true)
+	if(xivo_is_function(e.preventDefault) === true)
 		e.preventDefault();
 
 	if(confirm(xivo_toolbar_adv_menu_delete_confirm) === true)
@@ -41,16 +41,16 @@ xivo.dom.set_onload(function()
 			   xivo_eid('toolbar-bt-add'),
 			   function()
 			   {
-			   	if((add_menu = xivo_eid('toolbar-add-menu')) !== false)
-			   		add_menu.style.display = 'block';
+				if((add_menu = xivo_eid('toolbar-add-menu')) !== false)
+					add_menu.style.display = 'block';
 			   });
 
 	xivo.dom.add_event('mouseout',
 			   xivo_eid('toolbar-bt-add'),
 			   function()
 			   {
-			   	if((add_menu = xivo_eid('toolbar-add-menu')) !== false)
-			   		add_menu.style.display = 'none';
+				if((add_menu = xivo_eid('toolbar-add-menu')) !== false)
+					add_menu.style.display = 'none';
 			   });
 
 	xivo.dom.add_event('mouseover',
@@ -71,16 +71,16 @@ xivo.dom.set_onload(function()
 			   xivo_eid('toolbar-bt-advanced'),
 			   function()
 			   {
-			   	if((advanced_menu = xivo_eid('toolbar-advanced-menu')) !== false)
-			   		advanced_menu.style.display = 'block';
+				if((advanced_menu = xivo_eid('toolbar-advanced-menu')) !== false)
+					advanced_menu.style.display = 'block';
 			   });
 
 	xivo.dom.add_event('mouseout',
 			   xivo_eid('toolbar-bt-advanced'),
 			   function()
 			   {
-			   	if((advanced_menu = xivo_eid('toolbar-advanced-menu')) !== false)
-			   		advanced_menu.style.display = 'none';
+				if((advanced_menu = xivo_eid('toolbar-advanced-menu')) !== false)
+					advanced_menu.style.display = 'none';
 			   });
 
 	xivo.dom.add_event('mouseover',
@@ -109,7 +109,7 @@ xivo.dom.set_onload(function()
 			   xivo_eid('toolbar-advanced-menu-select-all'),
 			   function(e)
 			   {
-			   	if(xivo_is_function(e.preventDefault) === true)
+				if(xivo_is_function(e.preventDefault) === true)
 					e.preventDefault();
 
 				xivo_fm_checked_all(xivo_toolbar_form_name,

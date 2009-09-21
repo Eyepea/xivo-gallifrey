@@ -86,7 +86,7 @@ xivo.dom.set_onload(function()
 			   {
 				this.form['act'].value = 'list';
 
-			   	if(this.value !== '')
+				if(this.value !== '')
 					this.form['act'].value += 'file';
 
 				this.form.submit();

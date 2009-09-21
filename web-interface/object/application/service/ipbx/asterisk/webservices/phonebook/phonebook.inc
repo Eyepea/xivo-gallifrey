@@ -64,7 +64,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		if(is_object($this->_appxivoserver) === false
 		&& ($this->_appxivoserver = $this->_service->get_application('serverfeatures',
 									     array('feature'	=> 'phonebook',
-									    	   'type'	=> 'xivo'))) === false)
+										   'type'	=> 'xivo'))) === false)
 			return(false);
 
 		return(true);
@@ -75,7 +75,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		if(is_object($this->_appldapfilter) === false
 		&& ($this->_appldapfilter = $this->_service->get_application('serverfeatures',
 									     array('feature'	=> 'phonebook',
-									    	   'type'	=> 'ldap'))) === false)
+										   'type'	=> 'ldap'))) === false)
 			return(false);
 
 		return(true);
@@ -260,8 +260,8 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			|| isset($ldapfilter['attrphonenumber'][0]) === false)
 				continue;
 
-                        $ldapfilter['attrdisplayname'] = xivo_array_change_value_case($ldapfilter['attrdisplayname'],CASE_LOWER);
-                        $ldapfilter['attrphonenumber'] = xivo_array_change_value_case($ldapfilter['attrphonenumber'],CASE_LOWER);
+			$ldapfilter['attrdisplayname'] = xivo_array_change_value_case($ldapfilter['attrdisplayname'],CASE_LOWER);
+			$ldapfilter['attrphonenumber'] = xivo_array_change_value_case($ldapfilter['attrphonenumber'],CASE_LOWER);
 
 			if(xivo_has_len($ldapfilter['filter']) === true)
 			{

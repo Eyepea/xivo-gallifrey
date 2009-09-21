@@ -90,7 +90,7 @@ $page = $url->pager($pager['pages'],
 							       'border="0"'),
 						'xivo/configuration/manage/user',
 						array('act'	=> 'edit',
-						      'id' 	=> $ref['id']),
+						      'id'	=> $ref['id']),
 						null,
 						$this->bbf('opt_modify')),"\n";
 

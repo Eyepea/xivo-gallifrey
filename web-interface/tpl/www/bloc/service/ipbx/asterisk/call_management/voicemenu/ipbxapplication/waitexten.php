@@ -26,10 +26,10 @@ $form = &$this->get_module('form');
 $apparg_waitexten = $this->get_var('apparg_waitexten');
 
 echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_waitexten-seconds'),
-		          'name'	=> 'ipbxapplication[waitexten][seconds]',
-		          'labelid'	=> 'ipbxapplication-waitexten-seconds',
-		          'size'	=> 10,
-		          'default'	=> $apparg_waitexten['seconds']['default'])),
+			  'name'	=> 'ipbxapplication[waitexten][seconds]',
+			  'labelid'	=> 'ipbxapplication-waitexten-seconds',
+			  'size'	=> 10,
+			  'default'	=> $apparg_waitexten['seconds']['default'])),
 
 	$form->checkbox(array('desc'	=> $this->bbf('fm_ipbxapplication_waitexten-m'),
 			      'name'	=> 'ipbxapplication[waitexten][m]',

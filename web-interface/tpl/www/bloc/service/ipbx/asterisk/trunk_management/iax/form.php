@@ -95,7 +95,7 @@ endif;
 				    'value'	=> ($host_static === true ? 'static' : $host)),
 			      $element['protocol']['host-type']['value'],
 			      'onchange="xivo_chg_attrib(\'ast_fm_trunk_host\',
-			      				 \'fd-protocol-host-static\',
+							 \'fd-protocol-host-static\',
 							 Number((this.value === \'static\')));"'),
 
 		$form->text(array('desc'	=> '&nbsp;',
@@ -146,7 +146,7 @@ endif;
 				      'checked'		=> $reg_active,
 				      'disabled'	=> $protocol_disable),
 				      'onclick="xivo_chg_attrib(\'ast_fm_trunk_register\',
-				      				\'it-register-username\',
+								\'it-register-username\',
 								Number((this.checked === false)));"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_username'),
@@ -205,9 +205,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_protocol_qualifyfreq-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'mixkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'millisecond',
-							 		'format'	=> '%M%s%ms')),
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['qualifyfreqok']['default'],
 				    'value'	=> $info['protocol']['qualifyfreqok']),
 			      $element['protocol']['qualifyfreqok']['value']),
@@ -218,9 +218,9 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_protocol_qualifyfreq-opt',
 				    'bbf_opt'	=> array('argmode'	=> 'mixkey',
-				    			 'time'		=> array(
-							 		'from'		=> 'millisecond',
-							 		'format'	=> '%M%s%ms')),
+							 'time'		=> array(
+									'from'		=> 'millisecond',
+									'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['qualifyfreqnotok']['default'],
 				    'value'	=> $info['protocol']['qualifyfreqnotok']),
 			      $element['protocol']['qualifyfreqnotok']['value']),
@@ -303,15 +303,15 @@ endif;
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-codeclist',
-		   				  'it-codec');
+						  'it-codec');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
-		   	<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_fm_move_selected('it-codec',
-		   				  'it-codeclist');
+						  'it-codeclist');
 			    return(xivo.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
@@ -334,16 +334,16 @@ endif;
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-codec',1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
-			   	<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
 			   onclick="xivo_fm_order_selected('it-codec',-1);
-			   	    return(xivo.dom.free_focus());"
+				    return(xivo.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
-			   	<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcodec'),
 						  'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
 		</div>

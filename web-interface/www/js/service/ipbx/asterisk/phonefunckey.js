@@ -200,7 +200,7 @@ function xivo_build_phonefunckey_array(id)
 
 		xivo_elt_phonefunckey[id][keyit] = {'style': {'display': 'none'},
 						    'property':
-						    	{readOnly:	true,
+							{readOnly:	true,
 							 disabled:	true,
 							 className:	'it-disabled'}};
 		xivo_elt_phonefunckey[id]['links']['link'][i++] = [keyit,0,1];
@@ -223,7 +223,7 @@ function xivo_build_phonefunckey_array(id)
 			if(xivo_is_undef(xivo_phonefunckey_type[property]['destination']) === true
 			|| xivo_bool(xivo_phonefunckey_type[property]['destination']) === false)
 				 propertyit = {readOnly:	true,
-				 	       disabled:	false,
+					       disabled:	false,
 					       className:	'it-readonly'};
 		}
 

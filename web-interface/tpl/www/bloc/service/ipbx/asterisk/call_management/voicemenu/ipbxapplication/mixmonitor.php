@@ -26,10 +26,10 @@ $form = &$this->get_module('form');
 $apparg_mixmonitor = $this->get_var('apparg_mixmonitor');
 
 echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_mixmonitor-filename'),
-		          'name'	=> 'ipbxapplication[mixmonitor][filename]',
-		          'labelid'	=> 'ipbxapplication-mixmonitor-filename',
-		          'size'	=> 10,
-		          'default'	=> $apparg_mixmonitor['filename']['default'])),
+			  'name'	=> 'ipbxapplication[mixmonitor][filename]',
+			  'labelid'	=> 'ipbxapplication-mixmonitor-filename',
+			  'size'	=> 10,
+			  'default'	=> $apparg_mixmonitor['filename']['default'])),
 
 	$form->select(array('desc'	=> $this->bbf('fm_ipbxapplication_mixmonitor-fileformat'),
 			    'name'	=> 'ipbxapplication[mixmonitor][fileformat]',

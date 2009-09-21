@@ -120,9 +120,9 @@ $array['filter']['event'] = array('key' => array('answer',
 $array['filter']['category'] = array('key' => array('callfilter','group','incall','queue','schedule','user'));
 $array['filter']['categoryval'] = array('maxlen' => 128,'cast' => 'sgraph');
 $array['filter']['action'] = array('key' => array('none',
-				 		  'endcall:busy',
-				 		  'endcall:congestion',
-				 		  'endcall:hangup',
+						  'endcall:busy',
+						  'endcall:congestion',
+						  'endcall:hangup',
 						  'user',
 						  'group',
 						  'queue',

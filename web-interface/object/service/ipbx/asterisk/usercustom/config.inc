@@ -55,7 +55,7 @@ $array['filter'] = array();
 $array['filter']['name'] = array('set' => false);
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(
-				    			XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
+							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['intfsuffix'] = array('set' => false);

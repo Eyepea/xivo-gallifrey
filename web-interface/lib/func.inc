@@ -425,7 +425,7 @@ function xivo_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
 			$r = trim($r);
 
 		if(isset($end{0}) === true)
-	       		$r .= $end;
+			$r .= $end;
 	}
 	else if((bool) $trim === true)
 		$r = trim($r);

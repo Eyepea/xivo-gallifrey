@@ -34,10 +34,10 @@ echo	$form->select(array('desc'	=> $this->bbf('fm_ipbxapplication_monitor-filefo
 		      $apparg_monitor['fileformat']['value']),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_monitor-basename'),
-		          'name'	=> 'ipbxapplication[monitor][basename]',
-		          'labelid'	=> 'ipbxapplication-monitor-basename',
-		          'size'	=> 15,
-		          'default'	=> $apparg_monitor['basename']['default'])),
+			  'name'	=> 'ipbxapplication[monitor][basename]',
+			  'labelid'	=> 'ipbxapplication-monitor-basename',
+			  'size'	=> 15,
+			  'default'	=> $apparg_monitor['basename']['default'])),
 
 	$form->checkbox(array('desc'	=> $this->bbf('fm_ipbxapplication_monitor-m'),
 			      'name'	=> 'ipbxapplication[monitor][m]',
