@@ -153,7 +153,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
-	
+
 		$r = $identity = array();
 
 		for($i = 0;$i < $nb;$i++)

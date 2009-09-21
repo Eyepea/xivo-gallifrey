@@ -309,7 +309,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 
 		for($i = 0;$m = $this->fetch_row();$i++)
 			$r[$i] = xivo_array_combine($full_column_names,$m);
-		
+
 		return($r);
 	}
 

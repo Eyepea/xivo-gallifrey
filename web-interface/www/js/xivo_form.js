@@ -83,7 +83,7 @@ function xivo_fm_show_error()
 
 function xivo_fm_set_onfocus(obj)
 {
-	var list = {'input': 1,'select': 1, 'textarea': 1}; 
+	var list = {'input': 1,'select': 1, 'textarea': 1};
 
 	if(xivo_is_undef(xivo_fm_onfocus_class) === true
 	|| xivo_is_undef(xivo_fm_error_class) === true
@@ -108,7 +108,7 @@ function xivo_fm_set_onfocus(obj)
 
 function xivo_fm_set_onblur(obj)
 {
-	var list = {'input': 1,'select': 1, 'textarea': 1}; 
+	var list = {'input': 1,'select': 1, 'textarea': 1};
 
 	if(xivo_is_undef(xivo_fm_onblur_class) === true
 	|| xivo_is_undef(xivo_fm_error_class) === true

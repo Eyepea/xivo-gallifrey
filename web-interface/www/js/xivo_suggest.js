@@ -537,7 +537,7 @@ xivo.suggest.prototype.changehighlight = function(key)
 
 	if(suggestid > this._suggests.length)
 		suggestid = 1;
-	
+
 	if(suggestid < 1)
 		suggestid = this._suggests.length;
 

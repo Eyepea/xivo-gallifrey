@@ -245,7 +245,7 @@ xivo.dom.get_offset_position = function(obj)
 		if(xivo_is_undef(obj.y) === false)
 			ret.y = obj.y;
 	}
-	
+
 	return(ret);
 }
 
@@ -322,7 +322,7 @@ xivo.dom.make_table_list = function(name,obj,del,idcnt)
 	|| (ref['node'] === ''
 	   && (ref['node'] = xivo.dom.etag('tr',xivo_eid('ex-'+name),0)) === false) === true)
 		return(false);
-	
+
 	if(Boolean(del) === true)
 	{
 		if(xivo_is_object(obj) === false

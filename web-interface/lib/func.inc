@@ -230,7 +230,7 @@ function xivo_unumber($str,$def=0,$t=false)
 
 	if($str === '0')
 		$str = 0;
-	
+
 	return($str);
 }
 

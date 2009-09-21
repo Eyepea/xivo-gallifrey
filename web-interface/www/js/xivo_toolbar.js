@@ -115,7 +115,7 @@ xivo.dom.set_onload(function()
 				xivo_fm_checked_all(xivo_toolbar_form_name,
 						    xivo_toolbar_form_list);
 			   });
-	
+
 	xivo.dom.add_event('click',
 			   xivo_eid('toolbar-advanced-menu-delete'),
 			   xivo_toolbar_fn_adv_menu_delete);

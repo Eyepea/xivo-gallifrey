@@ -56,7 +56,7 @@ class xivo_sysinfo_linux
 		{
 			if(preg_match('/^([^:]+):\s+(\d+)\s*((?i:[KMGTPEZY])B)?$/',$content[$i],$match) !== 1)
 				continue;
-			
+
 			$key = trim(strtolower($match[1]));
 			$value = trim($match[2]);
 

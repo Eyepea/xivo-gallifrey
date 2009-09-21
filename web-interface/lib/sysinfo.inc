@@ -91,7 +91,7 @@ class xivo_sysinfo
 
 	function sapi_name()
 	{
-		return(PHP_SAPI);	
+		return(PHP_SAPI);
 	}
 
 	function sapi_mode()

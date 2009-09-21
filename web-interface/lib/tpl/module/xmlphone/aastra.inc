@@ -61,7 +61,7 @@ class xivo_tpl_xmlphone_aastra extends xivo_tpl_xmlphone_abstract
 			case '6757i CT':
 				return(true);
 		}
-		
+
 		return(false);
 	}
 

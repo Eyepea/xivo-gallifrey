@@ -167,7 +167,7 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 
 	if(xivo_is_array(obj.query) === true)
 		query = this.build_query(obj.query,encode);
-	
+
 	if(xivo_has_len(obj,'fragment') === true)
 	{
 		obj.fragment = xivo_string(obj.fragment);
@@ -181,10 +181,10 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 
 	if(scheme !== '')
 		r += scheme + ':';
-	
+
 	if(authority !== '')
 		r += '//' + authority;
-	
+
 	if(path !== '')
 	{
 		if(authority === '' && path.substr(0,2) === '//')
@@ -195,7 +195,7 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 
 	if(query !== '')
 		r += '?' + query;
-	
+
 	if(fragment !== '')
 		r += '#' + fragment;
 
@@ -336,7 +336,7 @@ xivo.uri.prototype.split_authority = function(authority)
 
 	if(authority === '')
 		return(null);
-	
+
 	var r = {};
 
 	if((pos = authority.indexOf('@')) === -1)
@@ -414,7 +414,7 @@ xivo.uri.prototype.split_query = function(query)
 
 	if(r.length === 0)
 		return(false);
-	
+
 	return(r);
 }
 
@@ -531,7 +531,7 @@ xivo.uri.prototype.valid_scheme = function(scheme)
 {
 	if(xivo_is_scalar(scheme) === false)
 		return(false);
-	
+
 	return((xivo_string(scheme).match(this._regexp.scheme) !== null));
 }
 
@@ -565,7 +565,7 @@ xivo.uri.prototype._valid_h16 = function(h16)
 	   || h16.match(/^[0-9]+$/) !== null) === true
 	&& b16 >= 0 && b16 <= 65535)
 		return(true);
-	
+
 	return(false);
 }
 
@@ -586,7 +586,7 @@ xivo.uri.prototype._valid_rightipv6 = function(ip)
 	if(nb > 8 || (nb > 7 && ip.indexOf('.') !== -1) === true
 	|| (nb > 1 && arr.slice(0,-1).join('').match(/^[\da-fA-F]+$/) !== null) === true)
 		return(false);
-	
+
 	var h16_cnt = 0;
 
 	if(arr[nb - 1].indexOf('.') !== -1)
@@ -645,7 +645,7 @@ xivo.uri.prototype.valid_ipvfuture = function(ip)
 	if(xivo_is_scalar(ip) === true
 	&& ip.match(this._regexp.ipvfuture) !== null)
 		return(true);
-	
+
 	return(false);
 }
 
@@ -660,12 +660,12 @@ xivo.uri.prototype.valid_ipliteral = function(ip)
 
 	if(len < 2 || ip[0] !== '[' || ip[len - 1] !== ']')
 		return(false);
-	
+
 	ip = xivo_substr(ip,1,-1);
 
 	if(this.valid_ipv6(ip) === true || this.valid_ipvfuture(ip) === true)
 		return(true);
-	
+
 	return(false);
 }
 
@@ -695,17 +695,17 @@ xivo.uri.prototype.valid_authority = function(host,user,password,port)
 		host = '';
 	else if(xivo_is_scalar(host) === false)
 		return(false);
-	
+
 	if(xivo_is_undef(user) === true)
 		user = '';
 	else if(xivo_is_scalar(user) === false)
 		return(false);
-	
+
 	if(xivo_is_undef(password) === true)
 		password = '';
 	else if(xivo_is_scalar(password) === false)
 		return(false);
-	
+
 	if(xivo_is_undef(port) === true)
 		port = '';
 	else if(xivo_is_scalar(port) === false)
@@ -729,7 +729,7 @@ xivo.uri.prototype.valid_authority = function(host,user,password,port)
 	   && password === ''
 	   && port === '') === true)
 		return(false);
-	
+
 	return(true);
 }
 

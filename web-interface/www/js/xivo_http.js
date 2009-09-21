@@ -440,7 +440,7 @@ xivo.http.prototype.onreadystatechange = function(timeout)
 	}
 	else if(timeout === false && this._request.readyState !== 4)
 		return(null);
-	
+
 	this._completed = true;
 
 	this.deleteinterval();
@@ -493,7 +493,7 @@ xivo.http.prototype.send = function(cache)
 
 	if(this._options.async === false)
 		this.onreadystatechange();
-	
+
 	return(true);
 }
 
@@ -505,6 +505,6 @@ xivo.http.prototype.reload = function(cache)
 
 	if(this._request === null || cache === false)
 		this._prepare_request();
-	
+
 	return(this.send(cache));
 }

@@ -152,7 +152,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
-	
+
 		$r = $identity = array();
 
 		for($i = 0;$i < $nb;$i++)

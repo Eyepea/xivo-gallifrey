@@ -469,7 +469,7 @@ function xivo_is_empty(val)
 			return(false);
 		return(true);
 	}
-	
+
 	switch(val)
 	{
 		case 0:
@@ -492,7 +492,7 @@ function xivo_has_len(val,key)
 
 	if(xivo_is_scalar(val) === false)
 		return(false);
-	
+
 	val = xivo_string(val);
 
 	return((val.length > 0));

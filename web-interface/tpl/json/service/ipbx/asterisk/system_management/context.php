@@ -48,7 +48,7 @@ else
 
 		if(xivo_issa('entity',$ref) === true)
 			$data[$i]['context']['entityid'] = $ref['entity']['id'];
-		
+
 		unset($data[$i]['entity']);
 	}
 

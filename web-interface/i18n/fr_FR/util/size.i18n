@@ -1,8 +1,8 @@
 ; size_iec_Bytes(0)
-%.2f octet 
+%.2f octet
 
 ; size_iec_Bytes(1)
-%.2f octet 
+%.2f octet
 
 ; size_iec_Bytes
 %.2f octets

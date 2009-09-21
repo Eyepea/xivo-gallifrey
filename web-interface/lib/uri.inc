@@ -365,7 +365,7 @@ class xivo_uri
 				return(false);
 
 			$r['host'] = '['.$match[1].']';
-			
+
 			if(isset($match[2],$match[2]{1}) === true)
 				$r['port'] = substr($match[2],1);
 		}
@@ -422,7 +422,7 @@ class xivo_uri
 
 		if(($nb = count($query)) === 0)
 			return($r);
-		
+
 		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
@@ -511,7 +511,7 @@ class xivo_uri
 
 	function valid_scheme($scheme)
 	{
-		if(is_scalar($scheme) === true 
+		if(is_scalar($scheme) === true
 		&& preg_match($this->_regexp['scheme'],$scheme) === 1)
 			return(true);
 

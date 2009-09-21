@@ -41,7 +41,7 @@ $data = array();
 for($i = 0;$i < $nb;$i++)
 {
 	$ref = &$list[$i];
-	
+
 	if($ref['id'] === $except)
 		continue;
 	else if(preg_match('/^(.+) \((.+)\)$/',$ref['identity'],$match) !== 1)

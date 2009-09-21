@@ -47,7 +47,7 @@ switch($_QRY->get('act'))
 		}
 
 		$_TPL->set_var('result',$result);
-		$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');	
+		$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');
 }
 
 ?>
