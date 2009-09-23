@@ -1,7 +1,7 @@
 2009-09-23  Adrien DELLE CAVE <decryptus@proformatique.com>
 
 	pf_gosub_args.patch
-	$Revision$
+	Revision: Removed because already set in patch.
 	$Date$
 	Gosub interface change (backport from Asterisk 1.6 for 1.4)
 
