@@ -30,12 +30,12 @@ Index: asterisk-1.4.26/channels/chan_sip.c
 -					pickup->exten   = ast_strdup(subscription->exten);
 -					pickup->context = ast_strdup(subscription->context);
 +
-+					if(ast_asprintf(&pickup->exten,
-+							"%s%%%s@PICKUPMARK&%s@%s",
-+							subscription->exten,
-+							subscription->context,
-+							subscription->exten,
-+							subscription->context) < 0) {
++					if (ast_asprintf(&pickup->exten,
++							 "%s%%%s@PICKUPMARK&%s@%s",
++							 subscription->exten,
++							 subscription->context,
++							 subscription->exten,
++							 subscription->context) < 0) {
 +						pickup->exten = NULL;
 +					}
 +
