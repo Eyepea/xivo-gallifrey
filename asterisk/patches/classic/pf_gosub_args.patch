@@ -33,8 +33,8 @@ Index: asterisk-1.4.26.2/apps/app_stack.c
  
  #include "asterisk.h"
   
--ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
-+ASTERISK_FILE_VERSION(__FILE__, "$Revision$")
+-ASTERISK_FILE_VERSION(__FILE__, "$Revision: 85687 $")
++ASTERISK_FILE_VERSION(__FILE__, "$Revision: 211551 $")
  
 -#include <stdio.h>
 -#include <stdlib.h>
