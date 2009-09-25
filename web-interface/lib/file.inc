@@ -35,7 +35,7 @@ define('FILE_X_OK',1);
 define('FILE_W_OK',2);
 define('FILE_R_OK',4);
 
-class xivo_file
+class dwho_file
 {
 	var $_finfo	= null;
 	var $info	= array(
@@ -50,25 +50,25 @@ class xivo_file
 				'charset'	=> false,
 				'upload'	=> false);
 
-	function xivo_file()
+	function dwho_file()
 	{
 		$this->_finfo = $this->_load_fileinfo();
 	}
 
 	function _load_fileinfo()
 	{
-		if(blop::load_extension('fileinfo') === false
-		|| xivo::load_class('xivo_file_fileinfo','file','fileinfo') === false)
+		if(dwho::load_extension('fileinfo') === false
+		|| dwho::load_class('dwho_file_fileinfo','file','fileinfo') === false)
 			return(false);
 
-		return(new xivo_file_fileinfo());
+		return(new dwho_file_fileinfo());
 	}
 
 	function get_info($file)
 	{
 		$file = (string) $file;
 
-		if(($file = xivo_file::is_f($file)) === false)
+		if(($file = dwho_file::is_f($file)) === false)
 			return(false);
 
 		$pinfo = pathinfo($file);
@@ -88,12 +88,12 @@ class xivo_file
 			$info['filename'] = $info['name'];
 
 		$info['pathnoext'] = $pinfo['dirname'].DIRECTORY_SEPARATOR.$info['filename'];
-		$info['mime'] = xivo_file::get_mime($info['path']);
-		$info['charset'] = xivo_file::get_charset($info['path']);
+		$info['mime'] = dwho_file::get_mime($info['path']);
+		$info['charset'] = dwho_file::get_charset($info['path']);
 		$info['mtime'] = filemtime($info['path']);
 		$info['size'] = filesize($info['path']);
 
-		if(isset($this) === true && xivo_instanceof($this,__CLASS__) === true)
+		if(isset($this) === true && dwho_instanceof($this,__CLASS__) === true)
 			$this->info = $info;
 
 		return($info);
@@ -127,7 +127,7 @@ class xivo_file
 
 	function get_mime($file='')
 	{
-		if(isset($this) === true && xivo_instanceof($this,__CLASS__) === true)
+		if(isset($this) === true && dwho_instanceof($this,__CLASS__) === true)
 			$static = false;
 		else
 			$static = true;
@@ -137,7 +137,7 @@ class xivo_file
 
 		if($static === false && is_object($this->_finfo) === true)
 			$r = $this->_finfo->get_mime($file);
-		else if(($file = xivo_file::is_f($file)) !== false && blop::load_extension('mime_magic') !== false)
+		else if(($file = dwho_file::is_f($file)) !== false && dwho::load_extension('mime_magic') !== false)
 			$r = mime_content_type($file);
 		else
 			$r = false;
@@ -148,7 +148,7 @@ class xivo_file
 	function get_charset($file='')
 	{
 		if(isset($this) === false
-		|| xivo_instanceof($this,__CLASS__) === false
+		|| dwho_instanceof($this,__CLASS__) === false
 		|| is_object($this->_finfo) === false)
 			return(false);
 
@@ -162,7 +162,7 @@ class xivo_file
 	{
 		$r = false;
 
-		if(($file = xivo_file::is_f($file)) !== false)
+		if(($file = dwho_file::is_f($file)) !== false)
 			$r = filemtime($file);
 
 		return($r);
@@ -212,7 +212,7 @@ class xivo_file
 			return(false);
 		else if(isset($param['size']) === true)
 		{
-			$param['size'] = xivo_uint($param['size']);
+			$param['size'] = dwho_uint($param['size']);
 
 			if($this->info['size'] > $param['size'])
 				return(false);
@@ -250,7 +250,7 @@ class xivo_file
 					return(false);
 			}
 
-			if(xivo_issa($ext,$param['extension']) === true
+			if(dwho_issa($ext,$param['extension']) === true
 			&& in_array($this->info['mime'],$param['extension'][$ext]) === false)
 				return(false);
 		}
@@ -262,15 +262,15 @@ class xivo_file
 	{
 		$name = (string) $name;
 
-		if(xivo_issa($name,$_FILES) === false || isset($_FILES[$name]['error']) === false)
+		if(dwho_issa($name,$_FILES) === false || isset($_FILES[$name]['error']) === false)
 			return(false);
-		else if(($upload = xivo_get_memory('upload_max_filesize')) === false)
+		else if(($upload = dwho_get_memory('upload_max_filesize')) === false)
 			trigger_error('Invalid upload_max_filesize php.ini directive',E_USER_ERROR);
 
-		if(($post = xivo_get_memory('post_max_size')) === false)
+		if(($post = dwho_get_memory('post_max_size')) === false)
 			trigger_error('Invalid post_max_size php.ini directive',E_USER_ERROR);
 
-		if(($mlimit = xivo_get_memory('memory_limit')) === false)
+		if(($mlimit = dwho_get_memory('memory_limit')) === false)
 			trigger_error('Invalid memory_limit php.ini directive',E_USER_ERROR);
 
 		if($post < $upload)
@@ -318,7 +318,7 @@ class xivo_file
 		if(preg_match('/^[a-z0-9\-_\.]+$/i',$file) !== 1)
 			return(false);
 		else if(is_array($dir) === true)
-			$dir = xivo_file::list_to_path($dir);
+			$dir = dwho_file::list_to_path($dir);
 
 		$dir = (string) $dir;
 
@@ -354,12 +354,12 @@ class xivo_file
 
 	function required($arr,$once=false,$includable=false)
 	{
-		$path = xivo_file::list_to_path($arr);
+		$path = dwho_file::list_to_path($arr);
 
 		if($path === false
-		|| ($path = xivo_file::is_f_r($path)) === false
+		|| ($path = dwho_file::is_f_r($path)) === false
 		|| ((bool) $includable === true
-		   && xivo_file::is_includable($path) === false) === true)
+		   && dwho_file::is_includable($path) === false) === true)
 			return(false);
 		else if((bool) $once === false)
 			return((bool) require($path));
@@ -414,7 +414,7 @@ class xivo_file
 	{
 		$arr = func_get_args();
 
-		return(xivo_implode(DIRECTORY_SEPARATOR,$arr));
+		return(dwho_implode(DIRECTORY_SEPARATOR,$arr));
 	}
 
 	function abspath($str)
@@ -445,7 +445,7 @@ class xivo_file
 				array_pop($r);
 		}
 
-		return(DIRECTORY_SEPARATOR.xivo_file::list_to_path($r));
+		return(DIRECTORY_SEPARATOR.dwho_file::list_to_path($r));
 	}
 
 	function is_f($file,$mode=1)
@@ -459,7 +459,7 @@ class xivo_file
 		else if(isset($pathcache[$file]) === false)
 		{
 			if($mode !== 2)
-				$pathcache[$file] = xivo_file::abspath($file);
+				$pathcache[$file] = dwho_file::abspath($file);
 			else
 				$pathcache[$file] = realpath($file);
 		}
@@ -470,7 +470,7 @@ class xivo_file
 	function is_f_r($file,$mode=1)
 	{
 		if(is_readable($file) === true)
-			return(xivo_file::is_f($file,$mode));
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
@@ -478,7 +478,7 @@ class xivo_file
 	function is_f_w($file,$mode=1)
 	{
 		if(is_writeable($file) === true)
-			return(xivo_file::is_f($file,$mode));
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
@@ -486,39 +486,39 @@ class xivo_file
 	function is_f_x($file,$mode=1)
 	{
 		if(is_executable($file) === true)
-			return(xivo_file::is_f($file,$mode));
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
 
 	function is_f_rw($file,$mode=1)
 	{
-		if(xivo_file::is_rw($file) === true)
-			return(xivo_file::is_f($file,$mode));
+		if(dwho_file::is_rw($file) === true)
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
 
 	function is_f_rx($file,$mode=1)
 	{
-		if(xivo_file::is_rx($file) === true)
-			return(xivo_file::is_f($file,$mode));
+		if(dwho_file::is_rx($file) === true)
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
 
 	function is_f_wx($file,$mode=1)
 	{
-		if(xivo_file::is_wx($file) === true)
-			return(xivo_file::is_f($file,$mode));
+		if(dwho_file::is_wx($file) === true)
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
 
 	function is_f_rwx($file,$mode=1)
 	{
-		if(xivo_file::is_rwx($file) === true)
-			return(xivo_file::is_f($file,$mode));
+		if(dwho_file::is_rwx($file) === true)
+			return(dwho_file::is_f($file,$mode));
 
 		return(false);
 	}
@@ -537,7 +537,7 @@ class xivo_file
 		else if(isset($pathcache[$dir]) === false)
 		{
 			if($mode !== 2)
-				$pathcache[$dir] = xivo_file::abspath($dir);
+				$pathcache[$dir] = dwho_file::abspath($dir);
 			else
 				$pathcache[$dir] = realpath($dir);
 		}
@@ -551,7 +551,7 @@ class xivo_file
 			$dir = dirname($dir);
 
 		if(is_readable($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -562,7 +562,7 @@ class xivo_file
 			$dir = dirname($dir);
 
 		if(is_writeable($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -573,7 +573,7 @@ class xivo_file
 			$dir = dirname($dir);
 
 		if(is_executable($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -583,8 +583,8 @@ class xivo_file
 		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_rw($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+		if(dwho_file::is_rw($dir) === true)
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -594,8 +594,8 @@ class xivo_file
 		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_rx($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+		if(dwho_file::is_rx($dir) === true)
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -605,8 +605,8 @@ class xivo_file
 		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_wx($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+		if(dwho_file::is_wx($dir) === true)
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -616,8 +616,8 @@ class xivo_file
 		if((bool) $dirname === true)
 			$dir = dirname($dir);
 
-		if(xivo_file::is_rwx($dir) === true)
-			return(xivo_file::is_d($dir,false,$mode));
+		if(dwho_file::is_rwx($dir) === true)
+			return(dwho_file::is_d($dir,false,$mode));
 
 		return(false);
 	}
@@ -625,21 +625,21 @@ class xivo_file
 	function put_contents($filename,$data,$flags=0)
 	{
 		$filename = (string) $filename;
-		$flags = xivo_uint($flags);
+		$flags = dwho_uint($flags);
 
 		if(is_array($data) === true || is_object($data) === true)
-			$data = xivo_implode('',$data);
+			$data = dwho_implode('',$data);
 
 		if(is_scalar($data) === false)
 			return(false);
 
 		$dir = dirname($filename);
 
-		if(xivo_file::is_d_rwx($dir) === false)
+		if(dwho_file::is_d_rwx($dir) === false)
 			return(false);
 		else if(($flags & FILE_APPEND) !== 0)
 			$mode = 'a';
-		else if(($filename = xivo_file::is_f_rw($filename)) !== false)
+		else if(($filename = dwho_file::is_f_rw($filename)) !== false)
 			$mode = 'wb';
 		else
 			return(false);
@@ -671,9 +671,9 @@ class xivo_file
 		$match = (string) $match;
 		$stat = (bool) $stat;
 
-		if(($dir = xivo_file::is_d_rx($dir)) === false
+		if(($dir = dwho_file::is_d_rx($dir)) === false
 		|| ($open = opendir($dir)) === false
-		|| ((bool) $dirwriteable === true && xivo_file::is_w($dir) === false) === true)
+		|| ((bool) $dirwriteable === true && dwho_file::is_w($dir) === false) === true)
 			return(false);
 
 		if($type !== 'file' && $type !== 'dir')
@@ -690,21 +690,21 @@ class xivo_file
 
 			$file = $dir.DIRECTORY_SEPARATOR.$name;
 
-			if(($mode & FILE_R_OK) !== 0 && xivo_file::is_r($file) === false)
+			if(($mode & FILE_R_OK) !== 0 && dwho_file::is_r($file) === false)
 				continue;
-			else if(($mode & FILE_W_OK) !== 0 && xivo_file::is_w($file) === false)
+			else if(($mode & FILE_W_OK) !== 0 && dwho_file::is_w($file) === false)
 				continue;
-			else if(($mode & FILE_X_OK) !== 0 && xivo_file::is_x($file) === false)
+			else if(($mode & FILE_X_OK) !== 0 && dwho_file::is_x($file) === false)
 				continue;
 
 			switch($type)
 			{
 				case 'file':
-					if(xivo_file::is_f($file) === false)
+					if(dwho_file::is_f($file) === false)
 						continue 2;
 					break;
 				case 'dir':
-					if(xivo_file::is_d($file) === false)
+					if(dwho_file::is_d($file) === false)
 						continue 2;
 					break;
 			}
@@ -724,7 +724,7 @@ class xivo_file
 
 	function rm($file)
 	{
-		if(xivo_file::is_d_w($file,true) !== false && unlink($file) !== false)
+		if(dwho_file::is_d_w($file,true) !== false && unlink($file) !== false)
 			return(true);
 
 		return(false);
@@ -732,9 +732,9 @@ class xivo_file
 
 	function rmdir($dir)
 	{
-		if(($dir = xivo_file::is_d_rwx($dir)) === false
-		|| xivo_file::is_d_rw(dirname($dir)) === false
-		|| ($list = xivo_file::read_d($dir)) === false
+		if(($dir = dwho_file::is_d_rwx($dir)) === false
+		|| dwho_file::is_d_rw(dirname($dir)) === false
+		|| ($list = dwho_file::read_d($dir)) === false
 		|| is_link($dir) === true)
 			return(false);
 		else if(isset($list[0]) === false)
@@ -746,14 +746,14 @@ class xivo_file
 		{
 			$path = $dir.DIRECTORY_SEPARATOR.$list[$i];
 
-			if(xivo_file::is_f($path) !== false)
+			if(dwho_file::is_f($path) !== false)
 			{
 				unlink($path);
 				continue;
 			}
 
-			if(xivo_file::is_d($path) !== false)
-				xivo_file::rmdir($path);
+			if(dwho_file::is_d($path) !== false)
+				dwho_file::rmdir($path);
 		}
 
 		return(rmdir($dir));

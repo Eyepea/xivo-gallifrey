@@ -348,7 +348,7 @@ $array['filter']['amaflags'] = array('set'	=> false,
 				     'key'	=> xivo_service_asterisk::get_amaflags_list());
 $array['filter']['allowtransfer'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
-$array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict');
+$array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict');
 $array['filter']['mailbox'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 80);
 $array['filter']['subscribemwi'] = array('bool' => true);
 $array['filter']['buggymwi'] = array('set' => false,'chk' => 2,'bool' => true);
@@ -391,12 +391,12 @@ $array['filter']['rtpholdtimeout'] = array('set' => false,'chk' => 2,'key' => ar
 $array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
-				 'callback'		=> 'xivo_filter::chk_ipv4_subnet',
-				 'callbackarg'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
+				 'callback'		=> 'dwho_filter::chk_ipv4_subnet',
+				 'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
-				   'callback'		=> 'xivo_filter::chk_ipv4_subnet',
-				   'callbackarg'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
+				   'callback'		=> 'dwho_filter::chk_ipv4_subnet',
+				   'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
 $array['filter']['pickupgroup'] = array('set' => false,'chk' => 2,'regexp' => '/^(?:[0-9]+[,]?)*$/','maxlen' => 180);
@@ -409,7 +409,7 @@ $array['filter']['host'] = array('set'		=> false,
 				 'chk'		=> 2,
 				 'key'		=> array('dynamic','static'),
 				 'strict'	=> false,
-				 'callback'	=> 'xivo_filter::chk_host_ipv4_strict');
+				 'callback'	=> 'dwho_filter::chk_host_ipv4_strict');
 $array['filter']['port'] = array('set' => false,'chk' => 0);
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['subscribecontext'] = array('set' => false,'chk' => 0);

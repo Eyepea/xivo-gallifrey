@@ -22,7 +22,7 @@ class xivo_service_asterisk_trunkcustom_identity
 {
 	function _prepare_identity(&$data)
 	{
-		if(xivo_has_len($data['intfsuffix']) === true)
+		if(dwho_has_len($data['intfsuffix']) === true)
 			$data['identity'] = $data['name'].' ('.$data['interface'].'|'.$data['intfsuffix'].')';
 		else
 			$data['identity'] = $data['name'].' ('.$data['interface'].')';

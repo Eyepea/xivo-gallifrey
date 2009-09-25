@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_file_csv
+class dwho_file_csv
 {
 	var $_link	= null;
 	var $_length	= 1024;
@@ -193,7 +193,7 @@ class xivo_file_csv
 					else if(is_array($array_ref[$field[$i]]) === true)
 					{
 						$array_ref[$field[$i]]['ref'] = $ref;
-						$ref_rs = array_merge_recursive(xivo_clone($array_ref[$field[$i]]['array']),$ref_rs);
+						$ref_rs = array_merge_recursive(dwho_clone($array_ref[$field[$i]]['array']),$ref_rs);
 					}
 					else
 						$ref_rs[$field[$i]] = $ref;
@@ -212,7 +212,7 @@ class xivo_file_csv
 						$array_ref[$ref] = '';
 						continue;
 					}
-					else if(($array_ref[$ref] = xivo_build_array_ref($arr[$ref])) === false)
+					else if(($array_ref[$ref] = dwho_build_array_ref($arr[$ref])) === false)
 						return(false);
 				}
 			}
@@ -223,7 +223,7 @@ class xivo_file_csv
 
 	function _open_file($file)
 	{
-		if(($file = xivo_file::is_f_r($file)) === false
+		if(($file = dwho_file::is_f_r($file)) === false
 		|| ($this->_link = fopen($file,'r')) === false)
 			return(false);
 
@@ -238,14 +238,14 @@ class xivo_file_csv
 
 	function _chk_length($length)
 	{
-		return(xivo_uint($length,1024));
+		return(dwho_uint($length,1024));
 	}
 
 	function _chk_delimiter($chr)
 	{
 		if($chr === null)
 			$chr = ',';
-		else if(xivo_has_len($chr,0) === true)
+		else if(dwho_has_len($chr,0) === true)
 			$chr = $chr{0};
 		else
 			$chr = false;
@@ -257,7 +257,7 @@ class xivo_file_csv
 	{
 		if($chr === null)
 			$chr = '"';
-		else if(xivo_has_len($chr,0) === true)
+		else if(dwho_has_len($chr,0) === true)
 			$chr = $chr{0};
 		else
 			$chr = false;

@@ -20,21 +20,21 @@
 
 define('ARGIN_SEPARATOR','&');
 define('ARGOUT_SEPARATOR','&');
-define('XIVO_PHP_VER_MIN','4.4');
-define('XIVO_PHP_VER_MAX','5.0');
+define('DWHO_PHP_VER_MIN','4.4');
+define('DWHO_PHP_VER_MAX','5.0');
 
-class xivo_sysinfo
+class dwho_sysinfo
 {
 	var $_sysinfo	= null;
 
-	function xivo_sysinfo()
+	function dwho_sysinfo()
 	{
 		$os = strtolower(PHP_OS);
 
-		if(blop::load_class('xivo::sysinfo::'.$os) === false)
+		if(dwho::load_class('dwho::sysinfo::'.$os) === false)
 			trigger_error('Failed to load SysInfo class for '.PHP_OS,E_USER_ERROR);
 
-		$name = 'xivo_sysinfo_'.$os;
+		$name = 'dwho_sysinfo_'.$os;
 
 		$this->_sysinfo = new $name();
 	}
@@ -57,7 +57,7 @@ class xivo_sysinfo
 	function argin_separator()
 	{
 		if(($sep = ini_get('arg_separator.input')) !== false
-		&& xivo_has_len($sep) === true
+		&& dwho_has_len($sep) === true
 		&& $sep !== '&amp;')
 			return($sep);
 
@@ -67,7 +67,7 @@ class xivo_sysinfo
 	function argout_separator()
 	{
 		if(($sep = ini_get('arg_separator.output')) !== false
-		&& xivo_has_len($sep) === true
+		&& dwho_has_len($sep) === true
 		&& $sep !== '&amp;')
 			return($sep);
 

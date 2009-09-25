@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_sip_register extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -108,9 +108,9 @@ class xivo_application_service_asterisk_realstatic_sip_register extends xivo_app
 
 	function edit_register($id)
 	{
-		if(xivo_issa($this->_name,$this->_info) === true)
+		if(dwho_issa($this->_name,$this->_info) === true)
 			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_ulongint($id)) === 0)
+		else if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		if(($rs = $this->get_result($this->_name)) === null)
@@ -134,9 +134,9 @@ class xivo_application_service_asterisk_realstatic_sip_register extends xivo_app
 
 	function delete_register($status,$id=0)
 	{
-		if(xivo_issa($this->_name,$this->_info) === true)
+		if(dwho_issa($this->_name,$this->_info) === true)
 			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_ulongint($id)) === 0)
+		else if(($id = dwho_ulongint($id)) === 0)
 			return(null);
 
 		$r = $this->_realstatic->delete($id);
@@ -149,9 +149,9 @@ class xivo_application_service_asterisk_realstatic_sip_register extends xivo_app
 
 	function _enable_disable_register($status,$disable=false,$id=0)
 	{
-		if(xivo_issa($this->_name,$this->_info) === true)
+		if(dwho_issa($this->_name,$this->_info) === true)
 			$id = $this->_info[$this->_name]['id'];
-		else if(($id = xivo_ulongint($id)) === 0)
+		else if(($id = dwho_ulongint($id)) === 0)
 			return(null);
 
 		if((bool) $disable === false)

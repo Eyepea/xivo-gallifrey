@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';
@@ -66,8 +66,8 @@ switch($act)
 							    true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('queuefeatures',$_QR) === true
-		&& xivo_issa('queue',$_QR) === true)
+		&& dwho_issa('queuefeatures',$_QR) === true
+		&& dwho_issa('queue',$_QR) === true)
 		{
 			if($appqueue->set_add($_QR) === false
 			|| $appqueue->add() === false)
@@ -84,8 +84,8 @@ switch($act)
 		}
 
 		if($pannounce['list'] !== false
-		&& xivo_issa('queue',$result) === true
-		&& xivo_ak('periodic-announce',$result['queue']) === true
+		&& dwho_issa('queue',$result) === true
+		&& dwho_ak('periodic-announce',$result['queue']) === true
 		&& empty($result['queue']['periodic-announce']) === false)
 		{
 			if(is_array($result['queue']['periodic-announce']) === false)
@@ -93,69 +93,69 @@ switch($act)
 			else
 				$pannounce['slt'] = $result['queue']['periodic-announce'];
 
-			$pannounce['slt'] = xivo_array_intersect_key(array_flip($pannounce['slt']),
+			$pannounce['slt'] = dwho_array_intersect_key(array_flip($pannounce['slt']),
 								     $pannounce['list']);
 
 			if(empty($pannounce['slt']) === false)
-				$pannounce['list'] = xivo_array_diff_key($pannounce['list'],
+				$pannounce['list'] = dwho_array_diff_key($pannounce['list'],
 									 $pannounce['slt']);
 		}
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
-		if($user['list'] !== false && xivo_ak('user',$result) === true)
+		if($user['list'] !== false && dwho_ak('user',$result) === true)
 		{
-			$user['slt'] = xivo_array_intersect_key($result['user'],
+			$user['slt'] = dwho_array_intersect_key($result['user'],
 								$user['list'],
 								'userid');
 
 			if($user['slt'] !== false)
 			{
-				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
+				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
 
-				$usersort = new xivo_sort(array('key' => 'identity'));
+				$usersort = new dwho_sort(array('key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
-		if($agentgroup['list'] !== false && xivo_ak('agentgroup',$result) === true)
+		if($agentgroup['list'] !== false && dwho_ak('agentgroup',$result) === true)
 		{
-			$agentgroup['slt'] = xivo_array_intersect_key($result['agentgroup'],
+			$agentgroup['slt'] = dwho_array_intersect_key($result['agentgroup'],
 								      $agentgroup['list'],
 								      'userid');
 
 			if($agentgroup['slt'] !== false)
 			{
-				$agentgroupsort = new xivo_sort(array('browse'	=> 'agentgroup',
+				$agentgroupsort = new dwho_sort(array('browse'	=> 'agentgroup',
 								      'key'	=> 'name'));
 
-				$agentgroup['list'] = xivo_array_diff_key($agentgroup['list'],$agentgroup['slt']);
+				$agentgroup['list'] = dwho_array_diff_key($agentgroup['list'],$agentgroup['slt']);
 				uasort($agentgroup['slt'],array(&$agentgroupsort,'str_usort'));
 			}
 		}
 
-		if($agent['list'] !== false && xivo_ak('agent',$result) === true)
+		if($agent['list'] !== false && dwho_ak('agent',$result) === true)
 		{
-			$agent['slt'] = xivo_array_intersect_key($result['agent'],
+			$agent['slt'] = dwho_array_intersect_key($result['agent'],
 								 $agent['list'],
 								 'userid');
 
 			if($agent['slt'] !== false)
 			{
-				$agentsort = new xivo_sort(array('browse'	=> 'agentfeatures',
+				$agentsort = new dwho_sort(array('browse'	=> 'agentfeatures',
 								 'key'		=> 'identity'));
 
-				$agent['list'] = xivo_array_diff_key($agent['list'],$agent['slt']);
+				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
 				uasort($agent['slt'],array(&$agentsort,'str_usort'));
 			}
 		}
 
 		if(empty($result) === false)
 		{
-			if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+			if(dwho_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
 				$result['dialaction'] = null;
 
-			if(xivo_issa('callerid',$result) === false || empty($result['callerid']) === true)
+			if(dwho_issa('callerid',$result) === false || empty($result['callerid']) === true)
 				$result['callerid'] = null;
 		}
 
@@ -221,8 +221,8 @@ switch($act)
 							    true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('queuefeatures',$_QR) === true
-		&& xivo_issa('queue',$_QR) === true)
+		&& dwho_issa('queuefeatures',$_QR) === true
+		&& dwho_issa('queue',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -241,8 +241,8 @@ switch($act)
 		}
 
 		if($pannounce['list'] !== false
-		&& xivo_issa('queue',$return) === true
-		&& xivo_ak('periodic-announce',$return['queue']) === true
+		&& dwho_issa('queue',$return) === true
+		&& dwho_ak('periodic-announce',$return['queue']) === true
 		&& empty($return['queue']['periodic-announce']) === false)
 		{
 			if(is_array($return['queue']['periodic-announce']) === false)
@@ -250,69 +250,69 @@ switch($act)
 			else
 				$pannounce['slt'] = $return['queue']['periodic-announce'];
 
-			$pannounce['slt'] = xivo_array_intersect_key(array_flip($pannounce['slt']),
+			$pannounce['slt'] = dwho_array_intersect_key(array_flip($pannounce['slt']),
 								     $pannounce['list']);
 
 			if(empty($pannounce['slt']) === false)
-				$pannounce['list'] = xivo_array_diff_key($pannounce['list'],
+				$pannounce['list'] = dwho_array_diff_key($pannounce['list'],
 									 $pannounce['slt']);
 		}
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
-		if($user['list'] !== false && xivo_ak('user',$return) === true)
+		if($user['list'] !== false && dwho_ak('user',$return) === true)
 		{
-			$user['slt'] = xivo_array_intersect_key($return['user'],
+			$user['slt'] = dwho_array_intersect_key($return['user'],
 								$user['list'],
 								'userid');
 
 			if($user['slt'] !== false)
 			{
-				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
+				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
 
-				$usersort = new xivo_sort(array('key' => 'identity'));
+				$usersort = new dwho_sort(array('key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
-		if($agentgroup['list'] !== false && xivo_ak('agentgroup',$return) === true)
+		if($agentgroup['list'] !== false && dwho_ak('agentgroup',$return) === true)
 		{
-			$agentgroup['slt'] = xivo_array_intersect_key($return['agentgroup'],
+			$agentgroup['slt'] = dwho_array_intersect_key($return['agentgroup'],
 								      $agentgroup['list'],
 								      'userid');
 
 			if($agentgroup['slt'] !== false)
 			{
-				$agentgroupsort = new xivo_sort(array('browse'	=> 'agentgroup',
+				$agentgroupsort = new dwho_sort(array('browse'	=> 'agentgroup',
 								      'key'	=> 'name'));
 
-				$agentgroup['list'] = xivo_array_diff_key($agentgroup['list'],$agentgroup['slt']);
+				$agentgroup['list'] = dwho_array_diff_key($agentgroup['list'],$agentgroup['slt']);
 				uasort($agentgroup['slt'],array(&$agentgroupsort,'str_usort'));
 			}
 		}
 
-		if($agent['list'] !== false && xivo_ak('agent',$return) === true)
+		if($agent['list'] !== false && dwho_ak('agent',$return) === true)
 		{
-			$agent['slt'] = xivo_array_intersect_key($return['agent'],
+			$agent['slt'] = dwho_array_intersect_key($return['agent'],
 								 $agent['list'],
 								 'userid');
 
 			if($agent['slt'] !== false)
 			{
-				$agentsort = new xivo_sort(array('browse'	=> 'agentfeatures',
+				$agentsort = new dwho_sort(array('browse'	=> 'agentfeatures',
 								 'key'		=> 'identity'));
 
-				$agent['list'] = xivo_array_diff_key($agent['list'],$agent['slt']);
+				$agent['list'] = dwho_array_diff_key($agent['list'],$agent['slt']);
 				uasort($agent['slt'],array(&$agentsort,'str_usort'));
 			}
 		}
 
 		if(empty($return) === false)
 		{
-			if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+			if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
 				$return['dialaction'] = null;
 
-			if(xivo_issa('callerid',$return) === false || empty($return['callerid']) === true)
+			if(dwho_issa('callerid',$return) === false || empty($return['callerid']) === true)
 				$return['callerid'] = null;
 		}
 
@@ -354,7 +354,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('queues',$_QR)) === false)
+		if(($values = dwho_issa_val('queues',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$appqueue = &$ipbx->get_application('queue');
@@ -377,7 +377,7 @@ switch($act)
 		$disable = $act === 'disables';
 		$invdisable = $disable === false;
 
-		if(($values = xivo_issa_val('queues',$_QR)) === false)
+		if(($values = dwho_issa_val('queues',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
 		$queuefeatures = &$ipbx->get_module('queuefeatures');
@@ -418,7 +418,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
 
 class xivo_application_service_asterisk_context_sql extends xivo_application_service_asterisk_abstract_sql
 {
@@ -40,8 +40,8 @@ class xivo_application_service_asterisk_context_sql extends xivo_application_ser
 
 	function _update_user_mailbox($protocol,$context,$newcontext)
 	{
-		if(xivo_has_len($context) === false
-		|| xivo_has_len($newcontext) === false)
+		if(dwho_has_len($context) === false
+		|| dwho_has_len($newcontext) === false)
 			return(false);
 
 		switch($protocol)

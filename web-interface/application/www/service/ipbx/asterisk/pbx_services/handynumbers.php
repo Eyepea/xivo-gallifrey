@@ -43,8 +43,8 @@ if(isset($_QR['fm_send']) === true)
 
 	$return = &$result;
 
-	if(xivo_issa('emergency',$_QR) === false
-	|| ($emergency = xivo_group_array('trunkfeaturesid',$_QR['emergency'])) === false)
+	if(dwho_issa('emergency',$_QR) === false
+	|| ($emergency = dwho_group_array('trunkfeaturesid',$_QR['emergency'])) === false)
 		$emergency = array();
 
 	if($apphnumbersemergency->set_save_all($emergency) === false)
@@ -60,8 +60,8 @@ if(isset($_QR['fm_send']) === true)
 		$error['emergency'] = $apphnumbersemergency->get_error();
 	}
 
-	if(xivo_issa('special',$_QR) === false
-	|| ($special = xivo_group_array('trunkfeaturesid',$_QR['special'])) === false)
+	if(dwho_issa('special',$_QR) === false
+	|| ($special = dwho_group_array('trunkfeaturesid',$_QR['special'])) === false)
 		$special = array();
 
 	if($apphnumbersspecial->set_save_all($special) === false)
@@ -78,13 +78,13 @@ if(isset($_QR['fm_send']) === true)
 	}
 }
 
-if(xivo_issa('emergency',$return) === true
+if(dwho_issa('emergency',$return) === true
 && isset($return['emergency']['handynumbers'],$return['emergency']['handynumbers'][0]) === true)
 	$return['emergency'] = $return['emergency']['handynumbers'];
 else
 	$return['emergency'] = false;
 
-if(xivo_issa('special',$return) === true
+if(dwho_issa('special',$return) === true
 && isset($return['special']['handynumbers'],$return['special']['handynumbers'][0]) === true)
 	$return['special'] = $return['special']['handynumbers'];
 else
@@ -93,8 +93,8 @@ else
 $apptrunk = &$ipbx->get_application('trunk',null,false);
 if(($trunkslist = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
 {
-	xivo::load_class('xivo_sort');
-	$trunksort = new xivo_sort(array('key' => 'identity'));
+	dwho::load_class('dwho_sort');
+	$trunksort = new dwho_sort(array('key' => 'identity'));
 	uasort($trunkslist,array(&$trunksort,'str_usort'));
 }
 

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_features_general extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -71,7 +71,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	function get_config_exten()
 	{
 		if(isset($this->_conf) === false
-		|| xivo_issa('exten',$this->_conf) === false)
+		|| dwho_issa('exten',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['exten']);
@@ -80,7 +80,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 	function get_config_sound()
 	{
 		if(isset($this->_conf) === false
-		|| xivo_issa('sound',$this->_conf) === false)
+		|| dwho_issa('sound',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['sound']);
@@ -88,7 +88,7 @@ class xivo_application_service_asterisk_realstatic_features_general extends xivo
 
 	function chk_sound($value)
 	{
-		if(xivo_has_len($value) === false)
+		if(dwho_has_len($value) === false)
 			return(true);
 		else if(is_string($value) === false)
 			return(false);

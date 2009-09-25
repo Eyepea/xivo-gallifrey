@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'application','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract.inc'));
 
 class xivo_application_service_abstract extends xivo_application_abstract
 {
@@ -28,7 +28,7 @@ class xivo_application_service_abstract extends xivo_application_abstract
 
 		$file = $abstract.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   $this->_service_type,
@@ -37,7 +37,7 @@ class xivo_application_service_abstract extends xivo_application_abstract
 
 		$class = 'xivo_application_service_'.$this->_service_name.'_'.$abstract.'_abstract';
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);

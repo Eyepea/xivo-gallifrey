@@ -40,7 +40,7 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 <form action="#" name="fm-trunk-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -71,7 +71,7 @@ $page = $url->pager($pager['pages'],
 				$icon = 'enable';
 			endif;
 
-			$calllimit = xivo_uint($ref['call-limit']);
+			$calllimit = dwho_uint($ref['call-limit']);
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"

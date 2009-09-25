@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_http
+class dwho_http
 {
 	var $_param	= array('version'	=> '1.0');
 	var $_headers	= array();
 
-	function xivo_http($param=array())
+	function dwho_http($param=array())
 	{
 		$param = (array) $param;
 

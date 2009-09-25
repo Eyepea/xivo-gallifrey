@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_tpl_xmlphone_abstract
+class dwho_tpl_xmlphone_abstract
 {
 	var $_argseparator	= '&amp;';
 	var $_cdata		= false;
@@ -64,7 +64,7 @@ class xivo_tpl_xmlphone_abstract
 		else if($this->has_cdata() === true)
 			$str = '<![CDATA['.$str.']]>';
 		else if($this->has_escape() === true || (bool) $force === true)
-			$str = xivo_htmlsc($str,ENT_NOQUOTES);
+			$str = dwho_htmlsc($str,ENT_NOQUOTES);
 
 		if($this->has_utf8() === false)
 			$str = utf8_decode($str);

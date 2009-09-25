@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_ldapserver extends xivo_libdatastorage_abstract
 {
@@ -30,7 +30,7 @@ class xivo_ldapserver extends xivo_libdatastorage_abstract
 
 	function xivo_ldapserver()
 	{
-		$this->_load_config(dirname(__FILE__).XIVO_SEP_DIR.'ldapserver');
+		$this->_load_config(dirname(__FILE__).DWHO_SEP_DIR.'ldapserver');
 		$this->_load_dso();
 	}
 
@@ -73,11 +73,11 @@ class xivo_ldapserver extends xivo_libdatastorage_abstract
 
 	function _load_dso()
 	{
-		$dso = &xivo_gct::get('XIVO_DSO');
+		$dso = &dwho_gct::get('DWHO_DSO');
 		$type = $dso->get_type();
 		$class = 'xivo_ldapserver_'.$type;
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'ldapserver','datastorage');
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,'ldapserver','datastorage');
 
 		if(xivo::load_class($class,$dir,$type,false) === false)
 		{

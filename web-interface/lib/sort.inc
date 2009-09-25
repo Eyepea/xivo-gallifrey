@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_sort
+class dwho_sort
 {
 	var $_param	= array();
 	var $_multi	= array();
 	var $_nb	= 0;
 
-	function xivo_sort($param=array())
+	function dwho_sort($param=array())
 	{
 		$param = (array) $param;
 

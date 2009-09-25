@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','helper','table.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
 
-class xivo_accesswebservice_abstract_sql extends xivo_datastorage_helper_table
+class xivo_accesswebservice_abstract_sql extends dwho_datastorage_helper_table
 {
 	var $_table	= 'accesswebservice';
 	var $_primary	= array('id' => 0);
@@ -37,7 +37,7 @@ class xivo_accesswebservice_abstract_sql extends xivo_datastorage_helper_table
 		if(($r = parent::get($id,$disable)) === false)
 			return(false);
 
-		$r['obj'] = xivo_unserialize($r['obj']);
+		$r['obj'] = dwho_unserialize($r['obj']);
 
 		return($r);
 	}
@@ -54,7 +54,7 @@ class xivo_accesswebservice_abstract_sql extends xivo_datastorage_helper_table
 
 	function _save_obj($id,$obj)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || is_array($obj) === false)
+		if(($id = dwho_ulongint($id)) === 0 || is_array($obj) === false)
 			return(false);
 
 		return($this->_dso->update($this->_table,
@@ -64,7 +64,7 @@ class xivo_accesswebservice_abstract_sql extends xivo_datastorage_helper_table
 
 	function _get_obj($id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table,'obj');
@@ -73,7 +73,7 @@ class xivo_accesswebservice_abstract_sql extends xivo_datastorage_helper_table
 		if(($r = $this->_dso->select_one()) === false)
 			return(false);
 
-		return(xivo_unserialize($r));
+		return(dwho_unserialize($r));
 	}
 }
 

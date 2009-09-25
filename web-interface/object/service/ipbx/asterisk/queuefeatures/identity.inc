@@ -22,7 +22,7 @@ class xivo_service_asterisk_queuefeatures_identity
 {
 	function _prepare_identity(&$data,$full=true)
 	{
-		if(xivo_has_len($data['context']) === false)
+		if(dwho_has_len($data['context']) === false)
 			$data['context'] = 'default';
 
 		$data['identity'] = trim($data['name']);
@@ -32,7 +32,7 @@ class xivo_service_asterisk_queuefeatures_identity
 
 		if((bool) $full === false)
 			return($data);
-		else if(xivo_has_len($data['number']) === true)
+		else if(dwho_has_len($data['number']) === true)
 			$data['identity'] .= ' ('.$data['number'].'@'.$data['context'].')';
 		else
 			$data['identity'] .= ' ('.$data['context'].')';

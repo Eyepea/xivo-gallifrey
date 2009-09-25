@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_rightcall extends xivo_application_asterisk_abstract
 {
@@ -184,24 +184,24 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('rightcall',$arr) === false)
+		|| dwho_issa('rightcall',$arr) === false)
 			return(false);
 
 		$this->set_rightcall($arr['rightcall']);
 
-		if(xivo_issa('rightcalluser',$arr) === true)
+		if(dwho_issa('rightcalluser',$arr) === true)
 			$this->set_rightcalluser($arr['rightcalluser']);
 
-		if(xivo_issa('rightcallgroup',$arr) === true)
+		if(dwho_issa('rightcallgroup',$arr) === true)
 			$this->set_rightcallgroup($arr['rightcallgroup']);
 
-		if(xivo_issa('rightcallincall',$arr) === true)
+		if(dwho_issa('rightcallincall',$arr) === true)
 			$this->set_rightcallincall($arr['rightcallincall']);
 
-		if(xivo_issa('rightcalloutcall',$arr) === true)
+		if(dwho_issa('rightcalloutcall',$arr) === true)
 			$this->set_rightcalloutcall($arr['rightcalloutcall']);
 
-		if(xivo_issa('rightcallexten',$arr) === true)
+		if(dwho_issa('rightcallexten',$arr) === true)
 			$this->set_rightcallexten($arr['rightcallexten']);
 		else
 		{
@@ -418,7 +418,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	function _add_rightcall_member_type($type,$rightcallid)
 	{
 		if($this->_rightcallmember->chk_element_value('type',$type) === false
-		|| ($rightcallid = xivo_ulongint($rightcallid)) === 0)
+		|| ($rightcallid = dwho_ulongint($rightcallid)) === 0)
 			return(false);
 
 		$key = 'rightcall'.$type;
@@ -446,7 +446,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function add_rightcallexten($rightcallid)
 	{
-		if(($rightcallid = xivo_ulongint($rightcallid)) === 0)
+		if(($rightcallid = dwho_ulongint($rightcallid)) === 0)
 			return(false);
 		else if(($rs = $this->get_result('rightcallexten')) === null || $rs === false)
 			return($rs);
@@ -546,7 +546,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function edit_rightcall()
 	{
-		if(xivo_issa('rightcall',$this->_info) === false
+		if(dwho_issa('rightcall',$this->_info) === false
 		|| ($rs = $this->get_result('rightcall')) === null
 		|| $rs === false)
 			return(false);
@@ -581,14 +581,14 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 	function _edit_rightcall_member_type($type)
 	{
 		if($this->_rightcallmember->chk_element_value('type',$type) === false
-		|| xivo_issa('rightcall',$this->_info) === false)
+		|| dwho_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$id = $this->_info['rightcall']['id'];
 
 		$key = 'rightcall'.$type;
 
-		if(xivo_issa($key,$this->_info) === false)
+		if(dwho_issa($key,$this->_info) === false)
 			return($this->_add_rightcall_member_type($type,$id));
 
 		$this->_return[$key] = $this->_delete_rightcall_member_type($type);
@@ -623,12 +623,12 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function edit_rightcallexten()
 	{
-		if(xivo_issa('rightcall',$this->_info) === false)
+		if(dwho_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$id = $this->_info['rightcall']['id'];
 
-		if(xivo_issa('rightcallexten',$this->_info) === false)
+		if(dwho_issa('rightcallexten',$this->_info) === false)
 			return($this->add_rightcallexten($id));
 
 		$this->_return['rightcallexten'] = $this->delete_rightcallexten();
@@ -663,7 +663,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('rightcall',$this->_info) === false)
+		if(dwho_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['rightcall']['id']));
@@ -743,7 +743,7 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function delete_rightcall()
 	{
-		if(xivo_issa('rightcall',$this->_info) === false)
+		if(dwho_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$r = $this->_rightcall->delete($this->_info['rightcall']['id']);
@@ -781,9 +781,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 		$key = 'rightcall'.$type;
 
-		if(xivo_issa($key,$this->_info) === false)
+		if(dwho_issa($key,$this->_info) === false)
 			return(null);
-		else if(xivo_issa('rightcall',$this->_info) === false)
+		else if(dwho_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$where = array();
@@ -800,9 +800,9 @@ class xivo_application_service_asterisk_rightcall extends xivo_application_aster
 
 	function delete_rightcallexten()
 	{
-		if(xivo_issa('rightcallexten',$this->_info) === false)
+		if(dwho_issa('rightcallexten',$this->_info) === false)
 			return(null);
-		else if(xivo_issa('rightcall',$this->_info) === false)
+		else if(dwho_issa('rightcall',$this->_info) === false)
 			return(false);
 
 		$where = array('rightcallid' => $this->_info['rightcall']['id']);

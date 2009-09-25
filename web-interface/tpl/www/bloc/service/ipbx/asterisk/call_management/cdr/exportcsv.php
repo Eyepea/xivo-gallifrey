@@ -30,9 +30,9 @@ header('Pragma: no-cache');
 header('Cache-Control: private, must-revalidate');
 header('Last-Modified: '.
 	date('D, d M Y H:i:s',mktime()).' '.
-	xivo_i18n::strftime_l('%Z',null));
+	dwho_i18n::strftime_l('%Z',null));
 header('Content-Disposition: attachment; filename=xivo_cdr-'.
-	xivo_i18n::strftime_l('%Y-%m-%d-%H:%M:%S',null).'.csv');
+	dwho_i18n::strftime_l('%Y-%m-%d-%H:%M:%S',null).'.csv');
 header('Content-Type: text/csv; charset=UTF-8');
 
 ob_start();

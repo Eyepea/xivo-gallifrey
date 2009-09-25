@@ -106,11 +106,11 @@ endif;
 </div>
 
 <div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-codec');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-codec');">
 
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
 ?>
@@ -401,17 +401,17 @@ endif;
 	</div>
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-codeclist',
+		   onclick="dwho.form.move_selected('it-codeclist',
 						  'it-codec');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-codec',
+		   onclick="dwho.form.move_selected('it-codec',
 						  'it-codeclist');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outcodec'),
@@ -429,15 +429,15 @@ endif;
 				 $this->get_varra('info',array('allow','var_val')));?>
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-codec',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-codec',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-codec',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-codec',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcodec'),

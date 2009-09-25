@@ -66,7 +66,7 @@ class xivo_service_asterisk_groupfeatures_sql extends xivo_service_asterisk_abst
 
 		$this->_dso->where($arr);
 
-		if(($id = xivo_ulongint($id)) !== 0)
+		if(($id = dwho_ulongint($id)) !== 0)
 			$this->_dso->andwherenot(array('id' => $id));
 
 		if((bool) $number === true)

@@ -18,10 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
-if(($data = xivo_json::encode($this->get_var('result'))) === false)
+if(($data = dwho_json::encode($this->get_var('result'))) === false)
 {
 	$http->set_status(500);
 	$http->send(true);
@@ -35,7 +35,7 @@ if(isset($sum{0}) === true && $sum === md5($data))
 	$http->send(true);
 }
 
-header(xivo_json::get_header());
+header(dwho_json::get_header());
 die($data);
 
 ?>

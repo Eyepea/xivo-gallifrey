@@ -20,33 +20,45 @@
 
 $array = array();
 
-$array['service/ipbx/asterisk/ui/pbx_settings/users/agents'] = array(
+$array['service/ipbx/asterisk/ui/pbx_settings/users/agents/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/agents',
 	'define'	=> array(
 			'XIVO_TPL_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_TPL_UI_ACL_SUBCATEGORY'	=> 'agents',
 			'XIVO_TPL_UI_ACTION'		=> 'search'));
 
-$array['service/ipbx/asterisk/ui/pbx_settings/users/groups'] = array(
+$array['service/ipbx/asterisk/ui/pbx_settings/users/search'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/users',
+	'define'	=> array('XIVO_TPL_UI_ACTION'	=> 'search'));
+
+$array['service/ipbx/asterisk/ui/pbx_settings/users/groups/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/groups',
 	'define'	=> array(
 			'XIVO_TPL_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_TPL_UI_ACL_SUBCATEGORY'	=> 'users',
 			'XIVO_TPL_UI_ACTION'		=> 'search'));
 
-$array['service/ipbx/asterisk/ui/pbx_settings/users/queues'] = array(
+$array['service/ipbx/asterisk/ui/pbx_settings/users/queues/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/queues',
 	'define'	=> array(
 			'XIVO_TPL_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_TPL_UI_ACL_SUBCATEGORY'	=> 'users',
 			'XIVO_TPL_UI_ACTION'		=> 'search'));
 
-$array['service/ipbx/asterisk/ui/pbx_settings/users/meetme'] = array(
+$array['service/ipbx/asterisk/ui/pbx_settings/users/meetme/search'] = array(
 	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/meetme',
 	'define'	=> array(
 			'XIVO_TPL_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_TPL_UI_ACL_SUBCATEGORY'	=> 'users',
 			'XIVO_TPL_UI_ACTION'		=> 'search'));
+
+$array['service/ipbx/asterisk/ui/pbx_settings/users/voicemail/search'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/voicemail',
+	'define'	=> array('XIVO_TPL_UI_ACTION'	=> 'search'));
+
+$array['service/ipbx/asterisk/ui/pbx_settings/users/voicemail/view'] = array(
+	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/voicemail',
+	'define'	=> array('XIVO_TPL_UI_ACTION'	=> 'view'));
 
 $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',

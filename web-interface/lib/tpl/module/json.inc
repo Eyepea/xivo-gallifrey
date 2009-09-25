@@ -18,33 +18,33 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
-class xivo_tpl_json extends xivo_tpl_module
+class dwho_tpl_json extends dwho_tpl_module
 {
 	var $_tpl	= null;
 
-	function xivo_tpl_json(&$tpl)
+	function dwho_tpl_json(&$tpl)
 	{
 		$this->_tpl = &$tpl;
 
-		if(xivo::load_class('xivo_json') === false)
+		if(dwho::load_class('dwho_json') === false)
 			trigger_error('Failed to load json class',E_USER_ERROR);
 	}
 
 	function get_header()
 	{
-		return(xivo_json::get_header());
+		return(dwho_json::get_header());
 	}
 
 	function encode($data)
 	{
-		return(xivo_json::encode($data));
+		return(dwho_json::encode($data));
 	}
 
 	function decode($data,$assoc=false)
 	{
-		return(xivo_json::decode($data,$assoc));
+		return(dwho_json::decode($data,$assoc));
 	}
 
 	function display()

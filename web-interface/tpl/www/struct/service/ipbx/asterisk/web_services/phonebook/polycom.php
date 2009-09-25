@@ -22,7 +22,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 	<head>
-		<title><?=xivo_htmlsc($this->bbf('phone_search-title'));?></title>
+		<title><?=dwho_htmlsc($this->bbf('phone_search-title'));?></title>
 	</head>
 	<body>
 <?php

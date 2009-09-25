@@ -55,14 +55,14 @@ if(is_array($tree) === true && empty($tree) === false):
 						      'field'	=> false,
 						      'value'	=> $v['path'],
 						      'checked'	=> $v['access']),
-						'onclick="xivo_fm_mk_acl(this);"'),
+						'onclick="xivo_form_mk_acl(this);"'),
 				'</h4>';
 
 			if(isset($v['child']) === true):
 				echo	'<span><a href="#"
 						  title="',$this->bbf('opt_browse'),'"
-						  onclick="xivo_eid(\'table-',$v['id'],'\').style.display =
-							   xivo_eid(\'table-',$v['id'],'\').style.display == \'block\'
+						  onclick="dwho_eid(\'table-',$v['id'],'\').style.display =
+							   dwho_eid(\'table-',$v['id'],'\').style.display == \'block\'
 							   ? \'none\'
 							   : \'block\';
 							   return(false);">',
@@ -92,7 +92,7 @@ if(is_array($tree) === true && empty($tree) === false):
 						      'field'	=> false,
 						      'value'	=> $v['path'],
 						      'checked'	=> $v['access']),
-						'onclick="xivo_fm_mk_acl(this);"'),
+						'onclick="xivo_form_mk_acl(this);"'),
 				'</div>',"\n";
 
 			if($cnt === $i):

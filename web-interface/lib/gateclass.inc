@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_gateclass
+class dwho_gateclass
 {
 	var $_class = array();
 
@@ -27,7 +27,7 @@ class xivo_gateclass
 		static $instance = null;
 
 		if($instance === null)
-			$instance = new xivo_gateclass();
+			$instance = new dwho_gateclass();
 
 		return(($ref = &$instance));
 	}
@@ -79,29 +79,29 @@ class xivo_gateclass
 	}
 }
 
-class xivo_gct
+class dwho_gct
 {
 	function set(&$obj,$name='')
 	{
-		$agc = &xivo_gateclass::getinstance();
+		$agc = &dwho_gateclass::getinstance();
 		return($agc->set($obj,$name));
 	}
 
 	function &get($name)
 	{
-		$agc = &xivo_gateclass::getinstance();
+		$agc = &dwho_gateclass::getinstance();
 		return(($ref = &$agc->get($name)));
 	}
 
 	function &set_get(&$obj,$name='')
 	{
-		$agc = &xivo_gateclass::getinstance();
+		$agc = &dwho_gateclass::getinstance();
 		return(($ref = &$agc->set_get($obj,$name)));
 	}
 
 	function is_valid($name)
 	{
-		$agc = &xivo_gateclass::getinstance();
+		$agc = &dwho_gateclass::getinstance();
 		return($agc->is_valid($name));
 	}
 }

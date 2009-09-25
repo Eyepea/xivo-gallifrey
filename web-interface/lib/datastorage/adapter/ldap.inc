@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','adapter','abstract','abstract.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','adapter','abstract','abstract.inc'));
 
 if(defined('LDAP_SCOPE_BASE') === false)
 	define('LDAP_SCOPE_BASE',0);
@@ -29,7 +29,7 @@ if(defined('LDAP_SCOPE_ONELEVEL') === false)
 if(defined('LDAP_SCOPE_SUBTREE') === false)
 	define('LDAP_SCOPE_SUBTREE',2);
 
-class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
+class dwho_datastorage_adapter_ldap extends dwho_datastorage_adapter_abstract
 {
 	var $_param		= array(
 					'host'		=> 'localhost',
@@ -54,7 +54,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	var $_wherecond		= true;
 	var $_aggwherelast	= '';
 
-	function xivo_datastorage_adapter_ldap($param=array())
+	function dwho_datastorage_adapter_ldap($param=array())
 	{
 		$param = (array) $param;
 
@@ -79,7 +79,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			$this->_param['pass'] = (string) $param['passdn'];
 
 		if(isset($param['port']) === true)
-			$this->_param['port'] = xivo_uint($param['port']);
+			$this->_param['port'] = dwho_uint($param['port']);
 
 		if(isset($param['tls']) === true)
 			$this->_param['tls'] = (bool) $param['tls'];
@@ -90,12 +90,12 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			$this->_param['ssl'] = (bool) $param['ssl'];
 
 		if(isset($param['protocol']) === true)
-			$this->_param['protocol'] = xivo_uint($param['protocol'],3);
+			$this->_param['protocol'] = dwho_uint($param['protocol'],3);
 		else if(isset($param['protocolversion']) === true)
-			$this->_param['protocol'] = xivo_uint($param['protocolversion'],3);
+			$this->_param['protocol'] = dwho_uint($param['protocolversion'],3);
 
 		if(isset($param['debug']) === true)
-			$this->_debug = xivo_uint($param['debug']);
+			$this->_debug = dwho_uint($param['debug']);
 
 		if($open === true && $this->open() !== false)
 			$this->bind();
@@ -186,7 +186,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 					return(false);
 				break;
 			case LDAP_OPT_PROTOCOL_VERSION:
-				if(($value = xivo_uint($value)) === 0
+				if(($value = dwho_uint($value)) === 0
 				|| ($value !== 2 && $value !== 3) === true)
 					return(false);
 				break;
@@ -234,12 +234,12 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function set_debug($debug=0)
 	{
-		$this->_debug = xivo_uint($debug);
+		$this->_debug = dwho_uint($debug);
 	}
 
 	function explode_dn($dn,$attrib=false,$empty=false,$count=true)
 	{
-		if(xivo_has_len($dn) === false
+		if(dwho_has_len($dn) === false
 		|| ($r = ldap_explode_dn($dn,intval((bool) $attrib))) === false
 		|| is_array($r) === false
 		|| ($r['count'] === 0 && (bool) $empty === false) === true)
@@ -306,27 +306,27 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	{
 		$scope = $this->_set_scope($scope);
 		$attrsonly = intval((bool) $attrsonly);
-		$sizelimit = xivo_uint($sizelimit);
-		$timelimit = xivo_uint($timelimit);
-		$deref = xivo_uint($deref);
+		$sizelimit = dwho_uint($sizelimit);
+		$timelimit = dwho_uint($timelimit);
+		$deref = dwho_uint($deref);
 
 		if(is_resource($this->_link) === false)
 			return(false);
-		else if(xivo_has_len($basedn) === true)
+		else if(dwho_has_len($basedn) === true)
 		{
-			$filter = xivo_has_len($filter) === true ? $filter : '(objectclass=*)';
+			$filter = dwho_has_len($filter) === true ? $filter : '(objectclass=*)';
 
-			if(xivo_has_len($attrib) === true)
+			if(dwho_has_len($attrib) === true)
 				$this->_attrib = array($attrib);
 			else if(is_array($attrib) === true && empty($attrib) === false)
 				$this->_attrib = array_values($attrib);
 			else
 				$this->_attrib = array('*');
 		}
-		else if(xivo_has_len($basedn,'from') === true)
+		else if(dwho_has_len($basedn,'from') === true)
 		{
-			$filter = xivo_has_len($basedn,'where') === true ? $basedn['where'] : '(objectclass=*)';
-			$this->_attrib = xivo_issa('column',$basedn) === true ? array_values($basedn['column']) : array('*');
+			$filter = dwho_has_len($basedn,'where') === true ? $basedn['where'] : '(objectclass=*)';
+			$this->_attrib = dwho_issa('column',$basedn) === true ? array_values($basedn['column']) : array('*');
 			$basedn = $basedn['from'];
 		}
 		else
@@ -438,7 +438,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			&& $this->clean_result($val,false,true) === false)
 				unset($result[$key]);
 			else if(is_int($key) === true
-			&& xivo_issa($val,$result) === true)
+			&& dwho_issa($val,$result) === true)
 				unset($result[$key]);
 			else if($recursive === false && is_int($key) === true)
 				$return[] = $result[$key];
@@ -569,7 +569,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function get_value_first_entry($attrib,$clean=false,$lower=false)
 	{
-		if(xivo_has_len($attrib) === true
+		if(dwho_has_len($attrib) === true
 		&& is_resource($this->_link) === true
 		&& is_resource($this->_result) === true
 		&& (is_resource($this->_entry) === true
@@ -588,7 +588,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function get_value_next_entry($attrib,$clean=false,$lower=false)
 	{
-		if(xivo_has_len($attrib) === true
+		if(dwho_has_len($attrib) === true
 		&& is_resource($this->_link) === true
 		&& is_resource($this->_result) === true
 		&& ($this->_entry = ldap_next_entry($this->_link,$this->_result)) !== false
@@ -606,7 +606,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function get_values($attrib,$clean=false,$lower=false)
 	{
-		if(xivo_has_len($attrib) === true
+		if(dwho_has_len($attrib) === true
 		&& is_resource($this->_link) === true
 		&& is_resource($this->_entry) === true
 		&& ($r = @ldap_get_values($this->_link,$this->_entry,$attrib)) !== false
@@ -663,9 +663,9 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 	{
 		$r = '';
 
-		if(xivo_has_len($this->_aggwherelast) === true)
+		if(dwho_has_len($this->_aggwherelast) === true)
 		{
-			if(xivo_has_len($this->_where) === false)
+			if(dwho_has_len($this->_where) === false)
 				$this->_aggwhere[] = $this->_aggwherelast;
 			else
 				$this->_aggwhere[] = '('.((bool) $this->_wherecond === true ? '&' : '|').
@@ -678,7 +678,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		if(is_array($this->_aggwhere) === true && isset($this->_aggwhere[0]) === true)
 			$r = implode('',$this->_aggwhere);
 
-		if(xivo_has_len($this->_where) === true)
+		if(dwho_has_len($this->_where) === true)
 		{
 			if($r !== '')
 				$r = '('.((bool) $this->_wherecond === true ? '&' : '|').$r.$this->_where.')';
@@ -694,7 +694,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 	function _mk_table($table)
 	{
-		if((xivo_has_len($table) === true
+		if((dwho_has_len($table) === true
 		   && ($table = $this->explode_dn($table,false,false,false)) === false) === true
 		|| is_array($table) === false)
 			return(false);
@@ -703,7 +703,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 		foreach($table as $val)
 		{
-			if(xivo_has_len($val) === false)
+			if(dwho_has_len($val) === false)
 				return(false);
 
 			$r[] = strtolower($val);
@@ -741,7 +741,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 			if($column === '*')
 				return(($this->_colall = true));
-			else if(xivo_has_len($column) === true)
+			else if(dwho_has_len($column) === true)
 				$column = (array) $column;
 			else
 				return(null);
@@ -849,13 +849,13 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 
 			return($condsep);
 		}
-		else if(is_array($val) === true || xivo_has_len($val) === true)
+		else if(is_array($val) === true || dwho_has_len($val) === true)
 		{
 			$val = (array) $val;
-			$r = vsprintf(xivo_printf_escape($cond,count($val)),
+			$r = vsprintf(dwho_printf_escape($cond,count($val)),
 				      array_map(array(&$this,'escape'),$val));
 		}
-		else if(xivo_has_len($cond) === true)
+		else if(dwho_has_len($cond) === true)
 			$r = (string) $cond;
 		else
 			return(false);
@@ -1150,7 +1150,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			else if(in_array('*',$this->_attrib) === true)
 				$attrib = $this->first_attribute();
 			else
-				$attrib = xivo_ak(0,$this->_attrib,true);
+				$attrib = dwho_ak(0,$this->_attrib,true);
 
 			if($attrib === false)
 				$r = false;
@@ -1174,7 +1174,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			if(in_array('*',$this->_attrib) === true)
 				$attrib = $this->first_attribute();
 			else
-				$attrib = xivo_ak(0,$this->_attrib,true);
+				$attrib = dwho_ak(0,$this->_attrib,true);
 
 			if($attrib === false)
 				$r = false;
@@ -1217,8 +1217,8 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			}
 			else
 			{
-				$attrib1 = xivo_ak(0,$this->_attrib,true);
-				$attrib2 = xivo_ak(1,$this->_attrib,true);
+				$attrib1 = dwho_ak(0,$this->_attrib,true);
+				$attrib2 = dwho_ak(1,$this->_attrib,true);
 			}
 
 			if($attrib1 === false || $attrib2 === false)
@@ -1271,8 +1271,8 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			}
 			else
 			{
-				$attrib1 = xivo_ak(0,$this->_attrib,true);
-				$attrib2 = xivo_ak(1,$this->_attrib,true);
+				$attrib1 = dwho_ak(0,$this->_attrib,true);
+				$attrib2 = dwho_ak(1,$this->_attrib,true);
 			}
 
 			if($attrib1 === false || $attrib2 === false)
@@ -1331,7 +1331,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			return(false);
 		else if($free === true)
 		{
-			if(xivo_has_len($search) === true)
+			if(dwho_has_len($search) === true)
 				$search = array('from' => $search,'column' => array('*'));
 			else if(is_array($search) === true)
 				$search['column'] = array('*');
@@ -1340,7 +1340,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 		if($this->search($search,$scope,null,null,(int) $free) === false)
 			return(false);
 		else if(($r = $this->num_rows()) !== false)
-			$r = xivo_ulongint($r);
+			$r = dwho_ulongint($r);
 
 		if($this->_free === true && $free === true)
 			$this->free();
@@ -1361,7 +1361,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			else if(in_array('*',$this->_attrib) === true)
 				$attrib = $this->first_attribute();
 			else
-				$attrib = xivo_ak(0,$this->_attrib,true);
+				$attrib = dwho_ak(0,$this->_attrib,true);
 
 			if($attrib === false)
 				$r = false;
@@ -1379,7 +1379,7 @@ class xivo_datastorage_adapter_ldap extends xivo_datastorage_adapter_abstract
 			if(in_array('*',$this->_attrib) === true)
 				$attrib = $this->first_attribute();
 			else
-				$attrib = xivo_ak(0,$this->_attrib,true);
+				$attrib = dwho_ak(0,$this->_attrib,true);
 
 			if($attrib === false)
 				$r = false;

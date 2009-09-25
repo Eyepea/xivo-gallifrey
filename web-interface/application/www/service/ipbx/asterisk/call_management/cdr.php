@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $act = isset($_QR['act']) === false || $_QR['act'] !== 'exportcsv' ? 'search' : 'exportcsv';
 
 $cdr = &$ipbx->get_module('cdr');
@@ -73,7 +73,7 @@ if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 		if($result === false)
 			$info = null;
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 	}
 
 	if($act === 'exportcsv' && $info !== null)

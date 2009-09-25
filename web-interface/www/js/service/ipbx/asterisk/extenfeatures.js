@@ -87,23 +87,23 @@ function xivo_extenfeatures_onload()
 {
 	for(property in xivo_list_elt_extenfeatures)
 	{
-		if(xivo_eid(property) === false)
+		if(dwho_eid(property) === false)
 			continue;
 
-		xivo_fm_readonly(xivo_list_elt_extenfeatures[property],xivo_eid(property).checked);
-		xivo.dom.add_event('change',
-				   xivo_eid(property),
+		dwho.form.readonly(xivo_list_elt_extenfeatures[property],dwho_eid(property).checked);
+		dwho.dom.add_event('change',
+				   dwho_eid(property),
 				   function()
 				   {
-					xivo_fm_readonly(xivo_list_elt_extenfeatures[this.id],this.checked);
+					dwho.form.readonly(xivo_list_elt_extenfeatures[this.id],this.checked);
 				   });
 
 		if(xivo_list_elt_extenfeatures[property].length === 2
-		&& (elt = xivo_eid(xivo_list_elt_extenfeatures[property][0])) !== false
-		&& (eltlist = xivo_eid(xivo_list_elt_extenfeatures[property][1])) !== false)
+		&& (elt = dwho_eid(xivo_list_elt_extenfeatures[property][0])) !== false
+		&& (eltlist = dwho_eid(xivo_list_elt_extenfeatures[property][1])) !== false)
 		{
 			eltlist.value = xivo_get_exten_buffer('X',elt.value);
-			xivo.dom.add_event('change',
+			dwho.dom.add_event('change',
 					   eltlist,
 					   function()
 					   {
@@ -113,4 +113,4 @@ function xivo_extenfeatures_onload()
 	}
 }
 
-xivo.dom.set_onload(xivo_extenfeatures_onload);
+dwho.dom.set_onload(xivo_extenfeatures_onload);

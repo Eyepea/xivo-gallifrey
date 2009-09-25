@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','adapter','abstract','sql.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','adapter','abstract','sql.inc'));
 
-class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_sql
+class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_sql
 {
 	var $_param			= array(
 						'db'			=> '',
@@ -35,7 +35,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 						'time'		=> '%H:%M:%S');
 	var $_fix_leftjoin_column	= false;
 
-	function xivo_datastorage_adapter_sqlite($param=array())
+	function dwho_datastorage_adapter_sqlite($param=array())
 	{
 		$param = (array) $param;
 		$open = true;
@@ -54,8 +54,8 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		if(isset($param['short_column_names']) === true)
 			$this->_param['short_column_names'] = (bool) $param['short_column_names'];
 
-		if(isset($param['timeout']) === true && ($timeout = xivo_uint($param['timeout'])) < 60000)
-			$this->_param['timeout'] = xivo_uint($param['timeout']);
+		if(isset($param['timeout']) === true && ($timeout = dwho_uint($param['timeout'])) < 60000)
+			$this->_param['timeout'] = dwho_uint($param['timeout']);
 
 		if($open === true)
 			$this->open();
@@ -71,14 +71,17 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 	function _chk_db()
 	{
-		if(($db = xivo_file::is_f($this->_param['db'])) !== false)
+		if(($db = dwho_file::is_f($this->_param['db'])) !== false)
 			return(null);
 		else if(($pos = strrpos($this->_param['db'],'.')) === false || substr($this->_param['db'],1-$pos) !== '.db')
 			$this->_param['db'] .= '.db';
 
-		$this->_param['db'] = XIVO_PATH_DS.XIVO_SEP_DIR.$this->_type.XIVO_SEP_DIR.ltrim($this->_param['db'],XIVO_SEP_DIR);
+		if(defined('DWHO_PATH_DS') === false)
+			trigger_error('DWHO datastorage path not defined',E_USER_ERROR);
 
-		if(($db = xivo_file::is_f($this->_param['db'])) === false)
+		$this->_param['db'] = DWHO_PATH_DS.DWHO_SEP_DIR.$this->_type.DWHO_SEP_DIR.ltrim($this->_param['db'],DWHO_SEP_DIR);
+
+		if(($db = dwho_file::is_f($this->_param['db'])) === false)
 			$this->halt('Can\'t find database SQLite');
 	}
 
@@ -103,7 +106,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 				if($onlykey === true)
 					return(true);
 
-				if(($value = xivo_uint($value)) === 0 || $value > 4000)
+				if(($value = dwho_uint($value)) === 0 || $value > 4000)
 					return(false);
 				break;
 			case 'synchronous':
@@ -144,7 +147,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 				if($onlykey === true)
 					return(true);
 
-				if(($value = xivo_uint($value)) === 0 || $value > 200)
+				if(($value = dwho_uint($value)) === 0 || $value > 200)
 					return(false);
 				break;
 			case 'parser_trace':
@@ -239,7 +242,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 
 	function timeout($time)
 	{
-		if(($time = xivo_uint($time)) < 60000 && is_resource($this->_link) === true)
+		if(($time = dwho_uint($time)) < 60000 && is_resource($this->_link) === true)
 			return(sqlite_busy_timeout($this->_link,$time));
 
 		return(false);
@@ -341,7 +344,7 @@ class xivo_datastorage_adapter_sqlite extends xivo_datastorage_adapter_abstract_
 		&& is_float($val) === false
 		&& is_bool($val) === false)
 			return($val);
-		else if(xivo_has_len($this->_fix_leftjoin_column) === false)
+		else if(dwho_has_len($this->_fix_leftjoin_column) === false)
 			return($val);
 
 		return(sprintf('SUBSTR(%s,0,0)||%s',$this->_fix_leftjoin_column,$val));

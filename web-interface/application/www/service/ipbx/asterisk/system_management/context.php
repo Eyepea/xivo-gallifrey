@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = array();
 
@@ -42,34 +42,34 @@ switch($act)
 
 		$contextinc['list'] = $appcontext->get_contexts_except(null,$contextincorder,null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('context',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('context',$_QR) === true)
 		{
-			if(xivo_issa('contextnumbers',$_QR) === true
+			if(dwho_issa('contextnumbers',$_QR) === true
 			&& isset($_QR['context']['entity']) === true
-			&& xivo_has_len($_QR['context']['entity']) === true)
+			&& dwho_has_len($_QR['context']['entity']) === true)
 			{
-				if(xivo_issa('user',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
+				if(dwho_issa('user',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['user'] = dwho_group_array('numberbeg',
 										      $_QR['contextnumbers']['user'])) === false)
 					unset($_QR['contextnumbers']['user']);
 
-				if(xivo_issa('group',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['group'] = xivo_group_array('numberbeg',
+				if(dwho_issa('group',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['group'] = dwho_group_array('numberbeg',
 										       $_QR['contextnumbers']['group'])) === false)
 					unset($_QR['contextnumbers']['group']);
 
-				if(xivo_issa('queue',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['queue'] = xivo_group_array('numberbeg',
+				if(dwho_issa('queue',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['queue'] = dwho_group_array('numberbeg',
 										       $_QR['contextnumbers']['queue'])) === false)
 					unset($_QR['contextnumbers']['queue']);
 
-				if(xivo_issa('meetme',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['meetme'] = xivo_group_array('numberbeg',
+				if(dwho_issa('meetme',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['meetme'] = dwho_group_array('numberbeg',
 											$_QR['contextnumbers']['meetme'])) === false)
 					unset($_QR['contextnumbers']['meetme']);
 
-				if(xivo_issa('incall',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['incall'] = xivo_group_array('numberbeg',
+				if(dwho_issa('incall',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['incall'] = dwho_group_array('numberbeg',
 											$_QR['contextnumbers']['incall'])) === false)
 					unset($_QR['contextnumbers']['incall']);
 			}
@@ -87,18 +87,18 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		}
 
-		if($contextinc['list'] !== false && xivo_issa('contextinclude',$result) === true)
+		if($contextinc['list'] !== false && dwho_issa('contextinclude',$result) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$contextincsort = new xivo_sort(array('key' => 'priority'));
+			dwho::load_class('dwho_sort');
+			$contextincsort = new dwho_sort(array('key' => 'priority'));
 			usort($result['contextinclude'],array(&$contextincsort,'num_usort'));
 
-			$contextinc['slt'] = xivo_array_intersect_key($result['contextinclude'],
+			$contextinc['slt'] = dwho_array_intersect_key($result['contextinclude'],
 								      $contextinc['list'],
 								      'include');
 
 			if($contextinc['slt'] !== false)
-				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
+				$contextinc['list'] = dwho_array_diff_key($contextinc['list'],$contextinc['slt']);
 		}
 
 		$_TPL->set_var('info',$result);
@@ -133,36 +133,36 @@ switch($act)
 								       null,
 								       true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('context',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('context',$_QR) === true)
 		{
 			$return = &$result;
 
-			if(xivo_issa('contextnumbers',$_QR) === true
+			if(dwho_issa('contextnumbers',$_QR) === true
 			&& isset($_QR['context']['entity']) === true
-			&& xivo_has_len($_QR['context']['entity']) === true)
+			&& dwho_has_len($_QR['context']['entity']) === true)
 			{
-				if(xivo_issa('user',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['user'] = xivo_group_array('numberbeg',
+				if(dwho_issa('user',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['user'] = dwho_group_array('numberbeg',
 										      $_QR['contextnumbers']['user'])) === false)
 					unset($_QR['contextnumbers']['user']);
 
-				if(xivo_issa('group',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['group'] = xivo_group_array('numberbeg',
+				if(dwho_issa('group',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['group'] = dwho_group_array('numberbeg',
 										       $_QR['contextnumbers']['group'])) === false)
 					unset($_QR['contextnumbers']['group']);
 
-				if(xivo_issa('queue',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['queue'] = xivo_group_array('numberbeg',
+				if(dwho_issa('queue',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['queue'] = dwho_group_array('numberbeg',
 										       $_QR['contextnumbers']['queue'])) === false)
 					unset($_QR['contextnumbers']['queue']);
 
-				if(xivo_issa('meetme',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['meetme'] = xivo_group_array('numberbeg',
+				if(dwho_issa('meetme',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['meetme'] = dwho_group_array('numberbeg',
 											$_QR['contextnumbers']['meetme'])) === false)
 					unset($_QR['contextnumbers']['meetme']);
 
-				if(xivo_issa('incall',$_QR['contextnumbers']) === true
-				&& ($_QR['contextnumbers']['incall'] = xivo_group_array('numberbeg',
+				if(dwho_issa('incall',$_QR['contextnumbers']) === true
+				&& ($_QR['contextnumbers']['incall'] = dwho_group_array('numberbeg',
 											$_QR['contextnumbers']['incall'])) === false)
 					unset($_QR['contextnumbers']['incall']);
 			}
@@ -180,18 +180,18 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		}
 
-		if($contextinc['list'] !== false && xivo_issa('contextinclude',$return) === true)
+		if($contextinc['list'] !== false && dwho_issa('contextinclude',$return) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$contextincsort = new xivo_sort(array('key' => 'priority'));
+			dwho::load_class('dwho_sort');
+			$contextincsort = new dwho_sort(array('key' => 'priority'));
 			usort($return['contextinclude'],array(&$contextincsort,'num_usort'));
 
-			$contextinc['slt'] = xivo_array_intersect_key($return['contextinclude'],
+			$contextinc['slt'] = dwho_array_intersect_key($return['contextinclude'],
 								      $contextinc['list'],
 								      'include');
 
 			if($contextinc['slt'] !== false)
-				$contextinc['list'] = xivo_array_diff_key($contextinc['list'],$contextinc['slt']);
+				$contextinc['list'] = dwho_array_diff_key($contextinc['list'],$contextinc['slt']);
 		}
 
 		$_TPL->set_var('id',$info['context']['name']);
@@ -221,7 +221,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('contexts',$_QR)) === false)
+		if(($values = dwho_issa_val('contexts',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext = &$ipbx->get_application('context');
@@ -240,7 +240,7 @@ switch($act)
 	case 'enables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('contexts',$_QR)) === false)
+		if(($values = dwho_issa_val('contexts',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 
 		$appcontext = &$ipbx->get_application('context');
@@ -282,7 +282,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/context'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

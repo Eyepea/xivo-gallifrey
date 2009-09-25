@@ -135,15 +135,15 @@ endif;
 
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-userlist','it-user');
-			    return(xivo.dom.free_focus());"
+		   onclick="dwho.form.move_selected('it-userlist','it-user');
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inuser');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inuser'),
 					  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-user','it-userlist');
-			    return(xivo.dom.free_focus());"
+		   onclick="dwho.form.move_selected('it-user','it-userlist');
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outuser');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outuser'),
@@ -198,14 +198,14 @@ endif;
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_ast_inqueue();
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inqueue');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inqueue'),
 					  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_outqueue();
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outqueue');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outqueue'),
@@ -239,7 +239,7 @@ endif;
 		foreach($queues as $value):
 			$name = $value['name'];
 
-			if(xivo_issa($value['id'],$qmember['info']) === true):
+			if(dwho_issa($value['id'],$qmember['info']) === true):
 				$class = '';
 				$value['member'] = $qmember['info'][$value['id']];
 				$penalty = intval($value['member']['penalty']);

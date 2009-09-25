@@ -18,19 +18,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_session
+class dwho_session
 {
 	var $_dso	= null;
 
-	function xivo_session()
+	function dwho_session()
 	{
-		if(defined('XIVO_SESS_HANDLER') === false)
+		if(defined('DWHO_SESS_HANDLER') === false)
 		{
-			define('XIVO_SESS_HANDLER',true);
-			$dso = &xivo_gct::get('XIVO_DSO');
-			$name = 'xivo_session_'.$dso->get_type();
+			define('DWHO_SESS_HANDLER',true);
+			$dso = &dwho_gct::get('DWHO_DSO');
+			$name = 'dwho_session_'.$dso->get_type();
 
-			if(xivo::load_class('xivo::session::'.$dso->get_type()) === false)
+			if(dwho::load_class('dwho::session::'.$dso->get_type()) === false)
 				trigger_error('Failed to load Session Datastorage',E_USER_ERROR);
 
 			$this->_dso = new $name($dso);
@@ -47,30 +47,30 @@ class xivo_session
 			register_shutdown_function(array(&$this->_dso,'write_close'));
 		}
 
-		session_set_cookie_params(XIVO_SESS_TIME,XIVO_SESS_PATH);
-		session_name(XIVO_SESS_NAME);
+		session_set_cookie_params(DWHO_SESS_TIME,DWHO_SESS_PATH);
+		session_name(DWHO_SESS_NAME);
 
 		$this->_mk_cookie();
 	}
 
 	function _mk_cookie()
 	{
-		if(defined('XIVO_SESS_ID') === true)
-			return(XIVO_SESS_ID);
+		if(defined('DWHO_SESS_ID') === true)
+			return(DWHO_SESS_ID);
 
-		$_QR = &xivo_gat::get('_QR');
+		$_QR = &dwho_gat::get('_QR');
 
-		if(xivo_has_len($_COOKIE,XIVO_SESS_NAME) === true)
-			$id = substr($_COOKIE[XIVO_SESS_NAME],0,32);
-		else if(xivo_has_len($_QR,XIVO_SESS_NAME) === true)
-			$id = substr($_QR[XIVO_SESS_NAME],0,32);
+		if(dwho_has_len($_COOKIE,DWHO_SESS_NAME) === true)
+			$id = substr($_COOKIE[DWHO_SESS_NAME],0,32);
+		else if(dwho_has_len($_QR,DWHO_SESS_NAME) === true)
+			$id = substr($_QR[DWHO_SESS_NAME],0,32);
 		else
 			$id = false;
 
-		if(defined('XIVO_SESS_ENABLE') === true && (bool) XIVO_SESS_ENABLE === false)
+		if(defined('DWHO_SESS_ENABLE') === true && (bool) DWHO_SESS_ENABLE === false)
 		{
 			$_SESSION = array();
-			$_QR[XIVO_SESS_NAME] = md5(uniqid(rand(),true));
+			$_QR[DWHO_SESS_NAME] = md5(uniqid(rand(),true));
 		}
 		else
 		{
@@ -79,15 +79,15 @@ class xivo_session
 
 			session_start();
 
-			if(($_QR[XIVO_SESS_NAME] = session_id()) === '')
+			if(($_QR[DWHO_SESS_NAME] = session_id()) === '')
 			{
 				session_regenerate_id();
-				$_QR[XIVO_SESS_NAME] = session_id();
+				$_QR[DWHO_SESS_NAME] = session_id();
 			}
 		}
 
-		define('XIVO_SESS_ID',$_QR[XIVO_SESS_NAME]);
-		define('XIVO_SESS_STR',XIVO_SESS_NAME.'='.XIVO_SESS_ID);
+		define('DWHO_SESS_ID',$_QR[DWHO_SESS_NAME]);
+		define('DWHO_SESS_STR',DWHO_SESS_NAME.'='.DWHO_SESS_ID);
 	}
 
 	function set_dso_attrib($name,$value)

@@ -244,7 +244,7 @@ $array['filter']['queue-reporthold'] = array('set' => false,'chk' => 2,'cast' =>
 $array['filter']['periodic-announce'] = array('set'	=> false,
 					      'chk'	=> 2,
 					      'regexp'	=> '/^(?:['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.
-								    preg_quote(XIVO_SEP_DIR,'/').']{1,79}\|?){1,10}$/');
+								    preg_quote(DWHO_SEP_DIR,'/').']{1,79}\|?){1,10}$/');
 $array['filter']['category'] = array('key' => array('queue','group'));
 
 ?>

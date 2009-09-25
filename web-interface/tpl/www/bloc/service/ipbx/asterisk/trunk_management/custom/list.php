@@ -40,7 +40,7 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 <form action="#" name="fm-trunk-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -89,8 +89,8 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=xivo_htmlen(xivo_trunc($ref['interface'],40,'...',false))?></td>
-		<td><?=(xivo_has_len($ref['intfsuffix']) === true ? $ref['intfsuffix'] : '-')?></td>
+		<td><?=dwho_htmlen(dwho_trunc($ref['interface'],40,'...',false))?></td>
+		<td><?=(dwho_has_len($ref['intfsuffix']) === true ? $ref['intfsuffix'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';
@@ -66,7 +66,7 @@ switch($act)
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,$outcallorder,null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('rightcall',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('rightcall',$_QR) === true)
 		{
 			if($apprightcall->set_add($_QR) === false
 			|| $apprightcall->add() === false)
@@ -75,61 +75,61 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
-		if($rcalluser['list'] !== false && xivo_ak('rightcalluser',$result) === true)
+		if($rcalluser['list'] !== false && dwho_ak('rightcalluser',$result) === true)
 		{
-			$rcalluser['slt'] = xivo_array_intersect_key($result['rightcalluser'],$rcalluser['list'],'typeval');
+			$rcalluser['slt'] = dwho_array_intersect_key($result['rightcalluser'],$rcalluser['list'],'typeval');
 
 			if($rcalluser['slt'] !== false)
 			{
-				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
+				$rcalluser['list'] = dwho_array_diff_key($rcalluser['list'],$rcalluser['slt']);
 
-				$usersort = new xivo_sort(array('key' => 'identity'));
+				$usersort = new dwho_sort(array('key' => 'identity'));
 				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
-		if($rcallgroup['list'] !== false && xivo_ak('rightcallgroup',$result) === true)
+		if($rcallgroup['list'] !== false && dwho_ak('rightcallgroup',$result) === true)
 		{
-			$rcallgroup['slt'] = xivo_array_intersect_key($result['rightcallgroup'],$rcallgroup['list'],'typeval');
+			$rcallgroup['slt'] = dwho_array_intersect_key($result['rightcallgroup'],$rcallgroup['list'],'typeval');
 
 			if($rcallgroup['slt'] !== false)
 			{
-				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
+				$rcallgroup['list'] = dwho_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
 
-				$groupsort = new xivo_sort(array('key' => 'name'));
+				$groupsort = new dwho_sort(array('key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
 		}
 
-		if($rcallincall['list'] !== false && xivo_ak('rightcallincall',$result) === true)
+		if($rcallincall['list'] !== false && dwho_ak('rightcallincall',$result) === true)
 		{
-			$rcallincall['slt'] = xivo_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval');
+			$rcallincall['slt'] = dwho_array_intersect_key($result['rightcallincall'],$rcallincall['list'],'typeval');
 
 			if($rcallincall['slt'] !== false)
 			{
-				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
+				$rcallincall['list'] = dwho_array_diff_key($rcallincall['list'],$rcallincall['slt']);
 
-				$incallsort = new xivo_sort(array('key' => 'exten'));
+				$incallsort = new dwho_sort(array('key' => 'exten'));
 				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
 			}
 		}
 
-		if($rcalloutcall['list'] !== false && xivo_ak('rightcalloutcall',$result) === true)
+		if($rcalloutcall['list'] !== false && dwho_ak('rightcalloutcall',$result) === true)
 		{
-			$rcalloutcall['slt'] = xivo_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval');
+			$rcalloutcall['slt'] = dwho_array_intersect_key($result['rightcalloutcall'],$rcalloutcall['list'],'typeval');
 
 			if($rcalloutcall['slt'] !== false)
 			{
-				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
+				$rcalloutcall['list'] = dwho_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
 
-				$outcallsort = new xivo_sort(array('key' => 'name'));
+				$outcallsort = new dwho_sort(array('key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
 		}
 
-		if(xivo_issa('rcallexten',$result) === true)
+		if(dwho_issa('rcallexten',$result) === true)
 			$rcallexten = $result['rcallexten'];
 		else
 			$rcallexten = null;
@@ -190,7 +190,7 @@ switch($act)
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
 		$rcalloutcall['list'] = $appoutcall->get_outcalls_list(null,$outcallorder,null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('rightcall',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('rightcall',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -201,67 +201,67 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
-		if($rcalluser['list'] !== false && xivo_ak('rightcalluser',$return) === true)
+		if($rcalluser['list'] !== false && dwho_ak('rightcalluser',$return) === true)
 		{
-			$rcalluser['slt'] = xivo_array_intersect_key($return['rightcalluser'],$rcalluser['list'],'typeval');
+			$rcalluser['slt'] = dwho_array_intersect_key($return['rightcalluser'],$rcalluser['list'],'typeval');
 
 			if($rcalluser['slt'] !== false)
 			{
-				$rcalluser['list'] = xivo_array_diff_key($rcalluser['list'],$rcalluser['slt']);
+				$rcalluser['list'] = dwho_array_diff_key($rcalluser['list'],$rcalluser['slt']);
 
-				$usersort = new xivo_sort(array('key' => 'identity'));
+				$usersort = new dwho_sort(array('key' => 'identity'));
 				uasort($rcalluser['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
-		if($rcallgroup['list'] !== false && xivo_ak('rightcallgroup',$return) === true)
+		if($rcallgroup['list'] !== false && dwho_ak('rightcallgroup',$return) === true)
 		{
-			$rcallgroup['slt'] = xivo_array_intersect_key($return['rightcallgroup'],$rcallgroup['list'],'typeval');
+			$rcallgroup['slt'] = dwho_array_intersect_key($return['rightcallgroup'],$rcallgroup['list'],'typeval');
 
 			if($rcallgroup['slt'] !== false)
 			{
-				$rcallgroup['list'] = xivo_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
+				$rcallgroup['list'] = dwho_array_diff_key($rcallgroup['list'],$rcallgroup['slt']);
 
-				$groupsort = new xivo_sort(array('key' => 'name'));
+				$groupsort = new dwho_sort(array('key' => 'name'));
 				uasort($rcallgroup['slt'],array(&$groupsort,'str_usort'));
 			}
 		}
 
-		if($rcallincall['list'] !== false && xivo_ak('rightcallincall',$return) === true)
+		if($rcallincall['list'] !== false && dwho_ak('rightcallincall',$return) === true)
 		{
-			$rcallincall['slt'] = xivo_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval');
+			$rcallincall['slt'] = dwho_array_intersect_key($return['rightcallincall'],$rcallincall['list'],'typeval');
 
 			if($rcallincall['slt'] !== false)
 			{
-				$rcallincall['list'] = xivo_array_diff_key($rcallincall['list'],$rcallincall['slt']);
+				$rcallincall['list'] = dwho_array_diff_key($rcallincall['list'],$rcallincall['slt']);
 
-				$incallsort = new xivo_sort(array('key' => 'exten'));
+				$incallsort = new dwho_sort(array('key' => 'exten'));
 				uasort($rcallincall['slt'],array(&$incallsort,'str_usort'));
 			}
 		}
 
-		if($rcalloutcall['list'] !== false && xivo_ak('rightcalloutcall',$return) === true)
+		if($rcalloutcall['list'] !== false && dwho_ak('rightcalloutcall',$return) === true)
 		{
-			$rcalloutcall['slt'] = xivo_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval');
+			$rcalloutcall['slt'] = dwho_array_intersect_key($return['rightcalloutcall'],$rcalloutcall['list'],'typeval');
 
 			if($rcalloutcall['slt'] !== false)
 			{
-				$rcalloutcall['list'] = xivo_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
+				$rcalloutcall['list'] = dwho_array_diff_key($rcalloutcall['list'],$rcalloutcall['slt']);
 
-				$outcallsort = new xivo_sort(array('key' => 'name'));
+				$outcallsort = new dwho_sort(array('key' => 'name'));
 				uasort($rcalloutcall['slt'],array(&$outcallsort,'str_usort'));
 			}
 		}
 
-		if(xivo_issa('rightcallexten',$return) === false)
+		if(dwho_issa('rightcallexten',$return) === false)
 			$rcallexten = null;
 		else
 		{
 			$rcallexten = $return['rightcallexten'];
 
-			$extensort = new xivo_sort(array('key' => 'exten'));
+			$extensort = new dwho_sort(array('key' => 'exten'));
 			uasort($rcallexten,array(&$extensort,'str_usort'));
 		}
 
@@ -293,7 +293,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
+		if(($values = dwho_issa_val('rightcalls',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
 		$apprightcall = &$ipbx->get_application('rightcall');
@@ -313,7 +313,7 @@ switch($act)
 		$param['page'] = $page;
 		$disable = $act === 'disables';
 
-		if(($values = xivo_issa_val('rightcalls',$_QR)) === false)
+		if(($values = dwho_issa_val('rightcalls',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
 		$rightcall = &$ipbx->get_module('rightcall');
@@ -348,7 +348,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

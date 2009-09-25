@@ -18,16 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_i18n_locale
+class dwho_i18n_locale
 {
 	var $_attrib	= array();
 	var $_conf	= array();
 
-	function xivo_i18n_locale()
+	function dwho_i18n_locale()
 	{
-		$file = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','locales','locales');
+		$file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','locales','locales');
 
-		if(($this->_conf = xivo_gat::get_file($file)) === false)
+		if(($this->_conf = dwho_gat::get_file($file)) === false)
 			trigger_error('Failed to load locales listing',E_USER_ERROR);
 	}
 
@@ -55,7 +55,7 @@ class xivo_i18n_locale
 					       'strtolower(\'\\1\').\'_\'.strtoupper(\'\\2\')',
 					       $locale);
 
-		if(xivo_issa($locale,$this->_conf) === false)
+		if(dwho_issa($locale,$this->_conf) === false)
 			return(false);
 
 		return($locale);

@@ -28,32 +28,32 @@ var xivo_smenu = {
 
 function xivo_smenu_click(obj,cname,part,last)
 {
-	if(xivo_is_empty(obj.id) === true)
+	if(dwho_is_empty(obj.id) === true)
 		return(false);
 
 	var disobj = click = before = '';
 	var num = 0;
 	var id = obj.id;
 
-	if(xivo_smenu['display'] !== '' && (disobj = xivo_eid(xivo_smenu['display'])) !== false)
+	if(xivo_smenu['display'] !== '' && (disobj = dwho_eid(xivo_smenu['display'])) !== false)
 		disobj.style.display = 'none';
 
-	if((disobj = xivo_eid(part)) !== false)
+	if((disobj = dwho_eid(part)) !== false)
 	{
 		xivo_smenu['display'] = part;
 		disobj.style.display = 'block';
 	}
 
-	if(xivo_smenu['click']['id'] !== '' && (click = xivo_eid(xivo_smenu['click']['id'])) !== false)
+	if(xivo_smenu['click']['id'] !== '' && (click = dwho_eid(xivo_smenu['click']['id'])) !== false)
 		click.className = xivo_smenu['click']['class'];
 
-	if(xivo_is_undef(xivo_smenu['bak'][id]) === false)
+	if(dwho_is_undef(xivo_smenu['bak'][id]) === false)
 	{
 		xivo_smenu['click']['id'] = id;
 		xivo_smenu['click']['class'] = xivo_smenu['bak'][id];
 	}
 
-	if(xivo_smenu['before']['id'] !== '' && (before = xivo_eid(xivo_smenu['before']['id'])) !== false)
+	if(xivo_smenu['before']['id'] !== '' && (before = dwho_eid(xivo_smenu['before']['id'])) !== false)
 		before.className = xivo_smenu['before']['class'];
 
 	var rs = id.match(/^([a-z0-9-_]*)(\d+)$/i);
@@ -65,9 +65,9 @@ function xivo_smenu_click(obj,cname,part,last)
 		var nid = vid+(num-1);
 		var get = '';
 
-		if(num > 1 && (get = xivo_eid(nid)) !== false)
+		if(num > 1 && (get = dwho_eid(nid)) !== false)
 		{
-			if(xivo_is_undef(xivo_smenu['bak'][nid]) === true)
+			if(dwho_is_undef(xivo_smenu['bak'][nid]) === true)
 				xivo_smenu['bak'][nid] = get.className;
 
 			xivo_smenu['before']['id'] = nid;
@@ -80,15 +80,15 @@ function xivo_smenu_click(obj,cname,part,last)
 
 	obj.className = Boolean(last) === false ? cname : cname+'-last';
 
-	xivo.dom.free_focus();
+	dwho.dom.free_focus();
 }
 
 function xivo_smenu_fmsubmit(obj)
 {
-	if(xivo_is_object(obj) === false
+	if(dwho_is_object(obj) === false
 	|| obj.nodeName.toLowerCase() !== 'form'
-	|| xivo_is_undef(obj['fm_smenu-tab']) === true
-	|| xivo_is_undef(obj['fm_smenu-part']) === true
+	|| dwho_is_undef(obj['fm_smenu-tab']) === true
+	|| dwho_is_undef(obj['fm_smenu-part']) === true
 	|| xivo_smenu['click']['id'] === ''
 	|| xivo_smenu['display'] === '')
 		return(false);
@@ -101,10 +101,10 @@ function xivo_smenu_fmsubmit(obj)
 
 function xivo_smenu_out(obj,cname,last)
 {
-	if((ul = xivo.dom.etag('ul',obj,0)) !== false)
+	if((ul = dwho.dom.etag('ul',obj,0)) !== false)
 		ul.style.display = 'none';
 
-	if(xivo_is_empty(obj.id) === true || xivo_smenu['click']['id'] === obj.id)
+	if(dwho_is_empty(obj.id) === true || xivo_smenu['click']['id'] === obj.id)
 		return(false);
 
 	var num = 0;
@@ -138,16 +138,16 @@ function xivo_smenu_out(obj,cname,last)
 
 function xivo_smenu_over(obj,cname,last)
 {
-	if((ul = xivo.dom.etag('ul',obj,0)) !== false)
+	if((ul = dwho.dom.etag('ul',obj,0)) !== false)
 		ul.style.display = 'block';
 
-	if(xivo_is_empty(obj.id) === true || xivo_smenu['click']['id'] === obj.id)
+	if(dwho_is_empty(obj.id) === true || xivo_smenu['click']['id'] === obj.id)
 		return(false);
 
 	var num = 0;
 	var id = obj.id;
 
-	if(xivo_is_undef(xivo_smenu['bak'][id]) === true)
+	if(dwho_is_undef(xivo_smenu['bak'][id]) === true)
 		xivo_smenu['bak'][id] = obj.className;
 
 	if(Boolean(last) === true)
@@ -178,11 +178,11 @@ function xivo_smenu_over(obj,cname,last)
 
 function xivo_submenu_onload()
 {
-	if(xivo_eid(xivo_smenu['tab']) === false)
+	if(dwho_eid(xivo_smenu['tab']) === false)
 		return(false);
 
-	xivo_smenu['bak'][xivo_smenu['tab']] = xivo_eid(xivo_smenu['tab']).className;
-	xivo_smenu_click(xivo_eid(xivo_smenu['tab']),xivo_smenu['class'],xivo_smenu['part'],xivo_smenu['last']);
+	xivo_smenu['bak'][xivo_smenu['tab']] = dwho_eid(xivo_smenu['tab']).className;
+	xivo_smenu_click(dwho_eid(xivo_smenu['tab']),xivo_smenu['class'],xivo_smenu['part'],xivo_smenu['last']);
 }
 
-xivo.dom.set_onload(xivo_submenu_onload);
+dwho.dom.set_onload(xivo_submenu_onload);

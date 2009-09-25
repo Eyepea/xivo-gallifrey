@@ -31,8 +31,8 @@ $info = $this->get_var('info');
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),

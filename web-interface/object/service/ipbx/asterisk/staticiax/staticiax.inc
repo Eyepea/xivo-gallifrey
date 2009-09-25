@@ -40,10 +40,10 @@ class xivo_service_asterisk_realstatic_staticiax extends xivo_service_asterisk_r
 	{
 		if(is_object($this->_uri) === true)
 			return(true);
-		else if(xivo::load_class('xivo_uri') === false)
+		else if(dwho::load_class('dwho_uri') === false)
 			return(false);
 
-		$this->_uri = new xivo_uri();
+		$this->_uri = new dwho_uri();
 
 		return(true);
 	}
@@ -53,17 +53,17 @@ class xivo_service_asterisk_realstatic_staticiax extends xivo_service_asterisk_r
 		$r = array('str' => '','arr' => array());
 
 		if($this->_load_uri() === false
-		|| xivo_has_len($arr,'username') === false
-		|| xivo_has_len($arr,'host') === false)
+		|| dwho_has_len($arr,'username') === false
+		|| dwho_has_len($arr,'host') === false)
 			return(false);
 
 		$uri['user'] = $arr['username'];
 		$uri['host'] = $arr['host'];
 
-		if(xivo_has_len($arr,'password') === true)
+		if(dwho_has_len($arr,'password') === true)
 			$uri['passwd'] = $arr['password'];
 
-		if(xivo_has_len($arr,'port') === true)
+		if(dwho_has_len($arr,'port') === true)
 			$uri['port'] = $arr['port'];
 
 		if(($r['str'] = $this->_uri->build_uri($uri)) === false
@@ -91,7 +91,7 @@ class xivo_service_asterisk_realstatic_staticiax extends xivo_service_asterisk_r
 			'host'		=> '',
 			'port'		=> '');
 
-		if(xivo_issa('authority',$parse_uri) === true)
+		if(dwho_issa('authority',$parse_uri) === true)
 		{
 			if(isset($parse_uri['authority']['user']) === true)
 				$r['username'] = $parse_uri['authority']['user'];

@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
-class xivo_tpl_dhtml extends xivo_tpl_module
+class dwho_tpl_dhtml extends dwho_tpl_module
 {
 	var $_css	= array();
 	var $_js	= array();
@@ -28,7 +28,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	var $_content	= array('js' => array('head' => array(),'foot' => array()),'css' => array('head' => array()));
 	var $_tpl	= null;
 
-	function xivo_tpl_dhtml(&$tpl)
+	function dwho_tpl_dhtml(&$tpl)
 	{
 		$this->_tpl = &$tpl;
 	}
@@ -52,30 +52,11 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			$replace[1] = '\"';
 		}
 		else if($entquote === ENT_QUOTES)
-			return(xivo_htmlsc($str,ENT_QUOTES));
+			return(dwho_htmlsc($str,ENT_QUOTES));
 		else
 			$entquote = ENT_COMPAT;
 
-		return(str_replace($search,$replace,xivo_htmlsc($str,$entquote)));
-	}
-
-	function chk_function_name($str)
-	{
-		if(is_string($str) === true
-		&& preg_match('/^[a-zA-Z_][a-zA-Z0-9_]*$/',$str) === 1)
-			return($str);
-
-		return(false);
-	}
-
-	function ajs_die($err='')
-	{
-		if(xivo_has_len($err) === true)
-			$err = 'xivo_ajs_set_error(\''.$this->escape($err).'\');';
-		else
-			$err = '';
-
-		die($err);
+		return(str_replace($search,$replace,dwho_htmlsc($str,$entquote)));
 	}
 
 	function add_css($css)
@@ -99,16 +80,16 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(xivo_has_len($files,$i) === false)
+			if(dwho_has_len($files,$i) === false)
 				continue;
-			else if($files[$i]{0} === XIVO_SEP_DIR)
+			else if($files[$i]{0} === DWHO_SEP_DIR)
 				$file = $files[$i];
 			else
-				$file = XIVO_SEP_DIR.'bloc'.XIVO_SEP_DIR.$files[$i];
+				$file = DWHO_SEP_DIR.'bloc'.DWHO_SEP_DIR.$files[$i];
 
-			if(xivo_issa($type,$this->_inc) === true
-			&& xivo_file::is_f_r($this->get_option('tpl_path').$file) !== false
-			&& xivo_issa($where,$this->_inc[$type]) === true)
+			if(dwho_issa($type,$this->_inc) === true
+			&& dwho_file::is_f_r($this->get_option('tpl_path').$file) !== false
+			&& dwho_issa($where,$this->_inc[$type]) === true)
 				$this->_inc[$type][$where][] = $file;
 		}
 
@@ -131,8 +112,8 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			$content = implode("\n",$content);
 
 		if(is_scalar($content) === false
-		|| xivo_issa($type,$this->_content) === false
-		|| xivo_issa($where,$this->_content[$type]) === false)
+		|| dwho_issa($type,$this->_content) === false
+		|| dwho_issa($where,$this->_content[$type]) === false)
 			return(false);
 
 		$this->_content[$type][$where][] = $content;
@@ -152,9 +133,9 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			if(isset($a[$i]) === false)
 				continue;
 
-			$path = $this->get_option('script_path').XIVO_SEP_DIR.ltrim($a[$i],XIVO_SEP_DIR);
+			$path = $this->get_option('script_path').DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
-			if(xivo_file::is_f_r($path) !== false)
+			if(dwho_file::is_f_r($path) !== false)
 				$this->_css[] = $a[$i];
 		}
 	}
@@ -171,9 +152,9 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 			if(isset($a[$i]) === false)
 				continue;
 
-			$path = $this->get_option('script_path').XIVO_SEP_DIR.ltrim($a[$i],XIVO_SEP_DIR);
+			$path = $this->get_option('script_path').DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
-			if(xivo_file::is_f_r($path) !== false)
+			if(dwho_file::is_f_r($path) !== false)
 				$this->_js[] = $a[$i];
 		}
 	}
@@ -232,7 +213,7 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		if(xivo_issa($where,$this->_inc['js']) === false || ($nb = count($this->_inc['js'][$where])) === 0)
+		if(dwho_issa($where,$this->_inc['js']) === false || ($nb = count($this->_inc['js'][$where])) === 0)
 			return(false);
 
 		for($i = 0;$i < $nb;$i++)
@@ -269,14 +250,14 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 		$r = '';
 		$where = 'head';
 
-		if(xivo_issa($where,$this->_inc['css']) !== false
+		if(dwho_issa($where,$this->_inc['css']) !== false
 		&& ($nb = count($this->_inc['css'][$where])) !== 0)
 		{
 			for($i = 0;$i < $nb;$i++)
 				$r .= $this->_load_file($this->_inc['css'][$where][$i])."\n";
 		}
 
-		if(xivo_issa($where,$this->_content['css']) !== false
+		if(dwho_issa($where,$this->_content['css']) !== false
 		&& ($nb = count($this->_content['css'][$where])) !== 0)
 		{
 			for($i = 0;$i < $nb;$i++)
@@ -291,9 +272,9 @@ class xivo_tpl_dhtml extends xivo_tpl_module
 	{
 		$r = '';
 
-		$path = $this->get_option('tpl_path').XIVO_SEP_DIR.ltrim($file,XIVO_SEP_DIR);
+		$path = $this->get_option('tpl_path').DWHO_SEP_DIR.ltrim($file,DWHO_SEP_DIR);
 
-		if(($path = xivo_file::is_f_r($path)) === false)
+		if(($path = dwho_file::is_f_r($path)) === false)
 			return($r);
 
 		$this->set_file('dhtml',$path);

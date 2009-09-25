@@ -246,7 +246,7 @@ endif;
 ?>
 <div id="pannouncelist" class="fm-field fm-multilist">
 	<p>
-		<label id="lb-pannouncelist" for="it-pannouncelist" onclick="xivo_eid('it-pannouncelist').focus();">
+		<label id="lb-pannouncelist" for="it-pannouncelist" onclick="dwho_eid('it-pannouncelist').focus();">
 			<?=$this->bbf('fm_queue_periodic-announce');?>
 		</label>
 	</p>
@@ -264,17 +264,17 @@ endif;
 
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-pannouncelist',
+		   onclick="dwho.form.move_selected('it-pannouncelist',
 						  'it-queue-periodic-announce');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inpannounce');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inpannounce'),
 					  'class="bt-inlist" id="bt-inpannounce" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-queue-periodic-announce',
+		   onclick="dwho.form.move_selected('it-queue-periodic-announce',
 						  'it-pannouncelist');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outpannounce');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outpannounce'),
@@ -293,15 +293,15 @@ endif;
 ?>
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-queue-periodic-announce',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_uppannounce');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_uppannounce'),
 						  'class="bt-uplist" id="bt-uppannounce" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-queue-periodic-announce',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-queue-periodic-announce',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downpannounce');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downpannounce'),
@@ -355,17 +355,17 @@ endif;
 
 		<div class="inout-list">
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-userlist',
+			   onclick="dwho.form.move_selected('it-userlist',
 							  'it-user');
-				    return(xivo.dom.free_focus());"
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inuser');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inuser'),
 						  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-user',
+			   onclick="dwho.form.move_selected('it-user',
 							  'it-userlist');
-				    return(xivo.dom.free_focus());"
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outuser');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outuser'),
@@ -422,17 +422,17 @@ endif;
 
 			<div class="inout-list">
 				<a href="#"
-				   onclick="xivo_fm_move_selected('it-agentgrouplist',
+				   onclick="dwho.form.move_selected('it-agentgrouplist',
 								  'it-agentgroup');
-					    return(xivo.dom.free_focus());"
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inagentgroup');?>">
 					<?=$url->img_html('img/site/button/row-left.gif',
 							  $this->bbf('bt_inagentgroup'),
 							  'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
 				<a href="#"
-				   onclick="xivo_fm_move_selected('it-agentgroup',
+				   onclick="dwho.form.move_selected('it-agentgroup',
 								  'it-agentgrouplist');
-					    return(xivo.dom.free_focus());"
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outagentgroup');?>">
 					<?=$url->img_html('img/site/button/row-right.gif',
 							  $this->bbf('bt_outagentgroup'),
@@ -478,17 +478,17 @@ endif;
 
 				<div class="inout-list">
 					<a href="#"
-					   onclick="xivo_fm_move_selected('it-agentlist',
+					   onclick="dwho.form.move_selected('it-agentlist',
 									  'it-agent');
-						    return(xivo.dom.free_focus());"
+						    return(dwho.dom.free_focus());"
 					   title="<?=$this->bbf('bt_inagent');?>">
 						<?=$url->img_html('img/site/button/row-left.gif',
 								  $this->bbf('bt_inagent'),
 								  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 					<a href="#"
-					   onclick="xivo_fm_move_selected('it-agent',
+					   onclick="dwho.form.move_selected('it-agent',
 									  'it-agentlist');
-						    return(xivo.dom.free_focus());"
+						    return(dwho.dom.free_focus());"
 					   title="<?=$this->bbf('bt_outagent');?>">
 						<?=$url->img_html('img/site/button/row-right.gif',
 								  $this->bbf('bt_outagent'),

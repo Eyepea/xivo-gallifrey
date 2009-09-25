@@ -61,7 +61,7 @@
 	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
 		<td class="td-left txt-left curpointer"
 		    colspan="2"
-		    onclick="location.href = xivo_eid('ah-files-<?=$i?>').href;"><?=$name?></td>
+		    onclick="location.href = dwho_eid('ah-files-<?=$i?>').href;"><?=$name?></td>
 		<td class="td-right" colspan="2">
 			<?=$url->href_html($url->img_html('img/site/button/edit.gif',
 							  $this->bbf('opt_modify'),

@@ -54,8 +54,8 @@ endif;
 
 <form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act));
@@ -138,36 +138,36 @@ elseif($act === 'listagent'):
 </div>
 
 <script type="text/javascript">
-xivo.dom.set_onload(function()
+dwho.dom.set_onload(function()
 {
-	xivo.dom.remove_event('click',
-			      xivo_eid('toolbar-advanced-menu-enable'),
+	dwho.dom.remove_event('click',
+			      dwho_eid('toolbar-advanced-menu-enable'),
 			      xivo_toolbar_fn_adv_menu_enable);
 
-	xivo.dom.add_event('click',
-			   xivo_eid('toolbar-advanced-menu-enable'),
+	dwho.dom.add_event('click',
+			   dwho_eid('toolbar-advanced-menu-enable'),
 			   function(e)
 			   {
-				if(xivo_is_function(e.preventDefault) === true)
+				if(dwho_is_function(e.preventDefault) === true)
 					e.preventDefault();
 
-				xivo_fm[xivo_toolbar_form_name]['act'].value = 'enableagents';
-				xivo_fm[xivo_toolbar_form_name].submit();
+				dwho.fm[xivo_toolbar_form_name]['act'].value = 'enableagents';
+				dwho.fm[xivo_toolbar_form_name].submit();
 			   });
 
-	xivo.dom.remove_event('click',
-			      xivo_eid('toolbar-advanced-menu-disable'),
+	dwho.dom.remove_event('click',
+			      dwho_eid('toolbar-advanced-menu-disable'),
 			      xivo_toolbar_fn_adv_menu_disable);
 
-	xivo.dom.add_event('click',
-			   xivo_eid('toolbar-advanced-menu-disable'),
+	dwho.dom.add_event('click',
+			   dwho_eid('toolbar-advanced-menu-disable'),
 			   function(e)
 			   {
-				if(xivo_is_function(e.preventDefault) === true)
+				if(dwho_is_function(e.preventDefault) === true)
 					e.preventDefault();
 
-				xivo_fm[xivo_toolbar_form_name]['act'].value = 'disableagents';
-				xivo_fm[xivo_toolbar_form_name].submit();
+				dwho.fm[xivo_toolbar_form_name]['act'].value = 'disableagents';
+				dwho.fm[xivo_toolbar_form_name].submit();
 			   });
 });
 </script>
@@ -177,10 +177,10 @@ endif;
 
 ?>
 <script type="text/javascript">
-xivo.dom.set_onload(function()
+dwho.dom.set_onload(function()
 {
-	xivo.dom.add_event('change',
-			   xivo_eid('it-toolbar-group'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-toolbar-group'),
 			   function()
 			   {
 				this.form['act'].value = 'list';

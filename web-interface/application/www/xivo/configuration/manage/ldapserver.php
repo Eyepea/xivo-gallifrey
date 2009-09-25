@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 xivo::load_class('xivo_ldapserver',XIVO_PATH_OBJECT,null,false);
 $_LDAPSVR = new xivo_ldapserver();
@@ -79,7 +79,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
+		if(($values = dwho_issa_val('ldapserver',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$nb = count($values);
@@ -97,7 +97,7 @@ switch($act)
 		$param['page'] = $page;
 		$disable = $act === 'disables';
 
-		if(($values = xivo_issa_val('ldapserver',$_QR)) === false)
+		if(($values = dwho_issa_val('ldapserver',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 
 		$nb = count($values);
@@ -128,7 +128,7 @@ switch($act)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

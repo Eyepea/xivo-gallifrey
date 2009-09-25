@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_i18n_mediator
+class dwho_i18n_mediator
 {
 	var $_mediator = array(
 				'language'	=> null,
@@ -33,18 +33,18 @@ class xivo_i18n_mediator
 				'territory'	=> '',
 				'timezone'	=> '');
 
-	function xivo_i18n_mediator()
+	function dwho_i18n_mediator()
 	{
-		if(xivo::load_class('xivo::i18n::language') === false
-		|| xivo::load_class('xivo::i18n::locale') === false
-		|| xivo::load_class('xivo::i18n::territory') === false
-		|| xivo::load_class('xivo::i18n::timezone') === false)
+		if(dwho::load_class('dwho::i18n::language') === false
+		|| dwho::load_class('dwho::i18n::locale') === false
+		|| dwho::load_class('dwho::i18n::territory') === false
+		|| dwho::load_class('dwho::i18n::timezone') === false)
 			return(false);
 
-		$this->_mediator['language'] = new xivo_i18n_language();
-		$this->_mediator['locale'] = new xivo_i18n_locale();
-		$this->_mediator['territory'] = new xivo_i18n_territory();
-		$this->_mediator['timezone'] = new xivo_i18n_timezone();
+		$this->_mediator['language'] = new dwho_i18n_language();
+		$this->_mediator['locale'] = new dwho_i18n_locale();
+		$this->_mediator['territory'] = new dwho_i18n_territory();
+		$this->_mediator['timezone'] = new dwho_i18n_timezone();
 		$this->_get_browser_info();
 	}
 
@@ -181,7 +181,7 @@ class xivo_i18n_mediator
 			$r = $lang;
 		else if(($lang = $this->get_browser_language()) !== false)
 			$r = $lang;
-		else if(defined('XIVO_LC_LANGUAGE') === true && ($lang = $this->chk_language(XIVO_LC_LANGUAGE)) !== false)
+		else if(defined('DWHO_LC_LANGUAGE') === true && ($lang = $this->chk_language(DWHO_LC_LANGUAGE)) !== false)
 			$r = $lang;
 
 		return(($this->_attrib['language'] = $r));
@@ -216,8 +216,8 @@ class xivo_i18n_mediator
 				$r = $this->get_def_territory($lang);
 		}
 
-		if($r === false && defined('XIVO_LC_TERRITORY') === true
-		&& ($territo = $this->chk_territory(XIVO_LC_TERRITORY)) !== false)
+		if($r === false && defined('DWHO_LC_TERRITORY') === true
+		&& ($territo = $this->chk_territory(DWHO_LC_TERRITORY)) !== false)
 			$r = $territo;
 
 		return(($this->_attrib['territory'] = $r));
@@ -330,7 +330,7 @@ class xivo_i18n_mediator
 
 		$locales = array();
 
-		if(($value = xivo_issa_val('charset',$info)) !== false
+		if(($value = dwho_issa_val('charset',$info)) !== false
 		&& ($nb = count($value)) !== 0)
 		{
 			for($i = 0;$i < $nb;$i++)
@@ -448,22 +448,22 @@ class xivo_i18n_mediator
 
 	function set_babelfish_path()
 	{
-		if(defined('XIVO_I18N_BABELFISH_PATH') === true)
+		if(defined('DWHO_I18N_BABELFISH_PATH') === true)
 			return(true);
-		else if(xivo_file::is_d_r(XIVO_PATH_I18N) === false)
+		else if(dwho_file::is_d_r(DWHO_PATH_I18N) === false)
 		{
 			trigger_error('Invalid I18N path',E_USER_ERROR);
 			return(false);
 		}
-		else if(defined('XIVO_USER_I18N_LOCALE') === true
-		&& $this->_chk_babelfish_path(XIVO_USER_I18N_LOCALE,true) !== false)
+		else if(defined('DWHO_USER_I18N_LOCALE') === true
+		&& $this->_chk_babelfish_path(DWHO_USER_I18N_LOCALE,true) !== false)
 			return(true);
-		else if(defined('XIVO_USER_I18N_LANGUAGE') === true)
+		else if(defined('DWHO_USER_I18N_LANGUAGE') === true)
 		{
-			if(($locale = $this->_mediator['language']->exists_default(XIVO_USER_I18N_LANGUAGE)) !== false
+			if(($locale = $this->_mediator['language']->exists_default(DWHO_USER_I18N_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locale,true) !== false)
 				return(true);
-			else if(($locales = $this->_mediator['language']->get_locale_list(XIVO_USER_I18N_LANGUAGE)) !== false
+			else if(($locales = $this->_mediator['language']->get_locale_list(DWHO_USER_I18N_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locales,true) !== false)
 				return(true);
 		}
@@ -483,12 +483,12 @@ class xivo_i18n_mediator
 				return(true);
 		}
 
-		if(defined('XIVO_LC_LANGUAGE') === true)
+		if(defined('DWHO_LC_LANGUAGE') === true)
 		{
-			if(($locale = $this->_mediator['language']->exists_default(XIVO_LC_LANGUAGE)) !== false
+			if(($locale = $this->_mediator['language']->exists_default(DWHO_LC_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locale,true) !== false)
 				return(true);
-			else if(($locales = $this->_mediator['language']->get_locale_list(XIVO_LC_LANGUAGE)) !== false
+			else if(($locales = $this->_mediator['language']->get_locale_list(DWHO_LC_LANGUAGE)) !== false
 			&& $this->_chk_babelfish_path($locales,true) !== false)
 				return(true);
 		}
@@ -513,20 +513,20 @@ class xivo_i18n_mediator
 			while(list($key) = each($locale))
 			{
 				if(($nlocale = $this->chk_locale($key)) === false
-				|| ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$nlocale)) === false)
+				|| ($dir = dwho_file::is_d_r(DWHO_PATH_I18N.DWHO_SEP_DIR.$nlocale)) === false)
 					continue;
 				else if($define === true)
 				{
 					if(($real_locale = $this->get_real_locale($nlocale)) === false)
 						$real_locale = $nlocale;
 
-					define('XIVO_I18N_BABELFISH_LANGUAGE',
+					define('DWHO_I18N_BABELFISH_LANGUAGE',
 						$this->_mediator['locale']->get_language($nlocale));
-					define('XIVO_I18N_BABELFISH_TERRITORY',
+					define('DWHO_I18N_BABELFISH_TERRITORY',
 						$this->_mediator['locale']->get_territory($nlocale));
-					define('XIVO_I18N_BABELFISH_LOCALE',$nlocale);
-					define('XIVO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
-					define('XIVO_I18N_BABELFISH_PATH',$dir);
+					define('DWHO_I18N_BABELFISH_LOCALE',$nlocale);
+					define('DWHO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
+					define('DWHO_I18N_BABELFISH_PATH',$dir);
 				}
 				return($dir);
 			}
@@ -534,18 +534,18 @@ class xivo_i18n_mediator
 			return(false);
 		}
 		else if(($locale = $this->chk_locale($locale)) !== false
-		&& ($dir = xivo_file::is_d_r(XIVO_PATH_I18N.XIVO_SEP_DIR.$locale)) !== false)
+		&& ($dir = dwho_file::is_d_r(DWHO_PATH_I18N.DWHO_SEP_DIR.$locale)) !== false)
 		{
 			if($define === true)
 			{
 				if(($real_locale = $this->get_real_locale($locale)) === false)
 					$real_locale = $locale;
 
-				define('XIVO_I18N_BABELFISH_LANGUAGE',$this->_mediator['locale']->get_language($locale));
-				define('XIVO_I18N_BABELFISH_TERRITORY',$this->_mediator['locale']->get_territory($locale));
-				define('XIVO_I18N_BABELFISH_LOCALE',$locale);
-				define('XIVO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
-				define('XIVO_I18N_BABELFISH_PATH',$dir);
+				define('DWHO_I18N_BABELFISH_LANGUAGE',$this->_mediator['locale']->get_language($locale));
+				define('DWHO_I18N_BABELFISH_TERRITORY',$this->_mediator['locale']->get_territory($locale));
+				define('DWHO_I18N_BABELFISH_LOCALE',$locale);
+				define('DWHO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
+				define('DWHO_I18N_BABELFISH_PATH',$dir);
 			}
 			return($dir);
 		}

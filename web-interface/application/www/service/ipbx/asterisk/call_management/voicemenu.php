@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = array();
 
@@ -33,7 +33,7 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('voicemenu',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('voicemenu',$_QR) === true)
 		{
 			if($appvoicemenu->set_add($_QR) === false
 			|| $appvoicemenu->add() === false)
@@ -56,13 +56,13 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/voicemenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
 
-		if(xivo_issa('voicemenu',$result) === false)
+		if(dwho_issa('voicemenu',$result) === false)
 			$result['voicemenu'] = null;
 
-		if(xivo_issa('voicemenuflow-data',$result) === false)
+		if(dwho_issa('voicemenuflow-data',$result) === false)
 			$result['voicemenuflow-data'] = null;
 
-		if(xivo_issa('voicemenuevent-data',$result) === false)
+		if(dwho_issa('voicemenuevent-data',$result) === false)
 			$result['voicemenuevent-data'] = null;
 
 		$_TPL->set_var('info',$result);
@@ -87,7 +87,7 @@ switch($act)
 		$result = $fm_save = $error = null;
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('voicemenu',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('voicemenu',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -105,10 +105,10 @@ switch($act)
 			}
 		}
 
-		if(xivo_issa('voicemenuflow-data',$return) === false)
+		if(dwho_issa('voicemenuflow-data',$return) === false)
 			$return['voicemenuflow-data'] = null;
 
-		if(xivo_issa('voicemenuevent-data',$return) === false)
+		if(dwho_issa('voicemenuevent-data',$return) === false)
 			$return['voicemenuevent-data'] = null;
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -146,7 +146,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('voicemenus',$_QR)) === false)
+		if(($values = dwho_issa_val('voicemenus',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
@@ -166,7 +166,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('voicemenus',$_QR)) === false)
+		if(($values = dwho_issa_val('voicemenus',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
@@ -209,7 +209,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/voicemenu'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

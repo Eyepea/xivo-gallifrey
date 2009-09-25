@@ -53,8 +53,8 @@ endif;
 
 <form action="#" method="post" id="fm-sounds-toolbar" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'list'));
@@ -123,29 +123,29 @@ if($act === 'list'):
 </div>
 
 <script type="text/javascript">
-xivo.dom.set_onload(function()
+dwho.dom.set_onload(function()
 {
-	xivo.dom.remove_event('click',
-			      xivo_eid('toolbar-advanced-menu-delete'),
+	dwho.dom.remove_event('click',
+			      dwho_eid('toolbar-advanced-menu-delete'),
 			      xivo_toolbar_fn_adv_menu_delete);
 
-	xivo.dom.add_event('click',
-			   xivo_eid('toolbar-advanced-menu-delete'),
+	dwho.dom.add_event('click',
+			   dwho_eid('toolbar-advanced-menu-delete'),
 			   function(e)
 			   {
-				if(xivo_is_function(e.preventDefault) === true)
+				if(dwho_is_function(e.preventDefault) === true)
 					e.preventDefault();
 
 				if(confirm(xivo_toolbar_adv_menu_delete_confirm) === true)
 				{
-					if(xivo_is_undef(xivo_fm[xivo_toolbar_form_name]['search']) === false)
-						xivo_fm[xivo_toolbar_form_name]['search'].value = xivo_toolbar_fm_search;
+					if(dwho_is_undef(dwho.fm[xivo_toolbar_form_name]['search']) === false)
+						dwho.fm[xivo_toolbar_form_name]['search'].value = xivo_toolbar_fm_search;
 
-					if(xivo_is_undef(xivo_fm[xivo_toolbar_form_name]['dir']) === false)
-						xivo_fm[xivo_toolbar_form_name]['dir'].value = '<?=$dirjs;?>';
+					if(dwho_is_undef(dwho.fm[xivo_toolbar_form_name]['dir']) === false)
+						dwho.fm[xivo_toolbar_form_name]['dir'].value = '<?=$dirjs;?>';
 
-					xivo_fm[xivo_toolbar_form_name]['act'].value = 'deletes';
-					xivo_fm[xivo_toolbar_form_name].submit();
+					dwho.fm[xivo_toolbar_form_name]['act'].value = 'deletes';
+					dwho.fm[xivo_toolbar_form_name].submit();
 				}
 			   });
 });
@@ -156,10 +156,10 @@ endif;
 
 ?>
 <script type="text/javascript">
-xivo.dom.set_onload(function()
+dwho.dom.set_onload(function()
 {
-	xivo.dom.add_event('change',
-			   xivo_eid('it-toolbar-directory'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-toolbar-directory'),
 			   function()
 			   {
 <?php

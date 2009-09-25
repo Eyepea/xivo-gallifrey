@@ -18,14 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_filter
+class dwho_filter
 {
 	var $_content		= array();
 	var $_error		= array();
 	var $_errnb		= 0;
 	var $_result		= array();
 
-	function xivo_filter($content=array())
+	function dwho_filter($content=array())
 	{
 		if(is_array($content) === true
 		&& empty($content) === false)
@@ -78,7 +78,7 @@ class xivo_filter
 
 	function get_errnb()
 	{
-		return(xivo_uint($this->_errnb));
+		return(dwho_uint($this->_errnb));
 	}
 
 	function _set_error($key,$msg)
@@ -130,8 +130,8 @@ class xivo_filter
 
 	function chk_between_date($dbeg,$dend)
 	{
-		if(($dbeg = xivo_filter::chk_date($dbeg)) === false
-		|| ($dend = xivo_filter::chk_date($dend)) === false)
+		if(($dbeg = dwho_filter::chk_date($dbeg)) === false
+		|| ($dend = dwho_filter::chk_date($dend)) === false)
 			return(false);
 		else if($dbeg['format'] !== $dend['format'] || $dbeg['dateint'] > $dend['dateint'])
 			return(false);
@@ -162,7 +162,7 @@ class xivo_filter
 
 	function chk_email_strict($email)
 	{
-		return(xivo_filter::chk_email($email,true));
+		return(dwho_filter::chk_email($email,true));
 	}
 
 	function chk_macaddr($macaddr)
@@ -175,7 +175,7 @@ class xivo_filter
 
 	function chk_ipv4($ip)
 	{
-		return((xivo_ip2long($ip) !== false));
+		return((dwho_ip2long($ip) !== false));
 	}
 
 	function chk_ipv4_in_lhost($ip,$host)
@@ -183,16 +183,16 @@ class xivo_filter
 		$ip = strval($ip);
 		$host = strval($host);
 
-		if(xivo_filter::chk_ipv4_strict($ip) === false)
+		if(dwho_filter::chk_ipv4_strict($ip) === false)
 		{
 			$ip = gethostbyname($ip);
 
-			if(xivo_filter::chk_ipv4_strict($ip) === false)
+			if(dwho_filter::chk_ipv4_strict($ip) === false)
 				return(false);
 		}
 
-		if(xivo_filter::chk_ipv4_strict($host) === true
-		|| xivo_filter::chk_ipv4_subnet($host) === true)
+		if(dwho_filter::chk_ipv4_strict($host) === true
+		|| dwho_filter::chk_ipv4_subnet($host) === true)
 			$lhost = (array) $host;
 		else if(($lhost = gethostbynamel($host)) === false)
 			return(false);
@@ -202,7 +202,7 @@ class xivo_filter
 		for($i = 0;$i < $nb;$i++)
 		{
 			if($ip === $lhost[$i]
-			|| xivo_filter::chk_ipv4_in_subnet($ip,$lhost[$i]) !== false)
+			|| dwho_filter::chk_ipv4_in_subnet($ip,$lhost[$i]) !== false)
 				return(true);
 		}
 
@@ -219,8 +219,8 @@ class xivo_filter
 		$ipsub = substr($sub,0,$pos);
 		$mask = substr($sub,$pos+1);
 
-		if(xivo_filter::chk_ipv4_strict($ip) === false
-		|| ($mask = xivo_filter::chk_ipv4_subnet($ipsub,$mask,true)) === false)
+		if(dwho_filter::chk_ipv4_strict($ip) === false
+		|| ($mask = dwho_filter::chk_ipv4_subnet($ipsub,$mask,true)) === false)
 			return(false);
 
 		$r = array();
@@ -241,7 +241,7 @@ class xivo_filter
 		return(false);
 	}
 
-	function chk_ipv4_subnet($ip,$mask=null,$type=XIVO_IPV4_NETMASK_ALL,$ret=false)
+	function chk_ipv4_subnet($ip,$mask=null,$type=DWHO_IPV4_NETMASK_ALL,$ret=false)
 	{
 		$ip = strval($ip);
 
@@ -256,27 +256,27 @@ class xivo_filter
 
 		$mask = strval($mask);
 
-		if(($mask = xivo_filter::chk_ipv4_netmask($mask,$type,$ret)) === false
-		|| xivo_filter::chk_ipv4_strict($ip) === false)
+		if(($mask = dwho_filter::chk_ipv4_netmask($mask,$type,$ret)) === false
+		|| dwho_filter::chk_ipv4_strict($ip) === false)
 			return(false);
 
 		return($mask);
 	}
 
-	function chk_ipv4_netmask($nm,$type=XIVO_IPV4_NETMASK_ALL,$ret=false)
+	function chk_ipv4_netmask($nm,$type=DWHO_IPV4_NETMASK_ALL,$ret=false)
 	{
 		$r = false;
 
 		$type = intval($type);
 
-		if(($type & XIVO_IPV4_NETMASK_ALL) === 0)
-			$type = XIVO_IPV4_NETMASK_ALL;
+		if(($type & DWHO_IPV4_NETMASK_ALL) === 0)
+			$type = DWHO_IPV4_NETMASK_ALL;
 
-		if(($type & XIVO_IPV4_NETMASK_BIT) !== 0)
-			$r = xivo_filter::chk_ipv4_netmask_bit($nm);
+		if(($type & DWHO_IPV4_NETMASK_BIT) !== 0)
+			$r = dwho_filter::chk_ipv4_netmask_bit($nm);
 
-		if($r === false && ($type & XIVO_IPV4_NETMASK_DOTDEC) !== 0)
-			$r = xivo_filter::chk_ipv4_netmask_dotdec($nm);
+		if($r === false && ($type & DWHO_IPV4_NETMASK_DOTDEC) !== 0)
+			$r = dwho_filter::chk_ipv4_netmask_dotdec($nm);
 
 		if($r !== false && (bool) $ret === false)
 			$r = true;
@@ -286,7 +286,7 @@ class xivo_filter
 
 	function chk_ipv4_netmask_bit($bit)
 	{
-		if(xivo_is_uint($bit) === false
+		if(dwho_is_uint($bit) === false
 		|| $bit > 32)
 			return(false);
 
@@ -295,7 +295,7 @@ class xivo_filter
 
 	function chk_ipv4_netmask_dotdec($nm)
 	{
-		if(($nm = xivo_ip2long($nm)) === 0)
+		if(($nm = dwho_ip2long($nm)) === 0)
 			return(0);
 		else if($nm === -1)
 			return(32);
@@ -329,7 +329,7 @@ class xivo_filter
 
 	function chk_host_ipv4($value)
 	{
-		if(xivo_filter::chk_ipv4($value) === true || xivo_filter::chk_host($value) === true)
+		if(dwho_filter::chk_ipv4($value) === true || dwho_filter::chk_host($value) === true)
 			return(true);
 
 		return(false);
@@ -337,7 +337,7 @@ class xivo_filter
 
 	function chk_host_ipv4_strict($value)
 	{
-		if(xivo_filter::chk_ipv4_strict($value) === true || xivo_filter::chk_host($value) === true)
+		if(dwho_filter::chk_ipv4_strict($value) === true || dwho_filter::chk_host($value) === true)
 			return(true);
 
 		return(false);
@@ -345,9 +345,9 @@ class xivo_filter
 
 	function chk_host_subnet_ipv4_strict($value)
 	{
-		if(xivo_filter::chk_ipv4_strict($value) === true
-		|| xivo_filter::chk_host($value) === true
-		|| xivo_filter::chk_ipv4_subnet($value) === true)
+		if(dwho_filter::chk_ipv4_strict($value) === true
+		|| dwho_filter::chk_host($value) === true
+		|| dwho_filter::chk_ipv4_subnet($value) === true)
 			return(true);
 
 		return(false);
@@ -355,40 +355,40 @@ class xivo_filter
 
 	function chk_bool($value)
 	{
-		return((int) xivo_bool($value));
+		return((int) dwho_bool($value));
 	}
 
 	function chk_cast($type,$value)
 	{
-		if(xivo_has_len($value) === false)
+		if(dwho_has_len($value) === false)
 			return(null);
 
 		switch($type)
 		{
 			case 'spunct':
-				return(xivo_is_spunct($value));
+				return(dwho_is_spunct($value));
 			case 'numspunct':
-				return(xivo_is_numspunct($value));
+				return(dwho_is_numspunct($value));
 			case 'alspunct':
-				return(xivo_is_alspunct($value));
+				return(dwho_is_alspunct($value));
 			case 'alnumspunct':
-				return(xivo_is_alnumspunct($value));
+				return(dwho_is_alnumspunct($value));
 			case 'punct':
 				return(ctype_punct($value));
 			case 'numpunct':
-				return(xivo_is_numpunct($value));
+				return(dwho_is_numpunct($value));
 			case 'alpunct':
-				return(xivo_is_alpunct($value));
+				return(dwho_is_alpunct($value));
 			case 'alnumpunct':
-				return(xivo_is_alnumpunct($value));
+				return(dwho_is_alnumpunct($value));
 			case 'sgraph':
-				return(xivo_is_sgraph($value));
+				return(dwho_is_sgraph($value));
 			case 'sgraph_tab':
-				return(xivo_is_sgraph_tab($value));
+				return(dwho_is_sgraph_tab($value));
 			case 'sgraph_crlf':
-				return(xivo_is_sgraph_crlf($value));
+				return(dwho_is_sgraph_crlf($value));
 			case 'sgraph_crlf_tab':
-				return(xivo_is_sgraph_crlf_tab($value));
+				return(dwho_is_sgraph_crlf_tab($value));
 			case 'space':
 				return(ctype_space($value));
 			case 'graph':
@@ -407,7 +407,7 @@ class xivo_filter
 			case 'uint':
 			case 'uinteger':
 			case 'unsigned-integer':
-				$cast = xivo_uint($value);
+				$cast = dwho_uint($value);
 				break;
 			case 'ureal':
 			case 'ufloat':
@@ -415,13 +415,13 @@ class xivo_filter
 			case 'unsigned-real':
 			case 'unsigned-float':
 			case 'unsigned-double':
-				$cast = xivo_ufloat($value,0,false);
+				$cast = dwho_ufloat($value,0,false);
 				$value = str_replace(',','.',strval($value));
 				break;
 			case 'ulongint':
 			case 'ulonginteger':
 			case 'unsigned-longinteger':
-				$cast = xivo_ulongint($value);
+				$cast = dwho_ulongint($value);
 				break;
 			case 'int':
 			case 'integer':
@@ -581,7 +581,7 @@ class xivo_filter
 		if(is_array($strlist) === false
 		|| ($nb = count($strlist)) === 0)
 			return(false);
-		else if(xivo_has_len($value) === false)
+		else if(dwho_has_len($value) === false)
 			return(null);
 
 		$strlist = array_values($strlist);
@@ -646,12 +646,12 @@ class xivo_filter
 				return($value);
 		}
 
-		$chk = isset($arr['chk']) === false ? 1 : xivo_uint($arr['chk']);
+		$chk = isset($arr['chk']) === false ? 1 : dwho_uint($arr['chk']);
 		$strict = isset($arr['strict']) === false;
 
 		if(isset($arr['bool']) === true)
 		{
-			if($set === false && $chk === 2 && xivo_has_len($value) === false)
+			if($set === false && $chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			return($this->chk_bool($value));
@@ -705,7 +705,7 @@ class xivo_filter
 
 		if(isset($arr['key']) === true)
 		{
-			if($chk === 2 && xivo_has_len($value) === false)
+			if($chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			$arrkey = $this->chk_array_key($arr['key'],$value);
@@ -721,7 +721,7 @@ class xivo_filter
 
 		if(isset($arr['nokey']) === true)
 		{
-			if($chk === 2 && xivo_has_len($value) === false)
+			if($chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			$noarrkey = $this->chk_array_key($arr['nokey'],$value);
@@ -741,7 +741,7 @@ class xivo_filter
 
 		if(isset($arr['str']) === true)
 		{
-			if($chk === 2 && xivo_has_len($value) === false)
+			if($chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			$strlist = $this->chk_str_in_strlist($arr['str'],$value);
@@ -757,7 +757,7 @@ class xivo_filter
 
 		if(isset($arr['ustr']) === true)
 		{
-			if($chk === 2 && xivo_has_len($value) === false)
+			if($chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			$strlist = $this->chk_str_in_strlist($arr['ustr'],$value,true);
@@ -773,7 +773,7 @@ class xivo_filter
 
 		if(isset($arr['char']) === true)
 		{
-			if($chk === 2 && xivo_has_len($value) === false)
+			if($chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			$charlist = $this->chk_char_in_charlist($arr['char'],$value);
@@ -789,7 +789,7 @@ class xivo_filter
 
 		if(isset($arr['uchar']) === true)
 		{
-			if($chk === 2 && xivo_has_len($value) === false)
+			if($chk === 2 && dwho_has_len($value) === false)
 				return('');
 
 			$charlist = $this->chk_char_in_charlist($arr['uchar'],$value,true);
@@ -804,12 +804,12 @@ class xivo_filter
 		}
 
 		if(isset($arr['eol']) === true)
-			$value = xivo_eol($value);
+			$value = dwho_eol($value);
 
 		if(isset($arr['notag']) === false)
-			$value = xivo_notag($value);
+			$value = dwho_notag($value);
 		else if(isset($arr['notagscript']) === true)
-			$value = xivo_notagscript($value);
+			$value = dwho_notagscript($value);
 
 		$len = strlen($value);
 
@@ -852,7 +852,7 @@ class xivo_filter
 			return(false);
 		}
 
-		if(xivo_issa('between',$arr) === true && isset($arr['between'][0],$arr['between'][1]) === true
+		if(dwho_issa('between',$arr) === true && isset($arr['between'][0],$arr['between'][1]) === true
 		&& $this->chk_between($arr['between'][0],$arr['between'][1],$value) === false)
 		{
 			$this->_set_error($key,'between false');
@@ -896,9 +896,9 @@ class xivo_filter
 	function _mk_value($value,$arr)
 	{
 		if(isset($arr['notag']) === false)
-			$value = xivo_notag($value);
+			$value = dwho_notag($value);
 		else if(isset($arr['notagscript']) === true)
-			$value = xivo_notagscript($value);
+			$value = dwho_notagscript($value);
 
 		return($value);
 	}

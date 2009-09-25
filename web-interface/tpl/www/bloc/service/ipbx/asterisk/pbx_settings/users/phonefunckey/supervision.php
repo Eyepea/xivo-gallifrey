@@ -32,7 +32,7 @@ $select['id'] = 'it-phonefunckey-supervision';
 $select['default'] = $supelem['default'];
 
 if($fkdata['ex'] === false):
-	$select['id'] .= '-'.xivo_uint($fkdata['incr']);
+	$select['id'] .= '-'.dwho_uint($fkdata['incr']);
 	$select['value'] = $supelem['value'];
 else:
 	$select['disabled'] = true;

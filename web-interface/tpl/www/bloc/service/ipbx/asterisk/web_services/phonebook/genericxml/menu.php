@@ -90,9 +90,9 @@ else:
 		$param['pos'] = $ref[2];
 
 		echo	'<MenuItem>',"\n",
-			'<Name>',$xmlvendor->escape(xivo_trunc($name1,8,'.','',true)),
+			'<Name>',$xmlvendor->escape(dwho_trunc($name1,8,'.','',true)),
 				 $xmlvendor->escape(' > ',false),
-				 $xmlvendor->escape(xivo_trunc($name2,8,'.','',true)),
+				 $xmlvendor->escape(dwho_trunc($name2,8,'.','',true)),
 			'</Name>',"\n",
 			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
 				$param,

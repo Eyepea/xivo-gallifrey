@@ -46,7 +46,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function _chk_autoprov()
 	{
-		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		if(dwho_issa($this->_name,$this->_sre->_ini) === false
 		|| isset($this->_sre->_ini[$this->_name]['host'],$this->_sre->_ini[$this->_name]['port']) === false)
 			$this->_autoprov = false;
 		else
@@ -61,22 +61,22 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function _load_sockprov($type)
 	{
-		if(($type !== 'list' && $type !== 'prov') === true || xivo_ak($type,$this->_autoprov) === false)
+		if(($type !== 'list' && $type !== 'prov') === true || dwho_ak($type,$this->_autoprov) === false)
 			return(false);
-		else if(xivo_ak($type,$this->_sockprov) === true)
+		else if(dwho_ak($type,$this->_sockprov) === true)
 			return($this->_sockprov[$type]->open());
 
-		xivo::load_class('xivo_socket');
-		$this->_sockprov[$type] = new xivo_socket($this->_autoprov[$type]);
+		dwho::load_class('dwho_socket');
+		$this->_sockprov[$type] = new dwho_socket($this->_autoprov[$type]);
 
-		if(xivo_issa('sndtimeo',$this->_autoprov[$type]) === true)
+		if(dwho_issa('sndtimeo',$this->_autoprov[$type]) === true)
 		{
 			$this->_sockprov[$type]->set_option(null,
 							    'sndtimeo',
 							    $this->_autoprov[$type]['sndtimeo']);
 		}
 
-		if(xivo_issa('rcvtimeo',$this->_autoprov[$type]) === true)
+		if(dwho_issa('rcvtimeo',$this->_autoprov[$type]) === true)
 		{
 			$this->_sockprov[$type]->set_option(null,
 							    'rcvtimeo',
@@ -142,7 +142,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 	{
 		$data = (string) $data;
 
-		if(xivo_ak($type,$this->_autoprov) === false)
+		if(dwho_ak($type,$this->_autoprov) === false)
 			return(false);
 
 		$r  = strtoupper($this->_autoprov[$type]['method']).' ';
@@ -211,7 +211,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 		foreach($arr as $key => $val)
 		{
-			if(xivo_has_len($val) === true)
+			if(dwho_has_len($val) === true)
 				$data .= $key.'='.$val."\r\n";
 		}
 
@@ -260,7 +260,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function userdeleted($iduserfeatures)
 	{
-		if(($id = xivo_ulongint($iduserfeatures)) === 0)
+		if(($id = dwho_ulongint($iduserfeatures)) === 0)
 			return(false);
 
 		$r = array();

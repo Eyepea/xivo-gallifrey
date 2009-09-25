@@ -22,17 +22,17 @@ $phonebook = &$ipbx->get_appcustom('webservices','phonebook');
 
 if(isset($_SERVER['REMOTE_ADDR']) === false
 || $phonebook->chk_host_access($_SERVER['REMOTE_ADDR']) === false)
-	xivo_die('Error/403');
+	dwho_die('Error/403');
 
 define('XIVO_PHONEBOOK_URL',$_TPL->url('service/ipbx/web_services/phonebook/search',true));
 
 $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']) : false;
 
 if($vendor === false)
-	xivo_die('Error/Invalid Vendor');
+	dwho_die('Error/Invalid Vendor');
 
-if(isset($_QR['name']) === false || xivo_has_len($_QR['name']) === false)
-	xivo_die('Error/Invalid name');
+if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
+	dwho_die('Error/Invalid name');
 
 $rs = array();
 
@@ -43,9 +43,9 @@ if(($rsu = $phonebook->get_user_search($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsu);
 
 if(($nb = count($rs)) === 0)
-	xivo_die('no-data');
+	dwho_die('no-data');
 
-echo xivo_msg('beg-data')."\n";
+echo dwho_msg('beg-data')."\n";
 
 for($i = 0;$i < $nb;$i++)
 {
@@ -56,6 +56,6 @@ for($i = 0;$i < $nb;$i++)
 		'"'.str_replace('"','""',$ref['type']).'"'."\n";
 }
 
-xivo_die('end-data')."\n";
+dwho_die('end-data')."\n";
 
 ?>

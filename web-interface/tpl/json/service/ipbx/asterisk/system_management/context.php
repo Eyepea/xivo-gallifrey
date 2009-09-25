@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
 if($this->get_var('act') === 'view')
-	$data = xivo_json::encode($this->get_var('info'));
+	$data = dwho_json::encode($this->get_var('info'));
 else
 {
 	$list = $this->get_var('list');
@@ -46,13 +46,13 @@ else
 
 		$data[$i] = $ref;
 
-		if(xivo_issa('entity',$ref) === true)
+		if(dwho_issa('entity',$ref) === true)
 			$data[$i]['context']['entityid'] = $ref['entity']['id'];
 
 		unset($data[$i]['entity']);
 	}
 
-	$data = xivo_json::encode($data);
+	$data = dwho_json::encode($data);
 }
 
 if($data === false)
@@ -69,7 +69,7 @@ if(isset($sum{0}) === true && $sum === md5($data))
 	$http->send(true);
 }
 
-header(xivo_json::get_header());
+header(dwho_json::get_header());
 die($data);
 
 ?>

@@ -193,20 +193,20 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 			case 'endcall:hangup':
 				return($this->chk_dest_endcall('hangup'));
 			case 'user':
-				if(xivo_has_len($actionarg2) === true
-				&& xivo_is_unumber($actionarg2) === false)
+				if(dwho_has_len($actionarg2) === true
+				&& dwho_is_unumber($actionarg2) === false)
 					return(false);
 
 				return($this->chk_dest_user($actionarg1,$actionarg2,$id,$disable));
 			case 'group':
-				if(xivo_has_len($actionarg2) === true
-				&& xivo_is_unumber($actionarg2) === false)
+				if(dwho_has_len($actionarg2) === true
+				&& dwho_is_unumber($actionarg2) === false)
 					return(false);
 
 				return($this->chk_dest_group($actionarg1,$actionarg2,$id,$disable));
 			case 'queue':
-				if(xivo_has_len($actionarg2) === true
-				&& xivo_is_unumber($actionarg2) === false)
+				if(dwho_has_len($actionarg2) === true
+				&& dwho_is_unumber($actionarg2) === false)
 					return(false);
 
 				return($this->chk_dest_queue($actionarg1,$actionarg2,$id,$disable));
@@ -244,8 +244,8 @@ class xivo_service_asterisk_dialaction extends xivo_service_asterisk_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('categoryevent',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['categoryevent']) === false)
+		|| dwho_issa('categoryevent',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['categoryevent']) === false)
 			return(false);
 
 		return($this->_conf['categoryevent'][$key]);

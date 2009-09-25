@@ -19,18 +19,18 @@
 #
 
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
 if($this->get_var('act') === 'view')
 {
 	$info = $this->get_var('info');
 	unset($info['register']);
 
-	$data = xivo_json::encode($info);
+	$data = dwho_json::encode($info);
 }
 else
-	$data = xivo_json::encode($this->get_var('list'));
+	$data = dwho_json::encode($this->get_var('list'));
 
 if($data === false)
 {
@@ -46,7 +46,7 @@ if(isset($sum{0}) === true && $sum === md5($data))
 	$http->send(true);
 }
 
-header(xivo_json::get_header());
+header(dwho_json::get_header());
 die($data);
 
 ?>

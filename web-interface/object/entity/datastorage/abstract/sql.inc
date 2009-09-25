@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','helper','table.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
 
-class xivo_entity_abstract_sql extends xivo_datastorage_helper_table
+class xivo_entity_abstract_sql extends dwho_datastorage_helper_table
 {
 	var $_table	= 'entity';
 	var $_primary	= array('id' => 0);
@@ -36,7 +36,7 @@ class xivo_entity_abstract_sql extends xivo_datastorage_helper_table
 	{
 		$this->_cnt = 0;
 
-		if(xivo_has_len($value) === false)
+		if(dwho_has_len($value) === false)
 			return(false);
 
 		$this->_dso->new_select($this->_table);

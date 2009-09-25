@@ -18,42 +18,43 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'config.inc');
+if(defined('DWHO_PATH_ROOT') === false)
+	define('DWHO_PATH_ROOT',dirname(__FILE__));
 
-define('XIVO_PATH_LIBCONF',XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'libconf');
+define('DWHO_PATH_CONF',DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'libconf');
 
-require_once(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'define.inc');
-require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'func.inc');
-require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'file.inc');
-require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'sysinfo.inc');
+require_once(DWHO_PATH_CONF.DIRECTORY_SEPARATOR.'define.inc');
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'func.inc');
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'file.inc');
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'sysinfo.inc');
 
-define('XIVO_OS_NAME',xivo_sysinfo::os_name());
-define('XIVO_OS_META',xivo_sysinfo::os_meta());
-define('XIVO_PHP_VER',xivo_sysinfo::php_version());
-define('XIVO_SEP_ARG_IN',xivo_sysinfo::argin_separator());
-define('XIVO_SEP_ARG_OUT',xivo_sysinfo::argout_separator());
-define('XIVO_SEP_DIR',xivo_sysinfo::directory_separator());
-define('XIVO_SEP_PATH',xivo_sysinfo::path_separator());
-define('XIVO_EOL',xivo_sysinfo::eol());
-define('XIVO_SAPI_NAME',xivo_sysinfo::sapi_name());
-define('XIVO_SAPI_MODE',xivo_sysinfo::sapi_mode());
+define('DWHO_OS_NAME',dwho_sysinfo::os_name());
+define('DWHO_OS_META',dwho_sysinfo::os_meta());
+define('DWHO_PHP_VER',dwho_sysinfo::php_version());
+define('DWHO_SEP_ARG_IN',dwho_sysinfo::argin_separator());
+define('DWHO_SEP_ARG_OUT',dwho_sysinfo::argout_separator());
+define('DWHO_SEP_DIR',dwho_sysinfo::directory_separator());
+define('DWHO_SEP_PATH',dwho_sysinfo::path_separator());
+define('DWHO_EOL',dwho_sysinfo::eol());
+define('DWHO_SAPI_NAME',dwho_sysinfo::sapi_name());
+define('DWHO_SAPI_MODE',dwho_sysinfo::sapi_mode());
 
-require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gateclass.inc');
-require_once(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gatearray.inc');
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gateclass.inc');
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gatearray.inc');
 
-class blop
+class dwho
 {
 	var $_conf	= array();
 
-	function blop()
+	function dwho()
 	{
-		if(($this->_conf['blop'] = xivo_gat::get_file(XIVO_PATH_LIBCONF.DIRECTORY_SEPARATOR.'blop')) === false)
-			die('ERR: Failed to load BLOP Array');
-		else if(($this->_conf['datastorage'] = xivo_gat::load_get('datastorage',XIVO_PATH_LIBCONF)) === false)
+		if(($this->_conf['dwho'] = dwho_gat::get_file(DWHO_PATH_CONF.DIRECTORY_SEPARATOR.'dwho')) === false)
+			die('ERR: Failed to load DWHO Array');
+		else if(($this->_conf['datastorage'] = dwho_gat::load_get('datastorage',DWHO_PATH_CONF)) === false)
 			die('ERR: Failed to load datastorage Array');
 		else if(function_exists('version_compare') === false
-		|| version_compare(PHP_VERSION,XIVO_PHP_VER_MIN,'<') === true
-		|| version_compare(PHP_VERSION,XIVO_PHP_VER_MAX,'>=') === true)
+		|| version_compare(PHP_VERSION,DWHO_PHP_VER_MIN,'<') === true
+		|| version_compare(PHP_VERSION,DWHO_PHP_VER_MAX,'>=') === true)
 			die('ERR: Please update your PHP');
 
 		$this->_cfg_ini_get();
@@ -63,28 +64,28 @@ class blop
 
 	function _set_error()
 	{
-		xivo::load_class('xivo_tracerror');
-		$_ERR = &xivo_gct::set_get(new xivo_tracerror($this->_conf['blop']['ini']['error']));
+		dwho::load_class('dwho_tracerror');
+		$_ERR = &dwho_gct::set_get(new dwho_tracerror($this->_conf['dwho']['ini']['error']));
 		set_error_handler(array(&$_ERR,'report_e_err'));
 	}
 
 	function _set_query()
 	{
-		blop::load_class('xivo_query');
-		$_QUERY = &xivo_gct::set_get(new xivo_query());
-		xivo_gat::set_get('_QR',$_QUERY->raw);
+		dwho::load_class('dwho_query');
+		$_QUERY = &dwho_gct::set_get(new dwho_query());
+		dwho_gat::set_get('_QR',$_QUERY->raw);
 	}
 
 	function _set_session()
 	{
-		blop::load_class('xivo_session');
-		xivo_gct::set(new xivo_session());
+		dwho::load_class('dwho_session');
+		dwho_gct::set(new dwho_session());
 	}
 
 	function _set_i18n()
 	{
-		blop::load_class('xivo_i18n');
-		xivo_gct::set(new xivo_i18n());
+		dwho::load_class('dwho_i18n');
+		dwho_gct::set(new dwho_i18n());
 	}
 
 	function _cfg_url()
@@ -106,16 +107,16 @@ class blop
 			}
 		}
 
-		define('XIVO_URL',$url);
+		define('DWHO_URL',$url);
 	}
 
 	function _cfg_ini_get()
 	{
-		define('XIVO_PHP_SAFE',(bool) ini_get('safe_mode'));
+		define('DWHO_PHP_SAFE',(bool) ini_get('safe_mode'));
 
-		$this->_conf['blop']['ini']['safe_mode'] = XIVO_PHP_SAFE;
-		$this->_conf['blop']['ini']['enable_dl'] = (bool) ini_get('enable_dl');
-		$this->_conf['blop']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
+		$this->_conf['dwho']['ini']['safe_mode'] = DWHO_PHP_SAFE;
+		$this->_conf['dwho']['ini']['enable_dl'] = (bool) ini_get('enable_dl');
+		$this->_conf['dwho']['ini']['file_uploads'] = (bool) ini_get('file_uploads');
 	}
 
 	function _cfg_ini_set()
@@ -126,89 +127,89 @@ class blop
 		ini_set('magic_quotes_runtime',false);
 		ini_set('register_argc_argv',true);
 
-		if(XIVO_PHP_SAFE === false)
+		if(DWHO_PHP_SAFE === false)
 			ini_set('max_execution_time',0);
 
-		ini_set('include_path',XIVO_PATH_ROOT.XIVO_SEP_PATH.XIVO_PATH_LIB.XIVO_SEP_PATH.ini_get('include_path'));
-		ini_set('default_charset',XIVO_LC_CHARSET);
+		ini_set('include_path',DWHO_PATH_ROOT.DWHO_SEP_PATH.ini_get('include_path'));
+		ini_set('default_charset',DWHO_LC_CHARSET);
 
 		if($this->load_extension('mbstring') !== false)
 		{
-			ini_set('mbstring.internal_encoding',XIVO_LC_CHARSET);
-			ini_set('mbstring.language',XIVO_LC_CHARSET);
-			ini_set('mbstring.http_input',XIVO_LC_CHARSET);
-			ini_set('mbstring.http_output',XIVO_LC_CHARSET);
+			ini_set('mbstring.internal_encoding',DWHO_LC_CHARSET);
+			ini_set('mbstring.language',DWHO_LC_CHARSET);
+			ini_set('mbstring.http_input',DWHO_LC_CHARSET);
+			ini_set('mbstring.http_output',DWHO_LC_CHARSET);
 		}
 	}
 
 	function _cfg_ini_locale($locale=null)
 	{
 		if(is_array($locale) === false)
-			$locale = $this->_conf['blop']['ini']['locale'];
+			$locale = $this->_conf['dwho']['ini']['locale'];
 
 		if(isset($locale['language']) === false)
-			$locale['language'] = $this->_conf['blop']['ini']['language'];
+			$locale['language'] = $this->_conf['dwho']['ini']['language'];
 
-		define('XIVO_LC_LANGUAGE',(string) $locale['language']);
+		define('DWHO_LC_LANGUAGE',(string) $locale['language']);
 
 		if(isset($locale['territory']) === false)
-			$locale['territory'] = $this->_conf['blop']['ini']['territory'];
+			$locale['territory'] = $this->_conf['dwho']['ini']['territory'];
 
-		define('XIVO_LC_TERRITORY',(string) $locale['territory']);
+		define('DWHO_LC_TERRITORY',(string) $locale['territory']);
 
 		if(isset($locale['charset']) === false)
-			$locale['charset'] = $this->_conf['blop']['ini']['charset'];
+			$locale['charset'] = $this->_conf['dwho']['ini']['charset'];
 
-		define('XIVO_LC_CHARSET',(string) $locale['charset']);
+		define('DWHO_LC_CHARSET',(string) $locale['charset']);
 
-		define('XIVO_LC_LABEL',setlocale(LC_ALL,0));
+		define('DWHO_LC_LABEL',setlocale(LC_ALL,0));
 	}
 
 	function _cfg_ini_session($session=null)
 	{
 		if(is_array($session) === false)
-			$session = $this->_conf['blop']['ini']['session'];
+			$session = $this->_conf['dwho']['ini']['session'];
 
 		if(isset($session['name']) === false)
-			$session['name'] = $this->_conf['blop']['ini']['session']['name'];
+			$session['name'] = $this->_conf['dwho']['ini']['session']['name'];
 
-		define('XIVO_SESS_NAME',(string) $session['name']);
+		define('DWHO_SESS_NAME',(string) $session['name']);
 
 		if(isset($session['time']) === false)
-			$session['time'] = $this->_conf['blop']['ini']['session']['time'];
+			$session['time'] = $this->_conf['dwho']['ini']['session']['time'];
 
-		define('XIVO_SESS_TIME',xivo_uint($session['time']));
+		define('DWHO_SESS_TIME',dwho_uint($session['time']));
 
 		if(isset($session['path']) === false)
-			$session['path'] = $this->_conf['blop']['ini']['session']['path'];
+			$session['path'] = $this->_conf['dwho']['ini']['session']['path'];
 
-		define('XIVO_SESS_PATH',(string) $session['path']);
+		define('DWHO_SESS_PATH',(string) $session['path']);
 	}
 
 	function _cfg_ini_error($error=null)
 	{
-		if(xivo_issa('error',$this->_conf['blop']['ini']) === false)
-			$this->_conf['blop']['ini']['error'] = array();
+		if(dwho_issa('error',$this->_conf['dwho']['ini']) === false)
+			$this->_conf['dwho']['ini']['error'] = array();
 
 		if(is_array($error) === false)
 			return(null);
 		else if(isset($error['level']) === true)
-			$this->_conf['blop']['ini']['error']['level'] = (string) $error['level'];
+			$this->_conf['dwho']['ini']['error']['level'] = (string) $error['level'];
 
 		if(isset($error['report_type']) === true)
-			$this->_conf['blop']['ini']['error']['report_type'] = (string) $error['report_type'];
+			$this->_conf['dwho']['ini']['error']['report_type'] = (string) $error['report_type'];
 
 		if(isset($error['report_mode']) === true)
-			$this->_conf['blop']['ini']['error']['report_mode'] = (string) $error['report_mode'];
+			$this->_conf['dwho']['ini']['error']['report_mode'] = (string) $error['report_mode'];
 
 		if(isset($error['report_func']) === true)
-			$this->_conf['blop']['ini']['error']['report_func'] = (string) $error['report_func'];
+			$this->_conf['dwho']['ini']['error']['report_func'] = (string) $error['report_func'];
 
 		if(isset($error['email']) === true)
-			$this->_conf['blop']['ini']['error']['email'] = (string) $error['email'];
+			$this->_conf['dwho']['ini']['error']['email'] = (string) $error['email'];
 
 		if(isset($error['file']) === true)
-			$this->_conf['blop']['ini']['error']['file'] = (string) $error['file'];
+			$this->_conf['dwho']['ini']['error']['file'] = (string) $error['file'];
 	}
 
 	function _cfg_infos_extension()
@@ -221,52 +222,52 @@ class blop
 		if(defined('PHP_SHLIB_SUFFIX') === true)
 			$suffix = PHP_SHLIB_SUFFIX;
 
-		switch(XIVO_OS_META)
+		switch(DWHO_OS_META)
 		{
 			default:
 				if($suffix === '')
 					$suffix = 'so';
 		}
 
-		if($this->_conf['blop']['ini']['safe_mode'] === true
-		|| $this->_conf['blop']['ini']['enable_dl'] === false)
-			define('XIVO_EXT_ENABLE',false);
+		if($this->_conf['dwho']['ini']['safe_mode'] === true
+		|| $this->_conf['dwho']['ini']['enable_dl'] === false)
+			define('DWHO_EXT_ENABLE',false);
 		else
-			define('XIVO_EXT_ENABLE',true);
+			define('DWHO_EXT_ENABLE',true);
 
-		define('XIVO_EXT_PRE',$prefix);
-		define('XIVO_EXT_SUF',$suffix);
+		define('DWHO_EXT_PRE',$prefix);
+		define('DWHO_EXT_SUF',$suffix);
 	}
 
 	function _cfg_ini_datastorage($dso)
 	{
-		if(xivo_issa('datastorage',$this->_conf['blop']['ini']) === false)
-			$this->_conf['blop']['ini']['datastorage'] = array();
+		if(dwho_issa('datastorage',$this->_conf['dwho']['ini']) === false)
+			$this->_conf['dwho']['ini']['datastorage'] = array();
 
-		blop::load_class('xivo_datastorage');
+		dwho::load_class('dwho_datastorage');
 
 		if(is_string($dso) === true)
-			$dso = xivo_datastorage::set_param_from_uri($dso);
+			$dso = dwho_datastorage::set_param_from_uri($dso);
 
 		if(is_array($dso) === false)
 			die('ERR: Invalid datastorage configuration in init file');
 		else if(isset($dso['type']) === false)
 			die('ERR: Missing datastorage "type" configuration in init file');
 
-		if(xivo_datastorage::is_valid($dso['type']) === false)
+		if(dwho_datastorage::is_valid($dso['type']) === false)
 			die('ERR: Invalid datastorage "type" configuration in init file');
-		else if(xivo_datastorage::chk_extension_loaded($dso['type'],true) === false)
+		else if(dwho_datastorage::chk_extension_loaded($dso['type'],true) === false)
 			die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
-		else if(($datastorage = &xivo_gct::set_get(
-						xivo_datastorage::factory($dso['type'],
+		else if(($datastorage = &dwho_gct::set_get(
+						dwho_datastorage::factory($dso['type'],
 									  $dso),
-						'XIVO_DSO')) === false)
+						'DWHO_DSO')) === false)
 			die('ERR: Datastorage class '.$dso['type'].' does not exist');
 
-		define('XIVO_DSO_TYPE',$datastorage->get_type());
+		define('DWHO_DSO_TYPE',$datastorage->get_type());
 
-		$this->_conf['blop']['ini']['datastorage']['type'] = XIVO_DSO_TYPE;
-		$this->_conf['blop']['ini']['datastorage']['param'] = $dso;
+		$this->_conf['dwho']['ini']['datastorage']['type'] = DWHO_DSO_TYPE;
+		$this->_conf['dwho']['ini']['datastorage']['param'] = $dso;
 	}
 
 	function _cfg_ini_template($template)
@@ -277,15 +278,15 @@ class blop
 		$def_script_path = $def_application_path = $def_tpl_path = false;
 
 		if(isset($template['script_path']) === true
-		&& ($def_script_path = xivo_file::is_d_r($template['script_path'])) === false)
+		&& ($def_script_path = dwho_file::is_d_r($template['script_path'])) === false)
 			die('ERR: Missing or invalid script_path for template configuration in init file');
 
 		if(isset($template['application_path']) === true
-		&& ($def_application_path = xivo_file::is_d_r($template['application_path'])) === false)
+		&& ($def_application_path = dwho_file::is_d_r($template['application_path'])) === false)
 			die('ERR: Missing or invalid application_path for template configuration in init file');
 
 		if(isset($template['tpl_path']) === true
-		&& ($def_tpl_path = xivo_file::is_d_r($template['tpl_path'])) === false)
+		&& ($def_tpl_path = dwho_file::is_d_r($template['tpl_path'])) === false)
 			die('ERR: Missing or invalid tpl_path for template configuration in init file');
 
 		unset($template['script_path'],$template['application_path'],$template['tpl_path']);
@@ -297,21 +298,21 @@ class blop
 		{
 			if(is_array($value) === false)
 				die('ERR: Missing information in '.$key.' for template configuration in init file');
-			else if(isset($value['script_path']) === true && ($script_path = xivo_file::is_d_r($value['script_path'])) !== false)
+			else if(isset($value['script_path']) === true && ($script_path = dwho_file::is_d_r($value['script_path'])) !== false)
 				$this->_conf['tpl'][$key]['script_path'] = $script_path;
 			else if($def_script_path !== false)
 				$this->_conf['tpl'][$key]['script_path'] = $def_script_path;
 			else
 				die('ERR: Missing or invalid script_path in '.$key.' for template configuration in init file');
 
-			if(isset($value['application_path']) === true && ($application_path = xivo_file::is_d_r($value['application_path'])) !== false)
+			if(isset($value['application_path']) === true && ($application_path = dwho_file::is_d_r($value['application_path'])) !== false)
 				$this->_conf['tpl'][$key]['application_path'] = $application_path;
 			else if($def_application_path !== false)
 				$this->_conf['tpl'][$key]['application_path'] = $def_application_path;
 			else
 				die('ERR: Missing or invalid application_path in '.$key.' for template configuration in init file');
 
-			if(isset($value['tpl_path']) === true && ($tpl_path = xivo_file::is_d_r($value['tpl_path'])) !== false)
+			if(isset($value['tpl_path']) === true && ($tpl_path = dwho_file::is_d_r($value['tpl_path'])) !== false)
 				$this->_conf['tpl'][$key]['tpl_path'] = $tpl_path;
 			else if($def_tpl_path !== false)
 				$this->_conf['tpl'][$key]['tpl_path'] = $def_tpl_path;
@@ -327,7 +328,7 @@ class blop
 
 	function chk_extension_loaded($ext)
 	{
-		if(xivo_has_len($ext) === false)
+		if(dwho_has_len($ext) === false)
 			return(false);
 
 		return(extension_loaded($ext));
@@ -335,19 +336,19 @@ class blop
 
 	function load_extension($ext)
 	{
-		if(xivo_has_len($ext) === false
+		if(dwho_has_len($ext) === false
 		|| preg_match('/^[a-z0-9_-]+$/',$ext) !== 1)
 			return(false);
 		else if(extension_loaded($ext) === true)
 			return(null);
-		else if(defined('XIVO_EXT_ENABLE') === false || XIVO_EXT_ENABLE === false)
+		else if(defined('DWHO_EXT_ENABLE') === false || DWHO_EXT_ENABLE === false)
 			return(false);
 
-		$file = XIVO_EXT_PRE.$ext.'.'.XIVO_EXT_SUF;
+		$file = DWHO_EXT_PRE.$ext.'.'.DWHO_EXT_SUF;
 
 		$path = ini_get('extension_dir').DIRECTORY_SEPARATOR.$file;
 
-		if(xivo_file::is_f_r($path) === false)
+		if(dwho_file::is_f_r($path) === false)
 			return(false);
 
 		dl($file);
@@ -357,8 +358,6 @@ class blop
 
 	function load_class($class,$dir='',$file='',$lib=true)
 	{
-		$class = (string) $class;
-
 		if(is_array($dir) === true)
 			$dir = implode(DIRECTORY_SEPARATOR,$dir);
 		else
@@ -376,8 +375,8 @@ class blop
 		{
 			$class = str_replace('::','_',$class);
 
-			if(substr($path,0,5) === 'xivo'.DIRECTORY_SEPARATOR)
-				$dir = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.dirname(substr($path,5));
+			if(substr($path,0,5) === 'dwho'.DIRECTORY_SEPARATOR)
+				$dir = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.dirname(substr($path,5));
 			else
 				$dir = dirname($path);
 
@@ -385,13 +384,13 @@ class blop
 		}
 		else if($dir === '' && $path !== $class)
 		{
-			$dir = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.dirname($path);
+			$dir = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.dirname($path);
 			$file .= '.inc';
 		}
-		else if(substr($class,0,5) === 'xivo_')
+		else if(substr($class,0,5) === 'dwho_')
 		{
 			if((bool) $lib === true)
-				$dir = rtrim(XIVO_PATH_LIB.DIRECTORY_SEPARATOR.ltrim($dir,DIRECTORY_SEPARATOR),DIRECTORY_SEPARATOR.'.');
+				$dir = rtrim(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.ltrim($dir,DIRECTORY_SEPARATOR),DIRECTORY_SEPARATOR.'.');
 			else
 				$dir = rtrim($dir,DIRECTORY_SEPARATOR.'.');
 
@@ -405,7 +404,7 @@ class blop
 		else
 			$file = $class.'.inc';
 
-		if(xivo_file::load_file($file,$dir,true) === false)
+		if(dwho_file::load_file($file,$dir,true) === false)
 			return(false);
 
 		return(class_exists($class));
@@ -415,7 +414,7 @@ class blop
 	{
 		$name = (string) $name;
 
-		if(($file = xivo_file::is_f_r($file)) === false
+		if(($file = dwho_file::is_f_r($file)) === false
 		|| ($init = parse_ini_file($file,true)) === false
 		|| empty($init) === true
 		|| ($name !== '' && isset($init[$name]) === false) === true)
@@ -473,7 +472,7 @@ class blop
 
 	function load_array($file,$once=true)
 	{
-		return(xivo_gat::get_file($file,$once));
+		return(dwho_gat::get_file($file,$once));
 	}
 }
 

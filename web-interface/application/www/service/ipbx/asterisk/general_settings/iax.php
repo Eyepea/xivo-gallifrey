@@ -40,10 +40,10 @@ if(isset($_QR['fm_send']) === true)
 
 $element = $appgeneraliax->get_element();
 
-if(xivo_issa('allow',$element) === true
-&& xivo_issa('value',$element['allow']) === true
+if(dwho_issa('allow',$element) === true
+&& dwho_issa('value',$element['allow']) === true
 && isset($info['allow']) === true
-&& xivo_has_len($info['allow'],'var_val') === true)
+&& dwho_has_len($info['allow'],'var_val') === true)
 {
 	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
 	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']['var_val']);

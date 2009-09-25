@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_voicemenu extends xivo_application_asterisk_abstract
 {
@@ -122,7 +122,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		{
 			$refdata[$i] = $refinfo[$i]['app'];
 
-			if(xivo_has_len($refinfo[$i]['appdata']) === true)
+			if(dwho_has_len($refinfo[$i]['appdata']) === true)
 				$refdata[$i] .= '|'.$refinfo[$i]['appdata'];
 		}
 
@@ -152,7 +152,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			$reforig[$event] = $this->_extensions->get_origin();
 			$refdata[$event] = $refinfo[$event]['app'];
 
-			if(xivo_has_len($refinfo[$event]['appdata']) === true)
+			if(dwho_has_len($refinfo[$event]['appdata']) === true)
 				$refdata[$event] .= '|'.$refinfo[$event]['appdata'];
 		}
 
@@ -162,7 +162,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 	function get_ipbxapplications()
 	{
 		if(isset($this->_conf) === false
-		|| xivo_issa('ipbxapplication',$this->_conf) === false)
+		|| dwho_issa('ipbxapplication',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['ipbxapplication']);
@@ -269,7 +269,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function _real_application($val,$astapp=true)
 	{
-		if(xivo_has_len($val) === false)
+		if(dwho_has_len($val) === false)
 			return(false);
 
 		$expcomma = explode(',',$val,2);
@@ -303,7 +303,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 				|| ($dirpath = $sounds->get_dir_path('playback')) === false)
 					return(false);
 
-				$expcomma[1] = $dirpath.XIVO_SEP_DIR.$rs['actionarg1'];
+				$expcomma[1] = $dirpath.DWHO_SEP_DIR.$rs['actionarg1'];
 
 				if($actionarg2 !== '')
 					$expcomma[2] = $actionarg2;
@@ -328,8 +328,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_VOICEMENU_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($voicemenuid);
-		$arr['appdata'][2] = xivo_uint($priority,1);
+		$arr['appdata'][1] = dwho_ulongint($voicemenuid);
+		$arr['appdata'][2] = dwho_uint($priority,1);
 
 		return($arr);
 	}
@@ -352,7 +352,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('voicemenu',$arr) === false)
+		|| dwho_issa('voicemenu',$arr) === false)
 			return(false);
 
 		$this->set_voicemenu($arr['voicemenu']);
@@ -365,7 +365,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 			$this->_set_error('voicemenuflow','invalid data');
 		}
 
-		if(xivo_issa('voicemenuevent',$arr) === true)
+		if(dwho_issa('voicemenuevent',$arr) === true)
 			$this->set_voicemenuevent($arr['voicemenuevent']);
 
 		$this->set_contextmember();
@@ -373,7 +373,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 		$number = (string) $this->get_result_var('voicemenu','number');
 		$context = (string) $this->get_result_var('voicemenu','context');
 
-		if($this->_errnb === 0 && xivo_has_len($number) === true)
+		if($this->_errnb === 0 && dwho_has_len($number) === true)
 		{
 			if(($rsvoicemenumacro = $this->chk_macro('voicemenumacro',
 								 $number,
@@ -414,7 +414,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 	{
 		$rs = false;
 
-		if(($voicemenuid = xivo_ulongint($voicemenuid)) === 0
+		if(($voicemenuid = dwho_ulongint($voicemenuid)) === 0
 		|| ($rs = $this->get_result('voicemenumacro')) === null
 		|| $rs === false)
 			return($rs);
@@ -532,7 +532,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 		foreach($arr as $event => $eventdata)
 		{
-			if(xivo_has_len($eventdata) === false)
+			if(dwho_has_len($eventdata) === false)
 				continue;
 			else if(($rs = $this->_real_application($eventdata,false)) === false)
 			{
@@ -669,7 +669,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($voicemenuid = xivo_ulongint($voicemenuid)) === 0
+		|| ($voicemenuid = dwho_ulongint($voicemenuid)) === 0
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
@@ -758,7 +758,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function edit_voicemenu()
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false
+		if(dwho_issa('voicemenu',$this->_info) === false
 		|| ($rs = $this->get_result('voicemenu')) === null
 		|| $rs === false)
 			return(false);
@@ -809,7 +809,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false)
+		if(dwho_issa('voicemenu',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['voicemenu']['id']));
@@ -898,7 +898,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function delete_voicemenu()
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false)
+		if(dwho_issa('voicemenu',$this->_info) === false)
 			return(false);
 
 		$r = $this->_voicemenu->delete($this->_info['voicemenu']['id']);
@@ -911,8 +911,8 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function delete_voicemenuflow()
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false
-		|| xivo_issa('voicemenuflow',$this->_info) === false)
+		if(dwho_issa('voicemenu',$this->_info) === false
+		|| dwho_issa('voicemenuflow',$this->_info) === false)
 			return(false);
 
 		$where = array();
@@ -930,9 +930,9 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function delete_voicemenuevent()
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false)
+		if(dwho_issa('voicemenu',$this->_info) === false)
 			return(false);
-		else if(xivo_issa('voicemenuevent',$this->_info) === false)
+		else if(dwho_issa('voicemenuevent',$this->_info) === false)
 			return(null);
 
 		$where = array();
@@ -1007,7 +1007,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function unlinks()
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false)
+		if(dwho_issa('voicemenu',$this->_info) === false)
 			return(false);
 
 		$this->_dialaction->unlinked('voicemenu',$this->_info['voicemenu']['id']);
@@ -1055,7 +1055,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 	function _enable_disable_voicemenu($disable=false)
 	{
-		if(xivo_issa('voicemenu',$this->_info) === false)
+		if(dwho_issa('voicemenu',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_voicemenu->enable($this->_info['voicemenu']['id']);

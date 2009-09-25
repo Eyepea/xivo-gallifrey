@@ -33,14 +33,14 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-context');
-										xivo_fm_select('it-contextnumbers-user');
-										xivo_fm_select('it-contextnumbers-group');
-										xivo_fm_select('it-contextnumbers-queue');
-										xivo_fm_select('it-contextnumbers-meetme');">
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-context');
+										dwho.form.select('it-contextnumbers-user');
+										dwho.form.select('it-contextnumbers-group');
+										dwho.form.select('it-contextnumbers-queue');
+										dwho.form.select('it-contextnumbers-meetme');">
 <?php
-		echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-					    'value'	=> XIVO_SESS_ID)),
+		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'fm_send',
 					    'value'	=> 1)),

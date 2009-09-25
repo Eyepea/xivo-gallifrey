@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'application','service','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','service','abstract.inc'));
 
 class xivo_application_asterisk_abstract extends xivo_application_service_abstract
 {
@@ -30,7 +30,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function xivo_application_asterisk_abstract(&$service)
 	{
-		if(xivo_instanceof($service,'xivo_service_asterisk') === false)
+		if(dwho_instanceof($service,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$service;
@@ -210,9 +210,9 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	function set_macro($action,$name,$exten,$arr,$context)
 	{
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_has_len($name) === false)
+		|| dwho_has_len($name) === false)
 			return(false);
-		else if($action === 'edit' && xivo_issa($name,$this->_info) !== false)
+		else if($action === 'edit' && dwho_issa($name,$this->_info) !== false)
 			$r = $this->_extensions->chk_exten($exten,$context,'macro',$arr);
 		else
 			$r = $this->_extensions->new_exten($exten,$context,'macro',$arr);
@@ -350,7 +350,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 	{
 		$rs = false;
 
-		if(xivo_issa($name,$this->_info) === false
+		if(dwho_issa($name,$this->_info) === false
 		|| ($rs = $this->get_result($name)) === null
 		|| $rs === false)
 			return($rs);
@@ -427,7 +427,7 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function delete_macro($name)
 	{
-		if(xivo_issa($name,$this->_info) === false)
+		if(dwho_issa($name,$this->_info) === false)
 			return(null);
 
 		$r = $this->_extensions->delete($this->_info[$name]['id']);
@@ -495,13 +495,13 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 		$userid = $groupid = $queueid = $scheduleid = 0;
 
 		if($type === 'user')
-			$userid = xivo_ulongint($id);
+			$userid = dwho_ulongint($id);
 		else if($type === 'group')
-			$groupid = xivo_ulongint($id);
+			$groupid = dwho_ulongint($id);
 		else if($type === 'queue')
-			$queueid = xivo_ulongint($id);
+			$queueid = dwho_ulongint($id);
 		else if($type === 'schedule')
-			$scheduleid = xivo_ulongint($id);
+			$scheduleid = dwho_ulongint($id);
 
 		$r['users'] = $this->get_destination_users($userid,$number);
 		$r['groups'] = $this->get_destination_groups($groupid,$number);
@@ -615,10 +615,10 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 
 	function _get_data_from_json()
 	{
-		$_QRY = &xivo_gct::get('xivo_query');
+		$_QRY = &dwho_gct::get('dwho_query');
 
-		if(xivo::load_class('xivo_json') === false
-		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
+		if(dwho::load_class('dwho_json') === false
+		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
 		|| is_array($data) === false)
 			return(false);
 

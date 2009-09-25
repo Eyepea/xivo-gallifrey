@@ -44,7 +44,7 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 
 	function _prepare($data)
 	{
-		if(xivo_has_len($data,'exten') === true && $data['exten']{0} === '_')
+		if(dwho_has_len($data,'exten') === true && $data['exten']{0} === '_')
 			$data['exten'] = substr($data['exten'],1);
 
 		return($data);
@@ -54,7 +54,7 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(xivo_has_len($arr,'exten') === false
+		else if(dwho_has_len($arr,'exten') === false
 		|| ($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 			return(false);
 
@@ -71,7 +71,7 @@ class xivo_service_asterisk_rightcallexten extends xivo_service_asterisk_abstrac
 
 		unset($arr['extenhash']);
 
-		if(xivo_has_len($arr,'exten') === true)
+		if(dwho_has_len($arr,'exten') === true)
 		{
 			if(($exten = $this->_sre->chk_extension($arr['exten'])) === false)
 				return(false);

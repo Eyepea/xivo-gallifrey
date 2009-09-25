@@ -32,12 +32,12 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 
 			if($ref['state'] === 'running' && $ref['type'] === 3):
 				$uptime = $this->bbf('sysinfos_uptime-duration',
-						     xivo_calc_time('second',
+						     dwho_calc_time('second',
 								    $ref['uptime'],
 								    '%d%H%M%s'));
 				$cpupcent = $this->bbf('number_percent',$ref['cpu']['percenttotal']);
-				$membyte = xivo_size_si_to_byte('KB',$ref['memory']['kilobytetotal']);
-				$mem = xivo_size_iec($membyte);
+				$membyte = dwho_size_si_to_byte('KB',$ref['memory']['kilobytetotal']);
+				$mem = dwho_size_iec($membyte);
 				$memsize = $this->bbf('size_iec_'.$mem[1],$mem[0]);
 
 				if($memtotal > 0):
@@ -50,7 +50,7 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 			endif;
 ?>
 			<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
-				<td><?=xivo_trunc(xivo_htmlen($ref['name']),20,'...',false);?></td>
+				<td><?=dwho_trunc(dwho_htmlen($ref['name']),20,'...',false);?></td>
 				<td class="monit-state-<?=$ref['state']?>"><b><?=$this->bbf('sysinfos_state-opt',$ref['state']);?></b></td>
 				<td class="txt-right"><?=$uptime?></td>
 				<td class="txt-right"><?=$cpupcent?></td>

@@ -40,18 +40,18 @@ if(isset($_QR['fm_send']) === true)
 
 $element = $appgeneralsip->get_element();
 
-if(xivo_issa('allow',$element) === true
-&& xivo_issa('value',$element['allow']) === true
+if(dwho_issa('allow',$element) === true
+&& dwho_issa('value',$element['allow']) === true
 && isset($info['allow']) === true
-&& xivo_has_len($info['allow'],'var_val') === true)
+&& dwho_has_len($info['allow'],'var_val') === true)
 {
 	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
 	$element['allow']['value'] = array_diff($element['allow']['value'],$info['allow']['var_val']);
 }
 
-if(xivo_issa('localnet',$info) === true
+if(dwho_issa('localnet',$info) === true
 && array_key_exists('var_val',$info['localnet']) === true
-&& xivo_has_len($info['localnet']['var_val']) === false)
+&& dwho_has_len($info['localnet']['var_val']) === false)
 	$info['localnet'] = null;
 
 $dhtml = &$_TPL->get_module('dhtml');

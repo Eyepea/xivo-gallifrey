@@ -34,12 +34,12 @@ if(isset($_QR['fm_send'],$_QR['category']) === false
 		$fm_save = false;
 
 		if(is_array($fileuploaded) === true)
-			xivo_file::rm($fileuploaded['tmp_name']);
+			dwho_file::rm($fileuploaded['tmp_name']);
 	}
 }
 else
 {
-	$filename = xivo_file::joinpath($info['category'],$fileuploaded['name']);
+	$filename = dwho_file::joinpath($info['category'],$fileuploaded['name']);
 
 	if($musiconhold->add_file($filename,$fileuploaded['tmp_name']) === true)
 	{

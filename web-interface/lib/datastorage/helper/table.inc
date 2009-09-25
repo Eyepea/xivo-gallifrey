@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'helper'.XIVO_SEP_DIR.'abstract.inc');
+require_once(DWHO_PATH_ROOT.DWHO_SEP_DIR.'datastorage'.DWHO_SEP_DIR.'helper'.DWHO_SEP_DIR.'abstract.inc');
 
-class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
+class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 {
 	var $_cnt		= 0;
 	var $_primary		= null;
@@ -38,7 +38,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		if(isset($param['table']) === true)
 			$this->_table = (string) $param['table'];
 
-		if(isset($this->_table) === false || xivo_has_len($this->_table) === false)
+		if(isset($this->_table) === false || dwho_has_len($this->_table) === false)
 			trigger_error('Missing or invalid table',E_USER_ERROR);
 
 		if(isset($param['primary']) === true)
@@ -56,9 +56,9 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		else if(isset($this->_autoincrement) === true)
 			$this->_autoincrement = (bool) $this->_autoincrement;
 
-		if(xivo_has_len($param,'disable') === true)
+		if(dwho_has_len($param,'disable') === true)
 			$this->_disable = (string) $param['disable'];
-		else if(isset($this->_disable) === false || xivo_has_len($this->_disable) === false)
+		else if(isset($this->_disable) === false || dwho_has_len($this->_disable) === false)
 			$this->_disable = null;
 
 		if(isset($param['forcecolumn']) === true)
@@ -69,7 +69,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 	function _mk_key($list,$next=false)
 	{
-		if(xivo_has_len($list) === true)
+		if(dwho_has_len($list) === true)
 			return(array(strval($list) => ''));
 		else if(is_array($list) === false || empty($list) === true)
 			return(null);
@@ -94,10 +94,10 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 			}
 			else if($noassoc === true && is_int($key) === true)
 			{
-				if(xivo_has_len($val) === true)
+				if(dwho_has_len($val) === true)
 					$r[strval($val)] = '';
 			}
-			else if(xivo_has_len($key) === true)
+			else if(dwho_has_len($key) === true)
 			{
 				if(is_null($val) === true || is_bool($val) === true)
 					$r[strval($key)] = '';
@@ -195,7 +195,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 			$key = &$keys[$i];
 
 			if(($noassoc === true && is_int($key) === true) === false
-			&& xivo_has_len($key) === true)
+			&& dwho_has_len($key) === true)
 				$r[strval($key)] = $column[$key];
 		}
 
@@ -245,7 +245,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 
 	function get_cnt()
 	{
-		return(xivo_ulongint($this->_cnt));
+		return(dwho_ulongint($this->_cnt));
 	}
 
 	function get_nb($arr=null,$disable=null)
@@ -264,7 +264,7 @@ class xivo_datastorage_helper_table extends xivo_datastorage_helper_abstract
 		if(is_array($arr) === true)
 			$this->_dso->where($arr);
 
-		return(xivo_ulongint($this->_dso->select_count()));
+		return(dwho_ulongint($this->_dso->select_count()));
 	}
 
 	function chk_unique($arr,$primary=null)

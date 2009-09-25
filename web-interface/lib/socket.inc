@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_socket
+class dwho_socket
 {
 	var $_param	= array(
 				'address'		=> '',
@@ -33,7 +33,7 @@ class xivo_socket
 	var $_errno	= 0;
 	var $_link	= null;
 
-	function xivo_socket($param=array())
+	function dwho_socket($param=array())
 	{
 		$param = (array) $param;
 		$open = true;
@@ -42,7 +42,7 @@ class xivo_socket
 			$open = false;
 
 		if(isset($param['port']) === true)
-			$this->_param['port'] = xivo_uint($param['port']);
+			$this->_param['port'] = dwho_uint($param['port']);
 
 		if(isset($param['domain']) === true)
 			$this->_param['domain'] = $this->_chk_domain($param['domain']);
@@ -63,12 +63,12 @@ class xivo_socket
 		{
 			if($this->_param['domain'] === AF_UNIX)
 			{
-				if(($addr = xivo_file::is_f_rwx($param['address'])) !== false)
+				if(($addr = dwho_file::is_f_rwx($param['address'])) !== false)
 					$this->_param['address'] = $addr;
 				else
 					$this->open = false;
 			}
-			else if(xivo_ip2long($param['address']) !== false)
+			else if(dwho_ip2long($param['address']) !== false)
 				$this->_param['address'] = $param['address'];
 			else
 				$this->_param['address'] = gethostbyname($param['address']);
@@ -296,7 +296,7 @@ class xivo_socket
 
 	function _read($length=0,$type)
 	{
-		$length = xivo_uint($length,4096);
+		$length = dwho_uint($length,4096);
 
 		if(is_resource($this->_link) === false)
 			return(false);
@@ -324,7 +324,7 @@ class xivo_socket
 	{
 		$r = false;
 
-		if(($length = xivo_uint($length)) === 0)
+		if(($length = dwho_uint($length)) === 0)
 			$length = strlen($data);
 
 		if(is_resource($this->_link) === true)
@@ -421,7 +421,7 @@ class xivo_socket
 	{
 		$r = false;
 
-		if(($how = xivo_uint($how)) > 2)
+		if(($how = dwho_uint($how)) > 2)
 			$how = 2;
 
 		if(is_resource($this->_link) === true)

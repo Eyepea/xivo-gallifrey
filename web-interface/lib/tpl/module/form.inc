@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_tpl_form extends xivo_tpl_module
+class dwho_tpl_form extends dwho_tpl_module
 {
 	var $_param		= array();
 	var $_render		= '';
@@ -27,7 +27,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	var $_optgroup		= array();
 	var $_uniqoptgroup	= array();
 
-	function xivo_tpl_form(&$tpl)
+	function dwho_tpl_form(&$tpl)
 	{
 		$this->_tpl = &$tpl;
 	}
@@ -65,7 +65,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$this->_param['invalid'] = false;
 
 		if(isset($v['name']) === true)
-			$this->_param['name'] = xivo_htmlsc($v['name']);
+			$this->_param['name'] = dwho_htmlsc($v['name']);
 
 		if(isset($v['type']) === true)
 			$this->_param['type'] = (string) $v['type'];
@@ -76,7 +76,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['size']) === true)
 		{
 			if($v['size'] !== false)
-				$this->_param['size'] = xivo_uint($v['size']);
+				$this->_param['size'] = dwho_uint($v['size']);
 			else
 				$this->_param['size'] = false;
 		}
@@ -84,7 +84,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['rows']) === true)
 		{
 			if($v['rows'] !== false)
-				$this->_param['rows'] = xivo_uint($v['rows']);
+				$this->_param['rows'] = dwho_uint($v['rows']);
 			else
 				$this->_param['rows'] = false;
 		}
@@ -92,7 +92,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['cols']) === true)
 		{
 			if($v['cols'] !== false)
-				$this->_param['cols'] = xivo_uint($v['cols']);
+				$this->_param['cols'] = dwho_uint($v['cols']);
 			else
 				$this->_param['cols'] = false;
 		}
@@ -155,7 +155,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['label']) === true)
 		{
 			if(is_string($v['label']) === true)
-				$this->_param['label'] = xivo_htmlsc($v['label']);
+				$this->_param['label'] = dwho_htmlsc($v['label']);
 			else
 				$this->_param['label'] = false;
 		}
@@ -163,7 +163,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['fieldid']) === true)
 		{
 			if(is_string($v['fieldid']) === true)
-				$this->_param['fieldid'] = xivo_htmlsc($v['fieldid']);
+				$this->_param['fieldid'] = dwho_htmlsc($v['fieldid']);
 			else
 				$this->_param['fieldid'] = false;
 		}
@@ -171,11 +171,11 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(isset($v['id']) === true)
 		{
 			if($v['id'] !== false)
-				$this->_param['id'] = xivo_htmlsc($v['id']);
+				$this->_param['id'] = dwho_htmlsc($v['id']);
 		}
 		else if(isset($v['labelid']) === true && is_string($v['labelid']) === true)
 		{
-			$v['labelid'] = xivo_htmlsc($v['labelid']);
+			$v['labelid'] = dwho_htmlsc($v['labelid']);
 
 			if($this->_param['label'] === true)
 				$this->_param['label'] = 'lb-'.$v['labelid'];
@@ -187,7 +187,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		else $this->_param['id'] = $this->_param['name'];
 
 		if(isset($v['class']) === true)
-			$this->_param['class'] = xivo_htmlsc($v['class']);
+			$this->_param['class'] = dwho_htmlsc($v['class']);
 
 		if(isset($v['null']) === true)
 			$this->_param['null'] = true;
@@ -207,7 +207,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		}
 
 		if(isset($v['jump']) === true)
-			$this->_param['jump'] = xivo_uint($v['jump']);
+			$this->_param['jump'] = dwho_uint($v['jump']);
 
 		if(isset($v['jump_strict']) === true)
 			$this->_param['jump_strict'] = (bool) $v['jump_strict'];
@@ -232,14 +232,14 @@ class xivo_tpl_form extends xivo_tpl_module
 				break;
 			case 'string':
 				if(isset($v['notag']) === false)
-					$r = xivo_notag($value);
+					$r = dwho_notag($value);
 				else if(isset($v['notagscript']) === true)
-					$r = xivo_notagscript($value);
+					$r = dwho_notagscript($value);
 				else
 					$r = $value;
 
 				if(isset($v['schars']) === false)
-					$r = xivo_htmlsc($r);
+					$r = dwho_htmlsc($r);
 				break;
 			case 'boolean':
 					$r = (int) $value;
@@ -312,7 +312,7 @@ class xivo_tpl_form extends xivo_tpl_module
 				$r['argmode'] = 'concatvalue';
 		}
 
-		if(xivo_issa('time',$v) === true)
+		if(dwho_issa('time',$v) === true)
 		{
 			if(isset($v['time']['from'],$v['time']['format']) === true)
 				$r['time'] = array('from'	=> $v['time']['from'],
@@ -326,8 +326,8 @@ class xivo_tpl_form extends xivo_tpl_module
 
 	function _mk_param_checked($checked)
 	{
-		if(xivo_bool($checked) === true
-		|| (xivo_issa($this->_param['name'],$checked) === true
+		if(dwho_bool($checked) === true
+		|| (dwho_issa($this->_param['name'],$checked) === true
 		&& (bool) $checked[$this->_param['name']] === true) === true)
 			$this->_param['checked'] = true;
 	}
@@ -482,7 +482,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		$v['type'] = 'image';
 
 		$o .= isset($v['src']) === true ? ' src="'.(string) $v['src'].'"' : '';
-		$o .= isset($v['alt']) === true ? ' alt="'.xivo_alttitle($v['alt']).'"' : ' alt=""';
+		$o .= isset($v['alt']) === true ? ' alt="'.dwho_alttitle($v['alt']).'"' : ' alt=""';
 
 		$this->_set_param($v);
 		$this->_mk_input($o);
@@ -793,29 +793,29 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(is_array($render) === false)
 			return(null);
 
-		$render['key'] = xivo_htmlsc($render['key']);
+		$render['key'] = dwho_htmlsc($render['key']);
 
 		if($this->_param['optgroup'] === true)
 		{
 			$this->_render .= sprintf('<option label="%s" value="%s"%s>%s</option>'."\n",
-						  xivo_alttitle($render['value']),
+						  dwho_alttitle($render['value']),
 						  $render['key'],
 						  $render['selected'],
-						  preg_replace('/^ $|(?<= ) /','&nbsp;',xivo_htmlsc($render['value'])));
+						  preg_replace('/^ $|(?<= ) /','&nbsp;',dwho_htmlsc($render['value'])));
 			return(null);
 		}
 
 		$this->_render .= sprintf('<option value="%s"%s>%s</option>'."\n",
 					  $render['key'],
 					  $render['selected'],
-					  preg_replace('/^ $|(?<= ) /','&nbsp;',xivo_htmlsc($render['value'])));
+					  preg_replace('/^ $|(?<= ) /','&nbsp;',dwho_htmlsc($render['value'])));
 	}
 
 	function _mk_slt_option_render($render,$param=null)
 	{
 		if(is_array($render) === false)
 			return(null);
-		else if(xivo_has_len($render,'value') === false)
+		else if(dwho_has_len($render,'value') === false)
 		{
 			$render['value'] = ' ';
 			return($this->_set_slt_option_render($render));
@@ -907,7 +907,7 @@ class xivo_tpl_form extends xivo_tpl_module
 	function _mk_slt_option_bbf_time($time)
 	{
 		if(isset($this->_param['bbf_opt']['time']) === false
-		|| ($time = xivo_calc_time($this->_param['bbf_opt']['time']['from'],
+		|| ($time = dwho_calc_time($this->_param['bbf_opt']['time']['from'],
 					   $time,
 					   $this->_param['bbf_opt']['time']['format'],
 					   false)) === false)
@@ -975,7 +975,7 @@ class xivo_tpl_form extends xivo_tpl_module
 
 		$param = &$this->_param['optgroup'];
 
-		if(is_scalar($render) === true && xivo_has_len($render) === false)
+		if(is_scalar($render) === true && dwho_has_len($render) === false)
 			$render = ' ';
 		else if(is_array($param['bbf']) === true)
 		{
@@ -1000,7 +1000,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if(is_scalar($render) === false)
 			return(null);
 
-		$render = preg_replace('/^ $|(?<= ) /','&nbsp;',xivo_htmlsc($render));
+		$render = preg_replace('/^ $|(?<= ) /','&nbsp;',dwho_htmlsc($render));
 
 		if($param['unique'] === true)
 			return($render);
@@ -1118,7 +1118,7 @@ class xivo_tpl_form extends xivo_tpl_module
 			{
 				for($i = 0;$i < $cnt;$i++)
 				{
-					if(xivo_issa($this->_param['browse'][$i],$ref) === false)
+					if(dwho_issa($this->_param['browse'][$i],$ref) === false)
 						break;
 
 					$ref = &$ref[$this->_param['browse'][$i]];
@@ -1186,7 +1186,7 @@ class xivo_tpl_form extends xivo_tpl_module
 		if($render !== false
 		&& ($label = $this->_mk_slt_optgroup_render($render)) !== null
 		&& $param['unique'] === true
-		&& xivo_has_len($this->_render) === true)
+		&& dwho_has_len($this->_render) === true)
 		{
 			$this->_optgroup[] = $this->_render;
 			$this->_render = '';

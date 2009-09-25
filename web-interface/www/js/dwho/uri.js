@@ -16,12 +16,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if(typeof(xivo) === 'undefined')
-	xivo = {'uri': {}};
-else if(xivo_is_undef(xivo.uri) === true)
-	xivo.uri = {};
+if(typeof(dwho) === 'undefined')
+	dwho = {'uri': {}};
+else if(dwho_is_undef(dwho.uri) === true)
+	dwho.uri = {};
 
-xivo.uri = function()
+dwho.uri = function()
 {
 	this._encode	= {};
 	this._host	= {'ipliteral':	1,
@@ -58,14 +58,14 @@ xivo.uri = function()
 					     '(\\:' + port + ')?$');
 }
 
-xivo.uri.prototype.build = function(obj,encode,type_host)
+dwho.uri.prototype.build = function(obj,encode,type_host)
 {
-	encode = xivo_is_undef(encode) === true ? true : Boolean(encode);
+	encode = dwho_is_undef(encode) === true ? true : Boolean(encode);
 	var scheme = authority = userinfo = hostport = path = query = fragment = '';
 
-	if(xivo_is_object(obj) === false)
+	if(dwho_is_object(obj) === false)
 		return(false);
-	else if(xivo_has_len(obj,'scheme') === true)
+	else if(dwho_has_len(obj,'scheme') === true)
 	{
 		if(this.valid_scheme(obj.scheme) === false)
 			return(false);
@@ -73,26 +73,26 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 		scheme = obj.scheme;
 	}
 
-	if(xivo_is_object(obj.authority) === true)
+	if(dwho_is_object(obj.authority) === true)
 	{
-		if(xivo_is_undef(obj.authority.host) === false)
+		if(dwho_is_undef(obj.authority.host) === false)
 			obj.host	= obj.authority.host;
 
-		if(xivo_is_undef(obj.authority.port) === false)
+		if(dwho_is_undef(obj.authority.port) === false)
 			obj.port	= obj.authority.port;
 
-		if(xivo_is_undef(obj.authority.user) === false)
+		if(dwho_is_undef(obj.authority.user) === false)
 			obj.user	= obj.authority.user;
 
-		if(xivo_is_undef(obj.authority.password) === false)
+		if(dwho_is_undef(obj.authority.password) === false)
 			obj.password	= obj.authority.password;
 	}
 
-	if(xivo_has_len(obj,'host') === true)
+	if(dwho_has_len(obj,'host') === true)
 	{
-		obj.host = xivo_string(obj.host);
+		obj.host = dwho_string(obj.host);
 
-		switch((xivo_is_empty(type_host) === true ? this.get_host_type(obj.host) : type_host))
+		switch((dwho_is_empty(type_host) === true ? this.get_host_type(obj.host) : type_host))
 		{
 			case this._host.ipliteral:
 				if(this.valid_ipliteral(obj.host) === false)
@@ -112,7 +112,7 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 		hostport = obj.host;
 	}
 
-	if(xivo_has_len(obj,'port') === true)
+	if(dwho_has_len(obj,'port') === true)
 	{
 		if(this.valid_port(obj.port) === false)
 			return(false);
@@ -120,18 +120,18 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 		hostport += ':' + obj.port;
 	}
 
-	if(xivo_has_len(obj,'user') === true)
+	if(dwho_has_len(obj,'user') === true)
 	{
-		obj.user = xivo_string(obj.user);
+		obj.user = dwho_string(obj.user);
 		if(encode === true)
 			obj.user = this.encode(obj.user,'user');
 
 		userinfo = obj.user;
 	}
 
-	if(xivo_has_len(obj,'password') === true)
+	if(dwho_has_len(obj,'password') === true)
 	{
-		obj.password = xivo_string(obj.password);
+		obj.password = dwho_string(obj.password);
 		if(encode === true)
 			obj.password = this.encode(obj.password,'password');
 
@@ -145,9 +145,9 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 	else if(hostport !== '')
 		authority = hostport;
 
-	if(xivo_has_len(obj,'path') === true)
+	if(dwho_has_len(obj,'path') === true)
 	{
-		obj.path = xivo_string(obj.path);
+		obj.path = dwho_string(obj.path);
 
 		if(authority !== '' && obj.path[0] !== '/')
 			return(false);
@@ -165,12 +165,12 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 		}
 	}
 
-	if(xivo_is_array(obj.query) === true)
+	if(dwho_is_array(obj.query) === true)
 		query = this.build_query(obj.query,encode);
 
-	if(xivo_has_len(obj,'fragment') === true)
+	if(dwho_has_len(obj,'fragment') === true)
 	{
-		obj.fragment = xivo_string(obj.fragment);
+		obj.fragment = dwho_string(obj.fragment);
 		if(encode === true)
 			fragment = this.encode(obj.fragment,'fragment');
 		else
@@ -202,29 +202,29 @@ xivo.uri.prototype.build = function(obj,encode,type_host)
 	return(r);
 }
 
-xivo.uri.prototype.parse = function(uri,decode)
+dwho.uri.prototype.parse = function(uri,decode)
 {
-	decode = xivo_is_undef(decode) === true ? true : Boolean(decode);
+	decode = dwho_is_undef(decode) === true ? true : Boolean(decode);
 
 	if((uri = this.split(uri)) === false)
 		return(false);
-	else if(xivo_is_undef(uri.authority) === false
+	else if(dwho_is_undef(uri.authority) === false
 	&& (uri.authority = this.split_authority(uri.authority)) === false)
 		return(false);
-	else if(xivo_is_undef(uri.query) === false
+	else if(dwho_is_undef(uri.query) === false
 	&& (uri.query = this.split_query(uri.query)) === false)
 		return(false);
-	else if(xivo_is_undef(uri.scheme) === false
+	else if(dwho_is_undef(uri.scheme) === false
 	&& this.valid_scheme(uri.scheme) === false)
 		return(false);
 
 	var authority = null;
 
-	if(xivo_is_object(uri.authority) === true)
+	if(dwho_is_object(uri.authority) === true)
 	{
 		authority = uri.authority;
 
-		if(xivo_is_undef(authority.user) === false)
+		if(dwho_is_undef(authority.user) === false)
 		{
 			if(this.valid_user(authority.user) === false)
 				return(false);
@@ -232,7 +232,7 @@ xivo.uri.prototype.parse = function(uri,decode)
 				authority.user = decodeURIComponent(authority.user);
 		}
 
-		if(xivo_is_undef(authority.password) === false)
+		if(dwho_is_undef(authority.password) === false)
 		{
 			if(this.valid_password(authority.password) === false)
 				return(false);
@@ -240,7 +240,7 @@ xivo.uri.prototype.parse = function(uri,decode)
 				authority.password = decodeURIComponent(authority.password);
 		}
 
-		if(xivo_is_undef(authority.host) === false)
+		if(dwho_is_undef(authority.host) === false)
 		{
 			if(this.valid_host(authority.host) === false)
 				return(false);
@@ -248,19 +248,19 @@ xivo.uri.prototype.parse = function(uri,decode)
 				authority.host = decodeURIComponent(authority.host);
 		}
 
-		if(xivo_is_undef(authority.port) === false
+		if(dwho_is_undef(authority.port) === false
 		&& this.valid_port(authority.port) === false)
 			return(false);
 	}
 
-	if(xivo_is_undef(uri.path) === false)
+	if(dwho_is_undef(uri.path) === false)
 	{
 		if(this.valid_path(uri.path) === false)
 			return(false);
 		else if(authority !== null && uri.path[0] !== '/')
 			return(false);
 		else if((authority === null
-		   || xivo_is_undef(uri.scheme) === true) === true
+		   || dwho_is_undef(uri.scheme) === true) === true
 		&& (pos = uri.path.indexOf(':')) !== -1
 		&& (poslash = uri.path.indexOf('/')) !== -1
 		&& pos < poslash)
@@ -270,13 +270,13 @@ xivo.uri.prototype.parse = function(uri,decode)
 			uri.path = decodeURIComponent(uri.path);
 	}
 
-	if(xivo_is_array(uri.query) === true && (nb = uri.query.length) !== 0)
+	if(dwho_is_array(uri.query) === true && (nb = uri.query.length) !== 0)
 	{
 		for(var i = 0;i < nb;i++)
 		{
 			ref = uri.query[i];
 
-			if(xivo_has_len(ref,0) === true)
+			if(dwho_has_len(ref,0) === true)
 			{
 				if(this.valid_query(ref[0]) === false)
 					return(false);
@@ -284,7 +284,7 @@ xivo.uri.prototype.parse = function(uri,decode)
 					ref[0] = decodeURIComponent(ref[0].replace(/\+/g,' '));
 			}
 
-			if(xivo_has_len(ref,1) === false)
+			if(dwho_has_len(ref,1) === false)
 				continue;
 			else if(this.valid_query(ref[1]) === false)
 				return(false);
@@ -293,7 +293,7 @@ xivo.uri.prototype.parse = function(uri,decode)
 		}
 	}
 
-	if(xivo_is_undef(uri.fragment) === false)
+	if(dwho_is_undef(uri.fragment) === false)
 	{
 		if(this.valid_fragment(uri.fragment) === false)
 			return(false);
@@ -304,35 +304,35 @@ xivo.uri.prototype.parse = function(uri,decode)
 	return(uri);
 }
 
-xivo.uri.prototype.split = function(uri)
+dwho.uri.prototype.split = function(uri)
 {
-	if(xivo_is_scalar(uri) === false
-	|| (rs = xivo_string(uri).match(this._regexp.rfc3986)) === null)
+	if(dwho_is_scalar(uri) === false
+	|| (rs = dwho_string(uri).match(this._regexp.rfc3986)) === null)
 		return(false);
 
 	var r = {};
 
-	if(xivo_has_len(rs,2) === true)
+	if(dwho_has_len(rs,2) === true)
 		r.scheme	= rs[2];
 
-	if(xivo_has_len(rs,4) === true)
+	if(dwho_has_len(rs,4) === true)
 		r.authority	= rs[4];
 
-	if(xivo_has_len(rs,5) === true)
+	if(dwho_has_len(rs,5) === true)
 		r.path		= rs[5];
 
-	if(xivo_has_len(rs,7) === true)
+	if(dwho_has_len(rs,7) === true)
 		r.query		= rs[7];
 
-	if(xivo_has_len(rs,9) === true)
+	if(dwho_has_len(rs,9) === true)
 		r.fragment	= rs[9];
 
 	return(r);
 }
 
-xivo.uri.prototype.split_authority = function(authority)
+dwho.uri.prototype.split_authority = function(authority)
 {
-	authority = xivo_string(authority);
+	authority = dwho_string(authority);
 
 	if(authority === '')
 		return(null);
@@ -355,7 +355,7 @@ xivo.uri.prototype.split_authority = function(authority)
 			if(pos !== 0)
 				r.user = userinfo.substring(0,pos);
 
-			if(xivo_is_undef(userinfo[pos + 1]) === false)
+			if(dwho_is_undef(userinfo[pos + 1]) === false)
 				r.password = userinfo.substring(pos + 1);
 		}
 	}
@@ -369,7 +369,7 @@ xivo.uri.prototype.split_authority = function(authority)
 
 		r.host = '[' + rs[1] + ']';
 
-		if(xivo_is_undef(rs[2]) === false && xivo_is_undef(rs[2][1]) === false)
+		if(dwho_is_undef(rs[2]) === false && dwho_is_undef(rs[2][1]) === false)
 			r.port = rs[2].substring(1);
 	}
 	else if((pos = hostport.indexOf(':')) !== -1)
@@ -377,7 +377,7 @@ xivo.uri.prototype.split_authority = function(authority)
 		if(pos !== 0)
 			r.host = hostport.substring(0,pos);
 
-		if(xivo_is_undef(hostport[pos + 1]) === false)
+		if(dwho_is_undef(hostport[pos + 1]) === false)
 			r.port = hostport.substring(pos + 1);
 	}
 	else
@@ -386,9 +386,9 @@ xivo.uri.prototype.split_authority = function(authority)
 	return(r);
 }
 
-xivo.uri.prototype.split_query = function(query)
+dwho.uri.prototype.split_query = function(query)
 {
-	query = xivo_string(query);
+	query = dwho_string(query);
 
 	if(query === '')
 		return(false);
@@ -418,11 +418,11 @@ xivo.uri.prototype.split_query = function(query)
 	return(r);
 }
 
-xivo.uri.prototype.build_query = function(query,encode)
+dwho.uri.prototype.build_query = function(query,encode)
 {
-	encode = xivo_is_undef(encode) === true ? true : Boolean(encode);
+	encode = dwho_is_undef(encode) === true ? true : Boolean(encode);
 
-	if(xivo_is_array(query) === false
+	if(dwho_is_array(query) === false
 	|| query.length === 0)
 		return('');
 
@@ -433,12 +433,12 @@ xivo.uri.prototype.build_query = function(query,encode)
 		var value = query[key];
 		var assignments = '';
 
-		if(xivo_is_array(value) === false)
+		if(dwho_is_array(value) === false)
 			continue;
 
-		if(xivo_has_len(value,0) === true)
+		if(dwho_has_len(value,0) === true)
 		{
-			value[0] = xivo_string(value[0]);
+			value[0] = dwho_string(value[0]);
 
 			if(encode === true)
 				assignments = this.encode(value[0],'query_key');
@@ -446,14 +446,14 @@ xivo.uri.prototype.build_query = function(query,encode)
 				assignments = value[0];
 		}
 
-		if(xivo_has_len(value,1) === false)
+		if(dwho_has_len(value,1) === false)
 		{
 			if(assignments !== '')
 				r.push(assignments);
 			continue;
 		}
 
-		value[1] = xivo_string(value[1]);
+		value[1] = dwho_string(value[1]);
 
 		if(encode === true)
 			assignments += '=' + this.encode(value[1],'query_val');
@@ -467,12 +467,12 @@ xivo.uri.prototype.build_query = function(query,encode)
 	return(r.join('&'));
 }
 
-xivo.uri.prototype.get_host_type = function(host)
+dwho.uri.prototype.get_host_type = function(host)
 {
-	if(xivo_has_len(host) === false)
+	if(dwho_has_len(host) === false)
 		return(this._host.reg_name);
 
-	host = xivo_string(host);
+	host = dwho_string(host);
 
 	if(host[0] === '[')
 		return(this._host.ipliteral);
@@ -482,14 +482,14 @@ xivo.uri.prototype.get_host_type = function(host)
 		return(this._host.reg_name);
 }
 
-xivo.uri.prototype.encode = function(str,type)
+dwho.uri.prototype.encode = function(str,type)
 {
-	str	= xivo_string(str);
-	type	= xivo_string(type);
+	str	= dwho_string(str);
+	type	= dwho_string(type);
 
 	var encode_uri = function(str)
 	{
-		return(encodeURIComponent(xivo_string(str)).
+		return(encodeURIComponent(dwho_string(str)).
 		       replace(/!/g,'%21').
 		       replace(/'/g,'%27').
 		       replace(/\(/g,'%28').
@@ -498,7 +498,7 @@ xivo.uri.prototype.encode = function(str,type)
 		       replace(/~/g,'%7E'));
 	}
 
-	if(xivo_is_undef(this._encode[type]) === true)
+	if(dwho_is_undef(this._encode[type]) === true)
 		return(encode_uri(str));
 
 	var rs = str.split(this._encode[type]);
@@ -527,25 +527,25 @@ xivo.uri.prototype.encode = function(str,type)
 	return(r);
 }
 
-xivo.uri.prototype.valid_scheme = function(scheme)
+dwho.uri.prototype.valid_scheme = function(scheme)
 {
-	if(xivo_is_scalar(scheme) === false)
+	if(dwho_is_scalar(scheme) === false)
 		return(false);
 
-	return((xivo_string(scheme).match(this._regexp.scheme) !== null));
+	return((dwho_string(scheme).match(this._regexp.scheme) !== null));
 }
 
-xivo.uri.prototype.valid_ipv4 = function(ip)
+dwho.uri.prototype.valid_ipv4 = function(ip)
 {
-	return((xivo_ip2long(ip) !== false));
+	return((dwho_ip2long(ip) !== false));
 }
 
-xivo.uri.prototype.valid_ipv6 = function(ip)
+dwho.uri.prototype.valid_ipv6 = function(ip)
 {
-	if(xivo_is_scalar(ip) === false)
+	if(dwho_is_scalar(ip) === false)
 		return(false);
 
-	ip = xivo_string(ip);
+	ip = dwho_string(ip);
 
 	if((pos = ip.indexOf('::')) === -1)
 		return((this._valid_rightipv6(ip) === 8));
@@ -557,9 +557,9 @@ xivo.uri.prototype.valid_ipv6 = function(ip)
 	return((right + left < 8));
 }
 
-xivo.uri.prototype._valid_h16 = function(h16)
+dwho.uri.prototype._valid_h16 = function(h16)
 {
-	h16 = xivo_string(h16);
+	h16 = dwho_string(h16);
 
 	if(((b16 = parseInt(h16,16).toString(10)) !== '0'
 	   || h16.match(/^[0-9]+$/) !== null) === true
@@ -569,9 +569,9 @@ xivo.uri.prototype._valid_h16 = function(h16)
 	return(false);
 }
 
-xivo.uri.prototype._valid_rightipv6 = function(ip)
+dwho.uri.prototype._valid_rightipv6 = function(ip)
 {
-	if((ip = xivo_string(ip)) === '')
+	if((ip = dwho_string(ip)) === '')
 		return(0);
 
 	var arrtmp = ip.split(/:/);
@@ -613,9 +613,9 @@ xivo.uri.prototype._valid_rightipv6 = function(ip)
 	return(h16_cnt + nb);
 }
 
-xivo.uri.prototype._valid_leftipv6 = function(ip)
+dwho.uri.prototype._valid_leftipv6 = function(ip)
 {
-	if((ip = xivo_string(ip)) === '')
+	if((ip = dwho_string(ip)) === '')
 		return(0);
 
 	var arrtmp = ip.split(/:/);
@@ -640,28 +640,28 @@ xivo.uri.prototype._valid_leftipv6 = function(ip)
 	return(nb);
 }
 
-xivo.uri.prototype.valid_ipvfuture = function(ip)
+dwho.uri.prototype.valid_ipvfuture = function(ip)
 {
-	if(xivo_is_scalar(ip) === true
+	if(dwho_is_scalar(ip) === true
 	&& ip.match(this._regexp.ipvfuture) !== null)
 		return(true);
 
 	return(false);
 }
 
-xivo.uri.prototype.valid_ipliteral = function(ip)
+dwho.uri.prototype.valid_ipliteral = function(ip)
 {
-	if(xivo_is_scalar(ip) === false)
+	if(dwho_is_scalar(ip) === false)
 		return(false);
 
-	ip = xivo_string(ip);
+	ip = dwho_string(ip);
 
 	var len = ip.length;
 
 	if(len < 2 || ip[0] !== '[' || ip[len - 1] !== ']')
 		return(false);
 
-	ip = xivo_substr(ip,1,-1);
+	ip = dwho_substr(ip,1,-1);
 
 	if(this.valid_ipv6(ip) === true || this.valid_ipvfuture(ip) === true)
 		return(true);
@@ -669,13 +669,13 @@ xivo.uri.prototype.valid_ipliteral = function(ip)
 	return(false);
 }
 
-xivo.uri.prototype.valid_host = function(host)
+dwho.uri.prototype.valid_host = function(host)
 {
 	switch(this.get_host_type(host))
 	{
 		case this._host.reg_name:
-			if(xivo_is_scalar(host) === true
-			&& xivo_string(host).match(this._regexp.host) !== null)
+			if(dwho_is_scalar(host) === true
+			&& dwho_string(host).match(this._regexp.host) !== null)
 				return(true);
 			break;
 		case this._host.ipliteral:
@@ -689,32 +689,32 @@ xivo.uri.prototype.valid_host = function(host)
 	return(false);
 }
 
-xivo.uri.prototype.valid_authority = function(host,user,password,port)
+dwho.uri.prototype.valid_authority = function(host,user,password,port)
 {
-	if(xivo_is_undef(host) === true)
+	if(dwho_is_undef(host) === true)
 		host = '';
-	else if(xivo_is_scalar(host) === false)
+	else if(dwho_is_scalar(host) === false)
 		return(false);
 
-	if(xivo_is_undef(user) === true)
+	if(dwho_is_undef(user) === true)
 		user = '';
-	else if(xivo_is_scalar(user) === false)
+	else if(dwho_is_scalar(user) === false)
 		return(false);
 
-	if(xivo_is_undef(password) === true)
+	if(dwho_is_undef(password) === true)
 		password = '';
-	else if(xivo_is_scalar(password) === false)
+	else if(dwho_is_scalar(password) === false)
 		return(false);
 
-	if(xivo_is_undef(port) === true)
+	if(dwho_is_undef(port) === true)
 		port = '';
-	else if(xivo_is_scalar(port) === false)
+	else if(dwho_is_scalar(port) === false)
 		return(false);
 
-	host		= xivo_string(host);
-	user		= xivo_string(user);
-	password	= xivo_string(password);
-	port		= xivo_string(port);
+	host		= dwho_string(host);
+	user		= dwho_string(user);
+	password	= dwho_string(password);
+	port		= dwho_string(port);
 
 	if((host !== ''
 	   && this.valid_host(host) === false) === true
@@ -733,52 +733,52 @@ xivo.uri.prototype.valid_authority = function(host,user,password,port)
 	return(true);
 }
 
-xivo.uri.prototype.valid_user = function(user)
+dwho.uri.prototype.valid_user = function(user)
 {
-	if(xivo_is_scalar(user) === true
+	if(dwho_is_scalar(user) === true
 	&& user.match(this._regexp.user) !== null)
 		return(true);
 
 	return(false);
 }
 
-xivo.uri.prototype.valid_password = function(password)
+dwho.uri.prototype.valid_password = function(password)
 {
-	if(xivo_is_scalar(password) === true
+	if(dwho_is_scalar(password) === true
 	&& password.match(this._regexp.password) !== null)
 		return(true);
 
 	return(false);
 }
 
-xivo.uri.prototype.valid_port = function(port)
+dwho.uri.prototype.valid_port = function(port)
 {
-	if(xivo_is_scalar(port) === true
+	if(dwho_is_scalar(port) === true
 	&& port.match(this._regexp.port) !== null)
 		return(true);
 
 	return(false);
 }
 
-xivo.uri.prototype.valid_path = function(path)
+dwho.uri.prototype.valid_path = function(path)
 {
-	if(xivo_is_scalar(path) === true
+	if(dwho_is_scalar(path) === true
 	&& path.match(this._regexp.path) !== null)
 		return(true);
 
 	return(false);
 }
 
-xivo.uri.prototype.valid_query = function(query)
+dwho.uri.prototype.valid_query = function(query)
 {
-	if(xivo_is_scalar(query) === true
+	if(dwho_is_scalar(query) === true
 	&& query.match(this._regexp.query) !== null)
 		return(true);
 
 	return(false);
 }
 
-xivo.uri.prototype.valid_fragment = function(fragment)
+dwho.uri.prototype.valid_fragment = function(fragment)
 {
 	return(this.valid_query(fragment));
 }

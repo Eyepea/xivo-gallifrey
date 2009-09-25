@@ -40,8 +40,8 @@
 ?>
 <form action="#" name="fm-meetme-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -92,13 +92,13 @@
 			<label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_trunc($ref['name'],25,'...',false);
+					dwho_trunc($ref['name'],25,'...',false);
 ?>
 			</label>
 		</td>
 		<td><?=$ref['number']?></td>
-		<td><?=(xivo_has_len($ref['pin']) === true ? $ref['pin'] : '-')?></td>
-		<td><?=(xivo_has_len($ref['admin-pin']) === true ? $ref['admin-pin'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['pin']) === true ? $ref['pin'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['admin-pin']) === true ? $ref['admin-pin'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_extenfeatures extends xivo_application_asterisk_abstract
 {
@@ -77,7 +77,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function get_config_exten()
 	{
-		if(xivo_issa('exten',$this->_conf) === false)
+		if(dwho_issa('exten',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['exten']);
@@ -93,8 +93,8 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 		$name = (string) $name;
 		$cmd = (string) $cmd;
 
-		if(xivo_issa('exten',$this->_conf) === false
-		|| xivo_issa($name,$this->_conf['exten']) === false)
+		if(dwho_issa('exten',$this->_conf) === false
+		|| dwho_issa($name,$this->_conf['exten']) === false)
 			return(false);
 		else if($cmd !== '' && isset($this->_conf['exten'][$name][$cmd]) === false)
 			return(false);
@@ -195,7 +195,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 		if($this->get($arr['name']) !== false
 		&& array_key_exists('commented',$arr) === false
-		&& xivo_ak('commented',$this->_info['extenfeatures']) === true)
+		&& dwho_ak('commented',$this->_info['extenfeatures']) === true)
 			$arr['commented'] = $this->_info['extenfeatures']['commented'];
 
 		$this->set_extenfeatures($arr);
@@ -383,7 +383,7 @@ class xivo_application_service_asterisk_extenfeatures extends xivo_application_a
 
 	function delete_extenfeatures($name='')
 	{
-		if(xivo_issa('extenfeatures',$this->_info) === true)
+		if(dwho_issa('extenfeatures',$this->_info) === true)
 			$name = $this->_info['extenfeatures']['name'];
 		else if(is_scalar($name) === false)
 			return(false);

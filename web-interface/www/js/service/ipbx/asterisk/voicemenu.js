@@ -38,8 +38,8 @@ xivo_ast_voicemenuevent_type = {
 
 function xivo_ast_voicemenu_flow_display()
 {
-	if((from = xivo_eid('it-voicemenu-flow-hidden')) === false
-	|| (to = xivo_eid('it-voicemenu-flow')) === false
+	if((from = dwho_eid('it-voicemenu-flow-hidden')) === false
+	|| (to = dwho_eid('it-voicemenu-flow')) === false
 	|| (from.type !== 'select-one'
 	   && from.type !== 'select-multiple') === true
 	|| (to.type !== 'select-one'
@@ -86,9 +86,9 @@ function xivo_ast_voicemenu_event_display()
 	{
 		eventname = xivo_ast_voicemenuevent_type[eventtype];
 
-		if((itevent = xivo_eid('it-voicemenuevent-'+eventname)) === false
+		if((itevent = dwho_eid('it-voicemenuevent-'+eventname)) === false
 		|| itevent.tagName.toLowerCase() !== 'input'
-		|| (infoevent = xivo_eid('voicemenuevent-'+eventname)) === false)
+		|| (infoevent = dwho_eid('voicemenuevent-'+eventname)) === false)
 			continue;
 
 		for(property in xivo_ast_defapplication)
@@ -98,9 +98,9 @@ function xivo_ast_voicemenu_event_display()
 
 			itevent.value = defapplication['value'];
 
-			infoevent.innerHTML = '<a href="#" onclick="return(xivo.dom.free_focus());" title="'+
-					      xivo_htmlsc(defapplication['text'])+'">'+
-					      xivo_htmlsc(xivo_trunc(defapplication['text'],40,'...',false))+'</a>';
+			infoevent.innerHTML = '<a href="#" onclick="return(dwho.dom.free_focus());" title="'+
+					      dwho_htmlsc(defapplication['text'])+'">'+
+					      dwho_htmlsc(dwho_trunc(defapplication['text'],40,'...',false))+'</a>';
 
 			if(defapplication['error'] === true)
 				infoevent.parentNode.className = 'l-infos-error';
@@ -118,9 +118,9 @@ function xivo_ast_voicemenu_event_display()
 			if(application['error'] === true)
 				infoevent.parentNode.className = 'l-infos-error';
 
-			infoevent.innerHTML = '<a href="#" onclick="return(xivo.dom.free_focus());" title="'+
-					      xivo_htmlsc(application['text'])+'">'+
-					      xivo_htmlsc(xivo_trunc(application['text'],40,'...',false))+'</a>';
+			infoevent.innerHTML = '<a href="#" onclick="return(dwho.dom.free_focus());" title="'+
+					      dwho_htmlsc(application['text'])+'">'+
+					      dwho_htmlsc(dwho_trunc(application['text'],40,'...',false))+'</a>';
 
 			continue nextevent;
 		}
@@ -129,7 +129,7 @@ function xivo_ast_voicemenu_event_display()
 
 function xivo_ast_voicemenu_get_defapplication(application,value,dialevent)
 {
-	if(xivo_strcasecmp(value,application,application.length) !== 0
+	if(dwho_strcasecmp(value,application,application.length) !== 0
 	|| ((lastchar = value.charAt(application.length)) !== ','
 	   && lastchar !== ''
 	   && lastchar !== '|') === true
@@ -182,7 +182,7 @@ function xivo_ast_voicemenu_get_defapplication(application,value,dialevent)
 
 function xivo_ast_voicemenu_get_application(application,value,dialevent)
 {
-	if(xivo_strcasecmp(value,application,application.length) !== 0
+	if(dwho_strcasecmp(value,application,application.length) !== 0
 	|| ((lastchar = value.charAt(application.length)) !== ','
 	   && lastchar !== ''
 	   && lastchar !== '|') === true
@@ -238,9 +238,9 @@ function xivo_ast_voicemenu_get_application(application,value,dialevent)
 
 function xivo_ast_voicemenuevent_get_eventname(eventtype)
 {
-	eventtype = xivo_string(eventtype);
+	eventtype = dwho_string(eventtype);
 
-	if(xivo_is_undef(xivo_ast_voicemenuevent_type[eventtype]) === false)
+	if(dwho_is_undef(xivo_ast_voicemenuevent_type[eventtype]) === false)
 		return(xivo_ast_voicemenuevent_type[eventtype]);
 
 	return(false);
@@ -248,13 +248,13 @@ function xivo_ast_voicemenuevent_get_eventname(eventtype)
 
 function xivo_ast_voicemenuevent_defapplication(action)
 {
-	if((eventtype = xivo_eid('it-voicemenuevent-type')) === false
+	if((eventtype = dwho_eid('it-voicemenuevent-type')) === false
 	|| (eventname = xivo_ast_voicemenuevent_get_eventname(eventtype.value)) === false)
 		return(false);
 
 	var targetid = 'voicemenuevent-'+eventname;
 
-	if((target = xivo_eid(targetid)) === false)
+	if((target = dwho_eid(targetid)) === false)
 		return(false);
 
 	switch(action)
@@ -265,12 +265,12 @@ function xivo_ast_voicemenuevent_defapplication(action)
 				var r = true;
 				target.value = '';
 			}
-			else if(xivo_is_undef(target.type) === true)
+			else if(dwho_is_undef(target.type) === true)
 			{
 				var r = true;
 				target.innerHTML = '-';
 
-				if((ittarget = xivo_eid('it-'+targetid)) !== false
+				if((ittarget = dwho_eid('it-'+targetid)) !== false
 				&& ittarget.tagName.toLowerCase() === 'input')
 					ittarget.value = '';
 			}
@@ -320,9 +320,9 @@ function xivo_ast_voicemenuevent_defapplication(action)
 	else if((html = target.innerHTML) === '-')
 		return(true);
 
-	target.innerHTML = '<a href="#" onclick="return(xivo.dom.free_focus());" title="'+
-			   xivo_htmlsc(html)+'">'+
-			   xivo_htmlsc(xivo_trunc(html,40,'...',false))+'</a>';
+	target.innerHTML = '<a href="#" onclick="return(dwho.dom.free_focus());" title="'+
+			   dwho_htmlsc(html)+'">'+
+			   dwho_htmlsc(dwho_trunc(html,40,'...',false))+'</a>';
 
 	return(true);
 }
@@ -341,12 +341,12 @@ function xivo_ast_voicemenu_onload()
 
 	xivo_ast_chg_ipbxapplication(null);
 
-	if(xivo_is_undef(xivo_fm['fm-voicemenu']) === false)
-		xivo_fm_set_disable_submit_onenter(xivo_fm['fm-voicemenu']);
+	if(dwho_is_undef(dwho.fm['fm-voicemenu']) === false)
+		dwho.form.set_disable_submit_onenter(dwho.fm['fm-voicemenu']);
 
 	xivo_ast_dialaction_onload();
 	xivo_ast_voicemenu_flow_display();
 	xivo_ast_voicemenu_event_display();
 }
 
-xivo.dom.set_onload(xivo_ast_voicemenu_onload);
+dwho.dom.set_onload(xivo_ast_voicemenu_onload);

@@ -55,7 +55,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 		if(isset($this->_origin) === true)
 			$this->_origin = false;
 
-		if(($id = xivo_ulongint($id)) === 0
+		if(($id = dwho_ulongint($id)) === 0
 		|| ($r = $this->_dso->get($id,$disable,$delete)) === false)
 			return(false);
 		else if(isset($this->_origin) === true)
@@ -100,7 +100,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 	function is_valid($id,$disable=null)
 	{
-		if(($id = xivo_ulongint($id)) === 0
+		if(($id = dwho_ulongint($id)) === 0
 		|| $this->get_primary($id,$disable) === false)
 			return(false);
 
@@ -144,7 +144,7 @@ class xivo_service_asterisk_agentgroup extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$disable=null,$delete=false)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
+		if(($id = dwho_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 		else if(isset($arr['name']) === true)
 		{

@@ -31,8 +31,8 @@ $info = $this->get_var('info');
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'edit')),
@@ -44,7 +44,7 @@ $info = $this->get_var('info');
 				    'value'	=> $info['id']));
 ?>
 		<p class="fm-field txt-left">
-			<span class="fm-desc"><?=$this->bbf('fm_login');?></span>&nbsp;<?=xivo_htmlen($info['login']);?>
+			<span class="fm-desc"><?=$this->bbf('fm_login');?></span>&nbsp;<?=dwho_htmlen($info['login']);?>
 		</p>
 		<p class="fm-field txt-left">
 			<span class="fm-desc"><?=$this->bbf('fm_type');?></span>&nbsp;<?=$info['meta']?>

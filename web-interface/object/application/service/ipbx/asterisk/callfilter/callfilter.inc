@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_callfilter extends xivo_application_asterisk_abstract
 {
@@ -279,7 +279,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 			$r[$rs[$i]['id']] = $this->_callfilter->_prepare($rs[$i]);
 			$ref = &$r[$rs[$i]['id']];
 
-			if(xivo_empty($ref['member_id']) === true)
+			if(dwho_empty($ref['member_id']) === true)
 			{
 				$ref['member_identity'] = '';
 				$ref['linked'] = false;
@@ -338,7 +338,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('callfilter',$arr) === false)
+		|| dwho_issa('callfilter',$arr) === false)
 			return(false);
 
 		$this->set_callfilter($arr['callfilter']);
@@ -346,7 +346,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		switch($this->_param['type'])
 		{
 			case 'bosssecretary':
-				if(xivo_issa('callfiltermember',$arr) === false)
+				if(dwho_issa('callfiltermember',$arr) === false)
 					return(false);
 
 				$this->set_callfiltermember($arr['callfiltermember']);
@@ -355,12 +355,12 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 				return(false);
 		}
 
-		if(xivo_issa('dialaction',$arr) === true)
+		if(dwho_issa('dialaction',$arr) === true)
 			$this->set_dialaction($arr['dialaction']);
 
 		$this->set_contextmember();
 
-		if(xivo_issa('callerid',$arr) === true)
+		if(dwho_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
 
 		return(($this->get_errnb() < 1));
@@ -560,7 +560,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _add_callfilterbs($callfilterid)
 	{
-		if(($callfilterid = xivo_ulongint($callfilterid)) === 0
+		if(($callfilterid = dwho_ulongint($callfilterid)) === 0
 		|| ($rs = $this->get_result('callfiltermember')) === null
 		|| $rs === false
 		|| isset($rs['boss'],$rs['secretary']) === false
@@ -663,7 +663,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function edit_callfilter()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false
+		if(dwho_issa('callfilter',$this->_info) === false
 		|| ($rs = $this->get_result('callfilter')) === null
 		|| $rs === false)
 			return(false);
@@ -686,12 +686,12 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _edit_callfilterbs()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		$id = $this->_info['callfilter']['id'];
 
-		if(xivo_issa('callfiltermember',$this->_info) === false)
+		if(dwho_issa('callfiltermember',$this->_info) === false)
 			return($this->_add_callfilterbs($id));
 
 		$this->_return['callfiltermember'] = $this->delete_callfiltermember();
@@ -711,7 +711,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 		$rs['boss']['callfilterid'] = $id;
 
-		if(xivo_issa('boss',$this->_info['callfiltermember']) === true)
+		if(dwho_issa('boss',$this->_info['callfiltermember']) === true)
 		{
 			$cid = $this->_info['callfiltermember']['boss']['id'];
 			$rs['boss']['active'] = $this->_info['callfiltermember']['boss']['active'];
@@ -723,7 +723,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 		|| ($this->_return['callfiltermember'][] = $this->_callfiltermember->add($rs['boss'],$cid)) === false)
 			return(false);
 
-		if(xivo_issa('secretary',$this->_info['callfiltermember']) === true)
+		if(dwho_issa('secretary',$this->_info['callfiltermember']) === true)
 		{
 			$secretary = &$this->_info['callfiltermember']['secretary'];
 			$cnt = count($secretary);
@@ -766,7 +766,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function edit_dialaction()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_dialaction($this->_info['callfilter']['id']));
@@ -774,7 +774,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['callfilter']['id']));
@@ -782,7 +782,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function edit_callerid()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_callerid($this->_info['callfilter']['id']));
@@ -857,7 +857,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function delete_callfilter()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		$r = $this->_callfilter->delete($this->_info['callfilter']['id']);
@@ -881,11 +881,11 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _delete_callfilterbs()
 	{
-		if(xivo_issa('callfiltermember',$this->_info) === false
+		if(dwho_issa('callfiltermember',$this->_info) === false
 		|| (isset($this->_info['callfiltermember']['boss']) === false
 		   && isset($this->_info['callfiltermember']['secretary']) === false) === true)
 			return(null);
-		else if(xivo_issa('callfilter',$this->_info) === false)
+		else if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		$where = array();
@@ -940,7 +940,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function unlinks()
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 
 		$this->_dialaction->unlinked('callfilter',$this->_info['callfilter']['id']);
@@ -990,7 +990,7 @@ class xivo_application_service_asterisk_callfilter extends xivo_application_aste
 
 	function _enable_disable_callfilter($disable=false)
 	{
-		if(xivo_issa('callfilter',$this->_info) === false)
+		if(dwho_issa('callfilter',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_callfilter->enable($this->_info['callfilter']['id']);

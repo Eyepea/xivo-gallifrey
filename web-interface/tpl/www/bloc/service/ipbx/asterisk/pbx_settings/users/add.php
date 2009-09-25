@@ -33,13 +33,13 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-group');
-										xivo_fm_select('it-queue');
-										xivo_fm_select('it-codec');
-										xivo_fm_select('it-rightcall');">
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-group');
+										dwho.form.select('it-queue');
+										dwho.form.select('it-codec');
+										dwho.form.select('it-rightcall');">
 <?php
-		echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-					    'value'	=> XIVO_SESS_ID)),
+		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'act',
 					    'value'	=> 'add')),
@@ -61,18 +61,3 @@ $form = &$this->get_module('form');
 		<span class="span-right">&nbsp;</span>
 	</div>
 </div>
-<!-- script type="text/javascript">
-	function xivo_http_requestor(xsptr)
-	{
-		var xivo_tata = new xivo.http(
-			'/service/ipbx/ui.php/pbx_settings/users/?' + xivo_sess_str,
-			{'callbackcomplete':	function(xhr) { xsptr.set(xhr,xsptr.get_search_value()); },
-			 'cache':		false},
-			{'act':		'search',
-			 'search':	xsptr.get_search_value()},
-			true);
-	}
-
-	var tutu = new xivo.suggest({'requestor': xivo_http_requestor},
-				    'it-userfeatures-firstname');
-</script -->

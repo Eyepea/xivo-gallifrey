@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
 class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 {
@@ -107,7 +107,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 	{
 		if($this->_dso->is_single_primary() === true)
 		{
-			if(xivo_has_len($id) === false)
+			if(dwho_has_len($id) === false)
 				return(false);
 			else
 				return($this->_dso->mk_primary_key_value($id));
@@ -115,7 +115,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		else if($this->_dso->is_multi_primary() === false)
 			return(false);
 		else if(($primary = $this->_dso->get_primary_key()) !== false
-		&& ($id = xivo_array_intersect_key($primary,$id)) !== false
+		&& ($id = dwho_array_intersect_key($primary,$id)) !== false
 		&& count($primary) === count($id))
 			return($id);
 
@@ -426,7 +426,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			{
 				for($i = 0;$i < $nb;$i++)
 				{
-					if(($intersect = xivo_array_intersect_key($primary,$list[$i])) !== false
+					if(($intersect = dwho_array_intersect_key($primary,$list[$i])) !== false
 					&& ($key = implode('-',$intersect)) !== '')
 						$r[$key] = $this->_prepare($list[$i]);
 				}
@@ -435,7 +435,7 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			{
 				for($i = 0;$i < $nb;$i++)
 				{
-					if(($intersect = xivo_array_intersect_key($primary,$list[$i])) !== false
+					if(($intersect = dwho_array_intersect_key($primary,$list[$i])) !== false
 					&& ($key = implode('-',$intersect)) !== '')
 						$r[$key] = $list[$i];
 				}

@@ -49,8 +49,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-files-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -96,7 +96,7 @@ $page = $url->pager($pager['pages'],
 						 'field'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
-		    onclick="location.href = xivo.dom.node.firstchild(this);">
+		    onclick="location.href = dwho.dom.node.firstchild(this);">
 			<?=$url->href_html($ref['name'],
 					   'service/ipbx/pbx_services/sounds',
 					   array('act'	=> 'download',
@@ -104,7 +104,7 @@ $page = $url->pager($pager['pages'],
 						 'id'	=> $ref['name'],
 						 'page'	=> $pager['page']));?>
 		</td>
-		<td><?=xivo_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
+		<td><?=dwho_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
 					     null,
 					     $ref['mtime']);?></td>
 		<td class="td-right" colspan="2">

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_tracerror
+class dwho_tracerror
 {
 	var $_param = array(
 				'level'		=> 0,
@@ -29,27 +29,27 @@ class xivo_tracerror
 				'file'		=> false);
 
 	var $_delayed_content	= array();
-	var $_sapi		= XIVO_SAPI_MODE;
+	var $_sapi		= DWHO_SAPI_MODE;
 	var $_conf		= array();
 
-	function xivo_tracerror($param=array())
+	function dwho_tracerror($param=array())
 	{
 		$param = (array) $param;
 
-		if(($this->_conf = xivo_gat::get_file(XIVO_PATH_LIBCONF.XIVO_SEP_DIR.'tracerror')) === false)
+		if(($this->_conf = dwho_gat::get_file(DWHO_PATH_CONF.DWHO_SEP_DIR.'tracerror')) === false)
 			die('Failed to load tracerror configuration array');
 
 		if(isset($param['level']) === false
 		|| $this->set_param('level',$param['level']) === false)
-			$this->set_param('level',XIVO_TE_ERR_ALL);
+			$this->set_param('level',DWHO_TE_ERR_ALL);
 
 		if(isset($param['report_type']) === false
 		|| $this->set_param('report_type',$param['report_type']) === false)
-			$this->set_param('report_type',XIVO_TE_RTYPE_LOG);
+			$this->set_param('report_type',DWHO_TE_RTYPE_LOG);
 
 		if(isset($param['report_mode']) === false
 		|| $this->set_param('report_mode',$param['report_mode']) === false)
-			$this->set_param('report_mode',XIVO_TE_RMODE_REALTIME);
+			$this->set_param('report_mode',DWHO_TE_RMODE_REALTIME);
 
 		if(isset($param['report_func']) === false
 		|| $this->set_param('report_func',$param['report_func']) === false)
@@ -87,7 +87,7 @@ class xivo_tracerror
 				if(($value = $this->_chk_report_type($value)) === false)
 					return(false);
 
-				ini_set('display_errors',(bool) ($value & XIVO_TE_RTYPE_SCREEN));
+				ini_set('display_errors',(bool) ($value & DWHO_TE_RTYPE_SCREEN));
 				break;
 			case 'report_mode':
 				if($this->_chk_report_mode($value) === false)
@@ -120,17 +120,17 @@ class xivo_tracerror
 
 	function notice($msg,$context='',$report_type=null)
 	{
-		return($this->report_err($msg,XIVO_TE_ERR_NOTICE,$context,$report_type));
+		return($this->report_err($msg,DWHO_TE_ERR_NOTICE,$context,$report_type));
 	}
 
 	function warning($msg,$context='',$report_type=null)
 	{
-		return($this->report_err($msg,XIVO_TE_ERR_WARNING,$context,$report_type));
+		return($this->report_err($msg,DWHO_TE_ERR_WARNING,$context,$report_type));
 	}
 
 	function error($msg,$context='',$report_type=null)
 	{
-		return($this->report_err($msg,XIVO_TE_ERR_ERROR,$context,$report_type));
+		return($this->report_err($msg,DWHO_TE_ERR_ERROR,$context,$report_type));
 	}
 
 	function _chk_level($level)
@@ -139,7 +139,7 @@ class xivo_tracerror
 
 		$level = intval($level);
 
-		if($level === 0 || ($level & XIVO_TE_ERR_ALL) !== 0)
+		if($level === 0 || ($level & DWHO_TE_ERR_ALL) !== 0)
 			$r = $level;
 
 		return($r);
@@ -151,7 +151,7 @@ class xivo_tracerror
 
 		$type = intval($type);
 
-		if($type === 0 || ($type & XIVO_TE_RTYPE_ALL) !== 0)
+		if($type === 0 || ($type & DWHO_TE_RTYPE_ALL) !== 0)
 			$r = $type;
 
 		return($r);
@@ -167,16 +167,16 @@ class xivo_tracerror
 		$r = false;
 
 		if($email !== false)
-			$r = xivo_chk_email($email);
+			$r = dwho_chk_email($email);
 
 		return($r);
 	}
 
 	function _chk_file($file)
 	{
-		if(($filelog = xivo_file::is_f_rw($file)) !== false)
+		if(($filelog = dwho_file::is_f_rw($file)) !== false)
 			$r = $filelog;
-		else if(xivo_file::is_d_rwx($file,true) !== false && xivo_file::is_f($file) === false)
+		else if(dwho_file::is_d_rwx($file,true) !== false && dwho_file::is_f($file) === false)
 			$r = touch($file);
 		else
 			$r = false;
@@ -184,7 +184,7 @@ class xivo_tracerror
 		return($r);
 	}
 
-	function report_err($msg,$level=0,$context=XIVO_TE_CONTEXT,$report_type=null)
+	function report_err($msg,$level=0,$context=DWHO_TE_CONTEXT,$report_type=null)
 	{
 		$level = $this->_chk_level($level);
 
@@ -193,13 +193,13 @@ class xivo_tracerror
 		else if(($report_type = $this->_chk_report_type($report_type)) === false)
 			$report_type = $this->_param['report_type'];
 
-		$context = $context !== '' ? (string) $context : XIVO_TE_CONTEXT;
+		$context = $context !== '' ? (string) $context : DWHO_TE_CONTEXT;
 
-		if($this->_param['report_mode'] === XIVO_TE_RMODE_REALTIME
-		|| $report_type !== XIVO_TE_RTYPE_SCREEN)
+		if($this->_param['report_mode'] === DWHO_TE_RMODE_REALTIME
+		|| $report_type !== DWHO_TE_RTYPE_SCREEN)
 			return($this->display($msg,$level,$report_type,$context,$this->_param['report_mode']));
 
-		return($this->display($msg,XIVO_TE_ERR_TRAC,XIVO_TE_RTYPE_SCREEN,$context,XIVO_TE_RMODE_DELAYED));
+		return($this->display($msg,DWHO_TE_ERR_TRAC,DWHO_TE_RTYPE_SCREEN,$context,DWHO_TE_RMODE_DELAYED));
 	}
 
 	function report_e_err($errno,$errstr,$errfile,$errline)
@@ -207,8 +207,8 @@ class xivo_tracerror
 		if(error_reporting() < 1)
 			return(null);
 
-		$context = XIVO_TE_CONTEXT;
-		$level = XIVO_TE_ERR_TRAC;
+		$context = DWHO_TE_CONTEXT;
+		$level = DWHO_TE_ERR_TRAC;
 
 		$msg = '['.$errno.'] '.$errstr.' - File: '.$errfile.' - Line: '.$errline;
 
@@ -216,20 +216,20 @@ class xivo_tracerror
 		{
 			$context = $this->_conf['e_context'][$errno];
 
-			if(($errno & XIVO_TE_ERR_ERROR) !== 0)
-				$level = XIVO_TE_ERR_ERROR;
-			else if(($errno & XIVO_TE_ERR_WARNING) !== 0)
-				$level = XIVO_TE_ERR_WARNING;
-			else if(($errno & XIVO_TE_ERR_NOTICE) !== 0)
-				$level = XIVO_TE_ERR_NOTICE;
-			else if(($errno & XIVO_TE_ERR_PARSE) !== 0)
-				$level = XIVO_TE_ERR_PARSE;
+			if(($errno & DWHO_TE_ERR_ERROR) !== 0)
+				$level = DWHO_TE_ERR_ERROR;
+			else if(($errno & DWHO_TE_ERR_WARNING) !== 0)
+				$level = DWHO_TE_ERR_WARNING;
+			else if(($errno & DWHO_TE_ERR_NOTICE) !== 0)
+				$level = DWHO_TE_ERR_NOTICE;
+			else if(($errno & DWHO_TE_ERR_PARSE) !== 0)
+				$level = DWHO_TE_ERR_PARSE;
 		}
 
 		$this->report_err($msg,$level,$context,$this->_param['report_type']);
 	}
 
-	function report_trac($msg,$context=XIVO_TE_CONTEXT,$report_type=null,$report_mode=0)
+	function report_trac($msg,$context=DWHO_TE_CONTEXT,$report_type=null,$report_mode=0)
 	{
 		if(($report_type = $this->_chk_report_type($report_type)) === false)
 			$report_type = $this->_param['report_type'];
@@ -237,23 +237,23 @@ class xivo_tracerror
 		if($this->_chk_report_mode($report_mode) === false)
 			$report_mode = $this->_param['report_mode'];
 
-		if($report_type === XIVO_TE_RTYPE_NONE)
+		if($report_type === DWHO_TE_RTYPE_NONE)
 			return(false);
 
-		$context = $context !== '' ? (string) $context : XIVO_TE_CONTEXT;
+		$context = $context !== '' ? (string) $context : DWHO_TE_CONTEXT;
 
-		if($report_mode === XIVO_TE_RMODE_REALTIME || $report_type !== XIVO_TE_RTYPE_SCREEN)
+		if($report_mode === DWHO_TE_RMODE_REALTIME || $report_type !== DWHO_TE_RTYPE_SCREEN)
 		{
-			return($this->display($msg,XIVO_TE_ERR_TRAC,$report_type,$context,$this->_param['report_mode']));
+			return($this->display($msg,DWHO_TE_ERR_TRAC,$report_type,$context,$this->_param['report_mode']));
 		}
 
-		return($this->display($msg,XIVO_TE_ERR_TRAC,XIVO_TE_RTYPE_SCREEN,$context,XIVO_TE_RMODE_DELAYED));
+		return($this->display($msg,DWHO_TE_ERR_TRAC,DWHO_TE_RTYPE_SCREEN,$context,DWHO_TE_RMODE_DELAYED));
 	}
 
-	function display($msg,$level=XIVO_TE_ERR_TRAC,$report_type=null,$context=XIVO_TE_CONTEXT,$report_mode=0)
+	function display($msg,$level=DWHO_TE_ERR_TRAC,$report_type=null,$context=DWHO_TE_CONTEXT,$report_mode=0)
 	{
 		if(($level = $this->_chk_level($level)) === false)
-			$level = XIVO_TE_ERR_TRAC;
+			$level = DWHO_TE_ERR_TRAC;
 
 		if(($report_type = $this->_chk_report_type($report_type)) === false)
 			$report_type = $this->_param['report_type'];
@@ -264,9 +264,9 @@ class xivo_tracerror
 		$context = (string) $context;
 
 		if(isset($context{0}) === false)
-			$context = XIVO_TE_CONTEXT;
+			$context = DWHO_TE_CONTEXT;
 
-		if($report_type === XIVO_TE_RTYPE_NONE)
+		if($report_type === DWHO_TE_RTYPE_NONE)
 			return(false);
 
 		$tomsg_log = '';
@@ -274,14 +274,14 @@ class xivo_tracerror
 		if(is_array($msg) === true || is_object($msg) === true || is_bool($msg) === true || is_null($msg) === true)
 		{
 			if($this->_param['report_func'] === 2 || (is_bool($msg) === true || is_null($msg) === true) === true)
-				$tomsg = xivo_svar_dump($msg);
+				$tomsg = dwho_svar_dump($msg);
 			else
-				$tomsg = xivo_sprint_r($msg);
+				$tomsg = dwho_sprint_r($msg);
 
-			if(($report_type & XIVO_TE_RTYPE_LOG) !== 0 || $this->_sapi !== 'default')
+			if(($report_type & DWHO_TE_RTYPE_LOG) !== 0 || $this->_sapi !== 'default')
 				$tomsg_log = $tomsg;
 
-			if(($report_type & XIVO_TE_RTYPE_SCREEN) !== 0 && $this->_sapi === 'default')
+			if(($report_type & DWHO_TE_RTYPE_SCREEN) !== 0 && $this->_sapi === 'default')
 				$tomsg = '<pre>'.$tomsg.'</pre>';
 		}
 		else $tomsg = (string) $msg;
@@ -293,15 +293,15 @@ class xivo_tracerror
 		$tolabel = $this->_conf['level'][$level]['label'];
 		$tocontext = '('.$context.')';
 
-		if(($report_type & XIVO_TE_RTYPE_LOG) !== 0 && $this->_param['file'] !== false
-		&& ($file = xivo_file::is_f_rw($this->_param['file'])) !== false)
-			error_log(strftime('%Y-%m-%d %H:%M:%S %z').' - '.$tolabel.' '.$tocontext.' - Message: '.xivo_notag($tomsg_log)."\n",3,$file);
+		if(($report_type & DWHO_TE_RTYPE_LOG) !== 0 && $this->_param['file'] !== false
+		&& ($file = dwho_file::is_f_rw($this->_param['file'])) !== false)
+			error_log(strftime('%Y-%m-%d %H:%M:%S %z').' - '.$tolabel.' '.$tocontext.' - Message: '.dwho_notag($tomsg_log)."\n",3,$file);
 
 		$delayed = false;
 
-		if(($report_type & XIVO_TE_RTYPE_SCREEN) !== 0)
+		if(($report_type & DWHO_TE_RTYPE_SCREEN) !== 0)
 		{
-			if($report_mode === XIVO_TE_RMODE_REALTIME)
+			if($report_mode === DWHO_TE_RMODE_REALTIME)
 			{
 				if($this->_sapi === 'default')
 					echo '<span style="color: '.$tocolor.'";>'.$tomsg.'</span> '.$tocontext.'<br />';
@@ -323,10 +323,10 @@ class xivo_tracerror
 			}
 		}
 
-		if(($report_type & XIVO_TE_RTYPE_MAIL) !== 0 && ($mail = $this->_chk_email($this->_param['email'])) !== false)
-			xivo_malert($tolabel,$tomsg,$mail);
+		if(($report_type & DWHO_TE_RTYPE_MAIL) !== 0 && ($mail = $this->_chk_email($this->_param['email'])) !== false)
+			dwho_malert($tolabel,$tomsg,$mail);
 
-		if($delayed === false && ($level & XIVO_TE_ERR_ERROR) !== 0)
+		if($delayed === false && ($level & DWHO_TE_ERR_ERROR) !== 0)
 			die();
 	}
 

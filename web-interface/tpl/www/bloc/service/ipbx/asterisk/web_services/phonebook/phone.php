@@ -22,7 +22,7 @@ $xmlphone = &$this->get_module('xmlphone');
 $xmlvendor = $xmlphone->factory($this->get_var('vendor'));
 
 if(($vendor = $directory = $xmlvendor->get_vendor()) === false)
-	xivo_die('Error/Invalid Vendor and User-Agent');
+	dwho_die('Error/Invalid Vendor and User-Agent');
 
 header($xmlvendor->get_header_contenttype());
 

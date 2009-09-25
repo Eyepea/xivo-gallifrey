@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_i18n
+class dwho_i18n
 {
 	var $_file	= null;
 	var $_dso	= null;
@@ -26,15 +26,15 @@ class xivo_i18n
 	var $_copy	= false;
 	var $_loop	= array();
 
-	function xivo_i18n()
+	function dwho_i18n()
 	{
-		if(defined('XIVO_PATH_I18N') === false)
-			define('XIVO_PATH_I18N',XIVO_PATH_ROOT.XIVO_SEP_DIR.'i18n');
+		if(defined('DWHO_PATH_I18N') === false)
+			trigger_error('DWHO i18n path not defined',E_USER_ERROR);
 
-		$dso = &xivo_gct::get('XIVO_DSO');
-		$name = 'xivo_i18n_'.$dso->get_type();
+		$dso = &dwho_gct::get('DWHO_DSO');
+		$name = 'dwho_i18n_'.$dso->get_type();
 
-		if(xivo::load_class($name,'i18n::datastorage',$dso->get_type()) === false)
+		if(dwho::load_class($name,'i18n::datastorage',$dso->get_type()) === false)
 			trigger_error('Failed to load i18n Datastorage',E_USER_ERROR);
 
 		$this->_dso = new $name($dso);
@@ -45,142 +45,142 @@ class xivo_i18n
 
 	function get_language($locale='')
 	{
-		return(xivo_i18n::mediator('get','language',$locale));
+		return(dwho_i18n::mediator('get','language',$locale));
 	}
 
 	function attrib_language()
 	{
-		return(xivo_i18n::mediator('attrib','language'));
+		return(dwho_i18n::mediator('attrib','language'));
 	}
 
 	function chk_language($lang)
 	{
-		return(xivo_i18n::mediator('chk','language',$lang));
+		return(dwho_i18n::mediator('chk','language',$lang));
 	}
 
 	function set_language($lang='')
 	{
-		return(xivo_i18n::mediator('set','language',$lang));
+		return(dwho_i18n::mediator('set','language',$lang));
 	}
 
 	function get_language_info($lang='')
 	{
-		return(xivo_i18n::mediator('info','language',$lang));
+		return(dwho_i18n::mediator('info','language',$lang));
 	}
 
 	function get_language_list()
 	{
-		return(xivo_i18n::mediator('list','language'));
+		return(dwho_i18n::mediator('list','language'));
 	}
 
 	function get_language_translated_list()
 	{
-		return(xivo_i18n::mediator('translated_list','language'));
+		return(dwho_i18n::mediator('translated_list','language'));
 	}
 
 	function get_territory($locale='')
 	{
-		return(xivo_i18n::mediator('get','territory',$locale));
+		return(dwho_i18n::mediator('get','territory',$locale));
 	}
 
 	function attrib_territory()
 	{
-		return(xivo_i18n::mediator('attrib','territory'));
+		return(dwho_i18n::mediator('attrib','territory'));
 	}
 
 	function chk_territory($territo)
 	{
-		return(xivo_i18n::mediator('chk','territory',$territo));
+		return(dwho_i18n::mediator('chk','territory',$territo));
 	}
 
 	function set_territory($territo='')
 	{
-		return(xivo_i18n::mediator('set','territory',$territo));
+		return(dwho_i18n::mediator('set','territory',$territo));
 	}
 
 	function get_territory_info($territo='')
 	{
-		return(xivo_i18n::mediator('info','territory',$territo));
+		return(dwho_i18n::mediator('info','territory',$territo));
 	}
 
 	function get_territory_list()
 	{
-		return(xivo_i18n::mediator('list','territory'));
+		return(dwho_i18n::mediator('list','territory'));
 	}
 
 	function get_territory_translated_list()
 	{
-		return(xivo_i18n::mediator('translated_list','territory'));
+		return(dwho_i18n::mediator('translated_list','territory'));
 	}
 
 	function attrib_locale()
 	{
-		return(xivo_i18n::mediator('attrib','locale'));
+		return(dwho_i18n::mediator('attrib','locale'));
 	}
 
 	function chk_locale($locale)
 	{
-		return(xivo_i18n::mediator('chk','locale',$locale));
+		return(dwho_i18n::mediator('chk','locale',$locale));
 	}
 
 	function set_locale($lang=false,$territo=false)
 	{
-		return(xivo_i18n::mediator('set','locale',array($lang,$territo)));
+		return(dwho_i18n::mediator('set','locale',array($lang,$territo)));
 	}
 
 	function get_locale_info($locale='')
 	{
-		return(xivo_i18n::mediator('info','locale',$locale));
+		return(dwho_i18n::mediator('info','locale',$locale));
 	}
 
 	function get_locale_list()
 	{
-		return(xivo_i18n::mediator('list','locale'));
+		return(dwho_i18n::mediator('list','locale'));
 	}
 
 	function get_timezone($locale='')
 	{
-		return(xivo_i18n::mediator('get','timezone',$locale));
+		return(dwho_i18n::mediator('get','timezone',$locale));
 	}
 
 	function attrib_timezone()
 	{
-		return(xivo_i18n::mediator('attrib','timezone'));
+		return(dwho_i18n::mediator('attrib','timezone'));
 	}
 
 	function chk_timezone($tz)
 	{
-		return(xivo_i18n::mediator('chk','timezone',$tz));
+		return(dwho_i18n::mediator('chk','timezone',$tz));
 	}
 
 	function set_timezone($tz='')
 	{
-		return(xivo_i18n::mediator('set','timezone',$tz));
+		return(dwho_i18n::mediator('set','timezone',$tz));
 	}
 
 	function get_timezone_info($tz='')
 	{
-		return(xivo_i18n::mediator('info','timezone',$tz));
+		return(dwho_i18n::mediator('info','timezone',$tz));
 	}
 
 	function get_timezone_list()
 	{
-		return(xivo_i18n::mediator('list','timezone'));
+		return(dwho_i18n::mediator('list','timezone'));
 	}
 
 	function set_babelfish_path()
 	{
-		return(xivo_i18n::mediator('set_babelfish_path'));
+		return(dwho_i18n::mediator('set_babelfish_path'));
 	}
 
 	function vsprintf_l($format,$locale,$value)
 	{
-		if($locale === null && defined('XIVO_I18N_BABELFISH_REAL_LOCALE') === true)
-			$locale = XIVO_I18N_BABELFISH_REAL_LOCALE;
+		if($locale === null && defined('DWHO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
 
 		$loc = setlocale(LC_ALL,null);
 		setlocale(LC_ALL,$locale);
-		$r = vsprintf(xivo_printf_escape($format,count($value)),$value);
+		$r = vsprintf(dwho_printf_escape($format,count($value)),$value);
 		setlocale(LC_ALL,$loc);
 
 		return($r);
@@ -188,8 +188,8 @@ class xivo_i18n
 
 	function strftime_l($format,$locale,$timestamp=null)
 	{
-		if($locale === null && defined('XIVO_I18N_BABELFISH_REAL_LOCALE') === true)
-			$locale = XIVO_I18N_BABELFISH_REAL_LOCALE;
+		if($locale === null && defined('DWHO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
 
 		$loc = setlocale(LC_TIME,null);
 		setlocale(LC_TIME,$locale);
@@ -204,12 +204,12 @@ class xivo_i18n
 
 	function gmlcstrftime_l($format,$time,$locale)
 	{
-		if($locale === null && defined('XIVO_I18N_BABELFISH_REAL_LOCALE') === true)
-			$locale = XIVO_I18N_BABELFISH_REAL_LOCALE;
+		if($locale === null && defined('DWHO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
 
 		$loc = setlocale(LC_TIME,null);
 		setlocale(LC_TIME,$locale);
-		$r = xivo_gmlcstrftime($format,$time);
+		$r = dwho_gmlcstrftime($format,$time);
 		setlocale(LC_TIME,$loc);
 
 		return($r);
@@ -221,10 +221,10 @@ class xivo_i18n
 
 		if($mediator === null)
 		{
-			if(xivo::load_class('xivo::i18n::mediator') === false)
+			if(dwho::load_class('dwho::i18n::mediator') === false)
 				trigger_error('Failed to load i18n mediator',E_USER_ERROR);
 
-			$mediator = new xivo_i18n_mediator();
+			$mediator = new dwho_i18n_mediator();
 		}
 
 		$r = false;
@@ -341,9 +341,9 @@ class xivo_i18n
 						if($language !== null)
 							return($language);
 
-						$i18n = &xivo_gct::get('xivo_i18n');
+						$i18n = &dwho_gct::get('dwho_i18n');
 
-						if($i18n->load_file('util'.XIVO_SEP_DIR.'language') === false
+						if($i18n->load_file('util'.DWHO_SEP_DIR.'language') === false
 						|| ($list = $mediator->get_language_list()) === false
 						|| is_array($list) === false
 						|| empty($list) === true)
@@ -354,7 +354,7 @@ class xivo_i18n
 						reset($list);
 
 						while(list($key) = each($list))
-							$language[$key] = xivo_i18n::babelfish('language_'.$key);
+							$language[$key] = dwho_i18n::babelfish('language_'.$key);
 
 						asort($language);
 						$r = &$language;
@@ -363,9 +363,9 @@ class xivo_i18n
 						if($territory !== null)
 							return($territory);
 
-						$i18n = &xivo_gct::get('xivo_i18n');
+						$i18n = &dwho_gct::get('dwho_i18n');
 
-						if($i18n->load_file('util'.XIVO_SEP_DIR.'territory') === false
+						if($i18n->load_file('util'.DWHO_SEP_DIR.'territory') === false
 						|| ($list = $mediator->get_territory_list()) === false
 						|| is_array($list) === false
 						|| empty($list) === true)
@@ -376,7 +376,7 @@ class xivo_i18n
 						reset($list);
 
 						while(list($key) = each($list))
-							$territory[$key] = xivo_i18n::babelfish('territory_'.$key);
+							$territory[$key] = dwho_i18n::babelfish('territory_'.$key);
 
 						asort($territory);
 						$r = &$territory;
@@ -393,7 +393,7 @@ class xivo_i18n
 			return(false);
 		else if($this->_get_cache_file() === true)
 			return(true);
-		else if(xivo_ak('filei18n',$this->_file,true) === false)
+		else if(dwho_ak('filei18n',$this->_file,true) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
 			return(false);
@@ -422,17 +422,17 @@ class xivo_i18n
 
 	function _set_babelfish($namespace,$value)
 	{
-		return(xivo_i18n::bfish('set',$namespace,$value));
+		return(dwho_i18n::bfish('set',$namespace,$value));
 	}
 
 	function get_babelfish($namespace,$name='')
 	{
-		return(xivo_i18n::bfish('get',$namespace,$name));
+		return(dwho_i18n::bfish('get',$namespace,$name));
 	}
 
 	function babelfish($name,$value=array(),$namespace='_empty_')
 	{
-		return(xivo_i18n::bfish('translate',$namespace,$value,$name));
+		return(dwho_i18n::bfish('translate',$namespace,$value,$name));
 	}
 
 	function bfish($func,$namespace,$value,$name='')
@@ -453,7 +453,7 @@ class xivo_i18n
 			case 'set':
 				$value = (array) $value;
 
-				if(xivo_issa($namespace,$babelfish) === true)
+				if(dwho_issa($namespace,$babelfish) === true)
 					$babelfish[$namespace] = array_merge($babelfish[$namespace],$value);
 				else
 					$babelfish[$namespace] = $value;
@@ -463,7 +463,7 @@ class xivo_i18n
 			case 'get':
 				$value = (string) $value;
 
-				if(xivo_issa($namespace,$babelfish) === false)
+				if(dwho_issa($namespace,$babelfish) === false)
 					return($r);
 
 				if($value !== '' && isset($namespace[$babelfish][$value]) === true)
@@ -473,8 +473,8 @@ class xivo_i18n
 				break;
 			case 'translate':
 				if($name === ''
-				|| (xivo_issa($namespace,$babelfish) === false
-				   && xivo_issa('_empty_',$babelfish) === false) === true)
+				|| (dwho_issa($namespace,$babelfish) === false
+				   && dwho_issa('_empty_',$babelfish) === false) === true)
 					return($name);
 
 				$value = (array) $value;
@@ -485,11 +485,11 @@ class xivo_i18n
 					$name_args = $name.'('.implode('|',$value).')';
 
 					if(isset($babelfish[$namespace][$name_args]) === true)
-						return(xivo_i18n::vsprintf_l($babelfish[$namespace][$name_args],
+						return(dwho_i18n::vsprintf_l($babelfish[$namespace][$name_args],
 									     null,
 									     $value));
 					else if(isset($babelfish['_empty_'][$name_args]) === true)
-						return(xivo_i18n::vsprintf_l($babelfish['_empty_'][$name_args],
+						return(dwho_i18n::vsprintf_l($babelfish['_empty_'][$name_args],
 									     null,
 									     $value));
 				}
@@ -505,7 +505,7 @@ class xivo_i18n
 				$r = (string) $babelfish[$namespace][$name];
 
 				if(empty($value) === false)
-					$r = xivo_i18n::vsprintf_l($r,null,$value);
+					$r = dwho_i18n::vsprintf_l($r,null,$value);
 				break;
 		}
 
@@ -537,7 +537,7 @@ class xivo_i18n
 		}
 		// TODO: trigger_error();
 
-		$dir = trim(dirname($file),'.'.XIVO_SEP_DIR);
+		$dir = trim(dirname($file),'.'.DWHO_SEP_DIR);
 		$file = basename($file);
 
 		if(($pos = strrpos($file,'.')) !== false)
@@ -545,10 +545,10 @@ class xivo_i18n
 
 		$file .= '.i18n';
 
-		$path = ltrim($dir.XIVO_SEP_DIR.$file,XIVO_SEP_DIR);
+		$path = ltrim($dir.DWHO_SEP_DIR.$file,DWHO_SEP_DIR);
 
 		if($namespace !== '' && $namespace !== '_empty_')
-			$path = trim(str_replace('::',XIVO_SEP_DIR,$namespace).XIVO_SEP_DIR.$path,XIVO_SEP_DIR);
+			$path = trim(str_replace('::',DWHO_SEP_DIR,$namespace).DWHO_SEP_DIR.$path,DWHO_SEP_DIR);
 		else
 			$namespace = '_empty_';
 
@@ -556,9 +556,9 @@ class xivo_i18n
 		$this->_file['dirname'] = $dir;
 		$this->_file['basename'] = $file;
 		$this->_file['path'] = $path;
-		$this->_file['filename'] = $dir.XIVO_SEP_DIR.$file;
+		$this->_file['filename'] = $dir.DWHO_SEP_DIR.$file;
 
-		if(defined('XIVO_I18N_BABELFISH_PATH') === false && $this->set_babelfish_path() === false)
+		if(defined('DWHO_I18N_BABELFISH_PATH') === false && $this->set_babelfish_path() === false)
 		{
 			trigger_error('Invalid I18N Babelfish path',E_USER_ERROR);
 			return(false);
@@ -566,27 +566,27 @@ class xivo_i18n
 
 		if(isset($this->_file['locale']) === true && ($lc = $this->chk_locale($this->_file['locale'])) !== false)
 		{
-			if($lc !== XIVO_I18N_BABELFISH_LOCALE)
+			if($lc !== DWHO_I18N_BABELFISH_LOCALE)
 			{
 				trigger_error('Invalid I18N locale',E_USER_ERROR);
 				return(false);
 			}
 
-			$this->_file['locale'] = XIVO_I18N_BABELFISH_LOCALE;
-			$this->_file['language'] = XIVO_I18N_BABELFISH_LANGUAGE;
+			$this->_file['locale'] = DWHO_I18N_BABELFISH_LOCALE;
+			$this->_file['language'] = DWHO_I18N_BABELFISH_LANGUAGE;
 		}
 		else
 		{
-			$this->_file['locale'] = XIVO_I18N_BABELFISH_LOCALE;
-			$this->_file['language'] = XIVO_I18N_BABELFISH_LANGUAGE;
+			$this->_file['locale'] = DWHO_I18N_BABELFISH_LOCALE;
+			$this->_file['language'] = DWHO_I18N_BABELFISH_LANGUAGE;
 		}
 
-		$filei18n = xivo_file::joinpath(XIVO_PATH_I18N,$this->_file['locale'],$this->_file['path']);
+		$filei18n = dwho_file::joinpath(DWHO_PATH_I18N,$this->_file['locale'],$this->_file['path']);
 
-		if(($this->_file['filei18n'] = xivo_file::is_f_r($filei18n)) === false)
+		if(($this->_file['filei18n'] = dwho_file::is_f_r($filei18n)) === false)
 			return(($this->_file = false));
 
-		$this->_file['filemtime'] = xivo_uint(filemtime($this->_file['filei18n']));
+		$this->_file['filemtime'] = dwho_uint(filemtime($this->_file['filei18n']));
 
 		return(true);
 	}
@@ -639,7 +639,7 @@ class xivo_i18n
 		if(isset($cached[$namespace][$this->_file['locale']][$this->_file['path']]) === false)
 		{
 			if(($cache = $this->_dso->get_cache($this->_file)) === false
-			|| xivo_issa('obj',$cache) === false)
+			|| dwho_issa('obj',$cache) === false)
 				return(false);
 
 			$cached[$namespace][$this->_file['locale']][$this->_file['path']] = array(
@@ -654,7 +654,7 @@ class xivo_i18n
 
 		$ref = &$cached[$namespace][$this->_file['locale']][$this->_file['path']];
 
-		if(xivo_issa('finfo',$ref) === false
+		if(dwho_issa('finfo',$ref) === false
 		|| (int) $ref['finfo']['filemtime'] !== (int) $this->_file['filemtime'])
 			return(false);
 
@@ -704,7 +704,7 @@ class xivo_i18n
 	{
 		if(is_array($this->_file) === false)
 			return(false);
-		else if(($file = xivo_file::is_f_r($this->_file['filei18n'])) === false)
+		else if(($file = dwho_file::is_f_r($this->_file['filei18n'])) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
 			return(false);
@@ -714,7 +714,7 @@ class xivo_i18n
 		$nb = count($content);
 		$priority = 0;
 		$txt = $copy = $load = $data = false;
-		$quote_sep_dir = preg_quote(XIVO_SEP_DIR);
+		$quote_sep_dir = preg_quote(DWHO_SEP_DIR);
 		$key = '';
 
 		$r = array();
@@ -768,7 +768,7 @@ class xivo_i18n
 						$filename = $matchload[2];
 
 						if($matchload[1] !== '')
-							$filename = $this->_file['dirname'].XIVO_SEP_DIR.$matchload[1].$filename;
+							$filename = $this->_file['dirname'].DWHO_SEP_DIR.$matchload[1].$filename;
 
 						if($this->_load_file($filename,$this->_file['namespace']) !== false)
 							$_load[$this->_file['filename']] = 1;
@@ -784,7 +784,7 @@ class xivo_i18n
 
 						if(isset($match[2]) === true)
 						{
-							if(xivo_is_sgraph($match[2]) === true)
+							if(dwho_is_sgraph($match[2]) === true)
 								$key .= $match[2];
 							else
 							{
@@ -805,7 +805,7 @@ class xivo_i18n
 
 						if(isset($match[2]) === true)
 						{
-							if(xivo_is_sgraph($match[2]) === true)
+							if(dwho_is_sgraph($match[2]) === true)
 								$key .= $match[2];
 							else
 							{
@@ -839,7 +839,7 @@ class xivo_i18n
 					}
 					else if(strlen(($line = trim($line))) > 0)
 					{
-						$r[$key] .= XIVO_EOL.$line;
+						$r[$key] .= DWHO_EOL.$line;
 						$priority |= 4;
 					}
 			}

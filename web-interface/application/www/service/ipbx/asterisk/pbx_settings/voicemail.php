@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 
 $info = array();
@@ -37,7 +37,7 @@ switch($act)
 
 		$result = $fm_save = null;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 		{
 			if($appvoicemail->set_add($_QR) === false
 			|| $appvoicemail->add() === false)
@@ -68,7 +68,7 @@ switch($act)
 		$result = $fm_save = null;
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('voicemail',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -107,7 +107,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
+		if(($values = dwho_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail = &$ipbx->get_application('voicemail');
@@ -126,7 +126,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('voicemails',$_QR)) === false)
+		if(($values = dwho_issa_val('voicemails',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
 		$appvoicemail = &$ipbx->get_application('voicemail',null,false);
@@ -172,7 +172,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
 }

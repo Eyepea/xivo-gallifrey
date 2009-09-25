@@ -35,7 +35,7 @@ var xivo_ast_outcall_mode_elt = {
 			 ['fd-outcall-exten',0,1],
 			 ['it-outcall-exten',0,1]]}};
 
-var xivo_ast_fm_outcall_mode = {'wizard':	xivo_clone(xivo_ast_outcall_mode_elt)};
+var xivo_ast_fm_outcall_mode = {'wizard':	dwho_clone(xivo_ast_outcall_mode_elt)};
 xivo_ast_fm_outcall_mode['wizard']['fd-outcall-prefix']['style'] = {display: 'block'};
 xivo_ast_fm_outcall_mode['wizard']['it-outcall-prefix']['property'] = {disabled: false};
 xivo_ast_fm_outcall_mode['wizard']['fd-outcall-numlen']['style'] = {display: 'block'};
@@ -43,16 +43,16 @@ xivo_ast_fm_outcall_mode['wizard']['it-outcall-numlen']['property'] = {disabled:
 
 xivo_attrib_register('fm_outcall_mode-wizard',xivo_ast_fm_outcall_mode['wizard']);
 
-xivo_ast_fm_outcall_mode['extension'] = xivo_clone(xivo_ast_outcall_mode_elt);
+xivo_ast_fm_outcall_mode['extension'] = dwho_clone(xivo_ast_outcall_mode_elt);
 xivo_ast_fm_outcall_mode['extension']['fd-outcall-exten']['style'] = {display: 'block'};
 
 xivo_attrib_register('fm_outcall_mode-extension',xivo_ast_fm_outcall_mode['extension']);
 
 function xivo_outcall_chg_mode(mode)
 {
-	if(xivo_is_object(mode) === false
-	|| xivo_is_undef(mode.value) === true
-	|| xivo_is_undef(xivo_ast_fm_outcall_mode[mode.value]) === true)
+	if(dwho_is_object(mode) === false
+	|| dwho_is_undef(mode.value) === true
+	|| dwho_is_undef(xivo_ast_fm_outcall_mode[mode.value]) === true)
 		return(false);
 
 	xivo_chg_attrib('fm_outcall_mode-'+mode.value,'links',0,1);
@@ -60,12 +60,12 @@ function xivo_outcall_chg_mode(mode)
 
 function xivo_outcall_wizard_exten()
 {
-	if((objpre = xivo_eid('it-outcall-prefix')) === false
-	|| (objnum = xivo_eid('it-outcall-numlen')) === false
-	|| (objres = xivo_eid('it-outcall-exten')) === false
-	|| xivo_is_undef(objpre.value) === true
-	|| xivo_is_undef(objnum.value) === true
-	|| xivo_is_undef(objres.value) === true)
+	if((objpre = dwho_eid('it-outcall-prefix')) === false
+	|| (objnum = dwho_eid('it-outcall-numlen')) === false
+	|| (objres = dwho_eid('it-outcall-exten')) === false
+	|| dwho_is_undef(objpre.value) === true
+	|| dwho_is_undef(objnum.value) === true
+	|| dwho_is_undef(objres.value) === true)
 		return(false);
 
 	if(objpre.value.match(/^\+?[0-9#\*]*$/) === null)
@@ -86,7 +86,7 @@ function xivo_outcall_wizard_exten()
 
 	if(option > 0 && option < 40)
 	{
-		objres.value += xivo_str_repeat('X',option);
+		objres.value += dwho_str_repeat('X',option);
 		return(true);
 	}
 
@@ -95,15 +95,15 @@ function xivo_outcall_wizard_exten()
 
 function xivo_outcall_exten_wizard()
 {
-	if((objpre = xivo_eid('it-outcall-prefix')) === false
-	|| (objnum = xivo_eid('it-outcall-numlen')) === false
-	|| (objres = xivo_eid('it-outcall-exten')) === false
-	|| xivo_is_undef(objpre.value) === true
-	|| xivo_is_undef(objnum.value) === true
-	|| xivo_is_undef(objres.value) === true)
+	if((objpre = dwho_eid('it-outcall-prefix')) === false
+	|| (objnum = dwho_eid('it-outcall-numlen')) === false
+	|| (objres = dwho_eid('it-outcall-exten')) === false
+	|| dwho_is_undef(objpre.value) === true
+	|| dwho_is_undef(objnum.value) === true
+	|| dwho_is_undef(objres.value) === true)
 		return(false);
 
-	objres.value = xivo_substr(objres.value,0,40);
+	objres.value = dwho_substr(objres.value,0,40);
 
 	if((match = objres.value.match(/^\+?[0-9\*]*/)) === null)
 		objpre.value = '';
@@ -119,10 +119,10 @@ function xivo_outcall_exten_wizard()
 function xivo_outcall_onload()
 {
 	xivo_outcall_exten_wizard();
-	xivo_outcall_chg_mode(xivo_eid('it-outcall-mode'));
+	xivo_outcall_chg_mode(dwho_eid('it-outcall-mode'));
 
-	xivo.dom.add_event('change',
-			   xivo_eid('it-outcall-mode'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-outcall-mode'),
 			   function()
 			   {
 				xivo_outcall_chg_mode(this);
@@ -133,41 +133,41 @@ function xivo_outcall_onload()
 					xivo_outcall_wizard_exten();
 			   });
 
-	xivo.dom.add_event('change',
-			   xivo_eid('it-outcall-prefix'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-outcall-prefix'),
 			   xivo_outcall_wizard_exten);
 
-	xivo.dom.add_event('focus',
-			   xivo_eid('it-outcall-prefix'),
+	dwho.dom.add_event('focus',
+			   dwho_eid('it-outcall-prefix'),
 			   xivo_outcall_wizard_exten);
 
-	xivo.dom.add_event('blur',
-			   xivo_eid('it-outcall-prefix'),
+	dwho.dom.add_event('blur',
+			   dwho_eid('it-outcall-prefix'),
 			   xivo_outcall_wizard_exten);
 
-	xivo.dom.add_event('change',
-			   xivo_eid('it-outcall-numlen'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-outcall-numlen'),
 			   xivo_outcall_wizard_exten);
 
-	xivo.dom.add_event('focus',
-			   xivo_eid('it-outcall-numlen'),
+	dwho.dom.add_event('focus',
+			   dwho_eid('it-outcall-numlen'),
 			   xivo_outcall_wizard_exten);
 
-	xivo.dom.add_event('blur',
-			   xivo_eid('it-outcall-numlen'),
+	dwho.dom.add_event('blur',
+			   dwho_eid('it-outcall-numlen'),
 			   xivo_outcall_wizard_exten);
 
-	xivo.dom.add_event('change',
-			   xivo_eid('it-outcall-exten'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-outcall-exten'),
 			   xivo_outcall_exten_wizard);
 
-	xivo.dom.add_event('focus',
-			   xivo_eid('it-outcall-exten'),
+	dwho.dom.add_event('focus',
+			   dwho_eid('it-outcall-exten'),
 			   xivo_outcall_exten_wizard);
 
-	xivo.dom.add_event('blur',
-			   xivo_eid('it-outcall-exten'),
+	dwho.dom.add_event('blur',
+			   dwho_eid('it-outcall-exten'),
 			   xivo_outcall_exten_wizard);
 }
 
-xivo.dom.set_onload(xivo_outcall_onload);
+dwho.dom.set_onload(xivo_outcall_onload);

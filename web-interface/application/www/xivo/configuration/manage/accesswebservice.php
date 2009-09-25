@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
 $_AWS = new xivo_accesswebservice();
@@ -38,10 +38,10 @@ switch($act)
 
 			if(($result = $_AWS->chk_values($_QR)) === false)
 				$result = $_AWS->get_filter_result();
-			else if(xivo_has_len($result['login']) === true
-			&& xivo_has_len($result['passwd']) === true)
+			else if(dwho_has_len($result['login']) === true
+			&& dwho_has_len($result['passwd']) === true)
 				$add = true;
-			else if(xivo_has_len($result['host']) === true)
+			else if(dwho_has_len($result['host']) === true)
 				$add = true;
 
 			if($add === true && $_AWS->add($result) !== false)
@@ -69,10 +69,10 @@ switch($act)
 
 			if(($result = $_AWS->chk_values($_QR)) === false)
 				$result = $_AWS->get_filter_result();
-			else if(xivo_has_len($result['login']) === true
-			&& xivo_has_len($result['passwd']) === true)
+			else if(dwho_has_len($result['login']) === true
+			&& dwho_has_len($result['passwd']) === true)
 				$edit = true;
-			else if(xivo_has_len($result['host']) === true)
+			else if(dwho_has_len($result['host']) === true)
 				$edit = true;
 
 			if($edit === true && $_AWS->edit($info['id'],$result) !== false)
@@ -114,7 +114,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('accesswebservice',$_QR)) === false)
+		if(($values = dwho_issa_val('accesswebservice',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/accesswebservice'),$param);
 
 		$nb = count($values);
@@ -132,7 +132,7 @@ switch($act)
 		$param['page'] = $page;
 		$disable = $act === 'disables';
 
-		if(($values = xivo_issa_val('accesswebservice',$_QR)) === false)
+		if(($values = dwho_issa_val('accesswebservice',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/accesswebservice'),$param);
 
 		$nb = count($values);
@@ -163,7 +163,7 @@ switch($act)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/accesswebservice'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

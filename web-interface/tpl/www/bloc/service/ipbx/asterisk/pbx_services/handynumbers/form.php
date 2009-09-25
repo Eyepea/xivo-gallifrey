@@ -40,7 +40,7 @@ $info = $this->get_var('info');
 							  'border="0"'),
 					   '#',
 					   null,
-					   'onclick="xivo.dom.make_table_list(\''.$type.'\',this); return(xivo.dom.free_focus());"',
+					   'onclick="dwho.dom.make_table_list(\''.$type.'\',this); return(dwho.dom.free_focus());"',
 					   $this->bbf('col_'.$type.'-add'));?>
 		</th>
 	</tr>
@@ -91,7 +91,7 @@ if($count > 0):
 							  'border="0"'),
 					   '#',
 					   null,
-					   'onclick="xivo.dom.make_table_list(\''.$type.'\',this,1); return(xivo.dom.free_focus());"',
+					   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
 					   $this->bbf('opt_'.$type.'-delete'));?>
 		</td>
 	</tr>
@@ -140,7 +140,7 @@ endif;
 							  'border="0"'),
 					   '#',
 					   null,
-					   'onclick="xivo.dom.make_table_list(\''.$type.'\',this,1); return(xivo.dom.free_focus());"',
+					   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
 					   $this->bbf('opt_'.$type.'-delete'));?>
 		</td>
 	</tr>

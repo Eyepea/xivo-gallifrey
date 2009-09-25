@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
 $_ETT = new xivo_entity();
@@ -42,7 +42,7 @@ switch($act)
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('element',$_ETT->get_element());
-		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
 	case 'edit':
 		if(isset($_QR['id']) === false
@@ -86,7 +86,7 @@ switch($act)
 		$_TPL->set_var('id',$info['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('element',$_ETT->get_element());
-		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -104,7 +104,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('entity',$_QR)) === false)
+		if(($values = dwho_issa_val('entity',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
 		$ipbx = &$_SRE->get('ipbx');
@@ -126,7 +126,7 @@ switch($act)
 		$param['page'] = $page;
 		$disable = $act === 'disables';
 
-		if(($values = xivo_issa_val('entity',$_QR)) === false)
+		if(($values = dwho_issa_val('entity',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
 		$nb = count($values);
@@ -157,7 +157,7 @@ switch($act)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

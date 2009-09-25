@@ -84,11 +84,11 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				if($data['type'] === '')
 					$data['type'] = $data['typeextenumbers'].'-'.$data['typevalextenumbers'];
 
-				if(xivo_issa($data['type'],$this->_conf['type']) === true)
+				if(dwho_issa($data['type'],$this->_conf['type']) === true)
 				{
-					$data['extension'] = (bool) xivo_ak('extension',$this->_conf['type'][$data['type']],true);
+					$data['extension'] = (bool) dwho_ak('extension',$this->_conf['type'][$data['type']],true);
 
-					if((bool) xivo_ak('destination',$this->_conf['type'][$data['type']],true) === true)
+					if((bool) dwho_ak('destination',$this->_conf['type'][$data['type']],true) === true)
 						$data['typeval'] = $data['exten'];
 				}
 				return($data);
@@ -105,7 +105,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				return($data);
 		}
 
-		if(xivo_has_len($data['exten']) === true || $data['type'] === '')
+		if(dwho_has_len($data['exten']) === true || $data['type'] === '')
 		{
 			$data['type'] = 'custom';
 			$data['custom'] = $data['typeval'] = $data['exten'];
@@ -166,7 +166,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'extenfeatures-queueaddmember':
 			case 'extenfeatures-queueremovemember':
 			case 'extenfeatures-queuetogglemember':
-				if(xivo_has_len($arr['typeval']) === false)
+				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
 
 				$r['typeextenumbers'] = 'extenfeatures';
@@ -175,7 +175,7 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				$r['typevalextenumbersright'] = $arr['typeval'];
 				return($r);
 			case 'extenfeatures-bsfilter':
-				if(xivo_has_len($arr['typeval']) === false)
+				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
 
 				$r['typeextenumbers'] = 'extenfeatures';
@@ -198,13 +198,13 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 				$r['typevalextenumbers'] = $type[1];
 				break;
 			case 'custom':
-				if(xivo_has_len($arr['typeval']) === false)
+				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
 
 				$r['exten'] = $arr['typeval'];
 				break;
 			default:
-				if(xivo_has_len($arr['typeval']) === false)
+				if(dwho_has_len($arr['typeval']) === false)
 					return(false);
 
 				$r['typeextenumbersright'] = $arr['type'];
@@ -241,11 +241,11 @@ class xivo_service_asterisk_phonefunckey extends xivo_service_asterisk_abstract
 			case 'generalfeatures':
 				if($this->_chk_exists_cfg('type',$type.'-'.$typeval) === false)
 					return(false);
-				else if(xivo_has_len($typeright) === false)
+				else if(dwho_has_len($typeright) === false)
 					return(true);
 				break;
 			default:
-				if(xivo_has_len($type) === true)
+				if(dwho_has_len($type) === true)
 					return(false);
 		}
 

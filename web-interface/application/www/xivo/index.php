@@ -34,10 +34,10 @@ $mon_telephony = $monitoring->get_group('telephony');
 $mon_grpundef = $monitoring->get_group_undefined();
 $devinfo = $monitoring->get_device();
 
-$_SYSINFO = new xivo_sysinfo();
+$_SYSINFO = new dwho_sysinfo();
 
-xivo::load_class('xivo_sort');
-$sort = new xivo_sort(array('key' => 'name'));
+dwho::load_class('dwho_sort');
+$sort = new dwho_sort(array('key' => 'name'));
 
 if(is_array($mon_telephony) === true)
 	usort($mon_telephony,array(&$sort,'strnat_usort'));

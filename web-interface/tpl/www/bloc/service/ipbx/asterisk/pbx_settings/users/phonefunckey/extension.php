@@ -30,7 +30,7 @@ $inputtxt['id'] = 'it-phonefunckey-extension-typeval';
 $inputtxt['size'] = 15;
 
 if($fkdata['ex'] === false):
-	$incr = xivo_uint($fkdata['incr']);
+	$incr = dwho_uint($fkdata['incr']);
 	$inputtxt['id'] = 'it-phonefunckey-'.$this->get_var('fktype').'-typeval-'.$incr;
 	$inputtxt['value'] = $this->get_var('fktypeval');
 

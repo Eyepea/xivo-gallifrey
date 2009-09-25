@@ -174,15 +174,15 @@ if($outcalltrunk['list'] !== false):
 
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-outcalltrunklist','it-outcalltrunk');
-			    return(xivo.dom.free_focus());"
+		   onclick="dwho.form.move_selected('it-outcalltrunklist','it-outcalltrunk');
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inoutcalltrunk');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inoutcalltrunk'),
 					  'class="bt-inlist" id="bt-inoutcalltrunk" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-outcalltrunk','it-outcalltrunklist');
-			    return(xivo.dom.free_focus());"
+		   onclick="dwho.form.move_selected('it-outcalltrunk','it-outcalltrunklist');
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outoutcalltrunk');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outoutcalltrunk'),
@@ -201,15 +201,15 @@ if($outcalltrunk['list'] !== false):
 				 $outcalltrunk['slt']);?>
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-outcalltrunk',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-outcalltrunk',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upoutcalltrunk');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upoutcalltrunk'),
 						  'class="bt-uplist" id="bt-upoutcalltrunk" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-outcalltrunk',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-outcalltrunk',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downoutcalltrunk');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downoutcalltrunk'),
@@ -250,15 +250,15 @@ endif;
 		<div class="inout-list">
 
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outrightcall'),

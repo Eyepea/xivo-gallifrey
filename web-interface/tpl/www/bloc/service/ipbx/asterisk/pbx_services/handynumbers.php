@@ -44,7 +44,7 @@ endif;
 
 if(empty($info['emergency']) === false):
 	$egency_nb = count($info['emergency']);
-	$handynumbers_js[] = 'xivo.dom.set_table_list(\'emergency\','.$egency_nb.');';
+	$handynumbers_js[] = 'dwho.dom.set_table_list(\'emergency\','.$egency_nb.');';
 else:
 	$egency_nb = 0;
 endif;
@@ -52,7 +52,7 @@ endif;
 
 if(empty($info['special']) === false):
 	$special_nb = count($info['special']);
-	$handynumbers_js[] = 'xivo.dom.set_table_list(\'special\','.$special_nb.');';
+	$handynumbers_js[] = 'dwho.dom.set_table_list(\'special\','.$special_nb.');';
 else:
 	$special_nb = 0;
 endif;
@@ -106,8 +106,8 @@ else:
 ?>
 <form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_smenu_fmsubmit(this);">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),

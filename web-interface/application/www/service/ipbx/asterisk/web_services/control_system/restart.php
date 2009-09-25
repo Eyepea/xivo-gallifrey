@@ -21,7 +21,7 @@
 $access_category = 'control_system';
 $access_subcategory = 'restart';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $ami = &$ipbx->get_module('ami');
 

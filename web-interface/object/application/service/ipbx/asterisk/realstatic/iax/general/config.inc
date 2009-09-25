@@ -198,7 +198,7 @@ $array['element']['autokill']['default'] = 'yes';
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['iaxthreadcount'] = array('cast' => 'uint','between' => array(1,256));
 $array['filter']['iaxmaxthreadcount'] = array('cast' => 'uint','between' => array(0,256));
 $array['filter']['iaxcompat'] = array('bool' => true);

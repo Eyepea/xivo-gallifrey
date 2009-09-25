@@ -46,7 +46,7 @@ class xivo_service_abstract
 		$name = (string) $name;
 
 		if(isset($this->_conf) === true
-		&& xivo_issa($type,$this->_conf) === true
+		&& dwho_issa($type,$this->_conf) === true
 		&& isset($this->_conf[$type][$name]) === true)
 			$r = (bool) $ret === false ? true : $this->_conf[$type][$name];
 
@@ -70,7 +70,7 @@ class xivo_service_abstract
 
 		$file = $module.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
@@ -78,7 +78,7 @@ class xivo_service_abstract
 
 		$class = 'xivo_service_'.$this->_name.'_'.$module;
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);
@@ -90,7 +90,7 @@ class xivo_service_abstract
 
 		$file = $application.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   $this->_type,
@@ -99,7 +99,7 @@ class xivo_service_abstract
 
 		$class = 'xivo_application_service_'.$this->_name.'_'.$application;
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);
@@ -112,7 +112,7 @@ class xivo_service_abstract
 
 		$file = $name.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   $this->_type,
@@ -122,7 +122,7 @@ class xivo_service_abstract
 
 		$class = 'xivo_application_service_'.$this->_name.'_'.$type.'_'.$name;
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);
@@ -133,14 +133,14 @@ class xivo_service_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 
-		$file = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$file = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
 					   'config',
 					   'config');
 
-		if(($this->_conf = xivo_gat::get_file($file)) === false)
+		if(($this->_conf = dwho_gat::get_file($file)) === false)
 			trigger_error('Failed to load '.$this->_name.' configuration',E_USER_ERROR);
 	}
 
@@ -149,7 +149,7 @@ class xivo_service_abstract
 		if(isset($this->_dsoconf[$type]) === true)
 			return(true);
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
@@ -157,7 +157,7 @@ class xivo_service_abstract
 					   'datastorage',
 					   $type);
 
-		if(($this->_dsoconf[$type] = xivo_gat::get_file($dir)) === false)
+		if(($this->_dsoconf[$type] = dwho_gat::get_file($dir)) === false)
 			return(false);
 
 		return(true);
@@ -247,7 +247,7 @@ class xivo_service_abstract
 			$this->_module[$name] = new $class($this,$param);
 		else
 		{
-			$custom = (bool) xivo_ak('custom',$ref['datastorage'],true);
+			$custom = (bool) dwho_ak('custom',$ref['datastorage'],true);
 			$this->_module[$name] = new $class($this,$this->_load_dso($name,$custom),$param);
 		}
 
@@ -285,7 +285,7 @@ class xivo_service_abstract
 		$type = (string) $type;
 		$name = (string) $name;
 
-		if(xivo_issa($this->_appcustom,$type) === true
+		if(dwho_issa($this->_appcustom,$type) === true
 		&& isset($this->_appcustom[$type][$name]) === true)
 			return(true);
 		else if($this->chk_appcustom_enable($type,$name) === false)
@@ -330,7 +330,7 @@ class xivo_service_abstract
 
 		$dsotype = $dso->get_type();
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   $this->_type,
@@ -342,7 +342,7 @@ class xivo_service_abstract
 
 		if(is_object($appdso) === true)
 			return($appdso);
-		else if(($meta = xivo_datastorage::get_meta($dsotype)) === false)
+		else if(($meta = dwho_datastorage::get_meta($dsotype)) === false)
 			return(false);
 
 		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso,$meta,$appdso);
@@ -370,7 +370,7 @@ class xivo_service_abstract
 
 		$dsotype = $dso->get_type();
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   $this->_type,
@@ -383,7 +383,7 @@ class xivo_service_abstract
 
 		if(is_object($appdso) === true)
 			return($appdso);
-		else if(($meta = xivo_datastorage::get_meta($dsotype)) === false)
+		else if(($meta = dwho_datastorage::get_meta($dsotype)) === false)
 			return(false);
 
 		$appdso = $this->_load_dso_application_class($name,$dir,$dsotype,$dso,$meta,$appdso,$type);
@@ -421,7 +421,7 @@ class xivo_service_abstract
 		$custom = (bool) $custom;
 		$ini = $gendatastorage = $datastorage = $datastoragemod = false;
 
-		if($name !== '' && xivo_issa($name,$this->_ini) === true)
+		if($name !== '' && dwho_issa($name,$this->_ini) === true)
 			$ini = $this->_ini[$name];
 
 		if(isset($this->_ini['general']['datastorage']) === true)
@@ -431,7 +431,7 @@ class xivo_service_abstract
 		{
 			if($datastorage === false || isset($datastorage['type']) === false)
 				return(false);
-			else if(xivo_datastorage::is_valid($datastorage['type']) === false)
+			else if(dwho_datastorage::is_valid($datastorage['type']) === false)
 			{
 				trigger_error('Invalid datastorage '.$datastorage['type'],E_USER_ERROR);
 				return(false);
@@ -440,7 +440,7 @@ class xivo_service_abstract
 			$this->_load_dso_config($datastorage['type']);
 
 			if(is_object($this->_dsogeneral) === false)
-				$this->_dsogeneral = xivo_datastorage::factory($datastorage['type'],$datastorage);
+				$this->_dsogeneral = dwho_datastorage::factory($datastorage['type'],$datastorage);
 
 			return(true);
 		}
@@ -454,7 +454,7 @@ class xivo_service_abstract
 		if($ini !== false && isset($ini['datastorage']) === true)
 		{
 			if(is_string($ini['datastorage']) === true)
-				$datastoragemod = xivo_datastorage::set_param_from_uri($ini['datastorage']);
+				$datastoragemod = dwho_datastorage::set_param_from_uri($ini['datastorage']);
 			else
 				$datastoragemod = $ini['datastorage'];
 
@@ -466,12 +466,12 @@ class xivo_service_abstract
 			trigger_error('Invalid or missing '.$name.' datastorage in '.$this->_type.' init file',E_USER_ERROR);
 		else if(isset($datastorage['type']) === false)
 			trigger_error('Missing datastorage type in '.$this->_type.' init file for '.$name,E_USER_ERROR);
-		else if(xivo_datastorage::is_valid($datastorage['type']) === false)
+		else if(dwho_datastorage::is_valid($datastorage['type']) === false)
 			trigger_error('Invalid datastorage '.$datastorage['type'].' for '.$name,E_USER_ERROR);
 
 		$type = $datastorage['type'];
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
@@ -483,7 +483,7 @@ class xivo_service_abstract
 		if(is_object($dso) === true)
 			return($dso);
 
-		if(($meta = xivo_datastorage::get_meta($type)) === false)
+		if(($meta = dwho_datastorage::get_meta($type)) === false)
 		{
 			trigger_error('Failed to load datastorage '.$type.' for '.$name,E_USER_ERROR);
 			return(false);
@@ -522,7 +522,7 @@ class xivo_service_abstract
 		else if($custom === false)
 		{
 			if(is_object($this->_dsogeneral) === false)
-				$this->_dsogeneral = xivo_datastorage::factory($type,$datastorage);
+				$this->_dsogeneral = dwho_datastorage::factory($type,$datastorage);
 
 			return(new $class($this->_dsogeneral,$paramod));
 		}
@@ -530,7 +530,7 @@ class xivo_service_abstract
 		{
 			if(isset($this->_dsocustom[$name]) === false
 			|| is_object($this->_dsocustom[$name]) === false)
-				$this->_dsocustom[$name] = xivo_datastorage::factory($type,$datastorage);
+				$this->_dsocustom[$name] = dwho_datastorage::factory($type,$datastorage);
 
 			return(new $class($this->_dsocustom[$name],$paramod));
 		}

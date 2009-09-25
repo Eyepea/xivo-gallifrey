@@ -33,7 +33,7 @@ $select['altkey'] = 'id';
 $select['id'] = 'it-phonefunckey-extenfeatures-bsfilter-typeval';
 
 if($fkdata['ex'] === false):
-	$incr = xivo_uint($fkdata['incr']);
+	$incr = dwho_uint($fkdata['incr']);
 	$select['id'] .= '-'.$incr;
 
 	if($fkdata['type'] === 'extenfeatures-bsfilter'):

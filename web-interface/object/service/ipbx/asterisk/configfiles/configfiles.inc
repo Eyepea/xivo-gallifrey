@@ -41,9 +41,9 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 
 	function _chk_cfgpath()
 	{
-		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		if(dwho_issa($this->_name,$this->_sre->_ini) === false
 		|| isset($this->_sre->_ini[$this->_name]['path']) === false
-		|| ($this->_cfgpath = xivo_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
+		|| ($this->_cfgpath = dwho_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
 	}
 
@@ -52,7 +52,7 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 		$name = basename(strval($name));
 
 		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$name) === 1)
-			return(xivo_file::is_f_rw($this->_cfgpath.XIVO_SEP_DIR.$name));
+			return(dwho_file::is_f_rw($this->_cfgpath.DWHO_SEP_DIR.$name));
 
 		return(false);
 	}
@@ -74,14 +74,14 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 	function edit($name,$contents)
 	{
 		if(($file = $this->_chk_file($name)) !== false)
-			return(xivo_file::put_contents($file,xivo_eol($contents)));
+			return(dwho_file::put_contents($file,dwho_eol($contents)));
 
 		return(false);
 	}
 
 	function get_list()
 	{
-		$r = xivo_file::read_d($this->_cfgpath,'file',(FILE_R_OK | FILE_W_OK),'/^[a-zA-Z0-9_-]+\.conf$/',true);
+		$r = dwho_file::read_d($this->_cfgpath,'file',(FILE_R_OK | FILE_W_OK),'/^[a-zA-Z0-9_-]+\.conf$/',true);
 
 		if($r !== false && isset($r[0]) === false)
 			return(false);

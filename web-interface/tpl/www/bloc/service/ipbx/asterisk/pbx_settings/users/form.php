@@ -31,6 +31,12 @@ $context_list = $this->get_var('context_list');
 $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
 
+if(empty($info['userfeatures']['voicemailid']) === true):
+	$voicemail_identity = true;
+elseif(($voicemail_identity = (string) $this->get_varra('voicemail','identity')) === ''):
+	$voicemail_identity = $this->get_varra('voicemail','fullname');
+endif;
+
 if(($outcallerid = (string) $info['userfeatures']['outcallerid']) === ''
 || in_array($outcallerid,$element['userfeatures']['outcallerid']['value'],true) === true):
 	$outcallerid_custom = false;
@@ -45,16 +51,16 @@ else:
 endif;
 
 if(isset($info['protocol']) === true):
-	if(xivo_issa('allow',$info['protocol']) === true):
+	if(dwho_issa('allow',$info['protocol']) === true):
 		$allow = $info['protocol']['allow'];
 	else:
 		$allow = array();
 	endif;
 
-	$context = (string) xivo_ak('context',$info['protocol'],true);
-	$amaflags = (string) xivo_ak('amaflags',$info['protocol'],true);
-	$qualify = (string) xivo_ak('qualify',$info['protocol'],true);
-	$host = (string) xivo_ak('host',$info['protocol'],true);
+	$context = (string) dwho_ak('context',$info['protocol'],true);
+	$amaflags = (string) dwho_ak('amaflags',$info['protocol'],true);
+	$qualify = (string) dwho_ak('qualify',$info['protocol'],true);
+	$host = (string) dwho_ak('host',$info['protocol'],true);
 else:
 	$allow = array();
 	$context = $amaflags = $qualify = $host = '';
@@ -189,16 +195,23 @@ endif;
 
 <div id="sb-part-voicemail" class="b-nodisplay">
 <?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_voicemailid'),
-				    'name'	=> 'userfeatures[voicemailid]',
-				    'labelid'	=> 'userfeatures-voicemailid',
-				    'empty'	=> true,
-				    'key'	=> 'identity',
-				    'altkey'	=> 'uniqueid',
-				    'value'	=> $info['userfeatures']['voicemailid']),
-			      $voicemail_list,
-			      null,
-			      array('add'	=> $this->bbf('fm_voicemail-opt-add'))),
+	echo	$form->hidden(array('name'	=> 'userfeatures[voicemailid]',
+				    'id'	=> 'it-userfeatures-voicemailid',
+				    'value'	=> $info['userfeatures']['voicemailid'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_voicemail_choice'),
+				    'name'	=> 'voicemail-choice',
+				    'labelid'	=> 'voicemail-choice',
+				    'key'	=> false,
+				    'empty'	=> $voicemail_identity,
+				    'bbf'	=> array('paramkey','fm_voicemail_choice-opt'),
+				    'value'	=> $this->get_varra('info','voicemail-choice')),
+			      $element['voicemail']['voicemail-choice']['value']),
+
+		$form->text(array('desc'	=> $this->bbf('fm_voicemail_suggest'),
+				  'name'	=> 'voicemail-suggest',
+				  'labelid'	=> 'voicemail-suggest',
+				  'size'	=> 20)),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_fullname'),
 				  'name'	=> 'voicemail[fullname]',
@@ -692,7 +705,7 @@ endif;
 
 <div id="codeclist" class="fm-field fm-multilist">
 	<p>
-		<label id="lb-codeclist" for="it-codeclist" onclick="xivo_eid('it-codeclist').focus();">
+		<label id="lb-codeclist" for="it-codeclist" onclick="dwho_eid('it-codeclist').focus();">
 			<?=$this->bbf('fm_protocol_codec-allow');?>
 		</label>
 	</p>
@@ -712,17 +725,17 @@ endif;
 
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-codeclist',
+		   onclick="dwho.form.move_selected('it-codeclist',
 						  'it-codec');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-codec',
+		   onclick="dwho.form.move_selected('it-codec',
 						  'it-codeclist');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outcodec'),
@@ -743,15 +756,15 @@ endif;
 ?>
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-codec',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-codec',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-codec',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-codec',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcodec'),
@@ -777,7 +790,7 @@ endif;
 
 	if(is_array($info['autoprov']) === false
 	|| $vendormodel === ''
-	|| (int) xivo_ak('iduserfeatures',$info['autoprov'],true) === 0):
+	|| (int) dwho_ak('iduserfeatures',$info['autoprov'],true) === 0):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_autoprov_vendormodel'),
 					    'name'	=> 'autoprov[vendormodel]',
 					    'labelid'	=> 'autoprov-vendormodel',
@@ -835,15 +848,15 @@ endif;
 		</div>
 		<div class="inout-list">
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outrightcall'),

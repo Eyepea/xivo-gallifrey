@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_voicemail extends xivo_application_asterisk_abstract
 {
@@ -76,7 +76,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('contextmember',$nocomponents,true) === false)
+		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['voicemail']['uniqueid']);
 
 		return($this->_info);
@@ -104,7 +104,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('contextmember',$nocomponents,true) === false)
+		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['voicemail']['uniqueid']);
 
 		return($this->_info);
@@ -208,12 +208,12 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('voicemail',$arr) === false)
+		|| dwho_issa('voicemail',$arr) === false)
 			return(false);
 
 		$this->set_voicemail($arr['voicemail'],$setval);
 
-		if(xivo_issa('voicemailfeatures',$arr) === true)
+		if(dwho_issa('voicemailfeatures',$arr) === true)
 			$this->set_voicemailfeatures($arr['voicemailfeatures']);
 		else
 			$this->set_voicemailfeatures();
@@ -245,7 +245,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 			$this->_set_error('voicemail',$this->_voicemail->get_filter_error());
 			return(false);
 		}
-		else if(xivo_has_len($rs,'tz') === true
+		else if(dwho_has_len($rs,'tz') === true
 		&& ($this->get_timezones() === false
 		   || isset($this->_timezones[$rs['tz']]) === false) === true)
 		{
@@ -346,7 +346,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	{
 		if(($rs = $this->get_result('voicemailfeatures')) === null
 		|| $rs === false
-		|| ($rs['voicemailid'] = xivo_ulongint($voicemailid)) === 0)
+		|| ($rs['voicemailid'] = dwho_ulongint($voicemailid)) === 0)
 			return(false);
 
 		return(($this->_return['voicemailfeatures'] = $this->_voicemailfeatures->add($rs)));
@@ -356,7 +356,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($voicemailid = xivo_ulongint($voicemailid)) === 0
+		|| ($voicemailid = dwho_ulongint($voicemailid)) === 0
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
@@ -406,7 +406,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function edit_voicemail($chkunique=true)
 	{
-		if(xivo_issa('voicemail',$this->_origin) === false
+		if(dwho_issa('voicemail',$this->_origin) === false
 		|| ($rs = $this->get_result('voicemail')) === null
 		|| $rs === false)
 			return(false);
@@ -434,7 +434,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function edit_voicemailfeatures()
 	{
-		if(xivo_issa('voicemailfeatures',$this->_info) === false
+		if(dwho_issa('voicemailfeatures',$this->_info) === false
 		|| ($rs = $this->get_result('voicemailfeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -446,7 +446,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('voicemail',$this->_info) === false)
+		if(dwho_issa('voicemail',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['voicemail']['uniqueid']));
@@ -454,7 +454,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function _update_user_mailbox($mailbox,$newmailbox)
 	{
-		if(xivo_issa('usermailbox',$this->_return) === false)
+		if(dwho_issa('usermailbox',$this->_return) === false)
 			$this->_return['usermailbox'] = array();
 
 		$ref = &$this->_return['usermailbox'];
@@ -549,7 +549,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function delete_voicemail()
 	{
-		if(xivo_issa('voicemail',$this->_info) === false)
+		if(dwho_issa('voicemail',$this->_info) === false)
 			return(false);
 
 		$r = $this->_voicemail->delete($this->_info['voicemail']['uniqueid']);
@@ -562,7 +562,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function delete_voicemailfeatures()
 	{
-		if(xivo_issa('voicemailfeatures',$this->_info) === false)
+		if(dwho_issa('voicemailfeatures',$this->_info) === false)
 			return(false);
 
 		$r = $this->_voicemailfeatures->delete($this->_info['voicemailfeatures']['id']);
@@ -608,7 +608,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function unlinks()
 	{
-		if(xivo_issa('voicemail',$this->_info) === false)
+		if(dwho_issa('voicemail',$this->_info) === false)
 			return(false);
 		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
@@ -692,7 +692,7 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 	function _enable_disable_voicemail($disable=false)
 	{
-		if(xivo_issa('voicemail',$this->_info) === false)
+		if(dwho_issa('voicemail',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_voicemail->enable($this->_info['voicemail']['uniqueid']);

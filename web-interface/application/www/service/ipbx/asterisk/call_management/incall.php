@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 
 $info = array();
@@ -41,7 +41,7 @@ switch($act)
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('incall',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('incall',$_QR) === true)
 		{
 			if($appincall->set_add($_QR) === false
 			|| $appincall->add() === false)
@@ -54,29 +54,29 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		}
 
-		if(xivo_issa('incall',$result) === false || empty($result['incall']) === true)
+		if(dwho_issa('incall',$result) === false || empty($result['incall']) === true)
 			$result['incall'] = null;
 
-		if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
 		{
-			$rightcall['slt'] = xivo_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
-				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-				xivo::load_class('xivo_sort');
-				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+				dwho::load_class('dwho_sort');
+				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
 
 		if(empty($result) === false)
 		{
-			if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+			if(dwho_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
 				$result['dialaction'] = null;
 
-			if(xivo_issa('callerid',$result) === false || empty($result['callerid']) === true)
+			if(dwho_issa('callerid',$result) === false || empty($result['callerid']) === true)
 				$result['callerid'] = null;
 		}
 
@@ -109,7 +109,7 @@ switch($act)
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('incall',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('incall',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -124,29 +124,29 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		}
 
-		if(xivo_issa('incall',$return) === false || empty($return['incall']) === true)
+		if(dwho_issa('incall',$return) === false || empty($return['incall']) === true)
 			$return['incall'] = null;
 
-		if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
 		{
-			$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
-				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-				xivo::load_class('xivo_sort');
-				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+				dwho::load_class('dwho_sort');
+				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
 
 		if(empty($return) === false)
 		{
-			if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+			if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
 				$return['dialaction'] = null;
 
-			if(xivo_issa('callerid',$return) === false || empty($return['callerid']) === true)
+			if(dwho_issa('callerid',$return) === false || empty($return['callerid']) === true)
 				$return['callerid'] = null;
 		}
 
@@ -182,7 +182,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('incalls',$_QR)) === false)
+		if(($values = dwho_issa_val('incalls',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
 		$appincall = &$ipbx->get_application('incall');
@@ -201,7 +201,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('incalls',$_QR)) === false)
+		if(($values = dwho_issa_val('incalls',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
 		$appincall = &$ipbx->get_application('incall',null,false);
@@ -247,7 +247,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
 }

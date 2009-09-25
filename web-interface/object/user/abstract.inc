@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_user_abstract extends xivo_libdatastorage_abstract
 {
@@ -51,7 +51,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		$data['valid'] = (bool) $data['valid'];
 
 		if(is_array($data['obj']) === false)
-			$data['obj'] = xivo_unserialize($data['obj']);
+			$data['obj'] = dwho_unserialize($data['obj']);
 
 		return($data);
 	}
@@ -171,7 +171,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 			}
 		}
 
-		if(xivo_has_len($lang) === true)
+		if(dwho_has_len($lang) === true)
 			$infos['language'] = $lang;
 
 		$this->_set_info($r,$infos);
@@ -215,22 +215,22 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if(isset($this->_info['territory']) === true)
 			$territo = $this->_info['territory'];
 
-		xivo_i18n::set_locale($lang,$territo);
+		dwho_i18n::set_locale($lang,$territo);
 
-		$this->_info['language'] = xivo_i18n::attrib_language();
-		$this->_info['territory'] = xivo_i18n::attrib_territory();
-		$this->_info['locale'] = xivo_i18n::attrib_locale();
+		$this->_info['language'] = dwho_i18n::attrib_language();
+		$this->_info['territory'] = dwho_i18n::attrib_territory();
+		$this->_info['locale'] = dwho_i18n::attrib_locale();
 
 		if(isset($this->_info['_valid']) === true && $this->_info['_valid'] === true)
 		{
-			if(defined('XIVO_USER_I18N_LANGUAGE') === false)
-				define('XIVO_USER_I18N_LANGUAGE',$this->_info['language']);
+			if(defined('DWHO_USER_I18N_LANGUAGE') === false)
+				define('DWHO_USER_I18N_LANGUAGE',$this->_info['language']);
 
-			if(defined('XIVO_USER_I18N_TERRITORY') === false)
-				define('XIVO_USER_I18N_TERRITORY',$this->_info['territory']);
+			if(defined('DWHO_USER_I18N_TERRITORY') === false)
+				define('DWHO_USER_I18N_TERRITORY',$this->_info['territory']);
 
-			if(defined('XIVO_USER_I18N_LOCALE') === false)
-				define('XIVO_USER_I18N_LOCALE',$this->_info['locale']);
+			if(defined('DWHO_USER_I18N_LOCALE') === false)
+				define('DWHO_USER_I18N_LOCALE',$this->_info['locale']);
 		}
 	}
 
@@ -260,9 +260,9 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 	function _load_dso()
 	{
-		if(xivo_gct::is_valid('XIVO_USER_DSO') === true)
+		if(dwho_gct::is_valid('XIVO_USER_DSO') === true)
 		{
-			$this->_dso = &xivo_gct::get('XIVO_USER_DSO');
+			$this->_dso = &dwho_gct::get('XIVO_USER_DSO');
 			return(true);
 		}
 
@@ -272,10 +272,10 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if(isset($ini['datastorage']) === true)
 			$datastorage = &$ini['datastorage'];
 
-		$dso = &xivo_gct::get('XIVO_DSO');
+		$dso = &dwho_gct::get('DWHO_DSO');
 		$type = $dso->get_type();
 		$name = 'xivo_user_'.$type;
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'user','datastorage');
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,'user','datastorage');
 
 		if(xivo::load_class($name,$dir,$type,false) === false)
 		{
@@ -286,7 +286,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if(isset($ini['datastorage']) === true)
 			$datastorage = &$ini['datastorage'];
 
-		$this->_dso = &xivo_gct::set_get(new $name($dso,$datastorage),'XIVO_USER_DSO');
+		$this->_dso = &dwho_gct::set_get(new $name($dso,$datastorage),'XIVO_USER_DSO');
 
 		return(true);
 	}
@@ -295,13 +295,13 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 	{
 		if(xivo_user::chk_meta($user) === false
 		|| ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false
-		|| ($filter = xivo_gat::get_file(xivo_file::joinpath(XIVO_PATH_OBJECT,
+		|| ($filter = dwho_gat::get_file(dwho_file::joinpath(XIVO_PATH_OBJECT,
 								     'user',
 								     'filter',
 								     $meta))) === false
-		|| xivo::load_class('xivo_filter') === false
-		|| xivo_issa($user,$filter) === false
-		|| xivo_issa($name,$filter[$user]) === false)
+		|| dwho::load_class('dwho_filter') === false
+		|| dwho_issa($user,$filter) === false
+		|| dwho_issa($name,$filter[$user]) === false)
 			return(false);
 
 		return($filter[$user][$name]);
@@ -312,7 +312,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if(is_object($this->_acl) === true)
 			return(true);
 		else if(xivo::load_class('xivo_user_acl',
-					 XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user',
+					 XIVO_PATH_OBJECT.DWHO_SEP_DIR.'user',
 					 'acl',
 					 false) === false)
 			trigger_error('Failed to load user ACL',E_USER_ERROR);
@@ -331,7 +331,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 	{
 		$ini = xivo_user::load_get_init();
 
-		if(xivo_issa('authent',$ini) === false)
+		if(dwho_issa('authent',$ini) === false)
 			return(false);
 
 		$authent = &$ini['authent'];
@@ -347,10 +347,10 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if($type !== 'internal')
 			return(false);
 
-		$dso = &xivo_gct::get('XIVO_DSO');
+		$dso = &dwho_gct::get('DWHO_DSO');
 		$type = $dso->get_type();
 		$name = 'xivo_authent_'.$type;
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'user','authent');
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,'user','authent');
 
 		if(xivo::load_class($name,$dir,$type,false) === false)
 		{

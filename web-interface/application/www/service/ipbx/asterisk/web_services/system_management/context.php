@@ -21,7 +21,7 @@
 $access_category = 'system_management';
 $access_subcategory = 'context';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appcontext = &$ipbx->get_application('context');
 

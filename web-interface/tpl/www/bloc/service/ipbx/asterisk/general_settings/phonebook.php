@@ -75,13 +75,13 @@ endif;
 </div>
 
 <div class="sb-content">
-	<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-access');
-									xivo_fm_select('it-xivoserver');
-									xivo_fm_select('it-ldapfilter');">
+	<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-access');
+									dwho.form.select('it-xivoserver');
+									dwho.form.select('it-ldapfilter');">
 
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
@@ -103,16 +103,16 @@ endif;
 ?>
 		<div class="bt-adddelete">
 			<a href="#"
-			   onclick="xivo_fm_select_add_host_ipv4_subnet('it-access',
-									prompt('<?=$dhtml->escape($this->bbf('accessfeatures_add'));?>'));
-				    return(xivo.dom.free_focus());"
+			   onclick="xivo_form_select_add_host_ipv4_subnet('it-access',
+									  prompt('<?=$dhtml->escape($this->bbf('accessfeatures_add'));?>'));
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_addaccess');?>">
 				<?=$url->img_html('img/site/button/mini/blue/add.gif',
 						  $this->bbf('bt_addaccess'),
 						  'class="bt-addlist" id="bt-addaccess" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_select_delete_entry('it-access');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.select_delete_entry('it-access');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_deleteaccess');?>">
 				<?=$url->img_html('img/site/button/mini/orange/delete.gif',
 						  $this->bbf('bt_deleteaccess'),
@@ -144,16 +144,16 @@ endif;
 			</div>
 			<div class="inout-list">
 				<a href="#"
-				   onclick="xivo_fm_move_selected('it-xivoserverlist','it-xivoserver');
-					    return(xivo.dom.free_focus());"
+				   onclick="dwho.form.move_selected('it-xivoserverlist','it-xivoserver');
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inxivoserver');?>">
 					<?=$url->img_html('img/site/button/row-left.gif',
 							  $this->bbf('bt_inxivoserver'),
 							  'class="bt-inlist" id="bt-inxivoserver" border="0"');?></a><br />
 
 				<a href="#"
-				   onclick="xivo_fm_move_selected('it-xivoserver','it-xivoserverlist');
-					    return(xivo.dom.free_focus());"
+				   onclick="dwho.form.move_selected('it-xivoserver','it-xivoserverlist');
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outxivoserver');?>">
 					<?=$url->img_html('img/site/button/row-right.gif',
 							  $this->bbf('bt_outxivoserver'),
@@ -205,15 +205,15 @@ endif;
 			</div>
 			<div class="inout-list">
 				<a href="#"
-				   onclick="xivo_fm_move_selected('it-ldapfilterlist','it-ldapfilter');
-					    return(xivo.dom.free_focus());"
+				   onclick="dwho.form.move_selected('it-ldapfilterlist','it-ldapfilter');
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inldapfilter');?>">
 					<?=$url->img_html('img/site/button/row-left.gif',
 							  $this->bbf('bt_inldapfilter'),
 							  'class="bt-inlist" id="bt-inldapfilter" border="0"');?></a><br />
 				<a href="#"
-				   onclick="xivo_fm_move_selected('it-ldapfilter','it-ldapfilterlist');
-					    return(xivo.dom.free_focus());"
+				   onclick="dwho.form.move_selected('it-ldapfilter','it-ldapfilterlist');
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outldapfilter');?>">
 					<?=$url->img_html('img/site/button/row-right.gif',
 							  $this->bbf('bt_outldapfilter'),

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'user','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'user','abstract.inc'));
 
 class xivo_user_user extends xivo_user_abstract
 {
@@ -29,7 +29,7 @@ class xivo_user_user extends xivo_user_abstract
 	{
 		$this->_ini = xivo_user::load_get_init();
 
-		$this->_load_config(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user');
+		$this->_load_config(XIVO_PATH_OBJECT.DWHO_SEP_DIR.'user');
 		$this->_load_dso();
 
 		if(is_object($this->_dso) === false)
@@ -52,7 +52,7 @@ class xivo_user_user extends xivo_user_abstract
 
 		$ini = xivo_user::load_get_init();
 
-		if(xivo_issa('authent',$ini) === false)
+		if(dwho_issa('authent',$ini) === false)
 			return(false);
 
 		$authent = &$ini['authent'];
@@ -76,7 +76,7 @@ class xivo_user_user extends xivo_user_abstract
 				break;
 			default:
 				$name = 'xivo_authent_'.$type;
-				$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user'.XIVO_SEP_DIR.'authent';
+				$dir = XIVO_PATH_OBJECT.DWHO_SEP_DIR.'user'.DWHO_SEP_DIR.'authent';
 
 				if(xivo::load_class($name,$dir,$type,false) === false)
 				{
@@ -87,8 +87,8 @@ class xivo_user_user extends xivo_user_abstract
 				{
 					$datastorage = &$authent['datastorage'];
 
-					if(xivo_ak('type',$datastorage) === true && xivo_datastorage::is_valid($datastorage['type']) === true)
-						return(new $name(xivo_datastorage::factory($type,$datastorage),$authent));
+					if(dwho_ak('type',$datastorage) === true && dwho_datastorage::is_valid($datastorage['type']) === true)
+						return(new $name(dwho_datastorage::factory($type,$datastorage),$authent));
 					else
 					{
 						trigger_error('Invalid user authentication datastorage',E_USER_ERROR);

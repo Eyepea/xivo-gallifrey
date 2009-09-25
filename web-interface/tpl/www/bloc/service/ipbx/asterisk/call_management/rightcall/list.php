@@ -39,7 +39,7 @@
 	endif;
 ?>
 <form action="#" name="fm-rightcall-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -88,7 +88,7 @@
 ?>
 			</label>
 		</td>
-		<td><?=(xivo_has_len($ref['passwd']) === true ? $ref['passwd'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['passwd']) === true ? $ref['passwd'] : '-')?></td>
 		<td><?=$this->bbf('rightcall_authorization-'.intval((bool) $ref['authorization']));?></td>
 		<td class="td-right" colspan="2">
 <?php

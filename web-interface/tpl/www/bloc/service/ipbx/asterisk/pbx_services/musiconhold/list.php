@@ -64,7 +64,7 @@ $page = $url->pager($pager['pages'],
 	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
 		<td class="td-left txt-left curpointer"
 		    colspan="2"
-		    onclick="location.href = xivo.dom.node.firstchild(this);">
+		    onclick="location.href = dwho.dom.node.firstchild(this);">
 			<?=$url->href_html($ref['category'],
 					   'service/ipbx/pbx_services/musiconhold',
 					   array('act'	=> 'listfile',

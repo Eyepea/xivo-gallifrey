@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_file_fileinfo
+class dwho_file_fileinfo
 {
 	var $_finfo	= null;
 	var $info	= array(
@@ -34,7 +34,7 @@ class xivo_file_fileinfo
 
 	function get_info($file)
 	{
-		if(($file = xivo_file::is_f($file)) === false)
+		if(($file = dwho_file::is_f($file)) === false)
 			return(false);
 		else if(is_resource($this->_finfo) === false)
 			$this->open(FILEINFO_MIME);

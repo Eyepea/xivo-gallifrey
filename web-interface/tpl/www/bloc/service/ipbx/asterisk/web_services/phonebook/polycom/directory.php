@@ -32,7 +32,7 @@ if($prevpos > 0):
 	$prevparam['pos'] = floor($pos / $prevpos) * $prevpos;
 	$prevparam['name'] = $this->get_var('name');
 
-	echo	'<li>[',$url->href_html(xivo_htmlsc($this->bbf('phone_back')),
+	echo	'<li>[',$url->href_html(dwho_htmlsc($this->bbf('phone_back')),
 					'service/ipbx/web_services/phonebook/search',
 					$prevparam,
 					null,
@@ -43,7 +43,7 @@ if($prevpos > 0):
 endif;
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
-	echo	'<li>',xivo_htmlsc($this->bbf('phone_noentries')),'<br /></li>',"\n";
+	echo	'<li>',dwho_htmlsc($this->bbf('phone_noentries')),'<br /></li>',"\n";
 else:
 	for($i = 0;$i < $nb;$i++):
 		$ref = &$list[$i];
@@ -58,7 +58,7 @@ else:
 			$name = $this->bbf('phone_name-'.$ref['type'],$ref['name']);
 		endif;
 
-		echo	'<li><a href="tel://',$ref['phone'],'">',xivo_htmlsc($name),'</a><br /></li>',"\n";
+		echo	'<li><a href="tel://',$ref['phone'],'">',dwho_htmlsc($name),'</a><br /></li>',"\n";
 	endfor;
 endif;
 

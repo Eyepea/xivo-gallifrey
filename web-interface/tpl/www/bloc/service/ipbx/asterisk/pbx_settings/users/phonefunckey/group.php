@@ -34,7 +34,7 @@ $inputtxt['name'] = 'phonefunckey-group-suggest';
 $inputtxt['id'] = 'it-phonefunckey-group-suggest';
 
 if($fkdata['ex'] === false):
-	$incr = xivo_uint($fkdata['incr']);
+	$incr = dwho_uint($fkdata['incr']);
 	$inputhidden['id'] .= '-'.$incr;
 	$inputtxt['id'] .= '-'.$incr;
 

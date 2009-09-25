@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = array();
 
@@ -36,19 +36,19 @@ switch($act)
 		$outcalltrunk = $rightcall = array();
 		$outcalltrunk['slt'] = $rightcall['slt'] = array();
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
 		$apptrunk = &$ipbx->get_application('trunk',null,false);
 		if(($outcalltrunk['list'] = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
 		{
-			$trunksort = new xivo_sort(array('key' => 'identity'));
+			$trunksort = new dwho_sort(array('key' => 'identity'));
 			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
 		}
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('outcall',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('outcall',$_QR) === true)
 		{
 			if($appoutcall->set_add($_QR) === false
 			|| $appoutcall->add() === false)
@@ -60,26 +60,26 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 
-		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$result) === true)
+		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$result) === true)
 		{
-			$outcalltrunksort = new xivo_sort(array('key' => 'priority'));
+			$outcalltrunksort = new dwho_sort(array('key' => 'priority'));
 			usort($result['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
 
-			$outcalltrunk['slt'] = xivo_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
+			$outcalltrunk['slt'] = dwho_array_intersect_key($result['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 
 			if($outcalltrunk['slt'] !== false)
-				$outcalltrunk['list'] = xivo_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
+				$outcalltrunk['list'] = dwho_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
 		}
 
-		if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
 		{
-			$rightcall['slt'] = xivo_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
-				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
@@ -106,19 +106,19 @@ switch($act)
 		$outcalltrunk = $rightcall = array();
 		$outcalltrunk['slt'] = $rightcall['slt'] = array();
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
 		$apptrunk = &$ipbx->get_application('trunk',null,false);
 		if(($outcalltrunk['list'] = $apptrunk->get_trunks_list(null,null,null,null,true)) !== false)
 		{
-			$trunksort = new xivo_sort(array('key' => 'identity'));
+			$trunksort = new dwho_sort(array('key' => 'identity'));
 			uasort($outcalltrunk['list'],array(&$trunksort,'str_usort'));
 		}
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('outcall',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('outcall',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -132,26 +132,26 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 
-		if($outcalltrunk['list'] !== false && xivo_issa('outcalltrunk',$return) === true)
+		if($outcalltrunk['list'] !== false && dwho_issa('outcalltrunk',$return) === true)
 		{
-			$outcalltrunksort = new xivo_sort(array('key' => 'priority'));
+			$outcalltrunksort = new dwho_sort(array('key' => 'priority'));
 			usort($return['outcalltrunk'],array(&$outcalltrunksort,'num_usort'));
 
-			$outcalltrunk['slt'] = xivo_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
+			$outcalltrunk['slt'] = dwho_array_intersect_key($return['outcalltrunk'],$outcalltrunk['list'],'trunkfeaturesid');
 
 			if($outcalltrunk['slt'] !== false)
-				$outcalltrunk['list'] = xivo_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
+				$outcalltrunk['list'] = dwho_array_diff_key($outcalltrunk['list'],$outcalltrunk['slt']);
 		}
 
-		if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
 		{
-			$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
-				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
@@ -183,7 +183,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
+		if(($values = dwho_issa_val('outcalls',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$appoutcall = &$ipbx->get_application('outcall');
@@ -202,7 +202,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('outcalls',$_QR)) === false)
+		if(($values = dwho_issa_val('outcalls',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
 		$appoutcall = &$ipbx->get_application('outcall',null,false);
@@ -244,7 +244,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

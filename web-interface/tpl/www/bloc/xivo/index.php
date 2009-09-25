@@ -28,11 +28,11 @@ $grpundef = $this->get_var('grpundef');
 
 $memrealused = $meminfo['memused'] - $meminfo['buffers'] - $meminfo['cached'];
 
-$memtotal = xivo_size_iec($meminfo['memtotal']);
-$memfree = xivo_size_iec($meminfo['memfree']);
-$memused = xivo_size_iec($memrealused);
-$membuffers = xivo_size_iec($meminfo['buffers']);
-$memcached = xivo_size_iec($meminfo['cached']);
+$memtotal = dwho_size_iec($meminfo['memtotal']);
+$memfree = dwho_size_iec($meminfo['memfree']);
+$memused = dwho_size_iec($memrealused);
+$membuffers = dwho_size_iec($meminfo['buffers']);
+$memcached = dwho_size_iec($meminfo['cached']);
 
 if($meminfo['memtotal'] > 0):
 	$memrealusedpercent = ($memrealused / $meminfo['memtotal'] * 100);
@@ -49,9 +49,9 @@ endif;
 
 $memusedpcentrnd = $memrealusedpcentrnd + $membufferspcentrnd + $memcachedpcentrnd;
 
-$swaptotal = xivo_size_iec($meminfo['swaptotal']);
-$swapfree = xivo_size_iec($meminfo['swapfree']);
-$swapused = xivo_size_iec($meminfo['swapused']);
+$swaptotal = dwho_size_iec($meminfo['swaptotal']);
+$swapfree = dwho_size_iec($meminfo['swapfree']);
+$swapused = dwho_size_iec($meminfo['swapused']);
 
 if($meminfo['swaptotal'] > 0):
 	$swappercent = ($meminfo['swapused'] / $meminfo['swaptotal'] * 100);
@@ -64,12 +64,12 @@ $this->set_var('memtotal',$meminfo['memtotal']);
 $cputotalpercent = 0;
 $load = $cputotal = $cpuuser = $cpusystem = $cpuwait = '-';
 
-if(xivo_issa('system',$sysinfo) === true):
-	if(xivo_issa('load',$sysinfo['system']) === true):
+if(dwho_issa('system',$sysinfo) === true):
+	if(dwho_issa('load',$sysinfo['system']) === true):
 		$load = vsprintf('%.2f %.2f %.2f',$sysinfo['system']['load']);
 	endif;
 
-	if(xivo_issa('cpu',$sysinfo['system']) === true):
+	if(dwho_issa('cpu',$sysinfo['system']) === true):
 		$cputotalpercent = array_sum($sysinfo['system']['cpu']);
 		$cputotal = $this->bbf('number_percent',$cputotalpercent);
 		$cpuuser = $this->bbf('number_percent',$sysinfo['system']['cpu']['user']);
@@ -115,7 +115,7 @@ endif;
 					<tr class="l-infos-2on2">
 						<td class="td-left txt-left"><?=$this->bbf('sysinfos_uptime');?></td>
 						<td class="td-right txt-right"><?=$this->bbf('sysinfos_uptime-duration',
-											     xivo_calc_time('second',
+											     dwho_calc_time('second',
 													    $this->get_var('uptime'),
 													    '%d%H%M%s'));?></td>
 					</tr>
@@ -144,9 +144,9 @@ endif;
 					$total = $ref['total'] * $ref['size'];
 					$free = $ref['free'] * $ref['size'];
 					$used = $total - $free;
-					$devtotal = xivo_size_iec($total);
-					$devfree = xivo_size_iec($free);
-					$devused = xivo_size_iec($used);
+					$devtotal = dwho_size_iec($total);
+					$devfree = dwho_size_iec($free);
+					$devused = dwho_size_iec($used);
 
 					if($total > 0):
 						$devpercent = ($used / $total * 100);
@@ -155,7 +155,7 @@ endif;
 					endif;
 ?>
 					<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
-						<td><?=xivo_trunc(xivo_htmlen($devinfo[$i]['name']),20,'...',false);?></td>
+						<td><?=dwho_trunc(dwho_htmlen($devinfo[$i]['name']),20,'...',false);?></td>
 						<td class="gauge">
 							<div><div style="width: <?=round($devpercent);?>px;">&nbsp;</div></div>
 						</td>
@@ -215,13 +215,13 @@ endif;
 		if(is_array($netinfo) === true):
 			$i = 0;
 			foreach($netinfo as $devname => $stats):
-				$rx_bytes = xivo_size_iec($stats['rx']['bytes']);
-				$tx_bytes = xivo_size_iec($stats['tx']['bytes']);
-				$total_errs = xivo_size_iec($stats['total']['errs']);
-				$total_drop = xivo_size_iec($stats['total']['drop']);
+				$rx_bytes = dwho_size_iec($stats['rx']['bytes']);
+				$tx_bytes = dwho_size_iec($stats['tx']['bytes']);
+				$total_errs = dwho_size_iec($stats['total']['errs']);
+				$total_drop = dwho_size_iec($stats['total']['drop']);
 ?>
 				<tr class="l-infos-<?=(($i++ % 2) + 1)?>on2">
-					<td><?=xivo_trunc(xivo_htmlen($devname),20,'...',false);?></td>
+					<td><?=dwho_trunc(dwho_htmlen($devname),20,'...',false);?></td>
 					<td class="txt-right"><?=$this->bbf('size_iec_'.$rx_bytes[1],$rx_bytes[0]);?></td>
 					<td class="txt-right"><?=$this->bbf('size_iec_'.$tx_bytes[1],$tx_bytes[0]);?></td>
 					<td class="txt-right"><?=$stats['total']['errs']?></td>

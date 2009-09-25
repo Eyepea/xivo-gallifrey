@@ -30,14 +30,14 @@ $info['xivoserver']['info'] = $appxivoserver->get();
 $info['ldapfilter']['info'] = $appldapfilter->get();
 $info['xivoserver']['slt'] = $info['ldapfilter']['slt'] = false;
 
-xivo::load_class('xivo_sort');
+dwho::load_class('dwho_sort');
 
-$accessfeaturessort = new xivo_sort(array('key' => 'host'));
+$accessfeaturessort = new dwho_sort(array('key' => 'host'));
 
 if(($info['accessfeatures'] = $appaccessfeatures->get()) !== false)
 	uasort($info['accessfeatures'],array(&$accessfeaturessort,'str_usort'));
 
-$serversort = new xivo_sort(array('key' => 'identity'));
+$serversort = new dwho_sort(array('key' => 'identity'));
 
 if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
 	uasort($info['xivoserver']['list'],array(&$serversort,'str_usort'));
@@ -104,13 +104,13 @@ if(isset($_QR['fm_send']) === true)
 if($info['xivoserver']['list'] !== false
 && $info['xivoserver']['info'] !== false)
 {
-	$info['xivoserver']['slt'] = xivo_array_intersect_key($info['xivoserver']['info'],
+	$info['xivoserver']['slt'] = dwho_array_intersect_key($info['xivoserver']['info'],
 							      $info['xivoserver']['list'],
 							      'serverid');
 
 	if($info['xivoserver']['slt'] !== false)
 	{
-		$info['xivoserver']['list'] = xivo_array_diff_key($info['xivoserver']['list'],
+		$info['xivoserver']['list'] = dwho_array_diff_key($info['xivoserver']['list'],
 								  $info['xivoserver']['slt']);
 		uasort($info['xivoserver']['slt'],array(&$serversort,'str_usort'));
 	}
@@ -119,13 +119,13 @@ if($info['xivoserver']['list'] !== false
 if($info['ldapfilter']['list'] !== false
 && $info['ldapfilter']['info'] !== false)
 {
-	$info['ldapfilter']['slt'] = xivo_array_intersect_key($info['ldapfilter']['info'],
+	$info['ldapfilter']['slt'] = dwho_array_intersect_key($info['ldapfilter']['info'],
 							      $info['ldapfilter']['list'],
 							      'serverid');
 
 	if($info['ldapfilter']['slt'] !== false)
 	{
-		$info['ldapfilter']['list'] = xivo_array_diff_key($info['ldapfilter']['list'],
+		$info['ldapfilter']['list'] = dwho_array_diff_key($info['ldapfilter']['list'],
 								  $info['ldapfilter']['slt']);
 		uasort($info['ldapfilter']['slt'],array(&$serversort,'str_usort'));
 	}

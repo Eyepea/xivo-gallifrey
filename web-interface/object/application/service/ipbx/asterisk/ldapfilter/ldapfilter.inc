@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_ldapfilter extends xivo_application_asterisk_abstract
 {
@@ -154,7 +154,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('ldapfilter',$arr) === false)
+		|| dwho_issa('ldapfilter',$arr) === false)
 			return(false);
 
 		$this->set_ldapfilter($arr['ldapfilter']);
@@ -244,7 +244,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 
 	function edit_ldapfilter()
 	{
-		if(xivo_issa('ldapfilter',$this->_info) === false
+		if(dwho_issa('ldapfilter',$this->_info) === false
 		|| ($rs = $this->get_result('ldapfilter')) === null
 		|| $rs === false)
 			return(false);
@@ -273,7 +273,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 
 	function delete_ldapfilter()
 	{
-		if(xivo_issa('ldapfilter',$this->_info) === false)
+		if(dwho_issa('ldapfilter',$this->_info) === false)
 			return(false);
 
 		$r = $this->_ldapfilter->delete($this->_info['ldapfilter']['id']);
@@ -326,7 +326,7 @@ class xivo_application_service_asterisk_ldapfilter extends xivo_application_aste
 
 	function _enable_disable_ldapfilter($disable=false)
 	{
-		if(xivo_issa('ldapfilter',$this->_info) === false)
+		if(dwho_issa('ldapfilter',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_ldapfilter->enable($this->_info['ldapfilter']['id']);

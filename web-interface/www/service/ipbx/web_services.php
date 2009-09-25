@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('XIVO_SESS_ENABLE',false);
+define('DWHO_SESS_ENABLE',false);
 
 require_once('xivo.php');
 
@@ -28,8 +28,8 @@ $application = $_TPL->get_application('service/ipbx/'.$ipbx->get_name().'/web_se
 
 if($application === false)
 {
-	xivo::load_class('xivo_http');
-	$http = new xivo_http();
+	dwho::load_class('dwho_http');
+	$http = new dwho_http();
 	$http->set_status(404);
 	$http->send(true);
 }

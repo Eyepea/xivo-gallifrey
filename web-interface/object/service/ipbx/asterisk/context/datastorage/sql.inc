@@ -64,7 +64,7 @@ class xivo_service_asterisk_context_sql extends xivo_service_asterisk_abstract_s
 		if(isset($this->_forcecolumn) === true)
 			$this->_dso->where($this->_forcecolumn);
 
-		if(xivo_has_len($name) === true)
+		if(dwho_has_len($name) === true)
 			$this->_dso->andwherenot(array('name' => $name));
 
 		$this->_dso->new_order($order);

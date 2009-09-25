@@ -28,7 +28,7 @@ class xivo_libconfig_abstract
 			return(false);
 		else if(empty($this->_conf) === false)
 			return(null);
-		else if(($this->_conf = xivo_gat::get_file($dir.XIVO_SEP_DIR.'config')) !== false)
+		else if(($this->_conf = dwho_gat::get_file($dir.DWHO_SEP_DIR.'config')) !== false)
 			return(true);
 
 		return(false);
@@ -42,7 +42,7 @@ class xivo_libconfig_abstract
 		$name = (string) $name;
 
 		if(isset($this->_conf) === true
-		&& xivo_issa($type,$this->_conf) === true
+		&& dwho_issa($type,$this->_conf) === true
 		&& isset($this->_conf[$type][$name]) === true)
 			$r = (bool) $ret === false ? true : $this->_conf[$type][$name];
 
@@ -51,7 +51,7 @@ class xivo_libconfig_abstract
 
 	function get_option()
 	{
-		if(isset($this->_conf) === false || xivo_issa('option',$this->_conf) === false)
+		if(isset($this->_conf) === false || dwho_issa('option',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['option']);
@@ -62,7 +62,7 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('option',$this->_conf) === false
+		|| dwho_issa('option',$this->_conf) === false
 		|| isset($this->_conf['option'][$key]) === false)
 			return(false);
 
@@ -71,7 +71,7 @@ class xivo_libconfig_abstract
 
 	function get_element()
 	{
-		if(isset($this->_conf) === false || xivo_issa('element',$this->_conf) === false)
+		if(isset($this->_conf) === false || dwho_issa('element',$this->_conf) === false)
 			return(false);
 
 		return($this->_conf['element']);
@@ -81,7 +81,7 @@ class xivo_libconfig_abstract
 	{
 		if(is_array($where) === false
 		|| isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
+		|| dwho_issa('element',$this->_conf) === false
 		|| empty($this->_conf['element']) === true)
 			return(false);
 
@@ -107,8 +107,8 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['value']) === false)
 			return(false);
 
@@ -130,8 +130,8 @@ class xivo_libconfig_abstract
 		$value = (string) $value;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false)
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false)
 			return(false);
 
 		$this->_conf['element'][$key]['default'] = $value;
@@ -144,8 +144,8 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['default']) === false)
 			return(false);
 
@@ -157,9 +157,9 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
-		|| xivo_ak('setdef',$this->_conf['element'][$key],true) === false)
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
+		|| dwho_ak('setdef',$this->_conf['element'][$key],true) === false)
 			return(false);
 
 		return(true);
@@ -170,8 +170,8 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === true
-		&& xivo_issa('element',$this->_conf) === true
-		&& xivo_issa($key,$this->_conf['element']) === true
+		&& dwho_issa('element',$this->_conf) === true
+		&& dwho_issa($key,$this->_conf['element']) === true
 		&& isset($this->_conf['element'][$key]['setdef']) === true
 		&& $this->_conf['element'][$key]['setdef'] === false)
 			return(true);
@@ -184,9 +184,9 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
-		|| xivo_ak('forcedef',$this->_conf['element'][$key],true) === false)
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
+		|| dwho_ak('forcedef',$this->_conf['element'][$key],true) === false)
 			return(false);
 
 		return(true);
@@ -197,9 +197,9 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
-		|| xivo_ak('set',$this->_conf['element'][$key],true) === false)
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
+		|| dwho_ak('set',$this->_conf['element'][$key],true) === false)
 			return(false);
 
 		return(true);
@@ -210,8 +210,8 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['unset']) === false)
 			return(false);
 
@@ -223,8 +223,8 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['null']) === false)
 			return(false);
 
@@ -236,8 +236,8 @@ class xivo_libconfig_abstract
 		$key = (string) $key;
 
 		if(isset($this->_conf) === false
-		|| xivo_issa('element',$this->_conf) === false
-		|| xivo_issa($key,$this->_conf['element']) === false
+		|| dwho_issa('element',$this->_conf) === false
+		|| dwho_issa($key,$this->_conf['element']) === false
 		|| isset($this->_conf['element'][$key]['multi']) === false)
 			return(false);
 
@@ -247,11 +247,11 @@ class xivo_libconfig_abstract
 	function _load_filter()
 	{
 		if(isset($this->_conf,$this->_filter) === false
-		|| xivo::load_class('xivo_filter') === false
-		|| xivo_issa('filter',$this->_conf) === false)
+		|| dwho::load_class('dwho_filter') === false
+		|| dwho_issa('filter',$this->_conf) === false)
 			return(false);
 
-		$this->_filter = new xivo_filter($this->_conf['filter']);
+		$this->_filter = new dwho_filter($this->_conf['filter']);
 
 		return(true);
 	}
@@ -343,7 +343,7 @@ class xivo_libconfig_abstract
 			return(false);
 		else if(is_scalar($value) === true)
 			return($value);
-		else if(xivo_ak($val,$value) === true)
+		else if(dwho_ak($val,$value) === true)
 			return($value[$val]);
 
 		return(false);
@@ -380,7 +380,7 @@ class xivo_libconfig_abstract
 
 	function _chk_upload_file()
 	{
-		$_CF = &xivo_gat::get('_CF');
+		$_CF = &dwho_gat::get('_CF');
 
 		if($_CF['xivo']['ini']['file_uploads'] !== true)
 		{
@@ -388,7 +388,7 @@ class xivo_libconfig_abstract
 			return(false);
 		}
 
-		$upload = xivo_get_memory('upload_max_filesize');
+		$upload = dwho_get_memory('upload_max_filesize');
 
 		if(($size = $this->_get_config_file_maxsize()) !== false && $upload < $size)
 		{

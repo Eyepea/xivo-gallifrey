@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_agentgroup extends xivo_application_asterisk_abstract
 {
@@ -87,7 +87,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$this->_origin['agentmember'] = false;
 
 		if(is_object($this->_agentmember) === true
-		&& xivo_issa('agentgroup',$this->_info) === true
+		&& dwho_issa('agentgroup',$this->_info) === true
 		&& ($this->_info['agentmember'] = $this->_agentmember->get($this->_info['agentgroup']['id'])) !== false)
 			$this->_origin['agentmember'] = $this->_agentmember->get_origin();
 
@@ -198,17 +198,17 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('agentgroup',$arr) === false)
+		|| dwho_issa('agentgroup',$arr) === false)
 			return(false);
 
 		$arr['agentgroup']['groupid'] = 0;
 		$this->set_agentgroup($arr['agentgroup']);
 		$this->set_staticagentgroup();
 
-		if(xivo_issa('agent-select',$arr) === true)
+		if(dwho_issa('agent-select',$arr) === true)
 			$this->set_agentmember($arr['agent-select']);
 
-		if(xivo_issa('queue',$arr) === true && xivo_issa('queue-select',$arr) === true)
+		if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true)
 			$this->set_queuemember($arr['queue'],$arr['queue-select'],0);
 
 		return(($this->get_errnb() < 1));
@@ -353,7 +353,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function add_staticagentgroup($agentgroupid)
 	{
-		if(($agentgroupid = xivo_ulongint($agentgroupid)) === 0
+		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0
 		|| ($rs = $this->_staticagentgroup->add_group($agentgroupid)) === null
 		|| $rs === false)
 			return(false);
@@ -363,8 +363,8 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function update_agentgroup($agentgroupid,$staticagentgroupid)
 	{
-		if(($agentgroupid = xivo_ulongint($agentgroupid)) === 0
-		|| ($staticagentgroupid = xivo_ulongint($staticagentgroupid)) === 0)
+		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0
+		|| ($staticagentgroupid = dwho_ulongint($staticagentgroupid)) === 0)
 			return(false);
 
 		return($this->_agentgroup->edit($agentgroupid,
@@ -387,7 +387,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 	{
 		$rs = false;
 
-		if(($agentgroupid = xivo_ulongint($agentgroupid)) === 0
+		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0
 		|| ($rs = $this->get_result('queuemember')) === null
 		|| $rs === false)
 			return($rs);
@@ -483,7 +483,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function edit_agentgroup()
 	{
-		if(xivo_issa('agentgroup',$this->_info) === false
+		if(dwho_issa('agentgroup',$this->_info) === false
 		|| ($rs = $this->get_result('agentgroup')) === null
 		|| $rs === false)
 			return(false);
@@ -495,8 +495,8 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function edit_staticagentgroup()
 	{
-		if(xivo_issa('staticagentgroup',$this->_info) === false
-		|| xivo_issa('agentgroup',$this->_info) === false
+		if(dwho_issa('staticagentgroup',$this->_info) === false
+		|| dwho_issa('agentgroup',$this->_info) === false
 		|| ($rs = $this->_staticagentgroup->edit_group($this->_info['staticagentgroup']['id'],
 							       $this->_info['agentgroup']['id'])) === null
 		|| $rs === false)
@@ -508,7 +508,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 	function edit_agentmember()
 	{
 		if(is_object($this->_agentmember) === false
-		|| xivo_issa('agentgroup',$this->_info) === false)
+		|| dwho_issa('agentgroup',$this->_info) === false)
 			return(false);
 
 		$r = $this->_agentmember->save($this->_info['agentgroup']['id']);
@@ -520,9 +520,9 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function edit_queuemember()
 	{
-		if(xivo_issa('agentgroup',$this->_info) === false)
+		if(dwho_issa('agentgroup',$this->_info) === false)
 			return(false);
-		else if(xivo_issa('queuemember',$this->_info) === false)
+		else if(dwho_issa('queuemember',$this->_info) === false)
 			return($this->add_queuemember($this->_info['agentgroup']['id']));
 
 		$agentgroupid = $this->_info['agentgroup']['id'];
@@ -633,7 +633,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function delete_agentgroup()
 	{
-		if(xivo_issa('agentgroup',$this->_info) === false
+		if(dwho_issa('agentgroup',$this->_info) === false
 		|| (string) $this->_info['agentgroup']['id'] === (string) XIVO_SRE_IPBX_AST_AGENT_GROUP_DEFAULT)
 			return(false);
 
@@ -647,7 +647,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function delete_staticagentgroup()
 	{
-		if(xivo_issa('staticagentgroup',$this->_info) === false
+		if(dwho_issa('staticagentgroup',$this->_info) === false
 		|| ($r = $this->_staticagentgroup->delete_group($this->_status,
 								$this->_info['staticagentgroup']['id'])) === null
 		|| $r === false)
@@ -660,7 +660,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function delete_agentmember()
 	{
-		if(xivo_issa('agentmember',$this->_info) === false)
+		if(dwho_issa('agentmember',$this->_info) === false)
 			return(null);
 		else if(is_object($this->_agentmember) === false)
 			return(false);
@@ -674,9 +674,9 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function delete_queuemember()
 	{
-		if(xivo_issa('queuemember',$this->_info) === false)
+		if(dwho_issa('queuemember',$this->_info) === false)
 			return(null);
-		else if(xivo_issa('agentgroup',$this->_info) === false
+		else if(dwho_issa('agentgroup',$this->_info) === false
 		|| is_object($this->_queuemember) === false)
 			return(false);
 
@@ -708,7 +708,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 			switch($key)
 			{
 				case 'agentgroup':
-					if(xivo_issa('agentgroup',$this->_origin) === true)
+					if(dwho_issa('agentgroup',$this->_origin) === true)
 						$this->_agentgroup->recover($this->_origin['agentgroup']['id']);
 					break;
 				case 'staticagentgroup':
@@ -782,7 +782,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function _enable_disable_agentgroup($disable=false)
 	{
-		if(xivo_issa('agentgroup',$this->_info) === false)
+		if(dwho_issa('agentgroup',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_agentgroup->enable($this->_info['agentgroup']['id']);
@@ -807,7 +807,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function _enable_disable_staticagentgroup($disable=false)
 	{
-		if(xivo_issa('staticagentgroup',$this->_info) === false)
+		if(dwho_issa('staticagentgroup',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_staticagentgroup->enable($this->_info['staticagentgroup']['id']);
@@ -832,7 +832,7 @@ class xivo_application_service_asterisk_agentgroup extends xivo_application_aste
 
 	function _enable_disable_agentmember($disable=false)
 	{
-		if(xivo_issa('agentmember',$this->_origin) === false)
+		if(dwho_issa('agentmember',$this->_origin) === false)
 			return(false);
 
 		$disable = (bool) $disable;

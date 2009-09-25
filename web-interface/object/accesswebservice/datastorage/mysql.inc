@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'accesswebservice','datastorage','abstract','sql.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'accesswebservice','datastorage','abstract','sql.inc'),true);
 
 class xivo_accesswebservice_mysql extends xivo_accesswebservice_abstract_sql
 {

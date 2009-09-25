@@ -16,54 +16,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-var xivo_fm = document.forms;
-var xivo_fm_error = {};
-var xivo_fm_text_helper = {};
+if(typeof(dwho) === 'undefined')
+	dwho = {'form': {}};
+else if(dwho_is_undef(dwho.form) === true)
+	dwho.form = {};
 
-function xivo_fm_set_events_text_helper(id)
+dwho.fm = document.forms;
+dwho.form.error = {};
+dwho.form.text_helper = {};
+
+dwho.form.set_events_text_helper = function(id)
 {
-	xivo.dom.add_cssclass(xivo_eid(id),'it-helper');
-	xivo.dom.add_event('focus',xivo_eid(id),xivo_fm_focus_text_helper);
-	xivo.dom.add_event('blur',xivo_eid(id),xivo_fm_blur_text_helper);
+	dwho.dom.add_cssclass(dwho_eid(id),'it-helper');
+	dwho.dom.add_event('focus',dwho_eid(id),dwho.form.focus_text_helper);
+	dwho.dom.add_event('blur',dwho_eid(id),dwho.form.blur_text_helper);
 }
 
-function xivo_fm_focus_text_helper()
+dwho.form.focus_text_helper = function()
 {
-	if(xivo_has_len(this.id) === false)
+	if(dwho_has_len(this.id) === false)
 		return(false);
-	else if(xivo_has_len(xivo_fm_text_helper[this.id]) === false)
+	else if(dwho_has_len(dwho.form.text_helper[this.id]) === false)
 	{
-		xivo_fm_text_helper[this.id] = this.value;
-		xivo.dom.remove_cssclass(this,'it-helper');
+		dwho.form.text_helper[this.id] = this.value;
+		dwho.dom.remove_cssclass(this,'it-helper');
 		this.value = '';
 	}
 }
 
-function xivo_fm_blur_text_helper()
+dwho.form.blur_text_helper = function()
 {
-	if(xivo_has_len(this.id) === false)
+	if(dwho_has_len(this.id) === false)
 		return(false);
-	else if(xivo_is_undef(xivo_fm_text_helper[this.id]) === false
-	&& xivo_has_len(this.value) === false)
+	else if(dwho_is_undef(dwho.form.text_helper[this.id]) === false
+	&& dwho_has_len(this.value) === false)
 	{
-		this.value = xivo_fm_text_helper[this.id];
-		xivo.dom.add_cssclass(this,'it-helper');
-		xivo_fm_text_helper[this.id] = '';
+		this.value = dwho.form.text_helper[this.id];
+		dwho.dom.add_cssclass(this,'it-helper');
+		dwho.form.text_helper[this.id] = '';
 	}
 }
 
-function xivo_fm_show_error()
+dwho.form.show_error = function()
 {
-	if(xivo_is_undef(xivo_fm_error) === true
-	|| xivo_type_object(xivo_fm_error) === false
-	|| xivo_is_undef(xivo_fm_error_class) === true)
+	if(dwho_is_undef(dwho.form.error) === true
+	|| dwho_type_object(dwho.form.error) === false
+	|| dwho_is_undef(dwho_form_class_error) === true)
 		return(false);
 
-	for(var key in xivo_fm_error)
+	for(var key in dwho.form.error)
 	{
-		var val = Boolean(xivo_fm_error[key]);
+		var val = Boolean(dwho.form.error[key]);
 
-		if((obj = xivo_eid(key)) === false || val === false)
+		if((obj = dwho_eid(key)) === false || val === false)
 			continue;
 
 		switch(obj.tagName.toLowerCase())
@@ -74,73 +79,73 @@ function xivo_fm_show_error()
 				&& obj.type !== 'password')
 					continue;
 			default:
-				obj.className = xivo_fm_error_class;
+				obj.className = dwho_form_class_error;
 		}
 	}
 
 	return(true);
 }
 
-function xivo_fm_set_onfocus(obj)
+dwho.form.set_onfocus = function(obj)
 {
 	var list = {'input': 1,'select': 1, 'textarea': 1};
 
-	if(xivo_is_undef(xivo_fm_onfocus_class) === true
-	|| xivo_is_undef(xivo_fm_error_class) === true
-	|| xivo_is_undef(xivo_fm_disabled_class) === true
-	|| xivo_is_undef(obj.tagName) === true
-	|| xivo_is_undef(list[obj.tagName.toLowerCase()]) === true)
+	if(dwho_is_undef(dwho_form_class_onfocus) === true
+	|| dwho_is_undef(dwho_form_class_error) === true
+	|| dwho_is_undef(dwho_form_class_disabled) === true
+	|| dwho_is_undef(obj.tagName) === true
+	|| dwho_is_undef(list[obj.tagName.toLowerCase()]) === true)
 		return(false);
 	else if((obj.tagName.toLowerCase() === 'input'
 	&& obj.type !== 'text'
 	&& obj.type !== 'file'
 	&& obj.type !== 'password') === true
-	|| obj.className === xivo_fm_error_class
-	|| obj.className === xivo_fm_disabled_class
+	|| obj.className === dwho_form_class_error
+	|| obj.className === dwho_form_class_disabled
 	|| obj.readOnly === true
 	|| obj.disabled === true)
 		return(false);
 
-	obj.className = xivo_fm_onfocus_class;
+	obj.className = dwho_form_class_onfocus;
 
 	return(true);
 }
 
-function xivo_fm_set_onblur(obj)
+dwho.form.set_onblur = function(obj)
 {
 	var list = {'input': 1,'select': 1, 'textarea': 1};
 
-	if(xivo_is_undef(xivo_fm_onblur_class) === true
-	|| xivo_is_undef(xivo_fm_error_class) === true
-	|| xivo_is_undef(xivo_fm_disabled_class) === true
-	|| xivo_is_undef(obj.tagName) === true
-	|| xivo_is_undef(list[obj.tagName.toLowerCase()]) === true)
+	if(dwho_is_undef(dwho_form_class_onblur) === true
+	|| dwho_is_undef(dwho_form_class_error) === true
+	|| dwho_is_undef(dwho_form_class_disabled) === true
+	|| dwho_is_undef(obj.tagName) === true
+	|| dwho_is_undef(list[obj.tagName.toLowerCase()]) === true)
 		return(false);
 	else if((obj.tagName.toLowerCase() === 'input'
 	&& obj.type !== 'text'
 	&& obj.type !== 'file'
 	&& obj.type !== 'password') === true
-	|| obj.className === xivo_fm_error_class
-	|| obj.className === xivo_fm_disabled_class
+	|| obj.className === dwho_form_class_error
+	|| obj.className === dwho_form_class_disabled
 	|| obj.readOnly === true
 	|| obj.disabled === true)
 		return(false);
 
-	obj.className = xivo_fm_onblur_class;
+	obj.className = dwho_form_class_onblur;
 
 	return(true);
 }
 
-function xivo_fm_onfocus_onblur(obj)
+dwho.form.onfocus_onblur = function(obj)
 {
 	var arr = ['input', 'select', 'textarea'];
 
-	var focus	= function() { xivo_fm_set_onfocus(this); };
-	var blur	= function() { xivo_fm_set_onblur(this); }
+	var focus	= function() { dwho.form.set_onfocus(this); };
+	var blur	= function() { dwho.form.set_onblur(this); }
 
 	for(var i = 0;i < 3;i++)
 	{
-		if((tag = xivo.dom.etag(arr[i],obj)) === false
+		if((tag = dwho.dom.etag(arr[i],obj)) === false
 		|| (len = tag.length) === 0)
 			continue;
 
@@ -152,17 +157,17 @@ function xivo_fm_onfocus_onblur(obj)
 			&& tag[j].type !== 'password')
 				continue;
 
-			xivo.dom.add_event('focus',tag[j],focus);
-			xivo.dom.add_event('blur',tag[j],blur);
+			dwho.dom.add_event('focus',tag[j],focus);
+			dwho.dom.add_event('blur',tag[j],blur);
 		}
 	}
 
 	return(true);
 }
 
-function xivo_fm_set_disable_submit_onenter(form)
+dwho.form.set_disable_submit_onenter = function(form)
 {
-	if((tag = xivo.dom.etag('input',form)) === false
+	if((tag = dwho.dom.etag('input',form)) === false
 	|| (len = tag.length) === 0)
 		return(null);
 
@@ -173,18 +178,18 @@ function xivo_fm_set_disable_submit_onenter(form)
 		   || tag[i].type === 'password'
 		   || tag[i].type === 'checkbox'
 		   || tag[i].type === 'radio')
-			xivo.dom.add_event('keypress',
+			dwho.dom.add_event('keypress',
 					   tag[i],
-					   xivo_fm_disable_submit_onenter);
+					   dwho.form.disable_submit_onenter);
 	}
 
 	return(true);
 }
 
-function xivo_fm_move_selected(from,to)
+dwho.form.move_selected = function(from,to)
 {
-	if((from = xivo_eid(from)) === false
-	|| (to = xivo_eid(to)) === false
+	if((from = dwho_eid(from)) === false
+	|| (to = dwho_eid(to)) === false
 	|| from.type !== 'select-multiple'
 	|| to.type !== 'select-multiple')
 		return(false);
@@ -210,16 +215,16 @@ function xivo_fm_move_selected(from,to)
 	return(true);
 }
 
-function xivo_fm_copy_select(from,to)
+dwho.form.copy_select = function(from,to)
 {
-	if((from = xivo_eid(from)) === false
-	|| (to = xivo_eid(to)) === false
+	if((from = dwho_eid(from)) === false
+	|| (to = dwho_eid(to)) === false
 	|| (from.type !== 'select-one'
 	   && from.type !== 'select-multiple') === true
 	|| (to.type !== 'select-one'
 	   && to.type !== 'select-multiple') === true)
 		return(false);
-	else if(to.selectedIndex === -1 || xivo_is_undef(to.options[to.selectedIndex]) === true)
+	else if(to.selectedIndex === -1 || dwho_is_undef(to.options[to.selectedIndex]) === true)
 		var selected = false;
 	else
 		var selected = to.options[to.selectedIndex].text;
@@ -240,16 +245,16 @@ function xivo_fm_copy_select(from,to)
 	return(true);
 }
 
-function xivo_fm_unshift_opt_select(from,text,value)
+dwho.form.unshift_opt_select = function(from,text,value)
 {
-	if((from = xivo_eid(from)) === false
+	if((from = dwho_eid(from)) === false
 	|| (from.type !== 'select-one'
 	   && from.type !== 'select-multiple') === true)
 		return(false);
-	else if(xivo_is_undef(text) === true)
+	else if(dwho_is_undef(text) === true)
 		text = '';
 
-	if(xivo_is_undef(value) === true)
+	if(dwho_is_undef(value) === true)
 		value = text;
 
 	var len = from.options.length;
@@ -269,9 +274,9 @@ function xivo_fm_unshift_opt_select(from,text,value)
 	return(true);
 }
 
-function xivo_fm_pop_opt_select(from)
+dwho.form.pop_opt_select = function(from)
 {
-	if((from = xivo_eid(from)) === false
+	if((from = dwho_eid(from)) === false
 	|| (from.type !== 'select-one'
 	   && from.type !== 'select-multiple') === true)
 		return(false);
@@ -281,11 +286,11 @@ function xivo_fm_pop_opt_select(from)
 	return(true);
 }
 
-function xivo_fm_get_text_opt_select(from,value,chk)
+dwho.form.get_text_opt_select = function(from,value,chk)
 {
-	if((from = xivo_eid(from)) === false
+	if((from = dwho_eid(from)) === false
 	|| from.type !== 'select-one'
-	|| xivo_is_scalar(value) === false)
+	|| dwho_is_scalar(value) === false)
 		return(false);
 
 	var r = false;
@@ -294,10 +299,10 @@ function xivo_fm_get_text_opt_select(from,value,chk)
 	from.value = value;
 	var valueindex = from.selectedIndex;
 
-	if(xivo_is_undef(from.options[valueindex]) === false)
+	if(dwho_is_undef(from.options[valueindex]) === false)
 		r = from.options[valueindex].text;
 
-	if(Boolean(chk) === true && xivo_string(from.value) !== xivo_string(value))
+	if(Boolean(chk) === true && dwho_string(from.value) !== dwho_string(value))
 		r = false;
 
 	from.selectedIndex = sltindex;
@@ -305,12 +310,12 @@ function xivo_fm_get_text_opt_select(from,value,chk)
 	return(r);
 }
 
-function xivo_fm_select(from,select)
+dwho.form.select = function(from,select)
 {
-	if((from = xivo_eid(from)) === false || from.type !== 'select-multiple')
+	if((from = dwho_eid(from)) === false || from.type !== 'select-multiple')
 		return(false);
 
-	select = xivo_is_undef(select) === true ? true : Boolean(select);
+	select = dwho_is_undef(select) === true ? true : Boolean(select);
 
 	var len = from.options.length;
 
@@ -320,21 +325,21 @@ function xivo_fm_select(from,select)
 	return(true);
 }
 
-function xivo_fm_order_selected(from,order,num)
+dwho.form.order_selected = function(from,order,num)
 {
 	order = Number(order);
 
-	if((from = xivo_eid(from)) === false || from.type !== 'select-multiple')
+	if((from = dwho_eid(from)) === false || from.type !== 'select-multiple')
 		return(false);
 
 	var len = from.length;
 	var selected = from.selectedIndex;
 
-	if(len < 2 || selected === -1 || xivo_is_undef(from.options[selected]) === true)
+	if(len < 2 || selected === -1 || dwho_is_undef(from.options[selected]) === true)
 		return(false);
 	else if(order === -1)
 	{
-		if(selected === len-1 || xivo_is_undef(from.options[selected+1]) === true)
+		if(selected === len-1 || dwho_is_undef(from.options[selected+1]) === true)
 			return(false);
 
 		var noption = from.options[selected+1];
@@ -365,13 +370,13 @@ function xivo_fm_order_selected(from,order,num)
 		from.options[selected+1] = new Option(stext,soption.value);
 		from.options[selected] = new Option(ntext,noption.value);
 
-		xivo_fm_select(from.id,false);
+		dwho.form.select(from.id,false);
 
 		from.options[selected+1].selected = true;
 	}
 	else
 	{
-		if(selected === 0 || xivo_is_undef(from.options[selected-1]) === true)
+		if(selected === 0 || dwho_is_undef(from.options[selected-1]) === true)
 			return(false);
 
 		var noption = from.options[selected-1];
@@ -402,22 +407,22 @@ function xivo_fm_order_selected(from,order,num)
 		from.options[selected-1] = new Option(stext,soption.value);
 		from.options[selected] = new Option(ntext,noption.value);
 
-		xivo_fm_select(from.id,false);
+		dwho.form.select(from.id,false);
 
 		from.options[selected-1].selected = true;
 	}
 }
 
-function xivo_fm_select_add_entry(id,text,value,num)
+dwho.form.select_add_entry = function(id,text,value,num)
 {
-	if ((obj = xivo_eid(id)) === false
+	if ((obj = dwho_eid(id)) === false
 	|| (obj.type !== 'select-multiple'
 	   && obj.type !== 'select-one') === true)
 		return(false);
-	else if(xivo_is_undef(text) === true)
+	else if(dwho_is_undef(text) === true)
 		text = '';
 
-	if(xivo_is_undef(value) === true)
+	if(dwho_is_undef(value) === true)
 		value = null;
 
 	var len = obj.options.length;
@@ -431,9 +436,9 @@ function xivo_fm_select_add_entry(id,text,value,num)
 	return(true);
 }
 
-function xivo_fm_select_delete_entry(id,num)
+dwho.form.select_delete_entry = function(id,num)
 {
-	if ((obj = xivo_eid(id)) === false
+	if ((obj = dwho_eid(id)) === false
 	|| (obj.type !== 'select-multiple'
 	   && obj.type !== 'select-one') === true)
 		return(false);
@@ -470,16 +475,16 @@ function xivo_fm_select_delete_entry(id,num)
 	return(true);
 }
 
-function xivo_fm_field_disabled(obj,disable)
+dwho.form.field_disabled = function(obj,disable)
 {
-	if(xivo_is_object(obj) === false)
+	if(dwho_is_object(obj) === false)
 		return(false);
-	else if(xivo_is_undef(disable) === true)
+	else if(dwho_is_undef(disable) === true)
 		disable = false;
 
 	disable = Boolean(disable);
 
-	if((tag_input = xivo.dom.etag('input',obj)) !== false)
+	if((tag_input = dwho.dom.etag('input',obj)) !== false)
 	{
 		var tag_input_nb = tag_input.length;
 
@@ -487,7 +492,7 @@ function xivo_fm_field_disabled(obj,disable)
 			tag_input[i].disabled = disable;
 	}
 
-	if((tag_select = xivo.dom.etag('select',obj)) !== false)
+	if((tag_select = dwho.dom.etag('select',obj)) !== false)
 	{
 		var tag_select_nb = tag_select.length;
 
@@ -495,7 +500,7 @@ function xivo_fm_field_disabled(obj,disable)
 			tag_select[i].disabled = disable;
 	}
 
-	if((tag_textarea = xivo.dom.etag('textarea',obj)) !== false)
+	if((tag_textarea = dwho.dom.etag('textarea',obj)) !== false)
 	{
 		var tag_textarea_nb = tag_textarea.length;
 
@@ -506,9 +511,9 @@ function xivo_fm_field_disabled(obj,disable)
 	return(true);
 }
 
-function xivo_fm_field_id_counter(obj,cnt)
+dwho.form.field_id_counter = function(obj,cnt)
 {
-	if(xivo_is_object(obj) === false || xivo_is_int(cnt) === false)
+	if(dwho_is_object(obj) === false || dwho_is_int(cnt) === false)
 		return(false);
 
 	var taglist = ['input','select','textarea','a','span'];
@@ -516,14 +521,14 @@ function xivo_fm_field_id_counter(obj,cnt)
 
 	for(var i = 0;i < len;i++)
 	{
-		if((tagobj = xivo.dom.etag(taglist[i],obj)) === false)
+		if((tagobj = dwho.dom.etag(taglist[i],obj)) === false)
 			continue;
 
 		tagobj_nb = tagobj.length;
 
 		for(var j = 0;j < tagobj_nb;j++)
 		{
-			if(xivo_is_undef(tagobj[j].id) === false
+			if(dwho_is_undef(tagobj[j].id) === false
 			&& tagobj[j].id.length > 0)
 				tagobj[j].id += '-'+cnt;
 		}
@@ -532,39 +537,39 @@ function xivo_fm_field_id_counter(obj,cnt)
 	return(true);
 }
 
-function xivo_fm_field_name_counter(obj,cnt)
+dwho.form.field_name_counter = function(obj,cnt)
 {
-	if(xivo_is_object(obj) === false || xivo_is_int(cnt) === false)
+	if(dwho_is_object(obj) === false || dwho_is_int(cnt) === false)
 		return(false);
-	else if((tag_input = xivo.dom.etag('input',obj)) !== false)
+	else if((tag_input = dwho.dom.etag('input',obj)) !== false)
 	{
 		var tag_input_nb = tag_input.length;
 
 		for(var i = 0;i < tag_input_nb;i++)
 		{
-			if(xivo_is_undef(tag_input[i].name) === false)
+			if(dwho_is_undef(tag_input[i].name) === false)
 				tag_input[i].name += '['+cnt+']';
 		}
 	}
 
-	if((tag_select = xivo.dom.etag('select',obj)) !== false)
+	if((tag_select = dwho.dom.etag('select',obj)) !== false)
 	{
 		var tag_select_nb = tag_select.length;
 
 		for(var i = 0;i < tag_select_nb;i++)
 		{
-			if(xivo_is_undef(tag_select[i].name) === false)
+			if(dwho_is_undef(tag_select[i].name) === false)
 				tag_select[i].name += '['+cnt+']';
 		}
 	}
 
-	if((tag_textarea = xivo.dom.etag('textarea',obj)) !== false)
+	if((tag_textarea = dwho.dom.etag('textarea',obj)) !== false)
 	{
 		var tag_textarea_nb = tag_textarea.length;
 
 		for(var i = 0;i < tag_textarea_nb;i++)
 		{
-			if(xivo_is_undef(tag_textarea[i].name) === false)
+			if(dwho_is_undef(tag_textarea[i].name) === false)
 				tag_textarea[i].name += '['+cnt+']';
 		}
 	}
@@ -572,27 +577,9 @@ function xivo_fm_field_name_counter(obj,cnt)
 	return(true);
 }
 
-function xivo_fm_mk_acl(tree)
+dwho.form.readonly = function(list,enable)
 {
-	var ref = tree.form[tree.name];
-	var value = tree.value;
-	var len = value.length;
-	var nb = ref.length
-	var sub = 0;
-	var rs = false;
-
-	for(var i = 0;i < nb;i++)
-	{
-		sub = ref[i].value.substring(0,len);
-
-		if(value === sub)
-			ref[i].checked = Boolean(tree.checked);
-	}
-}
-
-function xivo_fm_readonly(list,enable)
-{
-	if(xivo_is_array(list) === false)
+	if(dwho_is_array(list) === false)
 		list = new Array(list);
 
 	enable = Boolean(enable);
@@ -601,13 +588,13 @@ function xivo_fm_readonly(list,enable)
 
 	for(var i = 0;i < nb;i++)
 	{
-		if((element = xivo_eid(list[i])) === false)
+		if((element = dwho_eid(list[i])) === false)
 			continue;
 		else if(enable === true)
 		{
 			element.disabled = false;
 			element.readOnly = false;
-			element.className = xivo_fm_enabled_class;
+			element.className = dwho_form_class_enabled;
 		}
 		else
 		{
@@ -615,40 +602,30 @@ function xivo_fm_readonly(list,enable)
 				element.disabled = true;
 			else
 				element.readOnly = true;
-			element.className = xivo_fm_readonly_class;
+			element.className = dwho_form_class_readonly;
 		}
 	}
 }
 
-function xivo_fm_select_add_host_ipv4_subnet(id,value)
+dwho.form.checked_all = function(form,name,mode)
 {
-	if(xivo_chk_ipv4_strict(value) === false
-	&& xivo_chk_host(value) === false
-	&& xivo_chk_ipv4_subnet(value) === false)
+	if(dwho_is_undef(form) === true
+	|| dwho_is_undef(name) === true
+	|| dwho_is_string(form) === false
+	|| dwho_is_string(name) === false
+	|| dwho_is_undef(dwho.fm[form]) === true
+	|| dwho_is_undef(dwho.fm[form][name]) === true)
 		return(false);
-
-	return(xivo_fm_select_add_entry(id,value,value));
-}
-
-function xivo_fm_checked_all(form,name,mode)
-{
-	if(xivo_is_undef(form) === true
-	|| xivo_is_undef(name) === true
-	|| xivo_is_string(form) === false
-	|| xivo_is_string(name) === false
-	|| xivo_is_undef(xivo_fm[form]) === true
-	|| xivo_is_undef(xivo_fm[form][name]) === true)
-		return(false);
-	else if(xivo_is_undef(mode) === true)
+	else if(dwho_is_undef(mode) === true)
 		mode = true;
 	else if(mode !== 'reverse')
 		mode = Boolean(mode);
 
-	ref = xivo_fm[form][name];
+	ref = dwho.fm[form][name];
 
-	if(xivo_is_undef(ref.length) === false)
+	if(dwho_is_undef(ref.length) === false)
 		len = ref.length;
-	else if(xivo_is_undef(ref.type) === true
+	else if(dwho_is_undef(ref.type) === true
 	|| (ref.type !== 'checkbox' && ref.type !== 'radio') === true)
 		return(false);
 	else
@@ -679,21 +656,21 @@ function xivo_fm_checked_all(form,name,mode)
 	return(true);
 }
 
-function xivo_fm_get_checked(form,name)
+dwho.form.get_checked = function(form,name)
 {
-	if(xivo_is_undef(form) === true
-	|| xivo_is_undef(name) === true
-	|| xivo_is_string(form) === false
-	|| xivo_is_string(name) === false
-	|| xivo_is_undef(xivo_fm[form]) === true
-	|| xivo_is_undef(xivo_fm[form][name]) === true)
+	if(dwho_is_undef(form) === true
+	|| dwho_is_undef(name) === true
+	|| dwho_is_string(form) === false
+	|| dwho_is_string(name) === false
+	|| dwho_is_undef(dwho.fm[form]) === true
+	|| dwho_is_undef(dwho.fm[form][name]) === true)
 		return(false);
 
-	ref = xivo_fm[form][name];
+	ref = dwho.fm[form][name];
 
-	if(xivo_is_undef(ref.length) === false)
+	if(dwho_is_undef(ref.length) === false)
 		len = ref.length;
-	else if(xivo_is_undef(ref.type) === true
+	else if(dwho_is_undef(ref.type) === true
 	|| (ref.type !== 'checkbox' && ref.type !== 'radio') === true)
 		return(false);
 	else
@@ -709,56 +686,56 @@ function xivo_fm_get_checked(form,name)
 	return(false);
 }
 
-function xivo_fm_get_value_from_key(form,name,key)
+dwho.form.get_value_from_key = function(form,name,key)
 {
-	if(xivo_is_undef(form) === true
-	|| xivo_is_undef(name) === true
-	|| xivo_is_string(form) === false
-	|| xivo_is_string(name) === false
-	|| xivo_is_undef(xivo_fm[form]) === true
-	|| xivo_is_undef(xivo_fm[form][name]) === true
-	|| xivo_is_undef(xivo_fm[form][name][key]) === true
-	|| xivo_is_undef(xivo_fm[form][name][key].value) === true)
+	if(dwho_is_undef(form) === true
+	|| dwho_is_undef(name) === true
+	|| dwho_is_string(form) === false
+	|| dwho_is_string(name) === false
+	|| dwho_is_undef(dwho.fm[form]) === true
+	|| dwho_is_undef(dwho.fm[form][name]) === true
+	|| dwho_is_undef(dwho.fm[form][name][key]) === true
+	|| dwho_is_undef(dwho.fm[form][name][key].value) === true)
 		return(false);
 
-	return(xivo_fm[form][name][key].value);
+	return(dwho.fm[form][name][key].value);
 }
 
-function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
+dwho.form.toggle_enable_field = function(form,name,disable,exform,exformtag)
 {
-	if(xivo_is_undef(form) === true
-	|| xivo_is_undef(name) === true
-	|| xivo_is_object(form) === false
-	|| xivo_is_string(name) === false
-	|| xivo_is_undef(form[name]) === true)
+	if(dwho_is_undef(form) === true
+	|| dwho_is_undef(name) === true
+	|| dwho_is_object(form) === false
+	|| dwho_is_string(name) === false
+	|| dwho_is_undef(form[name]) === true)
 		return(false);
 
-	if(xivo_is_string(exform) === true && xivo_is_string(exformtag) === true)
+	if(dwho_is_string(exform) === true && dwho_is_string(exformtag) === true)
 		var disableparent = false;
 	else
 		var disableparent = true;
 
 	if((disable = Boolean(disable) !== false))
-		var classname = xivo_fm_disabled_class;
+		var classname = dwho_form_class_disabled;
 	else
-		var classname = xivo_fm_enabled_class;
+		var classname = dwho_form_class_enabled;
 
 	var ref = form[name];
 
-	if(xivo_is_undef(ref.tagName) === true)
+	if(dwho_is_undef(ref.tagName) === true)
 	{
-		if(xivo_is_undef(ref.item) === true
-		|| xivo_is_undef(ref.length) === true)
+		if(dwho_is_undef(ref.item) === true
+		|| dwho_is_undef(ref.length) === true)
 			return(false);
 
 		var nb = ref.length;
 
 		for(var i = 0;i < nb;i++)
 		{
-			if(xivo_is_undef(ref[i]) === false)
+			if(dwho_is_undef(ref[i]) === false)
 			{
 				if(disableparent === false
-				&& xivo.dom.get_parent_by_tag(ref[i],exformtag).id === exform)
+				&& dwho.dom.get_parent_by_tag(ref[i],exformtag).id === exform)
 					continue;
 
 				ref[i].disabled = disable;
@@ -775,7 +752,7 @@ function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
 		case 'select':
 		case 'textarea':
 			if(disableparent === false
-			&& xivo.dom.get_parent_by_tag(ref,exformtag).id === exform)
+			&& dwho.dom.get_parent_by_tag(ref,exformtag).id === exform)
 				return(false);
 
 			ref.disabled = disable;
@@ -787,10 +764,10 @@ function xivo_fm_enable_disable_field(form,name,disable,exform,exformtag)
 	return(true);
 }
 
-function xivo_fm_reset_field(obj,empty)
+dwho.form.reset_field = function(obj,empty)
 {
-	if(xivo_is_undef(obj.tagName) === true
-	|| xivo_is_undef(obj.type) === true)
+	if(dwho_is_undef(obj.tagName) === true
+	|| dwho_is_undef(obj.type) === true)
 		return(false);
 
 	switch(obj.tagName.toLowerCase())
@@ -821,48 +798,48 @@ function xivo_fm_reset_field(obj,empty)
 	return(true);
 }
 
-function xivo_fm_reset_child_field(obj,empty)
+dwho.form.reset_child_field = function(obj,empty)
 {
-	if(xivo_is_object(obj) === false)
+	if(dwho_is_object(obj) === false)
 		return(false);
 
-	if((tag_input = xivo.dom.etag('input',obj)) !== false)
+	if((tag_input = dwho.dom.etag('input',obj)) !== false)
 	{
 		var tag_input_nb = tag_input.length;
 
 		for(var i = 0;i < tag_input_nb;i++)
-			xivo_fm_reset_field(tag_input[i],empty);
+			dwho.form.reset_field(tag_input[i],empty);
 	}
 
-	if((tag_select = xivo.dom.etag('select',obj)) !== false)
+	if((tag_select = dwho.dom.etag('select',obj)) !== false)
 	{
 		var tag_select_nb = tag_select.length;
 
 		for(var i = 0;i < tag_select_nb;i++)
-			xivo_fm_reset_field(tag_select[i]);
+			dwho.form.reset_field(tag_select[i]);
 	}
 
-	if((tag_textarea = xivo.dom.etag('textarea',obj)) !== false)
+	if((tag_textarea = dwho.dom.etag('textarea',obj)) !== false)
 	{
 		var tag_textarea_nb = tag_textarea.length;
 
 		for(var i = 0;i < tag_textarea_nb;i++)
-			xivo_fm_reset_field(tag_textarea[i],empty);
+			dwho.form.reset_field(tag_textarea[i],empty);
 	}
 
 	return(true);
 }
 
-function xivo_fm_disable_submit_onenter(e)
+dwho.form.disable_submit_onenter = function(e)
 {
-	if(xivo_is_undef(window.event) === false)
+	if(dwho_is_undef(window.event) === false)
 		keycode = window.event.keyCode;
 	else
 		keyCode = e.keyCode;
 
 	if(keyCode === 13)
 	{
-		if(xivo_is_function(e.preventDefault) === true)
+		if(dwho_is_function(e.preventDefault) === true)
 			e.preventDefault();
 		return(false);
 	}
@@ -870,5 +847,5 @@ function xivo_fm_disable_submit_onenter(e)
 	return(true);
 }
 
-xivo.dom.set_onload(xivo_fm_onfocus_onblur);
-xivo.dom.set_onload(xivo_fm_show_error);
+dwho.dom.set_onload(dwho.form.onfocus_onblur);
+dwho.dom.set_onload(dwho.form.show_error);

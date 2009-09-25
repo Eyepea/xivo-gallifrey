@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_agents_group extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -42,7 +42,7 @@ class xivo_application_service_asterisk_realstatic_agents_group extends xivo_app
 
 	function chk_group_number($group)
 	{
-		if(($group = xivo_uint($group)) === 0
+		if(($group = dwho_uint($group)) === 0
 		|| $group < 1
 		|| $group > 63)
 			return(false);
@@ -117,7 +117,7 @@ class xivo_application_service_asterisk_realstatic_agents_group extends xivo_app
 
 	function edit_group($id,$numgroup)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 		else if(($rs = $this->_prepare_result($numgroup)) === null || $rs === false)
 			return($rs);
@@ -127,7 +127,7 @@ class xivo_application_service_asterisk_realstatic_agents_group extends xivo_app
 
 	function delete_group($status,$id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(null);
 
 		$r = $this->_realstatic->delete($id);

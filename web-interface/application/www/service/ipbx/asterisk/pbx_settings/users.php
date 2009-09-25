@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 $context = isset($_QR['context']) === true ? strval($_QR['context']) : '';
 
@@ -59,7 +59,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('users',$_QR)) === false)
+		if(($values = dwho_issa_val('users',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 		$appuser = &$ipbx->get_application('user');
@@ -80,7 +80,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('users',$_QR)) === false)
+		if(($values = dwho_issa_val('users',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 
 		$appuser = &$ipbx->get_application('user',null,false);
@@ -146,7 +146,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
 		$_TPL->set_var('context',$context);

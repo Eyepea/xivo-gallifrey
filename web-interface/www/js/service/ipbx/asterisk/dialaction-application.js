@@ -20,16 +20,16 @@ function xivo_ast_defapplication_endcall(dialevent,targetid)
 {
 	var optargs = valargs = '';
 
-	if((endcall = xivo_eid('it-dialaction-'+dialevent+'-endcall-action')) === false
+	if((endcall = dwho_eid('it-dialaction-'+dialevent+'-endcall-action')) === false
 	|| (endcall.value !== 'hangup'
 	   && endcall.value !== 'busy'
 	   && endcall.value !== 'congestion') === true)
 		return(false);
-	else if((endcallarg1 = xivo_eid('it-dialaction-'+dialevent+'-endcall-'+endcall.value+'-actionarg1')) !== false
+	else if((endcallarg1 = dwho_eid('it-dialaction-'+dialevent+'-endcall-'+endcall.value+'-actionarg1')) !== false
 	&& endcall.value !== 'hangup'
 	&& endcallarg1.value.length > 0)
 	{
-		if(xivo_is_ufloat(endcallarg1.value) === false)
+		if(dwho_is_ufloat(endcallarg1.value) === false)
 			return(false);
 
 		optargs = valargs = [endcallarg1.value];
@@ -40,10 +40,10 @@ function xivo_ast_defapplication_endcall(dialevent,targetid)
 
 function xivo_ast_defapplication_user(dialevent,targetid)
 {
-	if((userarg1 = xivo_eid('it-dialaction-'+dialevent+'-user-actionarg1')) === false
+	if((userarg1 = dwho_eid('it-dialaction-'+dialevent+'-user-actionarg1')) === false
 	|| userarg1.type !== 'select-one'
-	|| xivo_is_undef(userarg1.options[userarg1.selectedIndex]) === true
-	|| (userarg2 = xivo_eid('it-dialaction-'+dialevent+'-user-actionarg2')) === false)
+	|| dwho_is_undef(userarg1.options[userarg1.selectedIndex]) === true
+	|| (userarg2 = dwho_eid('it-dialaction-'+dialevent+'-user-actionarg2')) === false)
 		return(false);
 
 	var optargs = ['\''+userarg1.options[userarg1.selectedIndex].text+'\''];
@@ -51,7 +51,7 @@ function xivo_ast_defapplication_user(dialevent,targetid)
 
 	if(userarg2.value.length > 0)
 	{
-		if(xivo_is_ufloat(userarg2.value) === false)
+		if(dwho_is_ufloat(userarg2.value) === false)
 			return(false);
 
 		optargs.push(userarg2.value);
@@ -63,15 +63,15 @@ function xivo_ast_defapplication_user(dialevent,targetid)
 
 function xivo_ast_defapplication_get_user_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-user-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-user-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_group(dialevent,targetid)
 {
-	if((grouparg1 = xivo_eid('it-dialaction-'+dialevent+'-group-actionarg1')) === false
+	if((grouparg1 = dwho_eid('it-dialaction-'+dialevent+'-group-actionarg1')) === false
 	|| grouparg1.type !== 'select-one'
-	|| xivo_is_undef(grouparg1.options[grouparg1.selectedIndex]) === true
-	|| (grouparg2 = xivo_eid('it-dialaction-'+dialevent+'-group-actionarg2')) === false)
+	|| dwho_is_undef(grouparg1.options[grouparg1.selectedIndex]) === true
+	|| (grouparg2 = dwho_eid('it-dialaction-'+dialevent+'-group-actionarg2')) === false)
 		return(false);
 
 	var optargs = ['\''+grouparg1.options[grouparg1.selectedIndex].text+'\''];
@@ -79,7 +79,7 @@ function xivo_ast_defapplication_group(dialevent,targetid)
 
 	if(grouparg2.value.length > 0)
 	{
-		if(xivo_is_ufloat(grouparg2.value) === false)
+		if(dwho_is_ufloat(grouparg2.value) === false)
 			return(false);
 
 		optargs.push(grouparg2.value);
@@ -91,15 +91,15 @@ function xivo_ast_defapplication_group(dialevent,targetid)
 
 function xivo_ast_defapplication_get_group_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-group-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-group-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_queue(dialevent,targetid)
 {
-	if((queuearg1 = xivo_eid('it-dialaction-'+dialevent+'-queue-actionarg1')) === false
+	if((queuearg1 = dwho_eid('it-dialaction-'+dialevent+'-queue-actionarg1')) === false
 	|| queuearg1.type !== 'select-one'
-	|| xivo_is_undef(queuearg1.options[queuearg1.selectedIndex]) === true
-	|| (queuearg2 = xivo_eid('it-dialaction-'+dialevent+'-queue-actionarg2')) === false)
+	|| dwho_is_undef(queuearg1.options[queuearg1.selectedIndex]) === true
+	|| (queuearg2 = dwho_eid('it-dialaction-'+dialevent+'-queue-actionarg2')) === false)
 		return(false);
 
 	var optargs = ['\''+queuearg1.options[queuearg1.selectedIndex].text+'\''];
@@ -107,7 +107,7 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 
 	if(queuearg2.value.length > 0)
 	{
-		if(xivo_is_ufloat(queuearg2.value) === false)
+		if(dwho_is_ufloat(queuearg2.value) === false)
 			return(false);
 
 		optargs.push(queuearg2.value);
@@ -119,14 +119,14 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 
 function xivo_ast_defapplication_get_queue_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_meetme(dialevent,targetid)
 {
-	if((meetme = xivo_eid('it-dialaction-'+dialevent+'-meetme-actionarg1')) === false
+	if((meetme = dwho_eid('it-dialaction-'+dialevent+'-meetme-actionarg1')) === false
 	|| meetme.type !== 'select-one'
-	|| xivo_is_undef(meetme.options[meetme.selectedIndex]) === true)
+	|| dwho_is_undef(meetme.options[meetme.selectedIndex]) === true)
 		return(false);
 
 	var optargs = ['\''+meetme.options[meetme.selectedIndex].text+'\''];
@@ -137,18 +137,18 @@ function xivo_ast_defapplication_meetme(dialevent,targetid)
 
 function xivo_ast_defapplication_get_meetme_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-meetme-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-meetme-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_voicemail(dialevent,targetid)
 {
-	if((voicemail = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg1')) === false
+	if((voicemail = dwho_eid('it-dialaction-'+dialevent+'-voicemail-actionarg1')) === false
 	|| voicemail.type !== 'select-one'
-	|| xivo_is_undef(voicemail.options[voicemail.selectedIndex]) === true
-	|| (option_b = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-b')) === false
-	|| (option_s = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-s')) === false
-	|| (option_u = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-u')) === false
-	|| (option_j = xivo_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-j')) === false)
+	|| dwho_is_undef(voicemail.options[voicemail.selectedIndex]) === true
+	|| (option_b = dwho_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-b')) === false
+	|| (option_s = dwho_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-s')) === false
+	|| (option_u = dwho_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-u')) === false
+	|| (option_j = dwho_eid('it-dialaction-'+dialevent+'-voicemail-actionarg2-j')) === false)
 		return(false);
 
 	var optargs = ['\''+voicemail.options[voicemail.selectedIndex].text+'\''];
@@ -179,14 +179,14 @@ function xivo_ast_defapplication_voicemail(dialevent,targetid)
 
 function xivo_ast_defapplication_get_voicemail_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemail-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-voicemail-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_schedule(dialevent,targetid)
 {
-	if((schedule = xivo_eid('it-dialaction-'+dialevent+'-schedule-actionarg1')) === false
+	if((schedule = dwho_eid('it-dialaction-'+dialevent+'-schedule-actionarg1')) === false
 	|| schedule.type !== 'select-one'
-	|| xivo_is_undef(schedule.options[schedule.selectedIndex]) === true)
+	|| dwho_is_undef(schedule.options[schedule.selectedIndex]) === true)
 		return(false);
 
 	var optargs = ['\''+schedule.options[schedule.selectedIndex].text+'\''];
@@ -197,14 +197,14 @@ function xivo_ast_defapplication_schedule(dialevent,targetid)
 
 function xivo_ast_defapplication_get_schedule_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-schedule-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-schedule-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_voicemenu(dialevent,targetid)
 {
-	if((voicemenu = xivo_eid('it-dialaction-'+dialevent+'-voicemenu-actionarg1')) === false
+	if((voicemenu = dwho_eid('it-dialaction-'+dialevent+'-voicemenu-actionarg1')) === false
 	|| voicemenu.type !== 'select-one'
-	|| xivo_is_undef(voicemenu.options[voicemenu.selectedIndex]) === true)
+	|| dwho_is_undef(voicemenu.options[voicemenu.selectedIndex]) === true)
 		return(false);
 
 	var optargs = ['\''+voicemenu.options[voicemenu.selectedIndex].text+'\''];
@@ -215,13 +215,13 @@ function xivo_ast_defapplication_voicemenu(dialevent,targetid)
 
 function xivo_ast_defapplication_get_voicemenu_identity(dialevent,id)
 {
-	return(xivo_fm_get_text_opt_select('it-dialaction-'+dialevent+'-voicemenu-actionarg1',id,true));
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-voicemenu-actionarg1',id,true));
 }
 
 function xivo_ast_defapplication_extension(dialevent,targetid)
 {
-	if((actionarg1 = xivo_eid('it-dialaction-'+dialevent+'-extension-actionarg1')) === false
-	|| (actionarg2 = xivo_eid('it-dialaction-'+dialevent+'-extension-actionarg2')) === false)
+	if((actionarg1 = dwho_eid('it-dialaction-'+dialevent+'-extension-actionarg1')) === false
+	|| (actionarg2 = dwho_eid('it-dialaction-'+dialevent+'-extension-actionarg2')) === false)
 		return(false);
 
 	var actionarg1value = xivo_ast_defapplication_sanitize_arg(actionarg1.value);
@@ -238,7 +238,7 @@ function xivo_ast_defapplication_extension(dialevent,targetid)
 
 function xivo_ast_defapplication_application(dialevent,targetid)
 {
-	if((application = xivo_eid('it-dialaction-'+dialevent+'-application-action')) === false)
+	if((application = dwho_eid('it-dialaction-'+dialevent+'-application-action')) === false)
 		return(false);
 
 	var actionarg1_id = 'it-dialaction-'+dialevent+'-application-'+application.value+'-actionarg1';
@@ -248,8 +248,8 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 	{
 		case 'callbackdisa':
 		case 'disa':
-			if((applicationarg1 = xivo_eid(actionarg1_id)) === false
-			|| (applicationarg2 = xivo_eid(actionarg2_id)) === false)
+			if((applicationarg1 = dwho_eid(actionarg1_id)) === false
+			|| (applicationarg2 = dwho_eid(actionarg2_id)) === false)
 				return(false);
 
 			var applicationarg1value = xivo_ast_defapplication_sanitize_arg(applicationarg1.value);
@@ -265,7 +265,7 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 		case 'directory':
 		case 'faxtomail':
 		case 'voicemailmain':
-			if((applicationarg1 = xivo_eid(actionarg1_id)) === false)
+			if((applicationarg1 = dwho_eid(actionarg1_id)) === false)
 				return(false);
 
 			var applicationarg1value = xivo_ast_defapplication_sanitize_arg(applicationarg1.value);
@@ -284,10 +284,10 @@ function xivo_ast_defapplication_application(dialevent,targetid)
 
 function xivo_ast_defapplication_sound(dialevent,targetid)
 {
-	if((filename = xivo_eid('it-dialaction-'+dialevent+'-sound-actionarg1')) === false
-	|| (option_skip = xivo_eid('it-dialaction-'+dialevent+'-sound-actionarg2-skip')) === false
-	|| (option_noanswer = xivo_eid('it-dialaction-'+dialevent+'-sound-actionarg2-noanswer')) === false
-	|| (option_j = xivo_eid('it-dialaction-'+dialevent+'-sound-actionarg2-j')) === false)
+	if((filename = dwho_eid('it-dialaction-'+dialevent+'-sound-actionarg1')) === false
+	|| (option_skip = dwho_eid('it-dialaction-'+dialevent+'-sound-actionarg2-skip')) === false
+	|| (option_noanswer = dwho_eid('it-dialaction-'+dialevent+'-sound-actionarg2-noanswer')) === false
+	|| (option_j = dwho_eid('it-dialaction-'+dialevent+'-sound-actionarg2-j')) === false)
 		return(false);
 
 	var valfilenamevalue = xivo_ast_application_sanitize_arg(filename.value);
@@ -327,12 +327,12 @@ function xivo_ast_set_defapplication(app,targetid,optargs,valargs)
 {
 	if((appdisplayname = xivo_ast_get_defapplication_displayname(app)) === false)
 		return(false);
-	else if(xivo_is_array(optargs) === true)
+	else if(dwho_is_array(optargs) === true)
 		var optionargs = optargs.join(',').replace(/\|/g,',');
 	else
 		var optionargs = '';
 
-	if(xivo_is_array(valargs) === true)
+	if(dwho_is_array(valargs) === true)
 		var valueargs = valargs.join('|');
 	else
 		var valueargs = '';
@@ -340,17 +340,17 @@ function xivo_ast_set_defapplication(app,targetid,optargs,valargs)
 	var option = appdisplayname+'('+optionargs+')';
 	var value = app+','+valueargs;
 
-	if((target = xivo_eid(targetid)) === false)
+	if((target = dwho_eid(targetid)) === false)
 		return(false);
 	else if(target.type === 'select-multiple' || target.type === 'select-one')
-		return(xivo_fm_select_add_entry(targetid,option,value,true));
+		return(dwho.form.select_add_entry(targetid,option,value,true));
 	else if(target.type === 'text')
 		target.value = value;
-	else if(xivo_is_undef(target.type) === true)
+	else if(dwho_is_undef(target.type) === true)
 	{
 		target.innerHTML = option;
 
-		if((ittarget = xivo_eid('it-'+targetid)) !== false
+		if((ittarget = dwho_eid('it-'+targetid)) !== false
 		&& ittarget.tagName.toLowerCase() === 'input')
 			ittarget.value = value;
 
@@ -367,8 +367,8 @@ function xivo_ast_defapplication_sanitize_arg(str)
 
 function xivo_ast_get_defapplication_displayname(app)
 {
-	if(xivo_is_object(xivo_ast_defapplication[app]) === true
-	&& xivo_is_undef(xivo_ast_defapplication[app].displayname) === false)
+	if(dwho_is_object(xivo_ast_defapplication[app]) === true
+	&& dwho_is_undef(xivo_ast_defapplication[app].displayname) === false)
 		return(xivo_ast_defapplication[app].displayname);
 
 	return(false);
@@ -376,8 +376,8 @@ function xivo_ast_get_defapplication_displayname(app)
 
 function xivo_ast_get_defapplication_identityfunc(app)
 {
-	if(xivo_is_object(xivo_ast_defapplication[app]) === true
-	&& xivo_is_undef(xivo_ast_defapplication[app].identityfunc) === false)
+	if(dwho_is_object(xivo_ast_defapplication[app]) === true
+	&& dwho_is_undef(xivo_ast_defapplication[app].identityfunc) === false)
 		return(xivo_ast_defapplication[app].identityfunc);
 
 	return(false);

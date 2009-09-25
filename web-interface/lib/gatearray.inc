@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_gatearray
+class dwho_gatearray
 {
 	var $_array = array();
 
@@ -27,7 +27,7 @@ class xivo_gatearray
 		static $instance = null;
 
 		if($instance === null)
-			$instance = new xivo_gatearray();
+			$instance = new dwho_gatearray();
 
 		return(($ref = &$instance));
 	}
@@ -61,13 +61,13 @@ class xivo_gatearray
 			$name = $file;
 
 		if($path === '')
-			$path = XIVO_PATH_LIB.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
+			$path = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'gatearray'.DIRECTORY_SEPARATOR.$file.'.inc';
 		else if(is_array($path) === true)
 			$path = implode(DIRECTORY_SEPARATOR,$path).DIRECTORY_SEPARATOR.$file.'.inc';
 		else
 			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 
-		if(xivo_file::is_includable($path) === false)
+		if(dwho_file::is_includable($path) === false)
 			return(false);
 		else if(isset($this->_array[$name]) === false)
 		{
@@ -89,7 +89,7 @@ class xivo_gatearray
 
 		$path = (string) $path.'.inc';
 
-		if(xivo_file::is_includable($path) === false)
+		if(dwho_file::is_includable($path) === false)
 			return(false);
 		else if((bool) $once === false)
 			require($path);
@@ -110,7 +110,7 @@ class xivo_gatearray
 
 		if($name === '')
 			$r = &$this->_array;
-		else if(xivo_issa($name,$this->_array) === true)
+		else if(dwho_issa($name,$this->_array) === true)
 			$r = &$this->_array[$name];
 		else
 			$r = false;
@@ -142,53 +142,53 @@ class xivo_gatearray
 	{
 		$name = (string) $name;
 
-		if(xivo_issa($name,$this->_array) === true)
+		if(dwho_issa($name,$this->_array) === true)
 			return(true);
 
 		return(false);
 	}
 }
 
-class xivo_gat
+class dwho_gat
 {
 	function set($name,&$array)
 	{
-		$aga = &xivo_gatearray::getinstance();
+		$aga = &dwho_gatearray::getinstance();
 		return($aga->set($name,$array));
 	}
 
 	function load($file,$path='',$name='')
 	{
-		$aga = &xivo_gatearray::getinstance();
+		$aga = &dwho_gatearray::getinstance();
 		return($aga->load($file,$path,$name));
 	}
 
 	function &get($name='')
 	{
-		$aga = &xivo_gatearray::getinstance();
+		$aga = &dwho_gatearray::getinstance();
 		return(($ref = &$aga->get($name)));
 	}
 
 	function get_file($path,$once=false)
 	{
-		return(xivo_gatearray::get_file($path,$once));
+		return(dwho_gatearray::get_file($path,$once));
 	}
 
 	function &load_get($file,$path='',$name='')
 	{
-		$aga = &xivo_gatearray::getinstance();
+		$aga = &dwho_gatearray::getinstance();
 		return(($ref = &$aga->load_get($file,$path,$name)));
 	}
 
 	function &set_get($name,&$array)
 	{
-		$aga = &xivo_gatearray::getinstance();
+		$aga = &dwho_gatearray::getinstance();
 		return(($ref = &$aga->set_get($name,$array)));
 	}
 
 	function is_valid($name)
 	{
-		$aga = &xivo_gatearray::getinstance();
+		$aga = &dwho_gatearray::getinstance();
 		return($aga->is_valid($name));
 	}
 }

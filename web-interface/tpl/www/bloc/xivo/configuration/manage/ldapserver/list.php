@@ -41,8 +41,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-ldapserver-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -78,7 +78,7 @@ $page = $url->pager($pager['pages'],
 				$icon = 'enable';
 			endif;
 
-			if(xivo_has_len($ref['securitylayer']) === false):
+			if(dwho_has_len($ref['securitylayer']) === false):
 				$securitylayer = '-';
 			else:
 				$securitylayer = $this->bbf('securitylayer_'.$ref['securitylayer']);

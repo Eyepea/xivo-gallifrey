@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = array();
 
@@ -36,7 +36,7 @@ switch($act)
 		$secretary['slt'] = $secretary = array();
 		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('callfilter',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('callfilter',$_QR) === true)
 		{
 			if($appcallfilter->set_add($_QR) === false
 			|| $appcallfilter->add() === false)
@@ -45,31 +45,31 @@ switch($act)
 				$result = $appcallfilter->get_result();
 				$result['dialaction'] = $appcallfilter->get_dialaction_result();
 
-				if(xivo_issa('callfiltermember',$result) === true)
+				if(dwho_issa('callfiltermember',$result) === true)
 					$callfiltermember = &$result['callfiltermember'];
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		}
 
-		if($secretary['list'] !== false && xivo_issa('secretary',$callfiltermember) === true)
+		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$secretarysort = new xivo_sort(array('key' => 'priority'));
+			dwho::load_class('dwho_sort');
+			$secretarysort = new dwho_sort(array('key' => 'priority'));
 			usort($callfiltermember['secretary'],array(&$secretarysort,'num_usort'));
 
-			$secretary['slt'] = xivo_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
+			$secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
 
 			if($secretary['slt'] !== false)
-				$secretary['list'] = xivo_array_diff_key($secretary['list'],$secretary['slt']);
+				$secretary['list'] = dwho_array_diff_key($secretary['list'],$secretary['slt']);
 		}
 
 		if(empty($result) === false)
 		{
-			if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+			if(dwho_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
 				$result['dialaction'] = null;
 
-			if(xivo_issa('callerid',$result) === false || empty($result['callerid']) === true)
+			if(dwho_issa('callerid',$result) === false || empty($result['callerid']) === true)
 				$result['callerid'] = null;
 		}
 
@@ -100,7 +100,7 @@ switch($act)
 		$secretary['slt'] = $secretary = array();
 		$secretary['list'] = $appcallfilter->get_secretary_users(null,true);
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('callfilter',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('callfilter',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -115,27 +115,27 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		}
 
-		if(xivo_issa('callfiltermember',$return) === true)
+		if(dwho_issa('callfiltermember',$return) === true)
 			$callfiltermember = &$return['callfiltermember'];
 
-		if($secretary['list'] !== false && xivo_issa('secretary',$callfiltermember) === true)
+		if($secretary['list'] !== false && dwho_issa('secretary',$callfiltermember) === true)
 		{
-			xivo::load_class('xivo_sort');
-			$secretarysort = new xivo_sort(array('key' => 'priority'));
+			dwho::load_class('dwho_sort');
+			$secretarysort = new dwho_sort(array('key' => 'priority'));
 			usort($callfiltermember['secretary'],array(&$secretarysort,'num_usort'));
 
-			$secretary['slt'] = xivo_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
+			$secretary['slt'] = dwho_array_intersect_key($callfiltermember['secretary'],$secretary['list'],'typeval');
 
 			if($secretary['slt'] !== false)
-				$secretary['list'] = xivo_array_diff_key($secretary['list'],$secretary['slt']);
+				$secretary['list'] = dwho_array_diff_key($secretary['list'],$secretary['slt']);
 		}
 
 		if(empty($return) === false)
 		{
-			if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+			if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
 				$return['dialaction'] = null;
 
-			if(xivo_issa('callerid',$return) === false || empty($return['callerid']) === true)
+			if(dwho_issa('callerid',$return) === false || empty($return['callerid']) === true)
 				$return['callerid'] = null;
 		}
 
@@ -170,7 +170,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('callfilters',$_QR)) === false)
+		if(($values = dwho_issa_val('callfilters',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'));
@@ -189,7 +189,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('callfilters',$_QR)) === false)
+		if(($values = dwho_issa_val('callfilters',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 
 		$appcallfilter = &$ipbx->get_application('callfilter',array('type' => 'bosssecretary'),false);
@@ -231,7 +231,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/callfilter'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','acl.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','acl.inc'));
 
 class xivo_accesswebservice_acl extends xivo_acl_abstract
 {
@@ -31,9 +31,9 @@ class xivo_accesswebservice_acl extends xivo_acl_abstract
 		if(defined('XIVO_WEBSERVICE_ACL_FILE') === true)
 			$path = XIVO_WEBSERVICE_ACL_FILE;
 		else
-			$path = xivo_file::joinpath(XIVO_PATH_OBJECTCONF,'acl','webservice');
+			$path = dwho_file::joinpath(XIVO_PATH_OBJECTCONF,'acl','webservice');
 
-		if(($this->_conf = xivo_gat::get_file($path)) === false
+		if(($this->_conf = dwho_gat::get_file($path)) === false
 		|| isset($this->_conf['tree']) === false)
 			trigger_error('Failed to load web services ACL Array',E_USER_ERROR);
 

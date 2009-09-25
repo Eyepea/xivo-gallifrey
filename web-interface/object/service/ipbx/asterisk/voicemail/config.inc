@@ -138,6 +138,11 @@ $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
+$array['element']['voicemail-choice'] = array();
+$array['element']['voicemail-choice']['value'] = array('add','search','disable');
+$array['element']['voicemail-choice']['default'] = '';
+$array['element']['voicemail-choice']['unset'] = true;
+
 
 $array['filter'] = array();
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
@@ -145,7 +150,7 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['fullname'] = array('cast' => 'sgraph','maxlen' => 80);
-$array['filter']['email'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_email','maxlen' => 80);
+$array['filter']['email'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_email','maxlen' => 80);
 $array['filter']['pager'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['dialout'] = array('set' => false,
 				    'chk' => 2,

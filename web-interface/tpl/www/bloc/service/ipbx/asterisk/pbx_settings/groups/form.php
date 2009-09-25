@@ -160,15 +160,15 @@ endif;
 
 		<div class="inout-list">
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-userlist','it-user');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-userlist','it-user');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inuser');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inuser'),
 						  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-user','it-userlist');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-user','it-userlist');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outuser');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outuser'),
@@ -247,15 +247,15 @@ endif;
 
 		<div class="inout-list">
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-rightcalllist','it-rightcall');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
 				<?=$url->img_html('img/site/button/row-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_move_selected('it-rightcall','it-rightcalllist');
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
 				<?=$url->img_html('img/site/button/row-right.gif',
 						  $this->bbf('bt_outrightcall'),

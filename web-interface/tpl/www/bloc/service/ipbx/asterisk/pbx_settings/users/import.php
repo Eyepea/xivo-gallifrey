@@ -34,8 +34,8 @@ $import_file = $this->get_var('import_file');
 		echo	$form->hidden(array('name'	=> 'max_file_size',
 					    'value'	=> $import_file['size'])),
 
-			$form->hidden(array('name'	=> XIVO_SESS_NAME,
-					    'value'	=> XIVO_SESS_ID)),
+			$form->hidden(array('name'	=> DWHO_SESS_NAME,
+					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'fm_send',
 					    'value'	=> 1)),

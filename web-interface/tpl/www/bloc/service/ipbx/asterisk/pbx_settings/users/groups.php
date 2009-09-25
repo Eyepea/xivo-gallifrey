@@ -55,14 +55,14 @@ $qmember = $this->get_var('qmember');
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_ast_user_ingroup();
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_ingroup');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_ingroup'),
 					  'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_user_outgroup();
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outgroup');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outgroup'),
@@ -96,7 +96,7 @@ $qmember = $this->get_var('qmember');
 		foreach($groups as $value):
 			$name = $value['name'];
 
-			if(xivo_issa($value['id'],$gmember['info']) === true):
+			if(dwho_issa($value['id'],$gmember['info']) === true):
 				$class = '';
 				$value['member'] = $gmember['info'][$value['id']];
 				$calllimit = intval($value['member']['call-limit']);
@@ -169,14 +169,14 @@ $qmember = $this->get_var('qmember');
 	<div class="inout-list">
 		<a href="#"
 		   onclick="xivo_ast_inqueue();
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inqueue');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_inqueue'),
 					  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_outqueue();
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outqueue');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outqueue'),
@@ -212,7 +212,7 @@ $qmember = $this->get_var('qmember');
 		foreach($queues as $value):
 			$name = $value['name'];
 
-			if(xivo_issa($value['id'],$qmember['info']) === true):
+			if(dwho_issa($value['id'],$qmember['info']) === true):
 				$class = '';
 				$value['member'] = $qmember['info'][$value['id']];
 				$calllimit = intval($value['member']['call-limit']);

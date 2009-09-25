@@ -43,8 +43,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-agents-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -99,12 +99,12 @@ $page = $url->pager($pager['pages'],
 			<label for="it-agents-<?=$i?>" id="lb-agents-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_htmlen(xivo_trunc($ref['agentfeatures']['fullname'],25,'...',false));
+					dwho_htmlen(dwho_trunc($ref['agentfeatures']['fullname'],25,'...',false));
 ?>
 			</label>
 		</td>
 		<td><?=$ref['agent']['number']?></td>
-		<td><?=(xivo_has_len($ref['agent']['passwd']) === true ? $ref['agent']['passwd'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['agent']['passwd']) === true ? $ref['agent']['passwd'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

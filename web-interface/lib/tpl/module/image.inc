@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_tpl_image
+class dwho_tpl_image
 {
 	function make($url,$alt='',$opt='')
 	{
@@ -31,9 +31,9 @@ class xivo_tpl_image
 		if(isset($url{0}) === false)
 			return($r);
 
-		$url = $url{0} !== '/' ? '/i/i18n/'.XIVO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
+		$url = $url{0} !== '/' ? '/i/i18n/'.DWHO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
 
-		$r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.xivo_alttitle($alt).'" />';
+		$r = '<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.dwho_alttitle($alt).'" />';
 
 		return($r);
 	}
@@ -47,7 +47,7 @@ class xivo_tpl_image
 		if(isset($url{0}) === false)
 			return($r);
 
-		$r = $url{0} !== '/' ? '/i/i18n/'.XIVO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
+		$r = $url{0} !== '/' ? '/i/i18n/'.DWHO_I18N_BABELFISH_LOCALE.'/'.$url : $url;
 
 		return($r);
 	}

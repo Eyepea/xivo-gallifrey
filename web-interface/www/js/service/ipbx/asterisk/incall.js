@@ -32,10 +32,10 @@ xivo_attrib_register('fm_ast_faxdetectenable',xivo_fm_ast_faxdetectenable);
 
 function xivo_ast_enable_faxdetect()
 {
-	if((faxdetectenable = xivo_eid('it-incall-faxdetectenable')) === false)
+	if((faxdetectenable = dwho_eid('it-incall-faxdetectenable')) === false)
 		return(false);
-	else if((dialaction_answer_actiontype = xivo_eid('it-dialaction-answer-actiontype')) === false
-	|| (dialaction_answer_application_action = xivo_eid('it-dialaction-answer-application-action')) === false
+	else if((dialaction_answer_actiontype = dwho_eid('it-dialaction-answer-actiontype')) === false
+	|| (dialaction_answer_application_action = dwho_eid('it-dialaction-answer-application-action')) === false
 	|| dialaction_answer_actiontype.value !== 'application'
 	|| dialaction_answer_application_action.value !== 'faxtomail')
 	{
@@ -73,4 +73,4 @@ function xivo_ast_incall_onload()
 	xivo_ast_enable_faxdetect();
 }
 
-xivo.dom.set_onload(xivo_ast_incall_onload);
+dwho.dom.set_onload(xivo_ast_incall_onload);

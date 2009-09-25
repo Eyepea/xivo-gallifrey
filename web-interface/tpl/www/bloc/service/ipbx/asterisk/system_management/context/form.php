@@ -34,38 +34,38 @@ if($this->get_var('fm_save') === false):
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
-if(xivo_issa('contextnumbers',$info) === true):
+if(dwho_issa('contextnumbers',$info) === true):
 
 	$context_js = array();
 
-	if(xivo_issa('user',$info['contextnumbers']) === true
+	if(dwho_issa('user',$info['contextnumbers']) === true
 	&& ($user_nb = count($info['contextnumbers']['user'])) > 0):
 		$user_list = $info['contextnumbers']['user'];
-		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-user\','.$user_nb.');';
+		$context_js[] = 'dwho.dom.set_table_list(\'contextnumbers-user\','.$user_nb.');';
 	endif;
 
-	if(xivo_issa('group',$info['contextnumbers']) === true
+	if(dwho_issa('group',$info['contextnumbers']) === true
 	&& ($group_nb = count($info['contextnumbers']['group'])) > 0):
 		$group_list = $info['contextnumbers']['group'];
-		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-group\','.$group_nb.');';
+		$context_js[] = 'dwho.dom.set_table_list(\'contextnumbers-group\','.$group_nb.');';
 	endif;
 
-	if(xivo_issa('queue',$info['contextnumbers']) === true
+	if(dwho_issa('queue',$info['contextnumbers']) === true
 	&& ($queue_nb = count($info['contextnumbers']['queue'])) > 0):
 		$queue_list = $info['contextnumbers']['queue'];
-		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-queue\','.$queue_nb.');';
+		$context_js[] = 'dwho.dom.set_table_list(\'contextnumbers-queue\','.$queue_nb.');';
 	endif;
 
-	if(xivo_issa('meetme',$info['contextnumbers']) === true
+	if(dwho_issa('meetme',$info['contextnumbers']) === true
 	&& ($meetme_nb = count($info['contextnumbers']['meetme'])) > 0):
 		$meetme_list = $info['contextnumbers']['meetme'];
-		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-meetme\','.$meetme_nb.');';
+		$context_js[] = 'dwho.dom.set_table_list(\'contextnumbers-meetme\','.$meetme_nb.');';
 	endif;
 
-	if(xivo_issa('incall',$info['contextnumbers']) === true
+	if(dwho_issa('incall',$info['contextnumbers']) === true
 	&& ($incall_nb = count($info['contextnumbers']['incall'])) > 0):
 		$incall_list = $info['contextnumbers']['incall'];
-		$context_js[] = 'xivo.dom.set_table_list(\'contextnumbers-incall\','.$incall_nb.');';
+		$context_js[] = 'dwho.dom.set_table_list(\'contextnumbers-incall\','.$incall_nb.');';
 	endif;
 
 	if(isset($context_js[0]) === true):
@@ -119,7 +119,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 
 <div id="contextlist" class="fm-field fm-multilist">
 	<p>
-		<label id="lb-contextlist" for="it-contextlist" onclick="xivo_eid('it-contextlist').focus();">
+		<label id="lb-contextlist" for="it-contextlist" onclick="dwho_eid('it-contextlist').focus();">
 			<?=$this->bbf('fm_context_context-include');?>
 		</label>
 	</p>
@@ -139,17 +139,17 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-contextlist',
+		   onclick="dwho.form.move_selected('it-contextlist',
 						  'it-context');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incontext');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incontext'),
 					  'class="bt-inlist" id="bt-incontext" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-context',
+		   onclick="dwho.form.move_selected('it-context',
 						  'it-contextlist');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcontext');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outcontext'),
@@ -170,15 +170,15 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 ?>
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-context',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-context',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcontext');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcontext'),
 						  'class="bt-uplist" id="bt-upcontext" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-context',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-context',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcontext');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcontext'),
@@ -265,7 +265,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 								'#',
 								null,
 								'onclick="xivo_context_entity_enable_add(\'incall\',this);
-									  return(xivo.dom.free_focus());"',
+									  return(dwho.dom.free_focus());"',
 								$this->bbf('col_contextnumbers_incall-add'));?></th>
 		</tr>
 		</thead>
@@ -315,8 +315,8 @@ if($incall_list !== false):
 									       'border="0"'),
 								'#',
 								null,
-								'onclick="xivo.dom.make_table_list(\'contextnumbers-incall\',this,1);
-									  return(xivo.dom.free_focus());"',
+								'onclick="dwho.dom.make_table_list(\'contextnumbers-incall\',this,1);
+									  return(dwho.dom.free_focus());"',
 								$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 
@@ -366,8 +366,8 @@ endif;
 									       'border="0"'),
 								'#',
 								null,
-								'onclick="xivo.dom.make_table_list(\'contextnumbers-incall\',this,1);
-									  return(xivo.dom.free_focus());"',
+								'onclick="dwho.dom.make_table_list(\'contextnumbers-incall\',this,1);
+									  return(dwho.dom.free_focus());"',
 								$this->bbf('opt_contextnumbers_incall-delete'));?></td>
 		</tr>
 		</tbody>

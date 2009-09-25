@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
 $list = $this->get_var('list');
 
@@ -54,7 +54,7 @@ for($i = 0;$i < $nb;$i++)
 				'info'		=> $match[2]);
 }
 
-$data = xivo_json::encode($data);
+$data = dwho_json::encode($data);
 
 if($data === false)
 {
@@ -62,7 +62,7 @@ if($data === false)
 	$http->send(true);
 }
 
-header(xivo_json::get_header());
+header(dwho_json::get_header());
 die($data);
 
 ?>

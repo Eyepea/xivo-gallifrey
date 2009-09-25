@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_extenumbers_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -59,7 +59,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(xivo_has_len($typeval) === false)
+		if(dwho_has_len($typeval) === false)
 			return(false);
 
 		$where = array();
@@ -120,7 +120,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 	function add($typeval)
 	{
-		if(($rs = xivo_has_len($typeval)) === false
+		if(($rs = dwho_has_len($typeval)) === false
 		|| ($rs = $this->get_result()) === null
 		|| $rs === false)
 			return($rs);
@@ -173,7 +173,7 @@ class xivo_application_service_asterisk_extenumbers_abstract extends xivo_applic
 
 	function reverse_add()
 	{
-		if(($id = xivo_ulongint($this->_return)) !== 0)
+		if(($id = dwho_ulongint($this->_return)) !== 0)
 			return($this->_extenumbers->delete($id));
 
 		return(false);

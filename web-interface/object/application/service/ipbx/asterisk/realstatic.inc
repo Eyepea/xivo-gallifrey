@@ -24,7 +24,7 @@ class xivo_application_service_asterisk_realstatic
 
 	function xivo_application_service_asterisk_realstatic(&$service)
 	{
-		if(xivo_instanceof($service,'xivo_service_asterisk') === false)
+		if(dwho_instanceof($service,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$service;
@@ -39,7 +39,7 @@ class xivo_application_service_asterisk_realstatic
 
 		$file = $name.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   'ipbx',
@@ -50,7 +50,7 @@ class xivo_application_service_asterisk_realstatic
 
 		$class = 'xivo_application_service_asterisk_realstatic_'.$this->_name.'_'.$name;
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);

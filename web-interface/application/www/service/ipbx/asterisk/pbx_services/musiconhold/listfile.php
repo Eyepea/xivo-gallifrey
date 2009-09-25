@@ -30,12 +30,12 @@ if(($infos = $musiconhold->get_category($cat)) === false)
 if(($files = $infos['dir']['files']) !== false)
 {
 	$total = count($files);
-	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('key' => 'name'));
+	dwho::load_class('dwho_sort');
+	$sort = new dwho_sort(array('key' => 'name'));
 	usort($files,array(&$sort,'strnat_usort'));
 }
 
-$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+$_TPL->set_var('pager',dwho_calc_page($page,20,$total));
 $_TPL->set_var('list',$files);
 
 ?>

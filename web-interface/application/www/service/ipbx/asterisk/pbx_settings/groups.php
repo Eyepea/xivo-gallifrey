@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';
@@ -50,8 +50,8 @@ switch($act)
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('groupfeatures',$_QR) === true
-		&& xivo_issa('queue',$_QR) === true)
+		&& dwho_issa('groupfeatures',$_QR) === true
+		&& dwho_issa('queue',$_QR) === true)
 		{
 			if($appgroup->set_add($_QR) === false
 			|| $appgroup->add() === false)
@@ -67,40 +67,40 @@ switch($act)
 			}
 		}
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
-		if($user['list'] !== false && xivo_ak('user',$result) === true)
+		if($user['list'] !== false && dwho_ak('user',$result) === true)
 		{
-			$user['slt'] = xivo_array_intersect_key($result['user'],$user['list'],'userid');
+			$user['slt'] = dwho_array_intersect_key($result['user'],$user['list'],'userid');
 
 			if($user['slt'] !== false)
 			{
-				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
+				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
 
-				$usersort = new xivo_sort(array('key' => 'identity'));
+				$usersort = new dwho_sort(array('key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
-		if($rightcall['list'] !== false && xivo_ak('rightcall',$result) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$result) === true)
 		{
-			$rightcall['slt'] = xivo_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($result['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
-				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
 
 		if(empty($result) === false)
 		{
-			if(xivo_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
+			if(dwho_issa('dialaction',$result) === false || empty($result['dialaction']) === true)
 				$result['dialaction'] = null;
 
-			if(xivo_issa('callerid',$result) === false || empty($result['callerid']) === true)
+			if(dwho_issa('callerid',$result) === false || empty($result['callerid']) === true)
 				$result['callerid'] = null;
 		}
 
@@ -147,8 +147,8 @@ switch($act)
 		$rightcall['list'] = $apprightcall->get_rightcalls_list(null,array('name' => SORT_ASC),null,true);
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('groupfeatures',$_QR) === true
-		&& xivo_issa('queue',$_QR) === true)
+		&& dwho_issa('groupfeatures',$_QR) === true
+		&& dwho_issa('queue',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -166,40 +166,40 @@ switch($act)
 			}
 		}
 
-		xivo::load_class('xivo_sort');
+		dwho::load_class('dwho_sort');
 
-		if($user['list'] !== false && xivo_ak('user',$return) === true)
+		if($user['list'] !== false && dwho_ak('user',$return) === true)
 		{
-			$user['slt'] = xivo_array_intersect_key($return['user'],$user['list'],'userid');
+			$user['slt'] = dwho_array_intersect_key($return['user'],$user['list'],'userid');
 
 			if($user['slt'] !== false)
 			{
-				$user['list'] = xivo_array_diff_key($user['list'],$user['slt']);
+				$user['list'] = dwho_array_diff_key($user['list'],$user['slt']);
 
-				$usersort = new xivo_sort(array('key' => 'identity'));
+				$usersort = new dwho_sort(array('key' => 'identity'));
 				uasort($user['slt'],array(&$usersort,'str_usort'));
 			}
 		}
 
-		if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
+		if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
 		{
-			$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
+			$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],$rightcall['list'],'rightcallid');
 
 			if($rightcall['slt'] !== false)
 			{
-				$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+				$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-				$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+				$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 				uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 			}
 		}
 
 		if(empty($return) === false)
 		{
-			if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+			if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
 				$return['dialaction'] = null;
 
-			if(xivo_issa('callerid',$return) === false || empty($return['callerid']) === true)
+			if(dwho_issa('callerid',$return) === false || empty($return['callerid']) === true)
 				$return['callerid'] = null;
 		}
 
@@ -238,7 +238,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('groups',$_QR)) === false)
+		if(($values = dwho_issa_val('groups',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 
 		$appgroup = &$ipbx->get_application('group');
@@ -261,7 +261,7 @@ switch($act)
 		$disable = $act === 'disables';
 		$invdisable = $disable === false;
 
-		if(($values = xivo_issa_val('groups',$_QR)) === false)
+		if(($values = dwho_issa_val('groups',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 
 		$groupfeatures = &$ipbx->get_module('groupfeatures');
@@ -302,7 +302,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_schedule extends xivo_application_asterisk_abstract
 {
@@ -220,7 +220,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function get_dialaction_destination_list()
 	{
-		if(xivo_issa('schedule',$this->_info) === false)
+		if(dwho_issa('schedule',$this->_info) === false)
 			$id = 0;
 		else
 			$id = $this->_info['schedule']['id'];
@@ -250,7 +250,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		if(is_array($r) === false)
 			$r = array();
 
-		if(xivo_issa('schedule',$r) === false)
+		if(dwho_issa('schedule',$r) === false)
 			$r['schedule'] = array();
 
 		$timebeg = $this->get_result_var('schedule','timebeg');
@@ -261,7 +261,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$r['schedule']['timehourend'] = '';
 		$r['schedule']['timeminend'] = '';
 
-		if(xivo_has_len($timebeg) === true)
+		if(dwho_has_len($timebeg) === true)
 		{
 			$timebeg = explode(':',$timebeg);
 			$r['schedule']['timehourbeg'] = $timebeg[0];
@@ -270,7 +270,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 				$r['schedule']['timeminbeg'] = $timebeg[1];
 		}
 
-		if(xivo_has_len($timeend) === true)
+		if(dwho_has_len($timeend) === true)
 		{
 			$timeend = explode(':',$timeend);
 			$r['schedule']['timehourend'] = $timeend[0];
@@ -300,12 +300,12 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('schedule',$arr) === false)
+		|| dwho_issa('schedule',$arr) === false)
 			return(false);
 
 		$this->set_schedule($arr['schedule']);
 
-		if(xivo_issa('dialaction',$arr) === false
+		if(dwho_issa('dialaction',$arr) === false
 		|| $this->set_dialaction($arr['dialaction']) === null
 		|| is_array($this->get_result_var('dialaction','inschedule')) === false
 		|| is_array($this->get_result_var('dialaction','outschedule')) === false)
@@ -407,7 +407,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($scheduleid = xivo_ulongint($scheduleid)) === 0
+		|| ($scheduleid = dwho_ulongint($scheduleid)) === 0
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
@@ -457,7 +457,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function edit_schedule()
 	{
-		if(xivo_issa('schedule',$this->_info) === false
+		if(dwho_issa('schedule',$this->_info) === false
 		|| ($rs = $this->get_result('schedule')) === null
 		|| $rs === false)
 			return(false);
@@ -469,7 +469,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function edit_dialaction()
 	{
-		if(xivo_issa('schedule',$this->_info) === false)
+		if(dwho_issa('schedule',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_dialaction($this->_info['schedule']['id']));
@@ -477,7 +477,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('schedule',$this->_info) === false)
+		if(dwho_issa('schedule',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['schedule']['id']));
@@ -541,7 +541,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function delete_schedule()
 	{
-		if(xivo_issa('schedule',$this->_info) === false)
+		if(dwho_issa('schedule',$this->_info) === false)
 			return(false);
 
 		$r = $this->_schedule->delete($this->_info['schedule']['id']);
@@ -585,7 +585,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function unlinks()
 	{
-		if(xivo_issa('schedule',$this->_info) === false)
+		if(dwho_issa('schedule',$this->_info) === false)
 			return(false);
 
 		$this->_dialaction->unlinked('schedule',$this->_info['schedule']['id']);
@@ -633,7 +633,7 @@ class xivo_application_service_asterisk_schedule extends xivo_application_asteri
 
 	function _enable_disable_schedule($disable=false)
 	{
-		if(xivo_issa('schedule',$this->_info) === false)
+		if(dwho_issa('schedule',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_schedule->enable($this->_info['schedule']['id']);

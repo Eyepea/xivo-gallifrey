@@ -41,8 +41,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-context-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -78,7 +78,7 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			if($ref['entity'] !== false):
-				$entity = xivo_htmlen(xivo_trunc($ref['entity']['identity'],30,'...',false));
+				$entity = dwho_htmlen(dwho_trunc($ref['entity']['identity'],30,'...',false));
 			else:
 				$entity = '-';
 			endif;
@@ -102,7 +102,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=xivo_htmlen(xivo_trunc($ref['context']['displayname'],30,'...',false));?></td>
+		<td><?=dwho_htmlen(dwho_trunc($ref['context']['displayname'],30,'...',false));?></td>
 		<td><?=$entity?></td>
 		<td class="td-right" colspan="2">
 <?php

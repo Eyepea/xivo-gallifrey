@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_abstract
 {
@@ -125,7 +125,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('contextmember',$nocomponents,true) === false)
+		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['protocol']['id']);
 
 		return($this->_info);
@@ -138,7 +138,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		if(isset($this->_info['trunkfeatures']['registerid']) === false
 		|| is_object($this->_register) === false
-		|| ($registerid = xivo_ulongint($this->_info['trunkfeatures']['registerid'])) === 0)
+		|| ($registerid = dwho_ulongint($this->_info['trunkfeatures']['registerid'])) === 0)
 			return(null);
 		else if(($this->_info['register'] = $this->_register->get_register($registerid)) === false)
 			return(false);
@@ -151,7 +151,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	function get_timezones()
 	{
 		if(empty($this->_timezones) === true
-		&& ($timezones = xivo_i18n::get_timezone_list()) !== false)
+		&& ($timezones = dwho_i18n::get_timezone_list()) !== false)
 			$this->_timezones = $timezones;
 
 		return($this->_timezones);
@@ -192,7 +192,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 		if(is_array($protocols) === true && empty($protocols) === false)
 			$protocols = array_values($protocols);
-		else if($protocols === true && xivo_has_len($this->_param['protocol']) === true)
+		else if($protocols === true && dwho_has_len($this->_param['protocol']) === true)
 			$protocols = array($this->_param['protocol']);
 		else
 			$protocols = null;
@@ -247,12 +247,12 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		{
 			$ref = &$rs[$i];
 
-			$trunkfeatures = xivo_array_startswith_key($ref,'trunkfeatures.',true);
+			$trunkfeatures = dwho_array_startswith_key($ref,'trunkfeatures.',true);
 
 			switch($trunkfeatures['protocol'])
 			{
 				case XIVO_SRE_IPBX_AST_PROTO_SIP:
-					$sip = xivo_array_startswith_key($ref,'usersip.',true);
+					$sip = dwho_array_startswith_key($ref,'usersip.',true);
 					$sip['commented'] = (bool) $sip['commented'];
 
 					if(empty($sip['calllimit']) === true)
@@ -270,7 +270,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					$r[$trunkfeatures['id']] = array_merge($sip,$trunkfeatures);
 					break;
 				case XIVO_SRE_IPBX_AST_PROTO_IAX:
-					$iax = xivo_array_startswith_key($ref,'useriax.',true);
+					$iax = dwho_array_startswith_key($ref,'useriax.',true);
 					$iax['commented'] = (bool) $iax['commented'];
 
 					$iax['register'] = $staticiaxclass->parse_register_uri($ref['register']);
@@ -285,7 +285,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					$r[$trunkfeatures['id']] = array_merge($iax,$trunkfeatures);
 					break;
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
-					$custom = xivo_array_startswith_key($ref,'usercustom.',true);
+					$custom = dwho_array_startswith_key($ref,'usercustom.',true);
 					$custom['commented'] = (bool) $custom['commented'];
 					$custom['identity'] = $customidentity->mk_identity($custom);
 
@@ -325,15 +325,15 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('trunkfeatures',$arr) === false
-		|| xivo_issa('protocol',$arr) === false)
+		|| dwho_issa('trunkfeatures',$arr) === false
+		|| dwho_issa('protocol',$arr) === false)
 			return(false);
 
 		$this->set_trunkfeatures($arr['trunkfeatures']);
 
 		$this->set_protocol($arr['protocol']);
 
-		if(xivo_issa('register',$arr) === true)
+		if(dwho_issa('register',$arr) === true)
 			$this->set_register($arr['register']);
 
 		$this->set_contextmember();
@@ -397,7 +397,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			}
 
 			if($this->_param['protocol'] === XIVO_SRE_IPBX_AST_PROTO_IAX
-			&& xivo_has_len($arr,'timezone') === true)
+			&& dwho_has_len($arr,'timezone') === true)
 			{
 				$this->get_timezones();
 
@@ -425,7 +425,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		&& $rs['type'] === 'friend')
 			$rs['username'] = $rs['name'];
 
-		if(xivo_issa('allow',$rs) === true)
+		if(dwho_issa('allow',$rs) === true)
 			$rs['allow'] = implode(',',$rs['allow']);
 
 		$this->_set_result('protocol',$rs);
@@ -485,13 +485,13 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function add_trunkfeatures($protocolid,$registerid=null)
 	{
-		if(($protocolid = xivo_ulongint($protocolid)) === 0
+		if(($protocolid = dwho_ulongint($protocolid)) === 0
 		|| ($rs = $this->get_result('trunkfeatures')) === null
 		|| $rs === false)
 			return(false);
 		else if($registerid !== null)
 		{
-			if(($rs['registerid'] = xivo_ulongint($registerid)) === 0)
+			if(($rs['registerid'] = dwho_ulongint($registerid)) === 0)
 				return(false);
 
 			$rs['registercommented'] = false;
@@ -584,7 +584,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function edit_trunkfeatures($registerid)
 	{
-		if(xivo_issa('trunkfeatures',$this->_info) === false
+		if(dwho_issa('trunkfeatures',$this->_info) === false
 		|| ($rs = $this->get_result('trunkfeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -599,7 +599,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 			$rs['registercommented'] = $registerid === 'disable';
 			$registerid = $this->_info['trunkfeatures']['registerid'];
 		}
-		else if(($registerid = xivo_ulongint($registerid)) !== 0
+		else if(($registerid = dwho_ulongint($registerid)) !== 0
 		&& (int) $this->_info['trunkfeatures']['registerid'] !== 0)
 			return(false);
 
@@ -612,7 +612,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	function edit_protocol()
 	{
 		if(is_object($this->_protocol) === false
-		|| xivo_issa('protocol',$this->_info) === false
+		|| dwho_issa('protocol',$this->_info) === false
 		|| ($rs = $this->get_result('protocol')) === null
 		|| $rs === false)
 			return(false);
@@ -624,7 +624,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	{
 		if(is_object($this->_register) === false)
 			return(null);
-		else if(xivo_issa('register',$this->_info) === false)
+		else if(dwho_issa('register',$this->_info) === false)
 			return($this->add_register());
 		else if(($r = $this->_register->edit_register($this->_info['register']['id'])) === null)
 		{
@@ -643,7 +643,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('protocol',$this->_info) === false)
+		if(dwho_issa('protocol',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['protocol']['id']));
@@ -723,7 +723,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 
 	function delete_trunkfeatures()
 	{
-		if(xivo_issa('trunkfeatures',$this->_info) === false)
+		if(dwho_issa('trunkfeatures',$this->_info) === false)
 			return(false);
 
 		$r = $this->_trunkfeatures->delete($this->_info['trunkfeatures']['id']);
@@ -737,7 +737,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	function delete_protocol()
 	{
 		if(is_object($this->_protocol) === false
-		|| xivo_issa('protocol',$this->_info) === false)
+		|| dwho_issa('protocol',$this->_info) === false)
 			return(false);
 
 		$r = $this->_protocol->delete($this->_info['protocol']['id']);
@@ -752,11 +752,11 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	{
 		if(is_object($this->_register) === false)
 			return(null);
-		else if(xivo_issa('trunkfeatures',$this->_info) === false)
+		else if(dwho_issa('trunkfeatures',$this->_info) === false)
 			return(false);
-		else if(xivo_issa('register',$this->_info) === false)
+		else if(dwho_issa('register',$this->_info) === false)
 		{
-			if(xivo_ulongint($this->_info['trunkfeatures']['registerid']) === 0)
+			if(dwho_ulongint($this->_info['trunkfeatures']['registerid']) === 0)
 				return(null);
 
 			return(false);
@@ -816,8 +816,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		$this->_return = array();
 
 		if($this->enable_protocol() === false
-		|| (xivo_issa('trunkfeatures',$this->_info) === true
-		   && xivo_ulongint($this->_info['trunkfeatures']['registerid']) !== 0
+		|| (dwho_issa('trunkfeatures',$this->_info) === true
+		   && dwho_ulongint($this->_info['trunkfeatures']['registerid']) !== 0
 		   && $this->_info['trunkfeatures']['registercommented'] === false
 		   && $this->enable_register() === false) === true)
 		{
@@ -837,8 +837,8 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		$this->_return = array();
 
 		if($this->disable_protocol() === false
-		|| (xivo_issa('trunkfeatures',$this->_info) === true
-		   && xivo_ulongint($this->_info['trunkfeatures']['registerid']) !== 0
+		|| (dwho_issa('trunkfeatures',$this->_info) === true
+		   && dwho_ulongint($this->_info['trunkfeatures']['registerid']) !== 0
 		   && $this->disable_register() === false) === true)
 		{
 			$r = false;
@@ -863,7 +863,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	function _enable_disable_protocol($disable=false)
 	{
 		if(is_object($this->_protocol) === false
-		|| xivo_issa('protocol',$this->_info) === false)
+		|| dwho_issa('protocol',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_protocol->enable($this->_info['protocol']['id']);
@@ -880,7 +880,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 	{
 		if(is_object($this->_register) === false)
 			return(null);
-		else if(xivo_issa('register',$this->_info) === false)
+		else if(dwho_issa('register',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_register->enable_register($this->_status,

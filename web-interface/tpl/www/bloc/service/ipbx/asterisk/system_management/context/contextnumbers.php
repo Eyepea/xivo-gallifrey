@@ -39,7 +39,7 @@ $err = $this->get_varra('error',array('contextnumbers',$type));
 							'#',
 							null,
 							'onclick="xivo_context_entity_enable_add(\''.$type.'\',this);
-								  return(xivo.dom.free_focus());"',
+								  return(dwho.dom.free_focus());"',
 							$this->bbf('col_contextnumbers_'.$type.'-add'));?></th>
 	</tr>
 	</thead>
@@ -79,8 +79,8 @@ if($list !== false):
 								       'border="0"'),
 							'#',
 							null,
-							'onclick="xivo.dom.make_table_list(\'contextnumbers-'.$type.'\',this,1);
-								  return(xivo.dom.free_focus());"',
+							'onclick="dwho.dom.make_table_list(\'contextnumbers-'.$type.'\',this,1);
+								  return(dwho.dom.free_focus());"',
 							$this->bbf('opt_contextnumbers_'.$type.'-delete'));?></td>
 	</tr>
 <?php
@@ -120,8 +120,8 @@ endif;
 								       'border="0"'),
 							'#',
 							null,
-							'onclick="xivo.dom.make_table_list(\'contextnumbers-'.$type.'\',this,1);
-								  return(xivo.dom.free_focus());"',
+							'onclick="dwho.dom.make_table_list(\'contextnumbers-'.$type.'\',this,1);
+								  return(dwho.dom.free_focus());"',
 							$this->bbf('opt_contextnumbers_'.$type.'-delete'));?></td>
 	</tr>
 	</tbody>

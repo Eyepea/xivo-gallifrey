@@ -26,7 +26,7 @@ $url = &$this->get_module('url');
 	echo	$url->img_html('img/menu/top/login/left.gif'),
 		'<span>',
 		$this->bbf('info_top_login'),
-		'&nbsp;<b>',xivo_htmlen(xivo_user::get_info('login')),'</b>',
+		'&nbsp;<b>',dwho_htmlen(xivo_user::get_info('login')),'</b>',
 		'</span>',
 		$url->img_html('img/menu/top/login/sep.gif'),
 		'<span>',

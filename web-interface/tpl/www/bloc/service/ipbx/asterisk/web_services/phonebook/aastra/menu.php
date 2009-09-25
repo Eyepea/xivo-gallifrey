@@ -106,7 +106,7 @@ else:
 
 		echo	'<MenuItem>',"\n",
 			'<Prompt>',
-			$xmlvendor->escape(xivo_trunc($name1,8,'.','',true).' > '.xivo_trunc($name2,8,'.','',true)),
+			$xmlvendor->escape(dwho_trunc($name1,8,'.','',true).' > '.dwho_trunc($name2,8,'.','',true)),
 			'</Prompt>',"\n",
 			'<URI>',$url->href('service/ipbx/web_services/phonebook/search',
 					   $param,

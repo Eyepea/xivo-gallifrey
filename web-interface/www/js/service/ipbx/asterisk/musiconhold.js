@@ -25,8 +25,8 @@ xivo_attrib_register('fm_musiconhold',xivo_fm_musiconhold);
 
 function xivo_moh_onload()
 {
-	if((mode = xivo_eid('it-mode')) !== false)
+	if((mode = dwho_eid('it-mode')) !== false)
 		xivo_chg_attrib('fm_musiconhold','fd-application',Number(mode.value === 'custom'));
 }
 
-xivo.dom.set_onload(xivo_moh_onload);
+dwho.dom.set_onload(xivo_moh_onload);

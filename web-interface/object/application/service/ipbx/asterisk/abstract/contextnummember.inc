@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_contextnummember_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -63,7 +63,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
 
 		$where = array();
@@ -85,7 +85,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 		$info['type'] = $this->_param['type'];
 		$info['typeval'] = 0;
 
-		if(xivo_has_len($number) === false)
+		if(dwho_has_len($number) === false)
 		{
 			$info['number'] = '';
 			$chkerror = 'invalid context';
@@ -122,7 +122,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 
 	function add($typeval)
 	{
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
 		else if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
@@ -141,7 +141,7 @@ class xivo_application_service_asterisk_contextnummember_abstract extends xivo_a
 
 	function edit($status,$typeval)
 	{
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
 		else if(empty($this->_origin) === true)
 			return($this->add($typeval));

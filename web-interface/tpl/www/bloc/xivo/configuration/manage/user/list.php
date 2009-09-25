@@ -41,8 +41,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-user-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -76,10 +76,10 @@ $page = $url->pager($pager['pages'],
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left" colspan="2"><?=xivo_htmlen($ref['login']);?></td>
-		<td><?=xivo_htmlen($ref['passwd']);?></td>
+		<td class="td-left" colspan="2"><?=dwho_htmlen($ref['login']);?></td>
+		<td><?=dwho_htmlen($ref['passwd']);?></td>
 		<td><?=$ref['meta']?></td>
-		<td><?=xivo_i18n::strftime_l($this->bbf('date_format_yymmdd'),
+		<td><?=dwho_i18n::strftime_l($this->bbf('date_format_yymmdd'),
 					     null,
 					     $ref['dcreate']);?></td>
 		<td><?=$this->bbf('valid_'.intval((bool) $ref['valid']));?></td>

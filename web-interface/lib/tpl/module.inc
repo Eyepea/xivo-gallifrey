@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_tpl_module
+class dwho_tpl_module
 {
 	function load_init($param=null)
 	{

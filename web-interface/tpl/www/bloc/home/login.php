@@ -32,8 +32,8 @@ $dhtml = &$this->get_module('dhtml');
 		<form action="#" method="post" accept-charset="utf-8">
 			<div class="b-field">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->text(array('name'	=> 'login',
 				  'id'		=> 'it-login',
@@ -48,7 +48,7 @@ $dhtml = &$this->get_module('dhtml');
 		$form->select(array('desc'	=> $this->bbf('fm_language'),
 				    'name'	=> 'language',
 				    'id'	=> 'it-language',
-				    'value'	=> XIVO_I18N_BABELFISH_LANGUAGE),
+				    'value'	=> DWHO_I18N_BABELFISH_LANGUAGE),
 			      $this->get_var('language')),
 
 		$form->submit(array('name'	=> 'submit',
@@ -65,9 +65,9 @@ $dhtml = &$this->get_module('dhtml');
 	</div>
 </div>
 <script type="text/javascript">
-xivo.dom.set_onload(function ()
+dwho.dom.set_onload(function ()
 {
-	xivo_fm_set_events_text_helper('it-login');
-	xivo_fm_set_events_text_helper('it-password');
+	dwho.form.set_events_text_helper('it-login');
+	dwho.form.set_events_text_helper('it-password');
 });
 </script>

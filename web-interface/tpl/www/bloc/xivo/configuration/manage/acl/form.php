@@ -32,8 +32,8 @@ $tree = $this->get_var('tree');
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'acl')),
@@ -48,7 +48,7 @@ $tree = $this->get_var('tree');
 
 	$ref = &$tree['xivo'];
 
-	if(xivo_issa('child',$ref) === true && empty($ref['child']) === false):
+	if(dwho_issa('child',$ref) === true && empty($ref['child']) === false):
 		foreach($ref['child'] as $v):
 			echo	'<tr><th>',
 				$form->checkbox(array('desc'	=> array('%s%s',$this->bbf('acl_'.$v['id']),1),
@@ -58,7 +58,7 @@ $tree = $this->get_var('tree');
 						      'field'	=> false,
 						      'value'	=> $v['path'],
 						      'checked'	=> $v['access']),
-						'onclick="xivo_fm_mk_acl(this);"'),
+						'onclick="xivo_form_mk_acl(this);"'),
 				'</th></tr>';
 
 			if(isset($v['child']) === true):
@@ -71,7 +71,7 @@ $tree = $this->get_var('tree');
 
 	$ref = &$tree['service'];
 
-	if(xivo_issa('child',$ref) === true && empty($ref['child']) === false):
+	if(dwho_issa('child',$ref) === true && empty($ref['child']) === false):
 		foreach($ref['child'] as $v):
 			echo	'<tr><th>',
 				$form->checkbox(array('desc'	=> array('%s%s',$this->bbf('acl_'.$v['id']),1),
@@ -81,7 +81,7 @@ $tree = $this->get_var('tree');
 						      'field'	=> false,
 						      'value'	=> $v['path'],
 						      'checked'	=> $v['access']),
-						'onclick="xivo_fm_mk_acl(this);"'),
+						'onclick="xivo_form_mk_acl(this);"'),
 				'</th></tr>';
 
 			if(isset($v['child']) === true):

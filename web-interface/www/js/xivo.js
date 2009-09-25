@@ -67,36 +67,21 @@ function xivo_open_center(url,name,width,height,param)
 	return open(url,name,'left=' + cx + 'px,top=' + cy + 'px,width=' + width + 'px,height=' + height + 'px' + param);
 }
 
-function xivo_str_repeat(str,len)
-{
-	var r = '';
-	str = xivo_string(str);
-	len = Number(len);
-
-	if(len < 1)
-		return(r);
-
-	for(var i = 0;i < len;i++)
-		r += str;
-
-	return(r);
-}
-
 function xivo_attrib_register(id,arr)
 {
-	if(xivo_is_undef(xivo_conf['attrib'][id]) === true)
+	if(dwho_is_undef(xivo_conf['attrib'][id]) === true)
 		xivo_conf['attrib'][id] = arr;
 }
 
 function xivo_chg_style_attrib(elem,obj,type)
 {
-	type = xivo_is_undef(type) === true ? 0 : type;
+	type = dwho_is_undef(type) === true ? 0 : type;
 
-	if(xivo_is_array(obj) === true && xivo_is_object(obj[type]) === true)
+	if(dwho_is_array(obj) === true && dwho_is_object(obj[type]) === true)
 		obj = obj[type];
-	else if(xivo_is_object(obj) === false)
+	else if(dwho_is_object(obj) === false)
 		return(false);
-	else if(xivo_is_undef(elem['type']) === false && elem['type'] === 'hidden')
+	else if(dwho_is_undef(elem['type']) === false && elem['type'] === 'hidden')
 		return(null);
 
 	var style = '';
@@ -104,9 +89,9 @@ function xivo_chg_style_attrib(elem,obj,type)
 
 	try
 	{
-		if(xivo_is_undef(elem['style']) === false)
+		if(dwho_is_undef(elem['style']) === false)
 			var styletype = 1;
-		else if(xivo_is_undef(elem.style.setAttribute) === false)
+		else if(dwho_is_undef(elem.style.setAttribute) === false)
 			var styletype = 2;
 		else
 			var styletype = 3;
@@ -115,10 +100,10 @@ function xivo_chg_style_attrib(elem,obj,type)
 		{
 			style = obj[property];
 
-			if(xivo_is_scalar(style) === false)
+			if(dwho_is_scalar(style) === false)
 				continue;
 
-			style = xivo_string(style).replace(/\s/g,'');
+			style = dwho_string(style).replace(/\s/g,'');
 
 			if(style.length === 0)
 				continue;
@@ -156,60 +141,9 @@ function xivo_chg_style_attrib(elem,obj,type)
 	return(true);
 }
 
-function xivo_trunc(str,nb,end,chr)
-{
-	var r = xivo_string(str);
-	nb = Number(nb);
-	end = xivo_string(end);
-	chr = chr === null || xivo_is_undef(chr) === true ? ' ' : xivo_string(chr);
-
-	if(nb < 1 || nb > r.length || (sub = xivo_substr(r,0,nb)) === '')
-		return(r);
-
-	r = sub;
-
-	if(chr !== '' && (spos = sub.lastIndexOf(chr)) > -1)
-		r = xivo_substr(r,0,spos);
-
-	if(end.length > 0)
-		r += end;
-
-	return(r);
-}
-
-function xivo_htmlen(str,quote_style)
-{
-	var span = document.createElement('span');
-	span.appendChild(document.createTextNode(str));
-
-	return(xivo_htmlsc(span.innerHTML,quote_style));
-}
-
-function xivo_htmlsc(str,quote_style)
-{
-	str = xivo_string(str);
-	quote_style = xivo_string(quote_style);
-
-	str = str.replace(/</g,'&lt;');
-	str = str.replace(/>/g,'&gt;');
-
-	switch(quote_style.toUpperCase())
-	{
-		default:
-			str = str.replace(/'/g,'&#039;');
-		case '2':
-		case 'ENT_COMPAT':
-			str = str.replace(/"/g,'&quot;');
-		case '0':
-		case 'ENT_NOQUOTES':
-	}
-
-	return(str);
-}
-
 function xivo_split(str,delimit)
 {
-	str = xivo_string(str);
+	str = dwho_string(str);
 
 	if(str.match(/\\/) === null || delimit.length != 1)
 		return(str.split(delimit));
@@ -259,9 +193,9 @@ function xivo_split(str,delimit)
 
 function xivo_chg_property_attrib(elem,obj,type)
 {
-	if(xivo_is_array(obj) === true && xivo_is_object(obj[type]) === true)
+	if(dwho_is_array(obj) === true && dwho_is_object(obj[type]) === true)
 		obj = obj[type];
-	else if(xivo_is_object(obj) === false)
+	else if(dwho_is_object(obj) === false)
 		return(false);
 
 	for(var property in obj)
@@ -269,9 +203,9 @@ function xivo_chg_property_attrib(elem,obj,type)
 		if(property === 'style')
 			xivo_chg_style_attrib(elem,obj,type);
 		else if(property === 'AddclassName')
-			xivo.dom.add_cssclass(elem,obj[property]);
+			dwho.dom.add_cssclass(elem,obj[property]);
 		else if(property === 'RemoveclassName')
-			xivo.dom.remove_cssclass(elem,obj[property]);
+			dwho.dom.remove_cssclass(elem,obj[property]);
 		else
 			elem[property] = obj[property];
 	}
@@ -282,26 +216,26 @@ function xivo_chg_property_attrib(elem,obj,type)
 function xivo_chg_attrib(name,id,type,link)
 {
 	link = Boolean(link);
-	type = xivo_is_undef(type) === true ? 0 : type;
+	type = dwho_is_undef(type) === true ? 0 : type;
 
-	if(xivo_is_undef(xivo_conf['attrib'][name]) === true
-	|| xivo_is_undef(xivo_conf['attrib'][name][id]) === true)
+	if(dwho_is_undef(xivo_conf['attrib'][name]) === true
+	|| dwho_is_undef(xivo_conf['attrib'][name][id]) === true)
 		return(false);
 
 	var ref_elem = xivo_conf['attrib'][name][id];
 
-	if((get = xivo_eid(id)) !== false)
+	if((get = dwho_eid(id)) !== false)
 	{
-		if(xivo_is_undef(ref_elem['property']) === false)
+		if(dwho_is_undef(ref_elem['property']) === false)
 			xivo_chg_property_attrib(get,ref_elem['property'],type);
 
-		if(xivo_is_undef(ref_elem['style']) === false)
+		if(dwho_is_undef(ref_elem['style']) === false)
 			xivo_chg_style_attrib(get,ref_elem['style'],type);
 	}
 
-	if(xivo_is_undef(ref_elem['link']) === true)
+	if(dwho_is_undef(ref_elem['link']) === true)
 		return(null);
-	else if(xivo_type_object(ref_elem['link']) === false || link === false)
+	else if(dwho_type_object(ref_elem['link']) === false || link === false)
 	{
 		xivo_chg_attrib(name,ref_elem['link'],type,2);
 		return(null);
@@ -309,7 +243,7 @@ function xivo_chg_attrib(name,id,type,link)
 
 	for(var property in ref_elem['link'])
 	{
-		if(xivo_is_undef(ref_elem['link'][property][2]) === false)
+		if(dwho_is_undef(ref_elem['link'][property][2]) === false)
 			nlink = ref_elem['link'][property][2];
 		else
 			nlink = 2;
@@ -321,470 +255,53 @@ function xivo_chg_attrib(name,id,type,link)
 	}
 }
 
-function xivo_bool(bool)
-{
-	if(bool === null)
-		return(false);
-
-	switch(typeof(bool))
-	{
-		case 'object':
-			return(true);
-		case 'undefined':
-			return(false);
-	}
-
-	switch(bool.toString().toLowerCase())
-	{
-		case 'y':
-		case '1':
-		case 'on':
-		case 'yes':
-		case 'true':
-			return(true);
-		case 'n':
-		case '0':
-		case 'off':
-		case 'no':
-		case 'false':
-			return(false);
-	}
-
-	return(Boolean(bool));
-}
-
-function xivo_string(str)
-{
-	var r = '';
-
-	if(xivo_is_undef(str) === true)
-		return(r);
-
-	switch(str)
-	{
-		case null:
-		case false:
-			return(r);
-		case true:
-			r = 1;
-			break;
-		default:
-			r = str;
-	}
-
-	return(String(str));
-}
-
-function xivo_is_boolean(b)
-{
-	return((typeof(b) === 'boolean'));
-}
-
-function xivo_is_string(s)
-{
-	return((typeof(s) === 'string'));
-}
-
-function xivo_is_array(a)
-{
-	return((a instanceof Array));
-}
-
-function xivo_is_function(f)
-{
-	return((typeof(f) === 'function'));
-}
-
-function xivo_type_object(o)
-{
-	return((o !== null && typeof(o) === 'object'));
-}
-
-function xivo_is_object(o)
-{
-	return((xivo_type_object(o) === true && xivo_is_array(o) === false));
-}
-
-function xivo_is_undef(v)
-{
-	return((typeof(v) === 'undefined'));
-}
-
-function xivo_is_number(n)
-{
-	return((xivo_is_undef(Number(n))));
-}
-
-function xivo_is_int(i)
-{
-	var y = parseInt(i);
-
-	if(isNaN(y) === true)
-		return(false);
-
-	return((i == y && i.toString() === y.toString()));
-}
-
-function xivo_is_float(i)
-{
-	var y = parseFloat(i);
-
-	if(isNaN(y) === true || i != y)
-		return(false);
-
-	return((i.toString().replace(/\.00*$/,'') === y.toString()));
-}
-
-function xivo_is_uint(i)
-{
-	return(((xivo_is_int(i) === true && i >= 0)));
-}
-
-function xivo_is_ufloat(i)
-{
-	return(((xivo_is_float(i) === true && i >= 0)));
-}
-
-function xivo_is_scalar(val)
-{
-	switch(typeof(val))
-	{
-		case 'object':
-		case 'undefined':
-			return(false);
-	}
-
-	return(true);
-}
-
-function xivo_is_empty(val)
-{
-	if(xivo_is_undef(val) === true)
-		return(true);
-	else if(xivo_is_array(val) === true)
-		return((val.length === 0));
-	else if(xivo_is_object(val) === true)
-	{
-		for(var property in val)
-			return(false);
-		return(true);
-	}
-
-	switch(val)
-	{
-		case 0:
-		case '0':
-		case null:
-		case false:
-		case '':
-			return(true);
-	}
-
-	return(false);
-}
-
-function xivo_has_len(val,key)
-{
-	if(xivo_is_undef(key) === false
-	&& xivo_type_object(val) === true
-	&& xivo_is_undef(val[key]) === false)
-		val = val[key];
-
-	if(xivo_is_scalar(val) === false)
-		return(false);
-
-	val = xivo_string(val);
-
-	return((val.length > 0));
-}
-
-function xivo_chk_ipv4_strict(value)
-{
-	if(xivo_is_string(value) === false
-	|| (value === xivo_long2ip(xivo_ip2long(value))) === false)
-		return(false);
-
-	return(value);
-}
-
-function xivo_long2ip(value)
-{
-	if(xivo_is_int(value) === false || value > 0xFFFFFFFF)
-		value = 0xFFFFFFFF;
-
-	var r	= ((value >> 24) & 0xFF) + '.'
-		+ ((value >> 16) & 0xFF) + '.'
-		+ ((value >> 8) & 0xFF) + '.'
-		+ ((value & 0xFF));
-
-	return(r);
-}
-
-function xivo_ip2long(value)
-{
-	if(xivo_is_scalar(value) === false)
-		return(false);
-
-	var split = xivo_string(value).split('.');
-
-	if((len = split.length) > 4)
-		return(false);
-
-	var rs = 0;
-
-	for(var i = 0;i < len;i++)
-	{
-		if(split[i].match(/^(?:[1-9][0-9]*|0[0-7]*|0x[0-9A-F]*)$/i) === null)
-			return(false);
-
-		var lsn = parseInt(split[i]);
-
-		if(len === 1)
-		{
-			if (lsn <= 0xFFFFFFFF)
-				return(lsn | 0);
-			else
-				return(false);
-		}
-		else if(i < len-1)
-			mul = 1 << 8;
-		else
-			mul = 1 << (8 * (4-i));
-
-		if (lsn >= mul)
-			return(false);
-
-		rs = rs * mul + lsn;
-	}
-
-	return(rs | 0);
-}
-
-function xivo_chk_host(value)
-{
-	if(xivo_is_string(value) === false
-	|| value.length < 4
-	|| value.length > 255)
-		return(false);
-
-	if(value.match(/^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/i) === null)
-		return(false);
-
-	return(value);
-}
-
-function xivo_chk_ipv4_subnet(value)
-{
-	if(xivo_is_string(value) === false
-	|| (pos = value.indexOf('/')) < 7)
-		return(false);
-
-	var mask = xivo_substr(value,pos+1);
-	var ip = xivo_substr(value,0,pos);
-
-	if(xivo_chk_ipv4_netmask(mask) === false
-	|| xivo_chk_ipv4_strict(ip) === false)
-		return(false);
-
-	return(true);
-}
-
-function xivo_chk_ipv4_netmask(nm)
-{
-	if(xivo_chk_ipv4_netmask_bit(nm) === false
-	&& xivo_chk_ipv4_netmask_dotdec(nm) === false)
-		return(false);
-
-	return(true);
-}
-
-function xivo_chk_ipv4_netmask_bit(bit)
-{
-	if(xivo_is_uint(bit) === false
-	|| bit > 32)
-		return(false);
-
-	return(true);
-}
-
-function xivo_chk_ipv4_netmask_dotdec(nm)
-{
-	if((nm = xivo_ip2long(nm)) === 0)
-		return(0);
-	else if(nm === -1)
-		return(32);
-	else if(nm === false
-	|| (inv = (nm ^ 0xFFFFFFFF)) === 0
-	|| (inv & (inv + 1)) !== 0)
-		return(false);
-
-	return((32 - parseInt(Math.log(inv + 1,2))));
-}
-
-function xivo_strcmp(str1,str2,len)
-{
-	if(xivo_is_scalar(str1) === false
-	|| xivo_is_scalar(str2) === false)
-		return(false);
-
-	str1 = xivo_string(str1);
-	str2 = xivo_string(str2);
-
-	if(xivo_is_uint(len) === true)
-	{
-		str1 = str1.substring(0,len);
-		str2 = str2.substring(0,len);
-	}
-
-	if(str1 > str2)
-		return(1);
-	else if(str1 === str2)
-		return(0);
-
-	return(-1);
-}
-
-function xivo_strcasecmp(str1,str2,len)
-{
-	if(xivo_is_scalar(str1) === false
-	|| xivo_is_scalar(str2) === false)
-		return(false);
-
-	str1 = xivo_string(str1).toLowerCase();
-	str2 = xivo_string(str2).toLowerCase();
-
-	if(xivo_is_uint(len) === true)
-	{
-		str1 = str1.substring(0,len);
-		str2 = str2.substring(0,len);
-	}
-
-	if(str1 > str2)
-		return(1);
-	else if(str1 === str2)
-		return(0);
-
-	return(-1);
-}
-
-function xivo_substr(str,beg,end)
-{
-	var r = '';
-
-	if(xivo_is_scalar(str) === false)
-		return(r);
-
-	var len = str.length;
-
-	if(len === 0 || isNaN(beg) === true)
-		return(r);
-
-	if(isNaN(end) === true)
-		end = len;
-
-	beg = Number(beg);
-	end = Number(end);
-
-	if(beg < 0 || end < 0)
-	{
-		if(beg < 0)
-			beg = len + beg;
-
-		if(end < 0)
-		{
-			end = len + end;
-
-			if(beg !== 0 && str.substr(beg,len).length > end)
-				return(r);
-		}
-
-		return(str.substring(beg,end));
-	}
-
-	return(str.substr(beg,end));
-}
-
-function xivo_object_flip(obj)
-{
-	var r = {};
-
-	for(var property in obj)
-	{
-		if(xivo_is_scalar(obj[property]) === true)
-			r[obj[property]] = property;
-	}
-
-	return(r);
-}
-
-function xivo_clone(obj)
-{
-	if(xivo_is_array(obj) === true)
-		var r = [];
-	else if(xivo_is_object(obj) === true)
-		var r = {};
-	else
-		return(obj);
-
-	for(var property in obj)
-		r[property] = xivo_clone(obj[property]);
-
-	return(r);
-}
-
-function xivo_debug(obj)
-{
-	if(typeof(obj) !== 'object')
-		return(false);
-
-	var r = '';
-
-	for(var property in obj)
-	{
-		if(property === 'selectionStart' || property === 'selectionEnd')
-			continue;
-
-		if(typeof(obj[property]) !== 'object')
-		{
-			if(typeof(obj[property]) !== 'function')
-				r += property+':'+obj[property]+'\n';
-			else
-				r += 'function::'+property+'\n';
-		}
-		else
-			r += xivo_debug(obj[property]);
-	}
-
-	return(r);
-}
-
-function xivo_leadzero(n)
-{
-	if (n < 10)
-		n = '0' + n;
-
-	return(n);
-}
-
 function xivo_menu_active()
 {
-	var xivo_menu_active = 'mn-'+xivo_api_path_info.replace(/\//g,'--');
+	var xivo_menu_active = 'mn-'+dwho_api_path_info.replace(/\//g,'--');
 	xivo_menu_active = xivo_menu_active.replace(/_/g,'-');
 
-	if((xivo_menu_active = xivo_eid(xivo_menu_active)) !== false)
-		xivo.dom.add_cssclass(xivo_menu_active,'mn-active');
+	if((xivo_menu_active = dwho_eid(xivo_menu_active)) !== false)
+		dwho.dom.add_cssclass(xivo_menu_active,'mn-active');
+}
+
+function xivo_form_select_add_host_ipv4_subnet(id,value)
+{
+	if(dwho_chk_ipv4_strict(value) === false
+	&& dwho_chk_host(value) === false
+	&& dwho_chk_ipv4_subnet(value) === false)
+		return(false);
+
+	return(dwho.form.select_add_entry(id,value,value));
+}
+
+function xivo_form_mk_acl(tree)
+{
+	var ref = tree.form[tree.name];
+	var value = tree.value;
+	var len = value.length;
+	var nb = ref.length
+	var sub = 0;
+	var rs = false;
+
+	for(var i = 0;i < nb;i++)
+	{
+		sub = ref[i].value.substring(0,len);
+
+		if(value === sub)
+			ref[i].checked = Boolean(tree.checked);
+	}
 }
 
 function xivo_form_result(success,str)
 {
-	str = xivo_string(str);
+	str = dwho_string(str);
 
 	if(Boolean(success) === true)
 		txtclassname = 'fm-txt-success';
 	else
 		txtclassname = 'fm-txt-error';
 
-	if(str.length === 0 || xivo_eid('tooltips') === false)
+	if(str.length === 0 || dwho_eid('tooltips') === false)
 		var property = {innerHTML: '&nbsp;'};
 	else
 	{
@@ -795,5 +312,7 @@ function xivo_form_result(success,str)
 		var property = {'className': txtclassname, 'innerHTML': str};
 	}
 
-	xivo_chg_property_attrib(xivo_eid('tooltips'),property);
+	xivo_chg_property_attrib(dwho_eid('tooltips'),property);
 }
+
+dwho.dom.set_onload(xivo_menu_active);

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_dialaction_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -60,7 +60,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(($categoryval = xivo_ulongint($categoryval)) === 0)
+		if(($categoryval = dwho_ulongint($categoryval)) === 0)
 			return(false);
 
 		$where = array();
@@ -135,8 +135,8 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 				$infotmp['action'] = $infotmp['actiontype'];
 
 			if(($infotmp['actiontype'] === 'sound' || $infotmp['actiontype'] === 'voicemail') === true
-			&& xivo_issa('actionarg2',$infotmp) === true)
-				$infotmp['actionarg2'] = xivo_implode('',$infotmp['actionarg2']);
+			&& dwho_issa('actionarg2',$infotmp) === true)
+				$infotmp['actionarg2'] = dwho_implode('',$infotmp['actionarg2']);
 
 			if(($rs = $this->_dialaction->chk_values($infotmp)) !== false
 			&& isset($reslist[$rs['event']]) === false)
@@ -192,7 +192,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 		$r['custom'] = $arr;
 		$r['linked'] = false;
 
-		if(xivo_issa($event,$this->_result) === false)
+		if(dwho_issa($event,$this->_result) === false)
 			return($r);
 
 		if(isset($this->_result[$event]['linked']) === true)
@@ -232,7 +232,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 
 	function add($categoryval)
 	{
-		if(($categoryval = xivo_ulongint($categoryval)) === 0)
+		if(($categoryval = dwho_ulongint($categoryval)) === 0)
 			return(false);
 		else if(($rs = $this->get_result()) === null)
 			return($rs);
@@ -273,9 +273,9 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 
 	function edit($status,$categoryval)
 	{
-		if(($categoryval = xivo_ulongint($categoryval)) === 0)
+		if(($categoryval = dwho_ulongint($categoryval)) === 0)
 			return(false);
-		else if(xivo_issa(0,$this->_origin) === false)
+		else if(dwho_issa(0,$this->_origin) === false)
 			return($this->add($categoryval));
 
 		$this->_return = $this->delete($status);
@@ -316,7 +316,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 
 	function delete($status)
 	{
-		if(xivo_issa(0,$this->_origin) === false)
+		if(dwho_issa(0,$this->_origin) === false)
 			return(null);
 
 		$where = array();
@@ -356,7 +356,7 @@ class xivo_application_service_asterisk_dialaction_abstract extends xivo_applica
 	function unlinked($action,$actionarg1)
 	{
 		if($this->_dialaction->chk_element_value('action',$action) === false
-		|| ($actionarg1 = xivo_ulongint($actionarg1)) === 0)
+		|| ($actionarg1 = dwho_ulongint($actionarg1)) === 0)
 			return(false);
 
 		$where = array();

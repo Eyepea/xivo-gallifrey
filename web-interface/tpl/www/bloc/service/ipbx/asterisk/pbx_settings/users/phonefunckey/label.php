@@ -32,7 +32,7 @@ $inputtxt['id'] = 'it-phonefunckey-label';
 $inputtxt['default'] = $labelem['default'];
 
 if($fkdata['ex'] === false):
-	$incr = xivo_uint($fkdata['incr']);
+	$incr = dwho_uint($fkdata['incr']);
 	$inputtxt['id'] .= '-'.$incr;
 	$inputtxt['value'] = $labelem['value'];
 else:

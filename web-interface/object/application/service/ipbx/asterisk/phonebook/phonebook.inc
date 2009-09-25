@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_phonebook extends xivo_application_asterisk_abstract
 {
@@ -179,7 +179,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		if(($import_file = $this->_chk_exists_cfg('import','file',true)) !== false
 		&& isset($import_file['size']) === true)
-			$r = xivo_get_memory($import_file['size'],false);
+			$r = dwho_get_memory($import_file['size'],false);
 
 		return($r);
 	}
@@ -213,15 +213,15 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('phonebook',$arr) === false)
+		|| dwho_issa('phonebook',$arr) === false)
 			return(false);
 
 		$this->set_phonebook($arr['phonebook']);
 
-		if(xivo_issa('phonebookaddress',$arr) === true)
+		if(dwho_issa('phonebookaddress',$arr) === true)
 			$this->set_phonebookaddress($arr['phonebookaddress']);
 
-		if(xivo_issa('phonebooknumber',$arr) === true)
+		if(dwho_issa('phonebooknumber',$arr) === true)
 			$this->set_phonebooknumber($arr['phonebooknumber']);
 
 		return(($this->get_errnb() < 1));
@@ -288,7 +288,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			|| ($type === 'number'
 			   && is_scalar($val) === false) === true)
 				continue;
-			else if($type === 'number' && xivo_has_len($val) === false)
+			else if($type === 'number' && dwho_has_len($val) === false)
 			{
 				unset($list[$key]);
 				continue;
@@ -368,7 +368,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	function _add_phonebook_type($type,$id)
 	{
 		if(($type !== 'address' && $type !== 'number') === true
-		|| ($id = xivo_ulongint($id)) === 0)
+		|| ($id = dwho_ulongint($id)) === 0)
 			return(false);
 		else if($type === 'address')
 		{
@@ -465,7 +465,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function edit_phonebook()
 	{
-		if(xivo_issa('phonebook',$this->_info) === false
+		if(dwho_issa('phonebook',$this->_info) === false
 		|| ($rs = $this->get_result('phonebook')) === null
 		|| $rs === false)
 			return(false);
@@ -488,7 +488,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 	function _edit_phonebook_type($type)
 	{
 		if(($type !== 'address' && $type !== 'number') === true
-		|| xivo_issa('phonebook',$this->_info) === false)
+		|| dwho_issa('phonebook',$this->_info) === false)
 			return(false);
 		else if($type === 'address')
 		{
@@ -503,7 +503,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 		$id = $this->_info['phonebook']['id'];
 
-		if(xivo_issa($typename,$this->_info) === false)
+		if(dwho_issa($typename,$this->_info) === false)
 			return($this->_add_phonebook_type($type,$id));
 
 		$this->_return[$typename] = $this->_delete_phonebook_type($type);
@@ -605,7 +605,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function delete_phonebook()
 	{
-		if(xivo_issa('phonebook',$this->_info) === false)
+		if(dwho_issa('phonebook',$this->_info) === false)
 			return(false);
 
 		$r = $this->_phonebook->delete($this->_info['phonebook']['id']);
@@ -641,9 +641,9 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 			$module = &$this->_phonebooknumber;
 		}
 
-		if(xivo_issa($typename,$this->_info) === false)
+		if(dwho_issa($typename,$this->_info) === false)
 			return(null);
-		else if(xivo_issa('phonebook',$this->_info) === false)
+		else if(dwho_issa('phonebook',$this->_info) === false)
 			return(false);
 
 		$where = array();
@@ -700,19 +700,19 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 
 	function import_csv()
 	{
-		$file = new xivo_file();
+		$file = new dwho_file();
 
-		if(xivo::load_class('xivo::file::csv') === false
+		if(dwho::load_class('dwho::file::csv') === false
 		|| $file->get_upload('import',$this->_conf['import']['file']) === false)
 			return(false);
 
-		$filecsv = new xivo_file_csv();
+		$filecsv = new dwho_file_csv();
 
 		if(($data = $filecsv->parse($file->info['tmp_name'],0,'|',null,true,
 					    $this->_conf['import']['field'])) === false
 		|| ($nb = count($data)) === 0)
 		{
-			xivo_file::rm($file->info['tmp_name']);
+			dwho_file::rm($file->info['tmp_name']);
 			return(false);
 		}
 
@@ -725,7 +725,7 @@ class xivo_application_service_asterisk_phonebook extends xivo_application_aster
 				$r = false;
 		}
 
-		xivo_file::rm($file->info['tmp_name']);
+		dwho_file::rm($file->info['tmp_name']);
 
 		return($r);
 	}

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -42,7 +42,7 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 	function chk_var_metric($var_metric)
 	{
-		if(($var_metric = xivo_uint($var_metric)) === 0
+		if(($var_metric = dwho_uint($var_metric)) === 0
 		|| ($var_metric % 2) !== 0
 		|| $var_metric < $this->_var_metric_range)
 			return(false);
@@ -52,7 +52,7 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 	function edit_group($id,$numgroup)
 	{
-		if(($id = xivo_ulongint($id)) === 0
+		if(($id = dwho_ulongint($id)) === 0
 		|| ($var_metric = $this->_get_var_metric($numgroup)) === false)
 			return(false);
 
@@ -135,15 +135,15 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 		$arr['var_val'] = $rs['number'].',';
 
-		if(xivo_has_len($rs,'passwd') === true)
+		if(dwho_has_len($rs,'passwd') === true)
 			$arr['var_val'] .= $rs['passwd'];
 
 		$agentname = ',';
 
-		if(xivo_has_len($rs,'firstname') === true)
+		if(dwho_has_len($rs,'firstname') === true)
 			$agentname .= $rs['firstname'].' ';
 
-		if(xivo_has_len($rs,'lastname') === true)
+		if(dwho_has_len($rs,'lastname') === true)
 			$agentname .= $rs['lastname'];
 
 		$arr['var_val'] .= rtrim($agentname,' ');
@@ -170,7 +170,7 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 	function edit_agent($id,$numgroup,$var_metric)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || ($numgroup = xivo_uint($numgroup)) === 0)
+		if(($id = dwho_ulongint($id)) === 0 || ($numgroup = dwho_uint($numgroup)) === 0)
 			return(false);
 		else if(($rs = $this->_prepare_result($numgroup,$var_metric)) === null || $rs === false)
 			return($rs);
@@ -185,7 +185,7 @@ class xivo_application_service_asterisk_realstatic_agents_agent extends xivo_app
 
 	function delete_agent($status,$id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(null);
 
 		$arr = array();

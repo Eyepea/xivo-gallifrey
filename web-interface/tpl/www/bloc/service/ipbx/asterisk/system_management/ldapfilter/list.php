@@ -39,7 +39,7 @@
 	endif;
 ?>
 <form action="#" name="fm-ldapfilter-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -79,7 +79,7 @@
 				$host = $ref['ldapserver']['host'];
 				$port = $ref['ldapserver']['port'];
 
-				if(xivo_has_len($ref['ldapserver']['securitylayer']) === true)
+				if(dwho_has_len($ref['ldapserver']['securitylayer']) === true)
 					$securitylayer = $this->bbf('securitylayer_'.$ref['ldapserver']['securitylayer']);
 			endif;
 ?>

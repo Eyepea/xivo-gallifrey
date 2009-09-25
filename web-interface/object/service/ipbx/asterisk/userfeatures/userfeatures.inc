@@ -124,8 +124,8 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function loginclient_exists($loginclient,$context,$id=null)
 	{
-		if(xivo_has_len($loginclient) === false
-		|| xivo_has_len($context) === false)
+		if(dwho_has_len($loginclient) === false
+		|| dwho_has_len($context) === false)
 			return(null);
 
 		$arr = array();
@@ -134,7 +134,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 		if(($primary = $this->get_primary($arr)) === false
 		|| (empty($id) === false
-		   && xivo_ulongint($primary) === xivo_ulongint($id)) === true)
+		   && dwho_ulongint($primary) === dwho_ulongint($id)) === true)
 			return(false);
 
 		return(true);
@@ -238,7 +238,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 
 	function get_all_except($id=0,$number=false,$order=null,$limit=null)
 	{
-		if(($id = xivo_ulongint($id)) === 0 && (bool) $number === false)
+		if(($id = dwho_ulongint($id)) === 0 && (bool) $number === false)
 			return($this->get_all(null,true,$order,$limit));
 
 		if(isset($this->_origin_list) === true)

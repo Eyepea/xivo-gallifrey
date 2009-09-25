@@ -18,16 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_i18n_territory
+class dwho_i18n_territory
 {
 	var $_attrib	= array();
 	var $_conf	= array();
 
-	function xivo_i18n_territory()
+	function dwho_i18n_territory()
 	{
-		$file = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','territories','territories');
+		$file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','territories','territories');
 
-		if(($this->_conf = xivo_gat::get_file($file)) === false)
+		if(($this->_conf = dwho_gat::get_file($file)) === false)
 			trigger_error('Failed to load territories listing',E_USER_ERROR);
 	}
 
@@ -52,7 +52,7 @@ class xivo_i18n_territory
 	{
 		$territo = strtoupper($territo);
 
-		if(xivo_issa($territo,$this->_conf) === false)
+		if(dwho_issa($territo,$this->_conf) === false)
 			return(false);
 
 		return($territo);
@@ -72,7 +72,7 @@ class xivo_i18n_territory
 	function get_timezone($territo)
 	{
 		if(($territo = $this->is_valid($territo)) === false
-		|| xivo_issa('tz',$this->_conf[$territo]) === false
+		|| dwho_issa('tz',$this->_conf[$territo]) === false
 		|| count($this->_conf[$territo]['tz']) !== 1)
 			return(false);
 
@@ -84,7 +84,7 @@ class xivo_i18n_territory
 	function get_timezone_list($territo)
 	{
 		if(($territo = $this->is_valid($territo)) === false
-		|| xivo_issa('tz',$this->_conf[$territo]) === false)
+		|| dwho_issa('tz',$this->_conf[$territo]) === false)
 			return(false);
 
 		return($this->_conf[$territo]['tz']);
@@ -95,7 +95,7 @@ class xivo_i18n_territory
 		if(($territo = $this->is_valid($territo)) === false)
 			return(false);
 
-		return(xivo_ak('default',$this->_conf[$territo],true));
+		return(dwho_ak('default',$this->_conf[$territo],true));
 	}
 
 	function get_list()

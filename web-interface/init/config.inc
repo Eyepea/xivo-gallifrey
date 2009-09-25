@@ -18,8 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+define('DWHO_PATH_DS','/path/for/datastorage');
+define('DWHO_PATH_I18N','/path/for/i18n');
+define('DWHO_PATH_ROOT','/path/for/library');
+
 define('XIVO_PATH_CONF','/path/for/configuration');
-define('XIVO_PATH_LIB','/path/for/library');
-define('XIVO_PATH_DS','/path/for/datastorage');
 
 ?>

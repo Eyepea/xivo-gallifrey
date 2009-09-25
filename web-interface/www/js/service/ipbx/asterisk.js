@@ -18,53 +18,53 @@
 
 function xivo_ast_inqueue()
 {
-	xivo_fm_move_selected('it-queuelist','it-queue');
+	dwho.form.move_selected('it-queuelist','it-queue');
 
-	if((queuelist = xivo_eid('it-queue')) === false
+	if((queuelist = dwho_eid('it-queue')) === false
 	|| (len = queuelist.length) < 1)
 		return(false);
 
 	for(i = 0;i < len;i++)
 	{
-		if((queue = xivo_eid('queue-'+queuelist[i].value)) !== false)
+		if((queue = dwho_eid('queue-'+queuelist[i].value)) !== false)
 			queue.style.display = 'table-row';
 	}
 
-	if(xivo_eid('it-queue').length > 0)
-		xivo_eid('no-queue').style.display = 'none';
+	if(dwho_eid('it-queue').length > 0)
+		dwho_eid('no-queue').style.display = 'none';
 
 	return(true);
 }
 
 function xivo_ast_outqueue()
 {
-	xivo_fm_move_selected('it-queue','it-queuelist');
+	dwho.form.move_selected('it-queue','it-queuelist');
 
-	if((queuelist = xivo_eid('it-queuelist')) === false
+	if((queuelist = dwho_eid('it-queuelist')) === false
 	|| (len = queuelist.length) < 1)
 		return(false);
 
 	for(i = 0;i < len;i++)
 	{
-		if((queue = xivo_eid('queue-'+queuelist[i].value)) !== false)
+		if((queue = dwho_eid('queue-'+queuelist[i].value)) !== false)
 			queue.style.display = 'none';
 	}
 
-	if(xivo_eid('it-queue').length === 0)
-		xivo_eid('no-queue').style.display = 'table-row';
+	if(dwho_eid('it-queue').length === 0)
+		dwho_eid('no-queue').style.display = 'table-row';
 
 	return(true);
 }
 
 function xivo_exten_pattern(id,option)
 {
-	if((id = xivo_eid(id)) === false || xivo_is_undef(id.value) === true)
+	if((id = dwho_eid(id)) === false || dwho_is_undef(id.value) === true)
 		return(false);
 
 	var value = id.value;
 
 	if(value.charAt(0) === '_')
-		value = xivo_substr(value,1);
+		value = dwho_substr(value,1);
 
 	value = value.replace(/[X\.]/gi,'');
 
@@ -78,7 +78,7 @@ function xivo_exten_pattern(id,option)
 
 	if(option > 0 && option < 40)
 	{
-		id.value = value + xivo_str_repeat('X',option);
+		id.value = value + dwho_str_repeat('X',option);
 		return(true);
 	}
 
@@ -87,7 +87,7 @@ function xivo_exten_pattern(id,option)
 
 function xivo_get_exten_buffer(letter,value)
 {
-	if(xivo_substr(value,-1) === '.')
+	if(dwho_substr(value,-1) === '.')
 		return('*');
 
 	var chr = '';
@@ -114,7 +114,7 @@ function xivo_get_exten_buffer(letter,value)
 
 function xivo_chk_exten_pattern(value)
 {
-	if(xivo_is_undef(value) === true || xivo_is_string(value) === false)
+	if(dwho_is_undef(value) === true || dwho_is_string(value) === false)
 		return(false);
 
 	var len = value.length;
@@ -123,7 +123,7 @@ function xivo_chk_exten_pattern(value)
 		return(false);
 
 	if(value.charAt(0) === '_')
-		value = xivo_substr(value,1);
+		value = dwho_substr(value,1);
 
 	if(value.match(/^[0-9NXZ\*#\-\[\]]+[\.\!]?$/) === null)
 		return(false);
@@ -136,5 +136,5 @@ function xivo_fm_select_add_exten(id,value)
 	if((pattern = xivo_chk_exten_pattern(value)) === false)
 		return(false);
 
-	return(xivo_fm_select_add_entry(id,pattern,pattern));
+	return(dwho.form.select_add_entry(id,pattern,pattern));
 }

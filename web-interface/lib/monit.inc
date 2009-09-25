@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_monit
+class dwho_monit
 {
 	var $_url		= 'https://localhost:443/monit/';
 	var $_statusurl		= 'https://localhost:443/monit/_status?format=json';
@@ -72,26 +72,26 @@ class xivo_monit
 					0x10000		=> 'instance',
 					0xFFFFFFFF	=> 'all');
 
-	function xivo_monit($conf=null)
+	function dwho_monit($conf=null)
 	{
-		if(xivo::load_class('xivo_curl') === false
-		|| xivo::load_class('xivo_json') === false)
+		if(dwho::load_class('dwho_curl') === false
+		|| dwho::load_class('dwho_json') === false)
 			return(false);
 
-		$this->_curl = new xivo_curl();
+		$this->_curl = new dwho_curl();
 
 		if(is_array($conf) === false)
 			return(($this->_conf = null));
 
 		$this->_conf = $conf;
 
-		if(xivo_issa('general',$this->_conf) === false)
+		if(dwho_issa('general',$this->_conf) === false)
 			return(null);
 
-		if(xivo_has_len($this->_conf['general'],'url') === true)
+		if(dwho_has_len($this->_conf['general'],'url') === true)
 			$this->_url = rtrim($this->_conf['general']['url'],'/').'/';
 
-		if(xivo_has_len($this->_conf['general'],'statusurl') === true)
+		if(dwho_has_len($this->_conf['general'],'statusurl') === true)
 			$this->_statusurl = $this->_conf['general']['statusurl'];
 	}
 
@@ -102,7 +102,7 @@ class xivo_monit
 
 	function get_service($name=null)
 	{
-		if(xivo_has_len($name) === false)
+		if(dwho_has_len($name) === false)
 			return($this->_service);
 		else if(isset($this->_service[$name]) === true)
 			return($this->_service[$name]);
@@ -168,7 +168,7 @@ class xivo_monit
 
 	function get_group($name=null)
 	{
-		if(xivo_has_len($name) === false)
+		if(dwho_has_len($name) === false)
 			return($this->_group);
 		else if(isset($this->_group[$name]) === true)
 			return($this->_group[$name]);
@@ -183,7 +183,7 @@ class xivo_monit
 
 	function _manage_service($name,$action)
 	{
-		if(xivo_issa('service',$this->_conf) === true
+		if(dwho_issa('service',$this->_conf) === true
 		&& isset($this->_conf['service'][$name]) === true
 		&& (bool) $this->_conf['service'][$name] === false)
 			return(false);
@@ -200,7 +200,7 @@ class xivo_monit
 		if(isset($this->_service[$name]) === false
 		|| $this->_service[$name]['monitor'] !== 0)
 			return(false);
-		else if(xivo_issa('monitorable',$this->_conf) === true
+		else if(dwho_issa('monitorable',$this->_conf) === true
 		&& isset($this->_conf['monitorable'][$name]) === true
 		&& (bool) $this->_conf['monitorable'][$name] === false)
 			return(false);
@@ -213,7 +213,7 @@ class xivo_monit
 		if(isset($this->_service[$name]) === false
 		|| $this->_service[$name]['monitor'] === 0)
 			return(false);
-		else if(xivo_issa('unmonitorable',$this->_conf) === true
+		else if(dwho_issa('unmonitorable',$this->_conf) === true
 		&& isset($this->_conf['unmonitorable'][$name]) === true
 		&& (bool) $this->_conf['unmonitorable'][$name] === false)
 			return(false);
@@ -230,7 +230,7 @@ class xivo_monit
 		else if($this->_service[$name]['monitor'] === 1
 		&& $this->_service[$name]['status'] === 0)
 			return(false);
-		else if(xivo_issa('startable',$this->_conf) === true
+		else if(dwho_issa('startable',$this->_conf) === true
 		&& isset($this->_conf['startable'][$name]) === true
 		&& (bool) $this->_conf['startable'][$name] === false)
 			return(false);
@@ -246,7 +246,7 @@ class xivo_monit
 		else if($this->_service[$name]['monitor'] === 1
 		&& $this->_service[$name]['status'] !== 0)
 			return(false);
-		if(xivo_issa('stoppable',$this->_conf) === true
+		if(dwho_issa('stoppable',$this->_conf) === true
 		&& isset($this->_conf['stoppable'][$name]) === true
 		&& (bool) $this->_conf['stoppable'][$name] === false)
 			return(false);
@@ -263,7 +263,7 @@ class xivo_monit
 		else if($this->_service[$name]['monitor'] === 1
 		&& $this->_service[$name]['status'] !== 0)
 			return(false);
-		else if(xivo_issa('restartable',$this->_conf) === true
+		else if(dwho_issa('restartable',$this->_conf) === true
 		&& isset($this->_conf['restartable'][$name]) === true
 		&& (bool) $this->_conf['restartable'][$name] === false)
 			return(false);
@@ -354,7 +354,7 @@ class xivo_monit
 	{
 		if($this->_conf === false
 		|| ($data = $this->_curl->load($this->_statusurl,$this->_option)) === false
-		|| ($infos = xivo_json::decode($data,true)) === false
+		|| ($infos = dwho_json::decode($data,true)) === false
 		|| is_array($infos) === false
 		|| empty($infos) === true)
 		{
@@ -362,10 +362,10 @@ class xivo_monit
 			return(false);
 		}
 
-		if(isset($infos['monit']) === true && xivo_issa('server',$infos['monit']) === true)
+		if(isset($infos['monit']) === true && dwho_issa('server',$infos['monit']) === true)
 			$this->_monit = $infos['monit']['server'];
 
-		if(xivo_issa('service',$infos) === false
+		if(dwho_issa('service',$infos) === false
 		|| ($nb = count($infos['service'])) === 0)
 		{
 			$this->_curl->close();
@@ -412,7 +412,7 @@ class xivo_monit
 				continue;
 			}
 
-			if(xivo_issa('service',$this->_conf) === true
+			if(dwho_issa('service',$this->_conf) === true
 			&& isset($this->_conf['service'][$name]) === true
 			&& (bool) $this->_conf['service'][$name] === false)
 			{
@@ -450,7 +450,7 @@ class xivo_monit
 				$group = '__undefined__';
 			}
 
-			if(xivo_issa('group',$this->_conf) === true
+			if(dwho_issa('group',$this->_conf) === true
 			&& isset($this->_conf['group'][$grpname]) === true
 			&& (bool) $this->_conf['group'][$grpname] === false)
 				continue;

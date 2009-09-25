@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_outcall extends xivo_application_asterisk_abstract
 {
@@ -77,13 +77,13 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('outcalltrunk',$nocomponents,true) === false)
+		if(dwho_ak('outcalltrunk',$nocomponents,true) === false)
 			$this->_get_outcalltrunk();
 
-		if(xivo_ak('rightcall',$nocomponents,true) === false)
+		if(dwho_ak('rightcall',$nocomponents,true) === false)
 			$this->_get_rightcall($this->_info['outcall']['id']);
 
-		if(xivo_ak('contextmember',$nocomponents,true) === false)
+		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['outcall']['id']);
 
 		return($this->_info);
@@ -182,7 +182,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_OUTCALL_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($outcallid);
+		$arr['appdata'][1] = dwho_ulongint($outcallid);
 
 		return($arr);
 	}
@@ -205,7 +205,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('outcall',$arr) === false)
+		|| dwho_issa('outcall',$arr) === false)
 			return(false);
 
 		$this->set_outcall($arr['outcall']);
@@ -221,12 +221,12 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 		$this->set_extenumbers($action,$number,$context);
 
-		if(xivo_issa('outcalltrunk',$arr) === true)
+		if(dwho_issa('outcalltrunk',$arr) === true)
 			$this->set_outcalltrunk($arr['outcalltrunk']);
 		else
 			$this->_set_error('outcalltrunk','invalid data');
 
-		if(xivo_issa('rightcall',$arr) === true)
+		if(dwho_issa('rightcall',$arr) === true)
 			$this->set_rightcall($arr['rightcall']);
 
 		$this->set_contextmember();
@@ -259,7 +259,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _set_outcallmacro($action,$outcallid)
 	{
-		if(($outcallid = xivo_ulongint($outcallid)) === 0
+		if(($outcallid = dwho_ulongint($outcallid)) === 0
 		|| ($rs = $this->get_result('outcallmacro')) === null
 		|| $rs === false
 		|| ($rsmacro = $this->set_macro($action,
@@ -373,7 +373,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function add_outcalltrunk($outcallid)
 	{
-		if(($outcallid = xivo_ulongint($outcallid)) === 0
+		if(($outcallid = dwho_ulongint($outcallid)) === 0
 		|| ($rs = $this->get_result('outcalltrunk')) === null
 		|| $rs === false)
 			return(false);
@@ -409,7 +409,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 	{
 		if($this->get_errnb() > 0
 		|| $this->_status !== 'add'
-		|| ($outcallid = xivo_ulongint($outcallid)) === 0
+		|| ($outcallid = dwho_ulongint($outcallid)) === 0
 		|| is_array($this->_return) === false
 		|| empty($this->_return) === true)
 			return(false);
@@ -471,7 +471,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function edit_outcall()
 	{
-		if(xivo_issa('outcall',$this->_info) === false
+		if(dwho_issa('outcall',$this->_info) === false
 		|| ($rs = $this->get_result('outcall')) === null
 		|| $rs === false)
 			return(false);
@@ -483,7 +483,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function edit_outcallmacro()
 	{
-		if(xivo_issa('outcall',$this->_info) === false
+		if(dwho_issa('outcall',$this->_info) === false
 		|| $this->_set_outcallmacro('edit',$this->_info['outcall']['id']) !== true)
 			return(false);
 
@@ -492,7 +492,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function edit_outcalltrunk()
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 
 		$this->_return['outcalltrunk'] = $this->delete_outcalltrunk();
@@ -502,7 +502,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function edit_rightcall()
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_rightcall($this->_info['outcall']['id']));
@@ -510,7 +510,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['outcall']['id']));
@@ -592,7 +592,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function delete_outcall()
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 
 		$r = $this->_outcall->delete($this->_info['outcall']['id']);
@@ -605,9 +605,9 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function delete_outcalltrunk()
 	{
-		if(xivo_issa('outcalltrunk',$this->_info) === false)
+		if(dwho_issa('outcalltrunk',$this->_info) === false)
 			return(null);
-		else if(xivo_issa('outcall',$this->_info) === false)
+		else if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 
 		$r = $this->_outcalltrunk->delete_where(array('outcallid' => $this->_info['outcall']['id']));
@@ -712,7 +712,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _enable_disable_outcall($disable=false)
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_outcall->enable($this->_info['outcall']['id']);
@@ -737,7 +737,7 @@ class xivo_application_service_asterisk_outcall extends xivo_application_asteris
 
 	function _enable_disable_outcallmacro($disable=false)
 	{
-		if(xivo_issa('outcall',$this->_info) === false)
+		if(dwho_issa('outcall',$this->_info) === false)
 			return(false);
 
 		$where = array();

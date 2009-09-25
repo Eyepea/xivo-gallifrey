@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_agents_agentoptions extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -44,7 +44,7 @@ class xivo_application_service_asterisk_realstatic_agents_agentoptions extends x
 
 	function chk_var_metric($var_metric)
 	{
-		if(($var_metric = xivo_uint($var_metric)) === 0
+		if(($var_metric = dwho_uint($var_metric)) === 0
 		|| ($var_metric % 2) !== 1
 		|| $var_metric < $this->_var_metric_range)
 			return(false);

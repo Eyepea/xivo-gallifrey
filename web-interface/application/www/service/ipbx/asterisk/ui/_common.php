@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_ERR = &xivo_gct::get('xivo_tracerror');
+$_ERR = &dwho_gct::get('dwho_tracerror');
 $_ERR->set_param('report_type',
-		 $_ERR->get_param('report_type') & ~XIVO_TE_RTYPE_SCREEN);
+		 $_ERR->get_param('report_type') & ~DWHO_TE_RTYPE_SCREEN);
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
 if(isset($access_category,$access_subcategory) === false)
 {

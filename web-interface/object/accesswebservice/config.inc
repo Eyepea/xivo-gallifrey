@@ -58,7 +58,7 @@ $array['filter']['passwd'] = array('set'	=> false,
 				   'minlen'	=> 4,
 				   'maxlen'	=> 64,
 				   'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
-$array['filter']['host'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_host_subnet_ipv4_strict');
+$array['filter']['host'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_subnet_ipv4_strict');
 $array['filter']['disable'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

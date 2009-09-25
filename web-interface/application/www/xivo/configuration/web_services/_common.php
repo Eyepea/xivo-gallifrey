@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_http');
-$http = new xivo_http();
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
 header(XIVO_WS_HEADER_NAME_VERSION.': '.XIVO_WS_VERSION);
 
@@ -31,6 +31,6 @@ if(defined('XIVO_TPL_WEBSERVICES_MODE') === false
 	$http->send(true);
 }
 
-include(xivo_file::joinpath(dirname(__FILE__),'_'.XIVO_TPL_WEBSERVICES_MODE.'.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'_'.XIVO_TPL_WEBSERVICES_MODE.'.php'));
 
 ?>

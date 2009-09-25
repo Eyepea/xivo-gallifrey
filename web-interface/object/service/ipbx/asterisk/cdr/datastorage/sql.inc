@@ -89,19 +89,19 @@ class xivo_service_asterisk_cdr_sql extends xivo_service_asterisk_abstract_sql
 		if(isset($arr['dcontext']) === true)
 			$this->_dso->andwhereexact('dcontext',$arr['dcontext']);
 
-		if(xivo_issa('src',$arr) === true)
+		if(dwho_issa('src',$arr) === true)
 			$this->_dso->andwherelike('src',$arr['src']['pattern'],$arr['src']['type']);
 
-		if(xivo_issa('dst',$arr) === true)
+		if(dwho_issa('dst',$arr) === true)
 			$this->_dso->andwherelike('dst',$arr['dst']['pattern'],$arr['dst']['type']);
 
-		if(xivo_issa('clid',$arr) === true)
+		if(dwho_issa('clid',$arr) === true)
 			$this->_dso->andwherelike('clid',$arr['clid']['pattern'],$arr['clid']['type']);
 
-		if(xivo_issa('accountcode',$arr) === true)
+		if(dwho_issa('accountcode',$arr) === true)
 			$this->_dso->andwherelike('accountcode',$arr['accountcode']['pattern'],$arr['accountcode']['type']);
 
-		if(xivo_issa('userfield',$arr) === true)
+		if(dwho_issa('userfield',$arr) === true)
 			$this->_dso->andwherelike('userfield',$arr['userfield']['pattern'],$arr['userfield']['type']);
 
 		if(isset($arr['dubeg']) === true)

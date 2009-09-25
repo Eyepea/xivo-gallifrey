@@ -41,8 +41,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-accesswebservice-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -78,22 +78,22 @@ $page = $url->pager($pager['pages'],
 				$icon = 'enable';
 			endif;
 
-			if(xivo_has_len($ref['login']) === false):
+			if(dwho_has_len($ref['login']) === false):
 				$login = '-';
 			else:
-				$login = xivo_htmlen(xivo_trunc($ref['login'],20,'...',false));
+				$login = dwho_htmlen(dwho_trunc($ref['login'],20,'...',false));
 			endif;
 
-			if(xivo_has_len($ref['passwd']) === false):
+			if(dwho_has_len($ref['passwd']) === false):
 				$passwd = '-';
 			else:
-				$passwd = xivo_htmlen(xivo_trunc($ref['passwd'],20,'...',false));
+				$passwd = dwho_htmlen(dwho_trunc($ref['passwd'],20,'...',false));
 			endif;
 
-			if(xivo_has_len($ref['host']) === false):
+			if(dwho_has_len($ref['host']) === false):
 				$host = '-';
 			else:
-				$host = xivo_htmlen(xivo_trunc($ref['host'],20,'...',false));
+				$host = dwho_htmlen(dwho_trunc($ref['host'],20,'...',false));
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
@@ -111,7 +111,7 @@ $page = $url->pager($pager['pages'],
 			<label for="it-accesswebservice-<?=$i?>" id="lb-accesswebservice-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_trunc($ref['name'],20,'...',false);
+					dwho_trunc($ref['name'],20,'...',false);
 ?>
 			</label>
 		</td>

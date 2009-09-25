@@ -56,7 +56,7 @@ $page = $url->pager($pager['pages'],
 		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
-			$size = xivo_size_iec($ref['stat']['size']);
+			$size = dwho_size_iec($ref['stat']['size']);
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -68,7 +68,7 @@ $page = $url->pager($pager['pages'],
 					 'id'	=> $ref['name']));?>
 		</td>
 		<td class="td-center"><?=$this->bbf('size_iec_'.$size[1],$size[0]);?></td>
-		<td class="td-right" colspan="2"><?=xivo_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
+		<td class="td-right" colspan="2"><?=dwho_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
 									  null,
 									  $ref['stat']['mtime']);?></td>
 	</tr>

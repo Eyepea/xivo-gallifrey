@@ -20,7 +20,7 @@
 
 $act	= $_QRY->get('act','');
 $dir	= strval($_QRY->get('dir',''));
-$page	= xivo_uint($_QRY->get('page'),1);
+$page	= dwho_uint($_QRY->get('page'),1);
 $search	= strval($_QRY->get('search'));
 
 $param = array();
@@ -30,8 +30,8 @@ $sounds = &$ipbx->get_module('sounds');
 
 if(($list_dirs = $sounds->get_list_dirs()) !== false)
 {
-	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort();
+	dwho::load_class('dwho_sort');
+	$sort = new dwho_sort();
 	usort($list_dirs,array(&$sort,'strnat_usort'));
 }
 
@@ -111,12 +111,12 @@ switch($act)
 				$fm_save = false;
 
 				if(is_array($fileuploaded) === true)
-					xivo_file::rm($fileuploaded['tmp_name']);
+					dwho_file::rm($fileuploaded['tmp_name']);
 			}
 		}
 		else
 		{
-			$filename = xivo_file::joinpath($info['dirname'],$fileuploaded['name']);
+			$filename = dwho_file::joinpath($info['dirname'],$fileuploaded['name']);
 
 			if($sounds->add($filename,$fileuploaded['tmp_name']) === true)
 			{
@@ -158,8 +158,8 @@ switch($act)
 			if(($info['dirname'] = $sounds->chk_value('dirname',$info['dirname'])) !== false
 			&& ($info['filename'] = $sounds->chk_value('filename',$info['filename'])) !== false)
 			{
-				$filename = xivo_file::joinpath($info['file']['dirname'],$info['file']['filename']);
-				$newfilename = xivo_file::joinpath($info['dirname'],$info['filename']);
+				$filename = dwho_file::joinpath($info['file']['dirname'],$info['file']['filename']);
+				$newfilename = dwho_file::joinpath($info['dirname'],$info['filename']);
 
 				if($sounds->edit($filename,$newfilename) === true)
 				{
@@ -191,7 +191,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
-		$file = xivo_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
+		$file = dwho_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
 
 		$sounds->delete($file);
 
@@ -206,7 +206,7 @@ switch($act)
 		if(($info['directory'] = $sounds->get_dir($dir)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
-		if(($values = xivo_issa_val('files',$_QR)) === false)
+		if(($values = dwho_issa_val('files',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
 		$nb = count($values);
@@ -216,7 +216,7 @@ switch($act)
 			if(($info['file'] = $sounds->get(strval($values[$i]),$info['directory']['dirname'])) === false)
 				continue;
 
-			$file = xivo_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
+			$file = dwho_file::joinpath($info['directory']['dirname'],$info['file']['filename']);
 
 			$sounds->delete($file);
 		}
@@ -235,7 +235,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 
-		$file = new xivo_file();
+		$file = new dwho_file();
 
 		if(($file->download($info['file']['path'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
@@ -254,12 +254,12 @@ switch($act)
 		if(($dirs = $dirs['files']) !== false)
 		{
 			$total = count($dirs);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'name'));
+			dwho::load_class('dwho_sort');
+			$sort = new dwho_sort(array('key' => 'name'));
 			usort($dirs,array(&$sort,'strnat_usort'));
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,20,$total));
 		$_TPL->set_var('list',$dirs);
 		$_TPL->set_var('search',$search);
 		break;
@@ -273,12 +273,12 @@ switch($act)
 		if(($dirs = $sounds->get_list_dirs_files()) !== false)
 		{
 			$total = count($dirs);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'dirname'));
+			dwho::load_class('dwho_sort');
+			$sort = new dwho_sort(array('key' => 'dirname'));
 			usort($dirs,array(&$sort,'strnat_usort'));
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,20,$total));
 		$_TPL->set_var('list',$dirs);
 		break;
 }

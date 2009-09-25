@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
-class xivo_tpl_url extends xivo_tpl_module
+class dwho_tpl_url extends dwho_tpl_module
 {
 	var $_tpl	= null;
 
-	function xivo_tpl_url(&$tpl)
+	function dwho_tpl_url(&$tpl)
 	{
 		$this->_tpl = &$tpl;
 	}
@@ -47,14 +47,14 @@ class xivo_tpl_url extends xivo_tpl_module
 		$sep = $sep === null ? '&amp;' : (string) $sep;
 
 		if(is_array($param) === true)
-			$param = xivo_query::mk_query_str($param,$sep);
+			$param = dwho_query::mk_query_str($param,$sep);
 		else
 			$param = (string) $param;
 
 		if(isset($param{0}) === true)
-			return('?'.$param.($sid === true ? $sep.XIVO_SESS_STR : ''));
+			return('?'.$param.($sid === true ? $sep.DWHO_SESS_STR : ''));
 		else if($sid === true)
-			return('?'.XIVO_SESS_STR);
+			return('?'.DWHO_SESS_STR);
 
 		return('');
 	}
@@ -76,7 +76,7 @@ class xivo_tpl_url extends xivo_tpl_module
 		else
 			$title = $content;
 
-		$title = isset($title{0}) === true ? ' title="'.trim(xivo_alttitle($title)).'"' : '';
+		$title = isset($title{0}) === true ? ' title="'.trim(dwho_alttitle($title)).'"' : '';
 
 		return('<a href="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').$title.'>'.$content.'</a>');
 	}
@@ -102,15 +102,15 @@ class xivo_tpl_url extends xivo_tpl_module
 
 		$url = $this->img($url,$i18n,$internal);
 
-		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.trim(xivo_alttitle($alt)).'" />');
+		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.trim(dwho_alttitle($alt)).'" />');
 	}
 
 	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$internal=true)
 	{
 		$r = '';
 
-		$nb = xivo_uint($nb);
-		$page = xivo_uint($page,1);
+		$nb = dwho_uint($nb);
+		$page = dwho_uint($page,1);
 		$sep = $sep === null ? '&amp;' : (string) $sep;
 
 		if($nb < 2)

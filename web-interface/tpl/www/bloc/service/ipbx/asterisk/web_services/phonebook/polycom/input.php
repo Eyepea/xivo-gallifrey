@@ -25,7 +25,7 @@ $form = &$this->get_module('form');
 	method="get"
 	accept-charset="utf-8">
 <?php
-	echo	$form->text(array('desc'	=> xivo_htmlsc($this->bbf('phone_search-prompt')),
+	echo	$form->text(array('desc'	=> dwho_htmlsc($this->bbf('phone_search-prompt')),
 				  'name'	=> 'name',
 				  'id'		=> 'it-name',
 				  'size'	=> 15,

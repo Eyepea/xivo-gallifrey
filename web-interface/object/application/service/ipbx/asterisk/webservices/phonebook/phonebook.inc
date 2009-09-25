@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','webservices','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','webservices','abstract.inc'),true);
 
 class xivo_application_service_asterisk_webservices_phonebook extends xivo_application_service_asterisk_webservices_abstract
 {
@@ -40,7 +40,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		if($this->_init(&$service) === false
 		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
-		|| xivo::load_class('xivo_filter') === false)
+		|| dwho::load_class('dwho_filter') === false)
 			return(false);
 
 		return(true);
@@ -55,10 +55,10 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	{
 		if(is_object($this->_curl) === false)
 		{
-			if(xivo::load_class('xivo_curl') === false)
+			if(dwho::load_class('dwho_curl') === false)
 				return(false);
 
-			$this->_curl = new xivo_curl();
+			$this->_curl = new dwho_curl();
 		}
 
 		if(is_object($this->_appxivoserver) === false
@@ -89,7 +89,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(xivo_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true)
+			if(dwho_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true)
 				return($rs[$i]);
 		}
 
@@ -193,8 +193,8 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function _parse_xivoserver_recv($recv)
 	{
-		if(xivo::load_class('xivo::file::csv') === false
-		|| xivo_has_len($recv) === false)
+		if(dwho::load_class('dwho::file::csv') === false
+		|| dwho_has_len($recv) === false)
 			return(false);
 
 		$recv = explode("\n",str_replace("\r",'',$recv));
@@ -208,7 +208,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		|| ($nb = count($recv)) === 0)
 			return(false);
 
-		$filecsv = new xivo_file_csv();
+		$filecsv = new dwho_file_csv();
 
 		if(($data = $filecsv->parse($recv,0,'|',null,false)) === false
 		|| ($nb = count($data)) === 0)
@@ -243,7 +243,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function get_phonebook_search_from_ldapfilter($query,$disable=null)
 	{
-		if(xivo_has_len($query) === false
+		if(dwho_has_len($query) === false
 		|| $this->_load_ldapfilter() === false
 		|| ($rs = $this->_appldapfilter->get_servers_list($disable)) === false
 		|| ($nb = count($rs)) === 0)
@@ -260,17 +260,17 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			|| isset($ldapfilter['attrphonenumber'][0]) === false)
 				continue;
 
-			$ldapfilter['attrdisplayname'] = xivo_array_change_value_case($ldapfilter['attrdisplayname'],CASE_LOWER);
-			$ldapfilter['attrphonenumber'] = xivo_array_change_value_case($ldapfilter['attrphonenumber'],CASE_LOWER);
+			$ldapfilter['attrdisplayname'] = dwho_array_change_value_case($ldapfilter['attrdisplayname'],CASE_LOWER);
+			$ldapfilter['attrphonenumber'] = dwho_array_change_value_case($ldapfilter['attrphonenumber'],CASE_LOWER);
 
-			if(xivo_has_len($ldapfilter['filter']) === true)
+			if(dwho_has_len($ldapfilter['filter']) === true)
 			{
 				$ldapserver['user'] = $ldapfilter['user'];
 				$ldapserver['passwd'] = $ldapfilter['passwd'];
 
-				$dso = xivo_datastorage::factory('ldap',$ldapserver);
+				$dso = dwho_datastorage::factory('ldap',$ldapserver);
 
-				if(($filter = xivo_replacef('Q',$dso->escape_string($query),$ldapfilter['filter'])) === false)
+				if(($filter = dwho_replacef('Q',$dso->escape_string($query),$ldapfilter['filter'])) === false)
 				{
 					$dso->close();
 					continue;
@@ -301,7 +301,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 				$ldapserver['user'] = $ldapfilter['user'];
 				$ldapserver['passwd'] = $ldapfilter['passwd'];
 
-				$dso = xivo_datastorage::factory('ldap',$ldapserver);
+				$dso = dwho_datastorage::factory('ldap',$ldapserver);
 
 				$dso->new_select($ldapfilter['basedn'],$columns);
 

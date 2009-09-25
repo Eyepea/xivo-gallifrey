@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
 
 class xivo_application_service_asterisk_incall_sql extends xivo_application_service_asterisk_abstract_sql
 {
@@ -133,7 +133,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 			$this->_dso->andwhere(array('commented' => intval((bool) $disable)),
 					      $this->_table['incall']);
 
-		if(xivo_has_len($value) === true)
+		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('exten',$value,true,$this->_table['incall']);
@@ -175,7 +175,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_serv
 	{
 		$this->_cnt = 0;
 
-		if(xivo_has_len($value) === false)
+		if(dwho_has_len($value) === false)
 			return(false);
 
 		return($this->get_all($disable,$order,$limit,$value));

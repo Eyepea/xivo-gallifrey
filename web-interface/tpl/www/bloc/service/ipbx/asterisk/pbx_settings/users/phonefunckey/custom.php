@@ -30,7 +30,7 @@ $inputtxt['size'] = 15;
 $inputtxt['id'] = 'it-phonefunckey-custom-typeval';
 
 if($fkdata['ex'] === false):
-	$incr = xivo_uint($fkdata['incr']);
+	$incr = dwho_uint($fkdata['incr']);
 	$inputtxt['id'] .= '-'.$incr;
 
 	if($fkdata['type'] === 'custom'):

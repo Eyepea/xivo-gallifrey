@@ -313,12 +313,12 @@ $array['filter']['mohinterpret'] = array('set' => false,'chk' => 0);
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
-				 'callback'		=> 'xivo_filter::chk_ipv4_subnet',
-				 'callbackarg'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
+				 'callback'		=> 'dwho_filter::chk_ipv4_subnet',
+				 'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
-				   'callback'		=> 'xivo_filter::chk_ipv4_subnet',
-				   'callbackarg'	=> array(null,XIVO_IPV4_NETMASK_DOTDEC));
+				   'callback'		=> 'dwho_filter::chk_ipv4_subnet',
+				   'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['sourceaddress'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set'	=> false,
@@ -330,9 +330,9 @@ $array['filter']['host'] = array('set'		=> false,
 				 'chk'		=> 2,
 				 'key'		=> array('dynamic','static'),
 				 'strict'	=> false,
-				 'callback'	=> 'xivo_filter::chk_host_ipv4_strict');
+				 'callback'	=> 'dwho_filter::chk_host_ipv4_strict');
 $array['filter']['port'] = array('set' => false,'chk' => 0);
-$array['filter']['mask'] = array('set' => false,'chk' => 2,'callback' => 'xivo_filter::chk_ipv4_netmask_dotdec');
+$array['filter']['mask'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_ipv4_netmask_dotdec');
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['peercontext'] = array('set' => false,'chk' => 0);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);

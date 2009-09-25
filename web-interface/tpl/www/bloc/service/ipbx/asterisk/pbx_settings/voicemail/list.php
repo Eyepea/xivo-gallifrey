@@ -46,8 +46,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-voicemail-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -100,12 +100,12 @@ $page = $url->pager($pager['pages'],
 			<label for="it-voicemails-<?=$i?>" id="lb-voicemails-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_htmlen(xivo_trunc($ref['fullname'],25,'...',false));
+					dwho_htmlen(dwho_trunc($ref['fullname'],25,'...',false));
 ?>
 			</label>
 		</td>
 		<td><?=$ref['mailbox']?></td>
-		<td><?=(xivo_has_len($ref['email']) === true ? $ref['email'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['email']) === true ? $ref['email'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

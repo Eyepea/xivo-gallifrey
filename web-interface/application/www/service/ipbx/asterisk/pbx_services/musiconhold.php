@@ -20,7 +20,7 @@
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $cat = isset($_QR['cat']) === true ? strval($_QR['cat']) : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $element = $info = $result = array();
 
@@ -31,8 +31,8 @@ $musiconhold = &$ipbx->get_module('musiconhold');
 
 if(($list_cats = $musiconhold->get_all_by_category()) !== false)
 {
-	xivo::load_class('xivo_sort');
-	$sort = new xivo_sort(array('key' => 'category'));
+	dwho::load_class('dwho_sort');
+	$sort = new dwho_sort(array('key' => 'category'));
 	usort($list_cats,array(&$sort,'strnat_usort'));
 }
 

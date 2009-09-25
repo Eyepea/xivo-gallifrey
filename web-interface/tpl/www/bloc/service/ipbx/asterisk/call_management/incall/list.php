@@ -46,8 +46,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-incall-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -126,7 +126,7 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td><?=$ref['context']?></td>
 		<td><?=$destination?></td>
-		<td><?=xivo_htmlen(xivo_trunc($destidentity,30,'...',false));?></td>
+		<td><?=dwho_htmlen(dwho_trunc($destidentity,30,'...',false));?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

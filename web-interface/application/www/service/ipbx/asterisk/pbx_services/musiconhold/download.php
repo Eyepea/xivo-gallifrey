@@ -27,7 +27,7 @@ if(isset($_QR['id']) === false
 || ($info = $musiconhold->get_file($_QR['id'],$infos['cat']['category'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);
 
-$file = new xivo_file();
+$file = new dwho_file();
 
 if(($file->download($info['path'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);

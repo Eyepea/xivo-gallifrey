@@ -57,7 +57,7 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 $array['filter']['faxdetectenable'] = array('bool' => true);
 $array['filter']['faxdetecttimeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,30));
-$array['filter']['faxdetectemail'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'xivo_filter::chk_email');
+$array['filter']['faxdetectemail'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_filter::chk_email');
 $array['filter']['commented'] = array('bool' => true);
 
 ?>

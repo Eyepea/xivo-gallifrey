@@ -41,8 +41,8 @@ $page = $url->pager($pager['pages'],
 ?>
 <form action="#" name="fm-agentgroups-list" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act)),
@@ -88,10 +88,10 @@ $page = $url->pager($pager['pages'],
 						 'field'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
-		    onclick="location.href = xivo.dom.node.lastchild(this);">
+		    onclick="location.href = dwho.dom.node.lastchild(this);">
 <?php
 			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-				$url->href_html(xivo_trunc($ref['agentgroup']['name'],40,'...',false),
+				$url->href_html(dwho_trunc($ref['agentgroup']['name'],40,'...',false),
 						'service/ipbx/pbx_settings/agents',
 						array('act'	=> 'listagent',
 						      'group'	=> $ref['agentgroup']['id']));

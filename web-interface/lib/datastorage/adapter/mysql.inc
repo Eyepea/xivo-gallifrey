@@ -26,9 +26,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','adapter','abstract','sql.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','adapter','abstract','sql.inc'));
 
-class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_sql
+class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_sql
 {
 	var $_param	= array(
 				'host'		=> 'localhost',
@@ -53,7 +53,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 				'date'		=> '%Y-%m-%d',
 				'time'		=> '%H:%i:%s');
 
-	function xivo_datastorage_adapter_mysql($param=array())
+	function dwho_datastorage_adapter_mysql($param=array())
 	{
 		$param = (array) $param;
 
@@ -79,7 +79,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 			$open = false;
 
 		if(isset($param['port']) === true)
-			$this->_param['port'] = xivo_uint($param['port']);
+			$this->_param['port'] = dwho_uint($param['port']);
 
 		if(isset($param['socket']) === true)
 			$this->_param['socket'] = (string) $param['socket'];
@@ -308,7 +308,7 @@ class xivo_datastorage_adapter_mysql extends xivo_datastorage_adapter_abstract_s
 		$r = array();
 
 		for($i = 0;$m = $this->fetch_row();$i++)
-			$r[$i] = xivo_array_combine($full_column_names,$m);
+			$r[$i] = dwho_array_combine($full_column_names,$m);
 
 		return($r);
 	}

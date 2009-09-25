@@ -28,7 +28,7 @@ $fkinfo = $this->get_var('fkidentity_list');
 if(empty($fkinfo) === false):
 	$nb = count($fkinfo);
 	$dhtml = &$this->get_module('dhtml');
-	$dhtml->write_js('xivo.dom.set_table_list(\'phonefunckey\','.$nb.');');
+	$dhtml->write_js('dwho.dom.set_table_list(\'phonefunckey\','.$nb.');');
 else:
 	$nb = 0;
 endif;
@@ -49,7 +49,7 @@ endif;
 							'#',
 							null,
 							'onclick="xivo_phonefunckey_add(this);
-								  return(xivo.dom.free_focus());"',
+								  return(dwho.dom.free_focus());"',
 							$this->bbf('col_phonefunckey-add'));?></th>
 	</tr>
 	</thead>
@@ -166,7 +166,7 @@ if($nb > 0):
 						       'border="0"'),
 					'#',
 					null,
-					'onclick="xivo.dom.make_table_list(\'phonefunckey\',this,1); return(xivo.dom.free_focus());"',
+					'onclick="dwho.dom.make_table_list(\'phonefunckey\',this,1); return(dwho.dom.free_focus());"',
 					$this->bbf('opt_phonefunckey-delete')),
 			'</td></tr>';
 	endfor;
@@ -240,8 +240,8 @@ endif;
 					       'border="0"'),
 				'#',
 				null,
-				'onclick="xivo.dom.make_table_list(\'phonefunckey\',this,1);
-					  return(xivo.dom.free_focus());"',
+				'onclick="dwho.dom.make_table_list(\'phonefunckey\',this,1);
+					  return(dwho.dom.free_focus());"',
 				$this->bbf('opt_phonefunckey-delete'));
 ?>
 		</td>

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -88,10 +88,10 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 		$arr['var_val'] = $rs['number'].',';
 
-		if(xivo_has_len($rs,'pin') === true)
+		if(dwho_has_len($rs,'pin') === true)
 			$arr['var_val'] .= $rs['pin'];
 
-		if(xivo_has_len($rs,'admin-pin') === true)
+		if(dwho_has_len($rs,'admin-pin') === true)
 			$arr['var_val'] .= ','.$rs['admin-pin'];
 
 		$arr['var_val'] = rtrim($arr['var_val'],',');
@@ -109,7 +109,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 	function edit_meetmeroom($id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 		else if(($rs = $this->_prepare_result()) === null || $rs === false)
 			return($rs);
@@ -119,7 +119,7 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 
 	function delete_meetmeroom($status,$id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(null);
 
 		$r = $this->_realstatic->delete($id);

@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','helper','abstract.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','abstract.inc'));
 
-class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_helper_abstract
+class xivo_application_service_asterisk_abstract_sql extends dwho_datastorage_helper_abstract
 {
 	var $_cnt	= 0;
 	var $_dsoconf	= array();
@@ -57,13 +57,13 @@ class xivo_application_service_asterisk_abstract_sql extends xivo_datastorage_he
 
 	function get_cnt()
 	{
-		return(xivo_ulongint($this->_cnt));
+		return(dwho_ulongint($this->_cnt));
 	}
 
 	function _get_table($module)
 	{
 		if(isset($this->_table[$module]) === true
-		&& xivo_has_len($this->_table[$module]) === true)
+		&& dwho_has_len($this->_table[$module]) === true)
 			return($this->_table[$module]);
 		else if(($table = $this->get_modconf_key($module,'table')) === false)
 			return(false);

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_queue extends xivo_application_asterisk_abstract
 {
@@ -85,31 +85,31 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('queuemacro',$nocomponents,true) === false)
+		if(dwho_ak('queuemacro',$nocomponents,true) === false)
 			$this->_get_queuemacro();
 
-		if(xivo_ak('extenumbers',$nocomponents,true) === false)
+		if(dwho_ak('extenumbers',$nocomponents,true) === false)
 			$this->_get_extenumbers($this->_info['queuefeatures']['id']);
 
-		if(xivo_ak('user',$nocomponents,true) === false)
+		if(dwho_ak('user',$nocomponents,true) === false)
 			$this->_get_user();
 
-		if(xivo_ak('agentgroup',$nocomponents,true) === false)
+		if(dwho_ak('agentgroup',$nocomponents,true) === false)
 			$this->_get_agentgroup();
 
-		if(xivo_ak('agent',$nocomponents,true) === false)
+		if(dwho_ak('agent',$nocomponents,true) === false)
 			$this->_get_agent();
 
-		if(xivo_ak('dialaction',$nocomponents,true) === false)
+		if(dwho_ak('dialaction',$nocomponents,true) === false)
 			$this->_get_dialaction($this->_info['queuefeatures']['id']);
 
-		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+		if(dwho_ak('contextnummember',$nocomponents,true) === false)
 			$this->_get_contextnummember($this->_info['queuefeatures']['id']);
 
-		if(xivo_ak('contextmember',$nocomponents,true) === false)
+		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['queue']['name']);
 
-		if(xivo_ak('callerid',$nocomponents,true) === false)
+		if(dwho_ak('callerid',$nocomponents,true) === false)
 			$this->_get_callerid($this->_info['queuefeatures']['id']);
 
 		return($this->_info);
@@ -270,7 +270,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function get_dialaction_destination_list()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false)
+		if(dwho_issa('queuefeatures',$this->_info) === false)
 			$id = 0;
 		else
 			$id = $this->_info['queuefeatures']['id'];
@@ -285,8 +285,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_QUEUE_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($queuefeaturesid);
-		$arr['appdata'][2] = xivo_has_len($timeout) === true ? xivo_ufloat($timeout) : '';
+		$arr['appdata'][1] = dwho_ulongint($queuefeaturesid);
+		$arr['appdata'][2] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
 
 		return($arr);
 	}
@@ -309,8 +309,8 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('queuefeatures',$arr) === false
-		|| xivo_issa('queue',$arr) === false)
+		|| dwho_issa('queuefeatures',$arr) === false
+		|| dwho_issa('queue',$arr) === false)
 			return(false);
 
 		$this->set_queuefeatures($arr['queuefeatures']);
@@ -334,23 +334,23 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$this->set_extenumbers($action,$number,$context);
 		}
 
-		if(xivo_issa('user',$arr) === true)
+		if(dwho_issa('user',$arr) === true)
 			$this->set_user($action,$arr['user'],$name);
 
-		if(xivo_issa('agentgroup',$arr) === true)
+		if(dwho_issa('agentgroup',$arr) === true)
 			$this->set_agentgroup($action,$arr['agentgroup'],$name);
 
-		if(xivo_issa('agent',$arr) === true)
+		if(dwho_issa('agent',$arr) === true)
 			$this->set_agent($action,$arr['agent'],$name);
 
-		if(xivo_issa('dialaction',$arr) === true)
+		if(dwho_issa('dialaction',$arr) === true)
 			$this->set_dialaction($arr['dialaction']);
 
 		$this->set_contextnummember($context,$number);
 
 		$this->set_contextmember();
 
-		if(xivo_issa('callerid',$arr) === true)
+		if(dwho_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
 
 		return(($this->get_errnb() < 1));
@@ -481,7 +481,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		$rs = false;
 
-		if(($queuefeaturesid = xivo_ulongint($queuefeaturesid)) === 0
+		if(($queuefeaturesid = dwho_ulongint($queuefeaturesid)) === 0
 		|| ($rs = $this->get_result('queuemacro')) === null
 		|| $rs === false)
 			return($rs);
@@ -546,7 +546,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			return(null);
 		else if($action === 'edit')
 		{
-			if(xivo_issa('queuefeatures',$this->_info) === false)
+			if(dwho_issa('queuefeatures',$this->_info) === false)
 				return(false);
 
 			$where['queue_name'] = $this->_info['queuefeatures']['name'];
@@ -847,7 +847,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_queuefeatures()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false
+		if(dwho_issa('queuefeatures',$this->_info) === false
 		|| ($rs = $this->get_result('queuefeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -859,7 +859,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_queue()
 	{
-		if(xivo_issa('queue',$this->_info) === false
+		if(dwho_issa('queue',$this->_info) === false
 		|| ($rs = $this->get_result('queue')) === null
 		|| $rs === false
 		|| $this->_queue->edit($this->_info['queue']['name'],$rs) === false)
@@ -882,7 +882,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if(is_scalar($name) === false)
 			return(false);
-		else if(xivo_issa('user',$this->_info) === false)
+		else if(dwho_issa('user',$this->_info) === false)
 			return($this->add_user());
 
 		$this->_return['user'] = $this->delete_user($name);
@@ -897,7 +897,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if(is_scalar($name) === false)
 			return(false);
-		else if(xivo_issa('agentgroup',$this->_info) === false)
+		else if(dwho_issa('agentgroup',$this->_info) === false)
 			return($this->add_agentgroup());
 
 		$this->_return['agentgroup'] = $this->delete_agentgroup($name);
@@ -912,7 +912,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		if(is_scalar($name) === false)
 			return(false);
-		else if(xivo_issa('agent',$this->_info) === false)
+		else if(dwho_issa('agent',$this->_info) === false)
 			return($this->add_agent());
 
 		$this->_return['agent'] = $this->delete_agent($name);
@@ -953,7 +953,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_dialaction()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false)
+		if(dwho_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_dialaction($this->_info['queuefeatures']['id']));
@@ -961,7 +961,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false)
+		if(dwho_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextnummember($this->_info['queuefeatures']['id']));
@@ -969,7 +969,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function edit_callerid()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false)
+		if(dwho_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_callerid($this->_info['queuefeatures']['id']));
@@ -1017,7 +1017,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 				case 'user':
 				case 'agentgroup':
 				case 'agent':
-					if(xivo_issa('queuefeatures',$this->_info) === false)
+					if(dwho_issa('queuefeatures',$this->_info) === false)
 						continue;
 
 					$this->delete_user($this->_info['queuefeatures']['name']);
@@ -1076,7 +1076,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function delete_queuefeatures()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false)
+		if(dwho_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
 		$r = $this->_queuefeatures->delete($this->_info['queuefeatures']['id']);
@@ -1089,7 +1089,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function delete_queue()
 	{
-		if(xivo_issa('queue',$this->_info) === false)
+		if(dwho_issa('queue',$this->_info) === false)
 			return(false);
 
 		$r = $this->_queue->delete($this->_info['queue']['name']);
@@ -1118,9 +1118,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	function _delete_user_type($type,$name)
 	{
 		if(($type !== 'user' && $type !== 'agent' && $type !== 'agentgroup') === true
-		|| xivo_issa($type,$this->_info) === false)
+		|| dwho_issa($type,$this->_info) === false)
 			return(null);
-		else if(xivo_issa('queuefeatures',$this->_info) === false
+		else if(dwho_issa('queuefeatures',$this->_info) === false
 		|| is_scalar($name) === false
 		|| is_object($this->_queuemember) === false)
 			return(false);
@@ -1210,7 +1210,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function unlinks()
 	{
-		if(xivo_issa('queuefeatures',$this->_info) === false)
+		if(dwho_issa('queuefeatures',$this->_info) === false)
 			return(false);
 
 		$this->_dialaction->unlinked('queue',$this->_info['queuefeatures']['id']);

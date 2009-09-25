@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
-class xivo_tpl_xmlphone extends xivo_tpl_module
+class dwho_tpl_xmlphone extends dwho_tpl_module
 {
 	var $_vendor	= null;
 
-	function xivo_tpl_xmlphone(&$tpl)
+	function dwho_tpl_xmlphone(&$tpl)
 	{
 		$this->_tpl = &$tpl;
 	}
@@ -40,9 +40,9 @@ class xivo_tpl_xmlphone extends xivo_tpl_module
 			     'module',
 			     'xmlphone');
 
-		$classname = 'xivo_tpl_xmlphone_'.$vendor;
+		$classname = 'dwho_tpl_xmlphone_'.$vendor;
 
-		if(xivo::load_class($classname,$dir,$vendor) === false)
+		if(dwho::load_class($classname,$dir,$vendor) === false)
 			return(false);
 
 		$this->_vendor = $vendor;

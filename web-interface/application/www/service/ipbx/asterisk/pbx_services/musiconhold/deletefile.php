@@ -26,7 +26,7 @@ if(($infos = $musiconhold->get_category($cat)) === false)
 if(isset($_QR['id']) === false || ($info = $musiconhold->get_file($_QR['id'],$infos['cat']['category'])) === false)
 	$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);
 
-$file = xivo_file::joinpath($infos['cat']['category'],$info['filename']);
+$file = dwho_file::joinpath($infos['cat']['category'],$info['filename']);
 
 $musiconhold->delete_file($file);
 

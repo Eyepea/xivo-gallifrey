@@ -22,7 +22,7 @@ class xivo_service_asterisk_voicemenu_identity
 {
 	function _prepare_identity(&$data)
 	{
-		if(xivo_has_len($data['number']) === true)
+		if(dwho_has_len($data['number']) === true)
 			$data['identity'] = $data['name'].' ('.$data['number'].'@'.$data['context'].')';
 		else
 			$data['identity'] = $data['name'].' ('.$data['context'].')';

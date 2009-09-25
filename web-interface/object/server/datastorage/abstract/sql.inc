@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','helper','table.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','table.inc'));
 
-class xivo_server_abstract_sql extends xivo_datastorage_helper_table
+class xivo_server_abstract_sql extends dwho_datastorage_helper_table
 {
 	var $_table	= 'server';
 	var $_primary	= array('id' => 0);

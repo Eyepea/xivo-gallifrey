@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'service','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'service','abstract.inc'));
 
 class xivo_service_asterisk extends xivo_service_abstract
 {
@@ -34,7 +34,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$this->_load_config();
 
-		if(xivo_issa('general',$ini) === false)
+		if(dwho_issa('general',$ini) === false)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
 		$this->_ini = $ini;
@@ -46,9 +46,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$arr = (array) $arr;
 
-		array_unshift($arr,dirname(__FILE__).XIVO_SEP_DIR.$this->_name);
+		array_unshift($arr,dirname(__FILE__).DWHO_SEP_DIR.$this->_name);
 
-		return(xivo_file::required($arr,$once,$includable));
+		return(dwho_file::required($arr,$once,$includable));
 	}
 
 	function discuss($cmd,$recv=false)
@@ -63,7 +63,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function _load_identity_class($name)
 	{
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
@@ -71,7 +71,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$class = 'xivo_service_'.$this->_name.'_'.$name.'_identity';
 
-		if(xivo_file::load_file('identity.inc',$dir,true) === false
+		if(dwho_file::load_file('identity.inc',$dir,true) === false
 		|| class_exists($class) === false)
 			return(false);
 
@@ -131,23 +131,23 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$file = $name.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name);
 
 		$class = 'xivo_service_'.$this->_name.'_realstatic';
 
-		$dirapi = $dir.XIVO_SEP_DIR.$name;
+		$dirapi = $dir.DWHO_SEP_DIR.$name;
 		$classapi = $class.'_'.$name;
 
-		if(xivo_file::load_file($file,$dirapi,true) !== false && class_exists($classapi) === true)
+		if(dwho_file::load_file($file,$dirapi,true) !== false && class_exists($classapi) === true)
 			return($classapi);
 
 		$file = 'realstatic.inc';
-		$dir .= XIVO_SEP_DIR.'realstatic';
+		$dir .= DWHO_SEP_DIR.'realstatic';
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);
@@ -206,7 +206,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$file = $application.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',
 					   $this->_type,
@@ -216,7 +216,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$class = 'xivo_application_service_'.$this->_name.'_realstatic_'.$application;
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);
@@ -284,7 +284,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$label = $version = false;
 
-		if(xivo_issa('info',$sess_sre) === true
+		if(dwho_issa('info',$sess_sre) === true
 		&& isset($sess_sre['info']['label'],
 			 $sess_sre['info']['version']) === true)
 		{
@@ -301,8 +301,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 		}
 
 		if($label === false
-		&& xivo_issa('ini',$sess_sre) === true
-		&& xivo_issa('general',$sess_sre['ini']) === true
+		&& dwho_issa('ini',$sess_sre) === true
+		&& dwho_issa('general',$sess_sre['ini']) === true
 		&& isset($sess_sre['ini']['general']['label']) === true)
 			$label = (string) $sess_sre['ini']['general']['label'];
 
@@ -318,8 +318,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function _get_service_info_from_discuss()
 	{
-		if((defined('XIVO_SESS_ENABLE') === true
-		   && (bool) XIVO_SESS_ENABLE === false) === true
+		if((defined('DWHO_SESS_ENABLE') === true
+		   && (bool) DWHO_SESS_ENABLE === false) === true
 		|| ($info = $this->discuss('core show version',true)) === false
 		|| is_array($info) === false
 		|| isset($info[0]) === false)
@@ -358,7 +358,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$r = false;
 
 		if($this->chk_protocol($name) === true)
-			$r = xivo_ak('module',$this->_conf['protocol'][$name],true);
+			$r = dwho_ak('module',$this->_conf['protocol'][$name],true);
 
 		return($r);
 	}
@@ -472,7 +472,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if(($pos = strpos($interface,'/')) !== false)
 			$interface = substr($interface,0,$pos);
 
-		if(xivo_issa('channel',$this->_conf) === false
+		if(dwho_issa('channel',$this->_conf) === false
 		|| in_array($interface,$this->_conf['channel']) === false)
 			return(false);
 
@@ -515,11 +515,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			return($name);
-		else if(xivo_has_len($number) === true)
+		else if(dwho_has_len($number) === true)
 		{
 			if(($channel = $this->get_channel(XIVO_SRE_IPBX_AST_CHAN_LOCAL)) !== false)
 			{
-				if(xivo_has_len($context) === false)
+				if(dwho_has_len($context) === false)
 					$context = 'default';
 
 				$r = $channel.'/'.$number.'@'.$context;
@@ -530,7 +530,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$chan = $channel;
 
-		if(xivo_has_len($channel) === true)
+		if(dwho_has_len($channel) === true)
 		{
 			if(($channel = $this->chk_channel_by_interface($chan)) === false
 			&& ($channel = $this->get_channel($chan)) === false)

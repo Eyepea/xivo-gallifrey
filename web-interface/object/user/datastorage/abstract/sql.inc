@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(XIVO_PATH_LIB.XIVO_SEP_DIR.'datastorage'.XIVO_SEP_DIR.'helper'.XIVO_SEP_DIR.'table.inc');
+require_once(DWHO_PATH_ROOT.DWHO_SEP_DIR.'datastorage'.DWHO_SEP_DIR.'helper'.DWHO_SEP_DIR.'table.inc');
 
-class xivo_user_abstract_sql extends xivo_datastorage_helper_table
+class xivo_user_abstract_sql extends dwho_datastorage_helper_table
 {
 	var $_table	= 'user';
 	var $_primary	= array('id' => 0);
@@ -37,14 +37,14 @@ class xivo_user_abstract_sql extends xivo_datastorage_helper_table
 		if(($r = parent::get($id,$disable)) === false)
 			return(false);
 
-		$r['obj'] = xivo_unserialize($r['obj']);
+		$r['obj'] = dwho_unserialize($r['obj']);
 
 		return($r);
 	}
 
 	function chk_update($id,$dupdate)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || ($dupdate = xivo_uint($dupdate)) === 0)
+		if(($id = dwho_ulongint($id)) === 0 || ($dupdate = dwho_uint($dupdate)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table,'id');
@@ -69,7 +69,7 @@ class xivo_user_abstract_sql extends xivo_datastorage_helper_table
 
 	function _save_obj($id,$obj)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || is_array($obj) === false)
+		if(($id = dwho_ulongint($id)) === 0 || is_array($obj) === false)
 			return(false);
 
 		return($this->_dso->update($this->_table,
@@ -79,7 +79,7 @@ class xivo_user_abstract_sql extends xivo_datastorage_helper_table
 
 	function _get_obj($id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table,'obj');
@@ -88,7 +88,7 @@ class xivo_user_abstract_sql extends xivo_datastorage_helper_table
 		if(($r = $this->_dso->select_one()) === false)
 			return(false);
 
-		return(xivo_unserialize($r));
+		return(dwho_unserialize($r));
 	}
 }
 

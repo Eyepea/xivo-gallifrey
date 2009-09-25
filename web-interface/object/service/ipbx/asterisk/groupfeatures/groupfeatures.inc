@@ -105,7 +105,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$delete=false)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
+		if(($id = dwho_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 		else if(isset($arr['name']) === true)
 		{
@@ -171,7 +171,7 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function get_all_except($id=0,$number=false,$order=null,$limit=null)
 	{
-		if(($id = xivo_ulongint($id)) === 0 && (bool) $number === false)
+		if(($id = dwho_ulongint($id)) === 0 && (bool) $number === false)
 			return($this->get_all(false,true,$order,$limit));
 
 		if(isset($this->_origin_list) === true)

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 {
@@ -35,14 +35,14 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   'ipbx',
 					   'asterisk',
 					   $this->_name,
 					   'config');
 
-		if(($this->_conf = xivo_gat::get_file($dir)) === false)
+		if(($this->_conf = dwho_gat::get_file($dir)) === false)
 			$this->_conf = array();
 	}
 
@@ -65,7 +65,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 			case 'congestion':
 				$r['action'] = $action;
 
-				if(($actionarg1 = xivo_ufloat($actionarg1)) !== 0)
+				if(($actionarg1 = dwho_ufloat($actionarg1)) !== 0)
 					$r['actionarg1'] = $actionarg1;
 				return($r);
 			case 'hangup':
@@ -87,9 +87,9 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 				if(xivo_service_asterisk::chk_context($actionarg2) === false)
 					return(false);
 				else if($actionarg1 === 'no-password'
-				|| xivo_has_len($actionarg1) === false)
+				|| dwho_has_len($actionarg1) === false)
 					$actionarg1 = 'no-password';
-				else if(xivo_digit($actionarg1) === false
+				else if(dwho_digit($actionarg1) === false
 				|| strlen($actionarg1) > 40)
 					return(false);
 
@@ -106,8 +106,8 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 				$r['actionarg1'] = $actionarg1;
 				return($r);
 			case 'faxtomail':
-				if(xivo::load_class('xivo_filter') === false
-				|| xivo_filter::chk_email($actionarg1) === false
+				if(dwho::load_class('dwho_filter') === false
+				|| dwho_filter::chk_email($actionarg1) === false
 				|| strlen($actionarg1) > 80)
 					return(false);
 
@@ -115,7 +115,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 				$r['actionarg1'] = $actionarg1;
 				return($r);
 			case 'vmauthenticate':
-				if((xivo_has_len($actionarg2) === true
+				if((dwho_has_len($actionarg2) === true
 				   && $actionarg2 !== 's') === true
 				|| ($rs = $this->chk_dest_voicemail($actionarg1)) === false)
 					return(false);
@@ -149,7 +149,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	{
 		if(($sounds = &$this->_sre->get_module('sounds')) === false)
 			return(false);
-		else if(is_bool($getinfo) === true || xivo_has_len($getinfo) === false)
+		else if(is_bool($getinfo) === true || dwho_has_len($getinfo) === false)
 			$getinfo = 'pathnoext';
 
 		if(($list = $sounds->get_list($dir,$getinfo)) === false
@@ -160,7 +160,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$r['action'] = 'sound';
 		$r['actionarg1'] = $actionarg1;
 
-		if(xivo_has_len($actionarg2) === false)
+		if(dwho_has_len($actionarg2) === false)
 			return($r);
 
 		$r['actionarg2'] = '';
@@ -189,7 +189,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 	function chk_dest_agent($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
-		$actionarg2 = xivo_has_len($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+		$actionarg2 = dwho_has_len($actionarg2) === true ? dwho_ufloat($actionarg2) : '';
 
 		return($this->_chk_dest('agentfeatures',
 					'agent',
@@ -204,7 +204,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 
 	function chk_dest_user($actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
-		$actionarg2 = xivo_has_len($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+		$actionarg2 = dwho_has_len($actionarg2) === true ? dwho_ufloat($actionarg2) : '';
 
 		return($this->_chk_dest('userfeatures',
 					'user',
@@ -244,7 +244,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	function _chk_dest_group_queue($action,$actionarg1,$actionarg2='',$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		$actionarg1 = intval($actionarg1);
-		$actionarg2 = xivo_has_len($actionarg2) === true ? xivo_ufloat($actionarg2) : '';
+		$actionarg2 = dwho_has_len($actionarg2) === true ? dwho_ufloat($actionarg2) : '';
 
 		if($action !== 'group' && $action !== 'queue')
 			return(false);
@@ -288,7 +288,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	function chk_dest_voicemail($actionarg1,$actionarg2='',$id=null,$disable=null)
 	{
 		if($id !== null)
-			$id = xivo_ulongint($id);
+			$id = dwho_ulongint($id);
 
 		if(($module = $this->_sre->get_module('voicemail')) === false
 		|| ($info = $module->get(intval($actionarg1),$disable)) === false
@@ -300,7 +300,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		$r['actionarg1'] = $info['uniqueid'];
 		$r['actionarg2'] = '';
 
-		if(xivo_has_len($actionarg2) === false)
+		if(dwho_has_len($actionarg2) === false)
 			return($r);
 
 		if(strpos($actionarg2,'b') !== false)
@@ -336,7 +336,7 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 		return($this->_chk_dest('voicemenu',
 					'voicemenu',
 					$actionarg1,
-					xivo_uint($actionarg2,1),
+					dwho_uint($actionarg2,1),
 					$id,
 					$disable,
 					false,
@@ -347,12 +347,12 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 	function _chk_dest($type,$action,$actionarg1,$actionarg2=null,$id=null,$disable=null,$chknumber=false,$chkcontext=false,$context=null)
 	{
 		if($id !== null)
-			$id = xivo_ulongint($id);
+			$id = dwho_ulongint($id);
 
 		if(($module = $this->_sre->get_module($type)) === false
 		|| ($info = $module->get(intval($actionarg1),$disable)) === false
 		|| ($id !== null && $id === $info['id']) === true
-		|| ((bool) $chknumber === true && xivo_has_len($info['number']) === false) === true
+		|| ((bool) $chknumber === true && dwho_has_len($info['number']) === false) === true
 		|| ((bool) $chkcontext === true && $info['context'] !== $context) === true)
 			return(false);
 

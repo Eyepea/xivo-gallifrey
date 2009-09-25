@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_datastorage_adapter_abstract
+class dwho_datastorage_adapter_abstract
 {
 	var $_param	= array();
 
@@ -106,7 +106,7 @@ class xivo_datastorage_adapter_abstract
 
 	function quote_identifier($name)
 	{
-		return((xivo_has_len($name) === true ? $name : ''));
+		return((dwho_has_len($name) === true ? $name : ''));
 	}
 
 	function escape($str)
@@ -186,7 +186,7 @@ class xivo_datastorage_adapter_abstract
 
 	function get_where()
 	{
-		if(xivo_has_len($this->_where) === false)
+		if(dwho_has_len($this->_where) === false)
 			return(null);
 
 		return($this->_where);
@@ -540,10 +540,10 @@ class xivo_datastorage_adapter_abstract
 		if($offset === '')
 			return(false);
 
-		$r[0] = xivo_uint($offset);
+		$r[0] = dwho_uint($offset);
 
 		if($line !== '')
-			$r[1] = xivo_uint($line);
+			$r[1] = dwho_uint($line);
 
 		return($r);
 	}

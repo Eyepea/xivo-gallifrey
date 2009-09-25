@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_curl
+class dwho_curl
 {
 	var $_url	= '';
 	var $_option	= array(
@@ -30,9 +30,9 @@ class xivo_curl
 	var $_link	= null;
 	var $_uri	= null;
 
-	function xivo_curl()
+	function dwho_curl()
 	{
-		if(blop::load_extension('curl') === false)
+		if(dwho::load_extension('curl') === false)
 			trigger_error('Unable to load CURL',E_USER_ERROR);
 	}
 
@@ -41,7 +41,7 @@ class xivo_curl
 		$option = (array) $option;
 		$open = (bool) $open;
 
-		if(xivo_has_len($url) === false)
+		if(dwho_has_len($url) === false)
 			$url = $this->_url;
 
 		if($this->_chk_url($url) === false)
@@ -90,8 +90,8 @@ class xivo_curl
 	{
 		if(is_object($this->_uri) === false)
 		{
-			xivo::load_class('xivo_uri');
-			$this->_uri = new xivo_uri();
+			dwho::load_class('dwho_uri');
+			$this->_uri = new dwho_uri();
 		}
 
 		if(($arr = $this->_uri->parse_uri($str)) === false
@@ -261,8 +261,8 @@ class xivo_curl
 				return(CURLOPT_NETRC);
 			case 'followlocation':
 			case CURLOPT_FOLLOWLOCATION:
-				if(XIVO_PHP_SAFE === true
-				|| xivo_empty(ini_get('open_basedir')) === true)
+				if(DWHO_PHP_SAFE === true
+				|| dwho_empty(ini_get('open_basedir')) === true)
 					return(CURLOPT_FOLLOWLOCATION);
 				else
 					return(false);
@@ -528,7 +528,7 @@ class xivo_curl
 	function create()
 	{
 		if(is_resource($this->_link) === true
-		|| xivo_has_len($this->_url) === false
+		|| dwho_has_len($this->_url) === false
 		|| ($this->_link = curl_init($this->_url)) === false)
 		{
 			$this->halt();
@@ -603,7 +603,7 @@ class xivo_curl
 
 	function get_version($name='')
 	{
-		if(xivo_has_len($name) === true)
+		if(dwho_has_len($name) === true)
 			$name = strtolower($name);
 		else
 			$name = '';

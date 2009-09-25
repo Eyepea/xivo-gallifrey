@@ -22,7 +22,7 @@ class xivo_service_asterisk_userfeatures_identity
 {
 	function _prepare_identity(&$data,$full=true)
 	{
-		if(xivo_has_len($data['context']) === false)
+		if(dwho_has_len($data['context']) === false)
 			$data['context'] = 'default';
 
 		$data['fullname'] = trim(trim($data['firstname']).' '.trim($data['lastname']));
@@ -32,9 +32,9 @@ class xivo_service_asterisk_userfeatures_identity
 
 		if((bool) $full === false)
 			$data['identity'] = $data['fullname'];
-		else if(xivo_has_len($data['number']) === true)
+		else if(dwho_has_len($data['number']) === true)
 			$data['identity'] = $data['fullname'].' ('.$data['number'].'@'.$data['context'].')';
-		else if(xivo_has_len($data['name']) === true)
+		else if(dwho_has_len($data['name']) === true)
 			$data['identity'] = $data['fullname'].' ('.$data['name'].')';
 		else
 			$data['identity'] = $data['fullname'].' ('.$data['context'].')';

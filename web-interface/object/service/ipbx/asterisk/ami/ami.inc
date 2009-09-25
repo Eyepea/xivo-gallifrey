@@ -40,7 +40,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 
 	function _chk_socket()
 	{
-		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		if(dwho_issa($this->_name,$this->_sre->_ini) === false
 		|| isset($this->_sre->_ini[$this->_name]['bindaddr'],$this->_sre->_ini[$this->_name]['port']) === false)
 			return(false);
 
@@ -53,8 +53,8 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		if($this->_socket !== null)
 			return($this->_socket->open());
 
-		xivo::load_class('xivo_socket');
-		$this->_socket = new xivo_socket($this->_conf['socket']);
+		dwho::load_class('dwho_socket');
+		$this->_socket = new dwho_socket($this->_conf['socket']);
 
 		return(true);
 	}
@@ -64,14 +64,14 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 		if($this->_socket->is_open() === false)
 			return(false);
 
-		if(xivo_issa('sndtimeo',$this->_conf['socket']) === true)
+		if(dwho_issa('sndtimeo',$this->_conf['socket']) === true)
 		{
 			$this->_socket->set_option(null,
 						   'sndtimeo',
 						   $this->_conf['socket']['sndtimeo']);
 		}
 
-		if(xivo_issa('rcvtimeo',$this->_conf['socket']) === true)
+		if(dwho_issa('rcvtimeo',$this->_conf['socket']) === true)
 		{
 			$this->_socket->set_option(null,
 						   'rcvtimeo',
@@ -85,7 +85,7 @@ class xivo_service_asterisk_ami extends xivo_service_asterisk_abstract
 	{
 		$cmd = trim($cmd);
 
-		if(xivo_is_sgraph($cmd) === false
+		if(dwho_is_sgraph($cmd) === false
 		|| $this->_load_socket() === false
 		|| $this->_set_options() === false)
 			return(false);

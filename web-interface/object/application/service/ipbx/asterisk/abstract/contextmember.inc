@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_contextmember_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -64,9 +64,9 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		$where = array();
 		$where['type'] = $this->_param['type'];
 
-		if(xivo_has_len($typeval) === true)
+		if(dwho_has_len($typeval) === true)
 			$where['typeval'] = $typeval;
-		else if(xivo_has_len($varname) === true)
+		else if(dwho_has_len($varname) === true)
 			$where['varname'] = $varname;
 		else
 			return(false);
@@ -101,7 +101,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		{
 			$context = '';
 
-			if(xivo_has_len($list[$i],'context') === false)
+			if(dwho_has_len($list[$i],'context') === false)
 				continue;
 			else if(($context = $this->_context->get_primary($list[$i]['context'])) === false)
 			{
@@ -109,12 +109,12 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 				continue;
 			}
 
-			if(xivo_has_len($list[$i],'typeval') === true)
+			if(dwho_has_len($list[$i],'typeval') === true)
 				$info['typeval'] = $list[$i]['typeval'];
 			else
 				$info['typeval'] = '';
 
-			if(xivo_has_len($list[$i],'varname') === true)
+			if(dwho_has_len($list[$i],'varname') === true)
 				$info['varname'] = $list[$i]['varname'];
 			else
 				$info['varname'] = '';
@@ -152,7 +152,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		if(($rs = $this->get_result()) === null || $rs === false)
 			return($rs);
 
-		$typevalhaslen = xivo_has_len($typeval);
+		$typevalhaslen = dwho_has_len($typeval);
 
 		$this->_return = array();
 
@@ -162,8 +162,8 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 		{
 			if($typevalhaslen === true)
 				$rs[$i]['typeval'] = $typeval;
-			else if(xivo_has_len($rs[$i],'typeval') === false
-			&& xivo_has_len($rs[$i],'varname') === false)
+			else if(dwho_has_len($rs[$i],'typeval') === false
+			&& dwho_has_len($rs[$i],'varname') === false)
 				return(false);
 
 			if(($this->_return[] = $this->_contextmember->add($rs[$i])) === false)
@@ -183,7 +183,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 
 	function edit($status,$typeval='')
 	{
-		if(xivo_issa(0,$this->_origin) === false)
+		if(dwho_issa(0,$this->_origin) === false)
 			return($this->add($typeval));
 
 		$this->_return = $this->delete($status);
@@ -197,7 +197,7 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 
 		$nb = count($rs);
 
-		if(xivo_has_len($this->_origin[0],'typeval') === true)
+		if(dwho_has_len($this->_origin[0],'typeval') === true)
 			$typeval = $this->_origin[0]['typeval'];
 		else
 			$typeval = '';
@@ -218,15 +218,15 @@ class xivo_application_service_asterisk_contextmember_abstract extends xivo_appl
 
 	function delete($status)
 	{
-		if(xivo_issa(0,$this->_origin) === false)
+		if(dwho_issa(0,$this->_origin) === false)
 			return(null);
 
 		$where = array();
 		$where['type'] = $this->_origin[0]['type'];
 
-		if(xivo_has_len($this->_origin[0],'typeval') === true)
+		if(dwho_has_len($this->_origin[0],'typeval') === true)
 			$where['typeval'] = $this->_origin[0]['typeval'];
-		else if(xivo_has_len($this->_origin[0],'varname') === true)
+		else if(dwho_has_len($this->_origin[0],'varname') === true)
 			$where['varname'] = $this->_origin[0]['varname'];
 		else
 			return(false);

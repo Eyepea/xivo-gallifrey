@@ -18,8 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('XIVO_IPV4_NETMASK_BIT',1);
-define('XIVO_IPV4_NETMASK_DOTDEC',2);
-define('XIVO_IPV4_NETMASK_ALL',(XIVO_IPV4_NETMASK_BIT | XIVO_IPV4_NETMASK_DOTDEC));
+define('DWHO_LABEL','DWHO');
+
+define('DWHO_IPV4_NETMASK_BIT',1);
+define('DWHO_IPV4_NETMASK_DOTDEC',2);
+define('DWHO_IPV4_NETMASK_ALL',(DWHO_IPV4_NETMASK_BIT | DWHO_IPV4_NETMASK_DOTDEC));
 
 ?>

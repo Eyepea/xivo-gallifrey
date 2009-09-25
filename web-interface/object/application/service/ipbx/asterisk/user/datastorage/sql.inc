@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
 
 class xivo_application_service_asterisk_user_sql extends xivo_application_service_asterisk_abstract_sql
 {
@@ -92,7 +92,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 							  'IFNULL('.$this->_table['usersip'].'.fullcontact,\'\') = \'\'');
 		}
 
-		return(xivo_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
+		return(dwho_ulongint($this->_dso->select_count(null,'id',$this->_table['userfeatures'])));
 	}
 
 	function get_all($protocols,$disable=null,$initialized=null,$order=null,$limit=null,$value=null,$context=null,$mode=null)
@@ -189,10 +189,10 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 		$this->_dso->aggregate_where();
 
-		if(($has_context = xivo_has_len($context)) === true)
+		if(($has_context = dwho_has_len($context)) === true)
 			$this->_dso->where($this->_table['userfeatures'].'.context = %s',$context);
 
-		if(xivo_has_len($value) === true)
+		if(dwho_has_len($value) === true)
 		{
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('firstname',$value,true,$this->_table['userfeatures']);
@@ -241,7 +241,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 	{
 		$this->_cnt = 0;
 
-		if(xivo_has_len($value) === false && $mode === null)
+		if(dwho_has_len($value) === false && $mode === null)
 			return(false);
 
 		return($this->get_all($protocols,$disable,$initialized,$order,$limit,$value,$context,$mode));
@@ -249,7 +249,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 	function get_bsfilter($id,$context,$bsfilter)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table['userfeatures'],null);
@@ -305,8 +305,8 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 	function chk_bsfilter($id,$context,$bsfilter,$user2id)
 	{
-		if(($id = xivo_ulongint($id)) === 0
-		|| ($user2id = xivo_ulongint($user2id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0
+		|| ($user2id = dwho_ulongint($user2id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table['callfilter'],null);
@@ -344,7 +344,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_servic
 
 	function get_phonefunckey($id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		$this->_dso->new_select($this->_table['phonefunckey']);

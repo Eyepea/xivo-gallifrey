@@ -130,7 +130,7 @@ endif;
 				<a href="#"
 				   onclick="xivo_fm_select_add_attrldap('it-ldapfilter-attrdisplayname',
 									prompt('<?=$dhtml->escape($this->bbf('add_ldapfilter-attrdisplayname'));?>'));
-					    return(xivo.dom.free_focus());"
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_ldapfilter-attrdisplayname-add');?>">
 					<?=$url->img_html('img/site/button/mini/blue/add.gif',
 							  $this->bbf('bt_ldapfilter-attrdisplayname-add'),
@@ -138,8 +138,8 @@ endif;
 							   id="bt-ldapfilter-attrdisplayname-add"
 							   border="0"');?></a><br />
 					<a href="#"
-					   onclick="xivo_fm_select_delete_entry('it-ldapfilter-attrdisplayname');
-						    return(xivo.dom.free_focus());"
+					   onclick="dwho.form.select_delete_entry('it-ldapfilter-attrdisplayname');
+						    return(dwho.dom.free_focus());"
 					   title="<?=$this->bbf('bt_delete_ldapfilter-attrdisplayname');?>">
 					<?=$url->img_html('img/site/button/mini/orange/delete.gif',
 							  $this->bbf('bt_delete_ldapfilter-attrdisplayname'),
@@ -161,8 +161,8 @@ endif;
 
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-ldapfilter-attrdisplayname',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-ldapfilter-attrdisplayname',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_ldapfilter-attrdisplayname');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_up_ldapfilter-attrdisplayname'),
@@ -170,8 +170,8 @@ endif;
 						   id="bt-ldapfilter-attrdisplayname-up"
 						   border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-ldapfilter-attrdisplayname',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-ldapfilter-attrdisplayname',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_down_ldapfilter-attrdisplayname');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_down_ldapfilter-attrdisplayname'),
@@ -192,7 +192,7 @@ endif;
 				<a href="#"
 				   onclick="xivo_fm_select_add_attrldap('it-ldapfilter-attrphonenumber',
 									prompt('<?=$dhtml->escape($this->bbf('add_ldapfilter-attrphonenumber'));?>'));
-					    return(xivo.dom.free_focus());"
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_ldapfilter-attrphonenumber-add');?>">
 					<?=$url->img_html('img/site/button/mini/blue/add.gif',
 							  $this->bbf('bt_ldapfilter-attrphonenumber-add'),
@@ -200,8 +200,8 @@ endif;
 							   id="bt-ldapfilter-attrphonenumber-add"
 							   border="0"');?></a><br />
 				<a href="#"
-				   onclick="xivo_fm_select_delete_entry('it-ldapfilter-attrphonenumber');
-					    return(xivo.dom.free_focus());"
+				   onclick="dwho.form.select_delete_entry('it-ldapfilter-attrphonenumber');
+					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_delete_ldapfilter-attrphonenumber');?>">
 					<?=$url->img_html('img/site/button/mini/orange/delete.gif',
 							  $this->bbf('bt_delete_ldapfilter-attrphonenumber'),
@@ -223,8 +223,8 @@ endif;
 
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-ldapfilter-attrphonenumber',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-ldapfilter-attrphonenumber',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_ldapfilter-attrphonenumber');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_up_ldapfilter-attrphonenumber'),
@@ -232,8 +232,8 @@ endif;
 						   id="bt-ldapfilter-attrphonenumber-up"
 						   border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-ldapfilter-attrphonenumber',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-ldapfilter-attrphonenumber',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_down_ldapfilter-attrphonenumber');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_down_ldapfilter-attrphonenumber'),

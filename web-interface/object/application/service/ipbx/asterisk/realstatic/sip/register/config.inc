@@ -43,7 +43,7 @@ $array['filter'] = array();
 $array['filter']['username'] = array('set' => false,'maxlen' => 80);
 $array['filter']['password'] = array('set' => false,'chk' => 2,'maxlen' => 80);
 $array['filter']['authuser'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['host'] = array('set' => false,'callback' => 'xivo_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['host'] = array('set' => false,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['contact'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9]+$/i','maxlen' => 250);
 

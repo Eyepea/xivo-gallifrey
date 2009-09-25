@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_i18n_abstract_sql
+class dwho_i18n_abstract_sql
 {
 	var $_param	= array('table'	=> 'i18ncache');
 	var $_dso	= null;
@@ -40,10 +40,10 @@ class xivo_i18n_abstract_sql
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(($arr['dcreate'] = xivo_uint($arr['dcreate'])) === 0)
+		else if(($arr['dcreate'] = dwho_uint($arr['dcreate'])) === 0)
 			$arr['dcreate'] = time();
 
-		if(($arr['dupdate'] = xivo_uint($arr['dupdate'])) === 0)
+		if(($arr['dupdate'] = dwho_uint($arr['dupdate'])) === 0)
 			$arr['dupdate'] = time();
 
 		$arr['obj'] = serialize($arr['obj']);
@@ -65,7 +65,7 @@ class xivo_i18n_abstract_sql
 			$r['filectime'] = $r['dcreate'];
 
 			if((int) $r['dupdate'] === (int) $arr['filemtime'])
-				$r['obj'] = xivo_unserialize($r['obj']);
+				$r['obj'] = dwho_unserialize($r['obj']);
 		}
 
 		return($r);

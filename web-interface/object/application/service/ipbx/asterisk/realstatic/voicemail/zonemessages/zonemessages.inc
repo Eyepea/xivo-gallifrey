@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','realstatic','abstract.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_voicemail_zonemessages extends xivo_application_service_asterisk_realstatic_abstract
 {
@@ -55,7 +55,7 @@ class xivo_application_service_asterisk_realstatic_voicemail_zonemessages extend
 	function get_timezones()
 	{
 		if(empty($this->_timezones) === true
-		&& ($timezones = xivo_i18n::get_timezone_list()) !== false)
+		&& ($timezones = dwho_i18n::get_timezone_list()) !== false)
 			$this->_timezones = $timezones;
 
 		return($this->_timezones);

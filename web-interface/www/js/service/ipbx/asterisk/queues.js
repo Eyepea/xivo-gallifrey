@@ -25,4 +25,4 @@ function xivo_ast_queue_onload()
 	xivo_ast_dialaction_onload();
 }
 
-xivo.dom.set_onload(xivo_ast_queue_onload);
+dwho.dom.set_onload(xivo_ast_queue_onload);

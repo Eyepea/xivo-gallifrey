@@ -21,7 +21,7 @@
 $access_category = 'call_management';
 $access_subcategory = 'cdr';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 switch($_QRY->get('act'))
 {

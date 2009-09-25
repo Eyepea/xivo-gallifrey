@@ -117,7 +117,7 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 
 		if(($list = $this->get_all_where($where,null,false)) === false
 		|| ($nb = count($list)) === 0
-		|| ($type !== 'incall' && xivo_digit($number) === false) === true)
+		|| ($type !== 'incall' && dwho_digit($number) === false) === true)
 			return(false);
 
 		$number = strval($number);
@@ -126,7 +126,7 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 		{
 			$exten_pattern = $this->_sre->_regexten_pattern($number);
 			$pattern = '/^'.$exten_pattern.'$/';
-			$isdigit = xivo_digit($number);
+			$isdigit = dwho_digit($number);
 		}
 
 		for($i = 0;$i < $nb;$i++)
@@ -164,8 +164,8 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 
 	function chk_number_in_interval($min,$number,$max)
 	{
-		if(xivo_is_max_digit($min,$number,true) !== true
-		|| xivo_is_max_digit($number,$max,true) !== true)
+		if(dwho_is_max_digit($min,$number,true) !== true
+		|| dwho_is_max_digit($number,$max,true) !== true)
 			return(false);
 
 		return(true);
@@ -173,8 +173,8 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 
 	function chk_pattern_in_interval($min,$pattern,$max)
 	{
-		if(xivo_digit($min) === false
-		|| xivo_digit($max) === false)
+		if(dwho_digit($min) === false
+		|| dwho_digit($max) === false)
 			return(false);
 
 		$split = preg_split('/((?:\[[0-9#\*\-\\\]+\][\+\*]?)+|[0-9])/',

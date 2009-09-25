@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_callerid_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -59,7 +59,7 @@ class xivo_application_service_asterisk_callerid_abstract extends xivo_applicati
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
 
 		$where = array();
@@ -94,7 +94,7 @@ class xivo_application_service_asterisk_callerid_abstract extends xivo_applicati
 			return(false);
 		}
 		else if(isset($rs['callerdisplay']) === true
-		&& xivo_has_len($rs['callerdisplay']) === false)
+		&& dwho_has_len($rs['callerdisplay']) === false)
 		{
 			$rs['mode'] = null;
 			$rs['callerdisplay'] = '';
@@ -107,7 +107,7 @@ class xivo_application_service_asterisk_callerid_abstract extends xivo_applicati
 
 	function add($typeval)
 	{
-		if(($rs = xivo_ulongint($typeval)) === 0
+		if(($rs = dwho_ulongint($typeval)) === 0
 		|| ($rs = $this->get_result()) === null
 		|| $rs === false)
 			return($rs);
@@ -126,7 +126,7 @@ class xivo_application_service_asterisk_callerid_abstract extends xivo_applicati
 
 	function edit($status,$typeval)
 	{
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
 		else if(empty($this->_origin) === true)
 			return($this->add($typeval));

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_meetme extends xivo_application_asterisk_abstract
 {
@@ -81,16 +81,16 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('meetmemacro',$nocomponents,true) === false)
+		if(dwho_ak('meetmemacro',$nocomponents,true) === false)
 			$this->_get_meetmemacro();
 
-		if(xivo_ak('extenumbers',$nocomponents,true) === false)
+		if(dwho_ak('extenumbers',$nocomponents,true) === false)
 			$this->_get_extenumbers($this->_info['meetmefeatures']['id']);
 
-		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+		if(dwho_ak('contextnummember',$nocomponents,true) === false)
 			$this->_get_contextnummember($this->_info['meetmefeatures']['id']);
 
-		if(xivo_ak('contextmember',$nocomponents,true) === false)
+		if(dwho_ak('contextmember',$nocomponents,true) === false)
 			$this->_get_contextmember($this->_info['meetmefeatures']['id']);
 
 		return($this->_info);
@@ -184,7 +184,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		$arr = array();
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_MEETME_MACRO;
-		$arr['appdata'][1] = xivo_ulongint($meetmefeaturesid);
+		$arr['appdata'][1] = dwho_ulongint($meetmefeaturesid);
 
 		return($arr);
 	}
@@ -207,8 +207,8 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('meetmeroom',$arr) === false
-		|| xivo_issa('meetmefeatures',$arr) === false)
+		|| dwho_issa('meetmeroom',$arr) === false
+		|| dwho_issa('meetmefeatures',$arr) === false)
 			return(false);
 
 		$this->set_meetmeroom($arr['meetmeroom']);
@@ -283,7 +283,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 	{
 		$rs = false;
 
-		if(($meetmefeaturesid = xivo_ulongint($meetmefeaturesid)) === 0
+		if(($meetmefeaturesid = dwho_ulongint($meetmefeaturesid)) === 0
 		|| ($rs = $this->get_result('meetmemacro')) === null
 		|| $rs === false)
 			return($rs);
@@ -346,7 +346,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function add_meetmefeatures($meetmeid)
 	{
-		if(($meetmeid = xivo_ulongint($meetmeid)) === 0
+		if(($meetmeid = dwho_ulongint($meetmeid)) === 0
 		|| ($rs = $this->get_result('meetmefeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -429,7 +429,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_meetmeroom()
 	{
-		if(xivo_issa('meetmeroom',$this->_info) === false
+		if(dwho_issa('meetmeroom',$this->_info) === false
 		|| ($rs = $this->_meetmeroom->edit_meetmeroom($this->_info['meetmeroom']['id'])) === null
 		|| $rs === false)
 			return(false);
@@ -439,7 +439,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_meetmefeatures()
 	{
-		if(xivo_issa('meetmefeatures',$this->_info) === false
+		if(dwho_issa('meetmefeatures',$this->_info) === false
 		|| ($rs = $this->get_result('meetmefeatures')) === null
 		|| $rs === false)
 			return(false);
@@ -459,7 +459,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('meetmefeatures',$this->_info) === false)
+		if(dwho_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextnummember($this->_info['meetmefeatures']['id']));
@@ -467,7 +467,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('meetmefeatures',$this->_info) === false)
+		if(dwho_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextmember($this->_info['meetmefeatures']['id']));
@@ -551,7 +551,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function delete_meetmeroom()
 	{
-		if(xivo_issa('meetmeroom',$this->_info) === false
+		if(dwho_issa('meetmeroom',$this->_info) === false
 		|| ($r = $this->_meetmeroom->delete_meetmeroom($this->_status,
 							       $this->_info['meetmeroom']['id'])) === null
 		|| $r === false)
@@ -565,7 +565,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function delete_meetmefeatures()
 	{
-		if(xivo_issa('meetmefeatures',$this->_info) === false)
+		if(dwho_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 
 		$r = $this->_meetmefeatures->delete($this->_info['meetmefeatures']['id']);
@@ -624,7 +624,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function unlinks()
 	{
-		if(xivo_issa('meetmefeatures',$this->_info) === false)
+		if(dwho_issa('meetmefeatures',$this->_info) === false)
 			return(false);
 		else if(($dialaction = &$this->_service->get_module('dialaction')) !== false)
 		{
@@ -690,7 +690,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 
 	function _enable_disable_meetmeroom($disable=false)
 	{
-		if(xivo_issa('meetmeroom',$this->_info) === false)
+		if(dwho_issa('meetmeroom',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_meetmeroom->enable($this->_info['meetmeroom']['id']);

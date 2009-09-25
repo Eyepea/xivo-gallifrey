@@ -22,25 +22,26 @@ $dhtml = &$this->get_module('dhtml');
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html lang="<?=XIVO_I18N_BABELFISH_LANGUAGE?>">
+<html lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
 	<head id="t-head">
-		<title><?=xivo_htmlsc($this->bbf('page_title',php_uname('n')));?></title>
+		<title><?=dwho_htmlsc($this->bbf('page_title',php_uname('n')));?></title>
 
 		<script type="text/javascript">
-			document.title = '<?=$dhtml->escape($this->bbf('page_title',php_uname('n')));?>';
-			var xivo_i18n_lang = '<?=$dhtml->escape(XIVO_I18N_BABELFISH_LANGUAGE);?>';
-			var xivo_sess_name = '<?=$dhtml->escape(XIVO_SESS_NAME);?>';
-			var xivo_sess_id = '<?=$dhtml->escape(XIVO_SESS_ID);?>';
-			var xivo_sess_str = '<?=$dhtml->escape(XIVO_SESS_STR);?>';
-			var xivo_script_root = '<?=$dhtml->escape($this->get_option('script_root'));?>';
-			var xivo_api_path_info = '<?=$dhtml->escape($this->get_option('api_path_info'));?>';
-			var xivo_tooltips = '&nbsp;';
-			var xivo_fm_onfocus_class = 'it-mfocus';
-			var xivo_fm_onblur_class = 'it-mblur';
-			var xivo_fm_error_class = 'fm-error';
-			var xivo_fm_enabled_class = 'it-enabled';
-			var xivo_fm_disabled_class = 'it-disabled';
-			var xivo_fm_readonly_class = 'it-readonly';
+			var dwho_i18n_lang		= '<?=$dhtml->escape(DWHO_I18N_BABELFISH_LANGUAGE);?>';
+			var dwho_sess_name		= '<?=$dhtml->escape(DWHO_SESS_NAME);?>';
+			var dwho_sess_id		= '<?=$dhtml->escape(DWHO_SESS_ID);?>';
+			var dwho_sess_str		= '<?=$dhtml->escape(DWHO_SESS_STR);?>';
+			var dwho_script_root		= '<?=$dhtml->escape($this->get_option('script_root'));?>';
+			var dwho_api_path_info		= '<?=$dhtml->escape($this->get_option('api_path_info'));?>';
+			var dwho_form_class_onfocus	= 'it-mfocus';
+			var dwho_form_class_onblur	= 'it-mblur';
+			var dwho_form_class_error	= 'fm-error';
+			var dwho_form_class_enabled	= 'it-enabled';
+			var dwho_form_class_disabled	= 'it-disabled';
+			var dwho_form_class_readonly	= 'it-readonly';
+
+			document.title			= '<?=$dhtml->escape($this->bbf('page_title',php_uname('n')));?>';
+			var xivo_tooltips		= '&nbsp;';
 		</script>
 		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S %Z');?> -->
 

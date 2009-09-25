@@ -41,9 +41,9 @@ class xivo_service_asterisk_backupfiles extends xivo_service_asterisk_abstract
 
 	function _chk_bakpath()
 	{
-		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		if(dwho_issa($this->_name,$this->_sre->_ini) === false
 		|| isset($this->_sre->_ini[$this->_name]['path']) === false
-		|| ($this->_bakpath = xivo_file::is_d_r($this->_sre->_ini[$this->_name]['path'])) === false)
+		|| ($this->_bakpath = dwho_file::is_d_r($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
 	}
 
@@ -52,7 +52,7 @@ class xivo_service_asterisk_backupfiles extends xivo_service_asterisk_abstract
 		$name = basename(strval($name));
 
 		if(preg_match('/^[a-zA-Z0-9_\-\.]+\.(?:tgz|\d+)$/',$name) === 1)
-			return(xivo_file::is_f_r($this->_bakpath.XIVO_SEP_DIR.$name));
+			return(dwho_file::is_f_r($this->_bakpath.DWHO_SEP_DIR.$name));
 
 		return(false);
 	}
@@ -71,7 +71,7 @@ class xivo_service_asterisk_backupfiles extends xivo_service_asterisk_abstract
 
 	function get_list()
 	{
-		$r = xivo_file::read_d($this->_bakpath,'file',FILE_R_OK,'/^[a-zA-Z0-9_\-\.]+\.(?:tgz|\d+)$/',false,true);
+		$r = dwho_file::read_d($this->_bakpath,'file',FILE_R_OK,'/^[a-zA-Z0-9_\-\.]+\.(?:tgz|\d+)$/',false,true);
 
 		if($r !== false && isset($r[0]) === false)
 			return(false);

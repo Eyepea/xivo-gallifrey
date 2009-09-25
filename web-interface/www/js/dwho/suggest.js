@@ -16,14 +16,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-if(typeof(xivo) === 'undefined')
-	xivo = {'suggest': {}};
-else if(xivo_is_undef(xivo.suggest) === true)
-	xivo.suggest = {};
+if(typeof(dwho) === 'undefined')
+	dwho = {'suggest': {}};
+else if(dwho_is_undef(dwho.suggest) === true)
+	dwho.suggest = {};
 
-xivo.suggest = function(options,id)
+dwho.suggest = function(options,id)
 {
-	this._namespace		= '__xivo-suggest__';
+	this._namespace		= '__dwho-suggest__';
 	this._suggests		= [];
 	this._field		= null;
 	this._resfield		= null;
@@ -33,11 +33,11 @@ xivo.suggest = function(options,id)
 	this._highlightedid	= null;
 	this._delayid		= null;
 	this._timeoutid		= null;
-	this._xsid		= null;
-	this._xsresid		= null;
-	this._xsrestitleid	= null;
-	this._xsresdescid	= null;
-	this._highlightclass	= 'xs-highlight';
+	this._dwsid		= null;
+	this._dwsresid		= null;
+	this._dwsrestitleid	= null;
+	this._dwsresdescid	= null;
+	this._highlightclass	= 'dws-highlight';
 	this._searchval		= '';
 	this._searchlen		= 0;
 	this._vk		= {'TAB':	9,
@@ -51,9 +51,10 @@ xivo.suggest = function(options,id)
 		'result_minlen':		1,
 		'result_maxentries':		25,
 		'result_field':			'',
+		'result_onsetfield':		null,
 		'result_fulldisplay':		false,
 		'result_cache':			false,
-		'result_class':			'xivo-suggest',
+		'result_class':			'dwho-suggest',
 		'result_topoffset':		-10,
 		'result_callback':		null,
 		'result_displaycallback':	null,
@@ -61,42 +62,42 @@ xivo.suggest = function(options,id)
 
 	this.set_options(options);
 
-	var xsptr = this;
+	var dwsptr = this;
 
-	this.fnkeypress	= function(e) { return(xsptr.onkeypress(e)); }
-	this.fnkeyup	= function(e) { return(xsptr.onkeyup(e)); }
-	this.fnfocus	= function() { xsptr.deletetimeout(); }
-	this.fnblur	= function() { xsptr.onblur(); }
-	this.fnchange	= function() { xsptr.onchange(); }
+	this.fnkeypress	= function(e) { return(dwsptr.onkeypress(e)); }
+	this.fnkeyup	= function(e) { return(dwsptr.onkeyup(e)); }
+	this.fnfocus	= function() { dwsptr.deletetimeout(); }
+	this.fnblur	= function() { dwsptr.onblur(); }
+	this.fnchange	= function() { dwsptr.onchange(); }
 
-	if(xivo_is_string(id) === true)
+	if(dwho_is_string(id) === true)
 		this.set_field(id);
 }
 
-xivo.suggest.prototype.set_field = function(id)
+dwho.suggest.prototype.set_field = function(id)
 {
-	if(xivo_is_object(this._field) === true)
+	if(dwho_is_object(this._field) === true)
 	{
 		if(this._field.id === id)
 			return(true);
 
-		xivo.dom.remove_event('keypress',
+		dwho.dom.remove_event('keypress',
 				      this._field,
 				      this.fnkeypress);
 
-		xivo.dom.remove_event('keyup',
+		dwho.dom.remove_event('keyup',
 				      this._field,
 				      this.fnkeyup);
 
-		xivo.dom.remove_event('focus',
+		dwho.dom.remove_event('focus',
 				      this._field,
 				      this.fnfocus);
 
-		xivo.dom.remove_event('blur',
+		dwho.dom.remove_event('blur',
 				      this._field,
 				      this.fnblur);
 
-		xivo.dom.remove_event('change',
+		dwho.dom.remove_event('change',
 				      this._field,
 				      this.fnchange);
 
@@ -105,67 +106,68 @@ xivo.suggest.prototype.set_field = function(id)
 		this.clear();
 	}
 
-	if((this._field = xivo_eid(id,true)) === false)
+	if((this._field = dwho_eid(id,true)) === false)
 		return(false);
 
 
-	xivo.dom.add_event('keypress',
+	dwho.dom.add_event('keypress',
 			   this._field,
 			   this.fnkeypress);
 
-	xivo.dom.add_event('keyup',
+	dwho.dom.add_event('keyup',
 			   this._field,
 			   this.fnkeyup);
 
-	xivo.dom.add_event('focus',
+	dwho.dom.add_event('focus',
 			   this._field,
 			   this.fnfocus);
 
-	xivo.dom.add_event('blur',
+	dwho.dom.add_event('blur',
 			   this._field,
 			   this.fnblur);
 
-	xivo.dom.add_event('change',
+	dwho.dom.add_event('change',
 			   this._field,
 			   this.fnchange);
 
-	this._xsid		= this._namespace + this._field.id;
-	this._xsresid		= this._xsid + '-res';
-	this._xsrestitleid	= this._xsresid + '-title-';
-	this._xsresdescid	= this._xsresid + '-desc-';
+	this._dwsid		= this._namespace + this._field.id;
+	this._dwsresid		= this._dwsid + '-res';
+	this._dwsrestitleid	= this._dwsresid + '-title-';
+	this._dwsresdescid	= this._dwsresid + '-desc-';
 	this._autocomplete	= this._field.getAttribute('autocomplete');
 	this._resfieldcleared	= false;
 
 	this._field.setAttribute('autocomplete','off');
 }
 
-xivo.suggest.prototype.set_options = function(options)
+dwho.suggest.prototype.set_options = function(options)
 {
-	if(xivo_is_object(options) === false)
+	if(dwho_is_object(options) === false)
 		return(false);
 
 	for(var property in options)
 		this.set_option(property,options[property]);
 }
 
-xivo.suggest.prototype.set_option = function(name,value)
+dwho.suggest.prototype.set_option = function(name,value)
 {
-	if(xivo_is_undef(this._options[name]) === true)
+	if(dwho_is_undef(this._options[name]) === true)
 		return(false);
 
 	switch(name)
 	{
 		case 'requestor':
+		case 'result_onsetfield':
 		case 'result_callback':
 		case 'result_displaycallback':
 		case 'result_emptycallback':
-			if(xivo_is_function(value) === false)
+			if(dwho_is_function(value) === false)
 				return(false);
 			break;
 		case 'result_field':
-			if(xivo_has_len(value) === true
-			&& (resfield = xivo_eid(value,true)) !== false
-			&& xivo_is_undef(resfield.value) === false)
+			if(dwho_has_len(value) === true
+			&& (resfield = dwho_eid(value,true)) !== false
+			&& dwho_is_undef(resfield.value) === false)
 			{
 				this._resfield = resfield;
 				break;
@@ -174,33 +176,33 @@ xivo.suggest.prototype.set_option = function(name,value)
 			this._resfield = null;
 			return(false);
 		default:
-			if(xivo_is_boolean(this._options[name]) === true)
+			if(dwho_is_boolean(this._options[name]) === true)
 			{
-				if(xivo_is_boolean(value) === false)
+				if(dwho_is_boolean(value) === false)
 					return(false);
 				else
 					break;
 			}
 
-			if(xivo_is_int(this._options[name]) === true)
+			if(dwho_is_int(this._options[name]) === true)
 			{
-				if(xivo_is_int(value) === false)
+				if(dwho_is_int(value) === false)
 					return(false);
 				else
 					break;
 			}
 
-			if(xivo_is_float(this._options[name]) === true)
+			if(dwho_is_float(this._options[name]) === true)
 			{
-				if(xivo_is_float(value) === false)
+				if(dwho_is_float(value) === false)
 					return(false);
 				else
 					break;
 			}
 
-			if(xivo_is_string(this._options[name]) === true)
+			if(dwho_is_string(this._options[name]) === true)
 			{
-				if(xivo_is_string(value) === false)
+				if(dwho_is_string(value) === false)
 					return(false);
 				else
 					break;
@@ -212,27 +214,27 @@ xivo.suggest.prototype.set_option = function(name,value)
 	return(true);
 }
 
-xivo.suggest.prototype.get_option = function(name)
+dwho.suggest.prototype.get_option = function(name)
 {
-	if(xivo_is_undef(this._options[name]) === true)
+	if(dwho_is_undef(this._options[name]) === true)
 		return(false);
 
 	return(this._options[name]);
 }
 
-xivo.suggest.prototype.get_search_value = function()
+dwho.suggest.prototype.get_search_value = function()
 {
-	return(xivo_string(this._searchval));
+	return(dwho_string(this._searchval));
 }
 
-xivo.suggest.prototype.set = function(request,value)
+dwho.suggest.prototype.set = function(request,value)
 {
 	if(this._field.value !== value)
 		return(false);
 
 	this._suggests = [];
 
-	if(xivo_has_len(request.responseText) === true)
+	if(dwho_has_len(request.responseText) === true)
 	{
 		var jsondata = eval('(' + request.responseText + ')');
 		var cnt = jsondata.length;
@@ -246,7 +248,7 @@ xivo.suggest.prototype.set = function(request,value)
 	this.display_result();
 }
 
-xivo.suggest.prototype.get = function(value)
+dwho.suggest.prototype.get = function(value)
 {
 	if(this._searchval === value)
 		return(null);
@@ -274,13 +276,13 @@ xivo.suggest.prototype.get = function(value)
 		for(var i = 0;i < cnt;i++)
 		{
 			if(this._options.result_fulldisplay === true
-			&& xivo_has_len(this._suggests[i].info) === true)
+			&& dwho_has_len(this._suggests[i].info) === true)
 				var suggest = this._suggests[i].value +
 				' (' + this._suggests[i].info + ')';
 			else
 				var suggest = this._suggests[i].value;
 
-			if(xivo_strcasecmp(suggest,value,value.length) === 0)
+			if(dwho_strcasecmp(suggest,value,value.length) === 0)
 				arr.push(this._suggests[i]);
 		}
 
@@ -289,7 +291,7 @@ xivo.suggest.prototype.get = function(value)
 	}
 	else
 	{
-		var xsptr = this;
+		var dwsptr = this;
 
 		if(this._delayid !== null)
 		{
@@ -300,19 +302,19 @@ xivo.suggest.prototype.get = function(value)
 		if(this._options.request_delay > 0)
 		{
 			this._delayid = window.setTimeout(
-						function() { xsptr.get_option('requestor')(xsptr); },
+						function() { dwsptr.get_option('requestor')(dwsptr); },
 						this._options.request_delay);
 		}
 		else
-			xsptr.get_option('requestor')(xsptr);
+			dwsptr.get_option('requestor')(dwsptr);
 	}
 
 	return(true);
 }
 
-xivo.suggest.prototype.clear = function()
+dwho.suggest.prototype.clear = function()
 {
-	if(xivo_is_object(this._resfield) === true
+	if(dwho_is_object(this._resfield) === true
 	&& this._resfieldcleared === true)
 		this._field.value = '';
 	this._resfieldcleared = false;
@@ -320,10 +322,10 @@ xivo.suggest.prototype.clear = function()
 	this.deletetimeout();
 	this._highlightedid	= null;
 	this._suggestid		= null;
-	xivo.dom.remove_element(xivo_eid(this._xsid,true));
+	dwho.dom.remove_element(dwho_eid(this._dwsid,true));
 }
 
-xivo.suggest.prototype.display_result = function()
+dwho.suggest.prototype.display_result = function()
 {
 	if(this._options.result_displaycallback !== null)
 	{
@@ -344,52 +346,52 @@ xivo.suggest.prototype.display_result = function()
 
 	this.deletetimeout();
 
-	var xsptr = this;
+	var dwsptr = this;
 
-	var div = xivo.dom.create_element('div',
-					  {'id': this._xsid,
+	var div = dwho.dom.create_element('div',
+					  {'id': this._dwsid,
 					   'className': this._options.result_class});
 
-	var dl = xivo.dom.create_element('dl',{'id': this._xsresid});
+	var dl = dwho.dom.create_element('dl',{'id': this._dwsresid});
 
 	for(var i = 0, j = 1;i < cnt;i++,j++)
 	{
-		var dtid = this._xsrestitleid + j;
-		var ddid = this._xsresdescid + j;
+		var dtid = this._dwsrestitleid + j;
+		var ddid = this._dwsresdescid + j;
 
-		var dt = xivo.dom.create_element('dt',
+		var dt = dwho.dom.create_element('dt',
 						 {'id': dtid},
 						 this._suggests[i].value);
 
-		dt.onclick = function() { xsptr.setselectedvalue(); return(false); }
-		dt.onmouseover = function() { xsptr.sethighlight(this.id); }
+		dt.onclick = function() { dwsptr.setselectedvalue(); return(false); }
+		dt.onmouseover = function() { dwsptr.sethighlight(this.id); }
 		dl.appendChild(dt);
 
-		if(xivo_has_len(this._suggests[i].info) === true)
+		if(dwho_has_len(this._suggests[i].info) === true)
 		{
-			var dd = xivo.dom.create_element('dd',
+			var dd = dwho.dom.create_element('dd',
 							 {'id': ddid},
 							 this._suggests[i].info);
 
-			dd.onclick = function() { xsptr.setselectedvalue(); return(false); }
-			dd.onmouseover = function() { xsptr.sethighlight(this.id); }
+			dd.onclick = function() { dwsptr.setselectedvalue(); return(false); }
+			dd.onmouseover = function() { dwsptr.sethighlight(this.id); }
 			dl.appendChild(dd);
 		}
 	}
 
 	div.appendChild(dl);
 
-	var pos = xivo.dom.get_offset_position(this._field);
+	var pos = dwho.dom.get_offset_position(this._field);
 
 	div.style.left	= pos.x + 'px';
 	div.style.top	= (pos.y + this._field.offsetHeight + this._options.result_topoffset) + 'px';
 	div.style.width	= this._field.offsetWidth + 'px';
 
-	div.onmouseover	= function() { xsptr.deletetimeout(); }
-	div.onmouseout	= function() { xsptr.starttimeout(); }
+	div.onmouseover	= function() { dwsptr.deletetimeout(); }
+	div.onmouseout	= function() { dwsptr.starttimeout(); }
 
-	xivo.dom.remove_element(xivo_eid(this._xsid,true));
-	if(xivo_is_object(this._field.parentNode) === false)
+	dwho.dom.remove_element(dwho_eid(this._dwsid,true));
+	if(dwho_is_object(this._field.parentNode) === false)
 		document.getElementsByTagName('body')[0].appendChild(div);
 	else
 		this._field.parentNode.appendChild(div);
@@ -404,9 +406,9 @@ xivo.suggest.prototype.display_result = function()
 	return(true);
 }
 
-xivo.suggest.prototype.onkeypress = function(e)
+dwho.suggest.prototype.onkeypress = function(e)
 {
-	var key = xivo_is_undef(window.event) === false ? window.event.keyCode : e.keyCode;
+	var key = dwho_is_undef(window.event) === false ? window.event.keyCode : e.keyCode;
 
 	switch(key)
 	{
@@ -416,7 +418,7 @@ xivo.suggest.prototype.onkeypress = function(e)
 		case this._vk.RETURN:
 			this.setselectedvalue();
 
-			if(xivo_is_function(e.preventDefault) === true)
+			if(dwho_is_function(e.preventDefault) === true)
 				e.preventDefault();
 			return(false);
 		case this._vk.ESCAPE:
@@ -427,9 +429,9 @@ xivo.suggest.prototype.onkeypress = function(e)
 	return(true);
 }
 
-xivo.suggest.prototype.onkeyup = function(e)
+dwho.suggest.prototype.onkeyup = function(e)
 {
-	var key = xivo_is_undef(window.event) === false ? window.event.keyCode : e.keyCode;
+	var key = dwho_is_undef(window.event) === false ? window.event.keyCode : e.keyCode;
 
 	switch(key)
 	{
@@ -437,16 +439,19 @@ xivo.suggest.prototype.onkeyup = function(e)
 		case this._vk.DOWN:
 			this.changehighlight(key);
 
-			if(xivo_is_function(e.preventDefault) === true)
+			if(dwho_is_function(e.preventDefault) === true)
 				e.preventDefault();
 			return(false);
 		default:
-			if(xivo_is_object(this._resfield) === true
+			if(dwho_is_object(this._resfield) === true
 			&& this._resfield.value !== ''
 			&& this._searchval !== this._field.value)
 			{
 				this._resfieldcleared = true;
 				this._resfield.value = '';
+
+				if(dwho_is_function(this._options.result_onsetfield) === true)
+					this._options.result_onsetfield(this._resfield);
 			}
 
 			this.get(this._field.value);
@@ -455,62 +460,69 @@ xivo.suggest.prototype.onkeyup = function(e)
 	return(true);
 }
 
-xivo.suggest.prototype.onblur = function()
+dwho.suggest.prototype.onblur = function()
 {
-	if(xivo_is_object(this._resfield) === true
+	if(dwho_is_object(this._resfield) === true
 	&& this._resfield.value === '')
 	{
 		this._resfieldcleared = true;
 		this._resfield.value = '';
+
+		if(dwho_is_function(this._options.result_onsetfield) === true)
+			this._options.result_onsetfield(this._resfield);
 	}
 
 	this.starttimeout();
 }
 
-xivo.suggest.prototype.onchange = function()
+dwho.suggest.prototype.onchange = function()
 {
-	if(xivo_is_object(this._resfield) === true
+	if(dwho_is_object(this._resfield) === true
 	&& this._searchval !== this._field.value)
 	{
 		this._resfieldcleared = true;
 		this._resfield.value = '';
+
+		if(dwho_is_function(this._options.result_onsetfield) === true)
+			this._options.result_onsetfield(this._resfield);
+
 		this.clear();
 	}
 }
 
-xivo.suggest.prototype.sethighlight = function(id)
+dwho.suggest.prototype.sethighlight = function(id)
 {
 	if(this._highlightedid !== null)
 		this.resethighlight();
 
-	if(xivo_strcmp(id,this._xsrestitleid,this._xsrestitleid.length) === 0)
+	if(dwho_strcmp(id,this._dwsrestitleid,this._dwsrestitleid.length) === 0)
 	{
-		if((title = xivo_eid(id,true)) === false)
+		if((title = dwho_eid(id,true)) === false)
 			return(false);
 
-		this._suggestid		= xivo_substr(id,this._xsrestitleid.length - id.length);
+		this._suggestid		= dwho_substr(id,this._dwsrestitleid.length - id.length);
 		this._highlightedid	= id;
 		title.className		= this._highlightclass;
 		this.deletetimeout();
 
-		if((desc = xivo_eid(this._xsresdescid + this._suggestid,true)) === false)
+		if((desc = dwho_eid(this._dwsresdescid + this._suggestid,true)) === false)
 			return(true);
 
 		desc.className = this._highlightclass;
 
 		return(true);
 	}
-	else if(xivo_strcmp(id,this._xsresdescid,this._xsresdescid.length) === 0)
+	else if(dwho_strcmp(id,this._dwsresdescid,this._dwsresdescid.length) === 0)
 	{
-		if((desc = xivo_eid(id,true)) === false)
+		if((desc = dwho_eid(id,true)) === false)
 			return(false);
 
-		this._suggestid		= xivo_substr(id,this._xsresdescid.length - id.length);
+		this._suggestid		= dwho_substr(id,this._dwsresdescid.length - id.length);
 		this._highlightedid	= id;
 		desc.className		= this._highlightclass;
 		this.deletetimeout();
 
-		if((title = xivo_eid(this._xsrestitleid + this._suggestid,true)) === false)
+		if((title = dwho_eid(this._dwsrestitleid + this._suggestid,true)) === false)
 			return(false);
 
 		title.className = this._highlightclass;
@@ -521,7 +533,7 @@ xivo.suggest.prototype.sethighlight = function(id)
 	return(false);
 }
 
-xivo.suggest.prototype.changehighlight = function(key)
+dwho.suggest.prototype.changehighlight = function(key)
 {
 	switch(key)
 	{
@@ -541,43 +553,43 @@ xivo.suggest.prototype.changehighlight = function(key)
 	if(suggestid < 1)
 		suggestid = this._suggests.length;
 
-	this.sethighlight(this._xsrestitleid + suggestid);
+	this.sethighlight(this._dwsrestitleid + suggestid);
 }
 
-xivo.suggest.prototype.resethighlight = function()
+dwho.suggest.prototype.resethighlight = function()
 {
 	if(this._highlightedid === null)
 		return(null);
-	else if(xivo_strcmp(this._highlightedid,this._xsrestitleid,this._xsrestitleid.length) === 0)
+	else if(dwho_strcmp(this._highlightedid,this._dwsrestitleid,this._dwsrestitleid.length) === 0)
 	{
-		if((title = xivo_eid(this._highlightedid,true)) === false)
+		if((title = dwho_eid(this._highlightedid,true)) === false)
 			return(false);
 
 		title.className		= '';
-		var suggestid		= xivo_substr(this._highlightedid,
-						      this._xsrestitleid.length - this._highlightedid.length);
+		var suggestid		= dwho_substr(this._highlightedid,
+						      this._dwsrestitleid.length - this._highlightedid.length);
 		this._suggestid		= null;
 		this._highlightedid	= null;
 
-		if((desc = xivo_eid(this._xsresdescid + suggestid,true)) === false)
+		if((desc = dwho_eid(this._dwsresdescid + suggestid,true)) === false)
 			return(true);
 
 		desc.className = '';
 
 		return(true);
 	}
-	else if(xivo_strcmp(this._highlightedid,this._xsresdescid,this._xsresdescid.length) === 0)
+	else if(dwho_strcmp(this._highlightedid,this._dwsresdescid,this._dwsresdescid.length) === 0)
 	{
-		if((desc = xivo_eid(this._highlightedid,true)) === false)
+		if((desc = dwho_eid(this._highlightedid,true)) === false)
 			return(false);
 
 		desc.className		= '';
-		var suggestid		= xivo_substr(this._highlightedid,
-						      this._xsresdescid.length - this._highlightedid.length);
+		var suggestid		= dwho_substr(this._highlightedid,
+						      this._dwsresdescid.length - this._highlightedid.length);
 		this._suggestid		= null;
 		this._highlightedid	= null;
 
-		if((title = xivo_eid(this._xsrestitleid + suggestid,true)) === false)
+		if((title = dwho_eid(this._dwsrestitleid + suggestid,true)) === false)
 			return(false);
 
 		title.className = '';
@@ -586,13 +598,13 @@ xivo.suggest.prototype.resethighlight = function()
 	}
 }
 
-xivo.suggest.prototype.setselectedvalue = function()
+dwho.suggest.prototype.setselectedvalue = function()
 {
 	if(this._suggestid === null)
 		return(null);
 
 	if(this._options.result_fulldisplay === true
-	&& xivo_has_len(this._suggests[this._suggestid - 1].info) === true)
+	&& dwho_has_len(this._suggests[this._suggestid - 1].info) === true)
 		var value = this._suggests[this._suggestid - 1].value +
 			' (' + this._suggests[this._suggestid - 1].info + ')';
 	else
@@ -601,10 +613,13 @@ xivo.suggest.prototype.setselectedvalue = function()
 	this._searchval = this._field.value = value;
 	this._searchlen = value.length;
 
-	if(xivo_is_object(this._resfield) === true)
+	if(dwho_is_object(this._resfield) === true)
 	{
 		this._resfieldcleared = false;
 		this._resfield.value = this._suggests[this._suggestid - 1].id;
+
+		if(dwho_is_function(this._options.result_onsetfield) === true)
+			this._options.result_onsetfield(this._resfield);
 	}
 
 	this._field.focus();
@@ -618,15 +633,15 @@ xivo.suggest.prototype.setselectedvalue = function()
 		this._options.result_callback(this._suggests[this._suggestid - 1]);
 }
 
-xivo.suggest.prototype.starttimeout = function()
+dwho.suggest.prototype.starttimeout = function()
 {
 	this.deletetimeout();
 
-	var xsptr = this;
-	this._timeoutid = window.setTimeout(function() { xsptr.clear(); },2000);
+	var dwsptr = this;
+	this._timeoutid = window.setTimeout(function() { dwsptr.clear(); },2000);
 }
 
-xivo.suggest.prototype.deletetimeout = function()
+dwho.suggest.prototype.deletetimeout = function()
 {
 	if(this._timeoutid !== null)
 		window.clearTimeout(this._timeoutid);

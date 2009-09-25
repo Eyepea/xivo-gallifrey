@@ -22,18 +22,19 @@ define('XIVO_PATH_ROOT',dirname(__FILE__));
 
 require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'object'.DIRECTORY_SEPARATOR.'xivo.inc');
 
-$_XIVO = &xivo_gct::set_get(new xivo());
+$_XIVO = &dwho_gct::set_get(new xivo());
 
-$_CF = &xivo_gat::get('_CF');
-$_QR = &xivo_gat::get('_QR');
-$_URL = &xivo_gat::load_get('url',XIVO_PATH_OBJECTCONF);
+$_CF = &dwho_gat::get('_CF');
+$_QR = &dwho_gat::get('_QR');
+$_URL = &dwho_gat::load_get('url',XIVO_PATH_OBJECTCONF);
+$_API_MISC = &dwho_gat::load_get('api_misc',XIVO_PATH_OBJECTCONF);
 
-$_I18N = &xivo_gct::get('xivo_i18n');
+$_I18N = &dwho_gct::get('dwho_i18n');
 $_I18N->load_file('xivo');
 
-$_QRY = &xivo_gct::get('xivo_query');
-$_SRE = &xivo_gct::get('xivo_service');
-$_USR = &xivo_gct::get('_USR');
+$_QRY = &dwho_gct::get('dwho_query');
+$_SRE = &dwho_gct::get('xivo_service');
+$_USR = &dwho_gct::get('_USR');
 
 if(defined('XIVO_TPL_SPACE') === false)
 	define('XIVO_TPL_SPACE','www');
@@ -46,24 +47,24 @@ if(isset($_CF['tpl'][$tpl_space]) === false)
 switch($tpl_space)
 {
 	case 'www':
-		xivo::load_class('xivo_tpl');
-		$_TPL = &new xivo_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL);
+		dwho::load_class('dwho_tpl');
+		$_TPL = &new dwho_tpl($_CF['tpl']['www'],array('menu','url','dhtml'),$_URL,$_API_MISC);
 		break;
 	case 'ui':
 	case 'json':
-		xivo::load_class('xivo_tpl');
-		$_TPL = &new xivo_tpl($_CF['tpl'][$tpl_space],array('json','url','dhtml'),$_URL);
+		dwho::load_class('dwho_tpl');
+		$_TPL = &new dwho_tpl($_CF['tpl'][$tpl_space],array('json','url','dhtml'),$_URL,$_API_MISC);
 
-		if(xivo::load_class('xivo_json') === false)
+		if(dwho::load_class('dwho_json') === false)
 		{
-			xivo::load_class('xivo_http');
-			$http = new xivo_http();
+			dwho::load_class('dwho_http');
+			$http = new dwho_http();
 			$http->set_status(500);
 			$http->send(true);
 		}
 		break;
 	default:
-		xivo_die('Invalid TPL SPACE');
+		dwho_die('Invalid TPL SPACE');
 }
 
 if(($prepend = $_TPL->get_prepend()) !== false)

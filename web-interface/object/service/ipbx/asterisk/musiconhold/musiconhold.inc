@@ -62,9 +62,9 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function _chk_mohpath()
 	{
-		if(xivo_issa($this->_name,$this->_sre->_ini) === false
+		if(dwho_issa($this->_name,$this->_sre->_ini) === false
 		|| isset($this->_sre->_ini[$this->_name]['path']) === false
-		|| ($this->_mohpath = xivo_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
+		|| ($this->_mohpath = dwho_file::is_d_rwx($this->_sre->_ini[$this->_name]['path'])) === false)
 			return(false);
 
 		return(true);
@@ -76,7 +76,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		if(($option_file = $this->_chk_exists_cfg('option','file',true)) !== false
 		&& isset($option_file['size']) === true)
-			$r = xivo_get_memory($import_file['size'],false);
+			$r = dwho_get_memory($import_file['size'],false);
 
 		return($r);
 	}
@@ -88,13 +88,13 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if(($option = $this->get_option_value('file')) === false)
 			return(false);
 
-		if(xivo_has_len($option,'name') === true)
+		if(dwho_has_len($option,'name') === true)
 			$this->_fileoption['name'] = $option['name'];
 
-		if(xivo_issa('mime',$option) === true)
+		if(dwho_issa('mime',$option) === true)
 			$this->_fileoption['mime'] = array_keys($option['mime']);
 
-		if(xivo_issa('extension',$option) === false)
+		if(dwho_issa('extension',$option) === false)
 			return($this->_fileoption);
 
 		$formats = $this->_sre->get_formats();
@@ -111,7 +111,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		foreach($option['extension'] as $key => $val)
 		{
-			if($val === true && xivo_issa($key,$formats) === true)
+			if($val === true && dwho_issa($key,$formats) === true)
 			{
 				$refformat = &$formats[$key];
 
@@ -202,7 +202,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		else if((bool) $exists === false)
 			return(true);
 
-		return(xivo_file::is_d_rwx($this->_mohpath.XIVO_SEP_DIR.$dir));
+		return(dwho_file::is_d_rwx($this->_mohpath.DWHO_SEP_DIR.$dir));
 	}
 
 	function _chk_file($name,$dir,$exists=false)
@@ -218,7 +218,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		else if((bool) $exists === false)
 			return(true);
 
-		return(xivo_file::is_f(xivo_file::joinpath($this->_mohpath,$dir,$name)));
+		return(dwho_file::is_f(dwho_file::joinpath($this->_mohpath,$dir,$name)));
 	}
 
 	function get_category($id,$disable=null)
@@ -241,7 +241,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if($this->add_dir($category) === false)
 			return(false);
 
-		$arr['directory'] = $this->_mohpath.XIVO_SEP_DIR.$category;
+		$arr['directory'] = $this->_mohpath.DWHO_SEP_DIR.$category;
 
 		if(($r = parent::get_category($category)) !== false)
 		{
@@ -269,7 +269,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if($this->edit_dir($id,$category) === false)
 			return(false);
 
-		$arr['directory'] = $this->_mohpath.XIVO_SEP_DIR.$category;
+		$arr['directory'] = $this->_mohpath.DWHO_SEP_DIR.$category;
 
 		if(strtolower($id) !== strtolower($category) && parent::get_category($category) !== false)
 			parent::delete_by_category($category);
@@ -322,7 +322,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	function get_upload($name)
 	{
 		if((is_object($this->_file) === false
-		   && ($this->_file = new xivo_file()) === false) === true
+		   && ($this->_file = new dwho_file()) === false) === true
 		|| $this->_get_option_file() === false
 		|| $this->_file->get_upload($name,$this->_fileoption) === false)
 			return(false);
@@ -335,10 +335,10 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$name = (string) $name;
 		$tmpname = (string) $tmpname;
 
-		$file = $this->_mohpath.XIVO_SEP_DIR.$name;
+		$file = $this->_mohpath.DWHO_SEP_DIR.$name;
 
-		if(xivo_file::is_f($tmpname) === false || xivo_file::is_f($file) !== false
-		|| xivo_file::is_d_rwx($this->_mohpath) === false
+		if(dwho_file::is_f($tmpname) === false || dwho_file::is_f($file) !== false
+		|| dwho_file::is_d_rwx($this->_mohpath) === false
 		|| move_uploaded_file($tmpname,$file) === false)
 			return(false);
 
@@ -352,14 +352,14 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$name = (string) $name;
 		$newname = (string) $newname;
 
-		$file = $this->_mohpath.XIVO_SEP_DIR.$name;
-		$newfile = $this->_mohpath.XIVO_SEP_DIR.$newname;
+		$file = $this->_mohpath.DWHO_SEP_DIR.$name;
+		$newfile = $this->_mohpath.DWHO_SEP_DIR.$newname;
 
 		if($file === $newfile)
 			return(true);
-		else if(xivo_file::is_f($file) === false
-		|| xivo_file::is_f($newfile) !== false
-		|| xivo_file::is_d_rwx($this->_mohpath) === false
+		else if(dwho_file::is_f($file) === false
+		|| dwho_file::is_f($newfile) !== false
+		|| dwho_file::is_d_rwx($this->_mohpath) === false
 		|| rename($file,$newfile) === false)
 			return(false);
 
@@ -372,12 +372,12 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	{
 		$name = (string) $name;
 
-		$file = $this->_mohpath.XIVO_SEP_DIR.$name;
+		$file = $this->_mohpath.DWHO_SEP_DIR.$name;
 
-		if(xivo_file::is_f($file) === false || xivo_file::is_d_rwx($this->_mohpath) === false)
+		if(dwho_file::is_f($file) === false || dwho_file::is_d_rwx($this->_mohpath) === false)
 			return(false);
 
-		return(xivo_file::rm($file));
+		return(dwho_file::rm($file));
 	}
 
 	function get_dir($name)
@@ -386,7 +386,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1
-		|| ($path = xivo_file::is_d_rwx($this->_mohpath.XIVO_SEP_DIR.$name)) === false)
+		|| ($path = dwho_file::is_d_rwx($this->_mohpath.DWHO_SEP_DIR.$name)) === false)
 			return(false);
 
 		$r = array();
@@ -404,15 +404,15 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 	function add_dir($name)
 	{
-		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
+		$dir = $this->_mohpath.DWHO_SEP_DIR.$name;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$name) !== 1
-		|| xivo_file::is_d_rwx($this->_mohpath) === false)
+		|| dwho_file::is_d_rwx($this->_mohpath) === false)
 			return(false);
-		else if(xivo_file::is_d($dir) === false)
+		else if(dwho_file::is_d($dir) === false)
 			$r = mkdir($dir);
-		else if(xivo_file::is_d_rwx($dir) !== false)
+		else if(dwho_file::is_d_rwx($dir) !== false)
 			$r = true;
 
 		@chmod($dir,02775);
@@ -425,17 +425,17 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		$name = (string) $name;
 		$newname = (string) $newname;
 
-		$dir = $this->_mohpath.XIVO_SEP_DIR.$name;
-		$newdir = $this->_mohpath.XIVO_SEP_DIR.$newname;
+		$dir = $this->_mohpath.DWHO_SEP_DIR.$name;
+		$newdir = $this->_mohpath.DWHO_SEP_DIR.$newname;
 
 		if(($match_dir = $this->_get_option_dir_name()) === false
 		|| preg_match($match_dir,$newname) !== 1
-		|| xivo_file::is_d_rwx($this->_mohpath) === false
-		|| xivo_file::is_d($dir) === false)
+		|| dwho_file::is_d_rwx($this->_mohpath) === false
+		|| dwho_file::is_d($dir) === false)
 			return(false);
 		else if($name === $newname)
 			return(true);
-		else if(xivo_file::is_d($newdir) !== false)
+		else if(dwho_file::is_d($newdir) !== false)
 			return(false);
 
 		return(rename($dir,$newdir));
@@ -446,7 +446,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if(($info = $this->get_dir($name)) === false)
 			return(false);
 
-		$dirpath = $this->_mohpath.XIVO_SEP_DIR.$info['dirname'];
+		$dirpath = $this->_mohpath.DWHO_SEP_DIR.$info['dirname'];
 
 		if(is_link($dirpath) === true)
 			return(false);
@@ -457,7 +457,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		for($i = 0;$i < $info['nb_files'];$i++)
 		{
-			if($this->delete_file($info['dirname'].XIVO_SEP_DIR.$info['files'][$i]) === false)
+			if($this->delete_file($info['dirname'].DWHO_SEP_DIR.$info['files'][$i]) === false)
 			{
 				$r = false;
 				break;
@@ -483,7 +483,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		{
 			$val['category'] = $key;
 
-			if(($val['mode'] === 'custom' && xivo_has_len($val,'directory') === false) === true
+			if(($val['mode'] === 'custom' && dwho_has_len($val,'directory') === false) === true
 			|| $this->_chk_dir($key,true) !== false)
 				$r[] = $val;
 		}
@@ -526,12 +526,12 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 			if(($dirs = $this->get_list_dirs()) === false || in_array($dir,$dirs) === false)
 				return(false);
 
-			$dir = $this->_mohpath.XIVO_SEP_DIR.$dir;
+			$dir = $this->_mohpath.DWHO_SEP_DIR.$dir;
 		}
 		else
 			$dir = $this->_mohpath;
 
-		$r = xivo_file::read_d($dir,'file',0,$match_file,true);
+		$r = dwho_file::read_d($dir,'file',0,$match_file,true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;
@@ -544,7 +544,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		if(($match_dir = $this->_get_option_dir_name('match_dir')) === false)
 			return(false);
 
-		$r = xivo_file::read_d($this->_mohpath,'dir',(FILE_R_OK | FILE_W_OK | FILE_X_OK),$match_dir,true);
+		$r = dwho_file::read_d($this->_mohpath,'dir',(FILE_R_OK | FILE_W_OK | FILE_X_OK),$match_dir,true);
 
 		if($r !== false && isset($r[0]) === false)
 			$r = false;

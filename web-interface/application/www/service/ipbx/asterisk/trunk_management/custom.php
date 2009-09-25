@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = $result = array();
 
@@ -34,7 +34,7 @@ switch($act)
 
 		$result = $fm_save = null;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
 			if($apptrunk->set_add($_QR) === false
 			|| $apptrunk->add() === false)
@@ -62,7 +62,7 @@ switch($act)
 		$result = $fm_save = null;
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -98,7 +98,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('trunks',$_QR)) === false)
+		if(($values = dwho_issa_val('trunks',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/custom'),$param);
 
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -118,7 +118,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('trunks',$_QR)) === false)
+		if(($values = dwho_issa_val('trunks',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/custom'),$param);
 
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -163,7 +163,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/custom'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

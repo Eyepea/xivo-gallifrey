@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_incall extends xivo_application_asterisk_abstract
 {
@@ -81,13 +81,13 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if($this->_components === false)
 			return($this->_info);
 
-		if(xivo_ak('rightcall',$nocomponents,true) === false)
+		if(dwho_ak('rightcall',$nocomponents,true) === false)
 			$this->_get_rightcall($this->_info['incall']['id']);
 
-		if(xivo_ak('contextnummember',$nocomponents,true) === false)
+		if(dwho_ak('contextnummember',$nocomponents,true) === false)
 			$this->_get_contextnummember($this->_info['incall']['id']);
 
-		if(xivo_ak('callerid',$nocomponents,true) === false)
+		if(dwho_ak('callerid',$nocomponents,true) === false)
 			$this->_get_callerid($this->_info['incall']['id']);
 
 		return($this->_info);
@@ -289,7 +289,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('incall',$arr) === false)
+		|| dwho_issa('incall',$arr) === false)
 			return(false);
 
 		$this->set_incall($arr['incall']);
@@ -297,11 +297,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		$number = (string) $this->get_result_var('incall','exten');
 		$context = (string) $this->get_result_var('incall','context');
 
-		if(xivo_issa('dialaction',$arr) === false
+		if(dwho_issa('dialaction',$arr) === false
 		|| $this->set_dialaction($arr['dialaction']) === null
 		|| is_array(($dialaction_answer = $this->get_result_var('dialaction','answer'))) === false)
 			$this->_set_error('dialaction','invalid data');
-		else if(xivo_ak('action',$dialaction_answer,true) === 'application:faxtomail')
+		else if(dwho_ak('action',$dialaction_answer,true) === 'application:faxtomail')
 			$this->_set_result_var('incall','faxdetectenable',false);
 
 		if(($rsexten = $this->set_macro($action,'exten',$number,$this->_mk_exten_appdata($number),$context)) !== false)
@@ -309,18 +309,18 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 		$this->set_extenumbers($action,$number,$context);
 
-		if(xivo_issa('rightcall',$arr) === true)
+		if(dwho_issa('rightcall',$arr) === true)
 			$this->set_rightcall($arr['rightcall']);
 
 		if($this->get_errnb() < 1)
 			$this->set_contextnummember($context,$number);
 
-		if(xivo_issa('callerid',$arr) === true)
+		if(dwho_issa('callerid',$arr) === true)
 			$this->set_callerid($arr['callerid']);
 
 		if($this->get_errnb() < 1
 		&& (bool) $this->get_result_var('incall','faxdetectenable') === true
-		&& xivo_has_len($this->get_result_var('incall','faxdetectemail')) === false)
+		&& dwho_has_len($this->get_result_var('incall','faxdetectemail')) === false)
 			$this->_set_result_var('incall','faxdetectenable',false);
 
 		return(($this->get_errnb() < 1));
@@ -454,7 +454,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit_incall()
 	{
-		if(xivo_issa('incall',$this->_info) === false
+		if(dwho_issa('incall',$this->_info) === false
 		|| ($rs = $this->get_result('incall')) === null
 		|| $rs === false)
 			return(false);
@@ -466,7 +466,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit_dialaction()
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_dialaction($this->_info['incall']['id']));
@@ -474,7 +474,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit_rightcall()
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_rightcall($this->_info['incall']['id']));
@@ -482,7 +482,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_contextnummember($this->_info['incall']['id']));
@@ -490,7 +490,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function edit_callerid()
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 
 		return(parent::edit_callerid($this->_info['incall']['id']));
@@ -571,7 +571,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function delete_incall()
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 
 		$r = $this->_incall->delete($this->_info['incall']['id']);
@@ -677,7 +677,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function _enable_disable_incall($disable=false)
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_incall->enable($this->_info['incall']['id']);
@@ -702,7 +702,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 
 	function _enable_disable_exten($disable=false)
 	{
-		if(xivo_issa('incall',$this->_info) === false)
+		if(dwho_issa('incall',$this->_info) === false)
 			return(false);
 
 		$where = array();
@@ -753,8 +753,8 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 	function add_from_json()
 	{
 		if(($data = $this->_get_data_from_json()) === false
-		|| xivo_issa('incall',$data) === false
-		|| xivo_has_len($data['incall'],'exten') === false)
+		|| dwho_issa('incall',$data) === false
+		|| dwho_has_len($data['incall'],'exten') === false)
 			return(false);
 
 		$data['dialaction'] = array();

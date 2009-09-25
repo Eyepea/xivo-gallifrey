@@ -25,7 +25,7 @@
 		    class="moo"
 		    onmouseout="xivo_smenu_out(this,'moo');"
 		    onmouseover="xivo_smenu_over(this,'mov');">
-			<div onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-first');">
+			<div onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-first');">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
 				</div>
@@ -34,13 +34,13 @@
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-voicemail');
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-voicemail');
 							return(false);"><?=$this->bbf('smenu_voicemail');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-dialaction');
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-dialaction');
 							return(false);"><?=$this->bbf('smenu_dialaction');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-service');
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-service');
 							return(false);"><?=$this->bbf('smenu_services');?></a></li>
 				</ul>
 			</div>
@@ -79,7 +79,7 @@
 		    class="moo-last"
 		    onmouseout="xivo_smenu_out(this,'moo',1);"
 		    onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-last',1);">
+			<div onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-last',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
@@ -88,10 +88,10 @@
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-rightcall',1);
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-rightcall',1);
 							return(false);"><?=$this->bbf('smenu_rightcalls');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-t38',1);
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-t38',1);
 							return(false);"><?=$this->bbf('smenu_t38');?></a></li>
 				</ul>
 			</div>

@@ -26,9 +26,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'datastorage','adapter','abstract','abstract.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','adapter','abstract','abstract.inc'));
 
-class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abstract
+class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abstract
 {
 	var $_query		= '';
 	var $_meta		= 'sql';
@@ -57,7 +57,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		else if((bool) $trim === true)
 			$val = trim($val);
 
-		if(xivo_has_len($val) === true)
+		if(dwho_has_len($val) === true)
 			$r = $val;
 
 		return($r);
@@ -297,7 +297,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function _mk_table($table)
 	{
-		if(xivo_has_len($table) === true)
+		if(dwho_has_len($table) === true)
 		{
 			if(isset($this->_table[$table]) === true)
 				return(false);
@@ -311,8 +311,8 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$key = key($table);
 		$val = current($table);
 
-		if(xivo_has_len($key) === false
-		|| xivo_has_len($val) === false
+		if(dwho_has_len($key) === false
+		|| dwho_has_len($val) === false
 		|| isset($this->_table[$key]) === true)
 			return(false);
 
@@ -381,7 +381,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 				$val = $val->scalar;
 			}
 
-			if(xivo_has_len($key) === false || xivo_has_len($val) === false)
+			if(dwho_has_len($key) === false || dwho_has_len($val) === false)
 				continue;
 			else if($val === '*')
 			{
@@ -407,7 +407,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			if(strncasecmp($val,$tabledot,$tabledotlen) === 0)
 				$val = substr($val,$tabledotlen);
 
-			if(xivo_has_len($val) === false)
+			if(dwho_has_len($val) === false)
 				continue;
 
 			$col = sprintf('%s.%s',$this->quote_identifier($table),
@@ -588,7 +588,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 		foreach($data as $key => $val)
 		{
-			if(xivo_has_len($key) === false)
+			if(dwho_has_len($key) === false)
 				continue;
 			else if($set === true)
 			{
@@ -651,7 +651,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 			$r = implode(((bool) $condand === true ? ' AND ' : ' OR '),$condsep['str']);
 		}
-		else if(is_array($val) === true || xivo_has_len($val) === true)
+		else if(is_array($val) === true || dwho_has_len($val) === true)
 		{
 			$val = (array) $val;
 
@@ -675,9 +675,9 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 				$this->_fix_leftjoin_condition = false;
 			}
 
-			$r = vsprintf(xivo_printf_escape($cond,count($val)),$map);
+			$r = vsprintf(dwho_printf_escape($cond,count($val)),$map);
 		}
-		else if(xivo_has_len($cond) === true)
+		else if(dwho_has_len($cond) === true)
 			$r = (string) $cond;
 		else
 			return(false);
@@ -720,7 +720,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			$this->_aggwhere[] = strlen($this->_where)+1;
 			return(true);
 		}
-		else if(($last = xivo_last_key($this->_aggwhere)) === false)
+		else if(($last = dwho_last_key($this->_aggwhere)) === false)
 			return(false);
 
 		$start = substr($this->_where,0,$this->_aggwhere[$last]);
@@ -769,7 +769,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 			$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table])+1;
 			return(true);
 		}
-		else if(($last = xivo_last_key($this->_aggjoinwhere[$table])) === false)
+		else if(($last = dwho_last_key($this->_aggjoinwhere[$table])) === false)
 			return(false);
 
 		$start = substr($this->_joinwhere[$table],0,$this->_aggjoinwhere[$table][$last]);
@@ -1190,7 +1190,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		else if(is_array($pattern) === false || empty($pattern) === true)
 			return(false);
 
-		if(xivo_empty($column) === true)
+		if(dwho_empty($column) === true)
 			return(false);
 		else if($table === '')
 			$column = $this->quote_identifier($column);
@@ -1645,7 +1645,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function _mk_group($column='',$table='')
 	{
-		if(xivo_empty($column) === true)
+		if(dwho_empty($column) === true)
 			$group = $this->_group;
 		else
 			$group = $this->_set_group($column,$table);
@@ -1700,7 +1700,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function _mk_order($column='',$sort='',$table='')
 	{
-		if(xivo_empty($column) === true)
+		if(dwho_empty($column) === true)
 			$order = $this->_order;
 		else
 			$order = $this->_set_order($column,$sort,$table);
@@ -1730,7 +1730,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 
 	function _mk_limit($offset='',$line='')
 	{
-		if(xivo_empty($offset) === true)
+		if(dwho_empty($offset) === true)
 			$limit = $this->_limit;
 		else
 			$limit = $this->_set_limit($offset,$line);
@@ -1738,10 +1738,10 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if(is_array($limit) === false || isset($limit[0]) === false)
 			return(false);
 
-		$r = xivo_uint($limit[0]);
+		$r = dwho_uint($limit[0]);
 
 		if(isset($limit[1]) === true)
-			$r .= ', '.xivo_uint($limit[1]);
+			$r .= ', '.dwho_uint($limit[1]);
 
 		return($r);
 	}
@@ -1751,7 +1751,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if((xivo_has_len($query) === false
+		if((dwho_has_len($query) === false
 		   && ($query = $this->get_select()) === null) === true
 		|| $this->query($query,($free === false)) === false)
 			return(false);
@@ -1775,7 +1775,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if((xivo_has_len($query) === false
+		if((dwho_has_len($query) === false
 		   && ($query = $this->get_select()) === null) === true
 		|| $this->query($query,($free === false)) === false
 		|| ($m = $this->fetch_row()) === false
@@ -1800,7 +1800,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if(xivo_has_len($query) === false)
+		if(dwho_has_len($query) === false)
 		{
 			$tabledot = '';
 
@@ -1842,7 +1842,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		if($this->query($query,($free === false)) === false)
 			return(false);
 		else if(($r = $this->fetch_row()) !== false)
-			$r = xivo_ulongint($r[0]);
+			$r = dwho_ulongint($r[0]);
 
 		if($this->_free === true && $free === true)
 			$this->free();
@@ -1855,7 +1855,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if(xivo_has_len($query) === false)
+		if(dwho_has_len($query) === false)
 		{
 			$limit = $this->_limit;
 			$this->limit(1);
@@ -1885,7 +1885,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if(xivo_has_len($query) === false)
+		if(dwho_has_len($query) === false)
 		{
 			$limit = $this->_limit;
 			$this->limit(1);
@@ -1915,7 +1915,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		$query = (string) $query;
 		$free = (bool) $free;
 
-		if(xivo_has_len($query) === false
+		if(dwho_has_len($query) === false
 		&& ($query = $this->get_select()) === null)
 			return(false);
 
@@ -1925,7 +1925,7 @@ class xivo_datastorage_adapter_abstract_sql extends xivo_datastorage_adapter_abs
 		{
 			$r = array();
 
-			if((xivo_has_len($query) === false
+			if((dwho_has_len($query) === false
 			   && ($query = $this->get_select()) === null) === true
 			|| $this->query($query,($free === false)) === false)
 				return(false);

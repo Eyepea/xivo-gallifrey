@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'application','helper.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','helper.inc'));
 
 class xivo_application_service_asterisk_abstract extends xivo_application_helper
 {
@@ -26,7 +26,7 @@ class xivo_application_service_asterisk_abstract extends xivo_application_helper
 
 	function xivo_application_service_asterisk_abstract(&$ipbx)
 	{
-		if(xivo_instanceof($ipbx,'xivo_service_asterisk') === false)
+		if(dwho_instanceof($ipbx,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$ipbx;

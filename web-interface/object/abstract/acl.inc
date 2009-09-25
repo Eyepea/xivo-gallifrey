@@ -87,7 +87,7 @@ class xivo_acl_abstract
 		$level = 1;
 		$parent = false;
 
-		if(xivo_issa('child',$tree) === true)
+		if(dwho_issa('child',$tree) === true)
 		{
 			$level = $tree['level'] + 1;
 			$id = $tree['id'];
@@ -165,8 +165,8 @@ class xivo_acl_abstract
 			$k = &$arr[$i];
 			$grp = $reference;
 
-			if(xivo_issa($k,$tree) === false
-			|| ($reference = xivo_ak($k,$reference,true)) === false)
+			if(dwho_issa($k,$tree) === false
+			|| ($reference = dwho_ak($k,$reference,true)) === false)
 				return(false);
 			else if($reference === true)
 				return(true);
@@ -174,7 +174,7 @@ class xivo_acl_abstract
 				$tree = &$tree[$k]['child'];
 		}
 
-		if(xivo_ak($k,$grp,true) !== false)
+		if(dwho_ak($k,$grp,true) !== false)
 			return(true);
 
 		return(false);
@@ -198,7 +198,7 @@ class xivo_acl_abstract
 		{
 			$k = &$arr[$i];
 
-			if(xivo_ak($k,$tree) === false)
+			if(dwho_ak($k,$tree) === false)
 				return(false);
 
 			$tree = &$tree[$k];
@@ -255,7 +255,7 @@ class xivo_acl_abstract
 	function _chk_section($section,$id)
 	{
 		if(is_scalar($section) === false
-		|| xivo_ulongint($id) === false)
+		|| dwho_ulongint($id) === false)
 			return(false);
 
 		$section = trim(preg_replace('@/+@','/',$section),'/');
@@ -280,10 +280,10 @@ class xivo_acl_abstract
 			$key = &$arr[$i];
 			$grp = $info;
 
-			if(xivo_issa($key,$tree) === false)
+			if(dwho_issa($key,$tree) === false)
 				return(false);
 			else if($r === false
-			&& is_bool(($info = xivo_ak($key,$info,true))) === true)
+			&& is_bool(($info = dwho_ak($key,$info,true))) === true)
 			{
 				if(isset($tree[$key]['value']) === true
 				&& (bool) $tree[$key]['value'] === false)
@@ -296,7 +296,7 @@ class xivo_acl_abstract
 		}
 
 		if($r === false && isset($key,$grp) === true)
-			$r = xivo_ak($key,$grp,true) !== false;
+			$r = dwho_ak($key,$grp,true) !== false;
 
 		return($r);
 	}

@@ -49,8 +49,8 @@ do
 		break;
 	}
 
-	$filename = xivo_file::joinpath($info['file']['dirname'],$info['file']['filename']);
-	$newfilename = xivo_file::joinpath($info['category'],$info['filename']);
+	$filename = dwho_file::joinpath($info['file']['dirname'],$info['file']['filename']);
+	$newfilename = dwho_file::joinpath($info['category'],$info['filename']);
 
 	if($musiconhold->edit_file($filename,$newfilename) === true)
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);

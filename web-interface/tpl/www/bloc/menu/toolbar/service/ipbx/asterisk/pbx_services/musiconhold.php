@@ -37,8 +37,8 @@ endif;
 
 <form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'list'));
@@ -78,10 +78,10 @@ endif;
 </div>
 
 <script type="text/javascript">
-xivo.dom.set_onload(function()
+dwho.dom.set_onload(function()
 {
-	xivo.dom.add_event('change',
-			   xivo_eid('it-toolbar-category'),
+	dwho.dom.add_event('change',
+			   dwho_eid('it-toolbar-category'),
 			   function()
 			   {
 				this.form['act'].value = 'list';

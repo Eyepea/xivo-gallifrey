@@ -51,7 +51,7 @@ $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
 {
-	if(xivo_issa('generalagents',$_QR) === false)
+	if(dwho_issa('generalagents',$_QR) === false)
 		$_QR['generalagents'] = array();
 
 	if(($rs = $appgeneralagents->set_save_all($_QR['generalagents'])) !== false)
@@ -65,7 +65,7 @@ if(isset($_QR['fm_send']) === true)
 			$fm_save = true;
 	}
 
-	if(xivo_issa('generalqueues',$_QR) === false)
+	if(dwho_issa('generalqueues',$_QR) === false)
 		$_QR['generalqueues'] = array();
 
 	if(($rs = $appgeneralqueues->set_save_all($_QR['generalqueues'])) !== false)
@@ -79,7 +79,7 @@ if(isset($_QR['fm_send']) === true)
 			$fm_save = true;
 	}
 
-	if(xivo_issa('generalmeetme',$_QR) === true
+	if(dwho_issa('generalmeetme',$_QR) === true
 	&& ($rs = $appgeneralmeetme->set_save_all($_QR['generalmeetme'])) !== false)
 	{
 		$info['generalmeetme'] = $rs['result'];
@@ -91,7 +91,7 @@ if(isset($_QR['fm_send']) === true)
 			$fm_save = true;
 	}
 
-	if(xivo_issa('userinternal',$_QR) === false)
+	if(dwho_issa('userinternal',$_QR) === false)
 		$_QR['userinternal'] = array();
 
 	if($info['userinternal']['guest'] !== false)

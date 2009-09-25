@@ -43,7 +43,7 @@ $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
 {
-	if(xivo_issa('extenfeatures',$_QR) === true)
+	if(dwho_issa('extenfeatures',$_QR) === true)
 	{
 		if($info['extenfeatures'] === false)
 			$info['extenfeatures'] = array();
@@ -58,7 +58,7 @@ if(isset($_QR['fm_send']) === true)
 
 			while(list($key) = each($extens))
 			{
-				if(xivo_issa($key,$_QR['extenfeatures']) === false)
+				if(dwho_issa($key,$_QR['extenfeatures']) === false)
 					continue;
 				else if(isset($_QR['extenfeatures'][$key]['exten']) === true)
 					$exten = $_QR['extenfeatures'][$key]['exten'];
@@ -92,7 +92,7 @@ if(isset($_QR['fm_send']) === true)
 		}
 	}
 
-	if(xivo_issa('generalfeatures',$_QR) === true
+	if(dwho_issa('generalfeatures',$_QR) === true
 	&& ($rs = $appgeneralfeatures->set_save_all($_QR['generalfeatures'],false)) !== false)
 	{
 		$info['generalfeatures'] = $rs['result'];
@@ -104,7 +104,7 @@ if(isset($_QR['fm_send']) === true)
 			$fm_save = true;
 	}
 
-	if(xivo_issa('featuremap',$_QR) === true
+	if(dwho_issa('featuremap',$_QR) === true
 	&& ($rs = $appfeaturemap->set_save_all($_QR['featuremap'],false)) !== false)
 	{
 		$info['featuremap'] = $rs['result'];

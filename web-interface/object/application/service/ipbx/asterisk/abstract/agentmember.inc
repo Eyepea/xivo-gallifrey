@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_agentmember_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -68,7 +68,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(($agentgroupid = xivo_ulongint($agentgroupid)) === 0)
+		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0)
 			return(false);
 
 		$where = array();
@@ -148,7 +148,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 	{
 		$rs = false;
 
-		if(($agentgroupid = xivo_ulongint($agentgroupid)) === 0
+		if(($agentgroupid = dwho_ulongint($agentgroupid)) === 0
 		|| ($rs = $this->get_result()) === null
 		|| $rs === false)
 			return($rs);
@@ -281,7 +281,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 
 	function enable_agent($id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		return($this->_agent->enable($id));
@@ -289,7 +289,7 @@ class xivo_application_service_asterisk_agentmember_abstract extends xivo_applic
 
 	function disable_agent($id)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return(false);
 
 		return($this->_agent->disable($id));

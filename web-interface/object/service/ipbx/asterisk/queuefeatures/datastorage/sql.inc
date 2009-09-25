@@ -32,7 +32,7 @@ class xivo_service_asterisk_queuefeatures_sql extends xivo_service_asterisk_abst
 		if(isset($this->_forcecolumn) === true)
 			$this->_dso->where($this->_forcecolumn);
 
-		if(($id = xivo_ulongint($id)) !== 0)
+		if(($id = dwho_ulongint($id)) !== 0)
 			$this->_dso->andwherenot(array('id' => $id));
 
 		if((bool) $number === true)

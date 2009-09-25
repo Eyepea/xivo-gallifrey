@@ -39,7 +39,7 @@ $select['optgroup'] = array('key'	=> 'category',
 $selectoptattr = 'onchange="xivo_phonefunckey_chg_type(this);"';
 
 if($fkdata['ex'] === false):
-	$select['id'] .= '-'.xivo_uint($fkdata['incr']);
+	$select['id'] .= '-'.dwho_uint($fkdata['incr']);
 	$select['value'] = $fkdata['type'];
 else:
 	$select['disabled'] = true;

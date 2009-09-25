@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $search = isset($_QR['search']) === true ? strval($_QR['search']) : '';
 
 $param = array();
@@ -35,7 +35,7 @@ switch($act)
 	case 'add':
 		$result = $fm_save = null;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('phonebook',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('phonebook',$_QR) === true)
 		{
 			if($appphonebook->set_add($_QR) === false
 			|| $appphonebook->add() === false)
@@ -47,13 +47,13 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
-		if(xivo_issa('phonebook',$result) === false || empty($result['phonebook']) === true)
+		if(dwho_issa('phonebook',$result) === false || empty($result['phonebook']) === true)
 			$result['phonebook'] = null;
 
-		if(xivo_issa('phonebookaddress',$result) === false || empty($result['phonebookaddress']) === true)
+		if(dwho_issa('phonebookaddress',$result) === false || empty($result['phonebookaddress']) === true)
 			$result['phonebookaddress'] = null;
 
-		if(xivo_issa('phonebooknumber',$result) === false || empty($result['phonebooknumber']) === true)
+		if(dwho_issa('phonebooknumber',$result) === false || empty($result['phonebooknumber']) === true)
 			$result['phonebooknumber'] = null;
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -62,7 +62,7 @@ switch($act)
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appphonebook->get_elements());
-		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
 	case 'edit':
 		$appphonebook = &$ipbx->get_application('phonebook');
@@ -73,7 +73,7 @@ switch($act)
 		$result = $fm_save = null;
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('phonebook',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('phonebook',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -87,13 +87,13 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 		}
 
-		if(xivo_issa('phonebook',$return) === false || empty($return['phonebook']) === true)
+		if(dwho_issa('phonebook',$return) === false || empty($return['phonebook']) === true)
 			$return['phonebook'] = null;
 
-		if(xivo_issa('phonebookaddress',$return) === false || empty($return['phonebookaddress']) === true)
+		if(dwho_issa('phonebookaddress',$return) === false || empty($return['phonebookaddress']) === true)
 			$return['phonebookaddress'] = null;
 
-		if(xivo_issa('phonebooknumber',$return) === false || empty($return['phonebooknumber']) === true)
+		if(dwho_issa('phonebooknumber',$return) === false || empty($return['phonebooknumber']) === true)
 			$return['phonebooknumber'] = null;
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -105,7 +105,7 @@ switch($act)
 		$_TPL->set_var('phonebooknumber',$return['phonebooknumber']);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appphonebook->get_elements());
-		$_TPL->set_var('territory',xivo_i18n::get_territory_translated_list());
+		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -120,7 +120,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('phonebook',$_QR)) === false)
+		if(($values = dwho_issa_val('phonebook',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
 
 		$nb = count($values);
@@ -171,7 +171,7 @@ switch($act)
 		}
 
 		$_TPL->set_var('total',$total);
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		$_TPL->set_var('search',$search);
 }

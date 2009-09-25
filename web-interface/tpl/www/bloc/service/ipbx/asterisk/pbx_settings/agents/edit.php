@@ -29,9 +29,9 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-agent'); xivo_fm_select('it-queue');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-agent'); dwho.form.select('it-queue');">
 
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'group','value' => $this->get_var('group')));?>

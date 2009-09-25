@@ -43,7 +43,7 @@ class xivo_service_asterisk_usersip extends xivo_service_asterisk_abstract
 
 	function _prepare($data)
 	{
-		$data['initialized'] = xivo_has_len($data['fullcontact']);
+		$data['initialized'] = dwho_has_len($data['fullcontact']);
 		$data['commented'] = (bool) $data['commented'];
 		$data['callgroup'] = empty($data['callgroup']) === false ? explode(',',$data['callgroup']) : '';
 		$data['pickupgroup'] = empty($data['pickupgroup']) === false ? explode(',',$data['pickupgroup']) : '';

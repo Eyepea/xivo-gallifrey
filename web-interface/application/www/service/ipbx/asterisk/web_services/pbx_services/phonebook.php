@@ -21,7 +21,7 @@
 $access_category = 'pbx_services';
 $access_subcategory = 'phonebook';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $appphonebook = &$ipbx->get_application('phonebook');
 

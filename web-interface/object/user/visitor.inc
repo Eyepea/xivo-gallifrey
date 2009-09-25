@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'user','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'user','abstract.inc'));
 
 class xivo_user_visitor extends xivo_user_abstract
 {
@@ -33,7 +33,7 @@ class xivo_user_visitor extends xivo_user_abstract
 
 		$this->_ini = xivo_user::load_get_init();
 
-		$this->_load_config(XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user');
+		$this->_load_config(XIVO_PATH_OBJECT.DWHO_SEP_DIR.'user');
 		$this->_load_dso();
 
 		if(is_object($this->_dso) === false)

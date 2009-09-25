@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
 
 class xivo_application_service_asterisk_trunk_sql extends xivo_application_service_asterisk_abstract_sql
 {
@@ -34,7 +34,7 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_servi
 	{
 		$this->_cnt = 0;
 
-		$search = xivo_has_len($value);
+		$search = dwho_has_len($value);
 
 		$arr = array();
 
@@ -184,7 +184,7 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_servi
 	{
 		$this->_cnt = 0;
 
-		if(xivo_has_len($value) === false)
+		if(dwho_has_len($value) === false)
 			return(false);
 
 		return($this->get_all($protocols,$disable,$order,$limit,$value));

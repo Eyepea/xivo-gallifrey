@@ -65,7 +65,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 		$data['timehourbeg'] = sprintf('%02u',$hour[0]);
 
-		if(xivo_has_len($hour,1) === true)
+		if(dwho_has_len($hour,1) === true)
 			$data['timeminbeg'] = sprintf('%02u',$hour[1]);
 		else
 			$data['timeminbeg'] = '00';
@@ -80,7 +80,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 		$data['timehourend'] = sprintf('%02u',$hour[0]);
 
-		if(xivo_has_len($hour,1) === true)
+		if(dwho_has_len($hour,1) === true)
 			$data['timeminend'] = sprintf('%02u',$hour[1]);
 		else
 			$data['timeminend'] = '00';
@@ -231,7 +231,7 @@ class xivo_service_asterisk_schedule extends xivo_service_asterisk_abstract
 
 	function get_all_except($id,$order=null,$limit=null)
 	{
-		if(($id = xivo_ulongint($id)) === 0)
+		if(($id = dwho_ulongint($id)) === 0)
 			return($this->get_all(null,true,$order,$limit));
 
 		if(isset($this->_origin_list) === true)

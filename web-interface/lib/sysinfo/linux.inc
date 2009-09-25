@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_sysinfo_linux
+class dwho_sysinfo_linux
 {
 	function cpuinfo()
 	{
-		if(xivo_file::is_f_r('/proc/cpuinfo') === false
+		if(dwho_file::is_f_r('/proc/cpuinfo') === false
 		|| ($content = file('/proc/cpuinfo')) === false
 		|| ($nb = count($content)) === 0)
 			return(false);
@@ -43,7 +43,7 @@ class xivo_sysinfo_linux
 
 	function meminfo($byte=false)
 	{
-		if(xivo_file::is_f_r('/proc/meminfo') === false
+		if(dwho_file::is_f_r('/proc/meminfo') === false
 		|| ($content = file('/proc/meminfo')) === false
 		|| ($nb = count($content)) === 0)
 			return(false);
@@ -61,7 +61,7 @@ class xivo_sysinfo_linux
 			$value = trim($match[2]);
 
 			if($byte === true && isset($match[3]) === true)
-				$arr[$key] = xivo_size_si_to_byte($match[3],$value);
+				$arr[$key] = dwho_size_si_to_byte($match[3],$value);
 			else
 				$arr[$key] = $value;
 		}
@@ -80,7 +80,7 @@ class xivo_sysinfo_linux
 
 	function netinfo()
 	{
-		if(xivo_file::is_f_r('/proc/net/dev') === false
+		if(dwho_file::is_f_r('/proc/net/dev') === false
 		|| ($content = file('/proc/net/dev')) === false
 		|| ($nb = count($content)) === 0)
 			return(false);
@@ -98,7 +98,7 @@ class xivo_sysinfo_linux
 			$name = substr($data[0],0,$pos);
 			$data[0] = substr($data[0],$pos + 1);
 
-			if(xivo_has_len($data[0]) === false)
+			if(dwho_has_len($data[0]) === false)
 				array_shift($data);
 
 			$arr[$name] = array(
@@ -124,7 +124,7 @@ class xivo_sysinfo_linux
 
 	function uptime()
 	{
-		if(xivo_file::is_f_r('/proc/uptime') === false
+		if(dwho_file::is_f_r('/proc/uptime') === false
 		|| ($content = file('/proc/uptime')) === false
 		|| isset($content[0]) === false
 		|| ($exp = explode('.',$content[0],2)) === false)

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-function xivo_get_memory($value,$name=true)
+function dwho_get_memory($value,$name=true)
 {
 	$get_name = strtolower($value);
 
@@ -34,7 +34,7 @@ function xivo_get_memory($value,$name=true)
 
 	$type = substr($mem,-1,1);
 
-	if(xivo_digit($mem) !== false)
+	if(dwho_digit($mem) !== false)
 		$r = $mem;
 	else if(isset($arr[$type]) === true)
 		$r = substr($mem,0,strlen($mem)-1) * $arr[$type];
@@ -44,7 +44,7 @@ function xivo_get_memory($value,$name=true)
 	return($r);
 }
 
-function xivo_size_iec($size)
+function dwho_size_iec($size)
 {
 	$arr = array('Bytes',
 		     'KiB',
@@ -64,7 +64,7 @@ function xivo_size_iec($size)
 	return(array(strval($size),$arr[$c]));
 }
 
-function xivo_size_si_to_byte($from,$size)
+function dwho_size_si_to_byte($from,$size)
 {
 	$from = strtoupper(strval($from));
 	$size = floatval($size);
@@ -85,7 +85,7 @@ function xivo_size_si_to_byte($from,$size)
 	return(strval($size *= pow(1000,$pos)));
 }
 
-function xivo_bool($bool)
+function dwho_bool($bool)
 {
 	$bool = strtolower(strval($bool));
 
@@ -108,7 +108,7 @@ function xivo_bool($bool)
 	return((bool) $bool);
 }
 
-function xivo_empty($val,$str=true)
+function dwho_empty($val,$str=true)
 {
 	if(empty($val) === false
 	|| $val === '0'
@@ -119,7 +119,7 @@ function xivo_empty($val,$str=true)
 	return(true);
 }
 
-function xivo_has_len($val,$key=null)
+function dwho_has_len($val,$key=null)
 {
 	if($key !== null &&
 	is_array($val) === true
@@ -134,7 +134,7 @@ function xivo_has_len($val,$key=null)
 	return(isset($val{0}));
 }
 
-function xivo_digit($str=0,$def=null,$t=false)
+function dwho_digit($str=0,$def=null,$t=false)
 {
 	if(ctype_digit(strval($str)) === true)
 		return($str);
@@ -146,7 +146,7 @@ function xivo_digit($str=0,$def=null,$t=false)
 	return((ctype_digit(strval($def)) === true ? $def : false));
 }
 
-function xivo_xdigit($str=0,$def=null,$t=false)
+function dwho_xdigit($str=0,$def=null,$t=false)
 {
 	if(ctype_xdigit(strval($str)) === true)
 		return($str);
@@ -160,7 +160,7 @@ function xivo_xdigit($str=0,$def=null,$t=false)
 	return((ctype_xdigit(strval($def)) === true ? $def : false));
 }
 
-function xivo_uint($str,$def=0,$t=false)
+function dwho_uint($str,$def=0,$t=false)
 {
 	if(is_scalar($str) === false)
 		$str = 0;
@@ -173,12 +173,12 @@ function xivo_uint($str,$def=0,$t=false)
 	}
 
 	if($def !== 0 && $str === 0)
-		$str = (bool) $t === false ? $def : xivo_uint($def);
+		$str = (bool) $t === false ? $def : dwho_uint($def);
 
 	return($str);
 }
 
-function xivo_ufloat($str,$def=0,$t=false)
+function dwho_ufloat($str,$def=0,$t=false)
 {
 	if(is_scalar($str) === false)
 		$str = 0;
@@ -191,7 +191,7 @@ function xivo_ufloat($str,$def=0,$t=false)
 	}
 
 	if($def !== 0 && (string) $str === '0')
-		$str = (bool) $t === false ? $def : xivo_ufloat($def);
+		$str = (bool) $t === false ? $def : dwho_ufloat($def);
 
 	if(is_scalar($str) === true && (string) $str === '0')
 		return(0);
@@ -199,14 +199,14 @@ function xivo_ufloat($str,$def=0,$t=false)
 	return($str);
 }
 
-function xivo_ulongint($str,$def=0,$t=false)
+function dwho_ulongint($str,$def=0,$t=false)
 {
 	$str = strval($str);
 
 	if(preg_match('/^[1-9][0-9]{0,19}$/',$str) === 1)
 		return($str);
 
-	$str = (bool) $t === false ? strval($def) : xivo_ulongint($def);
+	$str = (bool) $t === false ? strval($def) : dwho_ulongint($def);
 
 	if($str === '0')
 		$str = 0;
@@ -214,7 +214,7 @@ function xivo_ulongint($str,$def=0,$t=false)
 	return($str);
 }
 
-function xivo_unumber($str,$def=0,$t=false)
+function dwho_unumber($str,$def=0,$t=false)
 {
 	$str = strval($str);
 
@@ -226,7 +226,7 @@ function xivo_unumber($str,$def=0,$t=false)
 		return($str);
 	}
 
-	$str = (bool) $t === false ? strval($def) : xivo_unumber($def);
+	$str = (bool) $t === false ? strval($def) : dwho_unumber($def);
 
 	if($str === '0')
 		$str = 0;
@@ -234,34 +234,34 @@ function xivo_unumber($str,$def=0,$t=false)
 	return($str);
 }
 
-function xivo_is_unumber($str)
+function dwho_is_unumber($str)
 {
 	return((bool) preg_match('/^[0-9]+(?:\.[0-9]+)?$/',strval($str)));
 }
 
-function xivo_sgraph($str='',$def=null,$t=false)
+function dwho_sgraph($str='',$def=null,$t=false)
 {
-	if(xivo_is_sgraph($str) === true)
+	if(dwho_is_sgraph($str) === true)
 		return($str);
 	else if($def === null)
 		return(false);
 	else if((bool) $t === false)
 		return($def);
 
-	return((xivo_is_sgraph($def) === true ? $def : false));
+	return((dwho_is_sgraph($def) === true ? $def : false));
 }
 
-function xivo_is_int($int)
+function dwho_is_int($int)
 {
 	return(((string) intval($int) === strval($int)));
 }
 
-function xivo_is_uint($uint)
+function dwho_is_uint($uint)
 {
-	return((xivo_is_int($uint) === true && $uint >= 0));
+	return((dwho_is_int($uint) === true && $uint >= 0));
 }
 
-function xivo_is_sgraph($str,$type='')
+function dwho_is_sgraph($str,$type='')
 {
 	if(is_scalar($str) === false)
 		return(false);
@@ -294,22 +294,22 @@ function xivo_is_sgraph($str,$type='')
 	return(false);
 }
 
-function xivo_is_sgraph_crlf($str)
+function dwho_is_sgraph_crlf($str)
 {
-	return(xivo_is_sgraph($str,'crlf'));
+	return(dwho_is_sgraph($str,'crlf'));
 }
 
-function xivo_is_sgraph_tab($str)
+function dwho_is_sgraph_tab($str)
 {
-	return(xivo_is_sgraph($str,'tab'));
+	return(dwho_is_sgraph($str,'tab'));
 }
 
-function xivo_is_sgraph_crlf_tab($str,$type='')
+function dwho_is_sgraph_crlf_tab($str,$type='')
 {
-	return(xivo_is_sgraph($str,'crlftab'));
+	return(dwho_is_sgraph($str,'crlftab'));
 }
 
-function xivo_is_spunct($str,$type='',$space=true)
+function dwho_is_spunct($str,$type='',$space=true)
 {
 	$space = (bool) $space;
 
@@ -350,42 +350,42 @@ function xivo_is_spunct($str,$type='',$space=true)
 	return(false);
 }
 
-function xivo_is_numspunct($str)
+function dwho_is_numspunct($str)
 {
-	return(xivo_is_spunct($str,'num'));
+	return(dwho_is_spunct($str,'num'));
 }
 
-function xivo_is_alspunct($str)
+function dwho_is_alspunct($str)
 {
-	return(xivo_is_spunct($str,'alpha'));
+	return(dwho_is_spunct($str,'alpha'));
 }
 
-function xivo_is_alnumspunct($str)
+function dwho_is_alnumspunct($str)
 {
-	return(xivo_is_spunct($str,'alphanum'));
+	return(dwho_is_spunct($str,'alphanum'));
 }
 
-function xivo_is_punct($str)
+function dwho_is_punct($str)
 {
-	return(xivo_is_spunct($str,null,false));
+	return(dwho_is_spunct($str,null,false));
 }
 
-function xivo_is_numpunct($str)
+function dwho_is_numpunct($str)
 {
-	return(xivo_is_spunct($str,'num',false));
+	return(dwho_is_spunct($str,'num',false));
 }
 
-function xivo_is_alpunct($str)
+function dwho_is_alpunct($str)
 {
-	return(xivo_is_spunct($str,'alpha',false));
+	return(dwho_is_spunct($str,'alpha',false));
 }
 
-function xivo_is_alnumpunct($str)
+function dwho_is_alnumpunct($str)
 {
-	return(xivo_is_spunct($str,'alphanum',false));
+	return(dwho_is_spunct($str,'alphanum',false));
 }
 
-function xivo_ip2long($ip_address)
+function dwho_ip2long($ip_address)
 {
 	if(is_scalar($ip_address) === false)
 		return(false);
@@ -397,7 +397,7 @@ function xivo_ip2long($ip_address)
 	return($long);
 }
 
-function xivo_instanceof($obj,$name)
+function dwho_instanceof($obj,$name)
 {
 	if(is_object($obj) === false
 	|| is_string($name) === false
@@ -407,7 +407,7 @@ function xivo_instanceof($obj,$name)
 	return(true);
 }
 
-function xivo_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
+function dwho_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
 {
 	$r = strval($str);
 	$nb = (int) $nb;
@@ -433,7 +433,7 @@ function xivo_trunc(&$str,$nb=0,$end='',$chr=null,$trim=false)
 	return($r);
 }
 
-function xivo_ak($k,&$a,$t=false,$f=false)
+function dwho_ak($k,&$a,$t=false,$f=false)
 {
 	if(is_scalar($k) === false || is_array($a) === false)
 		return(false);
@@ -450,7 +450,7 @@ function xivo_ak($k,&$a,$t=false,$f=false)
 	return(false);
 }
 
-function xivo_pk($k,&$o,$t=false,$f=false)
+function dwho_pk($k,&$o,$t=false,$f=false)
 {
 	if(is_scalar($k) === false || is_object($o) === false)
 		return(false);
@@ -467,7 +467,7 @@ function xivo_pk($k,&$o,$t=false,$f=false)
 	return(false);
 }
 
-function xivo_issa($k,&$a,$t=false)
+function dwho_issa($k,&$a,$t=false)
 {
 	if(is_scalar($k) === false || is_array($a) === false)
 		return(false);
@@ -477,9 +477,9 @@ function xivo_issa($k,&$a,$t=false)
 	return(false);
 }
 
-function xivo_issa_val($k,&$a,$e=false)
+function dwho_issa_val($k,&$a,$e=false)
 {
-	if(xivo_issa($k,$a) === false)
+	if(dwho_issa($k,$a) === false)
 		return(false);
 
 	$r = array_values($a[$k]);
@@ -490,7 +490,7 @@ function xivo_issa_val($k,&$a,$e=false)
 	return($r);
 }
 
-function xivo_isso($k,&$o,$t=false)
+function dwho_isso($k,&$o,$t=false)
 {
 	if(is_scalar($k) === false || is_object($o) === false)
 		return(false);
@@ -500,14 +500,14 @@ function xivo_isso($k,&$o,$t=false)
 	return(false);
 }
 
-function xivo_clone($obj)
+function dwho_clone($obj)
 {
 	return(unserialize(serialize($obj)));
 }
 
-function xivo_group_array($ref,&$arr)
+function dwho_group_array($ref,&$arr)
 {
-	if(xivo_issa($ref,$arr) === false
+	if(dwho_issa($ref,$arr) === false
 	|| ($nb = count($arr[$ref])) === 0
 	|| is_array($arr) === false
 	|| empty($arr) === true)
@@ -532,7 +532,7 @@ function xivo_group_array($ref,&$arr)
 	return($r);
 }
 
-function xivo_array_combine($keys,$values)
+function dwho_array_combine($keys,$values)
 {
 	if(is_array($keys) === false || is_array($values) === false)
 		return(false);
@@ -548,11 +548,11 @@ function xivo_array_combine($keys,$values)
 	return($r);
 }
 
-function xivo_array_startswith_key($arr,$str,$sub=false)
+function dwho_array_startswith_key($arr,$str,$sub=false)
 {
 	$sub = (bool) $sub;
 
-	if(is_array($arr) === false || xivo_has_len($str) === false)
+	if(is_array($arr) === false || dwho_has_len($str) === false)
 		return(false);
 
 	$len = strlen($str);
@@ -573,7 +573,7 @@ function xivo_array_startswith_key($arr,$str,$sub=false)
 	return($r);
 }
 
-function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
+function dwho_array_intersect_key($arr,$data,$key=null,$empty=false)
 {
 	$empty = (bool) $empty;
 
@@ -606,7 +606,7 @@ function xivo_array_intersect_key($arr,$data,$key=null,$empty=false)
 	return($r);
 }
 
-function xivo_array_copy_intersect_key($arr,$data,$key=null,$empty=false)
+function dwho_array_copy_intersect_key($arr,$data,$key=null,$empty=false)
 {
 	$empty = (bool) $empty;
 
@@ -639,7 +639,7 @@ function xivo_array_copy_intersect_key($arr,$data,$key=null,$empty=false)
 	return($r);
 }
 
-function xivo_array_diff_key($arr1,$arr2)
+function dwho_array_diff_key($arr1,$arr2)
 {
 	if(is_array($arr1) === false || is_array($arr2) === false)
 		return(false);
@@ -657,7 +657,7 @@ function xivo_array_diff_key($arr1,$arr2)
 	return($r);
 }
 
-function xivo_array_reduce_level($arr,$t=false)
+function dwho_array_reduce_level($arr,$t=false)
 {
 	if(is_array($arr) === false)
 		return(false);
@@ -683,12 +683,12 @@ function xivo_array_reduce_level($arr,$t=false)
 	return($r);
 }
 
-function xivo_array_change_value_case($arr,$case=CASE_LOWER)
+function dwho_array_change_value_case($arr,$case=CASE_LOWER)
 {
 	return(array_flip(array_change_key_case(array_flip(&$arr),intval((bool) $case))));
 }
 
-function xivo_build_array_ref(&$a)
+function dwho_build_array_ref(&$a)
 {
 	if(is_array($a) === false)
 		return(false);
@@ -715,7 +715,7 @@ function xivo_build_array_ref(&$a)
 	return($r);
 }
 
-function xivo_unserialize(&$str)
+function dwho_unserialize(&$str)
 {
 	$r = array();
 
@@ -725,54 +725,59 @@ function xivo_unserialize(&$str)
 	return($r);
 }
 
-function xivo_print_r($a,$n='')
+function dwho_print_r($a,$n='')
 {
 	$n = (string) $n;
 
-	if(xivo_empty($n) === false)
+	if(dwho_empty($n) === false)
 		print '<b>'.$n.'</b> : ';
 	print '<pre>'; print_r($a); print '</pre>';
 }
 
-function xivo_var_dump($a,$n='')
+function dwho_var_dump($a,$n='')
 {
 	$n = (string) $n;
 
-	if(xivo_empty($n) === false)
+	if(dwho_empty($n) === false)
 		print '<b>'.$n.'</b> : ';
 	print '<pre>'; var_dump($a); print '</pre>';
 }
 
-function xivo_sprint_r(&$a,$t=false)
+function dwho_sprint_r(&$a,$t=false)
 {
 	ob_start();
 	print_r($a);
 	return(((bool) $t === false ? ob_get_clean() : nl2br(ob_get_clean())));
 }
 
-function xivo_svar_dump(&$a,$t=false)
+function dwho_svar_dump(&$a,$t=false)
 {
 	ob_start();
 	var_dump($a);
 	return(((bool) $t === false ? ob_get_clean() : nl2br(ob_get_clean())));
 }
 
-function xivo_msg($msg='')
+function dwho_msg($msg='')
 {
-	if(xivo_has_len($msg) === true)
+	if(dwho_has_len($msg) === true)
 		$msg = ': '.$msg;
 	else
 		$msg = '';
 
-	return(XIVO_LABEL.$msg);
+	if(defined('DWHO_LABEL_CUSTOM') === true)
+		$label = DWHO_LABEL_CUSTOM;
+	else
+		$label = DWHO_LABEL;
+
+	return($label.$msg);
 }
 
-function xivo_die($msg='')
+function dwho_die($msg='')
 {
-	die(xivo_msg($msg));
+	die(dwho_msg($msg));
 }
 
-function xivo_chk_email($email,$strict=false)
+function dwho_chk_email($email,$strict=false)
 {
 	$nb = 0;
 	$email = strtolower(strval($email));
@@ -793,21 +798,21 @@ function xivo_chk_email($email,$strict=false)
 	return(false);
 }
 
-function xivo_eol($str)
+function dwho_eol($str)
 {
-	return(preg_replace('#\r\n|\n|\r#',XIVO_EOL,strval($str)));
+	return(preg_replace('#\r\n|\n|\r#',DWHO_EOL,strval($str)));
 }
 
-function xivo_alttitle($str,$sc=true)
+function dwho_alttitle($str,$sc=true)
 {
 	$pat = array('/<.+?>/s','/\t+/s','/\s+/s','/&nbsp;| +/s');
 	$rep = array('','',' ',' ');
 	$r = preg_replace($pat,$rep,strval($str));
 
-	return(((bool) $sc === true ? xivo_htmlsc($r) : $r));
+	return(((bool) $sc === true ? dwho_htmlsc($r) : $r));
 }
 
-function xivo_notag($str)
+function dwho_notag($str)
 {
 	$pat = array('/<.+?>/s','/\t+/s','/&nbsp;| +/s');
 	$rep = array('','',' ');
@@ -815,12 +820,12 @@ function xivo_notag($str)
 	return(preg_replace($pat,$rep,strval($str)));
 }
 
-function xivo_notagscript($str)
+function dwho_notagscript($str)
 {
 	return(preg_replace('@<script[^>]*?>.*?</script[^>]*?>@si','',strval($str)));
 }
 
-function xivo_tagreplace($str)
+function dwho_tagreplace($str)
 {
 	$pat = array('"','\'','<','>');
 	$rep = array('&quot;','&#039;','&lt;','&gt;');
@@ -828,21 +833,21 @@ function xivo_tagreplace($str)
 	return(str_replace($pat,$rep,strval($str)));
 }
 
-function xivo_htmlsc($str,$style=ENT_QUOTES)
+function dwho_htmlsc($str,$style=ENT_QUOTES)
 {
 	return(htmlspecialchars(strval($str),$style,'UTF-8'));
 }
 
-function xivo_htmlen($str,$style=ENT_QUOTES)
+function dwho_htmlen($str,$style=ENT_QUOTES)
 {
 	return(htmlentities(strval($str),$style,'UTF-8'));
 }
 
-function xivo_malert($subject='',$msg='',$to='')
+function dwho_malert($subject='',$msg='',$to='')
 {
 	$subject = (string) $subject;
 	$msg = (string) $msg;
-	$mail = $to !== '' ? xivo_chk_email($to) : '';
+	$mail = $to !== '' ? dwho_chk_email($to) : '';
 
 	$h  = 'MIME-Version: 1.0'."\n";
 	$h .= 'Content-type: text/html; charset=utf-8'."\n";
@@ -850,22 +855,22 @@ function xivo_malert($subject='',$msg='',$to='')
 
 	if($mail === false)
 		return(trigger_error('Invalid e-mail',E_USER_WARNING));
-	else if($mail === '' && defined('XIVO_ROOT_MAIL') === true && xivo_chk_email(XIVO_ROOT_MAIL) !== false)
+	else if($mail === '' && defined('DWHO_ROOT_MAIL') === true && dwho_chk_email(DWHO_ROOT_MAIL) !== false)
 	{
-		$mail = 'TECK XIVO <'.XIVO_ROOT_MAIL.'>';
+		$mail = 'TECK DWHO <'.DWHO_ROOT_MAIL.'>';
 		$h .= 'To: '.$mail."\n";
 	}
 	else
 		$h .= 'To: '.$mail.' <'.$mail.'>'."\n";
 
-	$h .= 'From: XIVO <xivo@xivo>'."\n";
-	$h .= 'X-Mailer: XIVO'."\n";
+	$h .= 'From: DWHO <dwho@example.com>'."\n";
+	$h .= 'X-Mailer: DWHO'."\n";
 	$h .= 'X-Priority: 1 (Highest)'."\n";
 
 	mb_send_mail($mail,$subject,$msg,$h);
 }
 
-function xivo_last_key(&$a,$sort=SORT_NUMERIC)
+function dwho_last_key(&$a,$sort=SORT_NUMERIC)
 {
 	if(is_array($a) === false)
 		return(false);
@@ -876,7 +881,7 @@ function xivo_last_key(&$a,$sort=SORT_NUMERIC)
 	return(end($ak));
 }
 
-function xivo_calc_time($from,$time,$format,$valzero=true)
+function dwho_calc_time($from,$time,$format,$valzero=true)
 {
 	$valzero = (bool) $valzero;
 
@@ -956,7 +961,7 @@ function xivo_calc_time($from,$time,$format,$valzero=true)
 	return($r);
 }
 
-function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
+function dwho_calc_duration($beg,$end,$diff=false,$unset=false)
 {
 	$r = array();
 
@@ -1003,7 +1008,7 @@ function xivo_calc_duration($beg,$end,$diff=false,$unset=false)
 	return($r);
 }
 
-function xivo_calc_page($page,$nb,$total)
+function dwho_calc_page($page,$nb,$total)
 {
 	$r = array(
 		'page'	=> 1,
@@ -1015,9 +1020,9 @@ function xivo_calc_page($page,$nb,$total)
 		'beg'	=> 0,
 		'end'	=> 0);
 
-	$r['page'] = xivo_uint($page,1);
-	$r['nb'] = xivo_uint($nb,10);
-	$r['total'] = xivo_uint($total);
+	$r['page'] = dwho_uint($page,1);
+	$r['nb'] = dwho_uint($nb,10);
+	$r['total'] = dwho_uint($total);
 
 	if($r['total'] === 0)
 		return($r);
@@ -1039,7 +1044,7 @@ function xivo_calc_page($page,$nb,$total)
 	return($r);
 }
 
-function xivo_gmlcstrftime($format,$time)
+function dwho_gmlcstrftime($format,$time)
 {
 	$format = (string) $format;
 	$time = (int) $time;
@@ -1068,10 +1073,10 @@ function xivo_gmlcstrftime($format,$time)
 	return(strftime($format,gmmktime($h,$m,$arr[2],$arr[3],$arr[4],$arr[5])));
 }
 
-function xivo_printf_escape($format,$argc=0)
+function dwho_printf_escape($format,$argc=0)
 {
 	$format = (string) $format;
-	$argc = xivo_uint($argc);
+	$argc = dwho_uint($argc);
 
 	if(preg_match_all('/%+/',$format,$match,PREG_OFFSET_CAPTURE) === 0)
 		return($format);
@@ -1095,11 +1100,11 @@ function xivo_printf_escape($format,$argc=0)
 	return($format);
 }
 
-function xivo_replacef($search,$replace,$subject)
+function dwho_replacef($search,$replace,$subject)
 {
 	if(is_scalar($subject) === false)
 		return(false);
-	else if(xivo_has_len($search) === false)
+	else if(dwho_has_len($search) === false)
 		return($subject);
 	else if(strpos($search,'%') !== false)
 		return(false);
@@ -1127,7 +1132,7 @@ function xivo_replacef($search,$replace,$subject)
 	return($r);
 }
 
-function xivo_implode($glue,$pieces)
+function dwho_implode($glue,$pieces)
 {
 	if(is_scalar($glue) === false)
 		return(false);
@@ -1147,9 +1152,9 @@ function xivo_implode($glue,$pieces)
 	return(implode((string) $glue,$pieces));
 }
 
-function xivo_is_max_digit($min,$max,$equal=false)
+function dwho_is_max_digit($min,$max,$equal=false)
 {
-	if(xivo_digit($min) === false || xivo_digit($max) === false)
+	if(dwho_digit($min) === false || dwho_digit($max) === false)
 		return(null);
 	else if(strlen($min) === strlen($max))
 		return((bool) $equal === false ? ($max > $min) : ($max >= $min));
@@ -1157,9 +1162,9 @@ function xivo_is_max_digit($min,$max,$equal=false)
 	return(false);
 }
 
-function xivo_get_max_digit($digit1,$digit2)
+function dwho_get_max_digit($digit1,$digit2)
 {
-	if(xivo_digit($digit1) === false || xivo_digit($digit2) === false)
+	if(dwho_digit($digit1) === false || dwho_digit($digit2) === false)
 		return(false);
 	else if(strlen($digit1) === strlen($digit2))
 		return($digit1 > $digit2 ? $digit1 : $digit2);

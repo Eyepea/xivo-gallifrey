@@ -50,9 +50,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(empty($this->_conf) === false)
 			return(null);
 
-		$dir = dirname(__FILE__).XIVO_SEP_DIR.'config';
+		$dir = dirname(__FILE__).DWHO_SEP_DIR.'config';
 
-		if(($this->_conf = xivo_gat::get_file($dir)) === false)
+		if(($this->_conf = dwho_gat::get_file($dir)) === false)
 			$this->_conf = array();
 	}
 
@@ -81,7 +81,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 		$r = array();
 
-		if(($id = xivo_ulongint($id)) !== 0)
+		if(($id = dwho_ulongint($id)) !== 0)
 			$r['id'] = $id;
 
 		$r['context'] = $arr['context'];
@@ -91,7 +91,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		if(isset($arr['priority']) === false)
 			$r['priority'] = 1;
 		else
-			$r['priority'] = xivo_uint($arr['priority'],1);
+			$r['priority'] = dwho_uint($arr['priority'],1);
 
 		if(isset($arr['appdata']) === true)
 			$r['appdata'] = (string) $arr['appdata'];
@@ -109,7 +109,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function edit($id,$arr,$disable=null)
 	{
-		if(($id = xivo_ulongint($id)) === 0 || is_array($arr) === false)
+		if(($id = dwho_ulongint($id)) === 0 || is_array($arr) === false)
 			return(false);
 
 		$r = array();
@@ -121,7 +121,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		if(isset($arr['priority']) === true)
-			$r['priority'] = xivo_uint($arr['priority'],1);
+			$r['priority'] = dwho_uint($arr['priority'],1);
 
 		if(isset($arr['app']) === true)
 			$r['app'] = (string) $arr['app'];
@@ -155,17 +155,17 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function set_exten($app,$id=0,$arr=null,$exten='',$context='')
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = dwho_uint($id)) === 0)
 		{
-			if(xivo_has_len($exten) === false
-			|| xivo_has_len($context) === false)
+			if(dwho_has_len($exten) === false
+			|| dwho_has_len($context) === false)
 				return(false);
 
 			$id = count($this->_exten) + 1;
 			$this->_exten[$id] = array();
 		}
-		else if(xivo_issa($id,$this->_exten) === false
-		|| xivo_issa(0,$this->_exten[$id]) === false)
+		else if(dwho_issa($id,$this->_exten) === false
+		|| dwho_issa(0,$this->_exten[$id]) === false)
 			return(false);
 		else
 		{
@@ -215,7 +215,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 			$r['commented'] = $arr['commented'];
 
 		if(isset($arr['priority']) === true)
-			$r['priority'] = xivo_uint($arr['priority']);
+			$r['priority'] = dwho_uint($arr['priority']);
 
 		return($this->chk_values($r,true,false,false));
 	}
@@ -223,9 +223,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function get_loaded_exten($id)
 	{
 		if(is_array($this->_exten) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| xivo_issa($id,$this->_exten) === false
-		|| xivo_issa(0,$this->_exten[$id]) === false)
+		|| ($id = dwho_uint($id)) === 0
+		|| dwho_issa($id,$this->_exten) === false
+		|| dwho_issa(0,$this->_exten[$id]) === false)
 			return(false);
 
 		return($this->_exten[$id]);
@@ -240,7 +240,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$where['exten'] = $this->_sre->clean_extension($exten);
 		$where['context'] = $context;
 
-		if(xivo_has_len($app) === true)
+		if(dwho_has_len($app) === true)
 		{
 			if(($app = $this->get_app_displayname($app)) === false)
 				return(false);
@@ -260,9 +260,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function add_exten($id)
 	{
 		if(is_array($this->_exten) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| xivo_issa($id,$this->_exten) === false
-		|| xivo_issa(0,$this->_exten[$id]) === false)
+		|| ($id = dwho_uint($id)) === 0
+		|| dwho_issa($id,$this->_exten) === false
+		|| dwho_issa(0,$this->_exten[$id]) === false)
 			return(false);
 
 		$nb = count($this->_exten[$id]);
@@ -289,9 +289,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function delete_exten($id)
 	{
 		if(is_array($this->_exten) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| xivo_issa($id,$this->_exten) === false
-		|| xivo_issa(0,$this->_exten[$id]) === false)
+		|| ($id = dwho_uint($id)) === 0
+		|| dwho_issa($id,$this->_exten) === false
+		|| dwho_issa(0,$this->_exten[$id]) === false)
 			return(false);
 
 		$where = array();
@@ -308,17 +308,17 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function set_context($exten,$app,$id=0,$arr=null,$context='')
 	{
-		if(($id = xivo_uint($id)) === 0)
+		if(($id = dwho_uint($id)) === 0)
 		{
-			if(xivo_has_len($exten) === false
-			|| xivo_has_len($context) === false)
+			if(dwho_has_len($exten) === false
+			|| dwho_has_len($context) === false)
 				return(false);
 
 			$id = count($this->_context) + 1;
 			$this->_context[$id] = array();
 		}
-		else if(xivo_issa($id,$this->_context) === false
-		|| xivo_issa(0,$this->_context[$id]) === false)
+		else if(dwho_issa($id,$this->_context) === false
+		|| dwho_issa(0,$this->_context[$id]) === false)
 			return(false);
 		else
 			$context = $this->_context[$id][0]['context'];
@@ -341,9 +341,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function get_loaded_context($id)
 	{
 		if(is_array($this->_context) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| xivo_issa($id,$this->_context) === false
-		|| xivo_issa(0,$this->_context[$id]) === false)
+		|| ($id = dwho_uint($id)) === 0
+		|| dwho_issa($id,$this->_context) === false
+		|| dwho_issa(0,$this->_context[$id]) === false)
 			return(false);
 
 		return($this->_context[$id]);
@@ -357,10 +357,10 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$where = array();
 		$where['context'] = $context;
 
-		if(xivo_has_len($exten) === true)
+		if(dwho_has_len($exten) === true)
 			$where['exten'] = $this->_sre->clean_extension($exten);
 
-		if(xivo_has_len($app) === true)
+		if(dwho_has_len($app) === true)
 		{
 			if(($app = $this->get_app_displayname($app)) === false)
 				return(false);
@@ -380,9 +380,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function add_context($id)
 	{
 		if(is_array($this->_context) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| xivo_issa($id,$this->_context) === false
-		|| xivo_issa(0,$this->_context[$id]) === false)
+		|| ($id = dwho_uint($id)) === 0
+		|| dwho_issa($id,$this->_context) === false
+		|| dwho_issa(0,$this->_context[$id]) === false)
 			return(false);
 
 		$nb = count($this->_context[$id]);
@@ -409,9 +409,9 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 	function delete_context($id)
 	{
 		if(is_array($this->_context) === false
-		|| ($id = xivo_uint($id)) === 0
-		|| xivo_issa($id,$this->_context) === false
-		|| xivo_issa(0,$this->_context[$id]) === false)
+		|| ($id = dwho_uint($id)) === 0
+		|| dwho_issa($id,$this->_context) === false
+		|| dwho_issa(0,$this->_context[$id]) === false)
 			return(false);
 
 		$where = array();
@@ -478,7 +478,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		else if(is_object($this->_filter_appdata) === true)
 			return(true);
 
-		$this->_filter_appdata = new xivo_filter();
+		$this->_filter_appdata = new dwho_filter();
 
 		return(true);
 	}
@@ -518,7 +518,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		else
 			return(false);
 
-		if(xivo_issa('arg',$cfg) === false)
+		if(dwho_issa('arg',$cfg) === false)
 			return($r);
 
 		$nbarg = count($cfg['arg']);
@@ -542,7 +542,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		$rs = $this->_filter_appdata->get_result();
 
 		if(isset($cfg['appdata']) === true)
-			$r['appdata'] = vsprintf(xivo_printf_escape($cfg['appdata'],count($rs)),$rs);
+			$r['appdata'] = vsprintf(dwho_printf_escape($cfg['appdata'],count($rs)),$rs);
 		else if(strcasecmp('macro',$r['app']) !== 0)
 			$r['appdata'] = rtrim(implode('|',$rs),'|');
 		else

@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_context extends xivo_application_asterisk_abstract
 {
@@ -182,7 +182,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		{
 			$info['context'] = $rs[$i];
 
-			if(xivo_has_len($info['context']['entity']) === false
+			if(dwho_has_len($info['context']['entity']) === false
 			|| is_object($this->_entity) === false
 			|| ($info['entity'] = $this->_entity->get_where(
 								array('name' => $info['context']['entity']))) === false)
@@ -249,7 +249,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$this->_reset();
 
 		if(($action !== 'add' && $action !== 'edit') === true
-		|| xivo_issa('context',$arr) === false)
+		|| dwho_issa('context',$arr) === false)
 			return(false);
 
 		$this->set_context($arr['context']);
@@ -262,18 +262,18 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		   || (isset($this->_info['deletable']) === true
 		      && $this->_info['deletable'] === true)) === true)
 		{
-			if(xivo_issa('contextinclude',$arr) === true)
+			if(dwho_issa('contextinclude',$arr) === true)
 				$this->set_contextinclude($name,$arr['contextinclude']);
 			return(($this->get_errnb() < 1));
 		}
 
-		if(xivo_issa('contextnumbers',$arr) === true)
+		if(dwho_issa('contextnumbers',$arr) === true)
 			$this->set_contextnumbers($name,$arr['contextnumbers']);
 
 		$this->set_contextnummember($action,$name);
 		$this->set_contextmember($action,$name);
 
-		if(xivo_issa('contextinclude',$arr) === true)
+		if(dwho_issa('contextinclude',$arr) === true)
 			$this->set_contextinclude($name,$arr['contextinclude']);
 
 		return(($this->get_errnb() < 1));
@@ -304,7 +304,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function set_contextnumbers($context,$arr)
 	{
-		if(xivo_has_len($context) === false)
+		if(dwho_has_len($context) === false)
 		{
 			$this->_set_result('contextnumbers',false);
 			$this->_set_error('contextnumbers','wrong context');
@@ -326,7 +326,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		$reslist = $errlist = $incr = array();
 		$nberr = 0;
 
-		if(xivo_issa('contextnummember',$this->_info) === true)
+		if(dwho_issa('contextnummember',$this->_info) === true)
 			$contextnummember = $this->_info['contextnummember'];
 		else
 			$contextnummember = false;
@@ -348,7 +348,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 				$infotmp = $info;
 				$infotmp['type'] = $key;
 
-				if(xivo_ak('numberbeg',$value) === false)
+				if(dwho_ak('numberbeg',$value) === false)
 				{
 					$errlist[$key][$i] = 'missing numberbeg';
 					$reslist[$key][$i++] = $infotmp;
@@ -361,7 +361,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 				if($key === 'incall')
 				{
-					if(xivo_has_len($value,'didlength') === false)
+					if(dwho_has_len($value,'didlength') === false)
 					{
 						$errlist['incall'][$i] = 'wrong didlength';
 						$reslist['incall'][$i++] = $infotmp;
@@ -373,10 +373,10 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					$infotmp['didlength'] = $value['didlength'];
 				}
 
-				if(xivo_has_len($value,'numberend') === true
+				if(dwho_has_len($value,'numberend') === true
 				&& $value['numberbeg'] !== $value['numberend'])
 				{
-					if(xivo_is_max_digit($value['numberbeg'],$value['numberend'],true) !== true)
+					if(dwho_is_max_digit($value['numberbeg'],$value['numberend'],true) !== true)
 					{
 						$errlist[$key][$i] = 'wrong interval';
 						$reslist[$key][$i++] = $infotmp;
@@ -387,7 +387,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 					$infotmp['numberend'] = $value['numberend'];
 				}
-				else if(xivo_has_len($infotmp['numberbeg']) === false)
+				else if(dwho_has_len($infotmp['numberbeg']) === false)
 				{
 					$nb--;
 					continue;
@@ -446,7 +446,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 								$number = $numberbeg;
 							else if(preg_match($pattern,$numberend) === 1)
 								$number = $numberend;
-							else if(xivo_digit($number) === false)
+							else if(dwho_digit($number) === false)
 							{
 								if($this->_contextnumbers->chk_pattern_in_interval($numberbeg,
 														   $exten_pattern,
@@ -506,9 +506,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	function set_contextnummember($action,$context)
 	{
 		if($action !== 'edit'
-		|| xivo_issa('context',$this->_origin) === false
+		|| dwho_issa('context',$this->_origin) === false
 		|| (string) $context === (string) $this->_origin['context']['name']
-		|| xivo_issa('contextnummember',$this->_origin) === false)
+		|| dwho_issa('contextnummember',$this->_origin) === false)
 			return(null);
 		else if($this->_contextnummember->chk_value('context',$context) !== false)
 		{
@@ -525,9 +525,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	function set_contextmember($action,$context)
 	{
 		if($action !== 'edit'
-		|| xivo_issa('context',$this->_origin) === false
+		|| dwho_issa('context',$this->_origin) === false
 		|| (string) $context === (string) $this->_origin['context']['name']
-		|| xivo_issa('contextmember',$this->_origin) === false)
+		|| dwho_issa('contextmember',$this->_origin) === false)
 			return(null);
 		else if($this->_contextmember->chk_value('context',$context) !== false)
 		{
@@ -543,7 +543,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function set_contextinclude($context,$arr)
 	{
-		if(xivo_has_len($context) === false)
+		if(dwho_has_len($context) === false)
 		{
 			$this->_set_result('contextinclude',false);
 			$this->_set_error('contextinclude','wrong context');
@@ -742,7 +742,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_context()
 	{
-		if(xivo_issa('context',$this->_info) === false
+		if(dwho_issa('context',$this->_info) === false
 		|| ($rs = $this->get_result('context')) === null
 		|| $rs === false)
 			return(false);
@@ -765,12 +765,12 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		else
 			$deletable = false;
 
-		if(xivo_issa('context',$this->_info) === false)
+		if(dwho_issa('context',$this->_info) === false)
 			return(false);
 		else if((string) $this->get_result_var('context','entity') === ''
 		&& $deletable === true)
 			return($this->delete_contextnumbers());
-		else if(xivo_issa('contextnumbers',$this->_info) === false)
+		else if(dwho_issa('contextnumbers',$this->_info) === false)
 			return($this->add_contextnumbers());
 
 		$where = array();
@@ -805,10 +805,10 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_contextnummember()
 	{
-		if(xivo_issa('context',$this->_info) === false)
+		if(dwho_issa('context',$this->_info) === false)
 			return(false);
 		else if(($newcontext = (string) $this->get_result_var('contextnummember','context')) === ''
-		|| xivo_issa('contextnummember',$this->_info) === false)
+		|| dwho_issa('contextnummember',$this->_info) === false)
 			return(null);
 
 		$context = $this->_info['context']['name'];
@@ -845,10 +845,10 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_contextmember()
 	{
-		if(xivo_issa('context',$this->_info) === false)
+		if(dwho_issa('context',$this->_info) === false)
 			return(false);
 		else if(($newcontext = (string) $this->get_result_var('contextmember','context')) === ''
-		|| xivo_issa('contextmember',$this->_info) === false)
+		|| dwho_issa('contextmember',$this->_info) === false)
 			return(null);
 
 		$context = $this->_info['context']['name'];
@@ -903,7 +903,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_contextinclude_name()
 	{
-		if(xivo_issa('context',$this->_info) === false
+		if(dwho_issa('context',$this->_info) === false
 		|| ($newcontext = (string) $this->get_result_var('context','name')) === '')
 			return(false);
 		else if($this->_contextinclude->edit_where(array('include' => $this->_info['context']['name']),
@@ -920,7 +920,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function edit_contextinclude()
 	{
-		if(xivo_issa('contextinclude',$this->_info) === false)
+		if(dwho_issa('contextinclude',$this->_info) === false)
 			return($this->add_contextinclude());
 
 		$this->_return['contextinclude'] = $this->delete_contextinclude();
@@ -948,8 +948,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_context_contextnummember($name,$context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false
-		|| xivo_has_len($name) === false)
+		if(dwho_issa('contextnummember',$this->_return) === false
+		|| dwho_has_len($name) === false)
 			return(false);
 
 		$ref = &$this->_return['contextnummember'];
@@ -979,7 +979,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_user_contextnummember($context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
+		if(dwho_issa('contextnummember',$this->_return) === false)
 			return(false);
 
 		$ref = &$this->_return['contextnummember'];
@@ -1014,7 +1014,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_group_contextnummember($context,$newcontext)
 	{
-		if(xivo_issa('contextnummember',$this->_return) === false)
+		if(dwho_issa('contextnummember',$this->_return) === false)
 			return(false);
 
 		$ref = &$this->_return['contextnummember'];
@@ -1049,8 +1049,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_context_contextmember($name,$context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false
-		|| xivo_has_len($name) === false)
+		if(dwho_issa('contextmember',$this->_return) === false
+		|| dwho_has_len($name) === false)
 			return(false);
 
 		$ref = &$this->_return['contextmember'];
@@ -1080,7 +1080,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_generalsip_contextmember($context,$newcontext,$data)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false
+		if(dwho_issa('contextmember',$this->_return) === false
 		|| is_array($data) === false)
 			return(false);
 
@@ -1110,7 +1110,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_generaliax_contextmember($context,$newcontext,$data)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false
+		if(dwho_issa('contextmember',$this->_return) === false
 		|| is_array($data) === false)
 			return(false);
 
@@ -1133,7 +1133,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_generalvoicemail_contextmember($context,$newcontext,$data)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false
+		if(dwho_issa('contextmember',$this->_return) === false
 		|| is_array($data) === false)
 			return(false);
 
@@ -1179,7 +1179,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_meetme_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
+		if(dwho_issa('contextmember',$this->_return) === false)
 			return(false);
 
 		$ref = &$this->_return['contextmember'];
@@ -1199,7 +1199,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_outcall_contextmember($context,$newcontext)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false)
+		if(dwho_issa('contextmember',$this->_return) === false)
 			return(false);
 
 		$ref = &$this->_return['contextmember'];
@@ -1264,7 +1264,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _update_voicemail_contextmember($context,$newcontext,$data)
 	{
-		if(xivo_issa('contextmember',$this->_return) === false
+		if(dwho_issa('contextmember',$this->_return) === false
 		|| is_array($data) === false)
 			return(false);
 
@@ -1350,7 +1350,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					$where = array('context' => $context);
 
 					if(isset($this->_origin['contextnummember']) === false
-					|| xivo_issa(0,$this->_origin['contextnummember']) === false)
+					|| dwho_issa(0,$this->_origin['contextnummember']) === false)
 					{
 						$this->_contextnummember->delete_where($where);
 						continue;
@@ -1392,7 +1392,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					$where = array('context' => $context);
 
 					if(isset($this->_origin['contextmember']) === false
-					|| xivo_issa(0,$this->_origin['contextmember']) === false)
+					|| dwho_issa(0,$this->_origin['contextmember']) === false)
 					{
 						$this->_contextmember->delete_where($where);
 						continue;
@@ -1461,7 +1461,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					$where = array('context' => $context);
 
 					if(isset($this->_origin['contextinclude']) === false
-					|| xivo_issa(0,$this->_origin['contextinclude']) === false)
+					|| dwho_issa(0,$this->_origin['contextinclude']) === false)
 					{
 						$this->_contextmember->delete_where($where);
 						continue;
@@ -1521,7 +1521,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function delete_context()
 	{
-		if(xivo_issa('context',$this->_info) === false)
+		if(dwho_issa('context',$this->_info) === false)
 			return(false);
 
 		$r = $this->_context->delete($this->_info['context']['name']);
@@ -1534,9 +1534,9 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function delete_contextnumbers()
 	{
-		if(xivo_issa('contextnumbers',$this->_info) === false)
+		if(dwho_issa('contextnumbers',$this->_info) === false)
 			return(null);
-		else if(xivo_issa('context',$this->_info) === false)
+		else if(dwho_issa('context',$this->_info) === false)
 			return(false);
 
 		$r = $this->_contextnumbers->delete_where(array('context' => $this->_info['context']['name']));
@@ -1549,7 +1549,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function delete_contextinclude()
 	{
-		if(xivo_issa('context',$this->_info) === false)
+		if(dwho_issa('context',$this->_info) === false)
 			return(false);
 
 		$r = $this->_contextinclude->delete_where(array('context' => $this->_info['context']['name']));
@@ -1639,7 +1639,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 	function _enable_disable_context($disable=false)
 	{
-		if(xivo_issa('context',$this->_info) === false)
+		if(dwho_issa('context',$this->_info) === false)
 			return(false);
 		else if((bool) $disable === false)
 			$r = $this->_context->enable($this->_info['context']['name']);

@@ -34,10 +34,10 @@ else:
 	$dcontext = (string) $info['dcontext'];
 endif;
 
-if(xivo_has_len($info['amaflags']) === false):
+if(dwho_has_len($info['amaflags']) === false):
 	$amaflags = null;
 else:
-	$amaflags = xivo_uint($info['amaflags']);
+	$amaflags = dwho_uint($info['amaflags']);
 endif;
 
 $page = $exportcsv = '';
@@ -119,9 +119,9 @@ $dhtml->write_js($js_result);
 		<li id="smenu-tab-3"
 		    class="moo-last"
 		    onclick="xivo_smenu_click(this,'moc','sb-part-result',1);
-			     location.href = xivo.dom.node.firstchild(
-						xivo.dom.node.firstchild(
-							xivo.dom.node.firstchild(this)));"
+			     location.href = dwho.dom.node.firstchild(
+						dwho.dom.node.firstchild(
+							dwho.dom.node.firstchild(this)));"
 		    onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
 			<div class="tab">
 				<span class="span-center"><?=$url->href_html($this->bbf('smenu_exportcsv'),
@@ -142,8 +142,8 @@ $dhtml->write_js($js_result);
 <div id="sb-part-first"<?=($result !== false ? ' class="b-nodisplay"' : '')?>>
 <form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
@@ -159,11 +159,11 @@ $dhtml->write_js($js_result);
 				  'field'	=> false,
 				  'name'	=> 'dbeg',
 				  'labelid'	=> 'dbeg',
-				  'default'	=> xivo_i18n::strftime_l('%Y-%m-%d',null),
+				  'default'	=> dwho_i18n::strftime_l('%Y-%m-%d',null),
 				  'value'	=> $info['dbeg']));
 ?>
 <a href="#"
-   onclick="xivo_eid('cal-dend').style.display = 'none';
+   onclick="dwho_eid('cal-dend').style.display = 'none';
 	    xivo_calendar_display('cal-dbeg','it-dbeg');"
    onmouseover="xivo_calendar_body();"
    onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');"
@@ -188,7 +188,7 @@ $dhtml->write_js($js_result);
 				  'value'	=> $info['dend']));
 ?>
 <a href="#"
-   onclick="xivo_eid('cal-dbeg').style.display = 'none';
+   onclick="dwho_eid('cal-dbeg').style.display = 'none';
 	    xivo_calendar_display('cal-dend','it-dend');"
    onmouseover="xivo_calendar_body();"
    onmouseout="xivo_calendar_body('cal-dend','it-dend');"
@@ -468,19 +468,19 @@ endif;
 			$ref = &$result[$i];
 			$mod = ($i % 2) + 1;
 
-			if(xivo_has_len($ref['src']) === false):
+			if(dwho_has_len($ref['src']) === false):
 				$src = '-';
 			else:
-				$src = xivo_htmlen(xivo_trunc($ref['src'],15,'...'));
+				$src = dwho_htmlen(dwho_trunc($ref['src'],15,'...'));
 			endif;
 
-			if(xivo_has_len($ref['dst']) === false):
+			if(dwho_has_len($ref['dst']) === false):
 				$dst = '-';
 			else:
-				$dst = xivo_htmlen(xivo_trunc($ref['dst'],15,'...'));
+				$dst = dwho_htmlen(dwho_trunc($ref['dst'],15,'...'));
 			endif;
 
-			$duration = xivo_calc_duration(null,null,$ref['duration'],true);
+			$duration = dwho_calc_duration(null,null,$ref['duration'],true);
 
 			if(($cnt_duration = count($duration)) === 4):
 				$bbf_duration = 'entry_duration-dayhourminsec';
@@ -492,7 +492,7 @@ endif;
 				$bbf_duration = 'entry_duration-sec';
 			endif;
 
-			$billsec = xivo_calc_duration(null,null,$ref['billsec'],true);
+			$billsec = dwho_calc_duration(null,null,$ref['billsec'],true);
 
 			if(($cnt_billsec = count($billsec)) === 4):
 				$bbf_billsec = 'entry_billsec-dayhourminsec';
@@ -511,12 +511,12 @@ endif;
 	    onmouseover="this.tmp = this.className;
 			 this.className = 'sb-content l-infos-over curpointer';"
 	    onmouseout="this.className = this.tmp;"
-	    onclick="this.entryline = xivo_eid('cdr-infos-<?=$i?>').style.display;
-		     xivo_eid('cdr-infos-<?=$i?>').style.display = this.entryline === '' || this.entryline === 'none'
+	    onclick="this.entryline = dwho_eid('cdr-infos-<?=$i?>').style.display;
+		     dwho_eid('cdr-infos-<?=$i?>').style.display = this.entryline === '' || this.entryline === 'none'
 								   ? 'table-row'
 								   : 'none';">
 		<td class="td-left">
-			<a href="#" onclick="return(false);"><?=xivo_i18n::strftime_l(
+			<a href="#" onclick="return(false);"><?=dwho_i18n::strftime_l(
 								$this->bbf('date_format_yymmddhhiiss'),
 								null,
 								strtotime($ref['calldate']));?></a>
@@ -529,82 +529,82 @@ endif;
 		<td colspan="4" class="td-single">
 		<dl>
 		<?php
-			if(xivo_has_len($ref['channel']) === true):
+			if(dwho_has_len($ref['channel']) === true):
 				echo	'<dt>',$this->bbf('entry_channel'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['channel']),'">',
-					xivo_htmlen(xivo_trunc($ref['channel'],30,'...',false)),
+					'<dd title="',dwho_htmlen($ref['channel']),'">',
+					dwho_htmlen(dwho_trunc($ref['channel'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['disposition']) === true):
+			if(dwho_has_len($ref['disposition']) === true):
 				echo	'<dt>',$this->bbf('entry_disposition'),'</dt>',
 					'<dd>',$this->bbf('entry_disposition',$ref['disposition']),'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['amaflagsmeta']) === true):
+			if(dwho_has_len($ref['amaflagsmeta']) === true):
 				echo	'<dt>',$this->bbf('entry_amaflagsmeta'),'</dt>',
 					'<dd>',$this->bbf('ast_amaflag_name_info',$ref['amaflagsmeta']),'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['clid']) === true):
+			if(dwho_has_len($ref['clid']) === true):
 				echo	'<dt>',$this->bbf('entry_clid'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['clid']),'">',
-					xivo_htmlen(xivo_trunc($ref['clid'],30,'...',false)),
+					'<dd title="',dwho_htmlen($ref['clid']),'">',
+					dwho_htmlen(dwho_trunc($ref['clid'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['accountcode']) === true):
+			if(dwho_has_len($ref['accountcode']) === true):
 				echo	'<dt>',$this->bbf('entry_accountcode'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['accountcode']),'">',
-					xivo_htmlen(xivo_trunc($ref['accountcode'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref['accountcode']),'">',
+					dwho_htmlen(dwho_trunc($ref['accountcode'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['userfield']) === true):
+			if(dwho_has_len($ref['userfield']) === true):
 				echo	'<dt>',$this->bbf('entry_userfield'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['userfield']),'">',
-					xivo_htmlen(xivo_trunc($ref['userfield'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref['userfield']),'">',
+					dwho_htmlen(dwho_trunc($ref['userfield'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 		?>
 		</dl>
 		<dl>
 		<?php
-			if(xivo_has_len($ref['dcontext']) === true):
+			if(dwho_has_len($ref['dcontext']) === true):
 				echo	'<dt>',$this->bbf('entry_dcontext'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['dcontext']),'">',
-					xivo_htmlen(xivo_trunc($ref['dcontext'],30,'...',false)),
+					'<dd title="',dwho_htmlen($ref['dcontext']),'">',
+					dwho_htmlen(dwho_trunc($ref['dcontext'],30,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['dstchannel']) === true):
+			if(dwho_has_len($ref['dstchannel']) === true):
 				echo	'<dt>',$this->bbf('entry_dstchannel'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['dstchannel']),'">',
-					xivo_htmlen(xivo_trunc($ref['dstchannel'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref['dstchannel']),'">',
+					dwho_htmlen(dwho_trunc($ref['dstchannel'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
 			echo	'<dt>',$this->bbf('entry_billsec'),'</dt>',
 				'<dd>',$this->bbf($bbf_billsec,$billsec),'<br /></dd>';
 
-			if(xivo_has_len($ref['lastapp']) === true):
+			if(dwho_has_len($ref['lastapp']) === true):
 				echo	'<dt>',$this->bbf('entry_lastapp'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['lastapp']),'">',
-					xivo_htmlen(xivo_trunc($ref['lastapp'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref['lastapp']),'">',
+					dwho_htmlen(dwho_trunc($ref['lastapp'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['lastdata']) === true):
+			if(dwho_has_len($ref['lastdata']) === true):
 				echo	'<dt>',$this->bbf('entry_lastdata'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['lastdata']),'">',
-					xivo_htmlen(xivo_trunc($ref['lastdata'],25,'...',false)),
+					'<dd title="',dwho_htmlen($ref['lastdata']),'">',
+					dwho_htmlen(dwho_trunc($ref['lastdata'],25,'...',false)),
 					'<br /></dd>';
 			endif;
 
-			if(xivo_has_len($ref['uniqueid']) === true):
+			if(dwho_has_len($ref['uniqueid']) === true):
 				echo	'<dt>',$this->bbf('entry_uniqueid'),'</dt>',
-					'<dd title="',xivo_htmlen($ref['uniqueid']),'">',
-					xivo_htmlen(xivo_trunc($ref['uniqueid'],20,'...',false)),
+					'<dd title="',dwho_htmlen($ref['uniqueid']),'">',
+					dwho_htmlen(dwho_trunc($ref['uniqueid'],20,'...',false)),
 					'<br /></dd>';
 			endif;
 		?>

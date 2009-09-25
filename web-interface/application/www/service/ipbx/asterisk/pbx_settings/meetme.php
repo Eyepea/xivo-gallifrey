@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = array();
 
@@ -34,8 +34,8 @@ switch($act)
 		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('meetmeroom',$_QR) === true
-		&& xivo_issa('meetmefeatures',$_QR) === true)
+		&& dwho_issa('meetmeroom',$_QR) === true
+		&& dwho_issa('meetmefeatures',$_QR) === true)
 		{
 			if($appmeetme->set_add($_QR) === false
 			|| $appmeetme->add() === false)
@@ -66,8 +66,8 @@ switch($act)
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
-		&& xivo_issa('meetmeroom',$_QR) === true
-		&& xivo_issa('meetmefeatures',$_QR) === true)
+		&& dwho_issa('meetmeroom',$_QR) === true
+		&& dwho_issa('meetmefeatures',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -106,7 +106,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('meetme',$_QR)) === false)
+		if(($values = dwho_issa_val('meetme',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$appmeetme = &$ipbx->get_application('meetme');
@@ -125,7 +125,7 @@ switch($act)
 	case 'enables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('meetme',$_QR)) === false)
+		if(($values = dwho_issa_val('meetme',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
@@ -167,7 +167,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

@@ -18,11 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_LIB,'i18n','datastorage','abstract','sql.inc'),true);
+dwho_file::required(array(DWHO_PATH_ROOT,'i18n','datastorage','abstract','sql.inc'),true);
 
-class xivo_i18n_mysql extends xivo_i18n_abstract_sql
+class dwho_i18n_mysql extends dwho_i18n_abstract_sql
 {
-	function xivo_i18n_mysql(&$dso,$param=array())
+	function dwho_i18n_mysql(&$dso,$param=array())
 	{
 		$this->_init(&$dso,$param);
 	}

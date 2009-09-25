@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_handynumbers extends xivo_application_asterisk_abstract
 {
@@ -85,7 +85,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 		$this->_info['exten'] = false;
 		$this->_origin['exten'] = false;
 
-		if(xivo_issa('handynumbers',$this->_info) === false
+		if(dwho_issa('handynumbers',$this->_info) === false
 		|| empty($this->_info['handynumbers']) === true)
 			return(false);
 
@@ -181,17 +181,17 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 			$result = $this->_handynumbers->get_filter_result();
 			$reslist[$j++] = $result;
 
-			if(xivo_issa('handynumbers',$this->_info) === true
+			if(dwho_issa('handynumbers',$this->_info) === true
 			&& isset($this->_info['handynumbers'][$k]) === true)
 				$result['id'] = $this->_info['handynumbers'][$k]['id'];
 
 			$this->_set_result('handynumbers',$result);
 
-			if(xivo_issa('extenumbers',$this->_info) === true
+			if(dwho_issa('extenumbers',$this->_info) === true
 			&& isset($this->_info['extenumbers'][$k]) === true)
 				$this->_set_result_var('extenumbers','id',$this->_info['extenumbers'][$k]['id']);
 
-			if(xivo_issa('exten',$this->_info) === true
+			if(dwho_issa('exten',$this->_info) === true
 			&& isset($this->_info['exten'][$k]) === true)
 				$this->_set_result_var('exten','id',$this->_info['exten'][$k]['id']);
 
@@ -292,7 +292,7 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 	{
 		$rs = false;
 
-		if(($handynumbersid = xivo_ulongint($handynumbersid)) === 0
+		if(($handynumbersid = dwho_ulongint($handynumbersid)) === 0
 		|| ($rs = $this->get_result('extenumbers')) === null
 		|| $rs === false)
 			return($rs);
@@ -329,14 +329,14 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 	function _delete_all()
 	{
-		if(xivo_issa('extenumbers',$this->_info) === true
+		if(dwho_issa('extenumbers',$this->_info) === true
 		&& ($nb = count($this->_info['extenumbers'])) !== 0)
 		{
 			for($i = 0;$i < $nb;$i++)
 				$this->_extenumbers->delete($this->_info['extenumbers'][$i]['id']);
 		}
 
-		if(xivo_issa('exten',$this->_info) === true
+		if(dwho_issa('exten',$this->_info) === true
 		&& ($nb = count($this->_info['exten'])) !== 0)
 		{
 			for($i = 0;$i < $nb;$i++)

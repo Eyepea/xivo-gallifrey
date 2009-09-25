@@ -261,13 +261,13 @@ endif;
 	<div class="slt-list">
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-voicemenu-flow',1,true); return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-voicemenu-flow',1,true); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_voicemenu-application');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_up_voicemenu-application'),
 						  'class="bt-uplist" id="bt-voicemenu-application-up" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-voicemenu-flow',-1,true); return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-voicemenu-flow',-1,true); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_down_voicemenu-application');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_down_voicemenu-application'),
@@ -286,7 +286,7 @@ endif;
 
 	<div class="bt-delete">
 		<a href="#"
-		   onclick="xivo_fm_select_delete_entry('it-voicemenu-flow',true); return(xivo.dom.free_focus());"
+		   onclick="dwho.form.select_delete_entry('it-voicemenu-flow',true); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_delete_voicemenu-application');?>">
 			<?=$url->img_html('img/site/button/mini/orange/delete.gif',
 					  $this->bbf('bt_delete_voicemenu-application'),

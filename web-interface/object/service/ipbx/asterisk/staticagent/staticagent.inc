@@ -32,9 +32,9 @@ class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk
 		{
 			$val = explode(',',$data['var_val'],3);
 
-			$data['number'] = xivo_has_len($val,0) === true ? $val[0] : '';
-			$data['passwd'] = xivo_has_len($val,1) === true ? $val[1] : '';
-			$data['fullname'] = xivo_has_len($val,2) === true ? $val[2] : '';
+			$data['number'] = dwho_has_len($val,0) === true ? $val[0] : '';
+			$data['passwd'] = dwho_has_len($val,1) === true ? $val[1] : '';
+			$data['fullname'] = dwho_has_len($val,2) === true ? $val[2] : '';
 		}
 
 		return(parent::_prepare($data));
@@ -42,7 +42,7 @@ class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk
 
 	function get_last_var_metric($group)
 	{
-		if(($group = xivo_uint($group)) === 0)
+		if(($group = dwho_uint($group)) === 0)
 			return(false);
 
 		$min = $group * $this->_var_metric_range;
@@ -53,7 +53,7 @@ class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk
 
 	function get_free_var_metric($group)
 	{
-		if(($group = xivo_uint($group)) === 0)
+		if(($group = dwho_uint($group)) === 0)
 			return(false);
 
 		$var_metric_range = $this->_var_metric_range;
@@ -66,7 +66,7 @@ class xivo_service_asterisk_realstatic_staticagent extends xivo_service_asterisk
 
 	function _chk_free_var_metric($var_metric)
 	{
-		if(($var_metric = xivo_uint($var_metric)) === 0
+		if(($var_metric = dwho_uint($var_metric)) === 0
 		|| $var_metric < $this->_var_metric_range)
 			return(false);
 

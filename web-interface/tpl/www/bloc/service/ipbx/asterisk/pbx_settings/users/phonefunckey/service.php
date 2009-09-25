@@ -35,7 +35,7 @@ if(empty($list) === false):
 	$select['id'] = 'it-phonefunckey-service-typeval';
 
 	if($fkdata['ex'] === false):
-		$select['id'] .= '-'.xivo_uint($fkdata['incr']);
+		$select['id'] .= '-'.dwho_uint($fkdata['incr']);
 
 		if($fkdata['type'] === 'service'):
 			$select['invalid'] = true;

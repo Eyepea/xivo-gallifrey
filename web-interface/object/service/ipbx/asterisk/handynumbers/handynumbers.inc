@@ -45,7 +45,7 @@ class xivo_service_asterisk_handynumbers extends xivo_service_asterisk_abstract
 	{
 		$data['commented'] = (bool) $data['commented'];
 
-		if(xivo_has_len($data,'exten') === true)
+		if(dwho_has_len($data,'exten') === true)
 			$data['exten'] = $this->_sre->display_extension($data['exten']);
 
 		return($data);
@@ -55,7 +55,7 @@ class xivo_service_asterisk_handynumbers extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(xivo_has_len($arr,'exten') === true)
+		else if(dwho_has_len($arr,'exten') === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::add($arr,$id));
@@ -65,7 +65,7 @@ class xivo_service_asterisk_handynumbers extends xivo_service_asterisk_abstract
 	{
 		if(is_array($arr) === false)
 			return(false);
-		else if(xivo_has_len($arr,'exten') === true)
+		else if(dwho_has_len($arr,'exten') === true)
 			$arr['exten'] = $this->_sre->clean_extension($arr['exten']);
 
 		return(parent::edit($id,$arr,$disable));

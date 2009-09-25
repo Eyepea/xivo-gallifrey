@@ -22,15 +22,15 @@ $phonebook = &$ipbx->get_appcustom('webservices','phonebook');
 
 if(isset($_SERVER['REMOTE_ADDR']) === false
 || $phonebook->chk_host_access($_SERVER['REMOTE_ADDR']) === false)
-	xivo_die('Error/403');
+	dwho_die('Error/403');
 
-$pos = isset($_QR['pos']) === true ? xivo_uint($_QR['pos']) : 0;
-$node = isset($_QR['node']) === true ? xivo_uint($_QR['node']) : 0;
+$pos = isset($_QR['pos']) === true ? dwho_uint($_QR['pos']) : 0;
+$node = isset($_QR['node']) === true ? dwho_uint($_QR['node']) : 0;
 $directory = isset($_QR['directory']) === true && $node === 1 ? true : false;
 $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']) : false;
 
 if($vendor === false && ($vendor = $phonebook->get_vendor_from_useragent()) === false)
-	xivo_die('Error/Invalid Vendor and User-Agent');
+	dwho_die('Error/Invalid Vendor and User-Agent');
 
 $path = '/bloc/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook';
 
@@ -42,7 +42,7 @@ else
 $_TPL->set_var('path',$path);
 $_TPL->set_var('vendor',$vendor);
 
-if(isset($_QR['name']) === false || xivo_has_len($_QR['name']) === false)
+if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
 {
 	if($vendor === 'aastra' || $vendor === 'polycom' || $vendor === 'snom')
 		$_TPL->set_var('act','input');
@@ -114,8 +114,8 @@ else
 
 $cnt = pow($nbbypage,floor($node));
 
-xivo::load_class('xivo::sort');
-$sort = new xivo_sort(array('key' => 'identity'));
+dwho::load_class('dwho_sort');
+$sort = new dwho_sort(array('key' => 'identity'));
 usort($rs,array(&$sort,'str_usort'));
 
 if($directory === true)

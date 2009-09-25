@@ -40,7 +40,7 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 <form action="#" name="fm-group-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -84,11 +84,11 @@ $page = $url->pager($pager['pages'],
 			<label for="it-groups-<?=$i?>" id="lb-groups-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					xivo_trunc($ref['name'],25,'...',false);
+					dwho_trunc($ref['name'],25,'...',false);
 ?>
 			</label>
 		</td>
-		<td><?=(xivo_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
 		<td><?=$ref['nb_qmember']?></td>
 		<td class="td-right" colspan="2">
 <?php

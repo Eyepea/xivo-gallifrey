@@ -21,7 +21,7 @@
 $access_category = 'trunk_management';
 $access_subcategory = 'sip';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $act = $_QRY->get('act');
 

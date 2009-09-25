@@ -39,7 +39,7 @@
 	endif;
 ?>
 <form action="#" name="fm-callfilter-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -71,7 +71,7 @@
 				$icon = 'enable';
 			endif;
 
-			if($ref['linked'] === false && xivo_has_len($ref['member_identity']) === false):
+			if($ref['linked'] === false && dwho_has_len($ref['member_identity']) === false):
 				$ref['member_identity'] = '-';
 			elseif($ref['type'] === 'bosssecretary'):
 				$ref['member_identity'] = $this->bbf('callfilter_type-opt-bosssecretary',$ref['member_identity']);
@@ -96,8 +96,8 @@
 ?>
 			</label></td>
 		<td><?=$this->bbf('callfilter_type-'.$ref['type']);?></td>
-		<td title="<?=xivo_htmlen($ref['member_identity']);?>">
-			<?=xivo_htmlen(xivo_trunc($ref['member_identity'],40,'...',false));?>
+		<td title="<?=dwho_htmlen($ref['member_identity']);?>">
+			<?=dwho_htmlen(dwho_trunc($ref['member_identity'],40,'...',false));?>
 		</td>
 		<td class="td-right" colspan="2">
 <?php

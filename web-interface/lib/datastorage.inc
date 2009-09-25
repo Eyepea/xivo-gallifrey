@@ -18,18 +18,18 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_datastorage
+class dwho_datastorage
 {
 	function factory($type,$param=array())
 	{
 		$type = strtolower($type);
-		$name = 'xivo_datastorage_adapter_'.$type;
+		$name = 'dwho_datastorage_adapter_'.$type;
 
-		if(xivo_datastorage::is_valid($type) === false)
+		if(dwho_datastorage::is_valid($type) === false)
 			trigger_error('Invalid datastorage type',E_USER_ERROR);
-		else if(xivo_datastorage::chk_extension_loaded($type,true) === false)
+		else if(dwho_datastorage::chk_extension_loaded($type,true) === false)
 			trigger_error('Datastorage '.$type.' extension is not loaded',E_USER_ERROR);
-		else if(xivo::load_class($name,array('datastorage','adapter'),$type) === false)
+		else if(dwho::load_class($name,array('datastorage','adapter'),$type) === false)
 			return(false);
 
 		return(new $name($param));
@@ -39,7 +39,7 @@ class xivo_datastorage
 	{
 		$type = (string) $type;
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
 		return(isset($datastorage[$type]));
 	}
@@ -48,24 +48,24 @@ class xivo_datastorage
 	{
 		$type = (string) $type;
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
-		if(xivo_datastorage::is_valid($type) === true
+		if(dwho_datastorage::is_valid($type) === true
 		&& (bool) $datastorage[$type]['ssl'] === true)
 			return($type);
 
-		return(xivo_datastorage::is_ssl_scheme($type));
+		return(dwho_datastorage::is_ssl_scheme($type));
 	}
 
 	function is_ssl_scheme($type)
 	{
 		$type = (string) $type;
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
 		if(substr($type,-1) === 's'
 		&& ($type = substr($type,0,-1)) !== false
-		&& xivo_datastorage::is_valid($type) === true
+		&& dwho_datastorage::is_valid($type) === true
 		&& (bool) $datastorage[$type]['ssl'] === true)
 			return($type);
 
@@ -74,14 +74,14 @@ class xivo_datastorage
 
 	function set_param_from_uri($str)
 	{
-		xivo::load_class('xivo_uri');
-		$uri = new xivo_uri();
+		dwho::load_class('dwho_uri');
+		$uri = new dwho_uri();
 
 		if(($arr = $uri->parse_uri($str)) === false || isset($arr['scheme']) === false)
 			return(false);
-		else if(($ssl = xivo_datastorage::is_ssl_scheme($arr['scheme'])) !== false)
+		else if(($ssl = dwho_datastorage::is_ssl_scheme($arr['scheme'])) !== false)
 			$arr['scheme'] = $ssl;
-		else if(xivo_datastorage::is_valid($arr['scheme']) === false)
+		else if(dwho_datastorage::is_valid($arr['scheme']) === false)
 			return(false);
 
 		$r = array();
@@ -116,7 +116,7 @@ class xivo_datastorage
 
 			for($i = 0;$i < $nb;$i++)
 			{
-				if(xivo_has_len($arr['query'][$i],0) === false)
+				if(dwho_has_len($arr['query'][$i],0) === false)
 					continue;
 				else if(isset($arr['query'][$i][1]) === true)
 					$r[$arr['query'][$i][0]] = $arr['query'][$i][1];
@@ -134,10 +134,10 @@ class xivo_datastorage
 	{
 		$type = (string) $type;
 
-		if(xivo_datastorage::chk_extension_exists($type) === false)
+		if(dwho_datastorage::chk_extension_exists($type) === false)
 			return(false);
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
 		return($datastorage[$type]['extension']);
 	}
@@ -146,39 +146,39 @@ class xivo_datastorage
 	{
 		$type = (string) $type;
 
-		if(xivo_datastorage::chk_extension_exists($type) === false)
+		if(dwho_datastorage::chk_extension_exists($type) === false)
 			return(false);
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
 		if((bool) $load === true)
-			blop::load_extension($datastorage[$type]['extension']);
+			dwho::load_extension($datastorage[$type]['extension']);
 
-		return(blop::chk_extension_loaded($datastorage[$type]['extension']));
+		return(dwho::chk_extension_loaded($datastorage[$type]['extension']));
 	}
 
 	function chk_extension_exists($type)
 	{
 		$type = (string) $type;
 
-		if(xivo_datastorage::is_valid($type) === false)
+		if(dwho_datastorage::is_valid($type) === false)
 			return(false);
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
-		return(xivo_ak('extension',$datastorage[$type]));
+		return(dwho_ak('extension',$datastorage[$type]));
 	}
 
 	function get_meta($type)
 	{
 		$type = (string) $type;
 
-		if(xivo_datastorage::is_valid($type) === false)
+		if(dwho_datastorage::is_valid($type) === false)
 			return(false);
 
-		$datastorage = &xivo_gat::get('datastorage');
+		$datastorage = &dwho_gat::get('datastorage');
 
-		return(xivo_ak('meta',$datastorage[$type],true));
+		return(dwho_ak('meta',$datastorage[$type],true));
 	}
 }
 

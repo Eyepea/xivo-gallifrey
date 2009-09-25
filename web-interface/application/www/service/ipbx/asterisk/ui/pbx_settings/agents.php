@@ -31,7 +31,7 @@ else
 	$access_subcategory = 'agents';
 }
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 if(defined('XIVO_TPL_UI_ACTION') === true)
 	$act = XIVO_TPL_UI_ACTION;

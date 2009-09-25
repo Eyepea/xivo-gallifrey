@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract.inc'),true);
 
 class xivo_application_service_asterisk_rightcall_abstract extends xivo_application_service_asterisk_abstract
 {
@@ -61,7 +61,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 		$this->_info = false;
 		$this->_origin = false;
 
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
 
 		$where = array();
@@ -131,7 +131,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 	{
 		$rs = false;
 
-		if(($typeval = xivo_ulongint($typeval)) === 0
+		if(($typeval = dwho_ulongint($typeval)) === 0
 		|| ($rs = $this->get_result()) === null
 		|| $rs === false)
 			return($rs);
@@ -161,9 +161,9 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 	function edit($status,$typeval)
 	{
-		if(($typeval = xivo_ulongint($typeval)) === 0)
+		if(($typeval = dwho_ulongint($typeval)) === 0)
 			return(false);
-		else if(xivo_issa(0,$this->_origin) === false)
+		else if(dwho_issa(0,$this->_origin) === false)
 			return($this->add($typeval));
 
 		$this->_return = $this->delete($status);
@@ -200,7 +200,7 @@ class xivo_application_service_asterisk_rightcall_abstract extends xivo_applicat
 
 	function delete($status)
 	{
-		if(xivo_issa(0,$this->_origin) === false)
+		if(dwho_issa(0,$this->_origin) === false)
 			return(null);
 
 		$where = array();

@@ -100,11 +100,20 @@ Jamais
 ; fm_protocol_nat-opt(route)
 Route
 
-; fm_userfeatures_voicemailid
-Sélection de la messagerie vocale :
+; fm_voicemail_choice
+Choix :
 
-; fm_voicemail-opt-add
-[Ajouter une messagerie vocale]
+; fm_voicemail_choice-opt(add)
+Ajouter
+
+; fm_voicemail_choice-opt(search)
+Rechercher
+
+; fm_voicemail_choice-opt(disable)
+Désactiver
+
+; fm_voicemail_suggest
+Rechercher :
 
 ; fm_voicemail_fullname
 Nom complet :

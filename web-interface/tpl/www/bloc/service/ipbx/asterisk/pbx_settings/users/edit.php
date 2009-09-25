@@ -31,13 +31,13 @@ $form = &$this->get_module('form');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/submenu');
 ?>
 	<div class="sb-content">
-		<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-group');
-										xivo_fm_select('it-queue');
-										xivo_fm_select('it-codec');
-										xivo_fm_select('it-rightcall');">
+		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-group');
+										dwho.form.select('it-queue');
+										dwho.form.select('it-codec');
+										dwho.form.select('it-rightcall');">
 <?php
-		echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-					    'value'	=> XIVO_SESS_ID)),
+		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'act',
 					    'value'	=> 'edit')),

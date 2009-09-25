@@ -39,7 +39,7 @@ $attachformat = is_array($format) === true && empty($format) === false;
 $zonemessages = $this->get_var('zonemessages');
 
 if(is_array($zonemessages) === true && ($zmsg_nb = count($zonemessages)) > 0):
-	$dhtml->write_js('xivo.dom.set_table_list(\'timezone\','.$zmsg_nb.');');
+	$dhtml->write_js('dwho.dom.set_table_list(\'timezone\','.$zmsg_nb.');');
 else:
 	$zmsg_nb = 0;
 endif;
@@ -141,11 +141,11 @@ endif;
 </div>
 
 <div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-voicemail-format');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-voicemail-format');">
 
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
 ?>
@@ -238,13 +238,13 @@ endif;
 	</div>
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_voicemail_format('in'); return(xivo.dom.free_focus());"
+		   onclick="xivo_voicemail_format('in'); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_informat');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_informat'),
 					  'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_voicemail_format('out'); return(xivo.dom.free_focus());"
+		   onclick="xivo_voicemail_format('out'); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outformat');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outformat'),
@@ -550,7 +550,7 @@ endif;
 								  'border="0"'),
 						   '#',
 						   null,
-						   'onclick="xivo.dom.make_table_list(\'timezone\',this); return(xivo.dom.free_focus());"',
+						   'onclick="dwho.dom.make_table_list(\'timezone\',this); return(dwho.dom.free_focus());"',
 						   $this->bbf('col_timezone-add'));?>
 			</th>
 		</tr>
@@ -604,7 +604,7 @@ if($zmsg_nb > 0):
 								  'border="0"'),
 						   '#',
 						   null,
-						   'onclick="xivo.dom.make_table_list(\'timezone\',this,1); return(xivo.dom.free_focus());"',
+						   'onclick="dwho.dom.make_table_list(\'timezone\',this,1); return(dwho.dom.free_focus());"',
 						   $this->bbf('opt_delete'));?>
 			</td>
 		</tr>
@@ -655,7 +655,7 @@ if($zmsg_nb > 0):
 								  'border="0"'),
 						   '#',
 						   null,
-						   'onclick="xivo.dom.make_table_list(\'timezone\',this,1); return(xivo.dom.free_focus());"',
+						   'onclick="dwho.dom.make_table_list(\'timezone\',this,1); return(dwho.dom.free_focus());"',
 						   $this->bbf('opt_delete'));?>
 			</td>
 		</tr>

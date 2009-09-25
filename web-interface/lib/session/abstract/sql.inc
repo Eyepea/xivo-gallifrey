@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_session_abstract_sql
+class dwho_session_abstract_sql
 {
 	var $_param		= array('table'	=> 'session');
 	var $_attrib		= array('userid' => 0);
 	var $_dso		= null;
-	var $_time		= XIVO_SESS_TIME;
+	var $_time		= DWHO_SESS_TIME;
 	var $_insert		= false;
 	var $_crc		= '';
 
@@ -101,7 +101,7 @@ class xivo_session_abstract_sql
 	function write($key,$val)
 	{
 		/*
-		$_USR = &xivo_gct::get('_USR');
+		$_USR = &dwho_gct::get('_USR');
 
 		if(isset($_USR->id) === true && $_USR->id > 0)
 			$this->u = $_USR->id;

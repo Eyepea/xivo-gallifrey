@@ -25,11 +25,11 @@ class xivo_user
 
 	function xivo_user()
 	{
-		$this->_conf = &xivo_gat::get('user');
+		$this->_conf = &dwho_gat::get('user');
 
 		$ini = &xivo_user::load_get_init();
 
-		if(xivo_issa('general',$ini) === false)
+		if(dwho_issa('general',$ini) === false)
 			trigger_error('Invalid user init file',E_USER_ERROR);
 
 		$this->_ini = &$ini;
@@ -48,7 +48,7 @@ class xivo_user
 		if(($class = $this->load_class($meta)) === false)
 			trigger_error('Failed to load user class',E_USER_ERROR);
 
-		xivo_gct::set(new $class(false),'_USR');
+		dwho_gct::set(new $class(false),'_USR');
 	}
 
 	function _chk_ini_general()
@@ -59,14 +59,14 @@ class xivo_user
 			$this->_conf['option']['ip_check'] = (bool) $cfg_gen['ip_check'];
 
 		if(isset($cfg_gen['time_cache']) === true)
-			$this->_conf['option']['time_cache'] = xivo_uint($cfg_gen['time_cache']);
+			$this->_conf['option']['time_cache'] = dwho_uint($cfg_gen['time_cache']);
 	}
 
 	function &load_get_init()
 	{
 		static $ini = null;
 
-		$path = XIVO_PATH_CONF.XIVO_SEP_DIR.'user.ini';
+		$path = XIVO_PATH_CONF.DWHO_SEP_DIR.'user.ini';
 
 		if($ini === null && ($ini = xivo::load_init($path)) === false)
 			trigger_error('User init file not found or unreadable',E_USER_ERROR);
@@ -95,7 +95,7 @@ class xivo_user
 
 	function chk_active()
 	{
-		$cfg = xivo_gat::get('user');
+		$cfg = dwho_gat::get('user');
 
 		if(xivo_user::is_valid() === false)
 			return(false);
@@ -108,7 +108,7 @@ class xivo_user
 
 	function chk_type($type,$real=false)
 	{
-		$cfg = xivo_gat::get('user');
+		$cfg = dwho_gat::get('user');
 
 		if(($r = isset($cfg['type'][$type])) === true
 		&& (bool) $real === true)
@@ -128,7 +128,7 @@ class xivo_user
 
 	function type_to_meta($type,$real=false)
 	{
-		$cfg = xivo_gat::get('user');
+		$cfg = dwho_gat::get('user');
 
 		if(xivo_user::chk_type($type,$real) === true
 		&& isset($cfg['type'][$type]['meta']) === true)
@@ -173,7 +173,7 @@ class xivo_user
 
 	function chk_acl($category='',$subcategory='',$section='')
 	{
-		xivo::load_class('xivo_user_acl',XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user','acl',false);
+		xivo::load_class('xivo_user_acl',XIVO_PATH_OBJECT.DWHO_SEP_DIR.'user','acl',false);
 
 		$section = xivo_user_acl::get_section($category,$subcategory,$section);
 
@@ -184,7 +184,7 @@ class xivo_user
 	{
 		if(isset($_SESSION['_ACL']) === false
 		|| xivo_user::is_valid() === false
-		|| xivo_issa('tree',$_SESSION['_ACL']) === false
+		|| dwho_issa('tree',$_SESSION['_ACL']) === false
 		|| isset($_SESSION['_ACL']['user'],
 			 $_SESSION['_ACL']['user_section']) === false
 		|| is_scalar($section) === false)
@@ -219,9 +219,9 @@ class xivo_user
 			$key = &$arr[$i];
 			$grp = $user;
 
-			if(xivo_issa($key,$tree) === false)
+			if(dwho_issa($key,$tree) === false)
 				return(($r = false));
-			else if($r === false && is_bool(($user = xivo_ak($key,$user,true))) === true)
+			else if($r === false && is_bool(($user = dwho_ak($key,$user,true))) === true)
 			{
 				if(isset($tree[$key]['value']) === true
 				&& (bool) $tree[$key]['value'] === false)
@@ -234,7 +234,7 @@ class xivo_user
 		}
 
 		if($r === false && isset($key,$grp) === true)
-			$r = xivo_ak($key,$grp,true) !== false;
+			$r = dwho_ak($key,$grp,true) !== false;
 
 		return($r);
 	}
@@ -262,7 +262,7 @@ class xivo_user
 			return(false);
 
 		$class = 'xivo_user_'.$meta;
-		$dir = XIVO_PATH_OBJECT.XIVO_SEP_DIR.'user';
+		$dir = XIVO_PATH_OBJECT.DWHO_SEP_DIR.'user';
 
 		if(xivo::load_class($class,$dir,$meta,false) === false)
 			trigger_error('Failed to load user class type: '.$meta,E_USER_ERROR);
@@ -275,12 +275,12 @@ class xivo_user
 		if($name === '' || is_object($obj) === false)
 			return(false);
 
-		return(xivo_gct::set($obj,XIVO_USER_CLASS_PRE.$name));
+		return(dwho_gct::set($obj,XIVO_USER_CLASS_PRE.$name));
 	}
 
 	function &get($name)
 	{
-		return(($ref = &xivo_gct::get(XIVO_USER_CLASS_PRE.$name)));
+		return(($ref = &dwho_gct::get(XIVO_USER_CLASS_PRE.$name)));
 	}
 
 	function &set_get($name,&$obj)
@@ -288,7 +288,7 @@ class xivo_user
 		$r = false;
 
 		if($name !== '')
-			$r = &xivo_gct::set_get($obj,XIVO_USER_CLASS_PRE.$name);
+			$r = &dwho_gct::set_get($obj,XIVO_USER_CLASS_PRE.$name);
 
 		return(($ref = &$r));
 	}

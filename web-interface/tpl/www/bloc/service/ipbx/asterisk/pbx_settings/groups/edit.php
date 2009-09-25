@@ -33,8 +33,8 @@ $form = &$this->get_module('form');
 ?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-user'); xivo_fm_select('it-rightcall');">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-user'); dwho.form.select('it-rightcall');">
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'edit'));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'id','value' => $this->get_var('id')));?>

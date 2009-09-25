@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_datastorage_helper_abstract
+class dwho_datastorage_helper_abstract
 {
 	var $_dso	= null;
 	var $_param	= array();

@@ -34,7 +34,7 @@ $error_js = array();
 $error_nb = count($error['generalmeetme']);
 
 for($i = 0;$i < $error_nb;$i++):
-	$error_js[] = 'xivo_fm_error[\'it-generalmeetme-'.$error['generalmeetme'][$i].'\'] = true;';
+	$error_js[] = 'dwho.form.error[\'it-generalmeetme-'.$error['generalmeetme'][$i].'\'] = true;';
 endfor;
 
 if(isset($error_js[0]) === true)
@@ -104,8 +104,8 @@ if(isset($error_js[0]) === true)
 <form action="#" method="post" accept-charset="utf-8">
 
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
 ?>

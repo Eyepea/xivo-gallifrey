@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_realstatic_abstract extends xivo_application_asterisk_abstract
 {
@@ -74,7 +74,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		$var = (string) $var;
 
-		if(xivo_issa($this->_name,$this->_info) === false
+		if(dwho_issa($this->_name,$this->_info) === false
 		|| isset($this->_info[$this->_name][$var]) === false)
 			return(null);
 
@@ -95,7 +95,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		$var = (string) $var;
 
-		if(xivo_issa($this->_name,$this->_origin) === false
+		if(dwho_issa($this->_name,$this->_origin) === false
 		|| isset($this->_origin[$this->_name][$var]) === false)
 			return(null);
 
@@ -106,7 +106,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		$var = (string) $var;
 
-		if(xivo_issa($this->_name,$this->_result) === false
+		if(dwho_issa($this->_name,$this->_result) === false
 		|| isset($this->_result[$this->_name][$var]) === false)
 			return(null);
 
@@ -127,7 +127,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 	{
 		$var = (string) $var;
 
-		if(xivo_issa($this->_name,$this->_return) === false
+		if(dwho_issa($this->_name,$this->_return) === false
 		|| isset($this->_return[$this->_name][$var]) === false)
 			return(null);
 
@@ -285,7 +285,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			{
 				$res[$i] = $rs;
 
-				if(xivo_has_len($value) === false)
+				if(dwho_has_len($value) === false)
 					$err[$i] = 'empty value';
 				else if(($value = $this->set_chk_value($arr['var_name'],$value,true)) === false)
 				{
@@ -368,7 +368,7 @@ class xivo_application_service_asterisk_realstatic_abstract extends xivo_applica
 			else
 				$rs['var_val'] = '';
 
-			$this->_multi = (bool) xivo_ak('multi',$list[$key],true);
+			$this->_multi = (bool) dwho_ak('multi',$list[$key],true);
 
 			if($this->set($rs) === false
 			|| ($pre_save = $this->_chk_pre_save($rs)) === false

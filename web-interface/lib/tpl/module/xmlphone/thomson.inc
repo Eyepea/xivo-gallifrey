@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module','xmlphone','abstract','abstract.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','abstract','abstract.inc'));
 
-class xivo_tpl_xmlphone_thomson extends xivo_tpl_xmlphone_abstract
+class dwho_tpl_xmlphone_thomson extends dwho_tpl_xmlphone_abstract
 {
 	var $_vendor		= 'thomson';
 	var $_model		= null;
@@ -29,7 +29,7 @@ class xivo_tpl_xmlphone_thomson extends xivo_tpl_xmlphone_abstract
 	var $_escape		= false;
 	var $_utf8		= false;
 
-	function xivo_tpl_xmlphone_aastra()
+	function dwho_tpl_xmlphone_aastra()
 	{
 		$this->_model = $this->get_model();
 	}

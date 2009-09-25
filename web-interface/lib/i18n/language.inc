@@ -18,16 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_i18n_language
+class dwho_i18n_language
 {
 	var $_attrib	= array();
 	var $_conf	= array();
 
-	function xivo_i18n_language()
+	function dwho_i18n_language()
 	{
-		$file = xivo_file::joinpath(XIVO_PATH_LIB,'i18n','languages','languages');
+		$file = dwho_file::joinpath(DWHO_PATH_ROOT,'i18n','languages','languages');
 
-		if(($this->_conf = xivo_gat::get_file($file)) === false)
+		if(($this->_conf = dwho_gat::get_file($file)) === false)
 			trigger_error('Failed to load languages listing',E_USER_ERROR);
 	}
 
@@ -52,7 +52,7 @@ class xivo_i18n_language
 	{
 		$lang = strtolower($lang);
 
-		if(xivo_issa($lang,$this->_conf) === false)
+		if(dwho_issa($lang,$this->_conf) === false)
 			return(false);
 
 		return($lang);
@@ -82,7 +82,7 @@ class xivo_i18n_language
 		if(($lang = $this->is_valid($lang)) === false)
 			return(false);
 
-		return(xivo_ak('default',$this->_conf[$lang],true));
+		return(dwho_ak('default',$this->_conf[$lang],true));
 	}
 
 	function get_list()

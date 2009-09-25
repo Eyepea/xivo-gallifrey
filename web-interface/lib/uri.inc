@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-class xivo_uri
+class dwho_uri
 {
 	var $_encode		= array();
 	var $_host		= array('ipliteral'	=> 1,
@@ -27,7 +27,7 @@ class xivo_uri
 	var $_regexp		= array();
 	var $_reipvfutureport	= '';
 
-	function xivo_uri()
+	function dwho_uri()
 	{
 		$gen_delims	= ':\/\?#\[\]@';
 		$sub_delims	= '\!\$&\'\(\)\*\+,;=';
@@ -66,7 +66,7 @@ class xivo_uri
 
 		if(is_array($arr) === false)
 			return(false);
-		else if(xivo_has_len($arr,'scheme') === true)
+		else if(dwho_has_len($arr,'scheme') === true)
 		{
 			if($this->valid_scheme($arr['scheme']) === false)
 				return(false);
@@ -74,7 +74,7 @@ class xivo_uri
 			$scheme = $arr['scheme'];
 		}
 
-		if(xivo_issa('authority',$arr) === true)
+		if(dwho_issa('authority',$arr) === true)
 		{
 			if(isset($arr['authority']['host']) === true)
 				$arr['host']	= $arr['authority']['host'];
@@ -89,7 +89,7 @@ class xivo_uri
 				$arr['passwd']	= $arr['authority']['passwd'];
 		}
 
-		if(xivo_has_len($arr,'host') === true)
+		if(dwho_has_len($arr,'host') === true)
 		{
 			$arr['host'] = (string) $arr['host'];
 
@@ -113,7 +113,7 @@ class xivo_uri
 			$hostport = $arr['host'];
 		}
 
-		if(xivo_has_len($arr,'port') === true)
+		if(dwho_has_len($arr,'port') === true)
 		{
 			if($this->valid_port($arr['port']) === false)
 				return(false);
@@ -121,7 +121,7 @@ class xivo_uri
 			$hostport .= ':'.$arr['port'];
 		}
 
-		if(xivo_has_len($arr,'user') === true)
+		if(dwho_has_len($arr,'user') === true)
 		{
 			$arr['user'] = (string) $arr['user'];
 			if($encode === true)
@@ -130,7 +130,7 @@ class xivo_uri
 			$userinfo = $arr['user'];
 		}
 
-		if(xivo_has_len($arr,'passwd') === true)
+		if(dwho_has_len($arr,'passwd') === true)
 		{
 			$arr['passwd'] = (string) $arr['passwd'];
 			if($encode === true)
@@ -146,7 +146,7 @@ class xivo_uri
 		else if($hostport !== '')
 			$authority = $hostport;
 
-		if(xivo_has_len($arr,'path') === true)
+		if(dwho_has_len($arr,'path') === true)
 		{
 			$arr['path'] = (string) $arr['path'];
 
@@ -168,10 +168,10 @@ class xivo_uri
 			}
 		}
 
-		if(xivo_issa('query',$arr) === true)
+		if(dwho_issa('query',$arr) === true)
 			$query = $this->build_query($arr['query'],$encode);
 
-		if(xivo_has_len($arr,'fragment') === true)
+		if(dwho_has_len($arr,'fragment') === true)
 		{
 			$arr['fragment'] = (string) $arr['fragment'];
 			if($encode === true)
@@ -220,7 +220,7 @@ class xivo_uri
 		else if(isset($uri['scheme']) === true && $this->valid_scheme($uri['scheme']) === false)
 			return(false);
 
-		if(xivo_issa('authority',$uri) === true)
+		if(dwho_issa('authority',$uri) === true)
 		{
 			$authority = &$uri['authority'];
 
@@ -268,13 +268,13 @@ class xivo_uri
 				$uri['path'] = urldecode($uri['path']);
 		}
 
-		if(xivo_issa('query',$uri) === true && ($nb = count($uri['query'])) !== 0)
+		if(dwho_issa('query',$uri) === true && ($nb = count($uri['query'])) !== 0)
 		{
 			for($i = 0;$i < $nb;$i++)
 			{
 				$ref = &$uri['query'][$i];
 
-				if(xivo_has_len($ref,0) === true)
+				if(dwho_has_len($ref,0) === true)
 				{
 					if($this->valid_query($ref[0]) === false)
 						return(false);
@@ -282,7 +282,7 @@ class xivo_uri
 						$ref[0] = urldecode($ref[0]);
 				}
 
-				if(xivo_has_len($ref,1) === false)
+				if(dwho_has_len($ref,1) === false)
 					continue;
 				else if($this->valid_query($ref[1]) === false)
 					return(false);
@@ -309,19 +309,19 @@ class xivo_uri
 
 		$r = array();
 
-		if(xivo_has_len($match,2) === true)
+		if(dwho_has_len($match,2) === true)
 			$r['scheme'] = $match[2];
 
-		if(xivo_has_len($match,4) === true)
+		if(dwho_has_len($match,4) === true)
 			$r['authority'] = $match[4];
 
-		if(xivo_has_len($match,5) === true)
+		if(dwho_has_len($match,5) === true)
 			$r['path'] = $match[5];
 
-		if(xivo_has_len($match,7) === true)
+		if(dwho_has_len($match,7) === true)
 			$r['query'] = $match[7];
 
-		if(xivo_has_len($match,9) === true)
+		if(dwho_has_len($match,9) === true)
 			$r['fragment'] = $match[9];
 
 		return($r);
@@ -433,7 +433,7 @@ class xivo_uri
 			if(is_array($ref) === false)
 				continue;
 
-			if(xivo_has_len($ref,0) === true)
+			if(dwho_has_len($ref,0) === true)
 			{
 				$ref[0] = (string) $ref[0];
 				if($encode === true)
@@ -442,7 +442,7 @@ class xivo_uri
 					$r[$i] = $ref[0];
 			}
 
-			if(xivo_has_len($ref,1) === false)
+			if(dwho_has_len($ref,1) === false)
 			{
 				if($r[$i] === '')
 					unset($r[$i]);
@@ -462,7 +462,7 @@ class xivo_uri
 
 	function get_host_type($host)
 	{
-		if(xivo_has_len($host) === false)
+		if(dwho_has_len($host) === false)
 			return($this->_host['reg_name']);
 
 		$host = (string) $host;
@@ -483,7 +483,7 @@ class xivo_uri
 			return(urlencode($str));
 
 		$rs = preg_split($this->_encode[$type],$str,-1,PREG_SPLIT_DELIM_CAPTURE);
-		xivo_print_r($rs);
+		dwho_print_r($rs);
 
 		if(($nb = count($rs)) === 1)
 		{
@@ -520,7 +520,7 @@ class xivo_uri
 
 	function valid_ipv4($ip)
 	{
-		return((xivo_ip2long($ip) !== false));
+		return((dwho_ip2long($ip) !== false));
 	}
 
 	function valid_ipv6($ip)

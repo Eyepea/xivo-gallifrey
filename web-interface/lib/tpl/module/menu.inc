@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_LIB,'tpl','module.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
-class xivo_tpl_menu extends xivo_tpl_module
+class dwho_tpl_menu extends dwho_tpl_module
 {
 	var $_tpl	= null;
 
-	function xivo_tpl_menu(&$tpl)
+	function dwho_tpl_menu(&$tpl)
 	{
 		$this->_tpl = &$tpl;
 	}
@@ -60,11 +60,11 @@ class xivo_tpl_menu extends xivo_tpl_module
 		$ext = (string) $ext;
 
 		if($ext === '')
-			$ext = XIVO_TPL_FILE_EXT;
+			$ext = DWHO_TPL_FILE_EXT;
 
-		$file = xivo_file::joinpath('bloc','menu',ltrim($file,XIVO_SEP_DIR).'.'.$ext);
+		$file = dwho_file::joinpath('bloc','menu',ltrim($file,DWHO_SEP_DIR).'.'.$ext);
 
-		if(xivo_file::is_f_r($this->get_option('tpl_path').XIVO_SEP_DIR.$file) !== false)
+		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.$file) !== false)
 			$this->set_file('menu_'.$where,$file);
 	}
 

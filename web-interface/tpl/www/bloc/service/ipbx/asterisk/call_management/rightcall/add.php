@@ -28,9 +28,9 @@
 ?>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_fm_select('it-user'); xivo_fm_select('it-group'); xivo_fm_select('it-incall'); xivo_fm_select('it-outcall'); xivo_fm_select('it-exten');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-user'); dwho.form.select('it-group'); dwho.form.select('it-incall'); dwho.form.select('it-outcall'); dwho.form.select('it-exten');">
 
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'fm_send','value' => 1));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
 

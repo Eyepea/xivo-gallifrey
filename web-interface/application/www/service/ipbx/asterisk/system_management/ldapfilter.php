@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = array();
 
@@ -33,7 +33,7 @@ switch($act)
 
 		$result = $fm_save = null;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('ldapfilter',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('ldapfilter',$_QR) === true)
 		{
 			if($appldapfilter->set_add($_QR) === false
 			|| $appldapfilter->add() === false)
@@ -45,14 +45,14 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
-		if(xivo_issa('ldapfilter',$result) === true)
+		if(dwho_issa('ldapfilter',$result) === true)
 		{
-			if(xivo_ak('attrdisplayname',$result['ldapfilter']) === true
-			&& xivo_has_len($result['ldapfilter'],'attrdisplayname') === true)
+			if(dwho_ak('attrdisplayname',$result['ldapfilter']) === true
+			&& dwho_has_len($result['ldapfilter'],'attrdisplayname') === true)
 				$result['ldapfilter']['attrdisplayname'] = explode(',',$result['ldapfilter']['attrdisplayname']);
 
-			if(xivo_ak('attrphonenumber',$result['ldapfilter']) === true
-			&& xivo_has_len($result['ldapfilter'],'attrphonenumber') === true)
+			if(dwho_ak('attrphonenumber',$result['ldapfilter']) === true
+			&& dwho_has_len($result['ldapfilter'],'attrphonenumber') === true)
 				$result['ldapfilter']['attrphonenumber'] = explode(',',$result['ldapfilter']['attrphonenumber']);
 		}
 
@@ -74,7 +74,7 @@ switch($act)
 		$result = $fm_save = null;
 		$return = &$info;
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('ldapfilter',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('ldapfilter',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -88,14 +88,14 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
-		if(xivo_issa('ldapfilter',$return) === true)
+		if(dwho_issa('ldapfilter',$return) === true)
 		{
-			if(xivo_ak('attrdisplayname',$return['ldapfilter']) === true
-			&& xivo_has_len($return['ldapfilter'],'attrdisplayname') === true)
+			if(dwho_ak('attrdisplayname',$return['ldapfilter']) === true
+			&& dwho_has_len($return['ldapfilter'],'attrdisplayname') === true)
 				$return['ldapfilter']['attrdisplayname'] = explode(',',$return['ldapfilter']['attrdisplayname']);
 
-			if(xivo_ak('attrphonenumber',$return['ldapfilter']) === true
-			&& xivo_has_len($return['ldapfilter'],'attrphonenumber') === true)
+			if(dwho_ak('attrphonenumber',$return['ldapfilter']) === true
+			&& dwho_has_len($return['ldapfilter'],'attrphonenumber') === true)
 				$return['ldapfilter']['attrphonenumber'] = explode(',',$return['ldapfilter']['attrphonenumber']);
 		}
 
@@ -124,7 +124,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('ldapfilters',$_QR)) === false)
+		if(($values = dwho_issa_val('ldapfilters',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
@@ -143,7 +143,7 @@ switch($act)
 	case 'enables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('ldapfilters',$_QR)) === false)
+		if(($values = dwho_issa_val('ldapfilters',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
@@ -185,7 +185,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

@@ -59,8 +59,8 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 							true);
 
 if(isset($_QR['fm_send']) === true
-&& xivo_issa('protocol',$_QR) === true
-&& xivo_issa('userfeatures',$_QR) === true
+&& dwho_issa('protocol',$_QR) === true
+&& dwho_issa('userfeatures',$_QR) === true
 && isset($_QR['protocol']['protocol']) === true)
 {
 	$return = &$result;
@@ -75,13 +75,11 @@ if(isset($_QR['fm_send']) === true
 
 		$error = $appuser->get_error();
 
-		if(xivo_issa('protocol',$result) === true
+		if(dwho_issa('protocol',$result) === true
 		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 
-		if(isset($_QR['userfeatures']['voicemailid']) === true
-		&& $_QR['userfeatures']['voicemailid'] === 'add')
-			$result['userfeatures']['voicemailid'] = 'add';
+		$result['voicemail-choice'] = $_QRY->get('voicemail-choice');
 	}
 	else
 	{
@@ -90,63 +88,63 @@ if(isset($_QR['fm_send']) === true
 	}
 }
 
-xivo::load_class('xivo_sort');
+dwho::load_class('dwho_sort');
 
-if($gmember['list'] !== false && xivo_ak('groupmember',$return) === true)
+if($gmember['list'] !== false && dwho_ak('groupmember',$return) === true)
 {
-	$gmember['slt'] = xivo_array_intersect_key($return['groupmember'],
+	$gmember['slt'] = dwho_array_intersect_key($return['groupmember'],
 						   $gmember['list'],
 						   'groupfeaturesid');
 
 	if($gmember['slt'] !== false)
 	{
-		$gmember['info'] = xivo_array_copy_intersect_key($return['groupmember'],
+		$gmember['info'] = dwho_array_copy_intersect_key($return['groupmember'],
 								 $gmember['slt'],
 								 'groupfeaturesid');
-		$gmember['list'] = xivo_array_diff_key($gmember['list'],$gmember['slt']);
+		$gmember['list'] = dwho_array_diff_key($gmember['list'],$gmember['slt']);
 
-		$groupsort = new xivo_sort(array('key' => 'name'));
+		$groupsort = new dwho_sort(array('key' => 'name'));
 		uasort($gmember['slt'],array(&$groupsort,'str_usort'));
 	}
 }
 
-if($qmember['list'] !== false && xivo_ak('queuemember',$return) === true)
+if($qmember['list'] !== false && dwho_ak('queuemember',$return) === true)
 {
-	$qmember['slt'] = xivo_array_intersect_key($return['queuemember'],
+	$qmember['slt'] = dwho_array_intersect_key($return['queuemember'],
 						   $qmember['list'],
 						   'queuefeaturesid');
 
 	if($qmember['slt'] !== false)
 	{
-		$qmember['info'] = xivo_array_copy_intersect_key($return['queuemember'],
+		$qmember['info'] = dwho_array_copy_intersect_key($return['queuemember'],
 								 $qmember['slt'],
 								 'queuefeaturesid');
-		$qmember['list'] = xivo_array_diff_key($qmember['list'],$qmember['slt']);
+		$qmember['list'] = dwho_array_diff_key($qmember['list'],$qmember['slt']);
 
-		$queuesort = new xivo_sort(array('key' => 'name'));
+		$queuesort = new dwho_sort(array('key' => 'name'));
 		uasort($qmember['slt'],array(&$queuesort,'str_usort'));
 	}
 }
 
-if($rightcall['list'] !== false && xivo_ak('rightcall',$return) === true)
+if($rightcall['list'] !== false && dwho_ak('rightcall',$return) === true)
 {
-	$rightcall['slt'] = xivo_array_intersect_key($return['rightcall'],
+	$rightcall['slt'] = dwho_array_intersect_key($return['rightcall'],
 						     $rightcall['list'],
 						     'rightcallid');
 
 	if($rightcall['slt'] !== false)
 	{
-		$rightcall['list'] = xivo_array_diff_key($rightcall['list'],$rightcall['slt']);
+		$rightcall['list'] = dwho_array_diff_key($rightcall['list'],$rightcall['slt']);
 
-		$rightcallsort = new xivo_sort(array('browse' => 'rightcall','key' => 'name'));
+		$rightcallsort = new dwho_sort(array('browse' => 'rightcall','key' => 'name'));
 		uasort($rightcall['slt'],array(&$rightcallsort,'str_usort'));
 	}
 }
 
 $element = $appuser->get_elements();
 
-if(xivo_issa('allow',$element['protocol']['sip']) === true
-&& xivo_issa('value',$element['protocol']['sip']['allow']) === true
+if(dwho_issa('allow',$element['protocol']['sip']) === true
+&& dwho_issa('value',$element['protocol']['sip']['allow']) === true
 && empty($allow) === false)
 {
 	if(is_array($allow) === false)
@@ -155,8 +153,8 @@ if(xivo_issa('allow',$element['protocol']['sip']) === true
 	$element['protocol']['sip']['allow']['value'] = array_diff($element['protocol']['sip']['allow']['value'],$allow);
 }
 
-if(xivo_issa('allow',$element['protocol']['iax']) === true
-&& xivo_issa('value',$element['protocol']['iax']['allow']) === true
+if(dwho_issa('allow',$element['protocol']['iax']) === true
+&& dwho_issa('value',$element['protocol']['iax']['allow']) === true
 && empty($allow) === false)
 {
 	if(is_array($allow) === false)
@@ -169,13 +167,13 @@ if(empty($return) === false)
 {
 	$return['protocol']['allow'] = $allow;
 
-	if(xivo_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
+	if(dwho_issa('dialaction',$return) === false || empty($return['dialaction']) === true)
 		$return['dialaction'] = null;
 
-	if(xivo_issa('voicemail',$return) === false || empty($return['voicemail']) === true)
+	if(dwho_issa('voicemail',$return) === false || empty($return['voicemail']) === true)
 		$return['voicemail'] = null;
 
-	if(xivo_issa('autoprov',$return) === false || empty($return['autoprov']) === true)
+	if(dwho_issa('autoprov',$return) === false || empty($return['autoprov']) === true)
 		$return['autoprov'] = null;
 }
 else
@@ -194,7 +192,6 @@ $_TPL->set_var('queues',$queues);
 $_TPL->set_var('qmember',$qmember);
 $_TPL->set_var('rightcall',$rightcall);
 $_TPL->set_var('element',$element);
-$_TPL->set_var('voicemail_list',$appuser->get_voicemail_list());
 $_TPL->set_var('agent_list',$appuser->get_agent_list());
 $_TPL->set_var('destination_list',$appuser->get_destination_list());
 $_TPL->set_var('moh_list',$appuser->get_musiconhold());
@@ -207,10 +204,9 @@ $_TPL->set_var('fktype_list',$appuser->get_phonefunckey_type());
 $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/xivo_ajs.js');
-$dhtml->set_js('js/xivo_uri.js');
-$dhtml->set_js('js/xivo_suggest.js');
-$dhtml->set_js('js/xivo_http.js');
+$dhtml->set_js('js/dwho/uri.js');
+$dhtml->set_js('js/dwho/http.js');
+$dhtml->set_js('js/dwho/suggest.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');

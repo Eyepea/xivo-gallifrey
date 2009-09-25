@@ -21,12 +21,12 @@ function xivo_fm_select_add_attrldap(id,value)
 	if(xivo_chk_attrldap(value) === false)
 		return(false);
 
-	return(xivo_fm_select_add_entry(id,value,value));
+	return(dwho.form.select_add_entry(id,value,value));
 }
 
 function xivo_chk_attrldap(value)
 {
-	if(xivo_is_string(value) === false
+	if(dwho_is_string(value) === false
 	|| value.match(/^(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)$/) === null)
 		return(false);
 
@@ -44,14 +44,14 @@ function xivo_chg_additionaltype(type)
 		disabled = false;
 	}
 
-	xivo_eid('fd-ldapfilter-additionaltext').style.display = display;
-	xivo_eid('it-ldapfilter-additionaltext').disabled = disabled;
+	dwho_eid('fd-ldapfilter-additionaltext').style.display = display;
+	dwho_eid('it-ldapfilter-additionaltext').disabled = disabled;
 }
 
 function xivo_ldapfilter_onload()
 {
-	if(xivo_eid('it-ldapfilter-additionaltype') !== false)
-		xivo_chg_additionaltype(xivo_eid('it-ldapfilter-additionaltype').value);
+	if(dwho_eid('it-ldapfilter-additionaltype') !== false)
+		xivo_chg_additionaltype(dwho_eid('it-ldapfilter-additionaltype').value);
 }
 
-xivo.dom.set_onload(xivo_ldapfilter_onload);
+dwho.dom.set_onload(xivo_ldapfilter_onload);

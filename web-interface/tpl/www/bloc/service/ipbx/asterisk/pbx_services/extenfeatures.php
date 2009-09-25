@@ -40,21 +40,21 @@ $error_js = array();
 $error_nb = count($error['extenfeatures']);
 
 for($i = 0;$i < $error_nb;$i++):
-	$error_js[] = 'xivo_fm_error[\'it-extenfeatures-'.$error['extenfeatures'][$i].'\'] = true;';
+	$error_js[] = 'dwho.form.error[\'it-extenfeatures-'.$error['extenfeatures'][$i].'\'] = true;';
 	$invalid['extenfeatures'][$error['extenfeatures'][$i]] = true;
 endfor;
 
 $error_nb = count($error['generalfeatures']);
 
 for($i = 0;$i < $error_nb;$i++):
-	$error_js[] = 'xivo_fm_error[\'it-generalfeatures-'.$error['generalfeatures'][$i].'\'] = true;';
+	$error_js[] = 'dwho.form.error[\'it-generalfeatures-'.$error['generalfeatures'][$i].'\'] = true;';
 	$invalid['generalfeatures'][$error['generalfeatures'][$i]] = true;
 endfor;
 
 $error_nb = count($error['featuremap']);
 
 for($i = 0;$i < $error_nb;$i++):
-	$error_js[] = 'xivo_fm_error[\'it-featuremap-'.$error['featuremap'][$i].'\'] = true;';
+	$error_js[] = 'dwho.form.error[\'it-featuremap-'.$error['featuremap'][$i].'\'] = true;';
 	$invalid['featuremap'][$error['featuremap'][$i]] = true;
 endfor;
 
@@ -75,7 +75,7 @@ if(isset($error_js[0]) === true)
 		    class="moo"
 		    onmouseout="xivo_smenu_out(this,'moo');"
 		    onmouseover="xivo_smenu_over(this,'mov');">
-			<div onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-first');">
+			<div onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-first');">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
 				</div>
@@ -84,13 +84,13 @@ if(isset($error_js[0]) === true)
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-call');
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-call');
 							return(false);"><?=$this->bbf('smenu_calls');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-transfer');
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-transfer');
 							return(false);"><?=$this->bbf('smenu_transfers');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-1'),'moc','sb-part-forward');
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-forward');
 							return(false);"><?=$this->bbf('smenu_forwards');?></a></li>
 				</ul>
 			</div>
@@ -129,7 +129,7 @@ if(isset($error_js[0]) === true)
 		    class="moo-last"
 		    onmouseout="xivo_smenu_out(this,'moo',1);"
 		    onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-last',1);">
+			<div onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-last',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
@@ -138,7 +138,7 @@ if(isset($error_js[0]) === true)
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(xivo_eid('smenu-tab-5'),'moc','sb-part-parking',1);
+					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-parking',1);
 							return(false);"><?=$this->bbf('smenu_parking');?></a></li>
 				</ul>
 			</div>
@@ -149,8 +149,8 @@ if(isset($error_js[0]) === true)
 <div class="sb-content">
 	<form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> XIVO_SESS_NAME,
-				    'value'	=> XIVO_SESS_ID)),
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
 
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));

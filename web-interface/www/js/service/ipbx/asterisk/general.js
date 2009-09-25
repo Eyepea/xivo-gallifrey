@@ -27,21 +27,21 @@ function xivo_voicemail_format(action)
 {
 	if(action === 'out')
 	{
-		xivo_fm_move_selected('it-voicemail-format','it-voicemail-formatlist');
-		xivo_fm_copy_select('it-voicemail-format','it-voicemail-attachformat');
+		dwho.form.move_selected('it-voicemail-format','it-voicemail-formatlist');
+		dwho.form.copy_select('it-voicemail-format','it-voicemail-attachformat');
 	}
 	else
 	{
-		xivo_fm_move_selected('it-voicemail-formatlist','it-voicemail-format');
-		xivo_fm_copy_select('it-voicemail-format','it-voicemail-attachformat');
+		dwho.form.move_selected('it-voicemail-formatlist','it-voicemail-format');
+		dwho.form.copy_select('it-voicemail-format','it-voicemail-attachformat');
 	}
 
-	if(xivo_eid('it-voicemail-attachformat') === false)
+	if(dwho_eid('it-voicemail-attachformat') === false)
 		return(false);
 
 	xivo_chg_attrib('fm_voicemail_format',
 			'it-voicemail-attachformat',
-			Number((xivo_eid('it-voicemail-attachformat').length === 0)));
+			Number((dwho_eid('it-voicemail-attachformat').length === 0)));
 
 	return(true);
 }

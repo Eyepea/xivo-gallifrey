@@ -51,12 +51,12 @@ class xivo_service_asterisk_rightcallmember extends xivo_service_asterisk_abstra
 		{
 			case 'incall':
 			case 'outcall':
-				$typeval = xivo_ulongint($typeval);
+				$typeval = dwho_ulongint($typeval);
 				$module = $this->_sre->get_module($type);
 				break;
 			case 'user':
 			case 'group':
-				$typeval = xivo_ulongint($typeval);
+				$typeval = dwho_ulongint($typeval);
 				$module = $this->_sre->get_module($type.'features');
 				break;
 			default:

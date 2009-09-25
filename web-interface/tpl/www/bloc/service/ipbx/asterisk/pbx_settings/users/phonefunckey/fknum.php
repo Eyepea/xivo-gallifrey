@@ -32,7 +32,7 @@ $select['key'] = false;
 $select['default'] = $fknumelem['default'];
 
 if($fkdata['ex'] === false):
-	$select['id'] .= '-'.xivo_uint($fkdata['incr']);
+	$select['id'] .= '-'.dwho_uint($fkdata['incr']);
 	$select['value'] = $fknumelem['value'];
 else:
 	$select['disabled'] = true;

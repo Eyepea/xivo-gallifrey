@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_json');
-echo 'var xivo_phonefunckey_type = '.xivo_json::encode($this->get_var('fktype_list'));
+dwho::load_class('dwho_json');
+echo 'var xivo_phonefunckey_type = '.dwho_json::encode($this->get_var('fktype_list'));
 
 ?>

@@ -25,11 +25,11 @@ var xivo_ast_callfilter_mode_elt = {
 
 var xivo_ast_fm_callfilter_mode = {
 	'bosssecretary':
-		{'bossfirst-serial':	xivo_clone(xivo_ast_callfilter_mode_elt),
-		 'bossfirst-simult':	xivo_clone(xivo_ast_callfilter_mode_elt),
-		 'secretary-serial':	xivo_clone(xivo_ast_callfilter_mode_elt),
-		 'secretary-simult':	xivo_clone(xivo_ast_callfilter_mode_elt),
-		 'secretary-all':	xivo_clone(xivo_ast_callfilter_mode_elt)}};
+		{'bossfirst-serial':	dwho_clone(xivo_ast_callfilter_mode_elt),
+		 'bossfirst-simult':	dwho_clone(xivo_ast_callfilter_mode_elt),
+		 'secretary-serial':	dwho_clone(xivo_ast_callfilter_mode_elt),
+		 'secretary-simult':	dwho_clone(xivo_ast_callfilter_mode_elt),
+		 'secretary-all':	dwho_clone(xivo_ast_callfilter_mode_elt)}};
 
 xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-serial']['fd-callfilter-ringseconds']['style'] = {display: 'none'};
 xivo_ast_fm_callfilter_mode['bosssecretary']['bossfirst-serial']['it-callfilter-ringseconds']['property'] = {disabled: false};
@@ -50,10 +50,10 @@ xivo_attrib_register('fm_callfilter_mode-bosssecretary-secretary-all',
 
 function xivo_callfilter_chg_mode(modename,mode)
 {
-	if(xivo_is_object(mode) === false
-	|| xivo_is_undef(mode.value) === true
-	|| xivo_is_undef(xivo_ast_fm_callfilter_mode[modename]) === true
-	|| xivo_is_undef(xivo_ast_fm_callfilter_mode[modename][mode.value]) === true)
+	if(dwho_is_object(mode) === false
+	|| dwho_is_undef(mode.value) === true
+	|| dwho_is_undef(xivo_ast_fm_callfilter_mode[modename]) === true
+	|| dwho_is_undef(xivo_ast_fm_callfilter_mode[modename][mode.value]) === true)
 		return(false);
 
 	xivo_chg_attrib('fm_callfilter_mode-' + modename + '-' + mode.value,'links',0,1);
@@ -61,9 +61,9 @@ function xivo_callfilter_chg_mode(modename,mode)
 
 function xivo_callfilter_onload()
 {
-	xivo_callfilter_chg_mode('bosssecretary',xivo_eid('it-callfilter-bosssecretary'));
+	xivo_callfilter_chg_mode('bosssecretary',dwho_eid('it-callfilter-bosssecretary'));
 	xivo_ast_build_dialaction_array('noanswer');
 	xivo_ast_dialaction_onload();
 }
 
-xivo.dom.set_onload(xivo_callfilter_onload);
+dwho.dom.set_onload(xivo_callfilter_onload);

@@ -39,7 +39,7 @@
 	endif;
 ?>
 <form action="#" name="fm-users-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => XIVO_SESS_NAME,'value' => XIVO_SESS_ID));?>
+<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => $act));?>
 <?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -67,7 +67,7 @@
 	    class="sb-content l-infos-<?=(($j % 2) + 1)?>on2">
 		<td class="td-left txt-left curpointer"
 		    colspan="2"
-		    onclick="location.href = xivo.dom.node.firstchild(this);">
+		    onclick="location.href = dwho.dom.node.firstchild(this);">
 			<?=$url->href_html($ref['dirname'],
 					   'service/ipbx/pbx_services/sounds',
 					   array('act'	=> 'list',

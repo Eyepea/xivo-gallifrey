@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_file::required(array(XIVO_PATH_OBJECT,'user','authent','abstract','sql.inc'),true);
+dwho_file::required(array(XIVO_PATH_OBJECT,'user','authent','abstract','sql.inc'),true);
 
 class xivo_authent_sqlite extends xivo_authent_abstract_sql
 {

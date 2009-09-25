@@ -26,14 +26,14 @@ $element = $this->get_var('element');
 $context_list = $this->get_var('context_list');
 
 if(isset($info['protocol']) === true):
-	if(xivo_issa('allow',$info['protocol']) === true):
+	if(dwho_issa('allow',$info['protocol']) === true):
 		$allow = $info['protocol']['allow'];
 	else:
 		$allow = array();
 	endif;
 
-	$host = (string) xivo_ak('host',$info['protocol'],true);
-	$protocol_disable = (bool) xivo_ak('commented',$info['protocol'],true);
+	$host = (string) dwho_ak('host',$info['protocol'],true);
+	$protocol_disable = (bool) dwho_ak('commented',$info['protocol'],true);
 else:
 	$allow = array();
 	$host = '';
@@ -44,7 +44,7 @@ $codec_active = empty($allow) === false;
 $host_static = ($host !== '' && $host !== 'dynamic');
 
 if(($reg_active = $this->get_varra('info',array('register','commented'))) !== null):
-	$reg_active = xivo_bool($reg_active) === false;
+	$reg_active = dwho_bool($reg_active) === false;
 endif;
 
 if($this->get_var('fm_save') === false):
@@ -282,7 +282,7 @@ endif;
 
 <div id="codeclist" class="fm-field fm-multilist">
 	<p>
-		<label id="lb-codeclist" for="it-codeclist" onclick="xivo_eid('it-codeclist').focus();">
+		<label id="lb-codeclist" for="it-codeclist" onclick="dwho_eid('it-codeclist').focus();">
 			<?=$this->bbf('fm_protocol_codec-allow');?>
 		</label>
 	</p>
@@ -302,17 +302,17 @@ endif;
 
 	<div class="inout-list">
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-codeclist',
+		   onclick="dwho.form.move_selected('it-codeclist',
 						  'it-codec');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
 			<?=$url->img_html('img/site/button/row-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 		<a href="#"
-		   onclick="xivo_fm_move_selected('it-codec',
+		   onclick="dwho.form.move_selected('it-codec',
 						  'it-codeclist');
-			    return(xivo.dom.free_focus());"
+			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
 			<?=$url->img_html('img/site/button/row-right.gif',
 					  $this->bbf('bt_outcodec'),
@@ -333,15 +333,15 @@ endif;
 ?>
 		<div class="bt-updown">
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-codec',1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-codec',1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
 				<?=$url->img_html('img/site/button/row-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
-			   onclick="xivo_fm_order_selected('it-codec',-1);
-				    return(xivo.dom.free_focus());"
+			   onclick="dwho.form.order_selected('it-codec',-1);
+				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
 				<?=$url->img_html('img/site/button/row-down.gif',
 						  $this->bbf('bt_downcodec'),

@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';
@@ -34,7 +34,7 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& $_USR->edit($info['meta'],$_QR) !== false)
 		{
-			if(xivo_ulongint($_USR->get_info('id')) === xivo_ulongint($info['id']))
+			if(dwho_ulongint($_USR->get_info('id')) === dwho_ulongint($info['id']))
 				$_USR->load_by_id($info['id']);
 
 			$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
@@ -83,7 +83,7 @@ switch($act)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 		break;
 }

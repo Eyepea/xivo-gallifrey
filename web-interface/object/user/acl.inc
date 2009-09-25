@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','acl.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','acl.inc'));
 
 class xivo_user_acl extends xivo_acl_abstract
 {
@@ -31,9 +31,9 @@ class xivo_user_acl extends xivo_acl_abstract
 		if(defined('XIVO_USER_ACL_FILE') === true)
 			$path = XIVO_USER_ACL_FILE;
 		else
-			$path = xivo_file::joinpath(XIVO_PATH_OBJECTCONF,'acl','user');
+			$path = dwho_file::joinpath(XIVO_PATH_OBJECTCONF,'acl','user');
 
-		if(($this->_conf = xivo_gat::get_file($path)) === false
+		if(($this->_conf = dwho_gat::get_file($path)) === false
 		|| isset($this->_conf['tree']) === false)
 			trigger_error('Failed to load user ACL Array',E_USER_ERROR);
 
@@ -65,7 +65,7 @@ class xivo_user_acl extends xivo_acl_abstract
 		if(isset($_SESSION['_ACL']['tree']) === false)
 			$_SESSION['_ACL']['tree'] = array();
 
-		if(xivo_issa('group',$this->_conf) === false)
+		if(dwho_issa('group',$this->_conf) === false)
 			trigger_error('Missing group array in acl',E_USER_ERROR);
 		else
 			$_SESSION['_ACL']['group'] = $this->_conf['group'];

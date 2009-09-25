@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'service','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'service','abstract.inc'));
 
 class xivo_service_monit extends xivo_service_abstract
 {
@@ -29,12 +29,12 @@ class xivo_service_monit extends xivo_service_abstract
 
 	function xivo_service_monit($ini)
 	{
-		if(xivo::load_class('xivo_monit') === false)
-			trigger_error('Unable to load class xivo_monit',E_USER_ERROR);
+		if(dwho::load_class('dwho_monit') === false)
+			trigger_error('Unable to load class dwho_monit',E_USER_ERROR);
 
 		$this->_load_config();
 
-		if(xivo_issa('general',$ini) === false)
+		if(dwho_issa('general',$ini) === false)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
 		$this->_ini = $ini;
@@ -42,7 +42,7 @@ class xivo_service_monit extends xivo_service_abstract
 
 	function __instance()
 	{
-		$this->_instance = new xivo_monit($this->_ini);
+		$this->_instance = new dwho_monit($this->_ini);
 		$this->_instance->recv_info();
 
 		return($this->_instance);

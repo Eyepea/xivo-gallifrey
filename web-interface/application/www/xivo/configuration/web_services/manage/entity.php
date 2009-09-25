@@ -21,7 +21,7 @@
 $access_category = 'manage';
 $access_subcategory = 'entity';
 
-include(xivo_file::joinpath(dirname(__FILE__),'..','_common.php'));
+include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
 $_ETT = new xivo_entity();
@@ -40,8 +40,8 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
-		if(xivo::load_class('xivo_json') === false
-		|| ($data = xivo_json::decode($_QRY->get_input(),true)) === false
+		if(dwho::load_class('dwho_json') === false
+		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
 		|| is_array($data) === false
 		|| $_ETT->chk_values($data) === false
 		|| ($result = $_ETT->get_filter_result()) === false

@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $info = $result = array();
 
@@ -36,7 +36,7 @@ switch($act)
 
 		$allow = array();
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
 			if($apptrunk->set_add($_QR) === false
 			|| $apptrunk->add() === false)
@@ -44,10 +44,10 @@ switch($act)
 				$fm_save = false;
 				$result = $apptrunk->get_result();
 
-				if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
+				if(dwho_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 					$allow = $result['protocol']['allow'];
 
-				if(xivo_issa('register',$result) === true && isset($result['register']['arr']) === true)
+				if(dwho_issa('register',$result) === true && isset($result['register']['arr']) === true)
 					$result['register'] = $result['register']['arr'];
 			}
 			else
@@ -56,8 +56,8 @@ switch($act)
 
 		$element = $apptrunk->get_elements();
 
-		if(xivo_issa('allow',$element['protocol']) === true
-		&& xivo_issa('value',$element['protocol']['allow']) === true
+		if(dwho_issa('allow',$element['protocol']) === true
+		&& dwho_issa('value',$element['protocol']['allow']) === true
 		&& empty($allow) === false)
 		{
 			if(is_array($allow) === false)
@@ -95,7 +95,7 @@ switch($act)
 		else
 			$allow = array();
 
-		if(isset($_QR['fm_send']) === true && xivo_issa('protocol',$_QR) === true)
+		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
 			$return = &$result;
 
@@ -105,10 +105,10 @@ switch($act)
 				$fm_save = false;
 				$result = $apptrunk->get_result();
 
-				if(xivo_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
+				if(dwho_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 					$allow = $result['protocol']['allow'];
 
-				if(xivo_issa('register',$result) === true && isset($result['register']['arr']) === true)
+				if(dwho_issa('register',$result) === true && isset($result['register']['arr']) === true)
 					$result['register'] = $result['register']['arr'];
 			}
 			else
@@ -117,8 +117,8 @@ switch($act)
 
 		$element = $apptrunk->get_elements();
 
-		if(xivo_issa('allow',$element['protocol']) === true
-		&& xivo_issa('value',$element['protocol']['allow']) === true
+		if(dwho_issa('allow',$element['protocol']) === true
+		&& dwho_issa('value',$element['protocol']['allow']) === true
 		&& empty($allow) === false)
 		{
 			if(is_array($allow) === false)
@@ -157,7 +157,7 @@ switch($act)
 	case 'deletes':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('trunks',$_QR)) === false)
+		if(($values = dwho_issa_val('trunks',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/sip'),$param);
 
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -177,7 +177,7 @@ switch($act)
 	case 'disables':
 		$param['page'] = $page;
 
-		if(($values = xivo_issa_val('trunks',$_QR)) === false)
+		if(($values = dwho_issa_val('trunks',$_QR)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/sip'),$param);
 
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -222,7 +222,7 @@ switch($act)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/sip'),$param);
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 		$_TPL->set_var('list',$list);
 }
 

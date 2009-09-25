@@ -19,7 +19,7 @@
 #
 
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
-$page = isset($_QR['page']) === true ? xivo_uint($_QR['page'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $param = array();
 $param['act'] = 'list';
@@ -34,7 +34,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $backupfiles->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/backupfiles'),$param);
 
-		$file = new xivo_file();
+		$file = new dwho_file();
 
 		if(($file->download($info['file'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/backupfiles'),$param);
@@ -48,12 +48,12 @@ switch($act)
 		if(($files = $backupfiles->get_list()) !== false)
 		{
 			$total = count($files);
-			xivo::load_class('xivo_sort');
-			$sort = new xivo_sort(array('key' => 'name'));
+			dwho::load_class('dwho_sort');
+			$sort = new dwho_sort(array('key' => 'name'));
 			usort($files,array(&$sort,'strnat_usort'));
 		}
 
-		$_TPL->set_var('pager',xivo_calc_page($page,20,$total));
+		$_TPL->set_var('pager',dwho_calc_page($page,20,$total));
 		$_TPL->set_var('list',$files);
 }
 

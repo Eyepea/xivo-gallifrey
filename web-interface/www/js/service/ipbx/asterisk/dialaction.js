@@ -25,7 +25,7 @@ var xivo_elt_dialaction = {
 			'inschedule':	{},
 			'outschedule':	{}};
 
-var xivo_fm_dialaction = xivo_clone(xivo_elt_dialaction);
+var xivo_fm_dialaction = dwho_clone(xivo_elt_dialaction);
 
 var xivo_dialaction_actiontype = {
 			'none':		['actiontype'],
@@ -106,9 +106,9 @@ xivo_dialaction_actionarg['application']['voicemailmain'] = [{display: false, na
 
 function xivo_ast_build_dialaction_array(dialevent)
 {
-	if(xivo_is_undef(xivo_elt_dialaction[dialevent]) === true
-	|| xivo_type_object(xivo_elt_dialaction[dialevent]) === false
-	|| xivo_is_undef(xivo_fm_dialaction[dialevent]) === true)
+	if(dwho_is_undef(xivo_elt_dialaction[dialevent]) === true
+	|| dwho_type_object(xivo_elt_dialaction[dialevent]) === false
+	|| dwho_is_undef(xivo_fm_dialaction[dialevent]) === true)
 		return(false);
 
 	xivo_elt_dialaction[dialevent]['links'] = {'link': []};
@@ -119,7 +119,7 @@ function xivo_ast_build_dialaction_array(dialevent)
 	{
 		var ref = xivo_dialaction_actiontype[property];
 
-		if(xivo_is_array(ref) === false || (nb = ref.length) === 0)
+		if(dwho_is_array(ref) === false || (nb = ref.length) === 0)
 			continue;
 
 		for(var j = 0;j < nb;j++)
@@ -137,16 +137,16 @@ function xivo_ast_build_dialaction_array(dialevent)
 
 function xivo_ast_register_dialaction(dialevent,actiontype)
 {
-	if(xivo_is_undef(xivo_dialaction_actiontype[actiontype]) === true)
+	if(dwho_is_undef(xivo_dialaction_actiontype[actiontype]) === true)
 		return(false);
-	else if(xivo_type_object(xivo_fm_dialaction[dialevent][actiontype]) === true)
+	else if(dwho_type_object(xivo_fm_dialaction[dialevent][actiontype]) === true)
 		return(true);
 
 	var ref = xivo_dialaction_actiontype[actiontype];
 
-	xivo_fm_dialaction[dialevent][actiontype] = xivo_clone(xivo_elt_dialaction[dialevent]);
+	xivo_fm_dialaction[dialevent][actiontype] = dwho_clone(xivo_elt_dialaction[dialevent]);
 
-	if(xivo_is_array(ref) === true && (nb = ref.length) > 0)
+	if(dwho_is_array(ref) === true && (nb = ref.length) > 0)
 	{
 		for(var i = 0;i < nb;i++)
 		{
@@ -165,9 +165,9 @@ function xivo_ast_register_dialaction(dialevent,actiontype)
 
 function xivo_ast_chg_dialaction(dialevent,actiontype)
 {
-	if(xivo_type_object(xivo_elt_dialaction[dialevent]) === false
-	|| xivo_is_undef(actiontype.value) === true
-	|| (xivo_is_undef(actiontype.disabled) === false && actiontype.disabled === true) === true
+	if(dwho_type_object(xivo_elt_dialaction[dialevent]) === false
+	|| dwho_is_undef(actiontype.value) === true
+	|| (dwho_is_undef(actiontype.disabled) === false && actiontype.disabled === true) === true
 	|| xivo_ast_register_dialaction(dialevent,actiontype.value) === false)
 		return(false);
 
@@ -177,11 +177,11 @@ function xivo_ast_chg_dialaction(dialevent,actiontype)
 
 function xivo_ast_chg_dialaction_actionarg(dialevent,actiontype)
 {
-	if(xivo_type_object(xivo_fm_dialaction[dialevent]) === false
-	|| xivo_type_object(xivo_dialaction_actionarg[actiontype]) === false
-	|| (action = xivo_eid('it-dialaction-'+dialevent+'-'+actiontype+'-action')) === false
-	|| xivo_is_undef(action.value) === true
-	|| xivo_is_array(xivo_dialaction_actionarg[actiontype][action.value]) === false
+	if(dwho_type_object(xivo_fm_dialaction[dialevent]) === false
+	|| dwho_type_object(xivo_dialaction_actionarg[actiontype]) === false
+	|| (action = dwho_eid('it-dialaction-'+dialevent+'-'+actiontype+'-action')) === false
+	|| dwho_is_undef(action.value) === true
+	|| dwho_is_array(xivo_dialaction_actionarg[actiontype][action.value]) === false
 	|| (nb = xivo_dialaction_actionarg[actiontype][action.value].length) === 0)
 		return(false);
 
@@ -189,10 +189,10 @@ function xivo_ast_chg_dialaction_actionarg(dialevent,actiontype)
 
 	for(var i = 0;i < nb;i++)
 	{
-		if((fdactionarg = xivo_eid('fd-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i].name)) !== false)
+		if((fdactionarg = dwho_eid('fd-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i].name)) !== false)
 			fdactionarg.style.display = (ref[i].display === false ? 'none' : 'block');
 
-		if((itactionarg = xivo_eid('it-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i].name)) !== false)
+		if((itactionarg = dwho_eid('it-dialaction-'+dialevent+'-'+actiontype+'-'+ref[i].name)) !== false)
 		{
 			if(ref[i].display === false)
 				xivo_chg_property_attrib(itactionarg,{disabled: true, className: 'it-disabled'});
@@ -206,7 +206,7 @@ function xivo_ast_dialaction_onload()
 {
 	for(var dialevent in xivo_fm_dialaction)
 	{
-		if((action = xivo_eid('it-dialaction-'+dialevent+'-actiontype')) !== false)
+		if((action = dwho_eid('it-dialaction-'+dialevent+'-actiontype')) !== false)
 			xivo_ast_chg_dialaction(dialevent,action);
 	}
 }

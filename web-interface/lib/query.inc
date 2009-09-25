@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('XIVO_QUERY_MODE_RAW',1);
-define('XIVO_QUERY_MODE_QOT',2);
-define('XIVO_QUERY_MODE_UNTRIM',4);
-define('XIVO_QUERY_MODE_URAW',XIVO_QUERY_MODE_RAW | XIVO_QUERY_MODE_UNTRIM);
-define('XIVO_QUERY_MODE_UQOT',XIVO_QUERY_MODE_QOT | XIVO_QUERY_MODE_UNTRIM);
+define('DWHO_QUERY_MODE_RAW',1);
+define('DWHO_QUERY_MODE_QOT',2);
+define('DWHO_QUERY_MODE_UNTRIM',4);
+define('DWHO_QUERY_MODE_URAW',DWHO_QUERY_MODE_RAW | DWHO_QUERY_MODE_UNTRIM);
+define('DWHO_QUERY_MODE_UQOT',DWHO_QUERY_MODE_QOT | DWHO_QUERY_MODE_UNTRIM);
 
-class xivo_query
+class dwho_query
 {
 	var $orig	= array('request' => array(),'qstring' => array());
 	var $raw	= array();
@@ -37,16 +37,16 @@ class xivo_query
 	var $_separator	= array('in' => '&','out' => '&');
 	var $_mquotes	= false;
 
-	function xivo_query()
+	function dwho_query()
 	{
 		if(isset($_SERVER['QUERY_STRING']) === true)
 			parse_str($_SERVER['QUERY_STRING'],$this->_orig['qstring']);
 
-		if(defined('XIVO_SEP_ARG_IN') === true)
-			$this->_separator['in'] = XIVO_SEP_ARG_IN;
+		if(defined('DWHO_SEP_ARG_IN') === true)
+			$this->_separator['in'] = DWHO_SEP_ARG_IN;
 
-		if(defined('XIVO_SEP_ARG_OUT') === true)
-			$this->_separator['out'] = XIVO_SEP_ARG_OUT;
+		if(defined('DWHO_SEP_ARG_OUT') === true)
+			$this->_separator['out'] = DWHO_SEP_ARG_OUT;
 
 		$this->_mquotes = (bool) get_magic_quotes_gpc();
 
@@ -73,12 +73,12 @@ class xivo_query
 		$r = array();
 
 		$type = (string) $type;
-		$mode = xivo_uint($mode);
+		$mode = dwho_uint($mode);
 
 		$type = isset($this->_orig[$type]) === true ? $type : 'request';
 		$data = $this->_orig[$type];
 
-		if(($mode & XIVO_QUERY_MODE_RAW) !== 0)
+		if(($mode & DWHO_QUERY_MODE_RAW) !== 0)
 			$r = &$this->_filter($data,
 					     $mode,
 					     ($this->_mquotes === true ? true : null));		// remove spaces and is unquoted
@@ -98,7 +98,7 @@ class xivo_query
 		{
 			$q = $this->qstring_raw_str();
 
-			if($this->get_qs(XIVO_SESS_NAME) === XIVO_SESS_ID)
+			if($this->get_qs(DWHO_SESS_NAME) === DWHO_SESS_ID)
 				$query = false;
 		}
 		else if(is_array($query) === true)
@@ -108,13 +108,13 @@ class xivo_query
 
 		if($query !== false)
 		{
-			if(xivo_has_len($q) === true)
-				$q .= XIVO_SEP_ARG_OUT;
+			if(dwho_has_len($q) === true)
+				$q .= DWHO_SEP_ARG_OUT;
 
-			$q .= XIVO_SESS_STR;
+			$q .= DWHO_SESS_STR;
 		}
 
-		if(xivo_has_len($q) === true)
+		if(dwho_has_len($q) === true)
 			$location .= '?'.$q;
 
 		die(header('Location: '.$location));
@@ -140,7 +140,7 @@ class xivo_query
 
 		$quote = $this->_mquotes === true ? true : null;
 
-		$this->raw[$name] = &$this->_filter($this->_orig['request'][$name],XIVO_QUERY_MODE_RAW,$quote);
+		$this->raw[$name] = &$this->_filter($this->_orig['request'][$name],DWHO_QUERY_MODE_RAW,$quote);
 
 		return($this->raw[$name]);
 	}
@@ -155,7 +155,7 @@ class xivo_query
 
 		$quote = $this->_mquotes === true ? true : null;
 
-		$this->qraw[$name] = &$this->_filter($this->_orig['qstring'][$name],XIVO_QUERY_MODE_RAW,$quote);
+		$this->qraw[$name] = &$this->_filter($this->_orig['qstring'][$name],DWHO_QUERY_MODE_RAW,$quote);
 
 		return($this->qraw[$name]);
 	}
@@ -170,7 +170,7 @@ class xivo_query
 
 		$quote = $this->_mquotes === true ? true : null;
 
-		$this->uraw[$name] = &$this->_filter($this->_orig['request'][$name],XIVO_QUERY_MODE_URAW,$quote);
+		$this->uraw[$name] = &$this->_filter($this->_orig['request'][$name],DWHO_QUERY_MODE_URAW,$quote);
 
 		return($this->uraw[$name]);
 	}
@@ -185,7 +185,7 @@ class xivo_query
 
 		$quote = $this->_mquotes === false ? false : null;
 
-		$this->qot[$name] = &$this->_filter($this->_orig['request'][$name],XIVO_QUERY_MODE_QOT,$quote);
+		$this->qot[$name] = &$this->_filter($this->_orig['request'][$name],DWHO_QUERY_MODE_QOT,$quote);
 
 		return($this->qot[$name]);
 	}
@@ -200,7 +200,7 @@ class xivo_query
 
 		$quote = $this->_mquotes === false ? false : null;
 
-		$this->uqot[$name] = &$this->_filter($this->_orig['request'][$name],XIVO_QUERY_MODE_UQOT,$quote);
+		$this->uqot[$name] = &$this->_filter($this->_orig['request'][$name],DWHO_QUERY_MODE_UQOT,$quote);
 
 		return($this->uqot[$name]);
 	}
@@ -250,7 +250,7 @@ class xivo_query
 
 	function &request_meth_raw()
 	{
-		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_RAW)));
+		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_RAW)));
 	}
 
 	function request_meth_raw_str($sep='')
@@ -260,7 +260,7 @@ class xivo_query
 
 	function &request_meth_uraw()
 	{
-		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_URAW)));
+		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_URAW)));
 	}
 
 	function request_meth_uraw_str($sep='')
@@ -270,7 +270,7 @@ class xivo_query
 
 	function &request_meth_qot()
 	{
-		return(($ref = &$this->query_string('request',XIVO_QUERY_MODE_QOT)));
+		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_QOT)));
 	}
 
 	function request_meth_qot_str($sep='')
@@ -290,7 +290,7 @@ class xivo_query
 
 	function &qstring_raw()
 	{
-		return(($ref = &$this->query_string('qstring',XIVO_QUERY_MODE_RAW)));
+		return(($ref = &$this->query_string('qstring',DWHO_QUERY_MODE_RAW)));
 	}
 
 	function qstring_raw_str($sep='')
@@ -300,7 +300,7 @@ class xivo_query
 
 	function &qstring_qot()
 	{
-		return(($ref = $this->query_string('qstring',XIVO_QUERY_MODE_QOT)));
+		return(($ref = $this->query_string('qstring',DWHO_QUERY_MODE_QOT)));
 	}
 
 	function qstring_qot_str($sep='')
@@ -402,8 +402,8 @@ class xivo_query
 
 		if($sep === '')
 		{
-			if(defined('XIVO_SEP_ARG_OUT') === true)
-				$sep = XIVO_SEP_ARG_OUT;
+			if(defined('DWHO_SEP_ARG_OUT') === true)
+				$sep = DWHO_SEP_ARG_OUT;
 			else
 				$sep = '&';
 		}
@@ -416,9 +416,9 @@ class xivo_query
 		foreach($a as $k => $v)
 		{
 			if(is_array($v) === true || is_object($v) === true)
-				$r[] = xivo_query::mk_query_str($v,$sep);
-			else if(($val = xivo_query::encode_query($v,'val')) !== '')
-				$r[] = xivo_query::encode_query($k,'key').'='.$val;
+				$r[] = dwho_query::mk_query_str($v,$sep);
+			else if(($val = dwho_query::encode_query($v,'val')) !== '')
+				$r[] = dwho_query::encode_query($k,'key').'='.$val;
 		}
 
 		return(implode($sep,$r));
@@ -426,11 +426,11 @@ class xivo_query
 
 	function &_filter($value,$mode=0,$quote=null)
 	{
-		$mode = xivo_uint($mode);
+		$mode = dwho_uint($mode);
 
 		if(is_array($value) === false)
 		{
-			if(($mode & XIVO_QUERY_MODE_UNTRIM) === 0)
+			if(($mode & DWHO_QUERY_MODE_UNTRIM) === 0)
 				$value = trim($value);
 
 			if($quote !== null)

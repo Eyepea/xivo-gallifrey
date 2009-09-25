@@ -26,7 +26,7 @@ $node = $this->get_var('node');
 echo	'<ol>',"\n";
 
 if(is_array($list) === false || ($nb = count($list)) === 0):
-	echo	'<li>',xivo_htmlsc($this->bbf('phone_noentries')),'<br /></li>',"\n";
+	echo	'<li>',dwho_htmlsc($this->bbf('phone_noentries')),'<br /></li>',"\n";
 else:
 	$param = array();
 	$param['name'] = $this->get_var('name');
@@ -37,7 +37,7 @@ else:
 		$prevparam['node'] = $node + 1;
 		$prevparam['prevpos'] = $this->get_var('prevpos');
 
-		echo	'<li>[',$url->href_html(xivo_htmlsc($this->bbf('phone_back')),
+		echo	'<li>[',$url->href_html(dwho_htmlsc($this->bbf('phone_back')),
 						'service/ipbx/web_services/phonebook/search',
 						$prevparam,
 						null,
@@ -76,7 +76,7 @@ else:
 
 		$param['pos'] = $ref[2];
 
-		$name = xivo_htmlsc(xivo_trunc($name1,8,'.','',true).' > '.xivo_trunc($name2,8,'.','',true));
+		$name = dwho_htmlsc(dwho_trunc($name1,8,'.','',true).' > '.dwho_trunc($name2,8,'.','',true));
 
 		echo	'<li>[',$url->href_html($name,
 						'service/ipbx/web_services/phonebook/search',

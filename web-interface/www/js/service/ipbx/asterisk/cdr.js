@@ -25,8 +25,8 @@ xivo_attrib_register('fm_dcontext',xivo_fm_dcontext);
 
 function xivo_cdr_onload()
 {
-	if((dcontext = xivo_eid('it-dcontext')) !== false)
+	if((dcontext = dwho_eid('it-dcontext')) !== false)
 		xivo_chg_attrib('fm_dcontext','fd-dcontext-custom',Number(dcontext.value === 'custom'));
 }
 
-xivo.dom.set_onload(xivo_cdr_onload);
+dwho.dom.set_onload(xivo_cdr_onload);

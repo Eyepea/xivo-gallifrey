@@ -26,14 +26,14 @@ class xivo_service
 
 	function xivo_service($ini)
 	{
-		if(($this->_conf = xivo_gat::get_file(XIVO_PATH_OBJECTCONF.XIVO_SEP_DIR.'service')) === false)
+		if(($this->_conf = dwho_gat::get_file(XIVO_PATH_OBJECTCONF.DWHO_SEP_DIR.'service')) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);
 		else if(is_array($ini) === false || empty($ini) === true)
 			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
 
 		$this->_ini = $ini;
 
-		if(xivo_issa('_SRE',$_SESSION) === false)
+		if(dwho_issa('_SRE',$_SESSION) === false)
 			$_SESSION['_SRE'] = array();
 	}
 
@@ -41,11 +41,11 @@ class xivo_service
 	{
 		if($this->is_valid($name) === true)
 			return(null);
-		else if((bool) xivo_ak($name,$this->_ini,true) === false)
+		else if((bool) dwho_ak($name,$this->_ini,true) === false)
 			return(false);
-		else if(xivo_issa($name,$this->_conf) === false
+		else if(dwho_issa($name,$this->_conf) === false
 		|| ($init = $this->_load_init_file($name)) === false
-		|| xivo_issa('general',$init) === false
+		|| dwho_issa('general',$init) === false
 		|| isset($init['general']['name'],$this->_conf[$name][$init['general']['name']]) === false)
 			return(false);
 
@@ -76,7 +76,7 @@ class xivo_service
 		if(isset($init['general']['version']) === true && is_string($init['general']['version']) === true)
 			$sess_ini['general']['version'] = $init['general']['version'];
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,'service',$name);
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,'service',$name);
 
 		if(xivo::load_class($cname,$dir,$sname,false) === false)
 			trigger_error('Failed to load '.$name.' '.$sname.' service',E_USER_ERROR);
@@ -84,7 +84,7 @@ class xivo_service
 		if(isset($init['general']['datastorage']) === true)
 		{
 			if(is_string($init['general']['datastorage']) === true)
-				$init['general']['datastorage'] = xivo_datastorage::set_param_from_uri($init['general']['datastorage']);
+				$init['general']['datastorage'] = dwho_datastorage::set_param_from_uri($init['general']['datastorage']);
 			else if(isset($init['general']['datastorage']['type']) === false)
 				$init['general']['datastorage'] = false;
 
@@ -116,15 +116,15 @@ class xivo_service
 		if(preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
 			return(false);
 
-		return(xivo::load_init(XIVO_PATH_CONF.XIVO_SEP_DIR.$name.'.ini'));
+		return(xivo::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.$name.'.ini'));
 	}
 
 	function _set($name,&$obj)
 	{
-		if(xivo_has_len($name) === false || is_object($obj) === false)
+		if(dwho_has_len($name) === false || is_object($obj) === false)
 			return(false);
 
-		return(xivo_gct::set($obj,XIVO_SRE_CLASS_PRE.$name));
+		return(dwho_gct::set($obj,XIVO_SRE_CLASS_PRE.$name));
 	}
 
 	function &get($name)
@@ -132,7 +132,7 @@ class xivo_service
 		$r = false;
 
 		if($this->_load_service($name) !== false)
-			$r = &xivo_gct::get(XIVO_SRE_CLASS_PRE.$name);
+			$r = &dwho_gct::get(XIVO_SRE_CLASS_PRE.$name);
 
 		return(($ref = &$r));
 	}
@@ -141,15 +141,15 @@ class xivo_service
 	{
 		$r = false;
 
-		if(xivo_has_len($name) === true)
-			$r = &xivo_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$name);
+		if(dwho_has_len($name) === true)
+			$r = &dwho_gct::set_get($obj,XIVO_SRE_CLASS_PRE.$name);
 
 		return(($ref = &$r));
 	}
 
 	function is_valid($name)
 	{
-		return(xivo_gct::is_valid(XIVO_SRE_CLASS_PRE.$name));
+		return(dwho_gct::is_valid(XIVO_SRE_CLASS_PRE.$name));
 	}
 }
 

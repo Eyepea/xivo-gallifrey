@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(xivo_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
 class xivo_application_abstract extends xivo_libconfig_abstract
 {
@@ -36,14 +36,14 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 		$file = $abstract.'.inc';
 
-		$dir = xivo_file::joinpath(XIVO_PATH_OBJECT,
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   $this->_application_name,
 					   'abstract');
 
 		$class = 'xivo_application_'.$this->_application_name.'_'.$abstract.'_abstract';
 
-		if(xivo_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
+		if(dwho_file::load_file($file,$dir,true) !== false && class_exists($class) === true)
 			return($class);
 
 		return(false);
@@ -129,7 +129,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 	function get_cnt()
 	{
-		return(xivo_ulongint($this->_cnt));
+		return(dwho_ulongint($this->_cnt));
 	}
 
 	function get_info($name='')
@@ -151,7 +151,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		$name = (string) $name;
 		$var = (string) $var;
 
-		if(xivo_issa($name,$this->_info) === false
+		if(dwho_issa($name,$this->_info) === false
 		|| isset($this->_info[$name][$var]) === false)
 			return(null);
 
@@ -177,7 +177,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		$name = (string) $name;
 		$var = (string) $var;
 
-		if(xivo_issa($name,$this->_origin) === false
+		if(dwho_issa($name,$this->_origin) === false
 		|| isset($this->_origin[$name][$var]) === false)
 			return(null);
 
@@ -217,7 +217,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		$name = (string) $name;
 		$var = (string) $var;
 
-		if(xivo_issa($name,$this->_result) === false
+		if(dwho_issa($name,$this->_result) === false
 		|| isset($this->_result[$name][$var]) === false)
 			return(null);
 
@@ -243,7 +243,7 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		$name = (string) $name;
 		$var = (string) $var;
 
-		if(xivo_issa($name,$this->_return) === false
+		if(dwho_issa($name,$this->_return) === false
 		|| isset($this->_return[$name][$var]) === false)
 			return(null);
 
