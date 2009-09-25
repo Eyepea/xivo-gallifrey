@@ -58,8 +58,9 @@ def faxtomail(agi, cursor, args):
             mutt = subprocess.Popen([MUTT_BIN, "-e", "set copy=no", "-s", "Reception de FAX vers %s" % dstnum, "-a", filepdf, email ],
                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                     close_fds=True)
-            mutt.communicate("Un nouveau fax est arrive. Il est joint dans ce mail.\n\nCordialement,\nService IPBX. --- Ceci est un
-                             mail envoye automatiquement. Merci de ne pas y repondre ---\n")
+            mutt.communicate("Un nouveau fax est arrive. Il est joint dans ce mail.\n\n"
+                             "Cordialement,\nService IPBX.\n\n"
+                             "--- Ceci est un mail envoye automatiquement. Merci de ne pas y repondre ---\n")
             status = mutt.wait()
         except OSError:
             status = 1
