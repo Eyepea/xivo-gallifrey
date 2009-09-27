@@ -71,7 +71,7 @@ $page = $url->pager($pager['pages'],
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_fullname');?></th>
 		<th class="th-center"><?=$this->bbf('col_protocol');?></th>
-		<th class="th-center"><?=$this->bbf('col_username');?></th>
+		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_phone');?></th>
 		<th class="th-center"><?=$this->bbf('col_provisioning');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
