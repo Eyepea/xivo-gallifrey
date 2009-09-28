@@ -4,10 +4,8 @@
 # $Revision$
 # $Date$
 
-# temporary hack to build without CDBS-ization
-
 include $(NONO_MK)/autobuild.mk
-#include $(NONO_MK)/autobuild-classic.mk
+include $(NONO_MK)/autobuild-classic.mk
 
 DEB_PKG = "asterisk"
 TARBALL_DIR := $(shell mktemp -d)
@@ -20,13 +18,9 @@ UPSTREAM_VER = $(ASTVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
 default:
 
 prepare-tarball::
-        cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) $(DEB_DESTDIR)/$(DEB_PKG)_$(UPSTREAM_VER).orig.tar.gz
-	#cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
-	#@cp -a $(MODULE_PATH)/patches ${TARBALL_DIR}
+	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
+	@cp -a $(MODULE_PATH)/patches ${TARBALL_DIR}
 
-#clean-tarball::
-#	@rm -rf ${TARBALL_DIR}
-
-remove-tarball::
-	@rm -f $(DEB_DESTDIR)/$(DEB_PKG)_*.orig.tar.gz
+clean-tarball::
+	@rm -rf ${TARBALL_DIR}
 
