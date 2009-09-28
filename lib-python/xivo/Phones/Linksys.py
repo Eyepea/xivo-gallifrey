@@ -87,6 +87,11 @@ class Linksys(PhoneVendorMixin):
 
     @staticmethod
     def xml_escape(data):
+        if data is None:
+            return ""
+        elif not isinstance(data, basestring):
+            return str(data)
+
         return escape(data, {"'": '&apos;', '"': '&quot;'})
 
     def __action(self, command, user, passwd):

@@ -333,36 +333,40 @@ class PhoneVendorMixin(object):
         cls.PROVI_VARS['config']['ntp_server_ipv4'] = cls.NTP_SERVER_IPV4
 
     @classmethod
-    def set_provisioning_variables(cls, provinfo, vars, format_var=None, format_extension=None):
+    def set_provisioning_variables(cls, provinfo, xvars, format_var=None, format_extension=None):
         for key in cls.PROVI_VARS['config'].keys():
-            if vars.has_key(key):
+            if xvars.has_key(key):
                 continue
             elif not format_var:
-                vars[key] = cls.PROVI_VARS['config'][key]
+                xvars[key] = cls.PROVI_VARS['config'][key]
             else:
-                vars[key] = format_var(cls.PROVI_VARS['config'][key])
+                xvars[key] = format_var(cls.PROVI_VARS['config'][key])
 
         for key, value in cls.PROVI_VARS['user'].iteritems():
             key = "user_%s" % key
 
-            if vars.has_key(key) or not provinfo.has_key(value):
+            if xvars.has_key(key) \
+               or not provinfo.has_key(value) \
+               or provinfo[value] is None:
                 continue
             elif not format_var:
-                vars[key] = provinfo[value]
+                xvars[key] = provinfo[value]
             else:
-                vars[key] = format_var(provinfo[value])
+                xvars[key] = format_var(provinfo[value])
 
         for key, value in cls.PROVI_VARS['exten'].iteritems():
             key = "exten_%s" % key
 
-            if vars.has_key(key):
+            if xvars.has_key(key) \
+               or not provinfo['extensions'].has_key(value) \
+               or provinfo['extensions'][value] is None:
                 continue
-            elif not format_extension or not provinfo['extensions'].has_key(value):
-                vars[key] = provinfo['extensions'][value]
+            elif not format_extension:
+                xvars[key] = provinfo['extensions'][value]
             else:
-                vars[key] = format_extension(provinfo['extensions'][value])
+                xvars[key] = format_extension(provinfo['extensions'][value])
 
-        return vars
+        return xvars
 
     def __init__(self, phone):
         """

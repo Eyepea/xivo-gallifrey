@@ -75,6 +75,15 @@ class Polycom(PhoneVendorMixin):
         and self.phone['model'] not in [x[0] for x in self.POLYCOM_MODELS]:
             raise ValueError, "Unknown Polycom model %r" % self.phone['model']
 
+    @staticmethod
+    def xml_escape(data):
+        if data is None:
+            return ""
+        elif not isinstance(data, basestring):
+            return str(data)
+
+        return escape(data)
+
     def __action(self, command, user, passwd):
         params = urllib.urlencode({'reg.1.server.1.address': "%s " % self.ASTERISK_IPV4})
 
@@ -130,9 +139,9 @@ class Polycom(PhoneVendorMixin):
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
-                    { 'user_vmail_addr':        escape(provinfo['vmailaddr']),
+                    { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
                     },
-                    escape,
+                    self.xml_escape,
                     clean_extension),
                 cfg_filename,
                 'utf8')
