@@ -167,7 +167,7 @@ class Linksys(PhoneVendorMixin):
                 clean_extension(provinfo['extensions']['pickupexten']) + "#"
 
         function_keys_config_lines = \
-                self.__format_function_keys(provinfo['funckey'])
+                self.__format_function_keys(provinfo['funckey'], model)
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -188,38 +188,49 @@ class Linksys(PhoneVendorMixin):
         os.rename(tmp_filename, cfg_filename)
 
     @classmethod
-    def __format_function_keys(cls, funckey):
+    def __format_function_keys(cls, funckey, model):
+        if model not in ('spa942', 'spa962'):
+            return ""
+
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
         for key in sorted_keys:
-            value = funckey[key]
-            exten = value['exten']
-
-            key = int(key)
-            unit = int(math.ceil(math.modf(key)[1] / 32))
-            key = key % 32
-
-            key = (int(key) % 32)
-
-            if key == 0:
-                key = 32
+            value   = funckey[key]
+            exten   = value['exten']
+            key     = int(key)
+            label   = Linksys.xml_escape(value.get('label', exten))
 
             if value.get('supervision'):
                 blf = "+blf"
             else:
                 blf = ""
 
-            fk_config_lines.append('<Unit_%d_Key_%d ua="na">fnc=sd+cp%s;sub=%s@%s:nme=%s</Unit_%d_Key_%d>'
-                                   % (unit,
-                                      key,
-                                      blf,
-                                      exten,
-                                      cls.ASTERISK_IPV4,
-                                      Linksys.xml_escape(value.get('label', exten)),
-                                      unit,
-                                      key))
+            func = "fnc=sd+cp%s;sub=%s@%s;nme=%s" % (blf, exten, cls.ASTERISK_IPV4, label)
+
+            if model == 'spa962':
+                if key > 6:
+                    key -= 6
+                    fk_config_lines.append(cls.__format_function_keys_unit(key, func))
+                    continue
+            elif key > 4:
+                continue
+
+            fk_config_lines.append('<Extension_%d_ ua="na">Disabled</Extension_%d_>' % (key, key))
+            fk_config_lines.append('<Short_Name_%d_ ua="na">%s</Short_Name_%d_>' % (key, label, key))
+            fk_config_lines.append('<Extended_Function_%d_ ua="na">%s</Extended_Function_%d_>' % (key, func, key))
+
         return "\n".join(fk_config_lines)
+
+    @classmethod
+    def __format_function_keys_unit(cls, key, func):
+        unit = int(math.ceil(math.modf(key)[1] / 32))
+        key %= 32
+
+        if key == 0:
+            key = 32
+
+        return '<Unit_%d_Key_%d ua="na">%s</Unit_%d_Key_%d>' % (unit, key, func, unit, key)
 
     def do_reinitprov(self, provinfo):
         """
