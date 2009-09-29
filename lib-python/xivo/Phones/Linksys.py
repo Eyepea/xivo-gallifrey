@@ -208,7 +208,9 @@ class Linksys(PhoneVendorMixin):
 
             func = "fnc=sd+cp%s;sub=%s@%s;nme=%s" % (blf, exten, cls.ASTERISK_IPV4, label)
 
-            if model == 'spa962':
+            if key == 1:
+                continue
+            elif model == 'spa962':
                 if key > 6:
                     key -= 6
                     fk_config_lines.append(cls.__format_function_keys_unit(key, func))
