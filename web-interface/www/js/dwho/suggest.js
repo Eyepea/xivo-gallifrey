@@ -93,6 +93,10 @@ dwho.suggest.prototype.set_field = function(id)
 				      this._field,
 				      this.fnfocus);
 
+		dwho.dom.remove_event('mouseover',
+				      this._field,
+				      this.fnfocus);
+
 		dwho.dom.remove_event('blur',
 				      this._field,
 				      this.fnblur);
@@ -109,7 +113,6 @@ dwho.suggest.prototype.set_field = function(id)
 	if((this._field = dwho_eid(id,true)) === false)
 		return(false);
 
-
 	dwho.dom.add_event('keypress',
 			   this._field,
 			   this.fnkeypress);
@@ -122,6 +125,10 @@ dwho.suggest.prototype.set_field = function(id)
 			   this._field,
 			   this.fnfocus);
 
+	dwho.dom.add_event('mouseover',
+			   this._field,
+			   this.fnfocus);
+
 	dwho.dom.add_event('blur',
 			   this._field,
 			   this.fnblur);
@@ -130,6 +137,8 @@ dwho.suggest.prototype.set_field = function(id)
 			   this._field,
 			   this.fnchange);
 
+	this._searchval		= this._field.value;
+	this._searchlen		= this._field.value.length;
 	this._dwsid		= this._namespace + this._field.id;
 	this._dwsresid		= this._dwsid + '-res';
 	this._dwsrestitleid	= this._dwsresid + '-title-';
@@ -466,7 +475,6 @@ dwho.suggest.prototype.onblur = function()
 	&& this._resfield.value === '')
 	{
 		this._resfieldcleared = true;
-		this._resfield.value = '';
 
 		if(dwho_is_function(this._options.result_onsetfield) === true)
 			this._options.result_onsetfield(this._resfield);
