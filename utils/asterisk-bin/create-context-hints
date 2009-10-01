@@ -248,7 +248,7 @@ if not xfeatures['vmusermsg'].get('commented', 1):
 
     for line in (
         "1,AGI(agi://${XIVO_AGID_IP}/user_get_vmbox,${EXTEN:%d})" % len(vmusermsgexten),
-        "n,Macro(pickup,0)",
+        "n,Gosub(xivo-pickup,0,1)",
         "n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})",
         "n,Hangup()"):
         cfeatures.append("_%s.," % vmusermsgexten + line)
