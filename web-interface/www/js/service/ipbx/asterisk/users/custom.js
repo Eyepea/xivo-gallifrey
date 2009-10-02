@@ -49,7 +49,7 @@ xivo_ast_user_protocol_elt['custom'] = {
 	'userfeatures-agentid': {it: false},
 
 	'userfeatures-voicemailid': {it: false, fd: false},
-	'voicemail-choice': {it: false},
+	'voicemail-option': {it: false},
 
 	'codec-active': {it: false},
 	'codeclist': {it: {style: {display: 'inline'}, property: {disabled: true, className: 'it-disabled'}}},

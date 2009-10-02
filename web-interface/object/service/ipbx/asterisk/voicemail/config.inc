@@ -138,10 +138,10 @@ $array['element']['commented']['value'] = array(0,1);
 $array['element']['commented']['default'] = 0;
 $array['element']['commented']['set'] = true;
 
-$array['element']['voicemail-choice'] = array();
-$array['element']['voicemail-choice']['value'] = array('add','search','disable');
-$array['element']['voicemail-choice']['default'] = '';
-$array['element']['voicemail-choice']['unset'] = true;
+$array['element']['option'] = array();
+$array['element']['option']['value'] = array('none','add','search');
+$array['element']['option']['default'] = 'none';
+$array['element']['option']['unset'] = true;
 
 
 $array['filter'] = array();

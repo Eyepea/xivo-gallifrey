@@ -32,7 +32,7 @@ $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
 
 if(empty($info['userfeatures']['voicemailid']) === true):
-	$voicemail_identity = true;
+	$voicemail_identity = false;
 elseif(($voicemail_identity = (string) $this->get_varra('voicemail','identity')) === ''):
 	$voicemail_identity = $this->get_varra('voicemail','fullname');
 endif;
@@ -199,14 +199,14 @@ endif;
 				    'id'	=> 'it-userfeatures-voicemailid',
 				    'value'	=> $info['userfeatures']['voicemailid'])),
 
-		$form->select(array('desc'	=> $this->bbf('fm_voicemail_choice'),
-				    'name'	=> 'voicemail-choice',
-				    'labelid'	=> 'voicemail-choice',
+		$form->select(array('desc'	=> $this->bbf('fm_voicemail_option'),
+				    'name'	=> 'voicemail-option',
+				    'labelid'	=> 'voicemail-option',
 				    'key'	=> false,
 				    'empty'	=> $voicemail_identity,
-				    'bbf'	=> array('paramkey','fm_voicemail_choice-opt'),
-				    'value'	=> $this->get_varra('info','voicemail-choice')),
-			      $element['voicemail']['voicemail-choice']['value']),
+				    'bbf'	=> array('paramkey','fm_voicemail_option-opt'),
+				    'value'	=> $this->get_varra('info','voicemail-option')),
+			      $element['voicemail']['option']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_suggest'),
 				  'name'	=> 'voicemail-suggest',

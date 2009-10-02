@@ -116,7 +116,7 @@ Début de l'intervalle de numéro
 Fin de l'intervalle de numéro
 
 ; col_contextnumbers_incall-didlength
-Taille de la SDA
+Nb de chiffres reçus
 
 ; col_contextnumbers_incall-add
 Ajouter un intervalle de numéro

@@ -106,7 +106,7 @@ var xivo_ast_users_elt_default = {
 	'userfeatures-description': {it: true},
 
 	'userfeatures-voicemailid': {it: true, fd: false},
-	'voicemail-choice': {it: true},
+	'voicemail-option': {it: true},
 	'voicemail-suggest': {it: false, fd: false},
 	'voicemail-fullname': {it: false},
 	'voicemail-mailbox': {it: false},
@@ -169,7 +169,7 @@ var xivo_ast_fm_user_enableunc = {
 
 xivo_attrib_register('ast_fm_user_enableunc',xivo_ast_fm_user_enableunc);
 
-var xivo_ast_fm_user_voicemailchoice = {
+var xivo_ast_fm_user_voicemailoption = {
 	'fd-voicemail-suggest':
 		{style: [{display: 'none'}, {display: 'block'}],
 		 link: 'it-voicemail-suggest'},
@@ -177,7 +177,7 @@ var xivo_ast_fm_user_voicemailchoice = {
 		{property: [{disabled: true, className: 'it-disabled'},
 			    {disabled: false, className: 'it-enabled'}]}};
 
-xivo_attrib_register('ast_fm_user_voicemailchoice',xivo_ast_fm_user_voicemailchoice);
+xivo_attrib_register('ast_fm_user_voicemailoption',xivo_ast_fm_user_voicemailoption);
 
 var xivo_ast_fm_user_outcallerid = {
 	'fd-userfeatures-outcallerid-custom':
@@ -574,14 +574,15 @@ function xivo_ast_user_chg_protocol(protocol)
 
 	xivo_chg_attrib('ast_fm_user-'+xivo_ast_user_protocol,'links',0,1);
 
-	if((voicemail_choice = dwho_eid('it-voicemail-choice')) !== false)
+	if(xivo_ast_user_protocol !== 'custom'
+	&& (voicemail_option = dwho_eid('it-voicemail-option')) !== false)
 	{
-		if(voicemail_choice.value === 'add')
+		if(voicemail_option.value === 'add')
 			xivo_chg_attrib('ast_fm_user_enablevoicemail',
 					'it-voicemail-fullname',
 					0);
 		else
-			xivo_ast_user_chg_voicemail(voicemail_choice.value);
+			xivo_ast_user_chg_voicemail(voicemail_option.value);
 	}
 
 	xivo_ast_user_chg_host_type();
@@ -659,17 +660,17 @@ function xivo_ast_user_voicemail_reset_search()
 			0);
 }
 
-function xivo_ast_user_chg_voicemail(choice)
+function xivo_ast_user_chg_voicemail(option)
 {
-	xivo_chg_attrib('ast_fm_user_voicemailchoice',
+	xivo_chg_attrib('ast_fm_user_voicemailoption',
 			'fd-voicemail-suggest',
-			Number(choice === 'search'));
+			Number(option === 'search'));
 
-	switch(choice)
+	switch(option)
 	{
 		case 'add':
-			if((voicemail_choice = dwho_eid('it-voicemail-choice')) !== false)
-				reset_field_empty = voicemail_choice.defaultValue !== choice;
+			if((voicemail_option = dwho_eid('it-voicemail-option')) !== false)
+				reset_field_empty = voicemail_option.defaultValue !== option;
 			else
 				reset_field_empty = true;
 
@@ -701,7 +702,7 @@ function xivo_ast_user_chg_voicemail(choice)
 			dwho_eid('it-voicemail-suggest').value = '';
 			xivo_ast_user_voicemail_reset_search();
 			break;
-		case 'disable':
+		case 'none':
 		default:
 			dwho.form.reset_field(dwho_eid('it-userfeatures-voicemailid'),false);
 
@@ -710,7 +711,7 @@ function xivo_ast_user_chg_voicemail(choice)
 
 			xivo_chg_attrib('ast_fm_user_enablevoicemail',
 					'it-voicemail-fullname',
-					Number((choice === 'disable'
+					Number((option === 'none'
 					        || dwho_eid('it-userfeatures-voicemailid').value === '')));
 	}
 }
@@ -720,7 +721,7 @@ function xivo_ast_user_http_get_voicemail(obj)
 	if(dwho_is_object(obj) === false
 	|| dwho_has_len(obj.value) === false)
 	{
-		xivo_chg_attrib('ast_fm_user_voicemailchoice',
+		xivo_chg_attrib('ast_fm_user_voicemailoption',
 				'fd-voicemail-suggest',
 				1);
 
@@ -818,18 +819,18 @@ function xivo_ast_user_onload()
 				   xivo_ast_user_chg_autoprov_modact);
 	}
 
-	if((voicemailchoice = dwho_eid('it-voicemail-choice')) !== false)
+	if((voicemailoption = dwho_eid('it-voicemail-option')) !== false)
 	{
 		dwho.dom.add_event('focus',
 				   dwho_eid('it-voicemail-suggest'),
 				   xivo_ast_user_suggest_event_voicemail);
 
-		var voicemailchoice_fn = function()
+		var voicemailoption_fn = function()
 					 {
-					 	xivo_ast_user_chg_voicemail(voicemailchoice.value);
+					 	xivo_ast_user_chg_voicemail(voicemailoption.value);
 					 };
 
-		dwho.dom.add_event('change',voicemailchoice,voicemailchoice_fn);
+		dwho.dom.add_event('change',voicemailoption,voicemailoption_fn);
 	}
 
 	if((outcallerid_type = dwho_eid('it-userfeatures-outcallerid-type')) !== false)

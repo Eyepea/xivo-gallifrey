@@ -79,7 +79,7 @@ if(isset($_QR['fm_send']) === true
 		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 
-		$result['voicemail-choice'] = $_QRY->get('voicemail-choice');
+		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 	}
 	else
 	{

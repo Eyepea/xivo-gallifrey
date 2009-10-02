@@ -100,17 +100,17 @@ Jamais
 ; fm_protocol_nat-opt(route)
 Route
 
-; fm_voicemail_choice
-Choix :
+; fm_voicemail_option
+Messagerie vocale :
 
-; fm_voicemail_choice-opt(add)
+; fm_voicemail_option-opt(none)
+Aucune
+
+; fm_voicemail_option-opt(add)
 Ajouter
 
-; fm_voicemail_choice-opt(search)
+; fm_voicemail_option-opt(search)
 Rechercher
-
-; fm_voicemail_choice-opt(disable)
-Désactiver
 
 ; fm_voicemail_suggest
 Rechercher :
@@ -628,6 +628,9 @@ Anonyme
 ; fm_userfeatures_outcallerid-opt(custom)
 Personnaliser
 
+; fm_protocol_sendani
+Envoyer la présentation du nom et numéro d'appel :
+
 ; fm_userfeatures_preprocess-subroutine
 Sous-routine de prétraitement :
 
@@ -645,9 +648,6 @@ Invite
 
 ; fm_protocol_insecure-opt(all)
 Tout
-
-; fm_protocol_sendani
-Envoyer la présentation du nom et numéro d'appel :
 
 ; fm_protocol_host-type
 Type d'adressage IP :

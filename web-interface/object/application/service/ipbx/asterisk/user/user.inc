@@ -736,13 +736,16 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$vmaction = $action;
 
-		if(isset($arr['voicemail-choice']) === true)
+		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
+			$arr['voicemail-option'] = 'none';
+
+		if(isset($arr['voicemail-option']) === true)
 		{
-			switch($arr['voicemail-choice'])
+			switch($arr['voicemail-option'])
 			{
 				case 'add':
-				case 'disable':
-					$vmaction = $arr['voicemail-choice'];
+				case 'none':
+					$vmaction = $arr['voicemail-option'];
 					$arr['userfeatures']['voicemailid'] = null;
 					break;
 				case 'search':

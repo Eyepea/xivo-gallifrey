@@ -139,14 +139,14 @@ Temps de rafraîchissement du domaine externe :
 ; fm_externrefresh-opt-minutes-seconds
 %s min. %s sec.
 
+; fm_matchexterniplocally
+Remplacer l'IP ou l'hôte externe s'il correspond au réseau local :
+
 ; fm_outboundproxy
 Proxy Outbound :
 
 ; fm_outboundproxyport
 Port du proxy Outbound :
-
-; fm_matchexterniplocally
-Remplacer l'IP ou l'hôte externe s'il correspond au réseau local :
 
 ; fm_localnet
 Réseau local :
