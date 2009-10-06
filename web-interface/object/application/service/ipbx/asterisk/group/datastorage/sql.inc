@@ -65,10 +65,14 @@ class xivo_application_service_asterisk_group_sql extends xivo_application_servi
 
 		$r = $this->_dso->select_all();
 
+		$this->_dso->reset_group();
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		if(($this->_cnt = $this->_dso->select_count(null,'id',$this->_table['groupfeatures'])) === false
+		if(($this->_cnt = $this->_dso->select_distinct_count_singlecolumn(
+							null,
+							'id',
+							$this->_table['groupfeatures'])) === false
 		|| isset($r[0]) === false)
 			$r = false;
 

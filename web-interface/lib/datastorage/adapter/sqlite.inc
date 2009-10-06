@@ -327,11 +327,6 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 		return($r);
 	}
 
-	function unix_timestamp($column='',$time='')
-	{
-		return($this->_expr_typetime(null,$column,$time,'%s'));
-	}
-
 	function _escape_like($str)
 	{
 		return($str);
@@ -348,6 +343,38 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 			return($val);
 
 		return(sprintf('SUBSTR(%s,0,0)||%s',$this->_fix_leftjoin_column,$val));
+	}
+
+	function _query_dictinct_count_singlecolumn($fullcolumn)
+	{
+		if(($from = $this->get_from()) === null)
+			return(false);
+
+		$coldistinct = $this->quote_identifier('_COLDISTINCT_');
+
+		$query = 'SELECT DISTINCT('.$fullcolumn.') AS '.$coldistinct.' FROM '.$from;
+
+		if(($join = $this->get_join()) !== null)
+			$query .= ' '.$join;
+
+		if(($where = $this->get_where()) !== null)
+			$query .= ' WHERE '.$where;
+
+		if(($group = $this->get_group()) !== null)
+			$query .= ' GROUP BY '.$group;
+
+		if(($order = $this->get_order()) !== null)
+			$query .= ' ORDER BY '.$order;
+
+		if(($limit = $this->get_limit()) !== null)
+			$query .= ' LIMIT '.$limit;
+
+		return('SELECT COUNT('.$coldistinct.') FROM ('.$query.')');
+	}
+
+	function unix_timestamp($column='',$time='')
+	{
+		return($this->_expr_typetime(null,$column,$time,'%s'));
 	}
 
 	function _expr_typetime($type='',$column='',$time='',$format='',$table='')

@@ -238,7 +238,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 
 	function reset_join()
 	{
-		$this->_join = $this->_joinwhere = $this->_aggjoinwhere = array();
+		$this->_join = $this->_jointype = $this->_joinwhere = $this->_aggjoinwhere = array();
 	}
 
 	function _chk_join($type)
@@ -1795,7 +1795,32 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		return($r);
 	}
 
-	function select_count($query='',$column='',$table='',$free=true)
+	function _query_dictinct_count_singlecolumn($fullcolumn)
+	{
+		if(($from = $this->get_from()) === null)
+			return(false);
+
+		$query = 'SELECT COUNT(DISTINCT('.$fullcolumn.')) FROM '.$from;
+
+		if(($join = $this->get_join()) !== null)
+			$query .= ' '.$join;
+
+		if(($where = $this->get_where()) !== null)
+			$query .= ' WHERE '.$where;
+
+		if(($group = $this->get_group()) !== null)
+			$query .= ' GROUP BY '.$group;
+
+		if(($order = $this->get_order()) !== null)
+			$query .= ' ORDER BY '.$order;
+
+		if(($limit = $this->get_limit()) !== null)
+			$query .= ' LIMIT '.$limit;
+
+		return($query);
+	}
+
+	function select_distinct_count_singlecolumn($query='',$column='',$table='',$free=true)
 	{
 		$query = (string) $query;
 		$free = (bool) $free;
@@ -1807,6 +1832,44 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 			$colobj = is_object($column);
 
 			if(($column = $this->_get_scalar($column,true)) === '' || $column === '*')
+				return(false);
+
+			if(($table = trim($table)) !== '')
+			{
+				if(isset($this->_table[$table]) === false)
+					return(false);
+
+				if($colobj === false)
+					$tabledot = $this->quote_identifier($table).'.';
+			}
+
+			if(($query = $this->_query_dictinct_count_singlecolumn($tabledot.$column)) === false)
+				return(false);
+		}
+
+		if($this->query($query,($free === false)) === false)
+			return(false);
+		else if(($r = $this->fetch_row()) !== false)
+			$r = dwho_ulongint($r[0]);
+
+		if($this->_free === true && $free === true)
+			$this->free();
+
+		return($r);
+	}
+
+	function select_count($query='',$column='',$table='',$free=true)
+	{
+		$query = (string) $query;
+		$free = (bool) $free;
+
+		if(dwho_has_len($query) === false)
+		{
+			$tabledot = '';
+
+			$colobj = is_object($column);
+
+			if(($column = $this->_get_scalar($column,true)) === '')
 				$column = '*';
 
 			if(($table = trim($table)) !== '')

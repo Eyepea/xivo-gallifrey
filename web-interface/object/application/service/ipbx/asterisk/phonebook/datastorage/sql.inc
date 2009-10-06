@@ -70,7 +70,10 @@ class xivo_application_service_asterisk_phonebook_sql extends xivo_application_s
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		if(($this->_cnt = $this->_dso->select_count(null,'id',$this->_table['phonebook'])) === false
+		if(($this->_cnt = $this->_dso->select_distinct_count_singlecolumn(
+						null,
+						'id',
+						$this->_table['phonebook'])) === false
 		|| isset($r[0]) === false)
 			$r = false;
 
