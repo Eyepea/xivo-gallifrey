@@ -10,224 +10,224 @@
 ; date_format_yymmddhhiiss
 %m/%d/%Y %H:%M:%S
 
-; date_day_monday
+; date_day(monday)
 monday
 
-; date_day_mon
+; date_day(mon)
 monday
 
-; date_Day_monday
+; date_Day(monday)
 Monday
 
-; date_Day_mon
+; date_Day(mon)
 Monday
 
-; date_day_tuesday
+; date_day(tuesday)
 tuesday
 
-; date_day_tue
+; date_day(tue)
 tuesday
 
-; date_Day_tuesday
+; date_Day(tuesday)
 Tuesday
 
-; date_Day_tue
+; date_Day(tue)
 Tuesday
 
-; date_day_wesnesday
+; date_day(wesnesday)
 wednesday
 
-; date_day_wed
+; date_day(wed)
 wednesday
 
-; date_Day_wesnesday
+; date_Day(wesnesday)
 Wednesday
 
-; date_Day_wed
+; date_Day(wed)
 Wednesday
 
-; date_day_thursday
+; date_day(thursday)
 thursday
 
-; date_day_thu
+; date_day(thu)
 thursday
 
-; date_Day_thursday
+; date_Day(thursday)
 Thursday
 
-; date_Day_thu
+; date_Day(thu)
 Thursday
 
-; date_day_friday
+; date_day(friday)
 friday
 
-; date_day_fri
+; date_day(fri)
 friday
 
-; date_Day_friday
+; date_Day(friday)
 Friday
 
-; date_Day_fri
+; date_Day(fri)
 Friday
 
-; date_day_saturday
+; date_day(saturday)
 saturday
 
-; date_day_sat
+; date_day(sat)
 saturday
 
-; date_Day_saturday
+; date_Day(saturday)
 Saturday
 
-; date_Day_sat
+; date_Day(sat)
 Saturday
 
-; date_day_sunday
+; date_day(sunday)
 sunday
 
-; date_day_sun
+; date_day(sun)
 sunday
 
-; date_Day_sunday
+; date_Day(sunday)
 Sunday
 
-; date_Day_sun
+; date_Day(sun)
 Sunday
 
-; date_month_january
+; date_month(january)
 january
 
-; date_month_jan
+; date_month(jan)
 january
 
-; date_Month_january
+; date_Month(january)
 January
 
-; date_Month_jan
+; date_Month(jan)
 January
 
-; date_month_february
+; date_month(february)
 february
 
-; date_month_feb
+; date_month(feb)
 february
 
-; date_Month_february
+; date_Month(february)
 February
 
-; date_Month_feb
+; date_Month(feb)
 February
 
-; date_month_march
+; date_month(march)
 march
 
-; date_month_mar
+; date_month(mar)
 march
 
-; date_Month_march
+; date_Month(march)
 March
 
-; date_Month_mar
+; date_Month(mar)
 March
 
-; date_month_april
+; date_month(april)
 april
 
-; date_month_apr
+; date_month(apr)
 april
 
-; date_Month_april
+; date_Month(april)
 April
 
-; date_Month_apr
+; date_Month(apr)
 April
 
-; date_month_may
+; date_month(may)
 may
 
-; date_Month_may
+; date_Month(may)
 May
 
-; date_month_june
+; date_month(june)
 june
 
-; date_month_jun
+; date_month(jun)
 june
 
-; date_Month_june
+; date_Month(june)
 June
 
-; date_Month_jun
+; date_Month(jun)
 June
 
-; date_month_july
+; date_month(july)
 july
 
-; date_month_jul
+; date_month(jul)
 july
 
-; date_Month_july
+; date_Month(july)
 July
 
-; date_Month_jul
+; date_Month(jul)
 July
 
-; date_month_august
+; date_month(august)
 august
 
-; date_month_aug
+; date_month(aug)
 august
 
-; date_Month_august
+; date_Month(august)
 August
 
-; date_Month_aug
+; date_Month(aug)
 August
 
-; date_month_september
+; date_month(september)
 september
 
-; date_month_sep
+; date_month(sep)
 september
 
-; date_Month_september
+; date_Month(september)
 September
 
-; date_Month_sep
+; date_Month(sep)
 September
 
-; date_month_october
+; date_month(october)
 october
 
-; date_month_oct
+; date_month(oct)
 october
 
-; date_Month_october
+; date_Month(october)
 October
 
-; date_Month_oct
+; date_Month(oct)
 October
 
-; date_month_november
+; date_month(november)
 november
 
-; date_month_nov
+; date_month(nov)
 november
 
-; date_Month_november
+; date_Month(november)
 November
 
-; date_Month_nov
+; date_Month(nov)
 November
 
-; date_month_december
+; date_month(december)
 december
 
-; date_month_dec
+; date_month(dec)
 december
 
-; date_Month_december
+; date_Month(december)
 December
 
-; date_Month_dec
+; date_Month(dec)
 December

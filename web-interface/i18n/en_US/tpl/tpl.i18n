@@ -43,10 +43,16 @@ Edit
 ; opt_delete
 Delete
 
-; fm_bool-opt-1
+; fm_bool-opt(1)
 Yes
 
-; fm_bool-opt-0
+; fm_bool-opt(0)
+No
+
+; fm_bool-opt(yes)
+Yes
+
+; fm_bool-opt(no)
 No
 
 ; fm_bt-save

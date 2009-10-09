@@ -74,7 +74,7 @@
 			if($ref['linked'] === false && dwho_has_len($ref['member_identity']) === false):
 				$ref['member_identity'] = '-';
 			elseif($ref['type'] === 'bosssecretary'):
-				$ref['member_identity'] = $this->bbf('callfilter_type-opt-bosssecretary',$ref['member_identity']);
+				$ref['member_identity'] = $this->bbf('callfilter_type-bosssecretary-identity',$ref['member_identity']);
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"

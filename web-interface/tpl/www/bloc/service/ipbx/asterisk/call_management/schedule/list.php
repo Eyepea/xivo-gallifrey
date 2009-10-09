@@ -92,10 +92,10 @@ $page = $url->pager($pager['pages'],
 			if($ref['daynamebeg'] === '*'):
 				$ref['dayname'] = '-';
 			elseif((string) $ref['daynameend'] === ''):
-				$ref['dayname'] = $this->bbf('date_Day_'.$ref['daynamebeg']);
+				$ref['dayname'] = $this->bbf('date_Day',$ref['daynamebeg']);
 			else:
-				$daynamebeg = $this->bbf('date_Day_'.$ref['daynamebeg']);
-				$daynameend = $this->bbf('date_Day_'.$ref['daynameend']);
+				$daynamebeg = $this->bbf('date_Day',$ref['daynamebeg']);
+				$daynameend = $this->bbf('date_Day',$ref['daynameend']);
 
 				$ref['dayname'] = $this->bbf('schedule_rangedayname',
 							     array($daynamebeg,$daynameend));
@@ -113,10 +113,10 @@ $page = $url->pager($pager['pages'],
 			if($ref['monthbeg'] === '*'):
 				$ref['month'] = '-';
 			elseif((string) $ref['monthend'] === ''):
-				$ref['month'] = $this->bbf('date_Month_'.$ref['monthbeg']);
+				$ref['month'] = $this->bbf('date_Month',$ref['monthbeg']);
 			else:
-				$monthbeg = $this->bbf('date_Month_'.$ref['monthbeg']);
-				$monthend = $this->bbf('date_Month_'.$ref['monthend']);
+				$monthbeg = $this->bbf('date_Month',$ref['monthbeg']);
+				$monthend = $this->bbf('date_Month',$ref['monthend']);
 
 				$ref['month'] = $this->bbf('schedule_rangemonth',
 							   array($monthbeg,$monthend));

@@ -13,10 +13,10 @@ Port:
 ; fm_securitylayer
 Security layer:
 
-; fm_securitylayer-opt-tls
+; fm_securitylayer-opt(tls)
 TLS
 
-; fm_securitylayer-opt-ssl
+; fm_securitylayer-opt(ssl)
 SSL
 
 ; fm_protocolversion

@@ -81,7 +81,7 @@ $page = $url->pager($pager['pages'],
 			if(dwho_has_len($ref['securitylayer']) === false):
 				$securitylayer = '-';
 			else:
-				$securitylayer = $this->bbf('securitylayer_'.$ref['securitylayer']);
+				$securitylayer = $this->bbf('securitylayer',$ref['securitylayer']);
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"

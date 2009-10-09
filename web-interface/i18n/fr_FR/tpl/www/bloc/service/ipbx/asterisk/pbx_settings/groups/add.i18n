@@ -25,22 +25,22 @@ Numéro :
 ; fm_queue_strategy
 Stratégie de sonnerie :
 
-; fm_queue_strategy-opt-leastrecent
+; fm_queue_strategy-opt(leastrecent)
 Le moins récent
 
-; fm_queue_strategy-opt-fewestcalls
+; fm_queue_strategy-opt(fewestcalls)
 Le moins d'appels
 
-; fm_queue_strategy-opt-roundrobin
+; fm_queue_strategy-opt(roundrobin)
 Répartition cyclique
 
-; fm_queue_strategy-opt-rrmemory
+; fm_queue_strategy-opt(rrmemory)
 Répartition cyclique (mémorisée)
 
-; fm_queue_strategy-opt-random
+; fm_queue_strategy-opt(random)
 Aléatoire
 
-; fm_queue_strategy-opt-ringall
+; fm_queue_strategy-opt(ringall)
 Tous
 
 ; fm_groupfeatures_context
@@ -52,7 +52,7 @@ Créer un contexte
 ; fm_groupfeatures_timeout
 Temps de sonnerie :
 
-; fm_groupfeatures_timeout-opt0
+; fm_groupfeatures_timeout-opt(0)
 Illimité
 
 ; fm_groupfeatures_timeout-opt
@@ -73,7 +73,7 @@ Autorise l'appelant à enregistrer l'appel :
 ; fm_queue_timeout
 Délai d'attente pour joindre un utilisateur :
 
-; fm_queue_timeout-opt0
+; fm_queue_timeout-opt(0)
 Désactivé
 
 ; fm_queue_timeout-opt

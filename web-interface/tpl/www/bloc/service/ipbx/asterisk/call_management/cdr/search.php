@@ -212,7 +212,7 @@ $dhtml->write_js($js_result);
 				    'labelid'	=> 'channel',
 				    'empty'	=> true,
 				    'bbf'	=> 'fm_channel-opt',
-				    'bbf_opt'	=> array('argmode' => 'paramvalue'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['channel']['default'],
 				    'value'	=> $info['channel']),
 			      $element['channel']['value']),
@@ -223,7 +223,7 @@ $dhtml->write_js($js_result);
 				    'empty'	=> true,
 				    'key'	=> false,
 				    'bbf'	=> 'fm_disposition-opt',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['disposition']['default'],
 				    'value'	=> $info['disposition']),
 			      $element['disposition']['value']),
@@ -233,7 +233,7 @@ $dhtml->write_js($js_result);
 				    'labelid'	=> 'amaflags',
 				    'empty'	=> true,
 				    'bbf'	=> 'ast_amaflag_name_info',
-				    'bbf_opt'	=> array('argmode' => 'paramvalue'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['amaflags']['default'],
 				    'value'	=> $amaflags),
 			      $element['amaflags']['value']);
@@ -244,7 +244,7 @@ if($context_list !== false):
 				    'labelid'	=> 'dcontext',
 				    'empty'	=> true,
 				    'bbf'	=> 'fm_dcontext-opt',
-				    'bbf_opt'	=> array('argmode' => 'paramvalue'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'value'	=> $dcontext),
@@ -283,7 +283,7 @@ endif;
 				    'labelid'	=> 'srcformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['srcformat']['default'],
 				    'value'	=> $info['srcformat']),
 			      $element['srcformat']['value']);
@@ -305,7 +305,7 @@ endif;
 				    'labelid'	=> 'dstformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['dstformat']['default'],
 				    'value'	=> $info['dstformat']),
 			      $element['dstformat']['value']);
@@ -328,7 +328,7 @@ endif;
 				    'labelid'	=> 'clidformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['clidformat']['default'],
 				    'value'	=> $info['clidformat']),
 			      $element['clidformat']['value']);
@@ -350,7 +350,7 @@ endif;
 				    'labelid'	=> 'accountcodeformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['accountcodeformat']['default'],
 				    'value'	=> $info['accountcodeformat']),
 			      $element['accountcodeformat']['value']);
@@ -372,7 +372,7 @@ endif;
 				    'labelid'	=> 'userfieldformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['userfieldformat']['default'],
 				    'value'	=> $info['userfieldformat']),
 			      $element['userfieldformat']['value']);
@@ -395,7 +395,7 @@ endif;
 				    'label'	=> false,
 				    'key'	=> false,
 				    'bbf'	=> 'fm_dubegunit-opt',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['dubegunit']['default'],
 				    'value'	=> $info['dubegunit']),
 			      $element['dubegunit']['value']);
@@ -416,7 +416,7 @@ endif;
 				    'label'	=> false,
 				    'key'	=> false,
 				    'bbf'	=> 'fm_duendunit-opt',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['duendunit']['default'],
 				    'value'	=> $info['duendunit']),
 			      $element['duendunit']['value']);

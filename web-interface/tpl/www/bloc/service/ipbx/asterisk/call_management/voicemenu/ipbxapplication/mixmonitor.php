@@ -35,7 +35,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_mixmonitor-filen
 			    'name'	=> 'ipbxapplication[mixmonitor][fileformat]',
 			    'labelid'	=> 'ipbxapplication-mixmonitor-fileformat',
 			    'key'	=> false,
-			    'bbf'	=> 'ast_format_name_info-',
+			    'bbf'	=> array('paramvalue','ast_format_name_info'),
 			    'default'	=> $apparg_mixmonitor['fileformat']['default']),
 		      $apparg_mixmonitor['fileformat']['value']),
 

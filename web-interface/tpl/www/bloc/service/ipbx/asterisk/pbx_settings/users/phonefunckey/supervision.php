@@ -27,7 +27,8 @@ $select = array();
 $select['field'] = false;
 $select['name'] = 'phonefunckey[supervision][]';
 $select['label'] = false;
-$select['bbf'] = array('concatkey','fm_phonefunckey_supervision-opt-');
+$select['key'] = false;
+$select['bbf'] = array('paramvalue','fm_phonefunckey_supervision-opt');
 $select['id'] = 'it-phonefunckey-supervision';
 $select['default'] = $supelem['default'];
 

@@ -80,7 +80,7 @@ endif;
 				    'name'	=> 'outcall[mode]',
 				    'labelid'	=> 'outcall-mode',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_outcall_mode-opt-'),
+				    'bbf'	=> array('paramvalue','fm_outcall_mode-opt'),
 				    'default'	=> $element['outcall']['mode']['default'],
 				    'value'	=> ''),
 			      $element['outcall']['mode']['value']),
@@ -146,7 +146,7 @@ endif;
 				    'labelid'	=> 'outcall-hangupringtime',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_outcall_hangupringtime-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'mixkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),

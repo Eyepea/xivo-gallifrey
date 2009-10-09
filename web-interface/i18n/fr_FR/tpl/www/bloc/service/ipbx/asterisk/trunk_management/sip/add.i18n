@@ -31,7 +31,7 @@ Contexte :
 ; fm_protocol_calllimit
 Nombre d'appels simultanés :
 
-; fm_protocol_calllimit-opt0
+; fm_protocol_calllimit-opt(0)
 Illimité
 
 ; fm_protocol_calllimit-opt
@@ -49,13 +49,13 @@ Statique
 ; fm_protocol_type
 Type de connexion :
 
-; fm_protocol_type-user
+; fm_protocol_type-opt(user)
 Entrant
 
-; fm_protocol_type-peer
+; fm_protocol_type-opt(peer)
 Sortant
 
-; fm_protocol_type-friend
+; fm_protocol_type-opt(friend)
 Entrant/Sortant
 
 ; fm_protocol_language
@@ -64,16 +64,16 @@ Langue :
 ; fm_protocol_nat
 NAT :
 
-; fm_protocol_nat-opt-no
+; fm_protocol_nat-opt(no)
 Non
 
-; fm_protocol_nat-opt-yes
+; fm_protocol_nat-opt(yes)
 Oui
 
-; fm_protocol_nat-opt-never
+; fm_protocol_nat-opt(never)
 Jamais
 
-; fm_protocol_nat-opt-route
+; fm_protocol_nat-opt(route)
 Route
 
 ; fm_register
@@ -100,28 +100,28 @@ Contact :
 ; fm_protocol_progressinband
 Evénement RING dans la bande :
 
-; fm_protocol_progressinband-opt-no
+; fm_protocol_progressinband-opt(no)
 Non
 
-; fm_protocol_progressinband-opt-yes
+; fm_protocol_progressinband-opt(yes)
 Oui
 
-; fm_protocol_progressinband-opt-never
+; fm_protocol_progressinband-opt(never)
 Jamais
 
 ; fm_protocol_dtmfmode
 DTMF :
 
-; fm_protocol_dtmfmode-opt-rfc2833
+; fm_protocol_dtmfmode-opt(rfc2833)
 RFC 2833
 
-; fm_protocol_dtmfmode-opt-inband
+; fm_protocol_dtmfmode-opt(inband)
 InBand
 
-; fm_protocol_dtmfmode-opt-info
+; fm_protocol_dtmfmode-opt(info)
 INFO
 
-; fm_protocol_dtmfmode-opt-auto
+; fm_protocol_dtmfmode-opt(auto)
 Auto
 
 ; fm_protocol_rfc2833compensate
@@ -130,10 +130,10 @@ Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
 ; fm_protocol_qualify
 Supervision de la latence :
 
-; fm_protocol_qualify-optno
+; fm_protocol_qualify-opt(no)
 Non
 
-; fm_protocol_qualify-optyes
+; fm_protocol_qualify-opt(yes)
 Oui
 
 ; fm_protocol_qualify-opt
@@ -142,7 +142,7 @@ Oui
 ; fm_protocol_rtptimeout
 Délai d'attente pour le RTP :
 
-; fm_protocol_rtptimeout-opt0
+; fm_protocol_rtptimeout-opt(0)
 Désactivé
 
 ; fm_protocol_rtptimeout-opt
@@ -151,7 +151,7 @@ Désactivé
 ; fm_protocol_rtpholdtimeout
 Délai du RTP sur attente :
 
-; fm_protocol_rtpholdtimeout-opt0
+; fm_protocol_rtpholdtimeout-opt(0)
 Désactivé
 
 ; fm_protocol_rtpholdtimeout-opt
@@ -160,7 +160,7 @@ Désactivé
 ; fm_protocol_rtpkeepalive
 Présence du RTP :
 
-; fm_protocol_rtpkeepalive-opt0
+; fm_protocol_rtpkeepalive-opt(0)
 Désactivée
 
 ; fm_protocol_rtpkeepalive-opt
@@ -187,7 +187,7 @@ Personnaliser les codecs :
 ; fm_protocol_codec-disallow
 Codecs désactivés :
 
-; fm_protocol_codec-disallow-opt-all
+; fm_protocol_codec-disallow-opt(all)
 Tous
 
 ; fm_protocol_codec-allow
@@ -208,16 +208,16 @@ Ajouter un ou plusieurs codecs ->
 ; fm_protocol_insecure
 Insécurité :
 
-; fm_protocol_insecure-opt-no
+; fm_protocol_insecure-opt(no)
 Non
 
-; fm_protocol_insecure-opt-port
+; fm_protocol_insecure-opt(port)
 Port
 
-; fm_protocol_insecure-opt-invite
+; fm_protocol_insecure-opt(invite)
 Invite
 
-; fm_protocol_insecure-opt-all
+; fm_protocol_insecure-opt(all)
 Tout
 
 ; fm_protocol_port
@@ -250,19 +250,19 @@ Ajouter ";user=phone" dans l'URI :
 ; fm_protocol_canreinvite
 Invite :
 
-; fm_protocol_canreinvite-opt-no
+; fm_protocol_canreinvite-opt(no)
 Non
 
-; fm_protocol_canreinvite-opt-yes
+; fm_protocol_canreinvite-opt(yes)
 Oui
 
-; fm_protocol_canreinvite-opt-update
+; fm_protocol_canreinvite-opt(update)
 Mise à jour
 
-; fm_protocol_canreinvite-opt-nonat
+; fm_protocol_canreinvite-opt(nonat)
 Sans NAT
 
-; fm_protocol_canreinvite-opt-update-nonat
+; fm_protocol_canreinvite-opt(update-nonat)
 Mise à jour sans NAT
 
 ; fm_protocol_fromuser

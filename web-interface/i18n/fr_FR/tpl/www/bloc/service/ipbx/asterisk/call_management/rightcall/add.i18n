@@ -31,10 +31,10 @@ Mot de passe :
 ; fm_rightcall_authorization
 Autorisation :
 
-; fm_rightcall_authorization-opt-deny
+; fm_rightcall_authorization-opt(deny)
 Refuser
 
-; fm_rightcall_authorization-opt-permit
+; fm_rightcall_authorization-opt(permit)
 Permettre
 
 ; fm_rightcallexten_exten

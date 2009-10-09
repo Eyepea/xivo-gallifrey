@@ -57,7 +57,6 @@ if($count > 0):
 		else:
 			$errdisplay = '';
 		endif;
-
 ?>
 	<tr class="fm-field<?=$errdisplay?>">
 		<td class="td-left txt-center">
@@ -71,7 +70,8 @@ if($count > 0):
 					       'optgroup'	=> array('key'		=> true,
 									 'altkey'	=> 'protocol',
 									 'unique'	=> true,
-									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
+									 'bbf'		=> 'fm_'.$type.'-trunk-opt',
+									 'bbfopt'	=> array('argmode' => 'paramvalue')),
 					       'value'		=> $ref['trunkfeaturesid'],
 					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
 					 $trunkslist);?>
@@ -121,7 +121,8 @@ endif;
 					       'optgroup'	=> array('key'		=> true,
 									 'altkey'	=> 'protocol',
 									 'unique'	=> true,
-									 'bbf'		=> array('concat','fm_'.$type.'-trunk-opt-')),
+									 'bbf'		=> 'fm_'.$type.'-trunk-opt',
+									 'bbfopt'	=> array('argmode' => 'paramvalue')),
 					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
 					 $trunkslist);?>
 		</td>

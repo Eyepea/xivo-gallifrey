@@ -40,13 +40,13 @@ Statique
 ; fm_protocol_type
 Type de connexion :
 
-; fm_protocol_type-user
+; fm_protocol_type-opt(user)
 Entrant
 
-; fm_protocol_type-peer
+; fm_protocol_type-opt(peer)
 Sortant
 
-; fm_protocol_type-friend
+; fm_protocol_type-opt(friend)
 Entrant/Sortant
 
 ; fm_protocol_language
@@ -70,10 +70,10 @@ Port :
 ; fm_protocol_qualify
 Supervision de la latence :
 
-; fm_protocol_qualify-optno
+; fm_protocol_qualify-opt(no)
 Non
 
-; fm_protocol_qualify-optyes
+; fm_protocol_qualify-opt(yes)
 Oui
 
 ; fm_protocol_qualify-opt
@@ -121,16 +121,16 @@ Fuseau horaire :
 ; fm_protocol_codecpriority
 Priorité des codecs :
 
-; fm_protocol_codecpriority-opt-disabled
+; fm_protocol_codecpriority-opt(disabled)
 Désactivée
 
-; fm_protocol_codecpriority-opt-host
+; fm_protocol_codecpriority-opt(host)
 Hôte
 
-; fm_protocol_codecpriority-opt-caller
+; fm_protocol_codecpriority-opt(caller)
 Appelant
 
-; fm_protocol_codecpriority-opt-reqonly
+; fm_protocol_codecpriority-opt(reqonly)
 Seulement par requête
 
 ; fm_codec-custom
@@ -139,7 +139,7 @@ Personnaliser les codecs :
 ; fm_protocol_codec-disallow
 Codecs désactivés :
 
-; fm_protocol_codec-disallow-opt-all
+; fm_protocol_codec-disallow-opt(all)
 Tous
 
 ; fm_protocol_codec-allow
@@ -166,13 +166,13 @@ Activer le multiplexage des flux :
 ; fm_protocol_transfer
 Activer les transferts :
 
-; fm_protocol_transfer-opt-no
+; fm_protocol_transfer-opt(no)
 Non
 
-; fm_protocol_transfer-opt-yes
+; fm_protocol_transfer-opt(yes)
 Oui
 
-; fm_protocol_transfer-opt-mediaonly
+; fm_protocol_transfer-opt(mediaonly)
 Uniquement la voix
 
 ; fm_protocol_port
@@ -190,25 +190,25 @@ Adresse IP ou masque sous-réseau refusés :
 ; fm_protocol_auth
 Mécanismes d'authentification :
 
-; fm_protocol_auth-opt-plaintext
+; fm_protocol_auth-opt(plaintext)
 Texte
 
-; fm_protocol_auth-opt-md5
+; fm_protocol_auth-opt(md5)
 MD5
 
-; fm_protocol_auth-opt-rsa
+; fm_protocol_auth-opt(rsa)
 RSA
 
-; fm_protocol_auth-opt-plaintext-md5
+; fm_protocol_auth-opt(plaintext-md5)
 Texte ou MD5
 
-; fm_protocol_auth-opt-plaintext-rsa
+; fm_protocol_auth-opt(plaintext-rsa)
 Texte ou RSA
 
-; fm_protocol_auth-opt-md5-rsa
+; fm_protocol_auth-opt(md5-rsa)
 MD5 ou RSA
 
-; fm_protocol_auth-opt-plaintext-md5-rsa
+; fm_protocol_auth-opt(plaintext-md5-rsa)
 Texte, MD5 ou RSA
 
 ; fm_protocol_inkeys
@@ -220,19 +220,19 @@ Clé RSA privée :
 ; fm_protocol_encryption
 Chiffrement :
 
-; fm_protocol_encryption-opt-no
+; fm_protocol_encryption-opt(no)
 Non
 
-; fm_protocol_encryption-opt-yes
+; fm_protocol_encryption-opt(yes)
 Oui
 
-; fm_protocol_encryption-opt-aes128
+; fm_protocol_encryption-opt(aes128)
 AES 128
 
 ; fm_protocol_maxauthreq
 Maximum AUTHREQs autorisées :
 
-; fm_protocol_maxauthreq-opt0
+; fm_protocol_maxauthreq-opt(0)
 Désactivé
 
 ; fm_protocol_maxauthreq-opt

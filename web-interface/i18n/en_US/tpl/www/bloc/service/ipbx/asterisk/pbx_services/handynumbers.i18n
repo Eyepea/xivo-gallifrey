@@ -25,13 +25,13 @@ Delete
 ; no_emergency
 No emergency numbers
 
-; fm_emergency-trunk-opt-sip
+; fm_emergency-trunk-opt(sip)
 SIP Protocol
 
-; fm_emergency-trunk-opt-iax
+; fm_emergency-trunk-opt(iax)
 IAX Protocol
 
-; fm_emergency-trunk-opt-custom
+; fm_emergency-trunk-opt(custom)
 Customized
 
 ; col_special-trunk
@@ -49,13 +49,13 @@ Delete
 ; no_special
 No special numbers
 
-; fm_special-trunk-opt-sip
+; fm_special-trunk-opt(sip)
 SIP Protocol
 
-; fm_special-trunk-opt-iax
+; fm_special-trunk-opt(iax)
 IAX Protocol
 
-; fm_special-trunk-opt-custom
+; fm_special-trunk-opt(custom)
 Customized
 
 ; fm_success-save

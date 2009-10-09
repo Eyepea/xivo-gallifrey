@@ -90,7 +90,7 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=($ref['host'] === 'dynamic' ? $this->bbf('protocol_host-unknown') : $ref['host'])?></td>
-		<td><?=$this->bbf('protocol_type-'.$ref['type']);?></td>
+		<td><?=$this->bbf('protocol_type',$ref['type']);?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

@@ -67,8 +67,9 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_mode'),
 				    'name'	=> 'meetmefeatures[mode]',
 				    'labelid'	=> 'meetmefeatures-mode',
-				    'bbf'	=> 'fm_meetmefeatures_mode-',
 				    'key'	=> false,
+				    'bbf'	=> 'fm_meetmefeatures_mode-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue'),
 				    'default'	=> $element['meetmefeatures']['mode']['default'],
 				    'value'	=> $info['meetmefeatures']['mode']),
 			      $element['meetmefeatures']['mode']['value']);

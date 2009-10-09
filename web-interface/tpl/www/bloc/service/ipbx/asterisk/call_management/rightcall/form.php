@@ -73,7 +73,7 @@ endif;
 
 		$form->select(array('desc'	=> $this->bbf('fm_rightcall_authorization'),
 				    'name'	=> 'rightcall[authorization]',
-				    'bbf'	=> array('concatvalue','fm_rightcall_authorization-opt-'),
+				    'bbf'	=> array('paramvalue','fm_rightcall_authorization-opt'),
 				    'labelid'	=> 'authorization',
 				    'value'	=> $info['rightcall']['authorization'],
 				    'default'	=> $element['rightcall']['authorization']['default']),

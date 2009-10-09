@@ -112,10 +112,11 @@ endif;
 				    'labelid'	=> 'dialaction-voicemenuflow-ipbxapplication-action',
 				    'optgroup'	=> array('key'		=> 'category',
 							 'unique'	=> true,
-							 'bbf'		=> 'fm_ipbxapplications-optgroup-'),
+							 'bbf'		=> 'fm_ipbxapplications-optgroup',
+							 'bbfopt'	=> array('argmode' => 'paramvalue')),
 				    'empty'	=> true,
 				    'key'	=> true,
-				    'bbf'	=> 'fm_ipbxapplications-opt-'),
+				    'bbf'	=> array('paramvalue','fm_ipbxapplications-opt')),
 			      $ipbxapplications,
 			      'onchange="xivo_ast_chg_ipbxapplication(this.value);"');
 

@@ -409,8 +409,8 @@ Delete messages from voicemail
 ; fm_phonefunckey_extension-typeval-opt-extenfeatures-directoryaccess
 Directory access
 
-; fm_phonefunckey_supervision-opt-0
+; fm_phonefunckey_supervision-opt(0)
 Disabled
 
-; fm_phonefunckey_supervision-opt-1
+; fm_phonefunckey_supervision-opt(1)
 Enabled

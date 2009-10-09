@@ -58,7 +58,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['optgroup'] = false;
 		$this->_param['null'] = false;
 		$this->_param['bbf'] = false;
-		$this->_param['bbf_opt'] = false;
+		$this->_param['bbfopt'] = false;
 		$this->_param['browse'] = false;
 		$this->_param['jump'] = 0;
 		$this->_param['jump_strict'] = true;
@@ -133,6 +133,11 @@ class dwho_tpl_form extends dwho_tpl_module
 			else
 				$this->_param['optgroup']['bbf'] = false;
 
+			if(isset($ref_ogrp['bbfopt']) === true && is_bool($ref_ogrp['bbfopt']) === false)
+				$this->_param['optgroup']['bbfopt'] = $this->_mk_param_bbfopt($ref_ogrp['bbfopt'],true);
+			else
+				$this->_param['optgroup']['bbfopt'] = false;
+
 			if(isset($ref_ogrp['unique']) === true && is_bool($ref_ogrp['unique']) === true)
 				$this->_param['optgroup']['unique'] = $ref_ogrp['unique'];
 			else
@@ -195,8 +200,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(isset($v['bbf']) === true && is_bool($v['bbf']) === false)
 			$this->_param['bbf'] = $this->_mk_param_bbf($v);
 
-		if(isset($v['bbf_opt']) === true && is_bool($v['bbf_opt']) === false)
-			$this->_param['bbf_opt'] = $this->_mk_param_bbf_opt($v['bbf_opt']);
+		if(isset($v['bbfopt']) === true && is_bool($v['bbfopt']) === false)
+			$this->_param['bbfopt'] = $this->_mk_param_bbfopt($v['bbfopt']);
 
 		if(isset($v['browse']) === true)
 		{
@@ -265,9 +270,7 @@ class dwho_tpl_form extends dwho_tpl_module
 			switch($v['bbf'][0])
 			{
 				case 'paramkey':
-				case 'mixkey':
 				case 'paramvalue':
-				case 'mixvalue':
 				case 'concatkey':
 					break;
 				default:
@@ -276,21 +279,26 @@ class dwho_tpl_form extends dwho_tpl_module
 
 			$r = array($v['bbf'][0],$v['bbf'][1]);
 
-			if(isset($v['bbf'][3]) === true
-			&& (is_array($v['bbf'][3]) === true
-			   || is_scalar($v['bbf'][3]) === true) === true)
-				$r[2] = (array) $v['bbf'][3];
+			if(isset($v['bbf'][2]) === true
+			&& (is_array($v['bbf'][2]) === true
+			   || is_scalar($v['bbf'][2]) === true) === true)
+				$r[2] = (array) $v['bbf'][2];
 		}
 
 		return($r);
 	}
 
-	function _mk_param_bbf_opt(&$v)
+	function _mk_param_bbfopt(&$v,$optgroup=false)
 	{
 		$r = array();
 
 		if(is_array($v) === true && isset($v['argmode']) === true)
-			$this->_param['bbf'][0] = $v['argmode'];
+		{
+			if((bool) $optgroup === false)
+				$this->_param['bbf'][0] = $v['argmode'];
+			else
+				$this->_param['optgroup']['bbf'][0] = $v['argmode'];
+		}
 
 		if(is_string($v) === true)
 			$v = array('argmode' => $v);
@@ -302,9 +310,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		switch($v['argmode'])
 		{
 			case 'paramkey':
-			case 'mixkey':
 			case 'paramvalue':
-			case 'mixvalue':
 			case 'concatkey':
 				$r['argmode'] = $v['argmode'];
 				break;
@@ -825,20 +831,6 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$key = $this->_param['bbf'][0];
 
-		$nparam = $oparam = null;
-
-		if(isset($this->_param['bbf'][2]) === true)
-		{
-			$oparam = $this->_param['bbf'][2];
-
-			if(is_array($param) === false
-			&& $key !== 'paramkey'
-			&& $key !== 'paramvalue')
-				$param = $oparam;
-			else if($nparam === null)
-				$nparam = $oparam;
-		}
-
 		$bbfkey = $this->_param['bbf'][1];
 		$bbfkeyorig = $this->_param['bbf'][1];
 		$renderkey = $render['key'];
@@ -852,13 +844,24 @@ class dwho_tpl_form extends dwho_tpl_module
 			$rendervalue = $time['timevalue'];
 		}
 
+		if(isset($this->_param['bbf'][2]) === false)
+			$oparam = null;
+		else
+			$oparam = $this->_param['bbf'][2];
+
 		switch($key)
 		{
 			case 'paramkey':
+				if($oparam !== null && is_array($param) === false)
+					$param = array_merge((array) $renderkey, $oparam);
+
 				$render['value'] = $this->bbf($bbfkey,
 							(is_array($param) === true ? $param : $renderkey));
 				break;
 			case 'paramvalue':
+				if($oparam !== null && is_array($param) === false)
+					$param = array_merge((array) $rendervalue, $oparam);
+
 				$render['value'] = $this->bbf($bbfkey,
 							(is_array($param) === true ? $param : $rendervalue));
 				break;
@@ -874,31 +877,6 @@ class dwho_tpl_form extends dwho_tpl_module
 
 				$render['value'] = $this->bbf($bbfkey,$oparam);
 				break;
-			default:
-				if($key === 'mixkey')
-				{
-					if(is_scalar($render['key']) === true)
-						$bbfkey .= $render['key'];
-
-					$nparam = $renderkey;
-				}
-				else if($key === 'mixvalue')
-				{
-					if(is_scalar($render['value']) === true)
-						$bbfkey .= $render['value'];
-
-					$nparam = $rendervalue;
-				}
-				else
-					break;
-
-				if(($render['value'] = $this->bbf($bbfkey,$oparam)) !== $bbfkey)
-					break;
-				else if(is_array($param) === true)
-					$render['value'] = $this->bbf($bbfkeyorig,$param);
-				else
-					$render['value'] = $this->bbf($bbfkeyorig,$nparam);
-				break;
 		}
 
 		return($this->_set_slt_option_render($render));
@@ -906,10 +884,10 @@ class dwho_tpl_form extends dwho_tpl_module
 
 	function _mk_slt_option_bbf_time($time)
 	{
-		if(isset($this->_param['bbf_opt']['time']) === false
-		|| ($time = dwho_calc_time($this->_param['bbf_opt']['time']['from'],
+		if(isset($this->_param['bbfopt']['time']) === false
+		|| ($time = dwho_calc_time($this->_param['bbfopt']['time']['from'],
 					   $time,
-					   $this->_param['bbf_opt']['time']['format'],
+					   $this->_param['bbfopt']['time']['format'],
 					   false)) === false)
 			return(false);
 
@@ -1125,13 +1103,10 @@ class dwho_tpl_form extends dwho_tpl_module
 				}
 			}
 
-			if($this->_param['optgroup'] === true)
-			{
-				if($prevkey !== null)
-					$key = $prevkey;
-			}
-			else
+			if($this->_param['optgroup'] !== true)
 				$this->_param['optgroup'] = $optgroup;
+			else if($prevkey !== null)
+				$key = $prevkey;
 
 			if(is_array($ref) === true)
 			{
@@ -1143,9 +1118,10 @@ class dwho_tpl_form extends dwho_tpl_module
 
 				if(($render = $this->_mk_slt_option_param_array($key,$ref)) !== false)
 					$this->_mk_slt_option_render($render);
-				else if(isset($this->_param['bbf_opt']['argvalue']) === true
-				&& ($render = $this->_mk_slt_option_param($key,$ref)) !== false)
-					$this->_mk_slt_option_render($render,$ref);
+				else if(isset($this->_param['bbfopt']['argvalue']) === true)
+					$this->_mk_slt_option_render(
+						$this->_mk_slt_option_param($key,$ref),
+						$ref);
 				else
 					$this->_mk_slt_option($ref);
 			}

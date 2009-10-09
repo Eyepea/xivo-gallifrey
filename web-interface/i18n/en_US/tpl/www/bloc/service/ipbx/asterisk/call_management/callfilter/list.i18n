@@ -10,7 +10,7 @@ Identity
 ; callfilter_type-bosssecretary
 Boss - Secretary
 
-; callfilter_type-opt-bosssecretary
+; callfilter_type-bosssecretary-identity
 Boss: %s
 
 ; no_callfilter

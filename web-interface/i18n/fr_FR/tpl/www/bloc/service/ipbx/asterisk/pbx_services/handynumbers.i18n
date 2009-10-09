@@ -25,13 +25,13 @@ Supprimer
 ; no_emergency
 Aucun numéro d'urgence
 
-; fm_emergency-trunk-opt-sip
+; fm_emergency-trunk-opt(sip)
 Protocole SIP
 
-; fm_emergency-trunk-opt-iax
+; fm_emergency-trunk-opt(iax)
 Protocole IAX
 
-; fm_emergency-trunk-opt-custom
+; fm_emergency-trunk-opt(custom)
 Personnalisée
 
 ; col_special-trunk
@@ -49,13 +49,13 @@ Supprimer
 ; no_special
 Aucun numéro spécial
 
-; fm_special-trunk-opt-sip
+; fm_special-trunk-opt(sip)
 Protocole SIP
 
-; fm_special-trunk-opt-iax
+; fm_special-trunk-opt(iax)
 Protocole IAX
 
-; fm_special-trunk-opt-custom
+; fm_special-trunk-opt(custom)
 Personnalisée
 
 ; fm_success-save

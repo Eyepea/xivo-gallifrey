@@ -35,7 +35,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_record-filename'
 			    'name'	=> 'ipbxapplication[record][fileformat]',
 			    'labelid'	=> 'ipbxapplication-record-fileformat',
 			    'key'	=> false,
-			    'bbf'	=> 'ast_format_name_info-',
+			    'bbf'	=> array('paramvalue','ast_format_name_info'),
 			    'default'	=> $apparg_record['fileformat']['default']),
 		      $apparg_record['fileformat']['value']),
 

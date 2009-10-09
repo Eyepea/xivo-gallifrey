@@ -31,10 +31,10 @@ Password:
 ; fm_rightcall_authorization
 Authorization:
 
-; fm_rightcall_authorization-opt-deny
+; fm_rightcall_authorization-opt(deny)
 Deny
 
-; fm_rightcall_authorization-opt-permit
+; fm_rightcall_authorization-opt(permit)
 Allow
 
 ; fm_rightcallexten_exten

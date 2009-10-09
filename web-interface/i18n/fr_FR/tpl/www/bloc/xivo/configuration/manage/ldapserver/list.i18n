@@ -10,10 +10,10 @@ Port
 ; col_securitylayer
 Couche d'authentification
 
-; securitylayer_tls
+; securitylayer(tls)
 TLS
 
-; securitylayer_ssl
+; securitylayer(ssl)
 SSL
 
 ; no_ldapserver

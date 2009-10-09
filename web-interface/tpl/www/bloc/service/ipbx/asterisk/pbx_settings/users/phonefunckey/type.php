@@ -29,12 +29,13 @@ $select['label'] = false;
 $select['key'] = 'name';
 $select['altkey'] = 'name';
 $select['bbf'] = 'fm_phonefunckey_type-opt';
-$select['bbf_opt'] = array('argmode' => 'paramkey');
+$select['bbfopt'] = array('argmode' => 'paramvalue');
 $select['id'] = 'it-phonefunckey-type';
 
 $select['optgroup'] = array('key'	=> 'category',
 			    'unique'	=> true,
-			    'bbf'	=> 'fm_phonefunckey_type-optgroup-');
+			    'bbf'	=> 'fm_phonefunckey_type-optgroup',
+			    'bbfopt'	=> array('argmode' => 'paramvalue'));
 
 $selectoptattr = 'onchange="xivo_phonefunckey_chg_type(this);"';
 

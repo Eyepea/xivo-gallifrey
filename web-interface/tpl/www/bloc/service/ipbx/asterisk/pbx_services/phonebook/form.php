@@ -37,7 +37,7 @@ endif;
 				    'name'	=> 'phonebook[title]',
 				    'labelid'	=> 'phonebook-title',
 				    'key'	=> false,
-				    'bbf'	=> array('concatkey','fm_phonebook_title-opt-'),
+				    'bbf'	=> array('paramvalue','fm_phonebook_title-opt'),
 				    'value'	=> $info['phonebook']['title'],
 				    'default'	=> $element['phonebook']['title']['default']),
 			      $element['phonebook']['title']['value']),

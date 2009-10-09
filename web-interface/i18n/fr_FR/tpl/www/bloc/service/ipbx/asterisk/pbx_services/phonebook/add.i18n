@@ -16,13 +16,13 @@ Autre
 ; fm_phonebook_title
 Civilité :
 
-; fm_phonebook_title-opt-mr
+; fm_phonebook_title-opt(mr)
 Monsieur
 
-; fm_phonebook_title-opt-mrs
+; fm_phonebook_title-opt(mrs)
 Madame
 
-; fm_phonebook_title-opt-ms
+; fm_phonebook_title-opt(ms)
 Mademoiselle
 
 ; fm_phonebook_firstname

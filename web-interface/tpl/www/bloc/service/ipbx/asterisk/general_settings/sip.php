@@ -245,7 +245,7 @@ endif;
 				    'name'	=> 'checkmwi',
 				    'labelid'	=> 'checkmwi',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_checkmwi-opt'),
+				    'bbf'	=> array('paramvalue','fm_checkmwi-opt'),
 				    'value'	=> $this->get_varra('info',array('checkmwi','var_val')),
 				    'default'	=> $element['checkmwi']['default']),
 			      $element['checkmwi']['value']),
@@ -358,7 +358,7 @@ endif;
 				    'labelid'	=> 'externrefresh',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_externrefresh-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
@@ -415,7 +415,7 @@ endif;
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_delete-localnet');?>">
 				<?=$url->img_html('img/site/button/mini/orange/delete.gif',
-						  $this->bbf('bt_del-localnet'),
+						  $this->bbf('bt_delete-localnet'),
 						  'class="bt-deletelist" id="bt-del-localnet" border="0"');?></a>
 		</div>
 	</div>
@@ -429,7 +429,7 @@ endif;
 				    'name'	=> 't1min',
 				    'labelid'	=> 't1min',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_t1min-opt'),
+				    'bbf'	=> array('paramvalue','fm_t1min-opt'),
 				    'value'	=> $this->get_varra('info',array('t1min','var_val')),
 				    'default'	=> $element['t1min']['default']),
 			      $element['t1min']['value']),
@@ -456,7 +456,7 @@ endif;
 				    'name'	=> 'rtptimeout',
 				    'labelid'	=> 'rtptimeout',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_rtptimeout-opt'),
+				    'bbf'	=> array('paramvalue','fm_rtptimeout-opt'),
 				    'value'	=> $this->get_varra('info',array('rtptimeout','var_val')),
 				    'default'	=> $element['rtptimeout']['default']),
 			      $element['rtptimeout']['value']),
@@ -465,7 +465,7 @@ endif;
 				    'name'	=> 'rtpholdtimeout',
 				    'labelid'	=> 'rtpholdtimeout',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_rtptimeout-opt'),
+				    'bbf'	=> array('paramvalue','fm_rtptimeout-opt'),
 				    'value'	=> $this->get_varra('info',array('rtpholdtimeout','var_val')),
 				    'default'	=> $element['rtpholdtimeout']['default']),
 			      $element['rtpholdtimeout']['value']),
@@ -474,7 +474,7 @@ endif;
 				    'name'	=> 'rtpkeepalive',
 				    'labelid'	=> 'rtpkeepalive',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_rtpkeepalive-opt'),
+				    'bbf'	=> array('paramvalue','fm_rtpkeepalive-opt'),
 				    'value'	=> $this->get_varra('info',array('rtpkeepalive','var_val')),
 				    'default'	=> $element['rtpkeepalive']['default']),
 			      $element['rtpkeepalive']['value']),
@@ -509,7 +509,7 @@ endif;
 				    'labelid'	=> 'minexpiry',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_expiry-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%H%M%s')),
@@ -522,7 +522,7 @@ endif;
 				    'labelid'	=> 'maxexpiry',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_expiry-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%H%M%s')),
@@ -535,7 +535,7 @@ endif;
 				    'labelid'	=> 'defaultexpiry',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_expiry-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%H%M%s')),
@@ -548,7 +548,7 @@ endif;
 				    'labelid'	=> 'registertimeout',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_registertimeout-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
@@ -561,7 +561,7 @@ endif;
 				    'labelid'	=> 'registerattempts',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_registerattempts-opt',
-				    'bbf_opt'	=> array('argmode' => 'paramkey'),
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'value'	=> $this->get_varra('info',array('registerattempts','var_val')),
 				    'default'	=> $element['registerattempts']['default']),
 			      $element['registerattempts']['value']),
@@ -607,7 +607,7 @@ endif;
 				    'name'	=> 'disallow',
 				    'labelid'	=> 'disallow',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_codec-disallow-opt')),
+				    'bbf'	=> array('paramvalue','fm_codec-disallow-opt')),
 			      $element['disallow']['value']);
 ?>
 
@@ -626,7 +626,7 @@ endif;
 				    'size'	=> 5,
 				    'field'	=> false,
 				    'key'	=> false,
-				    'bbf'	=> 'ast_codec_name_type-'),
+				    'bbf'	=> array('paramvalue','ast_codec_name_type')),
 			       $element['allow']['value']);
 ?>
 	</div>
@@ -656,7 +656,7 @@ endif;
 				       'size'		=> 5,
 				       'field'		=> false,
 				       'key'		=> false,
-				       'bbf'		=> 'ast_codec_name_type-'),
+				       'bbf'		=> array('paramvalue','ast_codec_name_type')),
 				 $this->get_varra('info',array('allow','var_val')));?>
 		<div class="bt-updown">
 			<a href="#"
@@ -725,7 +725,7 @@ endif;
 				    'name'	=> 'jbmaxsize',
 				    'labelid'	=> 'jbmaxsize',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_jbmaxsize-opt'),
+				    'bbf'	=> array('paramvalue','fm_jbmaxsize-opt'),
 				    'value'	=> $this->get_varra('info',array('jbmaxsize','var_val')),
 				    'default'	=> $element['jbmaxsize']['default']),
 			      $element['jbmaxsize']['value']),
@@ -734,7 +734,7 @@ endif;
 				    'name'	=> 'jbresyncthreshold',
 				    'labelid'	=> 'jbresyncthreshold',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_jbresyncthreshold-opt'),
+				    'bbf'	=> array('paramvalue','fm_jbresyncthreshold-opt'),
 				    'value'	=> $this->get_varra('info',array('jbresyncthreshold','var_val')),
 				    'default'	=> $element['jbresyncthreshold']['default']),
 			      $element['jbresyncthreshold']['value']),
@@ -743,7 +743,7 @@ endif;
 				    'name'	=> 'jbimpl',
 				    'labelid'	=> 'jbimpl',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_jbimpl-opt'),
+				    'bbf'	=> array('paramvalue','fm_jbimpl-opt'),
 				    'value'	=> $this->get_varra('info',array('jbimpl','var_val')),
 				    'default'	=> $element['jbimpl']['default']),
 			      $element['jbimpl']['value']),
@@ -775,7 +775,7 @@ endif;
 				    'name'	=> 'nat',
 				    'labelid'	=> 'nat',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_nat-opt'),
+				    'bbf'	=> array('paramvalue','fm_nat-opt'),
 				    'value'	=> $this->get_varra('info',array('nat','var_val')),
 				    'default'	=> $element['nat']['default']),
 			      $element['nat']['value']),
@@ -784,7 +784,7 @@ endif;
 				    'name'	=> 'dtmfmode',
 				    'labelid'	=> 'dtmfmode',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_dtmfmode-opt'),
+				    'bbf'	=> array('paramvalue','fm_dtmfmode-opt'),
 				    'value'	=> $this->get_varra('info',array('dtmfmode','var_val')),
 				    'default'	=> $element['dtmfmode']['default']),
 			      $element['dtmfmode']['value']),
@@ -793,7 +793,7 @@ endif;
 				    'name'	=> 'qualify',
 				    'labelid'	=> 'qualify',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_qualify-opt'),
+				    'bbf'	=> array('paramvalue','fm_qualify-opt'),
 				    'value'	=> $this->get_varra('info',array('qualify','var_val')),
 				    'default'	=> $element['qualify']['default']),
 			      $element['qualify']['value']),
@@ -808,7 +808,7 @@ endif;
 				    'name'	=> 'progressinband',
 				    'labelid'	=> 'progressinband',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_progressinband-opt'),
+				    'bbf'	=> array('paramvalue','fm_progressinband-opt'),
 				    'value'	=> $this->get_varra('info',array('progressinband','var_val')),
 				    'default'	=> $element['progressinband']['default']),
 			      $element['progressinband']['value']),
@@ -913,7 +913,7 @@ endif;
 				    'labelid'	=> 'rtautoclear',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_rtautoclear-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),

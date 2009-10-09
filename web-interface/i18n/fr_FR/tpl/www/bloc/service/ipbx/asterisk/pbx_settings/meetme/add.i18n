@@ -22,13 +22,13 @@ Code PIN Administrateur :
 ; fm_meetmefeatures_mode
 Mode :
 
-; fm_meetmefeatures_mode-talk
+; fm_meetmefeatures_mode-opt(talk)
 Parler
 
-; fm_meetmefeatures_mode-listen
+; fm_meetmefeatures_mode-opt(listen)
 Ecouter
 
-; fm_meetmefeatures_mode-all
+; fm_meetmefeatures_mode-opt(all)
 Tous
 
 ; fm_meetmefeatures_context

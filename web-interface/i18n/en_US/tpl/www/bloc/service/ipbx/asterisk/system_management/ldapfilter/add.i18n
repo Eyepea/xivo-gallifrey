@@ -31,22 +31,22 @@ Filter:
 ; fm_ldapfilter_additionaltype
 Phone number type:
 
-; fm_ldapfilter_additionaltype-opt-home
+; fm_ldapfilter_additionaltype-opt(home)
 Home
 
-; fm_ldapfilter_additionaltype-opt-office
+; fm_ldapfilter_additionaltype-opt(office)
 Office
 
-; fm_ldapfilter_additionaltype-opt-mobile
+; fm_ldapfilter_additionaltype-opt(mobile)
 Mobile
 
-; fm_ldapfilter_additionaltype-opt-fax
+; fm_ldapfilter_additionaltype-opt(fax)
 Fax
 
-; fm_ldapfilter_additionaltype-opt-other
+; fm_ldapfilter_additionaltype-opt(other)
 Other
 
-; fm_ldapfilter_additionaltype-opt-custom
+; fm_ldapfilter_additionaltype-opt(custom)
 Customized
 
 ; fm_ldapfilter_description

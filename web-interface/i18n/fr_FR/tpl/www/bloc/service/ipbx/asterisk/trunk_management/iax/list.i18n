@@ -13,13 +13,13 @@ Nombre d'appels
 ; protocol_host-unknown
 Hôte inconnu
 
-; protocol_type-user
+; protocol_type(user)
 Entrant
 
-; protocol_type-peer
+; protocol_type(peer)
 Sortant
 
-; protocol_type-friend
+; protocol_type(friend)
 Entrant/Sortant
 
 ; protocol_call-unlimited

@@ -37,112 +37,112 @@ Supprimer une ou plusieurs applications
 ; fm_dialaction_actiontype
 Action :
 
-; fm_ipbxapplications-optgroup-answer
+; fm_ipbxapplications-optgroup(answer)
 Réponse
 
-; fm_ipbxapplications-opt-answer
+; fm_ipbxapplications-opt(answer)
 Answer
 
-; fm_ipbxapplications-optgroup-authentication
+; fm_ipbxapplications-optgroup(authentication)
 Authentification
 
-; fm_ipbxapplications-opt-authenticate
+; fm_ipbxapplications-opt(authenticate)
 Authenticate
 
-; fm_ipbxapplications-opt-vmauthenticate
+; fm_ipbxapplications-opt(vmauthenticate)
 VMAuthenticate
 
-; fm_ipbxapplications-optgroup-execute
+; fm_ipbxapplications-optgroup(execute)
 Exécuter
 
-; fm_ipbxapplications-opt-macro
+; fm_ipbxapplications-opt(macro)
 Macro
 
-; fm_ipbxapplications-opt-agi
+; fm_ipbxapplications-opt(agi)
 AGI
 
-; fm_ipbxapplications-optgroup-jump
+; fm_ipbxapplications-optgroup(jump)
 Saut
 
-; fm_ipbxapplications-opt-goto
+; fm_ipbxapplications-opt(goto)
 Goto
 
-; fm_ipbxapplications-opt-gotoif
+; fm_ipbxapplications-opt(gotoif)
 GotoIf
 
-; fm_ipbxapplications-optgroup-sound
+; fm_ipbxapplications-optgroup(sound)
 Son
 
-; fm_ipbxapplications-opt-background
+; fm_ipbxapplications-opt(background)
 BackGround
 
-; fm_ipbxapplications-opt-playback
+; fm_ipbxapplications-opt(playback)
 Playback
 
-; fm_ipbxapplications-optgroup-recording
+; fm_ipbxapplications-optgroup(recording)
 Enregistrement
 
-; fm_ipbxapplications-opt-mixmonitor
+; fm_ipbxapplications-opt(mixmonitor)
 MixMonitor
 
-; fm_ipbxapplications-opt-monitor
+; fm_ipbxapplications-opt(monitor)
 Monitor
 
-; fm_ipbxapplications-opt-record
+; fm_ipbxapplications-opt(record)
 Record
 
-; fm_ipbxapplications-opt-stopmonitor
+; fm_ipbxapplications-opt(stopmonitor)
 StopMonitor
 
-; fm_ipbxapplications-optgroup-timeout
+; fm_ipbxapplications-optgroup(timeout)
 Temps
 
-; fm_ipbxapplications-opt-absolutetimeout
+; fm_ipbxapplications-opt(absolutetimeout)
 AbsoluteTimeout
 
-; fm_ipbxapplications-opt-digittimeout
+; fm_ipbxapplications-opt(digittimeout)
 DigitTimeout
 
-; fm_ipbxapplications-opt-responsetimeout
+; fm_ipbxapplications-opt(responsetimeout)
 ResponseTimeout
 
-; fm_ipbxapplications-optgroup-variable
+; fm_ipbxapplications-optgroup(variable)
 Variable
 
-; fm_ipbxapplications-opt-read
+; fm_ipbxapplications-opt(read)
 Read
 
-; fm_ipbxapplications-opt-set
+; fm_ipbxapplications-opt(set)
 Set
 
-; fm_ipbxapplications-opt-setcallerid
+; fm_ipbxapplications-opt(setcallerid)
 SetCallerID
 
-; fm_ipbxapplications-opt-setcidname
+; fm_ipbxapplications-opt(setcidname)
 SetCIDName
 
-; fm_ipbxapplications-opt-setcidnum
+; fm_ipbxapplications-opt(setcidnum)
 SetCIDNum
 
-; fm_ipbxapplications-opt-setlanguage
+; fm_ipbxapplications-opt(setlanguage)
 SetLanguage
 
-; fm_ipbxapplications-opt-noop
+; fm_ipbxapplications-opt(noop)
 NoOp
 
-; fm_ipbxapplications-optgroup-wait
+; fm_ipbxapplications-optgroup(wait)
 Attente
 
-; fm_ipbxapplications-opt-wait
+; fm_ipbxapplications-opt(wait)
 Wait
 
-; fm_ipbxapplications-opt-waitexten
+; fm_ipbxapplications-opt(waitexten)
 WaitExten
 
-; fm_ipbxapplications-opt-waitforring
+; fm_ipbxapplications-opt(waitforring)
 WaitForRing
 
-; fm_ipbxapplications-opt-waitmusiconhold
+; fm_ipbxapplications-opt(waitmusiconhold)
 WaitMusicOnHold
 
 ; fm_ipbxapplication_answer-delay
@@ -154,10 +154,10 @@ Mot de passe ou chemin des mots de passe :
 ; fm_ipbxapplication_authenticate-passwordinterpreter
 Localisation des mots de passe :
 
-; fm_ipbxapplication_authenticate-passwordinterpreter-opt-astdb
+; fm_ipbxapplication_authenticate-passwordinterpreter-opt(astdb)
 ASTDB
 
-; fm_ipbxapplication_authenticate-passwordinterpreter-opt-file
+; fm_ipbxapplication_authenticate-passwordinterpreter-opt(file)
 Fichier
 
 ; fm_ipbxapplication_authenticate-a

@@ -97,13 +97,13 @@ Délai d'attente pour la numérotation d'un transfert :
 ; fm_generalfeatures_xfersound
 Fichier son d'un transfert réussi :
 
-; fm_generalfeatures_xfersound-opt-default
+; fm_generalfeatures_xfersound-opt(default)
 Défaut
 
 ; fm_generalfeatures_xferfailsound
 Fichier son d'un transfert échoué :
 
-; fm_generalfeatures_xferfailsound-opt-default
+; fm_generalfeatures_xferfailsound-opt(default)
 Défaut
 
 ; fm_extenfeatures_enable-fwdundoall
@@ -232,7 +232,7 @@ Délai d'attente pour la numérotation d'une fonctionnalité  :
 ; fm_generalfeatures_courtesytone
 Fichier son de la tonalité :
 
-; fm_generalfeatures_courtesytone-opt-default
+; fm_generalfeatures_courtesytone-opt(default)
 Défaut
 
 ; fm_success-save

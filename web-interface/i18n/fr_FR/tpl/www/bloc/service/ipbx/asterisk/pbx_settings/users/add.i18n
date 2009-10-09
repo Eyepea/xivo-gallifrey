@@ -433,10 +433,10 @@ Ajouter une ou plusieurs files d'attente ->
 ; fm_autoprov_modact
 Mode :
 
-; fm_autoprov_modact-guest
+; fm_autoprov_modact-opt(guest)
 Initialiser
 
-; fm_autoprov_modact-prov
+; fm_autoprov_modact-opt(prov)
 Approvisionner
 
 ; fm_autoprov_vendormodel
@@ -481,7 +481,7 @@ File d'attente
 ; fm_phonefunckey_type-opt(meetme)
 Chambre de conférence
 
-; fm_phonefunckey_type-optgroup-extension-general
+; fm_phonefunckey_type-optgroup(extension-general)
 Général
 
 ; fm_phonefunckey_type-opt(featuremap-automon)
@@ -520,7 +520,7 @@ Accès à l'annuaire
 ; fm_phonefunckey_type-opt(extenfeatures-bsfilter)
 Filtrage Patron - Secrétaire
 
-; fm_phonefunckey_type-optgroup-extension-transfers
+; fm_phonefunckey_type-optgroup(extension-transfers)
 Transferts
 
 ; fm_phonefunckey_type-opt(featuremap-blindxfer)
@@ -529,7 +529,7 @@ Transfert direct
 ; fm_phonefunckey_type-opt(featuremap-atxfer)
 Transfert indirect
 
-; fm_phonefunckey_type-optgroup-extension-forwards
+; fm_phonefunckey_type-optgroup(extension-forwards)
 Renvois
 
 ; fm_phonefunckey_type-opt(extenfeatures-fwdundoall)
@@ -544,7 +544,7 @@ Active/Désactive le renvoi sur occupation
 ; fm_phonefunckey_type-opt(extenfeatures-fwdunc)
 Active/Désactive le renvoi inconditionnel
 
-; fm_phonefunckey_type-optgroup-extension-voicemail
+; fm_phonefunckey_type-optgroup(extension-voicemail)
 Messagerie vocale
 
 ; fm_phonefunckey_type-opt(extenfeatures-enablevm)
@@ -559,7 +559,7 @@ Consultation de la messagerie vocale de l'utilisateur
 ; fm_phonefunckey_type-opt(extenfeatures-vmuserpurge)
 Supprime les messages vocaux de l'utilisateur
 
-; fm_phonefunckey_type-optgroup-extension-agent
+; fm_phonefunckey_type-optgroup(extension-agent)
 Agent
 
 ; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogtoggle)
@@ -574,7 +574,7 @@ Déconnecte un agent statique
 ; fm_phonefunckey_type-opt(extenfeatures-agentdynamiclogin)
 Connecte un agent dynamique
 
-; fm_phonefunckey_type-optgroup-extension-groups
+; fm_phonefunckey_type-optgroup(extension-groups)
 Groupes
 
 ; fm_phonefunckey_type-opt(extenfeatures-grouptogglemember)
@@ -595,7 +595,7 @@ Ajoute un membre dans une file d'attente
 ; fm_phonefunckey_type-opt(extenfeatures-queueremovemember)
 Enlève un membre d'une file d'attente
 
-; fm_phonefunckey_type-optgroup-extension-parking
+; fm_phonefunckey_type-optgroup(extension-parking)
 Parking
 
 ; fm_phonefunckey_type-opt(generalfeatures-parkext)
@@ -604,10 +604,10 @@ Parking
 ; fm_phonefunckey_type-opt(custom)
 Personnalisé
 
-; fm_phonefunckey_supervision-opt-0
+; fm_phonefunckey_supervision-opt(0)
 Désactivée
 
-; fm_phonefunckey_supervision-opt-1
+; fm_phonefunckey_supervision-opt(1)
 Activée
 
 ; phonefunckey_no-user

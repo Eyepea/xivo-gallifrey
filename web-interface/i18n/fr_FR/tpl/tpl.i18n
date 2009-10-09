@@ -49,10 +49,10 @@ Parcourir
 ; opt_delete
 Supprimer
 
-; fm_bool-opt-1
+; fm_bool-opt(1)
 Oui
 
-; fm_bool-opt-0
+; fm_bool-opt(0)
 Non
 
 ; fm_bool-opt(yes)

@@ -93,7 +93,7 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=($ref['host'] === 'dynamic' ? $this->bbf('protocol_host-unknown') : $ref['host'])?></td>
-		<td><?=$this->bbf('protocol_type-'.$ref['type']);?></td>
+		<td><?=$this->bbf('protocol_type',$ref['type']);?></td>
 		<td><?=($calllimit === 0 ? $this->bbf('protocol_call-unlimited') : $calllimit)?></td>
 		<td class="td-right" colspan="2">
 <?php

@@ -10,7 +10,7 @@ Identité
 ; callfilter_type-bosssecretary
 Patron - Secrétaire
 
-; callfilter_type-opt-bosssecretary
+; callfilter_type-bosssecretary-identity
 Patron : %s
 
 ; no_callfilter

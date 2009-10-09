@@ -3,88 +3,88 @@
 ; service_type
 IPBX
 
-; ast_codec_name_type-g723
+; ast_codec_name_type(g723)
 G.723.1 (Audio)
 
-; ast_codec_name_type-gsm
+; ast_codec_name_type(gsm)
 GSM (Audio)
 
-; ast_codec_name_type-ulaw
+; ast_codec_name_type(ulaw)
 G.711 u-law (Audio)
 
-; ast_codec_name_type-alaw
+; ast_codec_name_type(alaw)
 G.711 A-law (Audio)
 
-; ast_codec_name_type-adpcm
+; ast_codec_name_type(adpcm)
 ADPCM (Audio)
 
-; ast_codec_name_type-slin
+; ast_codec_name_type(slin)
 16 bit Signed Linear PCM (Audio)
 
-; ast_codec_name_type-lpc10
+; ast_codec_name_type(lpc10)
 LPC10 (Audio)
 
-; ast_codec_name_type-g729
+; ast_codec_name_type(g729)
 G.729A (Audio)
 
-; ast_codec_name_type-speex
+; ast_codec_name_type(speex)
 SpeeX (Audio)
 
-; ast_codec_name_type-ilbc
+; ast_codec_name_type(ilbc)
 iLBC (Audio)
 
-; ast_codec_name_type-g726
+; ast_codec_name_type(g726)
 G.726 RFC3551 (Audio)
 
-; ast_codec_name_type-g722
+; ast_codec_name_type(g722)
 G.722 (Audio)
 
-; ast_codec_name_type-jpeg
+; ast_codec_name_type(jpeg)
 JPEG (Image)
 
-; ast_codec_name_type-png
+; ast_codec_name_type(png)
 PNG (Image)
 
-; ast_codec_name_type-h261
+; ast_codec_name_type(h261)
 H.261 (Video)
 
-; ast_codec_name_type-h263
+; ast_codec_name_type(h263)
 H.263 (Video)
 
-; ast_codec_name_type-h263p
+; ast_codec_name_type(h263p)
 H.263+ (Video)
 
-; ast_codec_name_type-h264
+; ast_codec_name_type(h264)
 H.264 (Video)
 
-; ast_format_name_info-wav
+; ast_format_name_info(wav)
 Microsoft WAV 8khz
 
-; ast_format_name_info-wav49
+; ast_format_name_info(wav49)
 Microsoft WAV GSM (WAV49)
 
-; ast_format_name_info-gsm
+; ast_format_name_info(gsm)
 GSM Data
 
-; ast_format_name_info-ogg
+; ast_format_name_info(ogg)
 OGG/Vorbis
 
-; ast_format_name_info-ulaw
+; ast_format_name_info(ulaw)
 uLaw 8khz
 
-; ast_format_name_info-ulaw
+; ast_format_name_info(ulaw)
 uLaw 8khz
 
-; ast_format_name_info-alaw
+; ast_format_name_info(alaw)
 aLaw 8khz
 
-; ast_format_name_info-au
+; ast_format_name_info(au)
 Sun Microsystems AU
 
-; ast_format_name_info-vox
+; ast_format_name_info(vox)
 Dialogic VOX (ADPCM)
 
-; ast_format_name_info-sln
+; ast_format_name_info(sln)
 Signed Linear (SLN)
 
 ; toolbar_add_menu_add-directory

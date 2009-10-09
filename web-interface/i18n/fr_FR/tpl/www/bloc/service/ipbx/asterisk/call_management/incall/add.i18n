@@ -40,10 +40,10 @@ Activer la détection :
 ; fm_incall_faxdetecttimeout
 Temps de détection :
 
-; fm_incall_faxdetecttimeout-opt0
+; fm_incall_faxdetecttimeout-opt(0)
 Illimitée
 
-; fm_incall_faxdetecttimeout-opt1
+; fm_incall_faxdetecttimeout-opt(1)
 1 seconde
 
 ; fm_incall_faxdetecttimeout-opt

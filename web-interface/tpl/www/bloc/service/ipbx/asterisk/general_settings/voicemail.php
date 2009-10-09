@@ -175,7 +175,7 @@ endif;
 				    'labelid'	=> 'voicemail-minmessage',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-message-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
@@ -188,7 +188,7 @@ endif;
 				    'labelid'	=> 'voicemail-maxmessage',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-message-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
@@ -200,7 +200,7 @@ endif;
 				    'name'	=> 'voicemail[maxsilence]',
 				    'labelid'	=> 'voicemail-maxsilence',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_voicemail-maxsilence-opt'),
+				    'bbf'	=> array('paramvalue','fm_voicemail-maxsilence-opt'),
 				    'value'	=> $this->get_varra('voicemail',array('maxsilence','var_val')),
 				    'default'	=> $element['voicemail']['maxsilence']['default']),
 			      $element['voicemail']['maxsilence']['value']),
@@ -233,7 +233,7 @@ endif;
 				       'size'		=> 5,
 				       'field'		=> false,
 				       'key'		=> false,
-				       'bbf'		=> 'ast_format_name_info-'),
+				       'bbf'		=> array('paramvalue','ast_format_name_info')),
 				 $element['voicemail']['format']['value']);?>
 	</div>
 	<div class="inout-list">
@@ -258,7 +258,7 @@ endif;
 				       'size'		=> 5,
 				       'field'		=> false,
 				       'key'		=> false,
-				       'bbf'		=> 'ast_format_name_info-'),
+				       'bbf'		=> array('paramvalue','ast_format_name_info')),
 				 $format);?>
 	</div>
 </div>
@@ -309,7 +309,7 @@ endif;
 				    'name'	=> 'voicemail[saydurationm]',
 				    'labelid'	=> 'voicemail-saydurationm',
 				    'key'	=> false,
-				    'bbf'	=> array('paramkey','fm_voicemail-saydurationm-opt'),
+				    'bbf'	=> array('paramvalue','fm_voicemail-saydurationm-opt'),
 				    'value'	=> $this->get_varra('voicemail',array('saydurationm','var_val')),
 				    'default'	=> $element['voicemail']['saydurationm']['default']),
 			      $element['voicemail']['saydurationm']['value']),
@@ -337,7 +337,7 @@ endif;
 				    'labelid'	=> 'voicemail-maxgreet',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-maxgreet-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
@@ -350,7 +350,7 @@ endif;
 				    'labelid'	=> 'voicemail-skipms',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-skipms-opt',
-				    'bbf_opt'	=> array('argmode'	=> 'paramkey',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
 							 'time'		=> array(
 									'from'		=> 'millisecond',
 									'format'	=> '%M%s')),
@@ -423,7 +423,7 @@ endif;
 				    'name'	=> 'voicemail[attachformat]',
 				    'labelid'	=> 'voicemail-attachformat',
 				    'key'	=> false,
-				    'bbf'	=> 'ast_format_name_info-'),
+				    'bbf'	=> array('paramvalue','ast_format_name_info')),
 			      $format,
 			      ($attachformat === false ? 'class="it-disabled" disabled="disabled"' : '')),
 

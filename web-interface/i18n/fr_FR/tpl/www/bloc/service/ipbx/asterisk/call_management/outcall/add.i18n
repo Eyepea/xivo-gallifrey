@@ -37,10 +37,10 @@ Descendre une ou plusieurs interconnexions
 ; fm_outcall_mode
 Mode :
 
-; fm_outcall_mode-opt-wizard
+; fm_outcall_mode-opt(wizard)
 Wizard
 
-; fm_outcall_mode-opt-extension
+; fm_outcall_mode-opt(extension)
 Extension
 
 ; fm_outcall_numlen
@@ -79,7 +79,7 @@ Sous-routine de prétraitement :
 ; fm_outcall_hangupringtime
 Temps de sonnerie avant de raccrocher :
 
-; fm_outcall_hangupringtime-opt0
+; fm_outcall_hangupringtime-opt(0)
 Illimité
 
 ; fm_outcall_hangupringtime-opt-seconds

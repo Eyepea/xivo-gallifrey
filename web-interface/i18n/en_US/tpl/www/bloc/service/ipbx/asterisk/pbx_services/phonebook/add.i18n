@@ -16,13 +16,13 @@ Other
 ; fm_phonebook_title
 Title:
 
-; fm_phonebook_title-opt-mr
+; fm_phonebook_title-opt(mr)
 Mr
 
-; fm_phonebook_title-opt-mrs
+; fm_phonebook_title-opt(mrs)
 Mrs
 
-; fm_phonebook_title-opt-ms
+; fm_phonebook_title-opt(ms)
 Ms
 
 ; fm_phonebook_firstname

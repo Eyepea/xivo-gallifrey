@@ -37,10 +37,10 @@ Down one or more trunks
 ; fm_outcall_mode
 Mode:
 
-; fm_outcall_mode-opt-wizard
+; fm_outcall_mode-opt(wizard)
 Wizard
 
-; fm_outcall_mode-opt-extension
+; fm_outcall_mode-opt(extension)
 Extension
 
 ; fm_outcall_numlen

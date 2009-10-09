@@ -18,6 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+define('DWHO_I18N_NAMESPACE_GLOBAL','_global_');
+define('DWHO_I18N_ARG_ESCAPE','`');
+define('DWHO_I18N_ARG_SEPARATOR','|');
+
 class dwho_i18n
 {
 	var $_file	= null;
@@ -38,6 +42,8 @@ class dwho_i18n
 			trigger_error('Failed to load i18n Datastorage',E_USER_ERROR);
 
 		$this->_dso = new $name($dso);
+
+		unset($_SESSION['_i18n']);
 
 		if(isset($_SESSION['_i18n']) === false)
 			$_SESSION['_i18n'] = array('babelfish' => array());
@@ -171,6 +177,19 @@ class dwho_i18n
 	function set_babelfish_path()
 	{
 		return(dwho_i18n::mediator('set_babelfish_path'));
+	}
+
+	function vksprintf_l($format,$locale,$value)
+	{
+		if($locale === null && defined('DWHO_I18N_BABELFISH_REAL_LOCALE') === true)
+			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
+
+		$loc = setlocale(LC_ALL,null);
+		setlocale(LC_ALL,$locale);
+		$r = dwho_vksprintf($format,$value);
+		setlocale(LC_ALL,$loc);
+
+		return($r);
 	}
 
 	function vsprintf_l($format,$locale,$value)
@@ -430,18 +449,110 @@ class dwho_i18n
 		return(dwho_i18n::bfish('get',$namespace,$name));
 	}
 
-	function babelfish($name,$value=array(),$namespace='_empty_')
+	function babelfish($name,$value=array(),$namespace=DWHO_I18N_NAMESPACE_GLOBAL)
 	{
 		return(dwho_i18n::bfish('translate',$namespace,$value,$name));
 	}
 
+	function bfish_build_key($key,$args=null)
+	{
+		if(is_array($args) === true)
+			return($key.'('.implode(DWHO_I18N_ARG_SEPARATOR,$args).')');
+
+		return($key);
+	}
+
+	function bfish_argsvar_removed($args)
+	{
+		if(is_array($args) === false)
+			return(false);
+
+		reset($args);
+
+		while(list($key) = each($args))
+		{
+			if(preg_match('/^\$[a-zA-Z][a-zA-Z0-9_]*$/',$key) === 1)
+				unset($args[$key]);
+		}
+
+		return($args);
+	}
+
+	function bfish_build_args($args)
+	{
+		if(is_array($args) === false)
+			return(false);
+
+		$r = array();
+
+		reset($args);
+
+		while(list($key,$value) = each($args))
+		{
+			if(is_scalar($value) === false)
+				continue;
+			else if(preg_match('/^[a-zA-Z][a-zA-Z0-9_]*$/',$key) === 0)
+			{
+				if(substr($value,0,1) === '$')
+					$value = '\\'.$value;
+
+				$r[str_replace(DWHO_I18N_ARG_SEPARATOR,
+					       DWHO_I18N_ARG_ESCAPE.DWHO_I18N_ARG_SEPARATOR,
+					       $value)] = $value;
+			}
+			else
+				$r['$'.$key] = $value;
+		}
+
+		return($r);
+	}
+
+	function bfish_parse_args($str)
+	{
+		if(dwho_is_sgraph($str) === false)
+			return(false);
+
+		$regexp = '/('.preg_quote(DWHO_I18N_ARG_ESCAPE).'*'.preg_quote(DWHO_I18N_ARG_SEPARATOR).')/';
+
+		$rs = preg_split($regexp,$str,-1,PREG_SPLIT_DELIM_CAPTURE);
+
+		if(($nb = count($rs)) > 127)
+			return(false);
+
+		$arr = array();
+		$cur = '';
+
+		for($i = 0,$j = 1;$i < $nb;$i += 2,$j += 2)
+		{
+			$cur .= $rs[$i];
+
+			if($j >= $nb)
+			{
+				$arr[] = $cur;
+				break;
+			}
+
+			$bquote = substr($rs[$j],0,-1);
+
+			if((strlen($bquote) % 2) === 0)
+			{
+				$arr[] = $cur.$bquote;
+				$cur = '';
+			}
+			else
+				$cur .= substr($bquote,0,-1).DWHO_I18N_ARG_SEPARATOR;
+		}
+
+		return(implode(DWHO_I18N_ARG_SEPARATOR,$arr));
+	}
+
 	function bfish($func,$namespace,$value,$name='')
 	{
-		static $babelfish = array();
+		static $babelfish	= array();
 
-		$func = (string) $func;
-		$namespace = (string) $namespace;
-		$name = (string) $name;
+		$func		= (string) $func;
+		$namespace	= (string) $namespace;
+		$name		= (string) $name;
 
 		$r = null;
 
@@ -453,63 +564,94 @@ class dwho_i18n
 			case 'set':
 				$value = (array) $value;
 
-				if(dwho_issa($namespace,$babelfish) === true)
-					$babelfish[$namespace] = array_merge($babelfish[$namespace],$value);
-				else
-					$babelfish[$namespace] = $value;
+				if(isset($babelfish[$namespace]) === false)
+					$babelfish[$namespace] = array();
 
-				$r = true;
-				break;
+				$babelfish[$namespace] = array_merge($babelfish[$namespace],$value);
+
+				return(true);
 			case 'get':
 				$value = (string) $value;
 
-				if(dwho_issa($namespace,$babelfish) === false)
+				if(isset($babelfish[$namespace]) === false)
 					return($r);
 
 				if($value !== '' && isset($namespace[$babelfish][$value]) === true)
 					$r = &$babelfish[$namespace][$value];
 				else
 					$r = &$babelfish[$namespace];
-				break;
+
+				return($r);
 			case 'translate':
 				if($name === ''
-				|| (dwho_issa($namespace,$babelfish) === false
-				   && dwho_issa('_empty_',$babelfish) === false) === true)
+				|| (isset($babelfish[$namespace]) === false
+				   && isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL]) === false) === true)
 					return($name);
 
 				$value = (array) $value;
 
 				if(empty($value) === false)
 				{
-					$value = array_map('strval',array_filter($value,'is_scalar'));
-					$name_args = $name.'('.implode('|',$value).')';
+					$args = dwho_i18n::bfish_build_args($value);
+					$name_args = dwho_i18n::bfish_build_key($name,$args);
 
 					if(isset($babelfish[$namespace][$name_args]) === true)
-						return(dwho_i18n::vsprintf_l($babelfish[$namespace][$name_args],
+						return(dwho_i18n::vksprintf_l(
+								$babelfish[$namespace][$name_args],
+								null,
+								$value));
+
+					$args_varkeys_arr = array_keys($args);
+					$name_args_varkeys = dwho_i18n::bfish_build_key($name,$args_varkeys_arr);
+
+					if(isset($babelfish[$namespace][$name_args_varkeys]) === true)
+						return(dwho_i18n::vksprintf_l(
+								$babelfish[$namespace][$name_args_varkeys],
+								null,
+								$value));
+					else if(isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name_args]) === true)
+						return(dwho_i18n::vksprintf_l($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name_args],
 									     null,
 									     $value));
-					else if(isset($babelfish['_empty_'][$name_args]) === true)
-						return(dwho_i18n::vsprintf_l($babelfish['_empty_'][$name_args],
-									     null,
-									     $value));
+					else if(isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name_args_varkeys]) === true)
+						return(dwho_i18n::vksprintf_l(
+								$babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name_args_varkeys],
+								null,
+								$value));
+
+					$argsvar_removed_arr = dwho_i18n::bfish_argsvar_removed($args);
+					$name_args_removed = dwho_i18n::bfish_build_key($name,array_keys($argsvar_removed_arr));
+
+					if(isset($babelfish[$namespace][$name_args_removed]) === true)
+						return(dwho_i18n::vksprintf_l(
+								$babelfish[$namespace][$name_args_removed],
+								null,
+								$argsvar_removed_arr));
+					else if(isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name_args_removed]) === true)
+						return(dwho_i18n::vksprintf_l(
+								$babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name_args_removed],
+								null,
+								$argsvar_removed_arr));
 				}
 
 				if(isset($babelfish[$namespace][$name]) === false)
 				{
-					if(isset($babelfish['_empty_'][$name]) === true)
-						$namespace = '_empty_';
+					if(isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name]) === true)
+						$namespace = DWHO_I18N_NAMESPACE_GLOBAL;
 					else
+					{
+						trigger_error('Missing translation for '.$name,E_USER_NOTICE);
 						return($name);
+					}
 				}
 
-				$r = (string) $babelfish[$namespace][$name];
+				$r = $babelfish[$namespace][$name];
 
 				if(empty($value) === false)
-					$r = dwho_i18n::vsprintf_l($r,null,$value);
-				break;
-		}
+					$r = dwho_i18n::vksprintf_l($r,null,$value);
 
-		return($r);
+				return($r);
+		}
 	}
 
 	function _chk_namespace($name)
@@ -535,7 +677,6 @@ class dwho_i18n
 			$this->_file = false;
 			return(false);
 		}
-		// TODO: trigger_error();
 
 		$dir = trim(dirname($file),'.'.DWHO_SEP_DIR);
 		$file = basename($file);
@@ -547,10 +688,10 @@ class dwho_i18n
 
 		$path = ltrim($dir.DWHO_SEP_DIR.$file,DWHO_SEP_DIR);
 
-		if($namespace !== '' && $namespace !== '_empty_')
+		if($namespace !== '' && $namespace !== DWHO_I18N_NAMESPACE_GLOBAL)
 			$path = trim(str_replace('::',DWHO_SEP_DIR,$namespace).DWHO_SEP_DIR.$path,DWHO_SEP_DIR);
 		else
-			$namespace = '_empty_';
+			$namespace = DWHO_I18N_NAMESPACE_GLOBAL;
 
 		$this->_file['namespace'] = $namespace;
 		$this->_file['dirname'] = $dir;
@@ -681,8 +822,8 @@ class dwho_i18n
 			$this->_file = $_file;
 		}
 
-		if($content !== false)
-			$this->_set_babelfish($namespace,$content);
+		if(is_array($content) === true)
+			$this->bfish('set',$namespace,$content);
 
 		return(true);
 	}
@@ -784,13 +925,14 @@ class dwho_i18n
 
 						if(isset($match[2]) === true)
 						{
-							if(dwho_is_sgraph($match[2]) === true)
-								$key .= $match[2];
-							else
+							if(($args = $this->bfish_parse_args(
+								substr($match[2],1,-1))) === false)
 							{
 								$txt = false;
 								continue;
 							}
+
+							$key .= '('.$args.')';
 						}
 
 						if(isset($r[$key]) === true)
@@ -805,13 +947,14 @@ class dwho_i18n
 
 						if(isset($match[2]) === true)
 						{
-							if(dwho_is_sgraph($match[2]) === true)
-								$key .= $match[2];
-							else
+							if(($args = $this->bfish_parse_args(
+								substr($match[2],1,-1))) === false)
 							{
 								$txt = false;
 								continue;
 							}
+
+							$key .= '('.$args.')';
 						}
 
 						if(isset($r[$key]) === true)

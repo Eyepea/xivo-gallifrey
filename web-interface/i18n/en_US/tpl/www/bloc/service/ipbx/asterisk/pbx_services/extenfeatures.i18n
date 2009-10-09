@@ -213,19 +213,19 @@ Feature dial timeout:
 ; fm_generalfeatures_courtesytone
 Tone audio file:
 
-; fm_generalfeatures_courtesytone-opt-default
+; fm_generalfeatures_courtesytone-opt(default)
 Default
 
 ; fm_generalfeatures_xfersound
 Audio file of a successful transfer:
 
-; fm_generalfeatures_xfersound-opt-default
+; fm_generalfeatures_xfersound-opt(default)
 Default
 
 ; fm_generalfeatures_xferfailsound
 Audio file of a failed transfer:
 
-; fm_generalfeatures_xferfailsound-opt-default
+; fm_generalfeatures_xferfailsound-opt(default)
 Default
 
 ; fm_generalfeatures_pickupexten
