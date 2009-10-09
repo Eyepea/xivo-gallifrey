@@ -483,7 +483,6 @@ class dwho_uri
 			return(urlencode($str));
 
 		$rs = preg_split($this->_encode[$type],$str,-1,PREG_SPLIT_DELIM_CAPTURE);
-		dwho_print_r($rs);
 
 		if(($nb = count($rs)) === 1)
 		{
