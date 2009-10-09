@@ -1046,7 +1046,6 @@ function dwho_calc_page($page,$nb,$total)
 
 function dwho_gmlcstrftime($format,$time)
 {
-	$format = (string) $format;
 	$time = (int) $time;
 
 	$arr = explode('-',gmstrftime('%H-%M-%S-%m-%d-%Y',$time));
@@ -1075,29 +1074,71 @@ function dwho_gmlcstrftime($format,$time)
 
 function dwho_printf_escape($format,$argc=0)
 {
-	$format = (string) $format;
 	$argc = dwho_uint($argc);
 
-	if(preg_match_all('/%+/',$format,$match,PREG_OFFSET_CAPTURE) === 0)
-		return($format);
+	$rs = preg_split('/(%+)/',$format,-1,PREG_SPLIT_DELIM_CAPTURE);
 
-	$match = $match[0];
-	$nb = count($match);
+	if(($nb = count($rs)) === 1)
+		return($rs[0]);
 
-	for($i = $j = $k = 0;$i < $nb;$i++)
+	$r = '';
+
+	for($i = 0,$j = 1,$k = 0;$i < $nb;$i += 2,$j += 2)
 	{
-		if(strlen($match[$i][0]) % 2 === 0)
-			continue;
-		else if($argc <= $j)
-		{
-			$format = substr($format,0,$match[$i][1]+$k).'%'.substr($format,$match[$i][1]+$k);
-			$k++;
-		}
+		$r .= $rs[$i];
 
-		$j++;
+		if($j >= $nb)
+			break;
+		else if((strlen($rs[$j]) % 2) === 0 || $argc > $k++)
+			$r .= $rs[$j];
+		else
+			$r .= '%'.$rs[$j];
 	}
 
-	return($format);
+	return($r);
+}
+
+function dwho_vksprintf($format,$args)
+{
+	if(is_array($args) === false)
+		return(false);
+
+	$rs = preg_split('/(%+\{([a-zA-Z][a-zA-Z0-9_]*)\}\$'.
+			   '(?:\+\-)?(?: 0|\'.)?(?:\-?[0-9]*(?:\.[0-9]+)?)?'.
+			   '[bcdeufFosxX])/',
+			 $format,
+			 -1,
+			 PREG_SPLIT_DELIM_CAPTURE);
+
+	if(($nb = count($rs)) === 1)
+		return(vsprintf(dwho_printf_escape($format,count($args)),$args));
+
+	$vsfargs = $args;
+
+	$r = '';
+
+	for($i = 0,$j = 1,$k = 2;$i < $nb;$i += 3,$j += 3,$k += 3)
+	{
+		$r .= $rs[$i];
+
+		if($j >= $nb)
+			break;
+
+		$pos = strpos($rs[$j],'{');
+
+		if(($pos % 2) === 0)
+			$r .= $rs[$j];
+		else if(isset($args[$rs[$k]]) === false)
+			$r .= '%'.$rs[$j];
+		else
+		{
+			$f = '%'.substr($rs[$j],strlen($rs[$k]) + $pos + 3);
+			$r .= str_replace('%','%%',sprintf($f,strval($args[$rs[$k]])));
+			unset($vsfargs[$rs[$k]]);
+		}
+	}
+
+	return(vsprintf(dwho_printf_escape($r,count($vsfargs)),$vsfargs));
 }
 
 function dwho_replacef($search,$replace,$subject)
