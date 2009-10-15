@@ -24,7 +24,7 @@ $fkdata = $this->get_var('fkdata');
 $fknumelem = $this->get_var('fknumelem');
 
 $select = array();
-$select['field'] = false;
+$select['paragraph'] = false;
 $select['name'] = 'phonefunckey[fknum][]';
 $select['id'] = 'it-phonefunckey-fknum';
 $select['label'] = false;
@@ -33,7 +33,7 @@ $select['default'] = $fknumelem['default'];
 
 if($fkdata['ex'] === false):
 	$select['id'] .= '-'.dwho_uint($fkdata['incr']);
-	$select['value'] = $fknumelem['value'];
+	$select['selected'] = $fknumelem['value'];
 else:
 	$select['disabled'] = true;
 endif;

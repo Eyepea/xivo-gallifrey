@@ -22,15 +22,17 @@ $form = &$this->get_module('form');
 
 $element = $this->get_var('element');
 $event = $this->get_var('event');
-$action = $this->get_varra('dialaction',array($event,'action'));
+$action = $this->get_var('dialaction',$event,'action');
 
 echo $form->select(array('desc'		=> $this->bbf('fm_dialaction_actiontype'),
 			 'name'		=> 'dialaction['.$event.'][actiontype]',
 			 'labelid'	=> 'dialaction-'.$event.'-actiontype',
 			 'key'		=> false,
-			 'bbf'		=> array('paramvalue','fm_dialaction_actiontype-opt',array('ipbx_label' => XIVO_SRE_IPBX_LABEL)),
+			 'bbf'		=> 'fm_dialaction_actiontype-opt',
+			 'bbfopt'	=> array('argmode'	=> 'paramvalue',
+						 'paramsupp'	=> array('ipbx_label' => XIVO_SRE_IPBX_LABEL)),
 			 'default'	=> $element['dialaction']['actiontype']['default'],
-			 'value'	=> $action),
+			 'selected'	=> $action),
 		   $element['voicemenuflow']['actiontype'],
 		   'onchange="xivo_ast_chg_dialaction(\''.$event.'\',this);"');
 

@@ -61,7 +61,7 @@ endif;
 				    'labelid'	=> 'mode',
 				    'key'	=> false,
 				    'default'	=> $element['mode']['default'],
-				    'value'	=> $info['mode']),
+				    'selected'	=> $info['mode']),
 			      $element['mode']['value'],
 			      'onchange="xivo_chg_attrib(\'fm_musiconhold\',
 							 \'fd-application\',

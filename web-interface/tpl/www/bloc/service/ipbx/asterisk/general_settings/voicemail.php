@@ -32,7 +32,7 @@ elseif($fm_save === false):
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
 
-$format = $this->get_varra('voicemail',array('format','var_val'));
+$format = $this->get_var('voicemail','format','var_val');
 
 $attachformat = is_array($format) === true && empty($format) === false;
 
@@ -158,7 +158,7 @@ endif;
 				    'name'	=> 'voicemail[maxmsg]',
 				    'labelid'	=> 'voicemail-maxmsg',
 				    'key'	=> false,
-				    'value'	=> $this->get_varra('voicemail',array('maxmsg','var_val')),
+				    'selected'	=> $this->get_var('voicemail','maxmsg','var_val'),
 				    'default'	=> $element['voicemail']['maxmsg']['default']),
 			      $element['voicemail']['maxmsg']['value']),
 
@@ -166,7 +166,7 @@ endif;
 				    'name'	=> 'voicemail[silencethreshold]',
 				    'labelid'	=> 'voicemail-silencethreshold',
 				    'key'	=> false,
-				    'value'	=> $this->get_varra('voicemail',array('silencethreshold','var_val')),
+				    'selected'	=> $this->get_var('voicemail','silencethreshold','var_val'),
 				    'default'	=> $element['voicemail']['silencethreshold']['default']),
 			      $element['voicemail']['silencethreshold']['value']),
 
@@ -179,7 +179,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('voicemail',array('minmessage','var_val')),
+				    'selected'	=> $this->get_var('voicemail','minmessage','var_val'),
 				    'default'	=> $element['voicemail']['minmessage']['default']),
 			      $element['voicemail']['minmessage']['value']),
 
@@ -192,7 +192,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('voicemail',array('maxmessage','var_val')),
+				    'selected'	=> $this->get_var('voicemail','maxmessage','var_val'),
 				    'default'	=> $element['voicemail']['maxmessage']['default']),
 			      $element['voicemail']['maxmessage']['value']),
 
@@ -200,26 +200,27 @@ endif;
 				    'name'	=> 'voicemail[maxsilence]',
 				    'labelid'	=> 'voicemail-maxsilence',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_voicemail-maxsilence-opt'),
-				    'value'	=> $this->get_varra('voicemail',array('maxsilence','var_val')),
+				    'bbf'	=> 'fm_voicemail-maxsilence-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('voicemail','maxsilence','var_val'),
 				    'default'	=> $element['voicemail']['maxsilence']['default']),
 			      $element['voicemail']['maxsilence']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-review'),
 				      'name'	=> 'voicemail[review]',
 				      'labelid'	=> 'voicemail-review',
-				      'checked'	=> $this->get_varra('voicemail',array('review','var_val')),
+				      'checked'	=> $this->get_var('voicemail','review','var_val'),
 				      'default'	=> $element['voicemail']['review']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-operator'),
 				      'name'	=> 'voicemail[operator]',
 				      'labelid'	=> 'voicemail-operator',
-				      'checked'	=> $this->get_varra('voicemail',array('operator','var_val')),
+				      'checked'	=> $this->get_var('voicemail','operator','var_val'),
 				      'default'	=> $element['voicemail']['operator']['default']));
 
 ?>
 
-<div id="formatlist" class="fm-field fm-multilist">
+<div id="formatlist" class="fm-paragraph fm-multilist">
 	<p>
 		<label id="lb-formatlist" for="it-voicemail-formatlist">
 			<?=$this->bbf('fm_voicemail-format');?>
@@ -231,9 +232,10 @@ endif;
 				       'id'		=> 'it-voicemail-formatlist',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false,
+				       'paragraph'		=> false,
 				       'key'		=> false,
-				       'bbf'		=> array('paramvalue','ast_format_name_info')),
+				       'bbf'		=> 'ast_format_name_info',
+				       'bbfopt'		=> array('argmode' => 'paramvalue')),
 				 $element['voicemail']['format']['value']);?>
 	</div>
 	<div class="inout-list">
@@ -256,9 +258,10 @@ endif;
 				       'id'		=> 'it-voicemail-format',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false,
+				       'paragraph'		=> false,
 				       'key'		=> false,
-				       'bbf'		=> array('paramvalue','ast_format_name_info')),
+				       'bbf'		=> 'ast_format_name_info',
+				       'bbfopt'		=> array('argmode' => 'paramvalue')),
 				 $format);?>
 	</div>
 </div>
@@ -271,65 +274,66 @@ endif;
 				    'name'	=> 'voicemail[maxlogins]',
 				    'labelid'	=> 'voicemail-maxlogins',
 				    'key'	=> false,
-				    'value'	=> $this->get_varra('voicemail',array('maxlogins','var_val')),
+				    'selected'	=> $this->get_var('voicemail','maxlogins','var_val'),
 				    'default'	=> $element['voicemail']['maxlogins']['default']),
 			      $element['voicemail']['maxlogins']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-envelope'),
 				      'name'	=> 'voicemail[envelope]',
 				      'labelid'	=> 'voicemail-envelope',
-				      'checked'	=> $this->get_varra('voicemail',array('envelope','var_val')),
+				      'checked'	=> $this->get_var('voicemail','envelope','var_val'),
 				      'default'	=> $element['voicemail']['envelope']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-saycid'),
 				      'name'	=> 'voicemail[saycid]',
 				      'labelid'	=> 'voicemail-saycid',
-				      'checked'	=> $this->get_varra('voicemail',array('saycid','var_val')),
+				      'checked'	=> $this->get_var('voicemail','saycid','var_val'),
 				      'default'	=> $element['voicemail']['saycid']['default']));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_voicemail-cidinternalcontexts'),
 				    'name'	=> 'voicemail[cidinternalcontexts]',
 				    'labelid'	=> 'voicemail-cidinternalcontexts',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['voicemail']['cidinternalcontexts']['default'],
-				    'value'	=> $this->get_varra('voicemail',array('cidinternalcontexts','var_val'))),
+				    'selected'	=> $this->get_var('voicemail','cidinternalcontexts','var_val')),
 			      $context_list);
 endif;
 
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-sayduration'),
 				      'name'	=> 'voicemail[sayduration]',
 				      'labelid'	=> 'voicemail-sayduration',
-				      'checked'	=> $this->get_varra('voicemail',array('sayduration','var_val')),
+				      'checked'	=> $this->get_var('voicemail','sayduration','var_val'),
 				      'default'	=> $element['voicemail']['sayduration']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail-saydurationm'),
 				    'name'	=> 'voicemail[saydurationm]',
 				    'labelid'	=> 'voicemail-saydurationm',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_voicemail-saydurationm-opt'),
-				    'value'	=> $this->get_varra('voicemail',array('saydurationm','var_val')),
+				    'bbf'	=> 'fm_voicemail-saydurationm-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('voicemail','saydurationm','var_val'),
 				    'default'	=> $element['voicemail']['saydurationm']['default']),
 			      $element['voicemail']['saydurationm']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-forcename'),
 				      'name'	=> 'voicemail[forcename]',
 				      'labelid'	=> 'voicemail-forcename',
-				      'checked'	=> $this->get_varra('voicemail',array('forcename','var_val')),
+				      'checked'	=> $this->get_var('voicemail','forcename','var_val'),
 				      'default'	=> $element['voicemail']['forcename']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-forcegreetings'),
 				      'name'	=> 'voicemail[forcegreetings]',
 				      'labelid'	=> 'voicemail-forcegreetings',
-				      'checked'	=> $this->get_varra('voicemail',array('forcegreetings','var_val')),
+				      'checked'	=> $this->get_var('voicemail','forcegreetings','var_val'),
 				      'default'	=> $element['voicemail']['forcegreetings']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-tempgreetwarn'),
 				      'name'	=> 'voicemail[tempgreetwarn]',
 				      'labelid'	=> 'voicemail-tempgreetwarn',
-				      'checked'	=> $this->get_varra('voicemail',array('tempgreetwarn','var_val')),
+				      'checked'	=> $this->get_var('voicemail','tempgreetwarn','var_val'),
 				      'default'	=> $element['voicemail']['tempgreetwarn']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail-maxgreet'),
@@ -341,7 +345,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('voicemail',array('maxgreet','var_val')),
+				    'selected'	=> $this->get_var('voicemail','maxgreet','var_val'),
 				    'default'	=> $element['voicemail']['maxgreet']['default']),
 			      $element['voicemail']['maxgreet']['value']),
 
@@ -354,57 +358,57 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'millisecond',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('voicemail',array('skipms','var_val')),
+				    'selected'	=> $this->get_var('voicemail','skipms','var_val'),
 				    'default'	=> $element['voicemail']['skipms']['default']),
 			      $element['voicemail']['skipms']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-sendvoicemail'),
 				      'name'	=> 'voicemail[sendvoicemail]',
 				      'labelid'	=> 'voicemail-sendvoicemail',
-				      'checked'	=> $this->get_varra('voicemail',array('sendvoicemail','var_val')),
+				      'checked'	=> $this->get_var('voicemail','sendvoicemail','var_val'),
 				      'default'	=> $element['voicemail']['sendvoicemail']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-usedirectory'),
 				      'name'	=> 'voicemail[usedirectory]',
 				      'labelid'	=> 'voicemail-usedirectory',
-				      'checked'	=> $this->get_varra('voicemail',array('usedirectory','var_val')),
+				      'checked'	=> $this->get_var('voicemail','usedirectory','var_val'),
 				      'default'	=> $element['voicemail']['usedirectory']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-nextaftercmd'),
 				      'name'	=> 'voicemail[nextaftercmd]',
 				      'labelid'	=> 'voicemail-nextaftercmd',
-				      'checked'	=> $this->get_varra('voicemail',array('nextaftercmd','var_val')),
+				      'checked'	=> $this->get_var('voicemail','nextaftercmd','var_val'),
 				      'default'	=> $element['voicemail']['nextaftercmd']['default']));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_voicemail-dialout'),
 				    'name'	=> 'voicemail[dialout]',
 				    'labelid'	=> 'voicemail-dialout',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['voicemail']['dialout']['default'],
-				    'value'	=> $this->get_varra('voicemail',array('dialout','var_val'))),
+				    'selected'	=> $this->get_var('voicemail','dialout','var_val')),
 			      $context_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail-callback'),
 				    'name'	=> 'voicemail[callback]',
 				    'labelid'	=> 'voicemail-callback',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['voicemail']['callback']['default'],
-				    'value'	=> $this->get_varra('voicemail',array('callback','var_val'))),
+				    'selected'	=> $this->get_var('voicemail','callback','var_val')),
 			      $context_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail-exitcontext'),
 				    'name'	=> 'voicemail[exitcontext]',
 				    'labelid'	=> 'voicemail-exitcontext',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['voicemail']['exitcontext']['default'],
-				    'value'	=> $this->get_varra('voicemail',array('exitcontext','var_val'))),
+				    'selected'	=> $this->get_var('voicemail','exitcontext','var_val')),
 			      $context_list);
 endif;
 
@@ -416,14 +420,15 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-attach'),
 				      'name'	=> 'voicemail[attach]',
 				      'labelid'	=> 'voicemail-attach',
-				      'checked'	=> $this->get_varra('voicemail',array('attach','var_val')),
+				      'checked'	=> $this->get_var('voicemail','attach','var_val'),
 				      'default'	=> $element['voicemail']['attach']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail-attachformat'),
 				    'name'	=> 'voicemail[attachformat]',
 				    'labelid'	=> 'voicemail-attachformat',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','ast_format_name_info')),
+				    'bbf'	=> 'ast_format_name_info',
+				    'bbfopt'	=> array('argmode' => 'paramvalue')),
 			      $format,
 			      ($attachformat === false ? 'class="it-disabled" disabled="disabled"' : '')),
 
@@ -431,7 +436,7 @@ endif;
 				    'name'	=> 'voicemail[volgain]',
 				    'labelid'	=> 'voicemail-volgain',
 				    'key'	=> false,
-				    'value'	=> $this->get_varra('voicemail',array('volgain','var_val')),
+				    'selected'	=> $this->get_var('voicemail','volgain','var_val'),
 				    'default'	=> $element['voicemail']['volgain']['default']),
 			      $element['voicemail']['volgain']['value']),
 
@@ -439,7 +444,7 @@ endif;
 				  'name'	=> 'voicemail[mailcmd]',
 				  'labelid'	=> 'voicemail-mailcmd',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('mailcmd','var_val')),
+				  'value'	=> $this->get_var('voicemail','mailcmd','var_val'),
 				  'default'	=> $element['voicemail']['mailcmd']['default']),
 			    'class="it-readonly" readonly="readonly"'),
 
@@ -447,7 +452,7 @@ endif;
 				  'name'	=> 'voicemail[charset]',
 				  'labelid'	=> 'voicemail-charset',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('charset','var_val')),
+				  'value'	=> $this->get_var('voicemail','charset','var_val'),
 				  'default'	=> $element['voicemail']['charset']['default']),
 			    'class="it-readonly" readonly="readonly"'),
 
@@ -455,54 +460,54 @@ endif;
 				  'name'	=> 'voicemail[serveremail]',
 				  'labelid'	=> 'voicemail-serveremail',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('serveremail','var_val')),
+				  'value'	=> $this->get_var('voicemail','serveremail','var_val'),
 				  'default'	=> $element['voicemail']['serveremail']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-fromstring'),
 				  'name'	=> 'voicemail[fromstring]',
 				  'labelid'	=> 'voicemail-fromstring',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('fromstring','var_val')),
+				  'value'	=> $this->get_var('voicemail','fromstring','var_val'),
 				  'default'	=> $element['voicemail']['fromstring']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-emaildateformat'),
 				  'name'	=> 'voicemail[emaildateformat]',
 				  'labelid'	=> 'voicemail-emaildateformat',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('emaildateformat','var_val')),
+				  'value'	=> $this->get_var('voicemail','emaildateformat','var_val'),
 				  'default'	=> $element['voicemail']['emaildateformat']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-emaildatelocale'),
 				  'name'	=> 'voicemail[emaildatelocale]',
 				  'labelid'	=> 'voicemail-emaildatelocale',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('emaildatelocale','var_val')),
+				  'value'	=> $this->get_var('voicemail','emaildatelocale','var_val'),
 				  'default'	=> $element['voicemail']['emaildatelocale']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-pbxskip'),
 				      'name'	=> 'voicemail[pbxskip]',
 				      'labelid'	=> 'voicemail-pbxskip',
-				      'checked'	=> $this->get_varra('voicemail',array('pbxskip','var_val')),
+				      'checked'	=> $this->get_var('voicemail','pbxskip','var_val'),
 				      'default'	=> $element['voicemail']['pbxskip']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-emailsubject'),
 				  'name'	=> 'voicemail[emailsubject]',
 				  'labelid'	=> 'voicemail-emailsubject',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('emailsubject','var_val')),
+				  'value'	=> $this->get_var('voicemail','emailsubject','var_val'),
 				  'default'	=> $element['voicemail']['emailsubject']['default']));
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_voicemail-emailbody');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'name'		=> 'voicemail[emailbody]',
 					 'label'	=> false,
 					 'id'		=> 'it-voicemail-emailbody',
 					 'cols'		=> 60,
 					 'rows'		=> 10),
-				   $this->get_varra('voicemail',array('emailbody','var_val')));?>
+				   $this->get_var('voicemail','emailbody','var_val'));?>
 	</div>
 </div>
 
@@ -512,27 +517,27 @@ endif;
 				  'name'	=> 'voicemail[pagerfromstring]',
 				  'labelid'	=> 'voicemail-pagerfromstring',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('pagerfromstring','var_val')),
+				  'value'	=> $this->get_var('voicemail','pagerfromstring','var_val'),
 				  'default'	=> $element['voicemail']['pagerfromstring']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-pagersubject'),
 				  'name'	=> 'voicemail[pagersubject]',
 				  'labelid'	=> 'voicemail-pagersubject',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('pagersubject','var_val')),
+				  'value'	=> $this->get_var('voicemail','pagersubject','var_val'),
 				  'default'	=> $element['voicemail']['pagersubject']['default']));
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_voicemail-pagerbody');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'name'		=> 'voicemail[pagerbody]',
 					 'label'	=> false,
 					 'id'		=> 'it-voicemail-pagerbody',
 					 'cols'		=> 60,
 					 'rows'		=> 10),
-				   $this->get_varra('voicemail',array('pagerbody','var_val')));?>
+				   $this->get_var('voicemail','pagerbody','var_val'));?>
 	</div>
 </div>
 
@@ -570,9 +575,9 @@ if($zmsg_nb > 0):
 		endif;
 
 ?>
-		<tr class="fm-field<?=$errdisplay?>">
+		<tr class="fm-paragraph<?=$errdisplay?>">
 			<td class="td-left">
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'zonemessages[name][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -580,17 +585,17 @@ if($zmsg_nb > 0):
 						     'default'	=> $element['zonemessages']['name']['default']));?>
 			</td>
 			<td>
-				<?=$form->select(array('field'		=> false,
+				<?=$form->select(array('paragraph'		=> false,
 						       'name'		=> 'zonemessages[timezone][]',
 						       'key'		=> true,
 						       'id'		=> false,
 						       'label'		=> false,
-						       'value'		=> $val['timezone'],
+						       'selected'	=> $val['timezone'],
 						       'default'	=> $element['zonemessages']['timezone']['default']),
 						 $this->get_var('timezone_list'));?>
 			</td>
 			<td>
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'zonemessages[msg_format][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -621,9 +626,9 @@ if($zmsg_nb > 0):
 	</table>
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-timezone">
-		<tr class="fm-field">
+		<tr class="fm-paragraph">
 			<td class="td-left">
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'zonemessages[name][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -631,7 +636,7 @@ if($zmsg_nb > 0):
 						     'default'	=> $element['zonemessages']['name']['default']));?>
 				</td>
 			<td>
-				<?=$form->select(array('field'		=> false,
+				<?=$form->select(array('paragraph'		=> false,
 						       'name'		=> 'zonemessages[timezone][]',
 						       'key'		=> true,
 						       'id'		=> false,
@@ -641,7 +646,7 @@ if($zmsg_nb > 0):
 						 $this->get_var('timezone_list'));?>
 			</td>
 			<td>
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'zonemessages[msg_format][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -669,20 +674,20 @@ if($zmsg_nb > 0):
 	echo	$form->text(array('desc'	=> $this->bbf('fm_voicemail-adsifdn'),
 				  'name'	=> 'voicemail[adsifdn]',
 				  'labelid'	=> 'voicemail-adsifdn',
-				  'value'	=> $this->get_varra('voicemail',array('adsifdn','var_val')),
+				  'value'	=> $this->get_var('voicemail','adsifdn','var_val'),
 				  'default'	=> $element['voicemail']['adsifdn']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-adsisec'),
 				  'name'	=> 'voicemail[adsisec]',
 				  'labelid'	=> 'voicemail-adsisec',
-				  'value'	=> $this->get_varra('voicemail',array('adsisec','var_val')),
+				  'value'	=> $this->get_var('voicemail','adsisec','var_val'),
 				  'default'	=> $element['voicemail']['adsisec']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-adsiver'),
 				  'name'	=> 'voicemail[adsiver]',
 				  'labelid'	=> 'voicemail-adsiver',
 				  'size'	=> 5,
-				  'value'	=> $this->get_varra('voicemail',array('adsiver','var_val')),
+				  'value'	=> $this->get_var('voicemail','adsiver','var_val'),
 				  'default'	=> $element['voicemail']['adsiver']['default']));
 ?>
 </div>
@@ -692,14 +697,14 @@ if($zmsg_nb > 0):
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-searchcontexts'),
 				      'name'	=> 'voicemail[searchcontexts]',
 				      'labelid'	=> 'voicemail-searchcontexts',
-				      'checked'	=> $this->get_varra('voicemail',array('searchcontexts','var_val')),
+				      'checked'	=> $this->get_var('voicemail','searchcontexts','var_val'),
 				      'default'	=> $element['voicemail']['searchcontexts']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-externpass'),
 				  'name'	=> 'voicemail[externpass]',
 				  'labelid'	=> 'voicemail-externpass',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('externpass','var_val')),
+				  'value'	=> $this->get_var('voicemail','externpass','var_val'),
 				  'default'	=> $element['voicemail']['externpass']['default']),
 				  'class="it-readonly" readonly="readonly"'),
 
@@ -707,27 +712,27 @@ if($zmsg_nb > 0):
 				  'name'	=> 'voicemail[externnotify]',
 				  'labelid'	=> 'voicemail-externnotify',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('externnotify','var_val')),
+				  'value'	=> $this->get_var('voicemail','externnotify','var_val'),
 				  'default'	=> $element['voicemail']['externnotify']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_smdiport'),
 				  'name'	=> 'smdiport',
 				  'labelid'	=> 'smdiport',
-				  'value'	=> $this->get_varra('info',array('smdiport','var_val')),
+				  'value'	=> $this->get_var('info','smdiport','var_val'),
 				  'default'	=> $element['voicemail']['smdiport']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-odbcstorage'),
 				  'name'	=> 'voicemail[odbcstorage]',
 				  'labelid'	=> 'voicemail-odbcstorage',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('odbcstorage','var_val')),
+				  'value'	=> $this->get_var('voicemail','odbcstorage','var_val'),
 				  'default'	=> $element['voicemail']['odbcstorage']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-odbctable'),
 				  'name'	=> 'voicemail[odbctable]',
 				  'labelid'	=> 'voicemail-odbctable',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('voicemail',array('odbctable','var_val')),
+				  'value'	=> $this->get_var('voicemail','odbctable','var_val'),
 				  'default'	=> $element['voicemail']['odbctable']['default']));
 ?>
 </div>

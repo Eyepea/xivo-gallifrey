@@ -29,12 +29,12 @@ $form = &$this->get_module('form');
 				  'name'	=> 'name',
 				  'id'		=> 'it-name',
 				  'size'	=> 15,
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'default'	=> '')),
 
 		$form->submit(array('name'	=> 'submit',
 				    'id'	=> 'it-submit',
 				    'value'	=> $this->bbf('phone_search-submit'),
-				    'field'	=> false));
+				    'paragraph'	=> false));
 ?>
 </form>

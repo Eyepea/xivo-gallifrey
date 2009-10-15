@@ -93,7 +93,7 @@ $page = $url->pager($pager['pages'],
 						 'label'	=> false,
 						 'id'		=> 'it-ldapserver-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-ldapserver-<?=$i?>" id="lb-ldapserver-<?=$i?>">

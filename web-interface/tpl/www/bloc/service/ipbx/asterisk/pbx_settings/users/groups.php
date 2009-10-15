@@ -37,7 +37,7 @@ $qmember = $this->get_var('qmember');
 <?php
 	if(is_array($groups) === true && empty($groups) === false):
 ?>
-<div id="grouplist" class="fm-field fm-multilist">
+<div id="grouplist" class="fm-paragraph fm-multilist">
 	<div class="slt-outlist">
 <?php
 		echo	   $form->select(array('name'		=> 'grouplist',
@@ -45,7 +45,7 @@ $qmember = $this->get_var('qmember');
 					       'id'		=> 'it-grouplist',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false,
+					       'paragraph'		=> false,
 					       'key'		=> 'name',
 					       'altkey'		=> 'name'),
 					 $gmember['list']);
@@ -76,7 +76,7 @@ $qmember = $this->get_var('qmember');
 					    'id'	=> 'it-group',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $gmember['slt']);
@@ -106,25 +106,25 @@ $qmember = $this->get_var('qmember');
 				$calllimit = '';
 			endif;
 
-		echo	'<tr id="group-',$name,'" class="fm-field',$class,'">',"\n",
+		echo	'<tr id="group-',$name,'" class="fm-paragraph',$class,'">',"\n",
 			'<td class="td-left">',$name,'</td>',"\n",
 			'<td>',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'group['.$name.'][chantype]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'key'	=> false,
 					    'default'	=> $element['qmember']['chantype']['default'],
-					    'value'	=> $value['member']['channel']),
+					    'selected'	=> $value['member']['channel']),
 				      $element['qmember']['chantype']['value']),
 			'</td>',"\n",
 			'<td class="td-right">',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'group['.$name.'][call-limit]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'default'	=> $element['qmember']['call-limit']['default'],
-					    'value'	=> $calllimit),
+					    'selected'	=> $calllimit),
 				      $element['qmember']['call-limit']['value']),
 			'</td>',"\n",
 			'</tr>',"\n";
@@ -151,7 +151,7 @@ $qmember = $this->get_var('qmember');
 <?php
 	if(is_array($queues) === true && empty($queues) === false):
 ?>
-<div id="queuelist" class="fm-field fm-multilist">
+<div id="queuelist" class="fm-paragraph fm-multilist">
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'queuelist',
@@ -159,7 +159,7 @@ $qmember = $this->get_var('qmember');
 					    'id'	=> 'it-queuelist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['list']);
@@ -191,7 +191,7 @@ $qmember = $this->get_var('qmember');
 					    'id'	=> 'it-queue',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['slt']);
@@ -223,34 +223,34 @@ $qmember = $this->get_var('qmember');
 				$penalty = $calllimit = '';
 			endif;
 
-		echo	'<tr id="queue-',$name,'" class="fm-field',$class,'">',"\n",
+		echo	'<tr id="queue-',$name,'" class="fm-paragraph',$class,'">',"\n",
 			'<td class="td-left">',$name,'</td>',"\n",
 			'<td>',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'queue['.$name.'][chantype]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'key'	=> false,
 					    'default'	=> $element['qmember']['chantype']['default'],
-					    'value'	=> $value['member']['channel']),
+					    'selected'	=> $value['member']['channel']),
 				      $element['qmember']['chantype']['value']),
 			'</td>',"\n",
 			'<td>',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'queue['.$name.'][penalty]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'default'	=> $element['qmember']['penalty']['default'],
-					    'value'	=> $penalty),
+					    'selected'	=> $penalty),
 				      $element['qmember']['penalty']['value']),
 			'</td>',"\n",
 			'<td class="td-right">',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'queue['.$name.'][call-limit]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'default'	=> $element['qmember']['call-limit']['default'],
-					    'value'	=> $calllimit),
+					    'selected'	=> $calllimit),
 				      $element['qmember']['call-limit']['value']),
 			'</td>',"\n",
 			'</tr>',"\n";

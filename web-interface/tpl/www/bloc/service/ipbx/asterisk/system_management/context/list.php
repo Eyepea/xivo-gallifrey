@@ -92,7 +92,7 @@ $page = $url->pager($pager['pages'],
 						 'label'	=> false,
 						 'id'		=> 'it-contexts-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-contexts-<?=$i?>" id="lb-contexts-<?=$i?>">

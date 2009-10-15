@@ -36,7 +36,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_ipbxapplication_authenticate-pas
 			    'labelid'	=> 'ipbxapplication-authenticate-passwordinterpreter',
 			    'empty'	=> true,
 			    'key'	=> false,
-			    'bbf'	=> array('paramvalue','fm_ipbxapplication_authenticate-passwordinterpreter-opt'),
+			    'bbf'	=> 'fm_ipbxapplication_authenticate-passwordinterpreter-opt',
+			    'bbfopt'	=> array('argmode' => 'paramvalue'),
 			    'default'	=> $apparg_authenticate['passwordinterpreter']['default']),
 		      $apparg_authenticate['passwordinterpreter']['value']),
 

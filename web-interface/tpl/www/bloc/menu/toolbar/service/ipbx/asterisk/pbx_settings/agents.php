@@ -60,16 +60,16 @@ endif;
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> $act));
 ?>
-	<div class="fm-field">
+	<div class="fm-paragraph">
 <?php
 		echo	$form->select(array('name'	=> 'group',
 					    'id'	=> 'it-toolbar-group',
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'browse'	=> 'agentgroup',
+					    'empty'	=> $this->bbf('toolbar_fm_group'),
 					    'key'	=> 'name',
 					    'altkey'	=> 'id',
-					    'empty'	=> $this->bbf('toolbar_fm_group'),
-					    'value'	=> $group),
+					    'selected'	=> $group),
 				      $this->get_var('agentgroup_list'));
 ?>
 	</div>

@@ -55,9 +55,10 @@ endif;
 				    'name'	=> 'queue[strategy]',
 				    'labelid'	=> 'queue-strategy',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_queue_strategy-opt'),
+				    'bbf'	=> 'fm_queue_strategy-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['strategy']['default'],
-				    'value'	=> $info['queue']['strategy']),
+				    'selected'	=> $info['queue']['strategy']),
 			      $element['queue']['strategy']['value']);
 
 if($context_list !== false):
@@ -67,7 +68,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['groupfeatures']['context']['default'],
-				    'value'	=> $info['groupfeatures']['context']),
+				    'selected'	=> $info['groupfeatures']['context']),
 			      $context_list);
 else:
 	echo	'<div id="fd-groupfeatures-context" class="txt-center">',
@@ -81,18 +82,20 @@ endif;
 				    'name'	=> 'groupfeatures[timeout]',
 				    'labelid'	=> 'groupfeatures-timeout',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_groupfeatures_timeout-opt'),
+				    'bbf'	=> 'fm_groupfeatures_timeout-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['groupfeatures']['timeout']['default'],
-				    'value'	=> $info['groupfeatures']['timeout']),
+				    'selected'	=> $info['groupfeatures']['timeout']),
 			      $element['groupfeatures']['timeout']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_timeout'),
 				    'name'	=> 'queue[timeout]',
 				    'labelid'	=> 'queue-timeout',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_queue_timeout-opt'),
+				    'bbf'	=> 'fm_queue_timeout-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['queue']['timeout']['default'],
-				    'value'	=> (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),
+				    'selected'	=> (isset($info['queue']['timeout']) === true ? (int) $info['queue']['timeout'] : null)),
 			      $element['queue']['timeout']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_ringinuse'),
@@ -105,22 +108,23 @@ if($moh_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_queue_musiconhold'),
 				    'name'	=> 'queue[musiconhold]',
 				    'labelid'	=> 'queue-musiconhold',
-				    'key'	=> 'category',
 				    'empty'	=> true,
+				    'key'	=> 'category',
 				    'invalid'	=> ($this->get_var('act') === 'edit'),
 				    'default'	=> ($this->get_var('act') === 'add' ? $element['queue']['musiconhold']['default'] : null),
-				    'value'	=> $info['queue']['musiconhold']),
+				    'selected'	=> $info['queue']['musiconhold']),
 			      $moh_list);
 endif;
 
 	echo	$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
 				    'name'	=> 'callerid[mode]',
 				    'labelid'	=> 'callerid-mode',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_callerid_mode-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_callerid_mode-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callerid']['mode']['default'],
-				    'value'	=> $info['callerid']['mode']),
+				    'selected'	=> $info['callerid']['mode']),
 			      $element['callerid']['mode']['value'],
 			      'onchange="xivo_ast_chg_callerid_mode(this);"'),
 
@@ -145,14 +149,14 @@ endif;
 <?php
 	if($user['list'] !== false):
 ?>
-	<div id="userlist" class="fm-field fm-multilist">
+	<div id="userlist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'userlist',
 					       'label'		=> false,
 					       'id'		=> 'it-userlist',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false,
+					       'paragraph'		=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
 					 $user['list']);?>
@@ -181,7 +185,7 @@ endif;
 					       'id'		=> 'it-user',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false,
+					       'paragraph'		=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
 					 $user['slt']);?>
@@ -231,7 +235,7 @@ endif;
 <?php
 	if($rightcall['list'] !== false):
 ?>
-	<div id="rightcalllist" class="fm-field fm-multilist">
+	<div id="rightcalllist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,
@@ -241,7 +245,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rightcall['list']);?>
 		</div>
 
@@ -271,7 +275,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rightcall['slt']);?>
 		</div>
 	</div>

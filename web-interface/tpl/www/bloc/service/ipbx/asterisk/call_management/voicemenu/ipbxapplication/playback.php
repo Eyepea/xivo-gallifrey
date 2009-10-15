@@ -26,7 +26,7 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
 $apparg_playback = $this->get_var('apparg_playback');
-$sound_list = $this->get_varra('destination_list','sounds');
+$sound_list = $this->get_var('destination_list','sounds');
 
 if(empty($sound_list) === false):
 	echo $form->select(array('desc'		=> $this->bbf('fm_ipbxapplication_playback-filename'),

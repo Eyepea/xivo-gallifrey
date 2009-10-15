@@ -21,8 +21,8 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$fkelem = $this->get_varra('element','phonefunckey');
-$fkerror = $this->get_varra('error','phonefunckey');
+$fkelem = $this->get_var('element','phonefunckey');
+$fkerror = $this->get_var('error','phonefunckey');
 $fkinfo = $this->get_var('fkidentity_list');
 
 if(empty($fkinfo) === false):
@@ -104,7 +104,7 @@ if($nb > 0):
 			$errdisplay = '';
 		endif;
 
-		echo	'<tr class="fm-field',$errdisplay,'">',
+		echo	'<tr class="fm-paragraph',$errdisplay,'">',
 			'<td class="td-left txt-center">';
 
 		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey/fknum');
@@ -181,7 +181,7 @@ endif;
 </table>
 <table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 	<tbody id="ex-phonefunckey">
-	<tr class="fm-field">
+	<tr class="fm-paragraph">
 <?php
 	$this->set_var('fknumelem',$fknumelem);
 	$this->set_var('fkdata',array('ex' => true));

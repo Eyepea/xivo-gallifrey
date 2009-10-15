@@ -43,10 +43,10 @@ $info = $this->get_var('info');
 		$form->hidden(array('name'	=> 'id',
 				    'value'	=> $info['id']));
 ?>
-		<p class="fm-field txt-left">
+		<p class="fm-paragraph txt-left">
 			<span class="fm-desc"><?=$this->bbf('fm_login');?></span>&nbsp;<?=dwho_htmlen($info['login']);?>
 		</p>
-		<p class="fm-field txt-left">
+		<p class="fm-paragraph txt-left">
 			<span class="fm-desc"><?=$this->bbf('fm_type');?></span>&nbsp;<?=$info['meta']?>
 		</p>
 <?php

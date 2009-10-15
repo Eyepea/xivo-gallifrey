@@ -58,26 +58,26 @@ if($count > 0):
 			$errdisplay = '';
 		endif;
 ?>
-	<tr class="fm-field<?=$errdisplay?>">
+	<tr class="fm-paragraph<?=$errdisplay?>">
 		<td class="td-left txt-center">
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> $type.'[trunkfeaturesid][]',
 					       'id'		=> false,
 					       'label'		=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id',
 					       'invalid'	=> true,
+					       'selected'	=> $ref['trunkfeaturesid'],
+					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default'],
 					       'optgroup'	=> array('key'		=> true,
 									 'altkey'	=> 'protocol',
 									 'unique'	=> true,
 									 'bbf'		=> 'fm_'.$type.'-trunk-opt',
-									 'bbfopt'	=> array('argmode' => 'paramvalue')),
-					       'value'		=> $ref['trunkfeaturesid'],
-					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
+									 'bbfopt'	=> array('argmode' => 'paramvalue'))),
 					 $trunkslist);?>
 		</td>
 		<td>
-			<?=$form->text(array('field'	=> false,
+			<?=$form->text(array('paragraph'	=> false,
 					     'name'	=> $type.'[exten][]',
 					     'id'	=> false,
 					     'label'	=> false,
@@ -109,25 +109,25 @@ endif;
 </table>
 <table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 	<tbody id="ex-<?=$type?>">
-	<tr class="fm-field">
+	<tr class="fm-paragraph">
 		<td class="td-left txt-center">
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> $type.'[trunkfeaturesid][]',
 					       'id'		=> false,
 					       'label'		=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id',
 					       'disabled'	=> true,
+					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default'],
 					       'optgroup'	=> array('key'		=> true,
 									 'altkey'	=> 'protocol',
 									 'unique'	=> true,
 									 'bbf'		=> 'fm_'.$type.'-trunk-opt',
-									 'bbfopt'	=> array('argmode' => 'paramvalue')),
-					       'default'	=> $element['handynumbers']['trunkfeaturesid']['default']),
+									 'bbfopt'	=> array('argmode' => 'paramvalue'))),
 					 $trunkslist);?>
 		</td>
 		<td>
-			<?=$form->text(array('field'	=> false,
+			<?=$form->text(array('paragraph'	=> false,
 					     'name'	=> $type.'[exten][]',
 					     'id'	=> false,
 					     'label'	=> false,

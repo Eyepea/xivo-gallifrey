@@ -40,8 +40,8 @@ if(($moh_list = $this->get_var('moh_list')) !== false):
 	echo $form->select(array('desc'		=> $this->bbf('fm_ipbxapplication_waitexten-musiconhold'),
 				 'name'		=> 'ipbxapplication[waitexten][musiconhold]',
 				 'labelid'	=> 'ipbxapplication-waitexten-musiconhold',
-				 'key'		=> 'category',
 				 'empty'	=> true,
+				 'key'		=> 'category',
 				 'default'	=> $apparg_waitexten['musiconhold']['default']),
 			   $moh_list);
 endif;

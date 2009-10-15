@@ -75,37 +75,37 @@ if(dwho_issa('contextnumbers',$info) === true):
 
 endif;
 
-$incall_err = $this->get_varra('error',array('contextnumbers','incall'));
+$incall_err = $this->get_var('error','contextnumbers','incall');
 
 ?>
 
 <div id="sb-part-first">
 
 <?php
-	echo $form->text(array('desc'		=> $this->bbf('fm_context_name'),
-			       'name'		=> 'context[name]',
-			       'labelid'	=> 'context-name',
-			       'size'		=> 15,
-			       'default'	=> $element['context']['name']['default'],
-			       'value'		=> $info['context']['name']));
+	echo	$form->text(array('desc'	=> $this->bbf('fm_context_name'),
+				  'name'	=> 'context[name]',
+				  'labelid'	=> 'context-name',
+				  'size'	=> 15,
+				  'default'	=> $element['context']['name']['default'],
+				  'value'	=> $info['context']['name'])),
 
-	echo $form->text(array('desc'		=> $this->bbf('fm_context_displayname'),
-			       'name'		=> 'context[displayname]',
-			       'labelid'	=> 'context-displayname',
-			       'size'		=> 15,
-			       'default'	=> $element['context']['displayname']['default'],
-			       'value'		=> $info['context']['displayname']));
+		$form->text(array('desc'	=> $this->bbf('fm_context_displayname'),
+				  'name'	=> 'context[displayname]',
+				  'labelid'	=> 'context-displayname',
+				  'size'	=> 15,
+				  'default'	=> $element['context']['displayname']['default'],
+				  'value'	=> $info['context']['displayname']));
 
 	if(($entities = $this->get_var('entities')) !== false):
 		echo $form->select(array('desc'		=> $this->bbf('fm_context_entity'),
 					 'name'		=> 'context[entity]',
 					 'labelid'	=> 'context-entity',
-					 'invalid'	=> ($this->get_var('act') === 'edit'),
+					 'empty'	=> isset($info['deletable']) === true ? $info['deletable'] : true,
 					 'key'		=> 'displayname',
 					 'altkey'	=> 'name',
-					 'empty'	=> isset($info['deletable']) === true ? $info['deletable'] : true,
+					 'invalid'	=> ($this->get_var('act') === 'edit'),
 					 'default'	=> $element['context']['entity']['default'],
-					 'value'	=> $info['context']['entity']),
+					 'selected'	=> $info['context']['entity']),
 				   $entities,
 				   'onchange="xivo_context_entity_status(this.form,this.value.length === 0);"');
 	else:
@@ -117,7 +117,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 	if($contextinc['list'] !== false):
 ?>
 
-<div id="contextlist" class="fm-field fm-multilist">
+<div id="contextlist" class="fm-paragraph fm-multilist">
 	<p>
 		<label id="lb-contextlist" for="it-contextlist" onclick="dwho_eid('it-contextlist').focus();">
 			<?=$this->bbf('fm_context_context-include');?>
@@ -130,7 +130,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 					    'id'	=> 'it-contextlist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'identity',
 					    'altkey'	=> 'name'),
 				      $contextinc['list']);
@@ -163,7 +163,7 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 					    'id'	=> 'it-context',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'identity',
 					    'altkey'	=> 'name'),
 				      $contextinc['slt']);
@@ -191,11 +191,11 @@ $incall_err = $this->get_varra('error',array('contextnumbers','incall'));
 	endif;
 ?>
 
-<div class="fm-field fm-description">
+<div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-context-description" for="it-context-description"><?=$this->bbf('fm_context_description');?></label>
 	</p>
-	<?=$form->textarea(array('field'	=> false,
+	<?=$form->textarea(array('paragraph'	=> false,
 				 'label'	=> false,
 				 'name'		=> 'context[description]',
 				 'id'		=> 'it-context-description',
@@ -281,9 +281,9 @@ if($incall_list !== false):
 			$errdisplay = '';
 		endif;
 ?>
-		<tr class="fm-field<?=$errdisplay?>">
+		<tr class="fm-paragraph<?=$errdisplay?>">
 			<td class="td-left txt-center">
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'contextnumbers[incall][numberbeg][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -292,7 +292,7 @@ if($incall_list !== false):
 						     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
 			</td>
 			<td>
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'contextnumbers[incall][numberend][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -301,12 +301,12 @@ if($incall_list !== false):
 						     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 			</td>
 			<td>
-				<?=$form->select(array('field'		=> false,
+				<?=$form->select(array('paragraph'		=> false,
 						       'name'		=> 'contextnumbers[incall][didlength][]',
 						       'id'		=> false,
 						       'label'		=> false,
 						       'key'		=> false,
-						       'value'		=> $ref['didlength'],
+						       'selected'	=> $ref['didlength'],
 						       'default'	=> $element['contextnumbers']['didlength']['default']),
 						 $element['contextnumbers']['didlength']['value']);?>
 			</td>
@@ -333,9 +333,9 @@ endif;
 	</table>
 	<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 		<tbody id="ex-contextnumbers-incall">
-		<tr class="fm-field">
+		<tr class="fm-paragraph">
 			<td class="td-left txt-center">
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'contextnumbers[incall][numberbeg][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -344,7 +344,7 @@ endif;
 						     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 			</td>
 			<td>
-				<?=$form->text(array('field'	=> false,
+				<?=$form->text(array('paragraph'	=> false,
 						     'name'	=> 'contextnumbers[incall][numberend][]',
 						     'id'	=> false,
 						     'label'	=> false,
@@ -353,7 +353,7 @@ endif;
 						     'default'	=> $element['contextnumbers']['numberend']['default']));?>
 			</td>
 			<td>
-				<?=$form->select(array('field'		=> false,
+				<?=$form->select(array('paragraph'		=> false,
 						       'name'		=> 'contextnumbers[incall][didlength][]',
 						       'id'		=> false,
 						       'label'		=> false,

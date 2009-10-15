@@ -121,21 +121,21 @@ endif;
 	echo	$form->text(array('desc'	=> $this->bbf('fm_bindport'),
 				  'name'	=> 'bindport',
 				  'labelid'	=> 'bindport',
-				  'value'	=> $this->get_varra('info',array('bindport','var_val')),
+				  'value'	=> $this->get_var('info','bindport','var_val'),
 				  'default'	=> $element['bindport']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_bindaddr'),
 				  'name'	=> 'bindaddr',
 				  'labelid'	=> 'bindaddr',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('info',array('bindaddr','var_val')),
+				  'value'	=> $this->get_var('info','bindaddr','var_val'),
 				  'default'	=> $element['bindaddr']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_iaxthreadcount'),
 				    'name'	=> 'iaxthreadcount',
 				    'labelid'	=> 'iaxthreadcount',
 				    'key'	=> false,
-				    'value'	=> $this->get_varra('info',array('iaxthreadcount','var_val')),
+				    'selected'	=> $this->get_var('info','iaxthreadcount','var_val'),
 				    'default'	=> $element['iaxthreadcount']['default']),
 			      $element['iaxthreadcount']['value']),
 
@@ -145,52 +145,53 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_iaxmaxthreadcount-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'value'	=> $this->get_varra('info',array('iaxmaxthreadcount','var_val')),
+				    'selected'	=> $this->get_var('info','iaxmaxthreadcount','var_val'),
 				    'default'	=> $element['iaxmaxthreadcount']['default']),
 			      $element['iaxmaxthreadcount']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_iaxcompat'),
 				      'name'	=> 'iaxcompat',
 				      'labelid'	=> 'iaxcompat',
-				      'checked'	=> $this->get_varra('info',array('iaxcompat','var_val')),
+				      'checked'	=> $this->get_var('info','iaxcompat','var_val'),
 				      'default'	=> $element['iaxcompat']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_authdebug'),
 				      'name'	=> 'authdebug',
 				      'labelid'	=> 'authdebug',
-				      'checked'	=> $this->get_varra('info',array('authdebug','var_val')),
+				      'checked'	=> $this->get_var('info','authdebug','var_val'),
 				      'default'	=> $element['authdebug']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_delayreject'),
 				      'name'	=> 'delayreject',
 				      'labelid'	=> 'delayreject',
-				      'checked'	=> $this->get_varra('info',array('delayreject','var_val')),
+				      'checked'	=> $this->get_var('info','delayreject','var_val'),
 				      'default'	=> $element['delayreject']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_trunkfreq'),
 				    'name'	=> 'trunkfreq',
 				    'labelid'	=> 'trunkfreq',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_trunkfreq-opt'),
-				    'value'	=> $this->get_varra('info',array('trunkfreq','var_val')),
+				    'bbf'	=> 'fm_trunkfreq-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','trunkfreq','var_val'),
 				    'default'	=> $element['trunkfreq']['default']),
 			      $element['trunkfreq']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_trunktimestamps'),
 				      'name'	=> 'trunktimestamps',
 				      'labelid'	=> 'trunktimestamps',
-				      'checked'	=> $this->get_varra('info',array('trunktimestamps','var_val')),
+				      'checked'	=> $this->get_var('info','trunktimestamps','var_val'),
 				      'default'	=> $element['trunktimestamps']['default']));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_regcontext'),
 				    'name'	=> 'regcontext',
 				    'labelid'	=> 'regcontext',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['regcontext']['default'],
-				    'value'	=> $this->get_varra('info',array('regcontext','var_val'))),
+				    'selected'	=> $this->get_var('info','regcontext','var_val')),
 			      $context_list);
 endif;
 
@@ -203,7 +204,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('info',array('minregexpire','var_val')),
+				    'selected'	=> $this->get_var('info','minregexpire','var_val'),
 				    'default'	=> $element['minregexpire']['default']),
 			      $element['minregexpire']['value']),
 
@@ -216,7 +217,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('info',array('maxregexpire','var_val')),
+				    'selected'	=> $this->get_var('info','maxregexpire','var_val'),
 				    'default'	=> $element['maxregexpire']['default']),
 			      $element['maxregexpire']['value']),
 
@@ -226,16 +227,16 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_bandwidth-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'value'	=> $this->get_varra('info',array('bandwidth','var_val')),
+				    'selected'	=> $this->get_var('info','bandwidth','var_val'),
 				    'default'	=> $element['bandwidth']['default']),
 			      $element['bandwidth']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_tos'),
 				    'name'	=> 'tos',
 				    'labelid'	=> 'tos',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'value'	=> $this->get_varra('info',array('tos','var_val')),
+				    'key'	=> false,
+				    'selected'	=> $this->get_var('info','tos','var_val'),
 				    'default'	=> $element['tos']['default']),
 			      $element['tos']['value']);
 ?>
@@ -246,21 +247,22 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_jitterbuffer'),
 				      'name'	=> 'jitterbuffer',
 				      'labelid'	=> 'jitterbuffer',
-				      'checked'	=> $this->get_varra('info',array('jitterbuffer','var_val')),
+				      'checked'	=> $this->get_var('info','jitterbuffer','var_val'),
 				      'default'	=> $element['jitterbuffer']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_forcejitterbuffer'),
 				      'name'	=> 'forcejitterbuffer',
 				      'labelid'	=> 'forcejitterbuffer',
-				      'checked'	=> $this->get_varra('info',array('forcejitterbuffer','var_val')),
+				      'checked'	=> $this->get_var('info','forcejitterbuffer','var_val'),
 				      'default'	=> $element['forcejitterbuffer']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_maxjitterbuffer'),
 				    'name'	=> 'maxjitterbuffer',
 				    'labelid'	=> 'maxjitterbuffer',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_maxjitterbuffer-opt'),
-				    'value'	=> $this->get_varra('info',array('maxjitterbuffer','var_val')),
+				    'bbf'	=> 'fm_maxjitterbuffer-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','maxjitterbuffer','var_val'),
 				    'default'	=> $element['maxjitterbuffer']['default']),
 			      $element['maxjitterbuffer']['value']),
 
@@ -268,8 +270,9 @@ endif;
 				    'name'	=> 'maxjitterinterps',
 				    'labelid'	=> 'maxjitterinterps',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_maxjitterinterps-opt'),
-				    'value'	=> $this->get_varra('info',array('maxjitterinterps','var_val')),
+				    'bbf'	=> 'fm_maxjitterinterps-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','maxjitterinterps','var_val'),
 				    'default'	=> $element['maxjitterinterps']['default']),
 			      $element['maxjitterinterps']['value']),
 
@@ -277,8 +280,9 @@ endif;
 				    'name'	=> 'resyncthreshold',
 				    'labelid'	=> 'resyncthreshold',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_resyncthreshold-opt'),
-				    'value'	=> $this->get_varra('info',array('resyncthreshold','var_val')),
+				    'bbf'	=> 'fm_resyncthreshold-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','resyncthreshold','var_val'),
 				    'default'	=> $element['resyncthreshold']['default']),
 			      $element['resyncthreshold']['value']);
 ?>
@@ -290,7 +294,7 @@ endif;
 				  'name'	=> 'accountcode',
 				  'labelid'	=> 'accountcode',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('info',array('accountcode','var_val')),
+				  'value'	=> $this->get_var('info','accountcode','var_val'),
 				  'default'	=> $element['accountcode']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_amaflags'),
@@ -299,22 +303,23 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'ast_amaflag_name_info',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'value'	=> $this->get_varra('info',array('amaflags','var_val')),
+				    'selected'	=> $this->get_var('info','amaflags','var_val'),
 				    'default'	=> $element['amaflags']['default']),
 			      $element['amaflags']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_adsi'),
 				      'name'	=> 'adsi',
 				      'labelid'	=> 'adsi',
-				      'checked'	=> $this->get_varra('info',array('adsi','var_val')),
+				      'checked'	=> $this->get_var('info','adsi','var_val'),
 				      'default'	=> $element['adsi']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_transfer'),
 				    'name'	=> 'transfer',
 				    'labelid'	=> 'transfer',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_transfer-opt'),
-				    'value'	=> $this->get_varra('info',array('transfer','var_val')),
+				    'bbf'	=> 'fm_transfer-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','transfer','var_val'),
 				    'default'	=> $element['transfer']['default']),
 			      $element['transfer']['value']),
 
@@ -322,7 +327,7 @@ endif;
 				    'name'	=> 'language',
 				    'labelid'	=> 'language',
 				    'key'	=> false,
-				    'value'	=> $this->get_varra('info',array('language','var_val')),
+				    'selected'	=> $this->get_var('info','language','var_val'),
 				    'default'	=> $element['language']['default']),
 			      $element['language']['value']);
 
@@ -331,7 +336,7 @@ if($moh_list !== false):
 				    'name'	=> 'mohinterpret',
 				    'labelid'	=> 'mohinterpret',
 				    'key'	=> 'category',
-				    'value'	=> $this->get_varra('info',array('mohinterpret','var_val')),
+				    'selected'	=> $this->get_var('info','mohinterpret','var_val'),
 				    'default'	=> $element['mohinterpret']['default']),
 			      $moh_list),
 
@@ -340,7 +345,7 @@ if($moh_list !== false):
 				    'labelid'	=> 'mohsuggest',
 				    'empty'	=> true,
 				    'key'	=> 'category',
-				    'value'	=> $this->get_varra('info',array('mohsuggest','var_val')),
+				    'selected'	=> $this->get_var('info','mohsuggest','var_val'),
 				    'default'	=> $element['mohsuggest']['default']),
 			      $moh_list);
 endif;
@@ -349,8 +354,9 @@ endif;
 				    'name'	=> 'encryption',
 				    'labelid'	=> 'encryption',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_encryption-opt'),
-				    'value'	=> $this->get_varra('info',array('encryption','var_val')),
+				    'bbf'	=> 'fm_encryption-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','encryption','var_val'),
 				    'default'	=> $element['encryption']['default']),
 			      $element['encryption']['value']),
 
@@ -358,8 +364,9 @@ endif;
 				    'name'	=> 'maxauthreq',
 				    'labelid'	=> 'maxauthreq',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_maxauthreq-opt'),
-				    'value'	=> $this->get_varra('info',array('maxauthreq','var_val')),
+				    'bbf'	=> 'fm_maxauthreq-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','maxauthreq','var_val'),
 				    'default'	=> $element['maxauthreq']['default']),
 			      $element['maxauthreq']['value']),
 
@@ -367,8 +374,9 @@ endif;
 				    'name'	=> 'codecpriority',
 				    'labelid'	=> 'codecpriority',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_codecpriority-opt'),
-				    'value'	=> $this->get_varra('info',array('codecpriority','var_val')),
+				    'bbf'	=> 'fm_codecpriority-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','codecpriority','var_val'),
 				    'default'	=> $element['codecpriority']['default']),
 			      $element['codecpriority']['value']),
 
@@ -376,11 +384,12 @@ endif;
 				    'name'	=> 'disallow',
 				    'labelid'	=> 'disallow',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_codec-disallow-opt')),
+				    'bbf'	=> 'fm_codec-disallow-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue')),
 			      $element['disallow']['value']);
 ?>
 
-<div id="codeclist" class="fm-field fm-multilist">
+<div id="codeclist" class="fm-paragraph fm-multilist">
 	<p>
 		<label id="lb-codeclist" for="it-codeclist">
 			<?=$this->bbf('fm_codec-allow');?>
@@ -393,9 +402,10 @@ endif;
 				    'id'	=> 'it-codeclist',
 				    'multiple'	=> true,
 				    'size'	=> 5,
-				    'field'	=> false,
+				    'paragraph'	=> false,
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','ast_codec_name_type')),
+				    'bbf'	=> 'ast_codec_name_type',
+				    'bbfopt'	=> array('argmode' => 'paramvalue')),
 			       $element['allow']['value']);
 ?>
 	</div>
@@ -423,10 +433,11 @@ endif;
 				       'id'		=> 'it-codec',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false,
+				       'paragraph'		=> false,
 				       'key'		=> false,
-				       'bbf'		=> array('paramvalue','ast_codec_name_type')),
-				 $this->get_varra('info',array('allow','var_val')));?>
+				       'bbf'		=> 'ast_codec_name_type',
+				       'bbfopt'		=> array('argmode' => 'paramvalue')),
+				 $this->get_var('info','allow','var_val'));?>
 		<div class="bt-updown">
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-codec',1);
@@ -453,19 +464,19 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_rtcachefriends'),
 				      'name'	=> 'rtcachefriends',
 				      'labelid'	=> 'rtcachefriends',
-				      'checked'	=> $this->get_varra('info',array('rtcachefriends','var_val')),
+				      'checked'	=> $this->get_var('info','rtcachefriends','var_val'),
 				      'default'	=> $element['rtcachefriends']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_rtupdate'),
 				      'name'	=> 'rtupdate',
 				      'labelid'	=> 'rtupdate',
-				      'checked'	=> $this->get_varra('info',array('rtupdate','var_val')),
+				      'checked'	=> $this->get_var('info','rtupdate','var_val'),
 				      'default'	=> $element['rtupdate']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_rtignoreregexpire'),
 				      'name'	=> 'rtignoreregexpire',
 				      'labelid'	=> 'rtignoreregexpire',
-				      'checked'	=> $this->get_varra('info',array('rtignoreregexpire','var_val')),
+				      'checked'	=> $this->get_var('info','rtignoreregexpire','var_val'),
 				      'default'	=> $element['rtignoreregexpire']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_rtautoclear'),
@@ -477,7 +488,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
-				    'value'	=> $this->get_varra('info',array('rtautoclear','var_val')),
+				    'selected'	=> $this->get_var('info','rtautoclear','var_val'),
 				    'default'	=> $element['rtautoclear']['default']),
 			      $element['rtautoclear']['value']);
 ?>
@@ -489,8 +500,9 @@ endif;
 				    'name'	=> 'pingtime',
 				    'labelid'	=> 'pingtime',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_pingtime-opt'),
-				    'value'	=> $this->get_varra('info',array('pingtime','var_val')),
+				    'bbf'	=> 'fm_pingtime-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','pingtime','var_val'),
 				    'default'	=> $element['pingtime']['default']),
 			      $element['pingtime']['value']),
 
@@ -498,23 +510,25 @@ endif;
 				    'name'	=> 'lagrqtime',
 				    'labelid'	=> 'lagrqtime',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_lagrqtime-opt'),
-				    'value'	=> $this->get_varra('info',array('lagrqtime','var_val')),
+				    'bbf'	=> 'fm_lagrqtime-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','lagrqtime','var_val'),
 				    'default'	=> $element['lagrqtime']['default']),
 			      $element['lagrqtime']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_nochecksums'),
 				      'name'	=> 'nochecksums',
 				      'labelid'	=> 'nochecksums',
-				      'checked'	=> $this->get_varra('info',array('nochecksums','var_val')),
+				      'checked'	=> $this->get_var('info','nochecksums','var_val'),
 				      'default'	=> $element['nochecksums']['default'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_autokill'),
 				    'name'	=> 'autokill',
 				    'labelid'	=> 'autokill',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_autokill-opt'),
-				    'value'	=> $this->get_varra('info',array('autokill','var_val')),
+				    'bbf'	=> 'fm_autokill-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $this->get_var('info','autokill','var_val'),
 				    'default'	=> $element['autokill']['default']),
 			      $element['autokill']['value']);
 ?>

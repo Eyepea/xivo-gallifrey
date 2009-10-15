@@ -59,30 +59,30 @@ endif;
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'list'));
 ?>
-	<div class="fm-field">
+	<div class="fm-paragraph">
 <?php
 
 if($act === 'list'):
 		echo	$form->text(array('name'	=> 'search',
 					  'id'		=> 'it-toolbar-search',
 					  'size'	=> 20,
-					  'field'	=> false,
+					  'paragraph'	=> false,
 					  'value'	=> $search,
 					  'default'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->image(array('name'	=> 'submit',
 					   'id'		=> 'it-subsearch',
 					   'src'	=> $url->img('img/menu/top/toolbar/bt-search.gif'),
-					   'field'	=> false,
+					   'paragraph'	=> false,
 					   'alt'	=> $this->bbf('toolbar_fm_search')));
 endif;
 
 		echo	$form->select(array('name'	=> 'dir',
 					    'id'	=> 'it-toolbar-directory',
-					    'key'	=> false,
-					    'field'	=> false,
 					    'empty'	=> $this->bbf('toolbar_fm_directory'),
-					    'value'	=> $dir),
+					    'key'	=> false,
+					    'paragraph'	=> false,
+					    'selected'	=> $dir),
 				      $this->get_var('list_dirs'),
 				      'style="margin-left: 20px;"');
 ?>

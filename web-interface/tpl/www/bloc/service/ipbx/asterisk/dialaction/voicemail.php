@@ -23,11 +23,11 @@ $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
-$list = $this->get_varra('destination_list','voicemail');
+$list = $this->get_var('destination_list','voicemail');
 $event = $this->get_var('event');
 
-$linked = $this->get_varra('dialaction',array($event,'linked'));
-$action = $this->get_varra('dialaction',array($event,'action'));
+$linked = $this->get_var('dialaction',$event,'linked');
+$action = $this->get_var('dialaction',$event,'action');
 
 if(empty($list) === false):
 	echo	'<div id="fd-dialaction-'.$event.'-voicemail-actiontype" class="b-nodisplay">',
@@ -38,31 +38,31 @@ if(empty($list) === false):
 				    'altkey'	=> 'uniqueid',
 				    'invalid'	=> ($linked === false && $action === 'voicemail'),
 				    'default'	=> $element['dialaction']['actionarg1']['default'],
-				    'value'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg1'))),
+				    'selected'	=> $this->get_var('dialaction',$event,'voicemail','actionarg1')),
 			      $list),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-b'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][b]',
 				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-b',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','b')),
+				      'checked'	=> $this->get_var('dialaction',$event,'voicemail','actionarg2','b'),
 				      'value'	=> 'b')),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-s'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][s]',
 				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-s',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','s')),
+				      'checked'	=> $this->get_var('dialaction',$event,'voicemail','actionarg2','s'),
 				      'value'	=> 's')),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-u'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][u]',
 				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-u',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','u')),
+				      'checked'	=> $this->get_var('dialaction',$event,'voicemail','actionarg2','u'),
 				      'value'	=> 'u')),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_voicemail-actionarg2-j'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][j]',
 				      'labelid'	=> 'dialaction-'.$event.'-voicemail-actionarg2-j',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'voicemail','actionarg2','j')),
+				      'checked'	=> $this->get_var('dialaction',$event,'voicemail','actionarg2','j'),
 				      'value'	=> 'j'));
 
 	if($event === 'voicemenuflow'):

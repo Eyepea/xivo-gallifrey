@@ -60,7 +60,7 @@ endif;
 				    'labelid'	=> 'it-category',
 				    'key'	=> true,
 				    'altkey'	=> 'category',
-				    'value'	=> $info['category']),
+				    'selected'	=> $info['category']),
 			      $this->get_var('list_cats')),
 
 		$form->submit(array('name'	=> 'submit',

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#b-tmenu #toolbar .fm-field {margin-left: 105px; width: 600px;float: left;text-align: center;}
+#b-tmenu #toolbar .fm-paragraph {margin-left: 105px; width: 600px;float: left;text-align: center;}
 
 #s-asterisk .b-list .b-total, #s-asterisk .sb-list .b-total {float: left;}
 
@@ -42,14 +42,14 @@
 #s-asterisk #sr-queues #create-agent {margin-top: 15px;}
 #s-asterisk #sr-schedule .sb-list {width: auto;}
 #s-asterisk #sr-schedule .sb-list table {margin: 5px auto;width: 450px;}
-#s-asterisk #sr-users #phonefunckey .fm-field select {max-width: 200px;}
-#s-asterisk #sr-voicemenu .fm-fieldbutton {text-align: center;padding: 4px 4px 0px 0px;}
+#s-asterisk #sr-users #phonefunckey .fm-paragraph select {max-width: 200px;}
+#s-asterisk #sr-voicemenu .fm-paragraph-button {text-align: center;padding: 4px 4px 0px 0px;}
 #s-asterisk #sr-voicemenu #fd-dialaction-voicemenuflow-type {margin-top: 10px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow .slt-list {width: 580px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow #it-voicemenu-flow {width: 550px;max-width: 550px;height: 200px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow .bt-delete {margin-top: 92px;}
 #s-asterisk #sr-voicemenu #voicemenu-flow .bt-updown {margin-top: 65px;}
-#s-asterisk #sr-voicemenu #sb-part-voicemenuflow .fm-fieldbutton {margin-bottom: 5px;}
+#s-asterisk #sr-voicemenu #sb-part-voicemenuflow .fm-paragraph-button {margin-bottom: 5px;}
 #s-asterisk #sr-voicemenu #voicemenu-event {margin: 0px auto;width: 650px;}
 #s-asterisk #sr-voicemenu #voicemenu-event table {width: 650px;}
 #s-asterisk #sr-voicemenu #voicemenu-event table th {width: 50%;}

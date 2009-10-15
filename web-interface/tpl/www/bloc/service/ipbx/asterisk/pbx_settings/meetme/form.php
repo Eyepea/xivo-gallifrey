@@ -71,7 +71,7 @@ endif;
 				    'bbf'	=> 'fm_meetmefeatures_mode-opt',
 				    'bbfopt'	=> array('argmode'	=> 'paramvalue'),
 				    'default'	=> $element['meetmefeatures']['mode']['default'],
-				    'value'	=> $info['meetmefeatures']['mode']),
+				    'selected'	=> $info['meetmefeatures']['mode']),
 			      $element['meetmefeatures']['mode']['value']);
 
 if($context_list !== false):
@@ -81,7 +81,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['meetmefeatures']['context']['default'],
-				    'value'	=> $info['meetmefeatures']['context']),
+				    'selected'	=> $info['meetmefeatures']['context']),
 			      $context_list);
 else:
 	echo	'<div id="fd-meetmefeatures-context" class="txt-center">',
@@ -95,11 +95,11 @@ if($moh_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_musiconhold'),
 				    'name'	=> 'meetmefeatures[musiconhold]',
 				    'labelid'	=> 'meetmefeatures-musiconhold',
-				    'key'	=> 'category',
 				    'empty'	=> true,
+				    'key'	=> 'category',
 				    'invalid'	=> ($this->get_var('act') === 'edit'),
 				    'default'	=> ($this->get_var('act') === 'add' ? $element['meetmefeatures']['musiconhold']['default'] : null),
-				    'value'	=> $info['meetmefeatures']['musiconhold']),
+				    'selected'	=> $info['meetmefeatures']['musiconhold']),
 			      $moh_list);
 endif;
 
@@ -172,11 +172,11 @@ if($context_list !== false):
 		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_exitcontext'),
 				    'name'	=> 'meetmefeatures[exitcontext]',
 				    'labelid'	=> 'meetmefeatures-exitcontext',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['meetmefeatures']['exitcontext']['default'],
-				    'value'	=> $info['meetmefeatures']['exitcontext']),
+				    'selected'	=> $info['meetmefeatures']['exitcontext']),
 			      $context_list);
 endif;
 ?>

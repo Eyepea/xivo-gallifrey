@@ -23,7 +23,7 @@ $form = &$this->get_module('form');
 $fkdata = $this->get_var('fkdata');
 $list = $this->get_var('fktype_list');
 $select = array();
-$select['field'] = false;
+$select['paragraph'] = false;
 $select['name'] = 'phonefunckey[type][]';
 $select['label'] = false;
 $select['key'] = 'name';
@@ -41,7 +41,7 @@ $selectoptattr = 'onchange="xivo_phonefunckey_chg_type(this);"';
 
 if($fkdata['ex'] === false):
 	$select['id'] .= '-'.dwho_uint($fkdata['incr']);
-	$select['value'] = $fkdata['type'];
+	$select['selected'] = $fkdata['type'];
 else:
 	$select['disabled'] = true;
 endif;

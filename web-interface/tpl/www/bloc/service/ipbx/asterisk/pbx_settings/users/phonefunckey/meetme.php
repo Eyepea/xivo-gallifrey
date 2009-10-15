@@ -23,7 +23,7 @@ $form = &$this->get_module('form');
 $fkdata = $this->get_var('fkdata');
 
 $inputhidden = array();
-$inputhidden['field'] = false;
+$inputhidden['paragraph'] = false;
 $inputhidden['name'] = 'phonefunckey[typeval][]';
 $inputhidden['label'] = false;
 $inputhidden['id'] = 'it-phonefunckey-meetme-typeval';

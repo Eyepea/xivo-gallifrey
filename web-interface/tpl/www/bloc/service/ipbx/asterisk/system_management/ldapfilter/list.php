@@ -92,7 +92,7 @@
 						 'label'	=> false,
 						 'id'		=> 'it-ldapfilters-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?></td>
+						 'paragraph'	=> false));?></td>
 		<td class="txt-left">
 			<label for="it-ldapfilters-<?=$i?>" id="lb-ldapfilters-<?=$i?>">
 <?php

@@ -36,33 +36,33 @@ class dwho_tpl_form extends dwho_tpl_module
 	{
 		$v = (array) $v;
 
-		$this->_param['name'] = 'undefined';
-		$this->_param['type'] = 'text';
-		$this->_param['desc'] = false;
-		$this->_param['default'] = false;
-		$this->_param['value'] = false;
-		$this->_param['checked'] = false;
-		$this->_param['size'] = 10;
-		$this->_param['rows'] = 5;
-		$this->_param['cols'] = 50;
-		$this->_param['multiple'] = false;
-		$this->_param['disabled'] = false;
-		$this->_param['id'] = false;
-		$this->_param['fieldid'] = false;
-		$this->_param['class'] = false;
-		$this->_param['label'] = true;
-		$this->_param['field'] = false;
-		$this->_param['key'] = null;
-		$this->_param['altkey'] = false;
-		$this->_param['empty'] = false;
-		$this->_param['optgroup'] = false;
-		$this->_param['null'] = false;
-		$this->_param['bbf'] = false;
-		$this->_param['bbfopt'] = false;
-		$this->_param['browse'] = false;
-		$this->_param['jump'] = 0;
-		$this->_param['jump_strict'] = true;
-		$this->_param['invalid'] = false;
+		$this->_param['name']		= 'undefined';
+		$this->_param['type']		= 'text';
+		$this->_param['desc']		= false;
+		$this->_param['default']	= false;
+		$this->_param['value']		= false;
+		$this->_param['selected']	= false;
+		$this->_param['checked']	= false;
+		$this->_param['size']		= 10;
+		$this->_param['rows']		= 5;
+		$this->_param['cols']		= 50;
+		$this->_param['multiple']	= false;
+		$this->_param['disabled']	= false;
+		$this->_param['id']		= false;
+		$this->_param['class']		= false;
+		$this->_param['label']		= true;
+		$this->_param['paragraph']	= true;
+		$this->_param['paragraphid']	= true;
+		$this->_param['key']		= null;
+		$this->_param['altkey']		= false;
+		$this->_param['empty']		= false;
+		$this->_param['optgroup']	= false;
+		$this->_param['bbf']		= false;
+		$this->_param['bbfopt']		= array('argmode' => 'paramvalue');
+		$this->_param['browse']		= false;
+		$this->_param['jump']		= 0;
+		$this->_param['jump_strict']	= true;
+		$this->_param['invalid']	= false;
 
 		if(isset($v['name']) === true)
 			$this->_param['name'] = dwho_htmlsc($v['name']);
@@ -101,7 +101,7 @@ class dwho_tpl_form extends dwho_tpl_module
 			$this->_param['disabled'] = (bool) $v['disabled'];
 
 		if(isset($v['multiple']) === true)
-			$this->_param['multiple'] = true;
+			$this->_param['multiple'] = (bool) $v['multiple'];
 
 		if(isset($v['key']) === true)
 			$this->_param['key'] = $v['key'];
@@ -128,15 +128,17 @@ class dwho_tpl_form extends dwho_tpl_module
 			else
 				$this->_param['optgroup']['altkey'] = false;
 
-			if(isset($ref_ogrp['bbf']) === true && is_bool($ref_ogrp['bbf']) === false)
-				$this->_param['optgroup']['bbf'] = $this->_mk_param_bbf($ref_ogrp);
+			if(isset($ref_ogrp['bbf']) === true
+			&& is_bool($ref_ogrp['bbf']) === false
+			&& dwho_has_len($ref_ogrp['bbf']) === true)
+				$this->_param['optgroup']['bbf'] = $ref_ogrp['bbf'];
 			else
 				$this->_param['optgroup']['bbf'] = false;
 
 			if(isset($ref_ogrp['bbfopt']) === true && is_bool($ref_ogrp['bbfopt']) === false)
-				$this->_param['optgroup']['bbfopt'] = $this->_mk_param_bbfopt($ref_ogrp['bbfopt'],true);
+				$this->_param['optgroup']['bbfopt'] = $this->_mk_param_bbfopt($ref_ogrp['bbfopt']);
 			else
-				$this->_param['optgroup']['bbfopt'] = false;
+				$this->_param['optgroup']['bbfopt'] = array('argmode' => 'paramvalue');
 
 			if(isset($ref_ogrp['unique']) === true && is_bool($ref_ogrp['unique']) === true)
 				$this->_param['optgroup']['unique'] = $ref_ogrp['unique'];
@@ -147,15 +149,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(isset($v['default']) === true)
 			$this->_param['default'] = $this->_mk_param_value($v['default'],$v);
 
-		if(isset($v['value']) === true)
-			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
-
-		if(isset($v['field']) === false)
-			$this->_param['field'] = true;
-
-		if(($this->_param['value'] === false || $this->_param['value'] === '') === true
-		&& $this->_param['default'] !== false)
-			$this->_param['value'] = $this->_param['default'];
+		if(isset($v['paragraph']) === true)
+			$this->_param['paragraph'] = (bool) $v['paragraph'];
 
 		if(isset($v['label']) === true)
 		{
@@ -165,12 +160,12 @@ class dwho_tpl_form extends dwho_tpl_module
 				$this->_param['label'] = false;
 		}
 
-		if(isset($v['fieldid']) === true)
+		if(isset($v['paragraphid']) === true)
 		{
-			if(is_string($v['fieldid']) === true)
-				$this->_param['fieldid'] = dwho_htmlsc($v['fieldid']);
+			if(is_string($v['paragraphid']) === true)
+				$this->_param['paragraphid'] = dwho_htmlsc($v['paragraphid']);
 			else
-				$this->_param['fieldid'] = false;
+				$this->_param['paragraphid'] = (bool) $v['paragraphid'];
 		}
 
 		if(isset($v['id']) === true)
@@ -184,8 +179,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 			if($this->_param['label'] === true)
 				$this->_param['label'] = 'lb-'.$v['labelid'];
-			if($this->_param['field'] !== false)
-				$this->_param['fieldid'] = 'fd-'.$v['labelid'];
+
+			if($this->_param['paragraph'] === true && $this->_param['paragraphid'] === true)
+				$this->_param['paragraphid'] = 'fd-'.$v['labelid'];
 
 			$this->_param['id'] = 'it-'.$v['labelid'];
 		}
@@ -194,11 +190,10 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(isset($v['class']) === true)
 			$this->_param['class'] = dwho_htmlsc($v['class']);
 
-		if(isset($v['null']) === true)
-			$this->_param['null'] = true;
-
-		if(isset($v['bbf']) === true && is_bool($v['bbf']) === false)
-			$this->_param['bbf'] = $this->_mk_param_bbf($v);
+		if(isset($v['bbf']) === true
+		&& is_bool($v['bbf']) === false
+		&& dwho_has_len($v['bbf']) === true)
+			$this->_param['bbf'] = $v['bbf'];
 
 		if(isset($v['bbfopt']) === true && is_bool($v['bbfopt']) === false)
 			$this->_param['bbfopt'] = $this->_mk_param_bbfopt($v['bbfopt']);
@@ -259,64 +254,45 @@ class dwho_tpl_form extends dwho_tpl_module
 		return($r);
 	}
 
-	function _mk_param_bbf(&$v)
+	function _set_param_value($value,&$v)
 	{
-		$r = false;
+		if($value === null)
+			$this->_param['value'] = false;
+		else
+			$this->_param['value'] = $this->_mk_param_value($value,$v);
 
-		if(is_scalar($v['bbf']) === true)
-			$r = array('concatvalue',$v['bbf']);
-		else if(is_array($v['bbf']) === true && isset($v['bbf'][0],$v['bbf'][1]) === true)
-		{
-			switch($v['bbf'][0])
-			{
-				case 'paramkey':
-				case 'paramvalue':
-				case 'concatkey':
-					break;
-				default:
-					$v['bbf'][0] = 'concatvalue';
-			}
-
-			$r = array($v['bbf'][0],$v['bbf'][1]);
-
-			if(isset($v['bbf'][2]) === true
-			&& (is_array($v['bbf'][2]) === true
-			   || is_scalar($v['bbf'][2]) === true) === true)
-				$r[2] = (array) $v['bbf'][2];
-		}
-
-		return($r);
+		if(($this->_param['value'] === false
+		   || $this->_param['value'] === '') === true
+		&& $this->_param['default'] !== false)
+			$this->_param['value'] = $this->_param['default'];
 	}
 
-	function _mk_param_bbfopt(&$v,$optgroup=false)
+	function _mk_param_bbfopt(&$v)
 	{
 		$r = array();
-
-		if(is_array($v) === true && isset($v['argmode']) === true)
-		{
-			if((bool) $optgroup === false)
-				$this->_param['bbf'][0] = $v['argmode'];
-			else
-				$this->_param['optgroup']['bbf'][0] = $v['argmode'];
-		}
 
 		if(is_string($v) === true)
 			$v = array('argmode' => $v);
 		else if(is_array($v) === false)
 			return(false);
 		else if(isset($v['argmode']) === false)
-			$v['argmode'] = 'concatvalue';
+			$v['argmode'] = 'paramvalue';
 
 		switch($v['argmode'])
 		{
 			case 'paramkey':
-			case 'paramvalue':
 			case 'concatkey':
+			case 'concatvalue':
 				$r['argmode'] = $v['argmode'];
 				break;
 			default:
-				$r['argmode'] = 'concatvalue';
+				$r['argmode'] = 'paramvalue';
 		}
+
+		if(isset($v['paramsupp']) === true
+		&& (is_array($v['paramsupp']) === true
+		   || is_scalar($v['paramsupp']) === true) === true)
+		   	$r['paramsupp'] = (array) $v['paramsupp'];
 
 		if(dwho_issa('time',$v) === true)
 		{
@@ -334,7 +310,7 @@ class dwho_tpl_form extends dwho_tpl_module
 	{
 		if(dwho_bool($checked) === true
 		|| (dwho_issa($this->_param['name'],$checked) === true
-		&& (bool) $checked[$this->_param['name']] === true) === true)
+		   && (bool) $checked[$this->_param['name']] === true) === true)
 			$this->_param['checked'] = true;
 	}
 
@@ -386,15 +362,20 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['type'] = 'text';
 		$v['checked'] = null;
 
-		if(isset($v['value']) === true && $v['value'] === false)
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+		else if($v['value'] === false)
 			$v['value'] = '';
 
-		$this->_set_param($v);
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -407,11 +388,17 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['type'] = 'file';
 
 		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -430,6 +417,12 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['type'] = 'hidden';
 
 		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = false;
+
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
 		return($this->_render."\n");
@@ -446,10 +439,16 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['type'] = 'button';
 
 		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
-		if($this->_param['field'] === true)
-			$this->_render = '<p class="fm-fieldbutton">'."\n".$this->_render."\n".'</p>';
+		if($this->_param['paragraph'] === true)
+			$this->_render = '<p class="fm-paragraph-button">'."\n".$this->_render."\n".'</p>';
 
 		$this->_mk_desc();
 
@@ -467,10 +466,16 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['type'] = 'submit';
 
 		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
-		if($this->_param['field'] === true)
-			$this->_render = '<p class="fm-fieldsubmit">'."\n".$this->_render."\n".'</p>';
+		if($this->_param['paragraph'] === true)
+			$this->_render = '<p class="fm-paragraph-submit">'."\n".$this->_render."\n".'</p>';
 
 		$this->_mk_desc();
 
@@ -487,14 +492,20 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['class'] = 'itb-image';
 		$v['type'] = 'image';
 
-		$o .= isset($v['src']) === true ? ' src="'.(string) $v['src'].'"' : '';
+		$o .= isset($v['src']) === true ? ' src="'.$v['src'].'"' : '';
 		$o .= isset($v['alt']) === true ? ' alt="'.dwho_alttitle($v['alt']).'"' : ' alt=""';
 
 		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
-		if($this->_param['field'] === true)
-			$this->_render = '<p class="fm-fieldimgsubmit">'."\n".$this->_render."\n".'</p>';
+		if($this->_param['paragraph'] === true)
+			$this->_render = '<p class="fm-paragraph-image-submit">'."\n".$this->_render."\n".'</p>';
 
 		$this->_mk_desc();
 
@@ -510,11 +521,17 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v['checked'] = null;
 
 		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
 		$this->_mk_input($o);
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -524,9 +541,6 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v = (array) $v;
 		$o = (string) $o;
 
-		$value = isset($v['value']) === false ? 1 : $this->_mk_param_value($v['value'],$v);
-
-		$v['value'] = 1;
 		$v['size'] = false;
 		$v['type'] = 'checkbox';
 
@@ -535,21 +549,21 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_set_param($v);
 
-		$this->_param['value'] = $value;
-
-		if(isset($v['checked']) === false || $v['checked'] === '')
-		{
-			if(isset($v['default']) === true)
-				$this->_mk_param_checked($v['default']);
-		}
+		if(isset($v['value']) === false)
+			$this->_param['value'] = 1;
 		else
+			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
+
+		if(isset($v['checked']) === true && $v['checked'] !== '')
 			$this->_mk_param_checked($v['checked']);
+		else if(isset($v['default']) === true)
+			$this->_mk_param_checked($v['default']);
 
 		$this->_mk_input($o);
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -559,9 +573,6 @@ class dwho_tpl_form extends dwho_tpl_module
 		$v = (array) $v;
 		$o = (string) $o;
 
-		$value = isset($v['value']) === false ? false : $this->_mk_param_value($v['value'],$v);
-
-		$v['value'] = 1;
 		$v['size'] = false;
 		$v['type'] = 'radio';
 
@@ -570,21 +581,21 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_set_param($v);
 
-		$this->_param['value'] = $value;
-
-		if(isset($v['checked']) === false || $v['checked'] === '')
-		{
-			if(isset($v['default']) === true)
-				$this->_mk_param_checked($v['default']);
-		}
+		if(isset($v['value']) === false)
+			$this->_param['value'] = 1;
 		else
+			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
+
+		if(isset($v['checked']) === true && $v['checked'] !== '')
 			$this->_mk_param_checked($v['checked']);
+		else if(isset($v['default']) === true)
+			$this->_mk_param_checked($v['default']);
 
 		$this->_mk_input($o);
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -600,6 +611,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$o = (string) $o;
 
 		$this->_set_param($v);
+		$this->_set_param_value($v['value'],$v);
 
 		$r .= '<textarea name="'.$this->_param['name'].'"';
 
@@ -619,7 +631,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -629,27 +641,37 @@ class dwho_tpl_form extends dwho_tpl_module
 		if($this->_param['label'] === false)
 			return((string) $str);
 
-		$for = $this->_param['id'] !== false ? $this->_param['id'] : $this->_param['name'];
-		$id = $this->_param['label'] === true ? 'lb-'.$this->_param['name'] : $this->_param['label'];
+		$format = '<label id="%s" for="%s">%s</label>';
+
+		if($this->_param['label'] === true)
+			$id = 'lb-'.$this->_param['name'];
+		else
+			$id = $this->_param['label'];
+
+		if($this->_param['id'] !== false)
+			$for = $this->_param['id'];
+		else
+			$for = $this->_param['name'];
 
 		if($str !== false)
-			$str = '<label id="'.$id.'" for="'.$for.'">'.(string) $str.'</label>';
-		else
-			$this->_render = '<label id="'.$id.'" for="'.$for.'">'.$this->_render.'</label>';
+			return(sprintf($format,$id,$for,$str));
 
-		return($str);
+		$this->_render = sprintf($format,$id,$for,$this->_render);
+
+		return(true);
 	}
 
-	function _mk_field()
+	function _mk_paragraph()
 	{
-		if($this->_param['field'] === false)
+		if($this->_param['paragraph'] === false)
 			return(false);
 
-		$this->_render = '<p'.
-				 ($this->_param['fieldid'] !== false ? ' id="'.$this->_param['fieldid'].'"' : '').
-				 ' class="fm-field">'."\n".
-				 $this->_render."\n".
-				 '</p>';
+		if(is_string($this->_param['paragraphid']) === true)
+			$id = ' id="'.$this->_param['paragraphid'].'"';
+		else
+			$id = '';
+
+		$this->_render = '<p'.$id.' class="fm-paragraph">'."\n".$this->_render."\n".'</p>';
 	}
 
 	function _mk_desc()
@@ -662,24 +684,31 @@ class dwho_tpl_form extends dwho_tpl_module
 					 $this->_mk_label((string) $this->_param['desc']).
 					 '</span>'.
 					 $this->_render;
+
 			$this->_param['label'] = false;
-			return(null);
 		}
 		else if(is_array($this->_param['desc']) === true
-		&& isset($this->_param['desc'][0],$this->_param['desc'][1]) === true)
+		&& isset($this->_param['desc']['format'],$this->_param['desc']['description']) === true
+		&& is_string($this->_param['desc']['format']) === true
+		&& is_scalar($this->_param['desc']['description']) === true)
 		{
-			$this->_mk_field();
+			$this->_mk_paragraph();
 
-			$this->_param['desc'][1] = '<span class="fm-desc clearboth">'.
-						   $this->_mk_label((string) $this->_param['desc'][1]).
-						   '</span>';
-
-			if(isset($this->_param['desc'][2]) === false)
-				$this->_render = sprintf($this->_param['desc'][0],$this->_param['desc'][1],$this->_render);
+			if(isset($this->_param['desc']['args']) === false
+			|| is_array($this->_param['desc']['args']) === false)
+				$args = array();
 			else
-				$this->_render = sprintf($this->_param['desc'][0],$this->_render,$this->_param['desc'][1]);
+				$args = $this->_param['desc']['args'];
 
-			$this->_param['label'] = $this->_param['field'] = false;
+			$args['description'] = '<span class="fm-desc clearboth">'.
+						$this->_mk_label($this->_param['desc']['description']).
+						'</span>';
+
+			$args['formfield'] = $this->_render;
+
+			$this->_render = dwho_i18n::vksprintf_l($this->_param['desc']['format'],null,$args);
+
+			$this->_param['label'] = $this->_param['paragraph'] = false;
 		}
 	}
 
@@ -693,6 +722,14 @@ class dwho_tpl_form extends dwho_tpl_module
 		$o = (string) $o;
 
 		$this->_set_param($v);
+
+		if(isset($v['selected']) === true)
+			$this->_param['selected'] = $this->_mk_param_value($v['selected'],$v);
+
+		if(($this->_param['selected'] === false
+		   || $this->_param['selected'] === '') === true
+		&& $this->_param['default'] !== false)
+			$this->_param['selected'] = $this->_param['default'];
 
 		$r = '<select name="'.$this->_param['name'].'"';
 
@@ -710,15 +747,18 @@ class dwho_tpl_form extends dwho_tpl_module
 				$r .= ' size="'.$this->_param['size'].'"';
 		}
 
-		$r .= (isset($o{0}) === true ? ' '.$o : '').'>'."\n";
+		if(isset($o{0}) === true)
+			$r .= ' '.$o;
 
-		if($this->_param['null'] === true || ($more !== '' && $more !== false) === true)
+		$r .= '>'."\n";
+
+		if($more !== '' && $more !== false)
 		{
 			$more = (array) $more;
 			$this->_mk_slt_option($more);
 		}
 
-		if($this->_param['null'] === true || ($arr !== '' && $arr !== false) === true)
+		if($arr !== '' && $arr !== false)
 		{
 			$arr = (array) $arr;
 
@@ -749,7 +789,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_mk_desc();
 		$this->_mk_label();
-		$this->_mk_field();
+		$this->_mk_paragraph();
 
 		return($this->_render);
 	}
@@ -761,7 +801,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		else
 			$empty = $this->_param['empty'];
 
-		$selected = $this->_param['value'] === '' ? ' selected="selected"' : '';
+		$selected = $this->_param['selected'] === '' ? ' selected="selected"' : '';
 
 		return('<option label="" value=""'.$selected.'>'.$empty.'</option>'."\n");
 	}
@@ -826,41 +866,37 @@ class dwho_tpl_form extends dwho_tpl_module
 			$render['value'] = ' ';
 			return($this->_set_slt_option_render($render));
 		}
-		else if(is_array($this->_param['bbf']) === false)
+		else if($this->_param['bbf'] === false)
 			return($this->_set_slt_option_render($render));
 
-		$key = $this->_param['bbf'][0];
-
-		$bbfkey = $this->_param['bbf'][1];
-		$bbfkeyorig = $this->_param['bbf'][1];
-		$renderkey = $render['key'];
-		$rendervalue = $render['value'];
+		$bbfkey		= $this->_param['bbf'];
+		$renderkey	= $render['key'];
+		$rendervalue	= $render['value'];
 
 		if(($time = $this->_mk_slt_option_bbf_time($render['key'])) !== false)
 		{
 			$bbfkey .= $time['bbfkey'];
-			$bbfkeyorig .= $time['bbfkey'];
 			$renderkey = $time['timevalue'];
 			$rendervalue = $time['timevalue'];
 		}
 
-		if(isset($this->_param['bbf'][2]) === false)
-			$oparam = null;
+		if(isset($this->_param['bbfopt']['paramsupp']) === false)
+			$paramsupp = null;
 		else
-			$oparam = $this->_param['bbf'][2];
+			$paramsupp = $this->_param['bbfopt']['paramsupp'];
 
-		switch($key)
+		switch($this->_param['bbfopt']['argmode'])
 		{
 			case 'paramkey':
-				if($oparam !== null && is_array($param) === false)
-					$param = array_merge((array) $renderkey, $oparam);
+				if($paramsupp !== null && is_array($param) === false)
+					$param = array_merge((array) $renderkey, $paramsupp);
 
 				$render['value'] = $this->bbf($bbfkey,
 							(is_array($param) === true ? $param : $renderkey));
 				break;
 			case 'paramvalue':
-				if($oparam !== null && is_array($param) === false)
-					$param = array_merge((array) $rendervalue, $oparam);
+				if($paramsupp !== null && is_array($param) === false)
+					$param = array_merge((array) $rendervalue, $paramsupp);
 
 				$render['value'] = $this->bbf($bbfkey,
 							(is_array($param) === true ? $param : $rendervalue));
@@ -869,13 +905,13 @@ class dwho_tpl_form extends dwho_tpl_module
 				if(is_scalar($render['key']) === true)
 					$bbfkey .= $render['key'];
 
-				$render['value'] = $this->bbf($bbfkey,$oparam);
+				$render['value'] = $this->bbf($bbfkey,$paramsupp);
 				break;
 			case 'concatvalue':
 				if(is_scalar($render['value']) === true)
 					$bbfkey .= $render['value'];
 
-				$render['value'] = $this->bbf($bbfkey,$oparam);
+				$render['value'] = $this->bbf($bbfkey,$paramsupp);
 				break;
 		}
 
@@ -955,22 +991,30 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(is_scalar($render) === true && dwho_has_len($render) === false)
 			$render = ' ';
-		else if(is_array($param['bbf']) === true)
+		else if($param['bbf'] !== false)
 		{
-			switch($param['bbf'][0])
+			if(isset($param['bbfopt']['paramsupp']) === false)
+				$paramsupp = null;
+			else
+				$paramsupp = $param['bbfopt']['paramsupp'];
+
+			switch($param['bbfopt']['argmode'])
 			{
 				case 'param':
 				case 'paramkey':
 				case 'paramvalue':
-					$render = $this->bbf($param['bbf'][1],$render);
+					if($paramsupp !== null)
+						$render = array_merge((array) $render,$paramsupp);
+
+					$render = $this->bbf($param['bbf'],$render);
 					break;
 				case 'concat':
 				case 'concatkey':
 				case 'concatvalue':
 					if(is_scalar($render) === true)
-						$render = $this->bbf($param['bbf'][1].$render);
+						$render = $this->bbf($param['bbf'].$render,$paramsupp);
 					else
-						$render = $this->bbf($param['bbf'][1]);
+						$render = $this->bbf($param['bbf'],$paramsupp);
 					break;
 			}
 		}
@@ -1015,17 +1059,17 @@ class dwho_tpl_form extends dwho_tpl_module
 		{
 			$r['key'] = $key;
 			$r['value'] = $ref[$this->_param['key']];
-			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['selected']);
 		}
 		else if($this->_param['key'] === true)
 		{
 			$r['key'] = $r['value'] = $key;
-			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['selected']);
 		}
 		else if($this->_param['key'] === false && is_scalar($ref) === true)
 		{
 			$r['key'] = $r['value'] = $ref;
-			$r['selected'] = $this->_mk_slt_option_selected($ref,$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($ref,$this->_param['selected']);
 		}
 		else if($this->_param['key'] === false
 		&& $this->_param['altkey'] === ''
@@ -1034,7 +1078,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		{
 			$r['key'] = key($ref);
 			$r['value'] = current($ref);
-			$r['selected'] = $this->_mk_slt_option_selected($r['key'],$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($r['key'],$this->_param['selected']);
 		}
 		else
 			return(false);
@@ -1049,18 +1093,18 @@ class dwho_tpl_form extends dwho_tpl_module
 		if($this->_param['key'] === true || is_scalar($ref) === false)
 		{
 			$r['key'] = $r['value'] = $key;
-			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['selected']);
 		}
 		else if($this->_param['key'] === false && is_scalar($ref) === true)
 		{
 			$r['key'] = $r['value'] = $ref;
-			$r['selected'] = $this->_mk_slt_option_selected($ref,$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($ref,$this->_param['selected']);
 		}
 		else
 		{
 			$r['key'] = $key;
 			$r['value'] = $ref;
-			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['value']);
+			$r['selected'] = $this->_mk_slt_option_selected($key,$this->_param['selected']);
 		}
 
 		return($r);

@@ -47,7 +47,7 @@ endif;
 
 	if($amember['list'] !== false):
 ?>
-<div id="agentlist" class="fm-field fm-multilist">
+<div id="agentlist" class="fm-paragraph fm-multilist">
 	<p><label id="lb-agentlist" for="it-agentlist"><?=$this->bbf('fm_agents');?></label></p>
 	<div class="slt-outlist">
 <?php
@@ -56,7 +56,7 @@ endif;
 					    'id'	=> 'it-agentlist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'browse'	=> 'agentfeatures',
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id'),
@@ -88,7 +88,7 @@ endif;
 					    'id'	=> 'it-agent',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'browse'	=> 'agentfeatures',
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id'),
@@ -100,11 +100,11 @@ endif;
 <?php
 	endif;
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-agentgroup-description" for="it-agentgroup-description"><?=$this->bbf('fm_agentgroup_description');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
 					 'name'		=> 'agentgroup[description]',
 					 'id'		=> 'it-agentgroup-description',
@@ -119,7 +119,7 @@ endif;
 <?php
 	if(is_array($queues) === true && empty($queues) === false):
 ?>
-<div id="queuelist" class="fm-field fm-multilist">
+<div id="queuelist" class="fm-paragraph fm-multilist">
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'queuelist',
@@ -127,7 +127,7 @@ endif;
 					    'id'	=> 'it-queuelist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['list']);
@@ -159,7 +159,7 @@ endif;
 					    'id'	=> 'it-queue',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['slt']);
@@ -188,15 +188,15 @@ endif;
 				$penalty = '';
 			endif;
 
-		echo	'<tr id="queue-',$name,'" class="fm-field',$class,'">',"\n",
+		echo	'<tr id="queue-',$name,'" class="fm-paragraph',$class,'">',"\n",
 			'<td class="td-left">',$name,'</td>',"\n",
 			'<td class="td-right">',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'queue['.$name.'][penalty]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'default'	=> $element['qmember']['penalty']['default'],
-					    'value'	=> $penalty),
+					    'selected'	=> $penalty),
 				      $element['qmember']['penalty']['value']),
 			'</td>',"\n",
 			'</tr>',"\n";

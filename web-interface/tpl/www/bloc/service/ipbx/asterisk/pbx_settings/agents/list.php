@@ -85,7 +85,7 @@ $page = $url->pager($pager['pages'],
 						 'label'	=> false,
 						 'id'		=> 'it-agentgroups-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
 		    onclick="location.href = dwho.dom.node.lastchild(this);">

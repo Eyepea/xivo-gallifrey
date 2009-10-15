@@ -1,161 +1,161 @@
-; acl_xivo
+; acl(xivo)
 XIVO
 
-; acl_xivo-user
+; acl(xivo-user)
 Utilisateurs
 
-; acl_service
+; acl(service)
 Services
 
-; acl_xivo-configuration
+; acl(xivo-configuration)
 Configuration
 
-; acl_xivo-configuration-manage
+; acl(xivo-configuration-manage)
 Gestion
 
-; acl_xivo-configuration-manage-entity
+; acl(xivo-configuration-manage-entity)
 Entités
 
-; acl_service-ipbx
+; acl(service-ipbx)
 IPBX
 
-; acl_service-ipbx-general_settings
+; acl(service-ipbx-general_settings)
 Paramètres globaux
 
-; acl_service-ipbx-general_settings-sip
+; acl(service-ipbx-general_settings-sip)
 Protocole SIP
 
-; acl_service-ipbx-general_settings-iax
+; acl(service-ipbx-general_settings-iax)
 Protocole IAX
 
-; acl_service-ipbx-general_settings-voicemail
+; acl(service-ipbx-general_settings-voicemail)
 Messageries vocales
 
-; acl_service-ipbx-general_settings-phonebook
+; acl(service-ipbx-general_settings-phonebook)
 Carnet d'adresses
 
-; acl_service-ipbx-general_settings-advanced
+; acl(service-ipbx-general_settings-advanced)
 Avancés
 
-; acl_service-ipbx-pbx_settings
+; acl(service-ipbx-pbx_settings)
 Paramètres IPBX
 
-; acl_service-ipbx-pbx_settings-agents
+; acl(service-ipbx-pbx_settings-agents)
 Agents
 
-; acl_service-ipbx-pbx_settings-users
+; acl(service-ipbx-pbx_settings-users)
 Utilisateurs
 
-; acl_service-ipbx-pbx_settings-groups
+; acl(service-ipbx-pbx_settings-groups)
 Groupes
 
-; acl_service-ipbx-pbx_settings-queues
+; acl(service-ipbx-pbx_settings-queues)
 Files d'attente
 
-; acl_service-ipbx-pbx_settings-meetme
+; acl(service-ipbx-pbx_settings-meetme)
 Chambres de conférence
 
-; acl_service-ipbx-pbx_settings-voicemail
+; acl(service-ipbx-pbx_settings-voicemail)
 Messageries vocales
 
-; acl_service-ipbx-call_management
+; acl(service-ipbx-call_management)
 Gestion des appels
 
-; acl_service-ipbx-call_management-incall
+; acl(service-ipbx-call_management-incall)
 Appels entrants
 
-; acl_service-ipbx-call_management-outcall
+; acl(service-ipbx-call_management-outcall)
 Appels sortants
 
-; acl_service-ipbx-call_management-rightcall
+; acl(service-ipbx-call_management-rightcall)
 Droits d'appels
 
-; acl_service-ipbx-call_management-callfilter
+; acl(service-ipbx-call_management-callfilter)
 Filtrages d'appels
 
-; acl_service-ipbx-call_management-schedule
+; acl(service-ipbx-call_management-schedule)
 Horaires
 
-; acl_service-ipbx-call_management-voicemenu
+; acl(service-ipbx-call_management-voicemenu)
 Menus vocaux
 
-; acl_service-ipbx-call_management-cdr
+; acl(service-ipbx-call_management-cdr)
 Journaux d'appels
 
-; acl_service-ipbx-trunk_management
+; acl(service-ipbx-trunk_management)
 Gestion des interconnexions
 
-; acl_service-ipbx-trunk_management-sip
+; acl(service-ipbx-trunk_management-sip)
 Protocole SIP
 
-; acl_service-ipbx-trunk_management-iax
+; acl(service-ipbx-trunk_management-iax)
 Protocole IAX
 
-; acl_service-ipbx-trunk_management-custom
+; acl(service-ipbx-trunk_management-custom)
 Personnalisée
 
-; acl_service-ipbx-pbx_services
+; acl(service-ipbx-pbx_services)
 Services IPBX
 
-; acl_service-ipbx-pbx_services-sounds
+; acl(service-ipbx-pbx_services-sounds)
 Fichiers son
 
-; acl_service-ipbx-pbx_services-musiconhold
+; acl(service-ipbx-pbx_services-musiconhold)
 Musiques d'attente
 
-; acl_service-ipbx-pbx_services-extenfeatures
+; acl(service-ipbx-pbx_services-extenfeatures)
 Extensions
 
-; acl_service-ipbx-pbx_services-handynumbers
+; acl(service-ipbx-pbx_services-handynumbers)
 Numéros utiles
 
-; acl_service-ipbx-pbx_services-phonebook
+; acl(service-ipbx-pbx_services-phonebook)
 Carnet d'adresses
 
-; acl_service-ipbx-system_management
+; acl(service-ipbx-system_management)
 Configuration IPBX
 
-; acl_service-ipbx-system_management-backupfiles
+; acl(service-ipbx-system_management-backupfiles)
 Fichiers de sauvegarde
 
-; acl_service-ipbx-system_management-configfiles
+; acl(service-ipbx-system_management-configfiles)
 Fichiers de configuration
 
-; acl_service-ipbx-system_management-context
+; acl(service-ipbx-system_management-context)
 Contextes
 
-; acl_service-ipbx-system_management-ldapfilter
+; acl(service-ipbx-system_management-ldapfilter)
 Filtres LDAP
 
-; acl_service-ipbx-control_system
+; acl(service-ipbx-control_system)
 Système de contrôle
 
-; acl_service-ipbx-control_system-logfiles
+; acl(service-ipbx-control_system-logfiles)
 Journaux d'événements
 
-; acl_service-ipbx-control_system-reload
+; acl(service-ipbx-control_system-reload)
 Recharger IPBX
 
-; acl_service-ipbx-control_system-restart
+; acl(service-ipbx-control_system-restart)
 Redémarrer IPBX
 
-; acl_service-monitoring
+; acl(service-monitoring)
 Monitoring
 
-; acl_service-monitoring-control_system
+; acl(service-monitoring-control_system)
 Système de contrôle
 
-; acl_service-monitoring-control_system-start
+; acl(service-monitoring-control_system-start)
 Démarrer
 
-; acl_service-monitoring-control_system-stop
+; acl(service-monitoring-control_system-stop)
 Arrêter
 
-; acl_service-monitoring-control_system-restart
+; acl(service-monitoring-control_system-restart)
 Redémarrer
 
-; acl_service-monitoring-control_system-monitor
+; acl(service-monitoring-control_system-monitor)
 Activer le monitoring
 
-; acl_service-monitoring-control_system-unmonitor
+; acl(service-monitoring-control_system-unmonitor)
 Désactiver le monitoring

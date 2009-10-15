@@ -24,7 +24,7 @@ $fkdata = $this->get_var('fkdata');
 $labelem = $this->get_var('labelem');
 
 $inputtxt = array();
-$inputtxt['field'] = false;
+$inputtxt['paragraph'] = false;
 $inputtxt['name'] = 'phonefunckey[label][]';
 $inputtxt['label'] = false;
 $inputtxt['size'] = 10;

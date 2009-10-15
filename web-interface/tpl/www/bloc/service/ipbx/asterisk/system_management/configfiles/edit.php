@@ -43,10 +43,10 @@ $info = $this->get_var('info');
 		$form->hidden(array('name'	=> 'id',
 				    'value'	=> $info['name']));
 ?>
-		<p class="fm-field txt-center width-auto"><?=$this->bbf('fm_filename'),' ',$info['name']?></p>
-		<div class="fm-field txt-center width-auto">
+		<p class="fm-paragraph txt-center width-auto"><?=$this->bbf('fm_filename'),' ',$info['name']?></p>
+		<div class="fm-paragraph txt-center width-auto">
 			<p><label id="lb-content" for="it-content"><?=$this->bbf('fm_content');?></label></p>
-				<?=$form->textarea(array('field'	=> false,
+				<?=$form->textarea(array('paragraph'	=> false,
 							 'name'		=> 'content',
 							 'label'	=> false,
 							 'notag'	=> false,

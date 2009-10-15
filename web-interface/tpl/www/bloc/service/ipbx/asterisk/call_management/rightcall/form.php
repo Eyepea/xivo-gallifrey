@@ -54,7 +54,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['rightcall']['context']['default'],
-				    'value'	=> $info['rightcall']['context']),
+				    'selected'	=> $info['rightcall']['context']),
 			      $context_list);
 else:
 	echo	'<div id="fd-rightcall-context" class="txt-center">',
@@ -73,13 +73,14 @@ endif;
 
 		$form->select(array('desc'	=> $this->bbf('fm_rightcall_authorization'),
 				    'name'	=> 'rightcall[authorization]',
-				    'bbf'	=> array('paramvalue','fm_rightcall_authorization-opt'),
+				    'bbf'	=> 'fm_rightcall_authorization-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'labelid'	=> 'authorization',
-				    'value'	=> $info['rightcall']['authorization'],
+				    'selected'	=> $info['rightcall']['authorization'],
 				    'default'	=> $element['rightcall']['authorization']['default']),
 			      $element['rightcall']['authorization']['value']);
 ?>
-<div id="extenlist" class="fm-field fm-multilist">
+<div id="extenlist" class="fm-paragraph fm-multilist">
 	<p>
 		<label id="lb-exten" for="it-exten"><?=$this->bbf('fm_rightcallexten_exten');?></label>
 	</p>
@@ -91,7 +92,7 @@ endif;
 				       'altkey'		=> 'exten',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false),
+				       'paragraph'		=> false),
 				 $rcallexten);?>
 		<div class="bt-adddelete">
 			<a href="#"
@@ -114,11 +115,11 @@ endif;
 </div>
 <div class="clearboth"></div>
 
-<div class="fm-field fm-description">
+<div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-rightcall-description" for="it-rightcall-description"><?=$this->bbf('fm_rightcall_description');?></label>
 	</p>
-	<?=$form->textarea(array('field'	=> false,
+	<?=$form->textarea(array('paragraph'	=> false,
 				 'label'	=> false,
 				 'name'		=> 'rightcall[description]',
 				 'id'		=> 'it-rightcall-description',
@@ -133,7 +134,7 @@ endif;
 <?php
 	if($rcalluser['list'] !== false):
 ?>
-	<div id="userlist" class="fm-field fm-multilist">
+	<div id="userlist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'userlist',
 					       'label'		=> false,
@@ -142,7 +143,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcalluser['list']);?>
 		</div>
 
@@ -171,7 +172,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcalluser['slt']);?>
 		</div>
 	</div>
@@ -191,7 +192,7 @@ endif;
 <?php
 	if($rcallgroup['list'] !== false):
 ?>
-	<div id="grouplist" class="fm-field fm-multilist">
+	<div id="grouplist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'grouplist',
 					       'label'		=> false,
@@ -200,7 +201,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcallgroup['list']);?>
 		</div>
 
@@ -229,7 +230,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcallgroup['slt']);?>
 		</div>
 	</div>
@@ -248,7 +249,7 @@ endif;
 <?php
 	if($rcallincall['list'] !== false):
 ?>
-	<div id="incalllist" class="fm-field fm-multilist">
+	<div id="incalllist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'incalllist',
 					       'label'		=> false,
@@ -257,7 +258,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcallincall['list']);?>
 		</div>
 
@@ -286,7 +287,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcallincall['slt']);?>
 		</div>
 	</div>
@@ -306,7 +307,7 @@ endif;
 <?php
 	if($rcalloutcall['list'] !== false):
 ?>
-	<div id="outcalllist" class="fm-field fm-multilist">
+	<div id="outcalllist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'outcalllist',
 					       'label'		=> false,
@@ -315,7 +316,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcalloutcall['list']);?>
 		</div>
 
@@ -344,7 +345,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rcalloutcall['slt']);?>
 		</div>
 	</div>

@@ -26,7 +26,7 @@ echo	'<div id="fd-dialaction-',$event,'-custom-actiontype" class="b-nodisplay">'
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-custom-actionarg1',
 			  'size'	=> 20,
-			  'value'	=> $this->get_varra('dialaction',array($event,'custom','actionarg1'))));
+			  'value'	=> $this->get_var('dialaction',$event,'custom','actionarg1')));
 
 	if($event === 'voicemenuflow'):
 		echo	$form->button(array('name'	=> 'add-defapplication-custom',

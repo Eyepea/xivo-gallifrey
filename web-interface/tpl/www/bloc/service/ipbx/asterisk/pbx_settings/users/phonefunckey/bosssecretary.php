@@ -25,7 +25,7 @@ $list = $this->get_var('bsfilter_list');
 $fkdata = $this->get_var('fkdata');
 
 $select = array();
-$select['field'] = false;
+$select['paragraph'] = false;
 $select['name'] = 'phonefunckey[typeval][]';
 $select['label'] = false;
 $select['key'] = 'callfilteridentity';
@@ -38,7 +38,7 @@ if($fkdata['ex'] === false):
 
 	if($fkdata['type'] === 'extenfeatures-bsfilter'):
 		$select['invalid'] = true;
-		$select['value'] = $fkdata['typeval'];
+		$select['selected'] = $fkdata['typeval'];
 	endif;
 
 	$selectoptattr = '';

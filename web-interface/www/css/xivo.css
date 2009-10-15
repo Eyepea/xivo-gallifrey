@@ -74,32 +74,32 @@ pre {text-align: left;}
 #b-lmenu {width: 200px;float: left;margin-left: 2px;}
 #bc-content {float: left;margin-left: 6px;}
 
-.fm-field {padding: 3px;}
-.fm-field {text-align: left;}
-.fm-field input {padding: 0px 2px;}
-.fm-field select {max-width: 350px;}
-.fm-field textarea, .fm-field select {padding-left: 2px;}
-.fm-field .it-mblur {border: 1px solid #7f99b1;}
-.fm-field .it-mfocus {border: 1px solid #ff9d03;}
-.fm-fieldsubmit {text-align: center;padding: 10px 4px 0px 0px;}
-.fm-field .itb-submit, .fm-field .itb-button, .itb-button, .itb-submit {background-position: left top; background-repeat: repeat-x;background-image: url(../img/site/button/bg-button.gif);color: #000;border: 1px solid #999;cursor: pointer;}
-.fm-field .itb-image {margin: 0px;padding: 0px;border: 0px solid #000;}
+.fm-paragraph {padding: 3px;}
+.fm-paragraph {text-align: left;}
+.fm-paragraph input {padding: 0px 2px;}
+.fm-paragraph select {max-width: 350px;}
+.fm-paragraph textarea, .fm-paragraph select {padding-left: 2px;}
+.fm-paragraph .it-mblur {border: 1px solid #7f99b1;}
+.fm-paragraph .it-mfocus {border: 1px solid #ff9d03;}
+.fm-paragraph-submit {text-align: center;padding: 10px 4px 0px 0px;}
+.fm-paragraph .itb-submit, .fm-paragraph .itb-button, .itb-button, .itb-submit {background-position: left top; background-repeat: repeat-x;background-image: url(../img/site/button/bg-button.gif);color: #000;border: 1px solid #999;cursor: pointer;}
+.fm-paragraph .itb-image {margin: 0px;padding: 0px;border: 0px solid #000;}
 
-.fm-field input, .fm-field select, .fm-field textarea, .fm-field .it-enabled {margin: 0px 2px;border: 1px solid #7f99b1;background-color: #beddfb;color: #000;}
+.fm-paragraph input, .fm-paragraph select, .fm-paragraph textarea, .fm-paragraph .it-enabled {margin: 0px 2px;border: 1px solid #7f99b1;background-color: #beddfb;color: #000;}
 
-.fm-field .it-disabled, .fm-field .it-readonly {border: 1px solid #a5acb2;background-color: #ebebe4;color: #aca899;}
-.fm-field .it-readonly {color: #000;}
+.fm-paragraph .it-disabled, .fm-paragraph .it-readonly {border: 1px solid #a5acb2;background-color: #ebebe4;color: #aca899;}
+.fm-paragraph .it-readonly {color: #000;}
 
-.fm-field .it-helper {color: #666;}
-.fm-field .it-checkbox, .fm-field .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
+.fm-paragraph .it-helper {color: #666;}
+.fm-paragraph .it-checkbox, .fm-paragraph .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
 
-.fm-error, .fm-field .fm-error {background-color: #ffcbcb;}
+.fm-error, .fm-paragraph .fm-error {background-color: #ffcbcb;}
 
-.fm-field .fm-desc {display: block;float: left;text-align: right;min-width: 50%;}
+.fm-paragraph .fm-desc {display: block;float: left;text-align: right;min-width: 50%;}
 .fm-desc-inline {padding: 2px;width: auto;text-align: center;}
 .fm-desc-inline label {padding: 0px 10px;}
 .fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
-.fm-field p {padding-bottom: 2px;}
+.fm-paragraph p {padding-bottom: 2px;}
 .fm-description {text-align: center;width: 100%;}
 
 .tooltips-over:hover {color: #ff9d03;}
@@ -177,9 +177,9 @@ pre {text-align: left;}
 
 #b-tmenu #toolbar {height: 19px;text-align: right;background-image: url(../img/menu/top/toolbar/bg.gif); background-repeat: repeat-x;padding-right: 50px;}
 #b-tmenu #toolbar .sb-advanced-menu {position: absolute;width: 970px;}
-#b-tmenu #toolbar .fm-field {margin: 0px;padding: 0px;width: auto;}
-#b-tmenu #toolbar .fm-field input {vertical-align: top;margin-top: 1px;}
-#b-tmenu #toolbar .fm-field .itb-image {margin: 0px;}
+#b-tmenu #toolbar .fm-paragraph {margin: 0px;padding: 0px;width: auto;}
+#b-tmenu #toolbar .fm-paragraph input {vertical-align: top;margin-top: 1px;}
+#b-tmenu #toolbar .fm-paragraph .itb-image {margin: 0px;}
 #b-tmenu #toolbar-add-menu,#b-tmenu #toolbar-advanced-menu {min-width: 90px;width: auto;float: right;display: none;background-color: #beddfb;border: 1px solid #057ab1;}
 #b-tmenu #toolbar-add-menu li,#b-tmenu #toolbar-advanced-menu li {text-align: left;}
 #b-tmenu #toolbar-add-menu li a,#b-tmenu #toolbar-advanced-menu li a {display: block;padding: 1px 4px;}

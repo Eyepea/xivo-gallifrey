@@ -24,7 +24,7 @@ $fkdata = $this->get_var('fkdata');
 $grouptype = $this->get_var('grouptype');
 
 $inputhidden = array();
-$inputhidden['field'] = false;
+$inputhidden['paragraph'] = false;
 $inputhidden['name'] = 'phonefunckey[typeval][]';
 $inputhidden['label'] = false;
 $inputhidden['id'] = 'it-phonefunckey-'.$grouptype.'-typeval';

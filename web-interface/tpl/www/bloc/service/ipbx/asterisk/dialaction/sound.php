@@ -22,10 +22,10 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
-$list = $this->get_varra('destination_list','sounds');
+$list = $this->get_var('destination_list','sounds');
 $event = $this->get_var('event');
 
-$action = $this->get_varra('dialaction',array($event,'action'));
+$action = $this->get_var('dialaction',$event,'action');
 
 if(empty($list) === false):
 	echo	'<div id="fd-dialaction-'.$event.'-sound-actiontype" class="b-nodisplay">',
@@ -36,25 +36,25 @@ if(empty($list) === false):
 				    'key'	=> 'name',
 				    'altkey'	=> 'pathnoext',
 				    'default'	=> $element['dialaction']['actionarg1']['default'],
-				    'value'	=> $this->get_varra('dialaction',array($event,'sound','actionarg1'))),
+				    'selected'	=> $this->get_var('dialaction',$event,'sound','actionarg1')),
 			      $list),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_sound-actionarg2-skip'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][skip]',
 				      'labelid'	=> 'dialaction-'.$event.'-sound-actionarg2-skip',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'sound','actionarg2','skip')),
+				      'checked'	=> $this->get_var('dialaction',$event,'sound','actionarg2','skip'),
 				      'value'	=> 'skip')),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_sound-actionarg2-noanswer'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][noanswer]',
 				      'labelid'	=> 'dialaction-'.$event.'-sound-actionarg2-noanswer',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'sound','actionarg2','noanswer')),
+				      'checked'	=> $this->get_var('dialaction',$event,'sound','actionarg2','noanswer'),
 				      'value'	=> 'noanswer')),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_dialaction_sound-actionarg2-j'),
 				      'name'	=> 'dialaction['.$event.'][actionarg2][j]',
 				      'labelid'	=> 'dialaction-'.$event.'-sound-actionarg2-j',
-				      'checked'	=> $this->get_varra('dialaction',array($event,'sound','actionarg2','j')),
+				      'checked'	=> $this->get_var('dialaction',$event,'sound','actionarg2','j'),
 				      'value'	=> 'j'));
 
 	if($event === 'voicemenuevent'):

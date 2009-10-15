@@ -42,7 +42,7 @@ endif;
 				  'labelid'	=> 'incall-exten',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['exten']['default'],
-				  'value'	=> $this->get_varra('incall','exten')));
+				  'value'	=> $this->get_var('incall','exten')));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_incall_context'),
@@ -51,7 +51,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['incall']['context']['default'],
-				    'value'	=> $this->get_varra('incall','context')),
+				    'selected'	=> $this->get_var('incall','context')),
 			      $context_list);
 else:
 	echo	'<div id="fd-incall-context" class="txt-center">',
@@ -67,11 +67,12 @@ endif;
 	echo	$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
 				    'name'	=> 'callerid[mode]',
 				    'labelid'	=> 'callerid-mode',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_callerid_mode-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_callerid_mode-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callerid']['mode']['default'],
-				    'value'	=> $callerid['mode']),
+				    'selected'	=> $callerid['mode']),
 			      $element['callerid']['mode']['value'],
 			      'onchange="xivo_ast_chg_callerid_mode(this);"'),
 
@@ -88,7 +89,7 @@ endif;
 				  'labelid'	=> 'incall-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['preprocess_subroutine']['default'],
-				  'value'	=> $this->get_varra('incall','preprocess_subroutine')));
+				  'value'	=> $this->get_var('incall','preprocess_subroutine')));
 ?>
 </div>
 
@@ -97,7 +98,7 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_incall_faxdetectenable'),
 				      'name'	=> 'incall[faxdetectenable]',
 				      'labelid'	=> 'incall-faxdetectenable',
-				      'checked'	=> $this->get_varra('incall','faxdetectenable'),
+				      'checked'	=> $this->get_var('incall','faxdetectenable'),
 				      'default'	=> $element['incall']['faxdetectenable']['default']),
 				'onchange="xivo_ast_enable_faxdetect();"'),
 
@@ -105,9 +106,10 @@ endif;
 				    'name'	=> 'incall[faxdetecttimeout]',
 				    'labelid'	=> 'incall-faxdetecttimeout',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_incall_faxdetecttimeout-opt'),
+				    'bbf'	=> 'fm_incall_faxdetecttimeout-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['incall']['faxdetecttimeout']['default'],
-				    'value'	=> $this->get_varra('incall','faxdetecttimeout')),
+				    'selected'	=> $this->get_var('incall','faxdetecttimeout')),
 			      $element['incall']['faxdetecttimeout']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_incall_faxdetectemail'),
@@ -115,7 +117,7 @@ endif;
 				  'labelid'	=> 'incall-faxdetectemail',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['faxdetectemail']['default'],
-				  'value'	=> $this->get_varra('incall','faxdetectemail')));
+				  'value'	=> $this->get_var('incall','faxdetectemail')));
 ?>
 </div>
 
@@ -124,7 +126,7 @@ endif;
 	if($rightcall['list'] !== false):
 ?>
 
-	<div id="rightcalllist" class="fm-field fm-multilist">
+	<div id="rightcalllist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,
@@ -134,7 +136,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rightcall['list']);?>
 		</div>
 		<div class="inout-list">
@@ -161,7 +163,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rightcall['slt']);?>
 
 		</div>

@@ -52,7 +52,7 @@ endif;
 				  'name'	=> 'dirname',
 				  'labelid'	=> 'dirname',
 				  'size'	=> 15,
-				  'value'	=> $this->get_varra('info','dirname'))),
+				  'value'	=> $this->get_var('info','dirname'))),
 
 		$form->submit(array('name'	=> 'submit',
 				    'id'	=> 'it-submit',

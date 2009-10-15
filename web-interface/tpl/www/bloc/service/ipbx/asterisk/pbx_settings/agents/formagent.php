@@ -74,7 +74,7 @@ endif;
 						    'key'	=> 'identity',
 						    'altkey'	=> 'name',
 						    'default'	=> $element['agentfeatures']['context']['default'],
-						    'value'	=> $info['agentfeatures']['context']),
+						    'selected'	=> $info['agentfeatures']['context']),
 					      $context_list);
 		else:
 			echo	'<div id="fd-agentfeatures-context" class="txt-center">',
@@ -89,7 +89,7 @@ endif;
 				    'labelid'	=> 'agentfeatures-language',
 				    'key'	=> false,
 				    'default'	=> $element['agentfeatures']['language']['default'],
-				    'value'	=> $info['agentfeatures']['language']),
+				    'selected'	=> $info['agentfeatures']['language']),
 			      $element['agentfeatures']['language']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_numgroup'),
@@ -99,7 +99,7 @@ endif;
 				    'key'	=> 'name',
 				    'altkey'	=> 'id',
 				    'default'	=> $this->get_var('group'),
-				    'value'	=> $info['agentfeatures']['numgroup']),
+				    'selected'	=> $info['agentfeatures']['numgroup']),
 			      $this->get_var('agentgroup_list'));
 
 	if(($moh_list = $this->get_var('moh_list')) !== false):
@@ -108,7 +108,7 @@ endif;
 					    'labelid'	=> 'agentoptions-musiconhold',
 					    'key'	=> 'category',
 					    'default'	=> $element['agentoptions']['musiconhold']['default'],
-					    'value'	=> $info['agentoptions']['musiconhold']),
+					    'selected'	=> $info['agentoptions']['musiconhold']),
 				      $moh_list);
 	endif;
 ?>
@@ -118,7 +118,7 @@ endif;
 <?php
 	if($umember['list'] !== false):
 ?>
-<div id="userlist" class="fm-field fm-multilist">
+<div id="userlist" class="fm-paragraph fm-multilist">
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'userlist',
@@ -126,7 +126,7 @@ endif;
 					    'id'	=> 'it-userlist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id'),
 				      $umember['list']);
@@ -157,7 +157,7 @@ endif;
 					    'id'	=> 'it-user',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id'),
 				      $umember['slt']);
@@ -180,7 +180,7 @@ endif;
 <?php
 	if(is_array($queues) === true && empty($queues) === false):
 ?>
-<div id="queuelist" class="fm-field fm-multilist">
+<div id="queuelist" class="fm-paragraph fm-multilist">
 	<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'queuelist',
@@ -188,7 +188,7 @@ endif;
 					    'id'	=> 'it-queuelist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['list']);
@@ -220,7 +220,7 @@ endif;
 					    'id'	=> 'it-queue',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> 'name',
 					    'altkey'	=> 'name'),
 				      $qmember['slt']);
@@ -249,15 +249,15 @@ endif;
 				$penalty = '';
 			endif;
 
-		echo	'<tr id="queue-',$name,'" class="fm-field',$class,'">',"\n",
+		echo	'<tr id="queue-',$name,'" class="fm-paragraph',$class,'">',"\n",
 			'<td class="td-left">',$name,'</td>',"\n",
 			'<td class="td-right">',
-			$form->select(array('field'	=> false,
+			$form->select(array('paragraph'	=> false,
 					    'name'	=> 'queue['.$name.'][penalty]',
 					    'id'	=> false,
 					    'label'	=> false,
 					    'default'	=> $element['qmember']['penalty']['default'],
-					    'value'	=> $penalty),
+					    'selected'	=> $penalty),
 				      $element['qmember']['penalty']['value']),
 			'</td>',"\n",
 			'</tr>',"\n";
@@ -291,9 +291,10 @@ endif;
 				    'name'	=> 'agentoptions[ackcall]',
 				    'labelid'	=> 'agentoptions-ackcall',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_agentoptions_ackcall-opt'),
+				    'bbf'	=> 'fm_agentoptions_ackcall-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['agentoptions']['ackcall']['default'],
-				    'value'	=> $info['agentoptions']['ackcall']),
+				    'selected'	=> $info['agentoptions']['ackcall']),
 			      $element['agentoptions']['ackcall']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_endcall'),
@@ -306,9 +307,10 @@ endif;
 				    'name'	=> 'agentoptions[autologoff]',
 				    'labelid'	=> 'agentoptions-autologoff',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_agentoptions_autologoff-opt'),
+				    'bbf'	=> 'fm_agentoptions_autologoff-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['agentoptions']['autologoff']['default'],
-				    'value'	=> $info['agentoptions']['autologoff']),
+				    'selected'	=> $info['agentoptions']['autologoff']),
 			      $element['agentoptions']['autologoff']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_autologoffunavail'),
@@ -326,7 +328,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'millisecond',
 									'format'	=> '%s')),
-				    'value'	=> $info['agentoptions']['wrapuptime'],
+				    'selected'	=> $info['agentoptions']['wrapuptime'],
 				    'default'	=> $element['agentoptions']['wrapuptime']['default']),
 			      $element['agentoptions']['wrapuptime']['value']),
 
@@ -334,9 +336,10 @@ endif;
 				    'name'	=> 'agentoptions[maxlogintries]',
 				    'labelid'	=> 'agentoptions-maxlogintries',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_agentoptions_maxlogintries-opt'),
+				    'bbf'	=> 'fm_agentoptions_maxlogintries-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['agentoptions']['maxlogintries']['default'],
-				    'value'	=> $info['agentoptions']['maxlogintries']),
+				    'selected'	=> $info['agentoptions']['maxlogintries']),
 			      $element['agentoptions']['maxlogintries']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_updatecdr'),
@@ -355,9 +358,10 @@ endif;
 				    'name'	=> 'agentoptions[recordformat]',
 				    'labelid'	=> 'agentoptions-recordformat',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','ast_format_name_info'),
+				    'bbf'	=> 'ast_format_name_info',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['agentoptions']['recordformat']['default'],
-				    'value'	=> $info['agentoptions']['recordformat']),
+				    'selected'	=> $info['agentoptions']['recordformat']),
 			      $element['agentoptions']['recordformat']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentoptions_urlprefix'),
@@ -372,7 +376,7 @@ endif;
 				    'labelid'	=> 'agentoptions-custom-beep',
 				    'empty'	=> $this->bbf('fm_agentoptions_custom-beep-opt','default'),
 				    'default'	=> $element['agentoptions']['custom_beep']['default'],
-				    'value'	=> $info['agentoptions']['custom_beep']),
+				    'selected'	=> $info['agentoptions']['custom_beep']),
 			      $this->get_var('beep_list')),
 
 		$form->select(array('desc'	=> $this->bbf('fm_agentoptions_goodbye'),
@@ -380,14 +384,14 @@ endif;
 				    'labelid'	=> 'agentoptions-goodbye',
 				    'empty'	=> $this->bbf('fm_agentoptions_goodbye-opt','default'),
 				    'default'	=> $element['agentoptions']['goodbye']['default'],
-				    'value'	=> $info['agentoptions']['goodbye']),
+				    'selected'	=> $info['agentoptions']['goodbye']),
 			      $this->get_var('goodbye_list'));
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-agentfeatures-description" for="it-agentfeatures-description"><?=$this->bbf('fm_agentfeatures_description');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
 					 'name'		=> 'agentfeatures[description]',
 					 'id'		=> 'it-agentfeatures-description',

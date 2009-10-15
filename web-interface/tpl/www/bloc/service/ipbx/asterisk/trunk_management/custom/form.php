@@ -54,22 +54,22 @@ if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
 				    'name'	=> 'protocol[context]',
 				    'labelid'	=> 'protocol-context',
+				    'empty'	=> true,
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'empty'	=> true,
 				    'default'	=> $element['protocol']['context']['default'],
-				    'value'	=> $info['protocol']['context']),
+				    'selected'	=> $info['protocol']['context']),
 			       $context_list);
 endif;
 
 ?>
-<div class="fm-field fm-description">
+<div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-trunkfeatures-description" for="it-trunkfeatures-description">
 			<?=$this->bbf('fm_trunkfeatures_description');?>
 		</label>
 	</p>
-	<?=$form->textarea(array('field'	=> false,
+	<?=$form->textarea(array('paragraph'	=> false,
 				 'label'	=> false,
 				 'name'		=> 'trunkfeatures[description]',
 				 'id'		=> 'it-trunkfeatures-description',

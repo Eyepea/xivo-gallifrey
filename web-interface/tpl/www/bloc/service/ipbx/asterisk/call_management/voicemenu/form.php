@@ -56,7 +56,7 @@ endif;
 					 'key'		=> 'identity',
 					 'altkey'	=> 'name',
 					 'default'	=> $element['voicemenu']['context']['default'],
-					 'value'	=> $info['voicemenu']['context']),
+					 'selected'	=> $info['voicemenu']['context']),
 				   $context_list);
 	else:
 		echo	'<div id="fd-voicemenu-context" class="txt-center">',
@@ -66,11 +66,11 @@ endif;
 			'</div>';
 	endif;
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-voicemenu-description" for="it-voicemenu-description"><?=$this->bbf('fm_voicemenu_description');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
 					 'name'		=> 'voicemenu[description]',
 					 'id'		=> 'it-voicemenu-description',
@@ -110,13 +110,14 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_dialaction_ipbxapplication-action'),
 				    'name'	=> 'ipbxapplications',
 				    'labelid'	=> 'dialaction-voicemenuflow-ipbxapplication-action',
+				    'empty'	=> true,
+				    'key'	=> true,
+				    'bbf'	=> 'fm_ipbxapplications-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'optgroup'	=> array('key'		=> 'category',
 							 'unique'	=> true,
 							 'bbf'		=> 'fm_ipbxapplications-optgroup',
-							 'bbfopt'	=> array('argmode' => 'paramvalue')),
-				    'empty'	=> true,
-				    'key'	=> true,
-				    'bbf'	=> array('paramvalue','fm_ipbxapplications-opt')),
+							 'bbfopt'	=> array('argmode' => 'paramvalue'))),
 			      $ipbxapplications,
 			      'onchange="xivo_ast_chg_ipbxapplication(this.value);"');
 
@@ -257,7 +258,7 @@ endif;
 
 	echo	'</div>';
 ?>
-<div id="voicemenu-flow" class="fm-field fm-multilist">
+<div id="voicemenu-flow" class="fm-paragraph fm-multilist">
 
 	<div class="slt-list">
 		<div class="bt-updown">
@@ -281,7 +282,7 @@ endif;
 				       'key'		=> true,
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false),
+				       'paragraph'		=> false),
 				 null);?>
 	</div>
 
@@ -304,7 +305,7 @@ endif;
 				    'altkey'	=> '',
 				    'cols'	=> 0,
 				    'size'	=> 0,
-				    'field'	=> false),
+				    'paragraph'	=> false),
 			      $info['voicemenuflow-data'],
 			      'class="b-nodisplay"');
 ?>
@@ -319,58 +320,58 @@ endif;
 
 		$form->hidden(array('name'	=> 'voicemenuevent[0]',
 				    'id'	=> 'it-voicemenuevent-0',
-				    'value'	=> $this->get_varra('voicemenuevent',0))),
+				    'value'	=> $this->get_var('voicemenuevent',0))),
 		$form->hidden(array('name'	=> 'voicemenuevent[1]',
 				    'id'	=> 'it-voicemenuevent-1',
-				    'value'	=> $this->get_varra('voicemenuevent',1))),
+				    'value'	=> $this->get_var('voicemenuevent',1))),
 		$form->hidden(array('name'	=> 'voicemenuevent[2]',
 				    'id'	=> 'it-voicemenuevent-2',
-				    'value'	=> $this->get_varra('voicemenuevent',2))),
+				    'value'	=> $this->get_var('voicemenuevent',2))),
 		$form->hidden(array('name'	=> 'voicemenuevent[3]',
 				    'id'	=> 'it-voicemenuevent-3',
-				    'value'	=> $this->get_varra('voicemenuevent',3))),
+				    'value'	=> $this->get_var('voicemenuevent',3))),
 		$form->hidden(array('name'	=> 'voicemenuevent[4]',
 				    'id'	=> 'it-voicemenuevent-4',
-				    'value'	=> $this->get_varra('voicemenuevent',4))),
+				    'value'	=> $this->get_var('voicemenuevent',4))),
 		$form->hidden(array('name'	=> 'voicemenuevent[5]',
 				    'id'	=> 'it-voicemenuevent-5',
-				    'value'	=> $this->get_varra('voicemenuevent',5))),
+				    'value'	=> $this->get_var('voicemenuevent',5))),
 		$form->hidden(array('name'	=> 'voicemenuevent[6]',
 				    'id'	=> 'it-voicemenuevent-6',
-				    'value'	=> $this->get_varra('voicemenuevent',6))),
+				    'value'	=> $this->get_var('voicemenuevent',6))),
 		$form->hidden(array('name'	=> 'voicemenuevent[7]',
 				    'id'	=> 'it-voicemenuevent-7',
-				    'value'	=> $this->get_varra('voicemenuevent',7))),
+				    'value'	=> $this->get_var('voicemenuevent',7))),
 		$form->hidden(array('name'	=> 'voicemenuevent[8]',
 				    'id'	=> 'it-voicemenuevent-8',
-				    'value'	=> $this->get_varra('voicemenuevent',8))),
+				    'value'	=> $this->get_var('voicemenuevent',8))),
 		$form->hidden(array('name'	=> 'voicemenuevent[9]',
 				    'id'	=> 'it-voicemenuevent-9',
-				    'value'	=> $this->get_varra('voicemenuevent',9))),
+				    'value'	=> $this->get_var('voicemenuevent',9))),
 		$form->hidden(array('name'	=> 'voicemenuevent[*]',
 				    'id'	=> 'it-voicemenuevent-star',
-				    'value'	=> $this->get_varra('voicemenuevent','*'))),
+				    'value'	=> $this->get_var('voicemenuevent','*'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[#]',
 				    'id'	=> 'it-voicemenuevent-sharp',
-				    'value'	=> $this->get_varra('voicemenuevent','#'))),
+				    'value'	=> $this->get_var('voicemenuevent','#'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[a]',
 				    'id'	=> 'it-voicemenuevent-a',
-				    'value'	=> $this->get_varra('voicemenuevent','a'))),
+				    'value'	=> $this->get_var('voicemenuevent','a'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[o]',
 				    'id'	=> 'it-voicemenuevent-o',
-				    'value'	=> $this->get_varra('voicemenuevent','o'))),
+				    'value'	=> $this->get_var('voicemenuevent','o'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[t]',
 				    'id'	=> 'it-voicemenuevent-t',
-				    'value'	=> $this->get_varra('voicemenuevent','t'))),
+				    'value'	=> $this->get_var('voicemenuevent','t'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[T]',
 				    'id'	=> 'it-voicemenuevent-tt',
-				    'value'	=> $this->get_varra('voicemenuevent','T'))),
+				    'value'	=> $this->get_var('voicemenuevent','T'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[i]',
 				    'id'	=> 'it-voicemenuevent-i',
-				    'value'	=> $this->get_varra('voicemenuevent','i'))),
+				    'value'	=> $this->get_var('voicemenuevent','i'))),
 		$form->hidden(array('name'	=> 'voicemenuevent[h]',
 				    'id'	=> 'it-voicemenuevent-h',
-				    'value'	=> $this->get_varra('voicemenuevent','h')));
+				    'value'	=> $this->get_var('voicemenuevent','h')));
 
 	$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/voicemenuevent-action',
 			    array('event'	=> 'voicemenuevent'));

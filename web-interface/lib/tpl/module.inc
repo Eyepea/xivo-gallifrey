@@ -50,19 +50,21 @@ class dwho_tpl_module
 		return($this->_tpl->set_var($name,$value));
 	}
 
-	function set_varra(&$a)
+	function set_vars(&$a)
 	{
-		return($this->_tpl->set_varra($a));
+		return($this->_tpl->set_vars(&$a));
 	}
 
-	function get_var($name)
+	function get_var()
 	{
-		return($this->_tpl->get_var($name));
+		$args = func_get_args();
+		return(call_user_func_array(array(&$this->_tpl,'get_var'),$args));
 	}
 
-	function get_varra($name,$keys)
+	function get_var_default()
 	{
-		return($this->_tpl->get_varra($name,$keys));
+		$args = func_get_args();
+		return(call_user_func_array(array(&$this->_tpl,'get_var_default'),$args));
 	}
 
 	function set_file($name,$value)

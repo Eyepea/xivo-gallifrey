@@ -59,7 +59,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['callfilter']['context']['default'],
-				    'value'	=> $info['callfilter']['context']),
+				    'selected'	=> $info['callfilter']['context']),
 			      $context_list);
 else:
 	echo	'<div id="fd-callfilter-context" class="txt-center">',
@@ -73,18 +73,20 @@ endif;
 				    'name'	=> 'callfilter[callfrom]',
 				    'labelid'	=> 'callfilter-callfrom',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_callfilter_callfrom-opt'),
+				    'bbf'	=> 'fm_callfilter_callfrom-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callfilter']['callfrom']['default'],
-				    'value'	=> $info['callfilter']['callfrom']),
+				    'selected'	=> $info['callfilter']['callfrom']),
 			      $element['callfilter']['callfrom']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_callfilter_bosssecretary'),
 				    'name'	=> 'callfilter[bosssecretary]',
 				    'labelid'	=> 'callfilter-bosssecretary',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_callfilter_bosssecretary-opt'),
+				    'bbf'	=> 'fm_callfilter_bosssecretary-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callfilter']['bosssecretary']['default'],
-				    'value'	=> $info['callfilter']['bosssecretary']),
+				    'selected'	=> $info['callfilter']['bosssecretary']),
 			      $element['callfilter']['bosssecretary']['value'],
 			      'onchange="xivo_callfilter_chg_mode(\'bosssecretary\',this);"'),
 
@@ -92,19 +94,21 @@ endif;
 				    'name'	=> 'callfilter[ringseconds]',
 				    'labelid'	=> 'callfilter-ringseconds',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_callfilter_ringseconds-opt'),
+				    'bbf'	=> 'fm_callfilter_ringseconds-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callfilter']['ringseconds']['default'],
-				    'value'	=> $info['callfilter']['ringseconds']),
+				    'selected'	=> $info['callfilter']['ringseconds']),
 			      $element['callfilter']['ringseconds']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_callerid_mode'),
 				    'name'	=> 'callerid[mode]',
 				    'labelid'	=> 'callerid-mode',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_callerid_mode-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_callerid_mode-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['callerid']['mode']['default'],
-				    'value'	=> $info['callerid']['mode']),
+				    'selected'	=> $info['callerid']['mode']),
 			      $element['callerid']['mode']['value'],
 			      'onchange="xivo_ast_chg_callerid_mode(this);"'),
 
@@ -127,16 +131,17 @@ endif;
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id',
 					    'invalid'	=> $invalid_boss,
-					    'value'	=> $info['callfiltermember']['boss']['typeval']),
+					    'selected'	=> $info['callfiltermember']['boss']['typeval']),
 				      $bosslist),
 
 			$form->select(array('desc'	=> $this->bbf('fm_callfiltermember_ringseconds-boss'),
 					    'name'	=> 'callfiltermember[boss][ringseconds]',
 					    'labelid'	=> 'callfiltermember-ringseconds-boss',
 					    'key'	=> false,
-					    'bbf'	=> array('paramvalue','fm_callfiltermember_ringseconds-boss-opt'),
+					    'bbf'	=> 'fm_callfiltermember_ringseconds-boss-opt',
+					    'bbfopt'	=> array('argmode' => 'paramvalue'),
 					    'default'	=> $element['callfiltermember']['ringseconds']['default'],
-					    'value'	=> $info['callfiltermember']['boss']['ringseconds']),
+					    'selected'	=> $info['callfiltermember']['boss']['ringseconds']),
 				      $element['callfiltermember']['ringseconds']['value']);
 	else:
 		echo	'<div class="txt-center">',
@@ -153,14 +158,14 @@ endif;
 <?php
 	if($secretary['list'] !== false):
 ?>
-	<div id="callfiltermember-secretarylist" class="fm-field fm-multilist">
+	<div id="callfiltermember-secretarylist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'callfiltermember-secretarylist',
 					       'label'		=> false,
 					       'id'		=> 'it-callfiltermember-secretarylist',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false,
+					       'paragraph'		=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
 					 $secretary['list']);?>
@@ -191,7 +196,7 @@ endif;
 					       'id'		=> 'it-callfiltermember-secretary',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false,
+					       'paragraph'		=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
 					 $secretary['slt']);?>
@@ -226,11 +231,11 @@ endif;
 ?>
 </fieldset>
 
-<div class="fm-field fm-description">
+<div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-callfilter-description" for="it-callfilter-description"><?=$this->bbf('fm_callfilter_description');?></label>
 	</p>
-	<?=$form->textarea(array('field'	=> false,
+	<?=$form->textarea(array('paragraph'	=> false,
 				 'label'	=> false,
 				 'name'		=> 'callfilter[description]',
 				 'id'		=> 'it-callfilter-description',

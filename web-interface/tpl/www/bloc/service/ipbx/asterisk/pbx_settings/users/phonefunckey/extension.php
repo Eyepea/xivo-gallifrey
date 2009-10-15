@@ -23,7 +23,7 @@ $form = &$this->get_module('form');
 $fkdata = $this->get_var('fkdata');
 
 $inputtxt = array();
-$inputtxt['field'] = false;
+$inputtxt['paragraph'] = false;
 $inputtxt['name'] = 'phonefunckey[typeval][]';
 $inputtxt['label'] = false;
 $inputtxt['id'] = 'it-phonefunckey-extension-typeval';

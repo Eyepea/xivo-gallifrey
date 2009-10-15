@@ -24,7 +24,7 @@ $fkdata = $this->get_var('fkdata');
 $agenttype = $this->get_var('agenttype');
 
 $inputhidden = array();
-$inputhidden['field'] = false;
+$inputhidden['paragraph'] = false;
 $inputhidden['name'] = 'phonefunckey[typeval][]';
 $inputhidden['label'] = false;
 $inputhidden['id'] = 'it-phonefunckey-'.$agenttype.'-typeval';

@@ -29,7 +29,8 @@ echo	$form->select(array('desc'	=> $this->bbf('fm_ipbxapplication_monitor-filefo
 			    'name'	=> 'ipbxapplication[monitor][fileformat]',
 			    'labelid'	=> 'ipbxapplication-monitor-fileformat',
 			    'key'	=> false,
-			    'bbf'	=> array('paramvalue','ast_format_name_info'),
+			    'bbf'	=> 'ast_format_name_info',
+			    'bbfopt'	=> array('argmode' => 'paramvalue'),
 			    'default'	=> $apparg_monitor['fileformat']['default']),
 		      $apparg_monitor['fileformat']['value']),
 

@@ -46,28 +46,30 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 	$form->select(array('desc'	=> $this->bbf('fm_securitylayer'),
 			    'name'	=> 'securitylayer',
 			    'labelid'	=> 'securitylayer',
-			    'key'	=> false,
 			    'empty'	=> true,
-			    'bbf'	=> array('paramvalue','fm_securitylayer-opt'),
+			    'key'	=> false,
+			    'bbf'	=> 'fm_securitylayer-opt',
+			    'bbfopt'	=> array('argmode' => 'paramvalue'),
 			    'default'	=> $element['securitylayer']['default'],
-			    'value'	=> $info['securitylayer']),
+			    'selected'	=> $info['securitylayer']),
 		      $element['securitylayer']['value']),
 
 	$form->select(array('desc'	=> $this->bbf('fm_protocolversion'),
 			    'name'	=> 'protocolversion',
 			    'labelid'	=> 'protocolversion',
 			    'key'	=> false,
-			    'bbf'	=> array('paramvalue','fm_protocolversion-opt'),
+			    'bbf'	=> 'fm_protocolversion-opt',
+			    'bbfopt'	=> array('argmode' => 'paramvalue'),
 			    'default'	=> $element['protocolversion']['default'],
-			    'value'	=> $info['protocolversion']),
+			    'selected'	=> $info['protocolversion']),
 		      $element['protocolversion']['value']);
 
 ?>
-<div class="fm-field fm-description">
+<div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-description" for="it-description"><?=$this->bbf('fm_description');?></label>
 	</p>
-	<?=$form->textarea(array('field'	=> false,
+	<?=$form->textarea(array('paragraph'	=> false,
 				 'label'	=> false,
 				 'name'		=> 'description',
 				 'id'		=> 'it-description',

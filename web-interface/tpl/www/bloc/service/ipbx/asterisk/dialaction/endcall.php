@@ -29,21 +29,22 @@ echo	'<div id="fd-dialaction-',$event,'-endcall-actiontype" class="b-nodisplay">
 			    'name'	=> 'dialaction['.$event.'][action]',
 			    'labelid'	=> 'dialaction-'.$event.'-endcall-action',
 			    'key'	=> false,
-			    'bbf'	=> array('paramvalue','fm_dialaction_endcall-action-opt'),
+			    'bbf'	=> 'fm_dialaction_endcall-action-opt',
+			    'bbfopt'	=> array('argmode' => 'paramvalue'),
 			    'default'	=> $element['dialaction']['endcall']['default'],
-			    'value'	=> $this->get_varra('dialaction',array($event,'endcall','action'))),
+			    'selected'	=> $this->get_var('dialaction',$event,'endcall','action')),
 		      $element['dialaction']['endcall']['value'],
 		      'onchange="xivo_ast_chg_dialaction_actionarg(\''.$dhtml->escape($event).'\',\'endcall\');"'),
 	$form->text(array('desc'	=> $this->bbf('fm_dialaction_endcall-busy-actionarg1'),
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-endcall-busy-actionarg1',
 			  'size'	=> 10,
-			  'value'	=> $this->get_varra('dialaction',array($event,'busy','actionarg1')))),
+			  'value'	=> $this->get_var('dialaction',$event,'busy','actionarg1'))),
 	$form->text(array('desc'	=> $this->bbf('fm_dialaction_endcall-congestion-actionarg1'),
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-endcall-congestion-actionarg1',
 			  'size'	=> 10,
-			  'value'	=> $this->get_varra('dialaction',array($event,'congestion','actionarg1'))));
+			  'value'	=> $this->get_var('dialaction',$event,'congestion','actionarg1')));
 
 	if($event === 'voicemenuflow'):
 		echo	$form->button(array('name'	=> 'add-defapplication-endcall',

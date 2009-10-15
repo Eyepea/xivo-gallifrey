@@ -59,7 +59,7 @@ endif;
 				    'name'	=> 'dirname',
 				    'labelid'	=> 'it-dirname',
 				    'key'	=> false,
-				    'value'	=> $info['dirname']),
+				    'selected'	=> $info['dirname']),
 			      $this->get_var('list_dirs')),
 
 		$form->submit(array('name'	=> 'submit',

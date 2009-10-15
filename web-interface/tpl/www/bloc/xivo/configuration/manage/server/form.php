@@ -49,11 +49,11 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 			      'default'	=> $element['ssl']['default'],
 			      'checked'	=> $info['ssl']));
 ?>
-<div class="fm-field fm-description">
+<div class="fm-paragraph fm-description">
 	<p>
 		<label id="lb-description" for="it-description"><?=$this->bbf('fm_description');?></label>
 	</p>
-	<?=$form->textarea(array('field'	=> false,
+	<?=$form->textarea(array('paragraph'	=> false,
 				 'label'	=> false,
 				 'name'		=> 'description',
 				 'id'		=> 'it-description',

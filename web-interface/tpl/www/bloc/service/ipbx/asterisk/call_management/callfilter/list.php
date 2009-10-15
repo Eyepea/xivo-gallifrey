@@ -86,7 +86,7 @@
 						 'label'	=> false,
 						 'id'		=> 'it-callfilters-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-callfilters-<?=$i?>" id="lb-callfilters-<?=$i?>">

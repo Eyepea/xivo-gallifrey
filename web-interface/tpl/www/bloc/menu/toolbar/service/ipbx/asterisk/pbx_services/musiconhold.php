@@ -43,15 +43,15 @@ endif;
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'list'));
 ?>
-	<div class="fm-field">
+	<div class="fm-paragraph">
 <?php
 		echo	$form->select(array('name'	=> 'cat',
 					    'id'	=> 'it-toolbar-category',
+					    'empty'	=> $this->bbf('toolbar_fm_category'),
 					    'key'	=> true,
 					    'altkey'	=> 'category',
-					    'field'	=> false,
-					    'empty'	=> $this->bbf('toolbar_fm_category'),
-					    'value'	=> $cat),
+					    'paragraph'	=> false,
+					    'selected'	=> $cat),
 				      $this->get_var('list_cats'),
 				      'onchange="this.form[\'act\'].value = this.value === \'\'
 									    ? \'list\'

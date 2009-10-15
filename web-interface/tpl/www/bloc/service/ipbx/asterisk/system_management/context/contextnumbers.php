@@ -25,7 +25,7 @@ $element = $this->get_var('element');
 $type = $this->get_var('type');
 $list = $this->get_var('list');
 $nb = $this->get_var('count');
-$err = $this->get_varra('error',array('contextnumbers',$type));
+$err = $this->get_var('error','contextnumbers',$type);
 
 ?>
 <table cellspacing="0" cellpadding="0" border="0">
@@ -55,9 +55,9 @@ if($list !== false):
 			$errdisplay = '';
 		endif;
 ?>
-	<tr class="fm-field<?=$errdisplay?>">
+	<tr class="fm-paragraph<?=$errdisplay?>">
 		<td class="td-left txt-center">
-			<?=$form->text(array('field'	=> false,
+			<?=$form->text(array('paragraph'	=> false,
 					     'name'	=> 'contextnumbers['.$type.'][numberbeg][]',
 					     'id'	=> false,
 					     'label'	=> false,
@@ -66,7 +66,7 @@ if($list !== false):
 					     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
 		</td>
 		<td>
-			<?=$form->text(array('field'	=> false,
+			<?=$form->text(array('paragraph'	=> false,
 					     'name'	=> 'contextnumbers['.$type.'][numberend][]',
 					     'id'	=> false,
 					     'label'	=> false,
@@ -96,9 +96,9 @@ endif;
 </table>
 <table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 	<tbody id="ex-contextnumbers-<?=$type?>">
-	<tr class="fm-field">
+	<tr class="fm-paragraph">
 		<td class="td-left txt-center">
-			<?=$form->text(array('field'	=> false,
+			<?=$form->text(array('paragraph'	=> false,
 					     'name'	=> 'contextnumbers['.$type.'][numberbeg][]',
 					     'id'	=> false,
 					     'label'	=> false,
@@ -107,7 +107,7 @@ endif;
 					     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
 		</td>
 		<td>
-			<?=$form->text(array('field'	=> false,
+			<?=$form->text(array('paragraph'	=> false,
 					     'name'	=> 'contextnumbers['.$type.'][numberend][]',
 					     'id'	=> false,
 					     'label'	=> false,

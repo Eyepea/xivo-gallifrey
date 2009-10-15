@@ -78,7 +78,7 @@
 						 'label'	=> false,
 						 'id'		=> 'it-voicemenus-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-voicemenus-<?=$i?>" id="lb-voicemenus-<?=$i?>">

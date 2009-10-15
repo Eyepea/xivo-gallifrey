@@ -29,12 +29,12 @@ echo	'<div id="fd-dialaction-',$event,'-extension-actiontype" class="b-nodisplay
 			  'name'	=> 'dialaction['.$event.'][actionarg1]',
 			  'labelid'	=> 'dialaction-'.$event.'-extension-actionarg1',
 			  'size'	=> 15,
-			  'value'	=> $this->get_varra('dialaction',array($event,'extension','actionarg1')))),
+			  'value'	=> $this->get_var('dialaction',$event,'extension','actionarg1'))),
 	$form->text(array('desc'	=> $this->bbf('fm_dialaction_extension-actionarg2'),
 			  'name'	=> 'dialaction['.$event.'][actionarg2]',
 			  'labelid'	=> 'dialaction-'.$event.'-extension-actionarg2',
 			  'size'	=> 15,
-			  'value'	=> $this->get_varra('dialaction',array($event,'extension','actionarg2'))));
+			  'value'	=> $this->get_var('dialaction',$event,'extension','actionarg2')));
 
 	if($event === 'voicemenuflow'):
 		echo	$form->button(array('name'	=> 'add-defapplication-extension',

@@ -48,26 +48,26 @@ $context_js = $dhtml->escape($context);
 		$form->hidden(array('name'	=> 'act',
 				    'value'	=> 'list'));
 ?>
-	<div class="fm-field">
+	<div class="fm-paragraph">
 <?php
 		echo	$form->text(array('name'	=> 'search',
 					  'id'		=> 'it-toolbar-search',
 					  'size'	=> 20,
-					  'field'	=> false,
+					  'paragraph'	=> false,
 					  'value'	=> $search,
 					  'default'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->image(array('name'	=> 'submit',
 					   'id'		=> 'it-toolbar-subsearch',
 					   'src'	=> $url->img('img/menu/top/toolbar/bt-search.gif'),
-					   'field'	=> false,
+					   'paragraph'	=> false,
 					   'alt'	=> $this->bbf('toolbar_fm_search'))),
 
 			$form->select(array('name'	=> 'context',
 					    'id'	=> 'it-toolbar-context',
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'empty'	=> $this->bbf('toolbar_fm_context'),
-					    'value'	=> $context),
+					    'selected'	=> $context),
 				      $this->get_var('contexts'),
 				      'style="margin-left: 20px;"');
 ?>

@@ -24,17 +24,18 @@ $fkdata = $this->get_var('fkdata');
 $supelem = $this->get_var('supelem');
 
 $select = array();
-$select['field'] = false;
+$select['paragraph'] = false;
 $select['name'] = 'phonefunckey[supervision][]';
 $select['label'] = false;
 $select['key'] = false;
-$select['bbf'] = array('paramvalue','fm_phonefunckey_supervision-opt');
+$select['bbf'] = 'fm_phonefunckey_supervision-opt';
+$select['bbfopt'] = array('argmode' => 'paramvalue');
 $select['id'] = 'it-phonefunckey-supervision';
 $select['default'] = $supelem['default'];
 
 if($fkdata['ex'] === false):
 	$select['id'] .= '-'.dwho_uint($fkdata['incr']);
-	$select['value'] = $supelem['value'];
+	$select['selected'] = $supelem['value'];
 else:
 	$select['disabled'] = true;
 endif;

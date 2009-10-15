@@ -108,12 +108,12 @@ function dwho_bool($bool)
 	return((bool) $bool);
 }
 
-function dwho_empty($val,$str=true)
+function dwho_empty($val,$var=true)
 {
 	if(empty($val) === false
 	|| $val === '0'
 	|| $val === 0
-	|| ($str !== true && $val !== $str) === true)
+	|| ($var !== true && $val !== $var) === true)
 		return(false);
 
 	return(true);

@@ -48,7 +48,7 @@ $dhtml = &$this->get_module('dhtml');
 		$form->select(array('desc'	=> $this->bbf('fm_language'),
 				    'name'	=> 'language',
 				    'id'	=> 'it-language',
-				    'value'	=> DWHO_I18N_BABELFISH_LANGUAGE),
+				    'selected'	=> DWHO_I18N_BABELFISH_LANGUAGE),
 			      $this->get_var('language')),
 
 		$form->submit(array('name'	=> 'submit',

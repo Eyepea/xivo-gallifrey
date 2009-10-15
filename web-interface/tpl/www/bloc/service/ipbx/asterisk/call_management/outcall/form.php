@@ -51,7 +51,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['outcall']['context']['default'],
-				    'value'	=> $info['outcall']['context']),
+				    'selected'	=> $info['outcall']['context']),
 			      $context_list);
 else:
 	echo	'<div id="fd-outcall-context" class="txt-center">',
@@ -73,16 +73,17 @@ endif;
 				    'labelid'	=> 'outcall-stripnum',
 				    'key'	=> false,
 				    'default'	=> $element['outcall']['stripnum']['default'],
-				    'value'	=> $info['outcall']['stripnum']),
+				    'selected'	=> $info['outcall']['stripnum']),
 			      $element['outcall']['stripnum']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_mode'),
 				    'name'	=> 'outcall[mode]',
 				    'labelid'	=> 'outcall-mode',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_outcall_mode-opt'),
+				    'bbf'	=> 'fm_outcall_mode-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['outcall']['mode']['default'],
-				    'value'	=> ''),
+				    'selected'	=> ''),
 			      $element['outcall']['mode']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_outcall_prefix'),
@@ -95,10 +96,10 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_numlen'),
 				    'name'	=> 'outcall[numlen]',
 				    'labelid'	=> 'outcall-numlen',
-				    'key'	=> false,
 				    'empty'	=> true,
+				    'key'	=> false,
 				    'default'	=> $element['outcall']['numlen']['default'],
-				    'value'	=> ''),
+				    'selected'	=> ''),
 			      $element['outcall']['numlen']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_outcall_exten'),
@@ -151,12 +152,12 @@ endif;
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
 				    'default'	=> $element['outcall']['hangupringtime']['default'],
-				    'value'	=> $info['outcall']['hangupringtime']),
+				    'selected'	=> $info['outcall']['hangupringtime']),
 			      $element['outcall']['hangupringtime']['value']);
 
 if($outcalltrunk['list'] !== false):
 ?>
-<div id="outcalltrunklist" class="fm-field fm-multilist">
+<div id="outcalltrunklist" class="fm-paragraph fm-multilist">
 	<p>
 		<label id="lb-outcalltrunklist" for="it-outcalltrunklist"><?=$this->bbf('fm_outcalltrunk');?></label>
 	</p>
@@ -168,7 +169,7 @@ if($outcalltrunk['list'] !== false):
 				       'altkey'		=> 'id',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false),
+				       'paragraph'		=> false),
 				 $outcalltrunk['list']);?>
 	</div>
 
@@ -197,7 +198,7 @@ if($outcalltrunk['list'] !== false):
 				       'altkey'		=> 'id',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'field'		=> false),
+				       'paragraph'		=> false),
 				 $outcalltrunk['slt']);?>
 		<div class="bt-updown">
 			<a href="#"
@@ -233,7 +234,7 @@ endif;
 <?php
 	if($rightcall['list'] !== false):
 ?>
-	<div id="rightcalllist" class="fm-field fm-multilist">
+	<div id="rightcalllist" class="fm-paragraph fm-multilist">
 		<div class="slt-outlist">
 			<?=$form->select(array('name'		=> 'rightcalllist',
 					       'label'		=> false,
@@ -243,7 +244,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rightcall['list']);?>
 		</div>
 
@@ -274,7 +275,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'field'		=> false),
+					       'paragraph'		=> false),
 					 $rightcall['slt']);?>
 		</div>
 	</div>

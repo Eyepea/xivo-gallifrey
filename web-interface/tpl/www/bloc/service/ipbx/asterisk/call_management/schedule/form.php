@@ -45,8 +45,8 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['schedule']['context']['default'],
-				    'value'	=> $info['schedule']['context']),
-				    $context_list);
+				    'selected'	=> $info['schedule']['context']),
+			      $context_list);
 else:
 	echo	'<div id="fd-schedule-context" class="txt-center">',
 		$url->href_html($this->bbf('create_context'),
@@ -62,7 +62,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 			      'default'	=> $element['schedule']['publicholiday']['default']));
 ?>
 <div class="sb-list">
-<table cellspacing="0" cellpadding="0" border="0" class="fm-field">
+<table cellspacing="0" cellpadding="0" border="0" class="fm-paragraph">
 	<thead>
 	<tr class="sb-top">
 		<th class="th-left"><?=$this->bbf('col_schedule-time');?></th>
@@ -75,116 +75,122 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 		<td class="txt-left"><?=$this->bbf('schedule_hour');?></td>
 		<td>
 <?php
-			echo	$form->select(array('field'	=> false,
+			echo	$form->select(array('paragraph'	=> false,
 						    'name'	=> 'schedule[timebeg][hour]',
 						    'labelid'	=> 'schedule-timehourbeg',
 						    'empty'	=> true,
 						    'key'	=> false,
 						    'default'	=> $element['schedule']['timehourbeg']['default'],
-						    'value'	=> $info['schedule']['timehourbeg']),
-						    $element['schedule']['timehourbeg']['value']),
-				$form->select(array('field'	=> false,
+						    'selected'	=> $info['schedule']['timehourbeg']),
+					      $element['schedule']['timehourbeg']['value']),
+
+				$form->select(array('paragraph'	=> false,
 						    'name'	=> 'schedule[timebeg][min]',
 						    'labelid'	=> 'schedule-timeminbeg',
 						    'empty'	=> true,
 						    'key'	=> false,
 						    'default'	=> $element['schedule']['timeminbeg']['default'],
-						    'value'	=> $info['schedule']['timeminbeg']),
-						    $element['schedule']['timeminbeg']['value']);
+						    'selected'	=> $info['schedule']['timeminbeg']),
+					      $element['schedule']['timeminbeg']['value']);
 ?>
 		</td>
 		<td class="td-right">
 <?php
-			echo	$form->select(array('field'	=> false,
+			echo	$form->select(array('paragraph'	=> false,
 						    'name'	=> 'schedule[timeend][hour]',
 						    'labelid'	=> 'schedule-timehourend',
 						    'empty'	=> true,
 						    'key'	=> false,
 						    'default'	=> $element['schedule']['timehourend']['default'],
-						    'value'	=> $info['schedule']['timehourend']),
-						    $element['schedule']['timehourend']['value']),
-				$form->select(array('field'	=> false,
+						    'selected'	=> $info['schedule']['timehourend']),
+					      $element['schedule']['timehourend']['value']),
+
+				$form->select(array('paragraph'	=> false,
 						    'name'	=> 'schedule[timeend][min]',
 						    'labelid'	=> 'schedule-timeminend',
 						    'empty'	=> true,
 						    'key'	=> false,
 						    'default'	=> $element['schedule']['timeminend']['default'],
-						    'value'	=> $info['schedule']['timeminend']),
-						    $element['schedule']['timeminend']['value']);
+						    'selected'	=> $info['schedule']['timeminend']),
+					      $element['schedule']['timeminend']['value']);
 ?>
 		</td>
 	</tr>
 	<tr>
 		<td class="txt-left"><?=$this->bbf('schedule_dayname');?></td>
 		<td>
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> 'schedule[daynamebeg]',
 					       'labelid'	=> 'schedule-daynamebeg',
 					       'empty'		=> true,
 					       'key'		=> false,
-					       'bbf'		=> array('paramvalue','date_Day'),
+					       'bbf'		=> 'date_Day',
+					       'bbfopt'		=> array('argmode' => 'paramvalue'),
 					       'default'	=> $element['schedule']['daynamebeg']['default'],
-					       'value'		=> $info['schedule']['daynamebeg']),
-					       $element['schedule']['daynamebeg']['value']);?>
+					       'selected'	=> $info['schedule']['daynamebeg']),
+					 $element['schedule']['daynamebeg']['value']);?>
 		</td>
 		<td class="td-right">
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> 'schedule[daynameend]',
 					       'labelid'	=> 'schedule-daynameend',
 					       'empty'		=> true,
 					       'key'		=> false,
-					       'bbf'		=> array('paramvalue','date_Day'),
+					       'bbf'		=> 'date_Day',
+					       'bbfopt'		=> array('argmode' => 'paramvalue'),
 					       'default'	=> $element['schedule']['daynameend']['default'],
-					       'value'		=> $info['schedule']['daynameend']),
-					       $element['schedule']['daynameend']['value']);?>
+					       'selected'	=> $info['schedule']['daynameend']),
+					 $element['schedule']['daynameend']['value']);?>
 		</td>
 	</tr>
 	<tr>
 		<td class="txt-left"><?=$this->bbf('schedule_daynum');?></td>
 		<td>
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> 'schedule[daynumbeg]',
 					       'labelid'	=> 'schedule-daynumbeg',
 					       'empty'		=> true,
 					       'key'		=> false,
 					       'default'	=> $element['schedule']['daynumbeg']['default'],
-					       'value'		=> $info['schedule']['daynumbeg']),
-					       $element['schedule']['daynumbeg']['value']);?>
+					       'selected'	=> $info['schedule']['daynumbeg']),
+					 $element['schedule']['daynumbeg']['value']);?>
 		</td>
 		<td class="td-right">
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> 'schedule[daynumend]',
 					       'labelid'	=> 'schedule-daynumend',
 					       'empty'		=> true,
 					       'key'		=> false,
 					       'default'	=> $element['schedule']['daynumend']['default'],
-					       'value'		=> $info['schedule']['daynumend']),
-					       $element['schedule']['daynumend']['value']);?>
+					       'selected'	=> $info['schedule']['daynumend']),
+					 $element['schedule']['daynumend']['value']);?>
 		</td>
 	</tr>
 	<tr>
 		<td class="txt-left"><?=$this->bbf('schedule_month');?></td>
 		<td>
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> 'schedule[monthbeg]',
 					       'labelid'	=> 'schedule-monthbeg',
 					       'empty'		=> true,
 					       'key'		=> false,
-					       'bbf'		=> array('paramvalue','date_Month'),
+					       'bbf'		=> 'date_Month',
+					       'bbfopt'		=> array('argmode' => 'paramvalue'),
 					       'default'	=> $element['schedule']['monthbeg']['default'],
-					       'value'		=> $info['schedule']['monthbeg']),
-					       $element['schedule']['monthbeg']['value']);?>
+					       'selected'	=> $info['schedule']['monthbeg']),
+					 $element['schedule']['monthbeg']['value']);?>
 		</td>
 		<td class="td-right">
-			<?=$form->select(array('field'		=> false,
+			<?=$form->select(array('paragraph'		=> false,
 					       'name'		=> 'schedule[monthend]',
 					       'labelid'	=> 'schedule-monthend',
 					       'empty'		=> true,
 					       'key'		=> false,
-					       'bbf'		=> array('paramvalue','date_Month'),
+					       'bbf'		=> 'date_Month',
+					       'bbfopt'		=> array('argmode' => 'paramvalue'),
 					       'default'	=> $element['schedule']['monthend']['default'],
-					       'value'		=> $info['schedule']['monthend']),
-					       $element['schedule']['monthend']['value']);?>
+					       'selected'	=> $info['schedule']['monthend']),
+					 $element['schedule']['monthend']['value']);?>
 		</td>
 	</tr>
 	</tbody>

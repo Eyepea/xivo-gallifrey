@@ -189,17 +189,15 @@ class dwho_tpl
 
 	function set_var($name,$value)
 	{
-		$name = (string) $name;
-
-		if($name === '')
+		if(dwho_has_len($name) === false)
 			return(false);
 
-		$this->_var[$name] = &$value;
+		$this->_var[(string) $name] = &$value;
 
 		return(true);
 	}
 
-	function set_varra(&$a)
+	function set_vars(&$a)
 	{
 		$a = (array) $a;
 
@@ -210,48 +208,49 @@ class dwho_tpl
 			$this->set_var($k,$v);
 	}
 
-	function get_var($name)
+	function get_var()
 	{
-		$r = null;
-
-		$name = (string) $name;
-
-		if(isset($this->_var[$name]) === true)
-			$r = &$this->_var[$name];
-
-		return($r);
-	}
-
-	function get_varra($name,$keys)
-	{
-		$name = (string) $name;
-
-		if(is_scalar($keys) === true)
-		{
-			$keys = (string) $keys;
-
-			if(dwho_issa($name,$this->_var) === false || isset($this->_var[$name][$keys]) === false)
-				return(null);
-
-			return($this->_var[$name][$keys]);
-		}
-
-		$keys = array_values((array) $keys);
-
-		if(dwho_issa($name,$this->_var) === false || ($nb = count($keys)) === 0)
+		if(($argc = func_num_args()) === 0)
 			return(null);
 
-		$ref = &$this->_var[$name];
+		$name = (string) func_get_arg(0);
 
-		for($i = 0;$i < $nb;$i++)
+		if(isset($this->_var[$name]) === false)
+			return(null);
+
+		$ref = &$this->_var[$name]; 
+
+		if($argc === 1)
+			return($ref);
+		else if(is_array($this->_var[$name]) === false)
+			return(null);
+
+		for($i = 1;$i < $argc;$i++)
 		{
-			if(dwho_ak($keys[$i],$ref) === false)
+			$key = func_get_arg($i);
+
+			if(dwho_ak($key,$ref) === false)
 				return(null);
 
-			$ref = &$ref[$keys[$i]];
+			$ref = &$ref[$key];
 		}
 
 		return($ref);
+	}
+
+	function get_var_default()
+	{
+		if(($argc = func_num_args()) < 2)
+			return(false);
+
+		$args = func_get_args();
+		$default = $args[$argc - 1];
+		unset($args[$argc - 1]);
+
+		if(($r = call_user_func_array(array(&$this,'get_var'),$args)) !== null)
+			return($r);
+
+		return($default);
 	}
 
 	function set_file($name,$value)
@@ -438,7 +437,7 @@ class dwho_tpl
 			return(false);
 
 		$this->set_file('tpl',$path);
-		$this->set_varra($arr);
+		$this->set_vars($arr);
 
 		if($this->get_option('overload_i18n') !== false)
 			$this->load_i18n_file($file);

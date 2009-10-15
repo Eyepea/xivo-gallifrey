@@ -37,8 +37,9 @@ endif;
 				    'name'	=> 'phonebook[title]',
 				    'labelid'	=> 'phonebook-title',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_phonebook_title-opt'),
-				    'value'	=> $info['phonebook']['title'],
+				    'bbf'	=> 'fm_phonebook_title-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $info['phonebook']['title'],
 				    'default'	=> $element['phonebook']['title']['default']),
 			      $element['phonebook']['title']['value']),
 
@@ -75,7 +76,7 @@ endif;
 				  'labelid'	=> 'phonebooknumber-mobile',
 				  'size'	=> 15,
 				  'default'	=> $element['phonebooknumber']['number']['default'],
-				  'value'	=> $this->get_varra('phonebooknumber',array('mobile','number')))),
+				  'value'	=> $this->get_var('phonebooknumber','mobile','number'))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_phonebook_email'),
 				  'name'	=> 'phonebook[email]',
@@ -91,11 +92,11 @@ endif;
 				  'default'	=> $element['phonebook']['url']['default'],
 				  'value'	=> $info['phonebook']['url']));
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-phonebook-description" for="it-phonebook-description"><?=$this->bbf('fm_phonebook_description');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
 					 'name'		=> 'phonebook[description]',
 					 'id'		=> 'it-phonebook-description',

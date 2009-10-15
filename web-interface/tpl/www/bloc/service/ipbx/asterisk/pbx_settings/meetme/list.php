@@ -86,7 +86,7 @@
 						 'label'	=> false,
 						 'id'		=> 'it-meetme-'.$i,
 						 'checked'	=> false,
-						 'field'	=> false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>">

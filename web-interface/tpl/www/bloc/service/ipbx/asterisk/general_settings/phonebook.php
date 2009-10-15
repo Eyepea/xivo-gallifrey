@@ -88,7 +88,7 @@ endif;
 ?>
 
 <div id="sb-part-first">
-	<div id="accesslist" class="fm-field fm-multilist">
+	<div id="accesslist" class="fm-paragraph fm-multilist">
 		<div class="slt-list">
 <?php
 		echo	$form->select(array('name'	=> 'accessfeatures[]',
@@ -98,7 +98,7 @@ endif;
 					    'altkey'	=> 'host',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['accessfeatures']);
 ?>
 		<div class="bt-adddelete">
@@ -128,7 +128,7 @@ endif;
 <?php
 	if($info['xivoserver']['list'] !== false):
 ?>
-		<div id="xivoserverlist" class="fm-field fm-multilist">
+		<div id="xivoserverlist" class="fm-paragraph fm-multilist">
 			<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'xivoserverlist',
@@ -138,7 +138,7 @@ endif;
 					    'altkey'	=> 'id',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['xivoserver']['list']);
 ?>
 			</div>
@@ -168,7 +168,7 @@ endif;
 					    'altkey'	=> 'id',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['xivoserver']['slt']);
 ?>
 			</div>
@@ -189,7 +189,7 @@ endif;
 <?php
 	if($info['ldapfilter']['list'] !== false):
 ?>
-		<div id="ldapfilterlist" class="fm-field fm-multilist">
+		<div id="ldapfilterlist" class="fm-paragraph fm-multilist">
 			<div class="slt-outlist">
 <?php
 		echo	$form->select(array('name'	=> 'ldapfilterlist',
@@ -199,7 +199,7 @@ endif;
 					    'altkey'	=> 'id',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['ldapfilter']['list']);
 ?>
 			</div>
@@ -228,7 +228,7 @@ endif;
 					    'altkey'	=> 'id',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['ldapfilter']['slt']);
 ?>
 			</div>

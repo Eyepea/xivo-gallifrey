@@ -43,7 +43,7 @@ endif;
 $codec_active = empty($allow) === false;
 $host_static = ($host !== '' && $host !== 'dynamic');
 
-if(($reg_active = $this->get_varra('info',array('register','commented'))) !== null):
+if(($reg_active = $this->get_var('info','register','commented')) !== null):
 	$reg_active = dwho_bool($reg_active) === false;
 endif;
 
@@ -92,7 +92,7 @@ endif;
 				    'bbf'	=> 'fm_protocol_host-type-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['host']['default'],
-				    'value'	=> ($host_static === true ? 'static' : $host)),
+				    'selected'	=> ($host_static === true ? 'static' : $host)),
 			      $element['protocol']['host-type']['value'],
 			      'onchange="xivo_chg_attrib(\'ast_fm_trunk_host\',
 							 \'fd-protocol-host-static\',
@@ -112,7 +112,7 @@ endif;
 				    'bbf'	=> 'fm_protocol_type-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['type']['default'],
-				    'value'	=> $info['protocol']['type']),
+				    'selected'	=> $info['protocol']['type']),
 			      $element['protocol']['type']['value'],
 			      'onchange="xivo_ast_chg_trunk_type(this.value);"');
 
@@ -120,21 +120,21 @@ endif;
 		echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_context'),
 					    'name'	=> 'protocol[context]',
 					    'labelid'	=> 'protocol-context',
+					    'empty'	=> true,
 					    'key'	=> 'identity',
 					    'altkey'	=> 'name',
-					    'empty'	=> true,
 					    'default'	=> $element['protocol']['context']['default'],
-					    'value'	=> $info['protocol']['context']),
+					    'selected'	=> $info['protocol']['context']),
 				      $context_list);
 	endif;
 
 	echo	$form->select(array('desc'	=> $this->bbf('fm_protocol_language'),
 				    'name'	=> 'protocol[language]',
 				    'labelid'	=> 'protocol-language',
-				    'key'	=> false,
 				    'empty'	=> true,
+				    'key'	=> false,
 				    'default'	=> $element['protocol']['language']['default'],
-				    'value'	=> $info['protocol']['language']),
+				    'selected'	=> $info['protocol']['language']),
 			      $element['protocol']['language']['value']);
 ?>
 </div>
@@ -155,28 +155,28 @@ endif;
 				  'labelid'	=> 'register-username',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['username']['default'],
-				  'value'	=> $this->get_varra('info',array('register','username')))),
+				  'value'	=> $this->get_var('info','register','username'))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_password'),
 				  'name'	=> 'register[password]',
 				  'labelid'	=> 'register-password',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['password']['default'],
-				  'value'	=> $this->get_varra('info',array('register','password')))),
+				  'value'	=> $this->get_var('info','register','password'))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_host'),
 				  'name'	=> 'register[host]',
 				  'labelid'	=> 'register-host',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['host']['default'],
-				  'value'	=> $this->get_varra('info',array('register','host')))),
+				  'value'	=> $this->get_var('info','register','host'))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_port'),
 				  'name'	=> 'register[port]',
 				  'labelid'	=> 'register-port',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['port']['default'],
-				  'value'	=> $this->get_varra('info',array('register','port'))));
+				  'value'	=> $this->get_var('info','register','port')));
 ?>
 </div>
 
@@ -186,18 +186,20 @@ endif;
 				    'name'	=> 'protocol[qualify]',
 				    'labelid'	=> 'protocol-qualify',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_protocol_qualify-opt'),
+				    'bbf'	=> 'fm_protocol_qualify-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['qualify']['default'],
-				    'value'	=> $info['protocol']['qualify']),
+				    'selected'	=> $info['protocol']['qualify']),
 			      $element['protocol']['qualify']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifysmoothing'),
 				    'name'	=> 'protocol[qualifysmoothing]',
 				    'labelid'	=> 'protocol-qualifysmoothing',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_bool-opt'),
+				    'bbf'	=> 'fm_bool-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['qualifysmoothing']['default'],
-				    'value'	=> $info['protocol']['qualifysmoothing']),
+				    'selected'	=> $info['protocol']['qualifysmoothing']),
 			      $element['protocol']['qualifysmoothing']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqok'),
@@ -210,7 +212,7 @@ endif;
 									'from'		=> 'millisecond',
 									'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['qualifyfreqok']['default'],
-				    'value'	=> $info['protocol']['qualifyfreqok']),
+				    'selected'	=> $info['protocol']['qualifyfreqok']),
 			      $element['protocol']['qualifyfreqok']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_qualifyfreqnotok'),
@@ -223,46 +225,49 @@ endif;
 									'from'		=> 'millisecond',
 									'format'	=> '%M%s%ms')),
 				    'default'	=> $element['protocol']['qualifyfreqnotok']['default'],
-				    'value'	=> $info['protocol']['qualifyfreqnotok']),
+				    'selected'	=> $info['protocol']['qualifyfreqnotok']),
 			      $element['protocol']['qualifyfreqnotok']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_jitterbuffer'),
 				    'name'	=> 'protocol[jitterbuffer]',
 				    'labelid'	=> 'protocol-jitterbuffer',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_bool-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_bool-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['jitterbuffer']['default'],
-				    'value'	=> $info['protocol']['jitterbuffer']),
+				    'selected'	=> $info['protocol']['jitterbuffer']),
 			      $element['protocol']['jitterbuffer']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_forcejitterbuffer'),
 				    'name'	=> 'protocol[forcejitterbuffer]',
 				    'labelid'	=> 'protocol-forcejitterbuffer',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_bool-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_bool-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['forcejitterbuffer']['default'],
-				    'value'	=> $info['protocol']['forcejitterbuffer']),
+				    'selected'	=> $info['protocol']['forcejitterbuffer']),
 			      $element['protocol']['forcejitterbuffer']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_timezone'),
 				    'name'	=> 'protocol[timezone]',
 				    'labelid'	=> 'protocol-timezone',
-				    'key'	=> true,
 				    'empty'	=> true,
+				    'key'	=> true,
 				    'default'	=> $element['protocol']['timezone']['default'],
-				    'value'	=> $info['protocol']['timezone']),
+				    'selected'	=> $info['protocol']['timezone']),
 			      $this->get_var('timezone_list')),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_codecpriority'),
 				    'name'	=> 'protocol[codecpriority]',
 				    'labelid'	=> 'protocol-codecpriority',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_protocol_codecpriority-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_codecpriority-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['codecpriority']['default'],
-				    'value'	=> $info['protocol']['codecpriority']),
+				    'selected'	=> $info['protocol']['codecpriority']),
 			      $element['protocol']['codecpriority']['value']),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_codec-custom'),
@@ -277,11 +282,12 @@ endif;
 				    'name'	=> 'protocol[disallow]',
 				    'labelid'	=> 'protocol-disallow',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_protocol_codec-disallow-opt')),
+				    'bbf'	=> 'fm_protocol_codec-disallow-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue')),
 			      $element['protocol']['disallow']['value']);
 ?>
 
-<div id="codeclist" class="fm-field fm-multilist">
+<div id="codeclist" class="fm-paragraph fm-multilist">
 	<p>
 		<label id="lb-codeclist" for="it-codeclist" onclick="dwho_eid('it-codeclist').focus();">
 			<?=$this->bbf('fm_protocol_codec-allow');?>
@@ -294,9 +300,10 @@ endif;
 					    'id'	=> 'it-codeclist',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> false,
-					    'bbf'	=> array('paramvalue','ast_codec_name_type')),
+					    'bbf'	=> 'ast_codec_name_type',
+					    'bbfopt'	=> array('argmode' => 'paramvalue')),
 				      $element['protocol']['allow']['value']);
 ?>
 	</div>
@@ -327,9 +334,10 @@ endif;
 					    'id'	=> 'it-codec',
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false,
+					    'paragraph'	=> false,
 					    'key'	=> false,
-					    'bbf'	=> array('paramvalue','ast_codec_name_type')),
+					    'bbf'	=> 'ast_codec_name_type',
+					    'bbfopt'	=> array('argmode' => 'paramvalue')),
 				      $allow);
 ?>
 		<div class="bt-updown">
@@ -360,22 +368,23 @@ endif;
 				      'name'	=> 'protocol[sendani]',
 				      'labelid'	=> 'protocol-sendani',
 				      'default'	=> $element['protocol']['sendani']['default'],
-				      'checked'	=> $this->get_varra('info',array('protocol','sendani')))),
+				      'checked'	=> $this->get_var('info','protocol','sendani'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_trunk'),
 				      'name'	=> 'protocol[trunk]',
 				      'labelid'	=> 'protocol-trunk',
 				      'default'	=> $element['protocol']['trunk']['default'],
-				      'checked'	=> $this->get_varra('info',array('protocol','trunk')))),
+				      'checked'	=> $this->get_var('info','protocol','trunk'))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_transfer'),
 				    'name'	=> 'protocol[transfer]',
 				    'labelid'	=> 'protocol-transfer',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_protocol_transfer-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_transfer-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['transfer']['default'],
-				    'value'	=> $info['protocol']['transfer']),
+				    'selected'	=> $info['protocol']['transfer']),
 			      $element['protocol']['transfer']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_port'),
@@ -410,9 +419,10 @@ endif;
 				    'name'	=> 'protocol[auth]',
 				    'labelid'	=> 'protocol-auth',
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_protocol_auth-opt'),
+				    'bbf'	=> 'fm_protocol_auth-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['auth']['default'],
-				    'value'	=> $info['protocol']['auth']),
+				    'selected'	=> $info['protocol']['auth']),
 			      $element['protocol']['auth']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_inkeys'),
@@ -432,42 +442,45 @@ endif;
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_encryption'),
 				    'name'	=> 'protocol[encryption]',
 				    'labelid'	=> 'protocol-encryption',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_protocol_encryption-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_encryption-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['encryption']['default'],
-				    'value'	=> $info['protocol']['encryption']),
+				    'selected'	=> $info['protocol']['encryption']),
 			      $element['protocol']['encryption']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_maxauthreq'),
 				    'name'	=> 'protocol[maxauthreq]',
 				    'labelid'	=> 'protocol-maxauthreq',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_protocol_maxauthreq-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_maxauthreq-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['maxauthreq']['default'],
-				    'value'	=> $info['protocol']['maxauthreq']),
+				    'selected'	=> $info['protocol']['maxauthreq']),
 			      $element['protocol']['maxauthreq']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_adsi'),
 				    'name'	=> 'protocol[adsi]',
 				    'labelid'	=> 'protocol-adsi',
-				    'key'	=> false,
 				    'empty'	=> true,
-				    'bbf'	=> array('paramvalue','fm_bool-opt'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_bool-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['adsi']['default'],
-				    'value'	=> $info['protocol']['adsi']),
+				    'selected'	=> $info['protocol']['adsi']),
 			      $element['protocol']['adsi']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_amaflags'),
 				    'name'	=> 'protocol[amaflags]',
 				    'labelid'	=> 'protocol-amaflags',
-				    'key'	=> false,
 				    'empty'	=> true,
+				    'key'	=> false,
 				    'bbf'	=> 'ast_amaflag_name_info',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['amaflags']['default'],
-				    'value'	=> $info['protocol']['amaflags']),
+				    'selected'	=> $info['protocol']['amaflags']),
 			      $element['protocol']['amaflags']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_accountcode'),
@@ -477,13 +490,13 @@ endif;
 				  'default'	=> $element['protocol']['accountcode']['default'],
 				  'value'	=> $info['protocol']['accountcode']));
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-trunkfeatures-description" for="it-trunkfeatures-description">
 				<?=$this->bbf('fm_trunkfeatures_description');?>
 			</label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
 					 'name'		=> 'trunkfeatures[description]',
 					 'id'		=> 'it-trunkfeatures-description',

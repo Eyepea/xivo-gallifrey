@@ -152,11 +152,11 @@ $dhtml->write_js($js_result);
 				    'value'	=> 'search'));
 ?>
 
-<div class="fm-field fm-desc-inline">
+<div class="fm-paragraph fm-desc-inline">
 	<div class="fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dbeg'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'dbeg',
 				  'labelid'	=> 'dbeg',
 				  'default'	=> dwho_i18n::strftime_l('%Y-%m-%d',null),
@@ -182,7 +182,7 @@ $dhtml->write_js($js_result);
 	<div class="fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dend'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'dend',
 				  'labelid'	=> 'dend',
 				  'value'	=> $info['dend']));
@@ -214,7 +214,7 @@ $dhtml->write_js($js_result);
 				    'bbf'	=> 'fm_channel-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['channel']['default'],
-				    'value'	=> $info['channel']),
+				    'selected'	=> $info['channel']),
 			      $element['channel']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_disposition'),
@@ -225,7 +225,7 @@ $dhtml->write_js($js_result);
 				    'bbf'	=> 'fm_disposition-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['disposition']['default'],
-				    'value'	=> $info['disposition']),
+				    'selected'	=> $info['disposition']),
 			      $element['disposition']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_amaflags'),
@@ -235,7 +235,7 @@ $dhtml->write_js($js_result);
 				    'bbf'	=> 'ast_amaflag_name_info',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['amaflags']['default'],
-				    'value'	=> $amaflags),
+				    'selected'	=> $amaflags),
 			      $element['amaflags']['value']);
 
 if($context_list !== false):
@@ -243,11 +243,11 @@ if($context_list !== false):
 				    'name'	=> 'dcontext',
 				    'labelid'	=> 'dcontext',
 				    'empty'	=> true,
-				    'bbf'	=> 'fm_dcontext-opt',
-				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
-				    'value'	=> $dcontext),
+				    'bbf'	=> 'fm_dcontext-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'selected'	=> $dcontext),
 
 			      $context_list,
 			      'onchange="xivo_chg_attrib(\'fm_dcontext\',
@@ -268,54 +268,54 @@ else:
 endif;
 ?>
 
-<div class="fm-field fm-multifield">
+<div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_src'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'src',
 				  'labelid'	=> 'src',
 				  'size'	=> 15,
 				  'default'	=> $element['src']['default'],
 				  'value'	=> $info['src'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'srcformat',
 				    'labelid'	=> 'srcformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['srcformat']['default'],
-				    'value'	=> $info['srcformat']),
+				    'selected'	=> $info['srcformat']),
 			      $element['srcformat']['value']);
 ?>
 </div>
 
-<div class="fm-field fm-multifield">
+<div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dst'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'dst',
 				  'labelid'	=> 'dst',
 				  'size'	=> 15,
 				  'default'	=> $element['dst']['default'],
 				  'value'	=> $info['dst'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'dstformat',
 				    'labelid'	=> 'dstformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['dstformat']['default'],
-				    'value'	=> $info['dstformat']),
+				    'selected'	=> $info['dstformat']),
 			      $element['dstformat']['value']);
 ?>
 </div>
 
-<div class="fm-field fm-multifield">
+<div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_clid'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'clid',
 				  'labelid'	=> 'clid',
 				  'size'	=> 15,
@@ -323,73 +323,73 @@ endif;
 				  'default'	=> $element['clid']['default'],
 				  'value'	=> $info['clid'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'clidformat',
 				    'labelid'	=> 'clidformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['clidformat']['default'],
-				    'value'	=> $info['clidformat']),
+				    'selected'	=> $info['clidformat']),
 			      $element['clidformat']['value']);
 ?>
 </div>
 
-<div class="fm-field fm-multifield">
+<div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_accountcode'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'accountcode',
 				  'labelid'	=> 'accountcode',
 				  'size'	=> 15,
 				  'default'	=> $element['accountcode']['default'],
 				  'value'	=> $info['accountcode'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'accountcodeformat',
 				    'labelid'	=> 'accountcodeformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['accountcodeformat']['default'],
-				    'value'	=> $info['accountcodeformat']),
+				    'selected'	=> $info['accountcodeformat']),
 			      $element['accountcodeformat']['value']);
 ?>
 </div>
 
-<div class="fm-field fm-multifield">
+<div class="fm-paragraph fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_userfield'),
-				    'field'	=> false,
+				    'paragraph'	=> false,
 				    'name'	=> 'userfield',
 				    'labelid'	=> 'userfield',
 				    'size'	=> 15,
 				    'default'	=> $element['userfield']['default'],
 				    'value'	=> $info['userfield'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'userfieldformat',
 				    'labelid'	=> 'userfieldformat',
 				    'key'	=> false,
 				    'bbf'	=> 'fm_search-format',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['userfieldformat']['default'],
-				    'value'	=> $info['userfieldformat']),
+				    'selected'	=> $info['userfieldformat']),
 			      $element['userfieldformat']['value']);
 ?>
 </div>
 
-<div class="fm-field fm-desc-inline">
+<div class="fm-paragraph fm-desc-inline">
 	<div class="fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dubeg'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'dubeg',
 				  'labelid'	=> 'dubeg',
 				  'default'	=> $element['dubeg']['default'],
 				  'value'	=> $info['dubeg'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'dubegunit',
 				    'id'	=> 'dubegunit',
 				    'label'	=> false,
@@ -397,7 +397,7 @@ endif;
 				    'bbf'	=> 'fm_dubegunit-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['dubegunit']['default'],
-				    'value'	=> $info['dubegunit']),
+				    'selected'	=> $info['dubegunit']),
 			      $element['dubegunit']['value']);
 ?>
 	</div>
@@ -405,12 +405,12 @@ endif;
 	<div class="fm-multifield">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_duend'),
-				  'field'	=> false,
+				  'paragraph'	=> false,
 				  'name'	=> 'duend',
 				  'labelid'	=> 'duend',
 				  'value'	=> $info['duend'])),
 
-		$form->select(array('field'	=> false,
+		$form->select(array('paragraph'	=> false,
 				    'name'	=> 'duendunit',
 				    'id'	=> 'duendunit',
 				    'label'	=> false,
@@ -418,7 +418,7 @@ endif;
 				    'bbf'	=> 'fm_duendunit-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['duendunit']['default'],
-				    'value'	=> $info['duendunit']),
+				    'selected'	=> $info['duendunit']),
 			      $element['duendunit']['value']);
 ?>
 	</div>

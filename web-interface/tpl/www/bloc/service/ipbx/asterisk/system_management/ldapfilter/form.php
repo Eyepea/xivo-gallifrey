@@ -48,7 +48,7 @@ endif;
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id',
 					    'default'	=> $element['ldapfilter']['ldapserverid']['default'],
-					    'value'	=> $info['ldapfilter']['ldapserverid']),
+					    'selected'	=> $info['ldapfilter']['ldapserverid']),
 				      $ldapservers);
 	else:
 		echo	'<div class="txt-center">',
@@ -91,9 +91,10 @@ endif;
 				    'name'	=> 'ldapfilter[additionaltype]',
 				    'labelid'	=> 'ldapfilter-additionaltype',
 				    'key'	=> false,
-				    'bbf'	=> array('paramvalue','fm_ldapfilter_additionaltype-opt'),
+				    'bbf'	=> 'fm_ldapfilter_additionaltype-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['ldapfilter']['additionaltype']['default'],
-				    'value'	=> $info['ldapfilter']['additionaltype']),
+				    'selected'	=> $info['ldapfilter']['additionaltype']),
 			      $element['ldapfilter']['additionaltype']['value'],
 			      'onchange="xivo_chg_additionaltype(this.value);"'),
 
@@ -104,11 +105,11 @@ endif;
 				  'default'	=> $element['ldapfilter']['additionaltext']['default'],
 				  'value'	=> $info['ldapfilter']['additionaltext']));
 ?>
-	<div class="fm-field fm-description">
+	<div class="fm-paragraph fm-description">
 		<p>
 			<label id="lb-ldapfilter-description" for="it-ldapfilter-description"><?=$this->bbf('fm_ldapfilter_description');?></label>
 		</p>
-		<?=$form->textarea(array('field'	=> false,
+		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
 					 'name'		=> 'ldapfilter[description]',
 					 'id'		=> 'it-ldapfilter-description',
@@ -124,7 +125,7 @@ endif;
 <fieldset id="fld-ldapfilter-attrdisplayname">
 	<legend><?=$this->bbf('fld-ldapfilter-attrdisplayname');?></legend>
 
-	<div class="fm-field fm-multilist">
+	<div class="fm-paragraph fm-multilist">
 		<div class="slt-list">
 			<div class="bt-adddelete">
 				<a href="#"
@@ -154,7 +155,7 @@ endif;
 					    'key'	=> false,
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['ldapfilter']['attrdisplayname']);
 ?>
 		</div>
@@ -186,7 +187,7 @@ endif;
 <fieldset id="fld-ldapfilter-attrphonenumber">
 	<legend><?=$this->bbf('fld-ldapfilter-attrphonenumber');?></legend>
 
-	<div class="fm-field fm-multilist">
+	<div class="fm-paragraph fm-multilist">
 		<div class="slt-list">
 			<div class="bt-adddelete">
 				<a href="#"
@@ -216,7 +217,7 @@ endif;
 					    'key'	=> false,
 					    'multiple'	=> true,
 					    'size'	=> 5,
-					    'field'	=> false),
+					    'paragraph'	=> false),
 				      $info['ldapfilter']['attrphonenumber']);
 ?>
 		</div>
