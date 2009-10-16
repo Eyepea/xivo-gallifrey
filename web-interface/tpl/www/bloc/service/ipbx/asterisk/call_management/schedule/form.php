@@ -119,7 +119,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 	<tr>
 		<td class="txt-left"><?=$this->bbf('schedule_dayname');?></td>
 		<td>
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> 'schedule[daynamebeg]',
 					       'labelid'	=> 'schedule-daynamebeg',
 					       'empty'		=> true,
@@ -131,7 +131,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 					 $element['schedule']['daynamebeg']['value']);?>
 		</td>
 		<td class="td-right">
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> 'schedule[daynameend]',
 					       'labelid'	=> 'schedule-daynameend',
 					       'empty'		=> true,
@@ -146,7 +146,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 	<tr>
 		<td class="txt-left"><?=$this->bbf('schedule_daynum');?></td>
 		<td>
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> 'schedule[daynumbeg]',
 					       'labelid'	=> 'schedule-daynumbeg',
 					       'empty'		=> true,
@@ -156,7 +156,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 					 $element['schedule']['daynumbeg']['value']);?>
 		</td>
 		<td class="td-right">
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> 'schedule[daynumend]',
 					       'labelid'	=> 'schedule-daynumend',
 					       'empty'		=> true,
@@ -169,7 +169,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 	<tr>
 		<td class="txt-left"><?=$this->bbf('schedule_month');?></td>
 		<td>
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> 'schedule[monthbeg]',
 					       'labelid'	=> 'schedule-monthbeg',
 					       'empty'		=> true,
@@ -181,7 +181,7 @@ echo	$form->checkbox(array('desc'	=> $this->bbf('fm_schedule_publicholiday'),
 					 $element['schedule']['monthbeg']['value']);?>
 		</td>
 		<td class="td-right">
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> 'schedule[monthend]',
 					       'labelid'	=> 'schedule-monthend',
 					       'empty'		=> true,

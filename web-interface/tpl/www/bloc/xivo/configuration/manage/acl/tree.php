@@ -48,14 +48,14 @@ if(is_array($tree) === true && empty($tree) === false):
 
 		if($v['level'] === 3):
 			echo	'<div class="acl-category"><div><h4>',
-				$form->checkbox(array('desc'	=> array('format'	=> '%{formfield}$s%{description}$s',
-									 'description'	=> $this->bbf('acl',$v['id'])),
-						      'name'	=> 'tree[]',
-						      'label'	=> 'lb-'.$v['id'],
-						      'id'	=> $v['id'],
+				$form->checkbox(array('desc'		=> array('format'	=> '%{formfield}$s%{description}$s',
+										 'description'	=> $this->bbf('acl',$v['id'])),
+						      'name'		=> 'tree[]',
+						      'label'		=> 'lb-'.$v['id'],
+						      'id'		=> $v['id'],
 						      'paragraph'	=> false,
-						      'value'	=> $v['path'],
-						      'checked'	=> $v['access']),
+						      'value'		=> $v['path'],
+						      'checked'		=> $v['access']),
 						'onclick="xivo_form_mk_acl(this);"'),
 				'</h4>';
 
@@ -86,14 +86,14 @@ if(is_array($tree) === true && empty($tree) === false):
 			endif;
 
 			echo	'<div class="acl-func">',
-				$form->checkbox(array('desc'	=> array('format'	=> '%{formfield}$s%{description}$s',
-									 'description'	=> $this->bbf('acl',$v['id'])),
-						      'name'	=> 'tree[]',
-						      'label'	=> 'lb-'.$v['id'],
-						      'id'	=> $v['id'],
+				$form->checkbox(array('desc'		=> array('format'	=> '%{formfield}$s%{description}$s',
+										 'description'	=> $this->bbf('acl',$v['id'])),
+						      'name'		=> 'tree[]',
+						      'label'		=> 'lb-'.$v['id'],
+						      'id'		=> $v['id'],
 						      'paragraph'	=> false,
-						      'value'	=> $v['path'],
-						      'checked'	=> $v['access']),
+						      'value'		=> $v['path'],
+						      'checked'		=> $v['access']),
 						'onclick="xivo_form_mk_acl(this);"'),
 				'</div>',"\n";
 

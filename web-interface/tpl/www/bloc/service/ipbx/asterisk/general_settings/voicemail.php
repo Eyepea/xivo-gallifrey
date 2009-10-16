@@ -232,7 +232,7 @@ endif;
 				       'id'		=> 'it-voicemail-formatlist',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'paragraph'		=> false,
+				       'paragraph'	=> false,
 				       'key'		=> false,
 				       'bbf'		=> 'ast_format_name_info',
 				       'bbfopt'		=> array('argmode' => 'paramvalue')),
@@ -258,7 +258,7 @@ endif;
 				       'id'		=> 'it-voicemail-format',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'paragraph'		=> false,
+				       'paragraph'	=> false,
 				       'key'		=> false,
 				       'bbf'		=> 'ast_format_name_info',
 				       'bbfopt'		=> array('argmode' => 'paramvalue')),
@@ -578,14 +578,14 @@ if($zmsg_nb > 0):
 		<tr class="fm-paragraph<?=$errdisplay?>">
 			<td class="td-left">
 				<?=$form->text(array('paragraph'	=> false,
-						     'name'	=> 'zonemessages[name][]',
-						     'id'	=> false,
-						     'label'	=> false,
-						     'value'	=> $val['name'],
-						     'default'	=> $element['zonemessages']['name']['default']));?>
+						     'name'		=> 'zonemessages[name][]',
+						     'id'		=> false,
+						     'label'		=> false,
+						     'value'		=> $val['name'],
+						     'default'		=> $element['zonemessages']['name']['default']));?>
 			</td>
 			<td>
-				<?=$form->select(array('paragraph'		=> false,
+				<?=$form->select(array('paragraph'	=> false,
 						       'name'		=> 'zonemessages[timezone][]',
 						       'key'		=> true,
 						       'id'		=> false,
@@ -596,12 +596,12 @@ if($zmsg_nb > 0):
 			</td>
 			<td>
 				<?=$form->text(array('paragraph'	=> false,
-						     'name'	=> 'zonemessages[msg_format][]',
-						     'id'	=> false,
-						     'label'	=> false,
-						     'size'	=> 25,
-						     'value'	=> $val['msg_format'],
-						     'default'	=> $element['zonemessages']['msg_format']['default']));?>
+						     'name'		=> 'zonemessages[msg_format][]',
+						     'id'		=> false,
+						     'label'		=> false,
+						     'size'		=> 25,
+						     'value'		=> $val['msg_format'],
+						     'default'		=> $element['zonemessages']['msg_format']['default']));?>
 			</td>
 			<td class="td-right">
 				<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -629,14 +629,14 @@ if($zmsg_nb > 0):
 		<tr class="fm-paragraph">
 			<td class="td-left">
 				<?=$form->text(array('paragraph'	=> false,
-						     'name'	=> 'zonemessages[name][]',
-						     'id'	=> false,
-						     'label'	=> false,
-						     'disabled'	=> true,
-						     'default'	=> $element['zonemessages']['name']['default']));?>
+						     'name'		=> 'zonemessages[name][]',
+						     'id'		=> false,
+						     'label'		=> false,
+						     'disabled'		=> true,
+						     'default'		=> $element['zonemessages']['name']['default']));?>
 				</td>
 			<td>
-				<?=$form->select(array('paragraph'		=> false,
+				<?=$form->select(array('paragraph'	=> false,
 						       'name'		=> 'zonemessages[timezone][]',
 						       'key'		=> true,
 						       'id'		=> false,
@@ -647,12 +647,12 @@ if($zmsg_nb > 0):
 			</td>
 			<td>
 				<?=$form->text(array('paragraph'	=> false,
-						     'name'	=> 'zonemessages[msg_format][]',
-						     'id'	=> false,
-						     'label'	=> false,
-						     'disabled'	=> true,
-						     'size'	=> 25,
-						     'default'	=> $element['zonemessages']['msg_format']['default']));?>
+						     'name'		=> 'zonemessages[msg_format][]',
+						     'id'		=> false,
+						     'label'		=> false,
+						     'disabled'		=> true,
+						     'size'		=> 25,
+						     'default'		=> $element['zonemessages']['msg_format']['default']));?>
 			</td>
 			<td class="td-right">
 				<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

@@ -49,7 +49,7 @@ endif;
 				  'labelid'	=> 'groupfeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['number']['default'],
-				  'value' => $info['groupfeatures']['number'])),
+				  'value' 	=> $info['groupfeatures']['number'])),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_strategy'),
 				    'name'	=> 'queue[strategy]',
@@ -156,7 +156,7 @@ endif;
 					       'id'		=> 'it-userlist',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false,
+					       'paragraph'	=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
 					 $user['list']);?>
@@ -185,7 +185,7 @@ endif;
 					       'id'		=> 'it-user',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false,
+					       'paragraph'	=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
 					 $user['slt']);?>
@@ -245,7 +245,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rightcall['list']);?>
 		</div>
 
@@ -275,7 +275,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rightcall['slt']);?>
 		</div>
 	</div>

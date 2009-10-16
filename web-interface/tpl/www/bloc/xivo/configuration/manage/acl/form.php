@@ -51,14 +51,14 @@ $tree = $this->get_var('tree');
 	if(dwho_issa('child',$ref) === true && empty($ref['child']) === false):
 		foreach($ref['child'] as $v):
 			echo	'<tr><th>',
-				$form->checkbox(array('desc'	=> array('format'	=> '%{formfield}$s%{description}$s',
-									 'description'	=> $this->bbf('acl',$v['id'])),
-						      'name'	=> 'tree[]',
-						      'label'	=> 'lb-'.$v['id'],
-						      'id'	=> $v['id'],
+				$form->checkbox(array('desc'		=> array('format'	=> '%{formfield}$s%{description}$s',
+										 'description'	=> $this->bbf('acl',$v['id'])),
+						      'name'		=> 'tree[]',
+						      'label'		=> 'lb-'.$v['id'],
+						      'id'		=> $v['id'],
 						      'paragraph'	=> false,
-						      'value'	=> $v['path'],
-						      'checked'	=> $v['access']),
+						      'value'		=> $v['path'],
+						      'checked'		=> $v['access']),
 						'onclick="xivo_form_mk_acl(this);"'),
 				'</th></tr>';
 
@@ -75,14 +75,14 @@ $tree = $this->get_var('tree');
 	if(dwho_issa('child',$ref) === true && empty($ref['child']) === false):
 		foreach($ref['child'] as $v):
 			echo	'<tr><th>',
-				$form->checkbox(array('desc'	=> array('format'	=> '%{formfield}$s%{description}$s',
-									 'description'	=> $this->bbf('acl',$v['id'])),
-						      'name'	=> 'tree[]',
-						      'label'	=> 'lb-'.$v['id'],
-						      'id'	=> $v['id'],
+				$form->checkbox(array('desc'		=> array('format'	=> '%{formfield}$s%{description}$s',
+										 'description'	=> $this->bbf('acl',$v['id'])),
+						      'name'		=> 'tree[]',
+						      'label'		=> 'lb-'.$v['id'],
+						      'id'		=> $v['id'],
 						      'paragraph'	=> false,
-						      'value'	=> $v['path'],
-						      'checked'	=> $v['access']),
+						      'value'		=> $v['path'],
+						      'checked'		=> $v['access']),
 						'onclick="xivo_form_mk_acl(this);"'),
 				'</th></tr>';
 

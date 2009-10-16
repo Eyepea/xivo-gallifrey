@@ -60,7 +60,7 @@ if($count > 0):
 ?>
 	<tr class="fm-paragraph<?=$errdisplay?>">
 		<td class="td-left txt-center">
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> $type.'[trunkfeaturesid][]',
 					       'id'		=> false,
 					       'label'		=> false,
@@ -78,12 +78,12 @@ if($count > 0):
 		</td>
 		<td>
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'	=> $type.'[exten][]',
-					     'id'	=> false,
-					     'label'	=> false,
-					     'size'	=> 15,
-					     'value'	=> $ref['exten'],
-					     'default'	=> $element['handynumbers']['exten']['default']));?>
+					     'name'		=> $type.'[exten][]',
+					     'id'		=> false,
+					     'label'		=> false,
+					     'size'		=> 15,
+					     'value'		=> $ref['exten'],
+					     'default'		=> $element['handynumbers']['exten']['default']));?>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -111,7 +111,7 @@ endif;
 	<tbody id="ex-<?=$type?>">
 	<tr class="fm-paragraph">
 		<td class="td-left txt-center">
-			<?=$form->select(array('paragraph'		=> false,
+			<?=$form->select(array('paragraph'	=> false,
 					       'name'		=> $type.'[trunkfeaturesid][]',
 					       'id'		=> false,
 					       'label'		=> false,
@@ -128,12 +128,12 @@ endif;
 		</td>
 		<td>
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'	=> $type.'[exten][]',
-					     'id'	=> false,
-					     'label'	=> false,
-					     'disabled'	=> true,
-					     'size'	=> 15,
-					     'default'	=> $element['handynumbers']['exten']['default']));?>
+					     'name'		=> $type.'[exten][]',
+					     'id'		=> false,
+					     'label'		=> false,
+					     'disabled'		=> true,
+					     'size'		=> 15,
+					     'default'		=> $element['handynumbers']['exten']['default']));?>
 		</td>
 		<td class="td-right">
 			<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

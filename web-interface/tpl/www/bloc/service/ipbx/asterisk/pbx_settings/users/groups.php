@@ -45,7 +45,7 @@ $qmember = $this->get_var('qmember');
 					       'id'		=> 'it-grouplist',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false,
+					       'paragraph'	=> false,
 					       'key'		=> 'name',
 					       'altkey'		=> 'name'),
 					 $gmember['list']);

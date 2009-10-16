@@ -282,7 +282,7 @@ endif;
 				       'key'		=> true,
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'paragraph'		=> false),
+				       'paragraph'	=> false),
 				 null);?>
 	</div>
 

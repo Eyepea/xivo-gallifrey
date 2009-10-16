@@ -92,7 +92,7 @@ endif;
 				       'altkey'		=> 'exten',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'paragraph'		=> false),
+				       'paragraph'	=> false),
 				 $rcallexten);?>
 		<div class="bt-adddelete">
 			<a href="#"
@@ -143,7 +143,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcalluser['list']);?>
 		</div>
 
@@ -172,7 +172,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcalluser['slt']);?>
 		</div>
 	</div>
@@ -201,7 +201,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcallgroup['list']);?>
 		</div>
 
@@ -230,7 +230,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcallgroup['slt']);?>
 		</div>
 	</div>
@@ -258,7 +258,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcallincall['list']);?>
 		</div>
 
@@ -287,7 +287,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcallincall['slt']);?>
 		</div>
 	</div>
@@ -316,7 +316,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcalloutcall['list']);?>
 		</div>
 
@@ -345,7 +345,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rcalloutcall['slt']);?>
 		</div>
 	</div>

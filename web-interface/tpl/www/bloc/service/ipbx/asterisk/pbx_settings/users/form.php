@@ -870,7 +870,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rightcall['list']);?>
 		</div>
 		<div class="inout-list">
@@ -898,7 +898,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rightcall['slt']);?>
 		</div>
 	</div>

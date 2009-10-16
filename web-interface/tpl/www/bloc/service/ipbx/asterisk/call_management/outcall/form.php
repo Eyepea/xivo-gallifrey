@@ -169,7 +169,7 @@ if($outcalltrunk['list'] !== false):
 				       'altkey'		=> 'id',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'paragraph'		=> false),
+				       'paragraph'	=> false),
 				 $outcalltrunk['list']);?>
 	</div>
 
@@ -198,7 +198,7 @@ if($outcalltrunk['list'] !== false):
 				       'altkey'		=> 'id',
 				       'multiple'	=> true,
 				       'size'		=> 5,
-				       'paragraph'		=> false),
+				       'paragraph'	=> false),
 				 $outcalltrunk['slt']);?>
 		<div class="bt-updown">
 			<a href="#"
@@ -244,7 +244,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rightcall['list']);?>
 		</div>
 
@@ -275,7 +275,7 @@ endif;
 					       'altkey'		=> 'id',
 					       'multiple'	=> true,
 					       'size'		=> 5,
-					       'paragraph'		=> false),
+					       'paragraph'	=> false),
 					 $rightcall['slt']);?>
 		</div>
 	</div>

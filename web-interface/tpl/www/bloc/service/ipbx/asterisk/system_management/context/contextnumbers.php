@@ -58,21 +58,21 @@ if($list !== false):
 	<tr class="fm-paragraph<?=$errdisplay?>">
 		<td class="td-left txt-center">
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'	=> 'contextnumbers['.$type.'][numberbeg][]',
-					     'id'	=> false,
-					     'label'	=> false,
-					     'size'	=> 15,
-					     'value'	=> $ref['numberbeg'],
-					     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
+					     'name'		=> 'contextnumbers['.$type.'][numberbeg][]',
+					     'id'		=> false,
+					     'label'		=> false,
+					     'size'		=> 15,
+					     'value'		=> $ref['numberbeg'],
+					     'default'		=> $element['contextnumbers']['numberbeg']['default']));?>
 		</td>
 		<td>
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'	=> 'contextnumbers['.$type.'][numberend][]',
-					     'id'	=> false,
-					     'label'	=> false,
-					     'size'	=> 15,
-					     'value'	=> $ref['numberend'],
-					     'default'	=> $element['contextnumbers']['numberend']['default']));?>
+					     'name'		=> 'contextnumbers['.$type.'][numberend][]',
+					     'id'		=> false,
+					     'label'		=> false,
+					     'size'		=> 15,
+					     'value'		=> $ref['numberend'],
+					     'default'		=> $element['contextnumbers']['numberend']['default']));?>
 		</td>
 		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 								       $this->bbf('opt_contextnumbers_'.$type.'-delete'),
@@ -99,21 +99,21 @@ endif;
 	<tr class="fm-paragraph">
 		<td class="td-left txt-center">
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'	=> 'contextnumbers['.$type.'][numberbeg][]',
-					     'id'	=> false,
-					     'label'	=> false,
-					     'disabled'	=> true,
-					     'size'	=> 15,
-					     'default'	=> $element['contextnumbers']['numberbeg']['default']));?>
+					     'name'		=> 'contextnumbers['.$type.'][numberbeg][]',
+					     'id'		=> false,
+					     'label'		=> false,
+					     'disabled'		=> true,
+					     'size'		=> 15,
+					     'default'		=> $element['contextnumbers']['numberbeg']['default']));?>
 		</td>
 		<td>
 			<?=$form->text(array('paragraph'	=> false,
-					     'name'	=> 'contextnumbers['.$type.'][numberend][]',
-					     'id'	=> false,
-					     'label'	=> false,
-					     'disabled'	=> true,
-					     'size'	=> 15,
-					     'default'	=> $element['contextnumbers']['numberend']['default']));?>
+					     'name'		=> 'contextnumbers['.$type.'][numberend][]',
+					     'id'		=> false,
+					     'label'		=> false,
+					     'disabled'		=> true,
+					     'size'		=> 15,
+					     'default'		=> $element['contextnumbers']['numberend']['default']));?>
 		</td>
 		<td class="td-right"><?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 								       $this->bbf('opt_contextnumbers_'.$type.'-delete'),

@@ -79,7 +79,7 @@ $page = $url->pager($pager['pages'],
 						 'label'	=> false,
 						 'id'		=> 'it-queues-'.$i,
 						 'checked'	=> false,
-						 'paragraph' => false));?>
+						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left">
 			<label for="it-queues-<?=$i?>" id="lb-queues-<?=$i?>">
