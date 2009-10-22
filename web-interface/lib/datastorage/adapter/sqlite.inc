@@ -327,7 +327,7 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 		return($r);
 	}
 
-	function _escape_like($str)
+	function escape_like($str)
 	{
 		return($str);
 	}

@@ -1223,7 +1223,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 
 		foreach($pattern as $value)
 		{
-			$value = $this->escape_string($this->_escape_like($value));
+			$value = $this->escape_like($this->escape_string($value));
 
 			if($r !== '')
 				$r .= $condand;
@@ -1237,7 +1237,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		return($r);
 	}
 
-	function _escape_like($str)
+	function escape_like($str)
 	{
 		return(str_replace(array('%','_'),array('\%','\_'),$str));
 	}
