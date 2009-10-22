@@ -1213,7 +1213,6 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 				$like_format = '%%%s';
 				break;
 			default:
-				$func = (bool) $not === false ? '=' : '!=';
 				$like_format = '%s';
 		}
 
