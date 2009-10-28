@@ -97,10 +97,12 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 				return(false);
 		}
 
-		if($replace === true)
-			return($this->_dso->edit($last,$arr));
+		if($replace === false)
+			return($this->_dso->add($arr));
+		else if($this->_dso->edit($last,$arr) !== false)
+			return($last);
 
-		return($this->_dso->add($arr));
+		return(false);
 	}
 
 	function edit($id,$arr,$delete=false)
@@ -136,12 +138,12 @@ class xivo_service_asterisk_groupfeatures extends xivo_service_asterisk_abstract
 
 	function recover($id)
 	{
-		return($this->edit($id,array('deleted' => false),true));
+		return($this->edit($id,array('deleted' => false)));
 	}
 
 	function recover_where($where)
 	{
-		return(parent::edit_where($where,array('deleted' => true),true,null,false));
+		return(parent::edit_where($where,array('deleted' => false),null,null,false));
 	}
 
 	function get_nb($arr=null,$delete=false)
