@@ -62,7 +62,7 @@ class SiemensHTTP:
                     ('ip_configuration', 'settings_lan.html', ()),
                     ('audio', 'settings_telephony_audio.html', ()))
 
-    RE_ACC_GIGASET      = re.compile('^\s*lines\[6\]\[4\]\s*=\s*2\s*;').match
+    RE_ACC_GIGASET = re.compile('^\s*lines\[6\]\[4\]\s*=\s*2\s*;').match
 
     def __init__(self, common_dir, common_pin):
         self.common_dir     = common_dir
