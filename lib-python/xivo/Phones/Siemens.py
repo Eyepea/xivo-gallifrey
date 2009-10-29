@@ -62,7 +62,7 @@ class SiemensHTTP:
                     ('ip_configuration', 'settings_lan.html', ()),
                     ('audio', 'settings_telephony_audio.html', ()))
 
-    RE_ACC_GIGASET = re.compile('^\s*lines\[6\]\[4\]\s*=\s*2\s*;').match
+    RE_ACC_GIGASET      = re.compile('^\s*lines\[6\]\[4\]\s*=\s*2\s*;').match
 
     def __init__(self, common_dir, common_pin):
         self.common_dir     = common_dir
@@ -70,13 +70,13 @@ class SiemensHTTP:
         self.cj             = CookieJar()
         self.opener         = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 
-    def request(self, ipv4, page, params=None):
+    def request(self, host, page, params=None):
         "Send a HTTP request to phone."
 
         if params is not None:
             params = urlencode(params)
 
-        url = "http://%s/%s" % (ipv4, page)
+        url = "http://%s/%s" % (host, page)
 
         log.info("HTTP Request: %r", url)
 
@@ -136,7 +136,7 @@ class SiemensHTTP:
 
         return True
 
-    def provi(self, ipv4, model, macaddr):
+    def provi(self, host, model, macaddr):
         "Provisioning from web-interface."
         rcp = Siemens.get_config(self.common_dir, model, macaddr)
 
@@ -153,15 +153,15 @@ class SiemensHTTP:
             rcp.set('ip_configuration', 'ip_address_type', 1)
 
         try:
-            self.login(ipv4)
+            self.login(host)
  
             # Disable Gigaset account
-            request = self.request(ipv4, 'scripts/settings_telephony_voip_multi.js')
+            request = self.request(host, 'scripts/settings_telephony_voip_multi.js')
  
             for line in request.readlines():
                 if self.RE_ACC_GIGASET(line):
                     request.close()
-                    request = self.request(ipv4, 'settings_telephony_voip_multi.html', {'account_id': '6'})
+                    request = self.request(host, 'settings_telephony_voip_multi.html', {'account_id': '6'})
                     break
  
             request.close()
@@ -173,31 +173,31 @@ class SiemensHTTP:
                 args = rcp.items(section)
                 args.extend(extend)
 
-                request = self.request(ipv4, page, args)
+                request = self.request(host, page, args)
                 request.close()
         finally:
             try:
-                self.logout(ipv4)
+                self.logout(host)
             except Exception, e: # pylint: disable-msg=W0703
                 log.exception(str(e))
                 pass
 
-    def login(self, ipv4):
+    def login(self, host):
         "Login from web-interface."
         params  = { 'language': 1,
                     'password': self.common_pin}
 
-        request = self.request(ipv4, 'login.html', params)
+        request = self.request(host, 'login.html', params)
 
         if "/login.html" in request.headers.getheaders('ETag'):
             request.close()
-            raise LookupError, "Not logged in (ip: %s)" % ipv4
+            raise LookupError, "Not logged in (ip: %s)" % host
 
         request.close()
 
-    def logout(self, ipv4):
+    def logout(self, host):
         "Logout from web-interface."
-        request = self.request(ipv4, 'logout.html')
+        request = self.request(host, 'logout.html')
         request.close()
         self.cj.clear_session_cookies()
 
@@ -273,7 +273,8 @@ class Siemens(PhoneVendorMixin):
 
     SIEMENS_COMMON_DIR = None
 
-    RE_FWDL_STATUS = re.compile('^\s*var\s*status\s*=\s*(\d+)\s*;').match
+    RE_FWDL_STATUS      = re.compile('^\s*var\s*status\s*=\s*(\d+)\s*;').match
+    RE_DISCOVER_MODEL   = re.compile('^\s*getCurrentNavigationID\s*\(\s*[\'"]\s*([a-zA-Z0-9_\.\-]+)\s*[\'"]\s*\)\s*;').match
 
     @classmethod
     def setup(cls, config):
@@ -285,6 +286,14 @@ class Siemens(PhoneVendorMixin):
         PhoneVendorMixin.__init__(self, phone)
         if self.phone['model'].upper() not in self.SIEMENS_MODELS:
             raise ValueError, "Unknown Siemens model %r" % self.phone['model']
+
+    @staticmethod
+    def get_config_filename(model, macaddr):
+        "Get configuration filename."
+        model = model.lower()
+        macaddr = macaddr.replace(':', '').lower()
+
+        return ("%s.ini" % model, "%s-%s.ini" % (model, macaddr))
 
     @staticmethod
     def get_config(common_dir, model, macaddr):
@@ -302,13 +311,27 @@ class Siemens(PhoneVendorMixin):
 
         return rcp
 
-    @staticmethod
-    def get_config_filename(model, macaddr):
-        "Get configuration filename."
-        model = model.lower()
-        macaddr = macaddr.replace(':', '').lower()
+    def discover_model(self, common_dir, common_pin, host):
+        http = SiemensHTTP(common_dir, common_pin)
 
-        return ("%s.ini" % model, "%s-%s.ini" % (model, macaddr))
+        try:
+            request = http.request(host, 'scripts/navnodes.js')
+ 
+            for line in request.readlines():
+                m = self.RE_DISCOVER_MODEL(line)
+
+                if not m:
+                    continue
+
+                model = m.group(1).strip().upper()
+
+                if model in self.SIEMENS_MODELS:
+                    request.close()
+                    return model
+ 
+            request.close()
+        except Exception, e: # pylint: disable-msg=W0703
+            log.exception(str(e))
 
     def __action(self, command, common_dir, common_pin):
         http = SiemensHTTP(common_dir, common_pin)
@@ -351,7 +374,17 @@ class Siemens(PhoneVendorMixin):
 
     def do_upgradefw(self, force=True):
         "Entry point to send the firmware upgrade command to the phone."
-        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, self.phone['model'], self.phone['macaddr'])
+
+        model = self.phone['model']
+
+        if self.phone.get('from') == 'dhcp':
+            model = self.discover_model(self.SIEMENS_COMMON_DIR,
+                                        self.SIEMENS_COMMON_PIN,
+                                        self.phone['ipv4'])
+            if not model:
+                model = self.phone['model']
+
+        rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, model, self.phone['macaddr'])
 
         if not force:
             if not self.phone['firmware'] or self.phone['firmware'] == 'unknown':
@@ -656,7 +689,7 @@ class Siemens(PhoneVendorMixin):
                 '                "-w30",\n',
                 '                "-f",\n',
                 '                "-u",\n',
-                '                "S675IP",\n', # TODO: Try to determine phone model.
+                '                "S675IP",\n', # XXX: method do_upgradefw try to discover phone model.
                 '                binary-to-ascii(10, 8, ".", leased-address),\n',
                 '                binary-to-ascii(16, 8, ":", suffix(hardware, 6)));\n',
                 '    }\n',
