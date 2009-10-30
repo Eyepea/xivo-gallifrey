@@ -1,87 +1,87 @@
-# Aastra 6730i 2.5.1
-[aa6730i_251]
+# Aastra 6730i 2.5.2
+[aa6730i_252]
 brand: Aastra
 model: 6730i
-version: 2.5.1
-files: LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip 6730i_FC-001240-02-REV01_sr_2.5.1.41_0905.zip
+version: 2.5.2
+files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6730i_FC-001240-02-REV05_sr_2.5.2.1010_0909.zip
 
-[6730i_FC-001240-02-REV01_sr_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/6730i_FC-001240-02-REV01_sr_2.5.1.41_0905.zip
-size: 1982306
-md5sum: 1d38fc8105450903a26525690c10c423
-sha1sum: d4e43b4911e1d5a2e8720311274940cdb3b4b4b3
+[6730i_FC-001240-02-REV05_sr_2.5.2.1010_0909.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6730i_FC-001240-02-REV05_sr_2.5.2.1010_0909.zip
+size: 1987542
+md5sum: 050d49028fb6ec51ba5c079c2d794926
+sha1sum: f22444cab69050f8b49d75078ef382a66dc5288e
 
-# Aastra 6731i 2.5.1
-[aa6731i_251]
+# Aastra 6731i 2.5.2
+[aa6731i_252]
 brand: Aastra
 model: 6731i
-version: 2.5.1
-files: LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip 6731i_FC-001224-03-REV01_sr_2.5.1.41_0905.zip
+version: 2.5.2
+files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6731i_FC-001224-03-REV05_sr_2.5.2.1010_0909.zip
 
-[6731i_FC-001224-03-REV01_sr_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/6731i_FC-001224-03-REV01_sr_2.5.1.41_0905.zip
-size: 1982609
-md5sum: 1c7cd2becbea72a4bc75797640199aa5
-sha1sum: 8cebf007436511877c87f5b7b901511bd4fbf01b
+[6731i_FC-001224-03-REV05_sr_2.5.2.1010_0909.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6731i_FC-001224-03-REV05_sr_2.5.2.1010_0909.zip
+size: 1982872
+md5sum: dff45a9a8567dc297add992230c66a9f
+sha1sum: 2e6a27014ce428d69ceadf6d39315fafc9dc5173
 
-# Aastra 6751i 2.5.1
-[aa6751i_251]
+# Aastra 6751i 2.5.2
+[aa6751i_252]
 brand: Aastra
 model: 6751i
-version: 2.5.1
-files: LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip 6751i_FC-001126-05-REV01_sr_2.5.1.41_0905.zip
+version: 2.5.2
+files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6751i_FC-001126-05-REV05_sr_2.5.2.1010_0909.zip
 
-[6751i_FC-001126-05-REV01_sr_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/6751i_FC-001126-05-REV01_sr_2.5.1.41_0905.zip
-size: 1924654
-md5sum: f17571321047e20f1aee372a0a844730
-sha1sum: c6868248eb26fe0a4dae81cb0a7171738fd8bffa
+[6751i_FC-001126-05-REV05_sr_2.5.2.1010_0909.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6751i_FC-001126-05-REV05_sr_2.5.2.1010_0909.zip
+size: 1927399
+md5sum: 095a0f74d620f088feb52c625a6fc65f
+sha1sum: 8a3472573704c5e94ee64e590d38441f0d294bc9
 
-# Aastra 6753i 2.5.1
-[aa6753i_251]
+# Aastra 6753i 2.5.2
+[aa6753i_252]
 brand: Aastra
 model: 6753i
-version: 2.5.1
-files: LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip 6753i_FC-001086-09-REV01_sr_2.5.1.41_0905.zip
+version: 2.5.2
+files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6753i_FC-001086-09-REV05_sr_2.5.2.1010_0909.zip
 
-[6753i_FC-001086-09-REV01_sr_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/6753i_FC-001086-09-REV01_sr_2.5.1.41_0905.zip
-size: 2869540
-md5sum: 0456330b0f94c6cad904cf767ac3e2ce
-sha1sum: 28c52f4da5e2c7e5b98b1b357d690d1ce45350ca
+[6753i_FC-001086-09-REV05_sr_2.5.2.1010_0909.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6753i_FC-001086-09-REV05_sr_2.5.2.1010_0909.zip
+size: 2874925
+md5sum: 91fe7b374685138291b168536052697b
+sha1sum: 3fa7ecde7c6d89b8f9e5c5994299d0b49194e6e2
 
-# Aastra 6755i 2.5.1
-[aa6755i_251]
+# Aastra 6755i 2.5.2
+[aa6755i_252]
 brand: Aastra
 model: 6755i
-version: 2.5.1
-files: LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip 6755i_FC-001087-10-REV01_sr_2.5.1.41_0905.zip
+version: 2.5.2
+files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6755i_FC-001087-10-REV05_sr_2.5.2.1010_0909.zip
 
-[6755i_FC-001087-10-REV01_sr_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/6755i_FC-001087-10-REV01_sr_2.5.1.41_0905.zip
-size: 2904291
-md5sum: 0f27546c44b033f72db767ea0dff7dd9
-sha1sum: e78c619e300d49fcf9ab2771d491d4af98804c68
+[6755i_FC-001087-10-REV05_sr_2.5.2.1010_0909.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6755i_FC-001087-10-REV05_sr_2.5.2.1010_0909.zip
+size: 2908422
+md5sum: 47321c7e01554937fd32ae76d82c0cc1
+sha1sum: 1e031b391aa81716340564ec37be51417c68394e
 
-# Aastra 6757i 2.5.1
-[aa6757i_251]
+# Aastra 6757i 2.5.2
+[aa6757i_252]
 brand: Aastra
 model: 6757i
-version: 2.5.1
-files: LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip 6757i_FC-001088-09-REV01_sr_2.5.1.41_0905.zip
+version: 2.5.2
+files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6757i_FC-001088-09-REV05_sr_2.5.2.1010_0909.zip
 
-[6757i_FC-001088-09-REV01_sr_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/6757i_FC-001088-09-REV01_sr_2.5.1.41_0905.zip
-size: 2903766
-md5sum: 46b5c58223dcdfb2bf4c23bd610156b1
-sha1sum: 758b2c1b249df8d7a2583b6bf0934fdea7a32184
+[6757i_FC-001088-09-REV05_sr_2.5.2.1010_0909.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6757i_FC-001088-09-REV05_sr_2.5.2.1010_0909.zip
+size: 2908198
+md5sum: b954bb42ea9d761d752a78d184e943a8
+sha1sum: fa2f8093c6dbbfe413932ad8d20c82facd3d366c
 
 # Common files for Aastra phones
-[LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-50A5FB95/03/LangPacks_PA-001006-03-REV01_lp_2.5.1.41_0905.zip
-size: 112190
-md5sum: 959a4e5797cc8862aadee17acf49c52a
-sha1sum: 806fd81178074ff2675fbccda9c43b1050f684d6
+[LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip
+size: 128954
+md5sum: ec1b6f9cf8de3614ac87e84597c3f6d1
+sha1sum: 936dddcab38162ebb1aa942040d15c37f7641f77
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]
@@ -437,31 +437,31 @@ size: 979068
 md5sum: 1a4966ec9c0c48c8bbc7ca440ba4ae7e
 sha1sum: f3bd2fd9872096a07c5ae17eacede68072681e64
 
-# Thomson ST2022 4.67
-[thst2022_467]
+# Thomson ST2022 4.68
+[thst2022_468]
 brand: Thomson
 model: ST2022
-version: 4.67
-files: ST2022_SG_v4.67_Release_Package.zip
+version: 4.68
+files: ST2022_SG_v4.68_Release_Package.zip
 
-[ST2022_SG_v4.67_Release_Package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6596
-size: 12132822
-md5sum: 864a81c6d3e755ffa46a01de0f57f4cf
-sha1sum: 1ab13b4407d2c2027eb7cc686796f3b56e0b2da9
+[ST2022_SG_v4.68_Release_Package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6712
+size: 7885268
+md5sum: 0c4a8312bbc7feb066ce1249a0b72595
+sha1sum: ac4ac77b82905af195e2c7e045131abdc524afd8
 
-# Thomson ST2030 2.67
-[thst2030_267]
+# Thomson ST2030 2.68
+[thst2030_268]
 brand: Thomson
 model: ST2030
-version: 2.67
-files: ST2030_SG_v2.67_Release_package.zip
+version: 2.68
+files: ST2030_SG_v2.68_Release_package.zip
 
-[ST2030_SG_v2.67_Release_package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6555
-size: 12494659
-md5sum: 014ba51938ea585dac1acda5acff4b52
-sha1sum: 7d254ec971f5b84baee7bd9d4b4b12526b4e61c1
+[ST2030_SG_v2.68_Release_package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6711
+size: 7921829
+md5sum: 2b5360a39fdd551eabf250d1c2a1239c
+sha1sum: f43e3d32895c9f5c340d9c6025372c591f31a731
 
 ###
 ### Cards Firmwares starting from here ###

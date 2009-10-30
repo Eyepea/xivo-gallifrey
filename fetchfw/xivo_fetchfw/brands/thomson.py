@@ -23,11 +23,11 @@ from xivo_fetchfw import fetchfw
 
 FW_PATHS = {
     'ST2022': {
-        '4.67': os.path.join("ST2022_SG_v4[1].67.2_Release_Package", "Binary")
+        '4.68': os.path.join("ST2022_SG_v4[2].68_SED_Release_Package", "Binary")
     },
 
     'ST2030': {
-        '2.67': os.path.join("ST2030_SG_v2[1].67_Release_package","Binary")
+        '2.68': os.path.join("ST2030_SG_v2[2].68_SED_Release_package","Binary")
     }
 }
 
