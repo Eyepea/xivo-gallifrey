@@ -1,4 +1,4 @@
-2007-00-00   Richard Braun <rbraun@proformatique.com>
+2009-11-01  Adrien DELLE CAVE <decryptus@proformatique.com>
 
 	pf_queue_incoming_limit.patch
 	$Revision$
@@ -6,6 +6,9 @@
 
 	This patch adds a incominglimit option per queue member so that one can
 	still pass outgoing calls when this limit is reached.
+
+	It was first done for Asterisk 1.2 by Richard Braun, I just refreshed
+	it for Asterisk 1.4 and take care Digium comments (https://issues.asterisk.org/view.php?id=8580).
 
 Index: asterisk-1.4.26.2/apps/app_queue.c
 ===================================================================
