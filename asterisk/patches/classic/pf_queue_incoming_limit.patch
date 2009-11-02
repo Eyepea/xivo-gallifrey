@@ -4,7 +4,7 @@
 	$Revision$
 	$Date$
 
-	This patch adds a incominglimit option per queue member so that one can
+	This patch adds an incominglimit option per queue member so that one can
 	still pass outgoing calls when this limit is reached.
 
 	It was first done for Asterisk 1.2 by Richard Braun, I just refreshed
@@ -156,7 +156,7 @@ Index: asterisk-1.4.26.2/apps/app_queue.c
  		case AST_DEVICE_UNKNOWN:
 -			if (!mem->paused) {
 +			if (!mem->paused &&
-+			    (!mem->incominglimit || mem->current_calls < mem->incominglimit)) {
++			    !(mem->incominglimit && mem->current_calls >= mem->incominglimit)) {
  				avl++;
  			}
  			break;
