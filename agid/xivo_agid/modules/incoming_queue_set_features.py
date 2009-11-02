@@ -29,6 +29,7 @@ def incoming_queue_set_features(agi, cursor, args):
         agi.dp_break(str(e))
 
     options = ""
+    needanswer = "1"
 
     if queue.data_quality:
         options += "d"
@@ -44,6 +45,7 @@ def incoming_queue_set_features(agi, cursor, args):
 
     if queue.ring:
         options += "r"
+        needanswer = "0"
 
     if queue.transfer_user:
         options += "t"
@@ -61,6 +63,7 @@ def incoming_queue_set_features(agi, cursor, args):
     agi.set_variable('XIVO_REAL_CONTEXT', queue.context)
     agi.set_variable('XIVO_QUEUENAME', queue.name)
     agi.set_variable('XIVO_QUEUEOPTIONS', options)
+    agi.set_variable('XIVO_QUEUENEEDANSWER', needanswer)
     agi.set_variable('XIVO_QUEUEURL', queue.url)
     agi.set_variable('XIVO_QUEUEANNOUNCEOVERRIDE', queue.announceoverride)
 

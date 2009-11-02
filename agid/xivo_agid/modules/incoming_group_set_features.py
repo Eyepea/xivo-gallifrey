@@ -29,6 +29,7 @@ def incoming_group_set_features(agi, cursor, args):
         agi.dp_break(str(e))
 
     options = ""
+    needanswer = "1"
 
     if group.transfer_user:
         options += "t"
@@ -44,11 +45,13 @@ def incoming_group_set_features(agi, cursor, args):
 
     if not group.musiconhold:
         options += "r"
+        needanswer = "0"
 
     agi.set_variable('XIVO_REAL_NUMBER', group.number)
     agi.set_variable('XIVO_REAL_CONTEXT', group.context)
     agi.set_variable('XIVO_GROUPNAME', group.name)
     agi.set_variable('XIVO_GROUPOPTIONS', options)
+    agi.set_variable('XIVO_GROUPNEEDANSWER', needanswer)
 
     pickupmark = [] 
     memberlist = agi.get_variable("QUEUE_MEMBER_LIST(%s)" % group.name).split(',')
