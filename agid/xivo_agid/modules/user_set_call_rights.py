@@ -46,8 +46,6 @@ def _user_set_call_rights(agi, cursor, args):
     except (ValueError, LookupError):
         if not outcallid:
             call_rights.allow(agi)
-        else:
-            pass
     else:
         cursor.query("SELECT ${columns} FROM rightcall "
                      "INNER JOIN rightcallmember "
