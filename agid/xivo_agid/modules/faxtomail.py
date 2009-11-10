@@ -55,7 +55,14 @@ def faxtomail(agi, cursor, args):
             raise FaxToMailException("Unable to convert fax to PDF")
 
         try:
-            mutt = subprocess.Popen([MUTT_BIN, "-e", "set copy=no", "-s", "Reception de FAX vers %s" % dstnum, "-a", filepdf, email ],
+            mutt = subprocess.Popen([MUTT_BIN,
+                                     "-e", "set copy=no",
+                                     "-e", "set from=fax-no-reply@xivo.fr",
+                                     "-e", "set realname='XiVO Fax'",
+                                     "-e", "set use_from=yes",
+                                     "-s", "Reception de FAX vers %s" % dstnum,
+                                     "-a", filepdf,
+                                     email],
                                     stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                     close_fds=True)
             mutt.communicate("Un nouveau fax est arrive. Il est joint dans ce mail.\n\n"
