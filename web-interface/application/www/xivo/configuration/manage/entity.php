@@ -21,83 +21,71 @@
 $act = isset($_QR['act']) === true ? $_QR['act']  : '';
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
-xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
-$_ETT = new xivo_entity();
-
 $param = array();
 $param['act'] = 'list';
 
 switch($act)
 {
 	case 'add':
-		$result = null;
+		$appentity = &$_XOBJ->get_application('entity',null,false);
+
+		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true)
 		{
-			if(($result = $_ETT->chk_values($_QR)) === false)
-				$result = $_ETT->get_filter_result();
-			else if($_ETT->add($result) !== false)
+			if($appentity->set_add($_QR) === false
+			|| $appentity->add() === false)
+			{
+				$fm_save = false;
+				$result = $appentity->get_result('entity');
+			}
+			else
 				$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_TPL->set_var('info',$result);
-		$_TPL->set_var('element',$_ETT->get_element());
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appentity->get_elements());
 		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
 	case 'edit':
-		if(isset($_QR['id']) === false
-		|| ($info = $_ETT->get($_QR['id'])) === false)
+		$appentity = &$_XOBJ->get_application('entity');
+
+		if(isset($_QR['id']) === false || ($info = $appentity->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
-		$return = &$info;
+		$result = $fm_save = null;
+		$return = &$info['entity'];
 
-		do
+		if(isset($_QR['fm_send']) === true)
 		{
-			if(isset($_QR['fm_send']) === false)
-				break;
-
-			$result = array();
 			$return = &$result;
 
-			$_QR['disable'] = $info['disable'];
-
-			if(($result = $_ETT->chk_values($_QR)) === false)
+			if($appentity->set_edit($_QR) === false
+			|| $appentity->edit() === false)
 			{
-				$result = $_ETT->get_filter_result();
-				break;
+				$fm_save = false;
+				$result = $appentity->get_result('entity');
 			}
-			else if($_ETT->edit($info['id'],$result) === false)
-				break;
-
-			$ipbx = &$_SRE->get('ipbx');
-			$context = &$ipbx->get_module('context');
-
-			if($context->edit_where(array('entity' => $info['name']),
-						array('entity' => $result['name'])) === false)
-			{
-				$_ETT->edit_origin();
-				break;
-			}
-
-			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
+			else
+				$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
-		while(false);
 
-		$_TPL->set_var('id',$info['id']);
+		$_TPL->set_var('id',$info['entity']['id']);
 		$_TPL->set_var('info',$return);
-		$_TPL->set_var('element',$_ETT->get_element());
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('element',$appentity->get_elements());
 		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
 	case 'delete':
 		$param['page'] = $page;
 
-		$ipbx = &$_SRE->get('ipbx');
-		$context = &$ipbx->get_module('context');
+		$appentity = &$_XOBJ->get_application('entity');
 
-		if(isset($_QR['id']) === true
-		&& ($info = $_ETT->get($_QR['id'])) !== false
-		&& $context->get_where(array('entity' => $info['name'])) === false)
-			$_ETT->delete($info['id']);
+		if(isset($_QR['id']) === false || $appentity->get($_QR['id']) === false)
+			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
+
+		$appentity->delete();
 
 		$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		break;
@@ -107,16 +95,14 @@ switch($act)
 		if(($values = dwho_issa_val('entity',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
-		$ipbx = &$_SRE->get('ipbx');
-		$context = &$ipbx->get_module('context');
+		$appentity = &$_XOBJ->get_application('entity');
 
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(($info = $_ETT->get($values[$i])) !== false
-			&& $context->get_where(array('entity' => $info['name'])) === false)
-				$_ETT->delete($info['id']);
+			if($appentity->get($values[$i]) !== false)
+				$appentity->delete();
 		}
 
 		$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
@@ -124,15 +110,23 @@ switch($act)
 	case 'enables':
 	case 'disables':
 		$param['page'] = $page;
-		$disable = $act === 'disables';
 
 		if(($values = dwho_issa_val('entity',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
+		$appentity = &$_XOBJ->get_application('entity',null,false);
+
 		$nb = count($values);
 
 		for($i = 0;$i < $nb;$i++)
-			$_ETT->disable(intval($values[$i]),$disable);
+		{
+			if($appentity->get($values[$i]) === false)
+				continue;
+			else if($act === 'disables')
+				$appentity->disable();
+			else
+				$appentity->enable();
+		}
 
 		$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		break;
@@ -141,6 +135,8 @@ switch($act)
 		$prevpage = $page - 1;
 		$nbbypage = 20;
 
+		$appentity = &$_XOBJ->get_application('entity');
+
 		$order = array();
 		$order['name'] = SORT_ASC;
 
@@ -148,8 +144,8 @@ switch($act)
 		$limit[0] = $prevpage * $nbbypage;
 		$limit[1] = $nbbypage;
 
-		$list = $_ETT->get_entities_list(null,$order,$limit);
-		$total = $_ETT->get_cnt();
+		$list = $appentity->get_entities_list(null,$order,$limit);
+		$total = $appentity->get_cnt();
 
 		if($list === false && $total > 0 && $prevpage > 0)
 		{

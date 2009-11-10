@@ -12,3 +12,6 @@ Aucune interconnexion personnalisée trouvée
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cette interconnexion ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces interconnexions ?

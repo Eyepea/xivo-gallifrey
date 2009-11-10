@@ -83,14 +83,12 @@ $array['element']['pickupexten']['default'] = '*8';
 $array['filter'] = array();
 $array['filter']['parkext'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
 $array['filter']['context'] = array('set' => false);
-$array['filter']['parkingtime'] = array('key' => array(15,30,45,60,75,90,105,120,
-						       135,150,165,180,195,210,225,
-						       240,255,270,285,300));
+$array['filter']['parkingtime'] = array('cast' => 'uint','between' => array(15,300,15));
 $array['filter']['parkpos'] = array('regexp' => '/^[0-9]{1,5}-[0-9]{1,5}$/','minlen' => 3,'maxlen' => 11);
 $array['filter']['parkfindnext'] = array('bool' => true);
 $array['filter']['adsipark'] = array('bool' => true);
 $array['filter']['transferdigittimeout'] = array('cast' => 'uint','between' => array(1,30));
-$array['filter']['featuredigittimeout'] = array('key' => array(1,500,1000,1500,2000,2500,3000,3500,4000));
+$array['filter']['featuredigittimeout'] = array('cast' => 'uint','between' => array(1,4000,500));
 $array['filter']['courtesytone'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['xfersound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['xferfailsound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');

@@ -400,6 +400,7 @@ dwho.suggest.prototype.display_result = function()
 	div.onmouseout	= function() { dwsptr.starttimeout(); }
 
 	dwho.dom.remove_element(dwho_eid(this._dwsid,true));
+
 	if(dwho_is_object(this._field.parentNode) === false)
 		document.getElementsByTagName('body')[0].appendChild(div);
 	else

@@ -102,7 +102,7 @@ class dwho_i18n_mediator
 			if(($lc = $this->chk_locale($l)) !== false)
 			{
 				$pos = strpos($lc,'_');
-				$t = substr($lc,$pos+1);
+				$t = substr($lc,$pos + 1);
 				$l = substr($lc,0,$pos);
 
 				if(isset($this->_attrib['browser'][$l]) === false)

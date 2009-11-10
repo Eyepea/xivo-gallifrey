@@ -444,7 +444,7 @@ class dwho
 					$r[$k][$ks] = $vs;
 					continue;
 				}
-				else if($pos === 0 || ($key2 = substr($ks,$pos+1)) === '')
+				else if($pos === 0 || ($key2 = substr($ks,$pos + 1)) === '')
 					continue;
 
 				$key1 = substr($ks,0,$pos);

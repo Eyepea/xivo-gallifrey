@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(DWHO_PATH_ROOT.DWHO_SEP_DIR.'datastorage'.DWHO_SEP_DIR.'helper'.DWHO_SEP_DIR.'abstract.inc');
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','abstract.inc'));
 
 class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 {
@@ -205,9 +205,10 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		return(null);
 	}
 
-	function get($arr,$disable=null,$primary=false)
+	function get($arr,$disable=null,$primary=false,$exists=false)
 	{
 		$primary = (bool) $primary;
+		$exists = (bool) $exists;
 
 		$column = '*';
 
@@ -233,14 +234,21 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 		$this->_dso->where($arr);
 
 		if($primary === true && $this->is_single_primary() === true)
-			return($this->_dso->select_one());
+			$r = $this->_dso->select_one(null,($exists === false));
+		else
+			$r = $this->_dso->select_single(null,($exists === false));
 
-		return($this->_dso->select_single());
+		return(($exists === false ? $r : (bool) $this->_dso->num_rows()));
 	}
 
 	function get_primary($arr,$disable=null)
 	{
 		return($this->get($arr,$disable,true));
+	}
+
+	function exists($arr,$disable=null)
+	{
+		return($this->get($arr,$disable,false,true));
 	}
 
 	function get_cnt()

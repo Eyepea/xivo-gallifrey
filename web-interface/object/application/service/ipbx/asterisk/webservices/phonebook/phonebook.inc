@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','webservices','abstract.inc'),true);
 
 class xivo_application_service_asterisk_webservices_phonebook extends xivo_application_service_asterisk_webservices_abstract
@@ -39,8 +41,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		$this->_dso = &$dso;
 
 		if($this->_init(&$service) === false
-		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false
-		|| dwho::load_class('dwho_filter') === false)
+		|| ($this->_accessfeatures = &$this->_service->get_module('accessfeatures')) === false)
 			return(false);
 
 		return(true);
@@ -89,7 +90,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(dwho_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true)
+			if(dwho_network::ipv4_in_lhost($host,$rs[$i]['host']) === true)
 				return($rs[$i]);
 		}
 

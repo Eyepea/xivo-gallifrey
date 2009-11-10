@@ -99,7 +99,7 @@ $array['element']['maxjitterbuffer']['value'] = array(0,250,500,750,1000,1250,15
 $array['element']['maxjitterbuffer']['default'] = 1000;
 
 $array['element']['maxjitterinterps'] = array();
-$array['element']['maxjitterinterps']['value'] = array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20);
+$array['element']['maxjitterinterps']['value'] = range(0,20);
 $array['element']['maxjitterinterps']['default'] = 10;
 
 $array['element']['resyncthreshold'] = array();
@@ -196,25 +196,32 @@ $array['element']['autokill']['value'] = array('no','yes',500,1000,1500,2000,250
 $array['element']['autokill']['default'] = 'yes';
 
 
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['bindaddr'] = array('set'		=> false,
+				     'chk'		=> 2,
+				     'callback'		=> 'dwho_network::valid_host',
+				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME_ALL)),
+				     'maxlen'		=> 64);
 $array['filter']['iaxthreadcount'] = array('cast' => 'uint','between' => array(1,256));
 $array['filter']['iaxmaxthreadcount'] = array('cast' => 'uint','between' => array(0,256));
 $array['filter']['iaxcompat'] = array('bool' => true);
 $array['filter']['authdebug'] = array('bool' => true);
 $array['filter']['delayreject'] = array('bool' => true);
-$array['filter']['trunkfreq'] = array('key' => array(10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100));
+$array['filter']['trunkfreq'] = array('cast' => 'uint','between' => array(10,100,5));
 $array['filter']['trunktimestamps'] = array('bool' => true);
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['minregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
-$array['filter']['maxregexpire'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,100,110,120));
+$array['filter']['minregexpire'] = array('cast' => 'uint','between' => array(0,120,10));
+$array['filter']['maxregexpire'] = array('cast' => 'uint','between' => array(0,120,10));
 $array['filter']['bandwidth'] = array('key' => array('low','medium','high'));
 $array['filter']['tos'] = array('set' => false,'chk' => 2,'regexp' => '/^(CS[0-7]|AF[1-4][1-3]|EF)$/');
 $array['filter']['jitterbuffer'] = array('bool' => true);
 $array['filter']['forcejitterbuffer'] = array('bool' => true);
-$array['filter']['maxjitterbuffer'] = array('key' => array(0,250,500,750,1000,1250,1500,1750,2000));
-$array['filter']['maxjitterinterps'] = array('key' => array(0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20));
+$array['filter']['maxjitterbuffer'] = array('cast' => 'uint','between' => array(0,2000,250));
+$array['filter']['maxjitterinterps'] = array('cast' => 'uint','between' => array(0,20));
 $array['filter']['resyncthreshold'] = array('key' => array(-1,0,250,500,750,1000,1250,1500,1750,2000));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['amaflags'] = array('key' => xivo_service_asterisk::get_amaflags_list());
@@ -234,8 +241,8 @@ $array['filter']['rtignoreregexpire'] = array('bool' => true);
 $array['filter']['rtautoclear'] = array('key' => array('yes','no',1,10,20,30,40,50,60,70,80,90,
 						       100,110,120,130,140,150,160,170,180,
 						       190,200,210,220,230,240));
-$array['filter']['pingtime'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['lagrqtime'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['pingtime'] = array('cast' => 'uint','between' => array(0,60,5));
+$array['filter']['lagrqtime'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['nochecksums'] = array('bool' => true);
 $array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 

@@ -216,8 +216,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 	function _load_entity()
 	{
 		if(is_object($this->_entity) === false
-		&& (xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false) === false
-		   || ($this->_entity = new xivo_entity()) === false) === true)
+		&& (($_XOBJ = &dwho_gct::get('xivo_object')) === false
+		   || ($this->_entity = &$_XOBJ->get_module('entity')) === false) === true)
 		   return(false);
 
 		return(true);

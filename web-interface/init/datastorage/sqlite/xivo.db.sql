@@ -79,6 +79,25 @@ CREATE INDEX i18ncache__idx__language ON i18ncache(language);
 CREATE INDEX i18ncache__idx__dupdate ON i18ncache(dupdate);
 
 
+DROP TABLE iproute;
+CREATE TABLE iproute (
+ id integer unsigned,
+ name varchar(64) NOT NULL DEFAULT '',
+ iface varchar(64) NOT NULL DEFAULT '',
+ destination varchar(39),
+ netmask varchar(39),
+ gateway varchar(39),
+ disable tinyint(1) NOT NULL DEFAULT 0,
+ dcreate integer unsigned NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX iproute__idx__iface ON iproute(iface);
+CREATE UNIQUE INDEX iproute__uidx__name ON iproute(name);
+CREATE UNIQUE INDEX iproute__uidx__destination_netmask_gateway ON iproute(destination,netmask,gateway);
+
+
 DROP TABLE ldapserver;
 CREATE TABLE ldapserver (
  id integer unsigned,
@@ -98,6 +117,40 @@ CREATE INDEX ldapserver__idx__port ON ldapserver(port);
 CREATE INDEX ldapserver__idx__disable ON ldapserver(disable);
 CREATE UNIQUE INDEX ldapserver__uidx__name ON ldapserver(name);
 CREATE UNIQUE INDEX ldapserver__uidx__host_port ON ldapserver(host,port);
+
+
+DROP TABLE netiface;
+CREATE TABLE netiface (
+ name varchar(64) NOT NULL DEFAULT '',
+ hwtypeid smallint unsigned NOT NULL DEFAULT 65534,
+ type char(5) NOT NULL,
+ family varchar(5) NOT NULL,
+ method varchar(6) NOT NULL,
+ address varchar(39),
+ netmask varchar(39),
+ broadcast varchar(39),
+ gateway varchar(39),
+ mtu smallint unsigned,
+ vlan varchar(64),
+ networktype char(4) NOT NULL,
+ disable tinyint(1) NOT NULL DEFAULT 0,
+ dcreate integer unsigned NOT NULL DEFAULT 0,
+ description text NOT NULL,
+ PRIMARY KEY(name)
+);
+
+CREATE INDEX netiface__idx__name ON netiface(name);
+CREATE INDEX netiface__idx__hwtypeid ON netiface(hwtypeid);
+CREATE INDEX netiface__idx__type ON netiface(type);
+CREATE INDEX netiface__idx__family ON netiface(family);
+CREATE INDEX netiface__idx__method ON netiface(method);
+CREATE INDEX netiface__idx__address ON netiface(address);
+CREATE INDEX netiface__idx__netmask ON netiface(netmask);
+CREATE INDEX netiface__idx__broadcast ON netiface(broadcast);
+CREATE INDEX netiface__idx__gateway ON netiface(gateway);
+CREATE INDEX netiface__idx__mtu ON netiface(mtu);
+CREATE INDEX netiface__idx__vlan ON netiface(vlan);
+CREATE INDEX netiface__idx__networktype ON netiface(networktype);
 
 
 DROP TABLE server;

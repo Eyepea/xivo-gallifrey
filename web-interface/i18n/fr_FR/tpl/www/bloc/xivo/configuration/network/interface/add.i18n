@@ -1,0 +1,44 @@
+; title_content_name
+Interfaces > Ajouter
+
+; fm_name
+Nom :
+
+; fm_networktype
+Type de réseau :
+
+; fm_networktype-opt(data)
+Informatique
+
+; fm_networktype-opt(voip)
+VOIP
+
+; fm_method
+Méthode :
+
+; fm_method-opt(static)
+Statique
+
+; fm_method-opt(dhcp)
+DHCP
+
+; fm_address
+Adresse :
+
+; fm_netmask
+Masque de sous-réseau :
+
+; fm_broadcast
+Adresse de diffusion :
+
+; fm_gateway
+Passerelle par défaut :
+
+; fm_mtu
+MTU :
+
+; fm_vlan
+Interface physique du VLAN :
+
+; fm_description
+Description :

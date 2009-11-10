@@ -34,10 +34,16 @@ $array['element']['port'] = array();
 $array['element']['port']['default'] = '';
 
 
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['username'] = array('set' => false,'maxlen' => 80);
 $array['filter']['password'] = array('set' => false,'chk' => 2,'maxlen' => 80);
-$array['filter']['host'] = array('set' => false,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['host'] = array('set'		=> false,
+				 'callback'	=> 'dwho_network::valid_host',
+				 'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+							  DWHO_NETWORK_HOST_HOSTNAME)),
+				 'maxlen'	=> 64);
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 
 ?>

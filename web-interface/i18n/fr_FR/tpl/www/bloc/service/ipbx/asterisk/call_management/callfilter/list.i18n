@@ -18,3 +18,6 @@ Aucun filtrage d'appel trouvé
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce filtrage d'appel ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer ce ou ces filtrages d'appels ?

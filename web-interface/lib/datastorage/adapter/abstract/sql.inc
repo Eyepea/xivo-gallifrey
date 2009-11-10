@@ -717,7 +717,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		else if((bool) $all === true || isset($this->_aggwhere[0]) === false)
 		{
 			$this->_where = '('.$this->_where.')';
-			$this->_aggwhere[] = strlen($this->_where)+1;
+			$this->_aggwhere[] = strlen($this->_where) + 1;
 			return(true);
 		}
 		else if(($last = dwho_last_key($this->_aggwhere)) === false)
@@ -745,7 +745,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		}
 
 		$this->_where = $start.$logic.'('.substr(ltrim($end),$len).')';
-		$this->_aggwhere[] = strlen($this->_where)+1;
+		$this->_aggwhere[] = strlen($this->_where) + 1;
 
 		return(true);
 	}
@@ -766,7 +766,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		if((bool) $all === true || isset($this->_aggjoinwhere[$table][0]) === false)
 		{
 			$this->_joinwhere[$table] = '('.$this->_joinwhere[$table].')';
-			$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table])+1;
+			$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table]) + 1;
 			return(true);
 		}
 		else if(($last = dwho_last_key($this->_aggjoinwhere[$table])) === false)
@@ -794,7 +794,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		}
 
 		$this->_joinwhere[$table] = $start.$logic.'('.substr(ltrim($end),$len).')';
-		$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table])+1;
+		$this->_aggjoinwhere[$table][] = strlen($this->_joinwhere[$table]) + 1;
 
 		return(true);
 	}

@@ -122,18 +122,18 @@ class dwho_file_csv
 
 		for($i = 0,$j = 0;$i < $nb;$i++)
 		{
-			if(isset($match[$i+1]) === false)
+			if(isset($match[$i + 1]) === false)
 			{
 				$sstr = $match[$i][0];
 				$start = 1;
 				$end = -1;
 				$break = true;
 			}
-			else if($j === 0 && strlen($match[$i+1][0]) % 2 === 1)
+			else if($j === 0 && strlen($match[$i + 1][0]) % 2 === 1)
 			{
 				$sstr = $line;
-				$start = $match[$i][1]+1;
-				$end = $match[++$i][1]-1;
+				$start = $match[$i][1] + 1;
+				$end = $match[++$i][1] - 1;
 			}
 			else if(strlen($match[$i][0]) % 2 === 0)
 				continue;

@@ -26,6 +26,7 @@ define('DWHO_PHP_VER_MAX','5.0');
 class dwho_sysinfo
 {
 	var $_sysinfo	= null;
+	var $_net	= null;
 
 	function dwho_sysinfo()
 	{
@@ -105,30 +106,6 @@ class dwho_sysinfo
 		return('default');
 	}
 
-	function cpuinfo()
-	{
-		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
-			return($this->_sysinfo->cpuinfo());
-
-		return(false);
-	}
-
-	function meminfo($byte=false)
-	{
-		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
-			return($this->_sysinfo->meminfo($byte));
-
-		return(false);
-	}
-
-	function netinfo()
-	{
-		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
-			return($this->_sysinfo->netinfo());
-
-		return(false);
-	}
-
 	function uptime()
 	{
 		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
@@ -137,6 +114,52 @@ class dwho_sysinfo
 		return(false);
 	}
 
+	function cpustats()
+	{
+		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
+			return($this->_sysinfo->cpustats());
+
+		return(false);
+	}
+
+	function memstats($byte=false)
+	{
+		if(isset($this->_sysinfo) === true && is_object($this->_sysinfo) === true)
+			return($this->_sysinfo->memstats($byte));
+
+		return(false);
+	}
+
+	function net()
+	{
+		if(isset($this->_sysinfo) === false
+		|| is_object($this->_sysinfo) === false)
+			return(false);
+
+		if(isset($this->_net) === false)
+			$this->_net = $this->_sysinfo->net();
+
+		if(is_object($this->_net) === true)
+			return($this->_net);
+
+		return(false);
+	}
+
+	function netinfo()
+	{
+		if($this->net() !== false)
+			return($this->_net->netinfo());
+
+		return(false);
+	}
+
+	function netstats()
+	{
+		if($this->net() !== false)
+			return($this->_net->netstats());
+
+		return(false);
+	}
 }
 
 ?>

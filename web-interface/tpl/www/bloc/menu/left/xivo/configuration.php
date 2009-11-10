@@ -56,6 +56,19 @@ $url = &$this->get_module('url');
 						   'act=list');?>
 			</dd>
 		</dl>
+		<dl>
+			<dt><?=$this->bbf('mn_left_ti_network');?></dt>
+			<dd id="mn-network--interface">
+				<?=$url->href_html($this->bbf('mn_left_network-interface'),
+						   'xivo/configuration/network/interface',
+						   'act=list');?>
+			</dd>
+			<dd id="mn-network--iproute">
+				<?=$url->href_html($this->bbf('mn_left_network-iproute'),
+						   'xivo/configuration/network/iproute',
+						   'act=list');?>
+			</dd>
+		</dl>
 	</dd>
 	<dd class="b-nosize">
 		<span class="span-left">&nbsp;</span>

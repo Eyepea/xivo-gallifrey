@@ -609,9 +609,7 @@ dwho.form.readonly = function(list,enable)
 
 dwho.form.checked_all = function(form,name,mode)
 {
-	if(dwho_is_undef(form) === true
-	|| dwho_is_undef(name) === true
-	|| dwho_is_string(form) === false
+	if(dwho_is_string(form) === false
 	|| dwho_is_string(name) === false
 	|| dwho_is_undef(dwho.fm[form]) === true
 	|| dwho_is_undef(dwho.fm[form][name]) === true)
@@ -644,8 +642,9 @@ dwho.form.checked_all = function(form,name,mode)
 	{
 		if(ref[i].type !== 'checkbox' && ref[i].type !== 'radio')
 			continue;
-
-		if(mode !== 'reverse')
+		else if(ref[i].disabled === true)
+			continue;
+		else if(mode !== 'reverse')
 			ref[i].checked = mode;
 		else if(ref[i].checked === true)
 			ref[i].checked = false;
@@ -658,9 +657,7 @@ dwho.form.checked_all = function(form,name,mode)
 
 dwho.form.get_checked = function(form,name)
 {
-	if(dwho_is_undef(form) === true
-	|| dwho_is_undef(name) === true
-	|| dwho_is_string(form) === false
+	if(dwho_is_string(form) === false
 	|| dwho_is_string(name) === false
 	|| dwho_is_undef(dwho.fm[form]) === true
 	|| dwho_is_undef(dwho.fm[form][name]) === true)
@@ -688,9 +685,7 @@ dwho.form.get_checked = function(form,name)
 
 dwho.form.get_value_from_key = function(form,name,key)
 {
-	if(dwho_is_undef(form) === true
-	|| dwho_is_undef(name) === true
-	|| dwho_is_string(form) === false
+	if(dwho_is_string(form) === false
 	|| dwho_is_string(name) === false
 	|| dwho_is_undef(dwho.fm[form]) === true
 	|| dwho_is_undef(dwho.fm[form][name]) === true
@@ -703,9 +698,7 @@ dwho.form.get_value_from_key = function(form,name,key)
 
 dwho.form.toggle_enable_field = function(form,name,disable,exform,exformtag)
 {
-	if(dwho_is_undef(form) === true
-	|| dwho_is_undef(name) === true
-	|| dwho_is_object(form) === false
+	if(dwho_is_object(form) === false
 	|| dwho_is_string(name) === false
 	|| dwho_is_undef(form[name]) === true)
 		return(false);
@@ -832,12 +825,9 @@ dwho.form.reset_child_field = function(obj,empty)
 
 dwho.form.disable_submit_onenter = function(e)
 {
-	if(dwho_is_undef(window.event) === false)
-		keycode = window.event.keyCode;
-	else
-		keyCode = e.keyCode;
+	var keycode = dwho_is_undef(window.event) === false ? window.event.keyCode : e.keyCode;
 
-	if(keyCode === 13)
+	if(keycode === 13)
 	{
 		if(dwho_is_function(e.preventDefault) === true)
 			e.preventDefault();

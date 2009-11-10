@@ -19,27 +19,27 @@
 #
 
 $sysinfo = $this->get_var('sysinfo');
-$cpuinfo = $this->get_var('cpuinfo');
-$devinfo = $this->get_var('devinfo');
-$meminfo = $this->get_var('meminfo');
-$netinfo = $this->get_var('netinfo');
+$cpustats = $this->get_var('cpustats');
+$devstats = $this->get_var('devstats');
+$memstats = $this->get_var('memstats');
+$netstats = $this->get_var('netstats');
 $telephony = $this->get_var('telephony');
 $grpundef = $this->get_var('grpundef');
 
-$memrealused = $meminfo['memused'] - $meminfo['buffers'] - $meminfo['cached'];
+$memrealused = $memstats['memused'] - $memstats['buffers'] - $memstats['cached'];
 
-$memtotal = dwho_size_iec($meminfo['memtotal']);
-$memfree = dwho_size_iec($meminfo['memfree']);
+$memtotal = dwho_size_iec($memstats['memtotal']);
+$memfree = dwho_size_iec($memstats['memfree']);
 $memused = dwho_size_iec($memrealused);
-$membuffers = dwho_size_iec($meminfo['buffers']);
-$memcached = dwho_size_iec($meminfo['cached']);
+$membuffers = dwho_size_iec($memstats['buffers']);
+$memcached = dwho_size_iec($memstats['cached']);
 
-if($meminfo['memtotal'] > 0):
-	$memrealusedpercent = ($memrealused / $meminfo['memtotal'] * 100);
+if($memstats['memtotal'] > 0):
+	$memrealusedpercent = ($memrealused / $memstats['memtotal'] * 100);
 	$memrealusedpcentrnd = round($memrealusedpercent);
-	$membufferspercent = ($meminfo['buffers'] / $meminfo['memtotal'] * 100);
+	$membufferspercent = ($memstats['buffers'] / $memstats['memtotal'] * 100);
 	$membufferspcentrnd = round($membufferspercent);
-	$memcachedpercent = ($meminfo['cached'] / $meminfo['memtotal'] * 100);
+	$memcachedpercent = ($memstats['cached'] / $memstats['memtotal'] * 100);
 	$memcachedpcentrnd = round($memcachedpercent);
 else:
 	$memrealusedpercent = $memrealusedpcentrnd = 0;
@@ -49,17 +49,17 @@ endif;
 
 $memusedpcentrnd = $memrealusedpcentrnd + $membufferspcentrnd + $memcachedpcentrnd;
 
-$swaptotal = dwho_size_iec($meminfo['swaptotal']);
-$swapfree = dwho_size_iec($meminfo['swapfree']);
-$swapused = dwho_size_iec($meminfo['swapused']);
+$swaptotal = dwho_size_iec($memstats['swaptotal']);
+$swapfree = dwho_size_iec($memstats['swapfree']);
+$swapused = dwho_size_iec($memstats['swapused']);
 
-if($meminfo['swaptotal'] > 0):
-	$swappercent = ($meminfo['swapused'] / $meminfo['swaptotal'] * 100);
+if($memstats['swaptotal'] > 0):
+	$swappercent = ($memstats['swapused'] / $memstats['swaptotal'] * 100);
 else:
 	$swappercent = 0;
 endif;
 
-$this->set_var('memtotal',$meminfo['memtotal']);
+$this->set_var('memtotal',$memstats['memtotal']);
 
 $cputotalpercent = 0;
 $load = $cputotal = $cpuuser = $cpusystem = $cpuwait = '-';
@@ -125,7 +125,7 @@ endif;
 					</tr>
 				</table>
 			</div>
-			<div id="devinfo">
+			<div id="devstats">
 				<table border="0" cellpadding="0" cellspacing="0">
 					<tr class="sb-top">
 						<th colspan="6" class="th-left th-right"><?=$this->bbf('sysinfos_device');?></th>
@@ -138,9 +138,9 @@ endif;
 						<td class="td-right"><?=$this->bbf('sysinfos_col_total');?></td>
 					</tr>
 <?php
-			if(is_array($devinfo) === true && ($nb = count($devinfo)) > 0):
+			if(is_array($devstats) === true && ($nb = count($devstats)) > 0):
 				for($i = 0;$i < $nb;$i++):
-					$ref = &$devinfo[$i]['block'];
+					$ref = &$devstats[$i]['block'];
 					$total = $ref['total'] * $ref['size'];
 					$free = $ref['free'] * $ref['size'];
 					$used = $total - $free;
@@ -155,7 +155,7 @@ endif;
 					endif;
 ?>
 					<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
-						<td><?=dwho_trunc(dwho_htmlen($devinfo[$i]['name']),20,'...',false);?></td>
+						<td><?=dwho_trunc(dwho_htmlen($devstats[$i]['name']),20,'...',false);?></td>
 						<td class="gauge">
 							<div><div style="width: <?=round($devpercent);?>px;">&nbsp;</div></div>
 						</td>
@@ -169,7 +169,7 @@ endif;
 			else:
 ?>
 					<tr class="l-infos-1on2">
-						<td colspan="6" class="td-single"><?=$this->bbf('sysinfos_no-devinfo');?></td>
+						<td colspan="6" class="td-single"><?=$this->bbf('sysinfos_no-devstats');?></td>
 					</tr>
 <?php
 			endif;
@@ -177,7 +177,7 @@ endif;
 				</table>
 			</div>
 		</div>
-		<div id="cpuinfo">
+		<div id="cpustats">
 			<table border="0" cellpadding="0" cellspacing="0">
 				<tr class="sb-top">
 					<th colspan="5" class="th-left th-right"><?=$this->bbf('sysinfos_cpu');?></th>
@@ -199,7 +199,7 @@ endif;
 				</tr>
 			</table>
 		</div>
-		<div id="netinfo">
+		<div id="netstats">
 			<table border="0" cellpadding="0" cellspacing="0">
 				<tr class="sb-top">
 					<th colspan="5" class="th-left th-right"><?=$this->bbf('sysinfos_network');?></th>
@@ -212,27 +212,27 @@ endif;
 					<td class="td-right"><?=$this->bbf('sysinfos_col_drop');?></td>
 				</tr>
 <?php
-		if(is_array($netinfo) === true):
+		if(is_array($netstats) === true):
 			$i = 0;
-			foreach($netinfo as $devname => $stats):
-				$rx_bytes = dwho_size_iec($stats['rx']['bytes']);
-				$tx_bytes = dwho_size_iec($stats['tx']['bytes']);
-				$total_errs = dwho_size_iec($stats['total']['errs']);
-				$total_drop = dwho_size_iec($stats['total']['drop']);
+			foreach($netstats as $devname => $stats):
+				$rx_bytes = dwho_size_iec($stats['statistics']['rx']['bytes']);
+				$tx_bytes = dwho_size_iec($stats['statistics']['tx']['bytes']);
+				$total_errs = dwho_size_iec($stats['statistics']['total']['errs']);
+				$total_drop = dwho_size_iec($stats['statistics']['total']['drop']);
 ?>
 				<tr class="l-infos-<?=(($i++ % 2) + 1)?>on2">
 					<td><?=dwho_trunc(dwho_htmlen($devname),20,'...',false);?></td>
 					<td class="txt-right"><?=$this->bbf('size_iec_'.$rx_bytes[1],$rx_bytes[0]);?></td>
 					<td class="txt-right"><?=$this->bbf('size_iec_'.$tx_bytes[1],$tx_bytes[0]);?></td>
-					<td class="txt-right"><?=$stats['total']['errs']?></td>
-					<td class="td-right txt-right"><?=$stats['total']['drop']?></td>
+					<td class="txt-right"><?=$stats['statistics']['total']['errs']?></td>
+					<td class="td-right txt-right"><?=$stats['statistics']['total']['drop']?></td>
 				</tr>
 <?php
 			endforeach;
 		else:
 ?>
 				<tr class="l-infos-1on2">
-					<td colspan="5" class="td-single"><?=$this->bbf('sysinfos_no-netinfo');?></td>
+					<td colspan="5" class="td-single"><?=$this->bbf('sysinfos_no-netstats');?></td>
 				</tr>
 <?php
 		endif;
@@ -240,7 +240,7 @@ endif;
 			</table>
 		</div>
 		<div class="clearboth"></div>
-		<div id="meminfo">
+		<div id="memstats">
 			<table border="0" cellpadding="0" cellspacing="0">
 				<tr class="sb-top">
 					<th colspan="8" class="th-left th-right"><?=$this->bbf('sysinfos_memory');?></th>

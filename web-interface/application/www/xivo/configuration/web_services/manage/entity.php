@@ -23,45 +23,37 @@ $access_subcategory = 'entity';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
-$_ETT = new xivo_entity();
-
 $act = $_QRY->get('act');
 
 switch($act)
 {
 	case 'view':
-		if(($info = $_ETT->get($_QRY->get('id'))) === false)
+		$appentity = &$_XOBJ->get_application('entity',null,false);
+
+		if(($info = $appentity->get($_QRY->get('id'))) === false)
 		{
 			$http->set_status(404);
 			$http->send(true);
 		}
 
-		$_TPL->set_var('info',$info);
+		$_TPL->set_var('info',$info['entity']);
 		break;
 	case 'add':
-		if(dwho::load_class('dwho_json') === false
-		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
-		|| is_array($data) === false
-		|| $_ETT->chk_values($data) === false
-		|| ($result = $_ETT->get_filter_result()) === false
-		|| $_ETT->add($result) === false)
-			$status = 400;
-		else
-			$status = 200;
+		$appentity = &$_XOBJ->get_application('entity',null,false);
+
+		$status = $appentity->add_from_json() === true ? 200 : 400;
 
 		$http->set_status($status);
 		$http->send(true);
 		break;
 	case 'delete':
-		$ipbx = &$_SRE->get('ipbx');
-		$context = &$ipbx->get_module('context');
+		$appentity = &$_XOBJ->get_application('entity');
 
-		if(($info = $_ETT->get($_QRY->get('id'))) === false)
+		if(($info = $appentity->get($_QRY->get('id'))) === false)
 			$status = 404;
-		else if($context->get_where(array('entity' => $info['name'])) !== false)
+		else if(isset($info['deletable']) === true && $info['deletable'] === false)
 			$status = 405;
-		else if($_ETT->delete($info['id']) !== false)
+		else if($appentity->delete() === true)
 			$status = 200;
 		else
 			$status = 500;
@@ -70,7 +62,9 @@ switch($act)
 		$http->send(true);
 		break;
 	case 'search':
-		if(($list = $_ETT->get_entities_search($_QRY->get('search'))) === false)
+		$appentity = &$_XOBJ->get_application('entity');
+
+		if(($list = $appentity->get_entities_search($_QRY->get('search'))) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);
@@ -82,7 +76,9 @@ switch($act)
 	default:
 		$act = 'list';
 
-		if(($list = $_ETT->get_entities_list()) === false)
+		$appentity = &$_XOBJ->get_application('entity');
+
+		if(($list = $appentity->get_entities_list()) === false)
 		{
 			$http->set_status(204);
 			$http->send(true);

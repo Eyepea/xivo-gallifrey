@@ -121,13 +121,13 @@ class dwho_tpl_url extends dwho_tpl_module
 		else
 		{
 			$a = array(1 => 0,2 => 0,3 => 0);
-			$page1 = $page-1;
-			$page2 = $page+1;
+			$page1 = $page - 1;
+			$page2 = $page + 1;
 
 			if($nb > 6)
 			{
-				$nb_page1 = $nb-1;
-				$nb_page2 = $nb-2;
+				$nb_page1 = $nb - 1;
+				$nb_page2 = $nb - 2;
 				$a[$nb] = 0;
 				$a[$nb_page1] = 0;
 				$a[$nb_page2] = 0;
@@ -163,11 +163,11 @@ class dwho_tpl_url extends dwho_tpl_module
 
 			$slt = $this->_mk_href_html($pagek,$url.$k,$opt,$this->bbf('page_number',$k));
 
-			if($k > 4 && isset($a[$k-1]) === false)
+			if($k > 4 && isset($a[$k - 1]) === false)
 				$r .= ' ... '.$slt.', ';
 			else if($k > 4 && $k < $nb-5 && isset($a[$k-1]) === false)
 				$r .= $slt.' ... ';
-			else if(isset($a[$k+1]) === true)
+			else if(isset($a[$k + 1]) === true)
 				$r .= $slt.', ';
 			else
 				$r .= $slt;

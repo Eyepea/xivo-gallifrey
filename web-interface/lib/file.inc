@@ -83,7 +83,7 @@ class dwho_file
 		$info['ext'] = $pinfo['extension'];
 
 		if(($extlen = strlen($pinfo['extension'])) > 0)
-			$info['filename'] = substr($pinfo['basename'],0,-($extlen+1));
+			$info['filename'] = substr($pinfo['basename'],0,-($extlen + 1));
 		else
 			$info['filename'] = $info['name'];
 
@@ -93,7 +93,7 @@ class dwho_file
 		$info['mtime'] = filemtime($info['path']);
 		$info['size'] = filesize($info['path']);
 
-		if(isset($this) === true && dwho_instanceof($this,__CLASS__) === true)
+		if(isset($this) === true && dwho_is_instance($this,__CLASS__) === true)
 			$this->info = $info;
 
 		return($info);
@@ -127,7 +127,7 @@ class dwho_file
 
 	function get_mime($file='')
 	{
-		if(isset($this) === true && dwho_instanceof($this,__CLASS__) === true)
+		if(isset($this) === true && dwho_is_instance($this,__CLASS__) === true)
 			$static = false;
 		else
 			$static = true;
@@ -148,7 +148,7 @@ class dwho_file
 	function get_charset($file='')
 	{
 		if(isset($this) === false
-		|| dwho_instanceof($this,__CLASS__) === false
+		|| dwho_is_instance($this,__CLASS__) === false
 		|| is_object($this->_finfo) === false)
 			return(false);
 

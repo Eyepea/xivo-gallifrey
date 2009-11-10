@@ -26,8 +26,9 @@ class dwho_tpl
 	var $_var	= array();
 	var $_url	= array();
 	var $_api_misc	= array();
-	var $_option	= array('overload_i18n'	=> null);
+	var $_option	= array('preload_i18n'	=> null);
 	var $_module	= array();
+	var $_i18n	= null;
 
 	function dwho_tpl($param=array(),$modules=array(),$url=null,$api_misc=null)
 	{
@@ -51,7 +52,7 @@ class dwho_tpl
 			$script_root = rtrim($param['script_root'],'/');
 
 		if(($pos = strrpos($tpl_path,DWHO_SEP_DIR)) !== 0 && $pos !== false)
-			$tpl_dir = substr($tpl_path,$pos+1);
+			$tpl_dir = substr($tpl_path,$pos + 1);
 		else
 			$tpl_dir = '';
 
@@ -82,22 +83,21 @@ class dwho_tpl
 
 	function load_i18n_file($file,$namespace='')
 	{
-		$namespace = (string) $namespace;
-
-		if($namespace === '')
+		if(dwho_has_len($namespace) === false)
 			$namespace = $this->get_option('i18n_namespace');
 
-		if(($i18n = &dwho_gct::get('dwho_i18n')) === false)
+		if($this->_i18n === null)
+			$this->_i18n = &dwho_gct::get('dwho_i18n');
+
+		if(is_object($this->_i18n) === false)
 			return(false);
 
-		return($i18n->load_file($file,$namespace));
+		return($this->_i18n->load_file($file,$namespace));
 	}
 
 	function bbf($name,$arr=array(),$namespace='')
 	{
-		$namespace = (string) $namespace;
-
-		if($namespace === '')
+		if(dwho_has_len($namespace) === false)
 			$namespace = $this->get_option('i18n_namespace');
 
 		return(dwho_i18n::babelfish($name,$arr,$namespace));
@@ -123,6 +123,18 @@ class dwho_tpl
 			return($this->_option[$name]);
 
 		return(null);
+	}
+
+	function get_file_extension($ext)
+	{
+		if($ext === null)
+			$ext = '';
+		else if(dwho_has_len($ext) === false)
+			$ext = '.'.DWHO_TPL_FILE_EXT;
+		else
+			$ext = '.'.$ext;
+
+		return($ext);
 	}
 
 	function set_module($value,$name='')
@@ -153,8 +165,6 @@ class dwho_tpl
 
 	function _load_class($module)
 	{
-		$module = (string) $module;
-
 		$file = $module.'.inc';
 
 		$dir = dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module');
@@ -253,7 +263,7 @@ class dwho_tpl
 		return($default);
 	}
 
-	function set_file($name,$value)
+	function set_file($name,$value,$preload_i18n=false)
 	{
 		$name = (string) $name;
 		$value = (string) $value;
@@ -261,14 +271,15 @@ class dwho_tpl
 		if($name === '')
 			return(false);
 		else if(isset($this->_file[$name]) === false)
-		{
 			$this->_file[$name] = $value;
-			return(true);
-		}
 		else if(is_array($this->_file[$name]) === true)
 			$this->_file[$name][] = $value;
 		else
-			$this->_file[$name] = array($this->_file[$name],$value);
+			$this->_file[$name] = array($this->_file[$name],
+						    $value);
+
+		if((bool) $preload_i18n === true)
+			$this->load_i18n_file($value);
 
 		return(true);
 	}
@@ -287,41 +298,35 @@ class dwho_tpl
 
 	function get_prepend($ext='')
 	{
-		$ext = (string) $ext;
-
-		if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
-
-		return(dwho_file::is_f_r($this->get_option('script_path').DWHO_SEP_DIR.'prepend.'.$ext));
+		return(dwho_file::is_f_r($this->get_option('script_path').
+					 DWHO_SEP_DIR.
+					 'prepend'.
+					 $this->get_file_extension($ext)));
 	}
 
 	function get_append($ext='')
 	{
-		$ext = (string) $ext;
-
-		if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
-
-		return(dwho_file::is_f_r($this->get_option('script_path').DWHO_SEP_DIR.'append.'.$ext));
+		return(dwho_file::is_f_r($this->get_option('script_path').
+					 DWHO_SEP_DIR.
+					 'append'.
+					 $this->get_file_extension($ext)));
 	}
 
-	function set_bloc($name,$file,$ext='')
+	function set_bloc($name,$file,$preload_i18n=false,$ext='')
 	{
-		$name = (string) $name;
-		$ext = (string) $ext;
+		$file = 'bloc'.
+			DWHO_SEP_DIR.
+			ltrim($file,DWHO_SEP_DIR).
+			$this->get_file_extension($ext);
 
-		if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
-
-		$file = 'bloc'.DWHO_SEP_DIR.ltrim($file,DWHO_SEP_DIR).'.'.$ext;
-
-		if($name === '' || dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.$file) === false)
+		if(dwho_has_len($name) === false
+		|| dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.$file) === false)
 			return(false);
 
 		$this->set_file('bloc_'.$name,$file);
 
-		if($this->get_option('overload_i18n') !== false)
-			$this->load_i18n_file($this->get_file('bloc_'.$name));
+		if($this->get_option('preload_i18n') !== false || (bool) $preload_i18n === true)
+			$this->load_i18n_file($file);
 
 		return(true);
 	}
@@ -329,57 +334,55 @@ class dwho_tpl
 	function mk_bloc($name)
 	{
 		if(($file = $this->get_file('bloc_'.$name)) !== null)
-			$this->file_include($file,null,null);
+			$this->file_include($file,null,false,null);
 	}
 
-	function set_struct($file,$ext='')
+	function set_struct($file,$preload_i18n=false,$ext='')
 	{
-		$ext = (string) $ext;
-
-		if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
-
-		$file = 'struct'.DWHO_SEP_DIR.ltrim($file,DWHO_SEP_DIR).'.'.$ext;
+		$file = 'struct'.
+			DWHO_SEP_DIR.
+			ltrim($file,DWHO_SEP_DIR).
+			$this->get_file_extension($ext);
 
 		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.$file) === false)
 			return(false);
 
 		$this->set_file('structure',$file);
 
-		if($this->get_option('overload_i18n') !== false)
-			$this->load_i18n_file($this->get_file('structure'));
+		if($this->get_option('preload_i18n') !== false || (bool) $preload_i18n === true)
+			$this->load_i18n_file($file);
 
 		return(true);
 	}
 
 	function mk_struct()
 	{
-		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.$this->get_file('structure')) === false)
+		if(dwho_file::is_f_r($this->get_option('tpl_path').
+				     DWHO_SEP_DIR.
+				     $this->get_file('structure')) === false)
 			return(false);
-		else if($this->get_option('overload_i18n') !== false)
+		else if($this->get_option('preload_i18n') !== false)
 			$this->load_i18n_file($this->get_file('structure'));
 
 		include($this->get_option('tpl_path').DWHO_SEP_DIR.$this->get_file('structure'));
 	}
 
-	function display($page,$overload_i18n=false,$ext='')
+	function display($page,$preload_i18n=false,$ext='')
 	{
-		$ext = (string) $ext;
-
 		if(dwho_has_len($page) === false)
 			return(false);
-		else if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
+
+		$ext = $this->get_file_extension($ext);
 
 		if($page{0} === DWHO_SEP_DIR)
-			$page .= '.'.$ext;
+			$page .= $ext;
 		else
-			$page = dwho_file::joinpath(DWHO_SEP_DIR.'struct','page',$page.'.'.$ext);
+			$page = dwho_file::joinpath(DWHO_SEP_DIR.'struct','page',$page.$ext);
 
 		$path = $this->get_option('tpl_path').$page;
 
-		if((bool) $overload_i18n === true)
-			$this->set_option('overload_i18n',true);
+		if((bool) $preload_i18n === true)
+			$this->set_option('preload_i18n',true);
 
 		if(dwho_file::is_f_r($path) === false)
 			return(false);
@@ -390,48 +393,44 @@ class dwho_tpl
 
 		unset($page,$path);
 
-		if($this->get_option('overload_i18n') === true)
+		if($this->get_option('preload_i18n') === true)
 		{
 			ob_start();
 
-			if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend.'.$ext) !== false)
-				include($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend.'.$ext);
+			if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend'.$ext) !== false)
+				include($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend'.$ext);
 
 			include($this->get_file('display'));
 
-			if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'append.'.$ext) !== false)
-				include($this->get_option('tpl_path').DWHO_SEP_DIR.'append.'.$ext);
+			if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'append'.$ext) !== false)
+				include($this->get_option('tpl_path').DWHO_SEP_DIR.'append'.$ext);
 
 			ob_end_clean();
 
-			$this->set_option('overload_i18n',false);
+			$this->set_option('preload_i18n',false);
 		}
 
 		ob_start();
 
-		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend.'.$ext) !== false)
-			include($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend.'.$ext);
+		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend'.$ext) !== false)
+			include($this->get_option('tpl_path').DWHO_SEP_DIR.'prepend'.$ext);
 
 		include($this->get_file('display'));
 
-		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'append.'.$ext) !== false)
-			include($this->get_option('tpl_path').DWHO_SEP_DIR.'append.'.$ext);
+		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.'append'.$ext) !== false)
+			include($this->get_option('tpl_path').DWHO_SEP_DIR.'append'.$ext);
 
 		ob_end_flush();
 	}
 
-	function file_include($file,$arr=array(),$ext='')
+	function file_include($file,$arr=array(),$preload_i18n=false,$ext='')
 	{
 		$file = ltrim($file,DWHO_SEP_DIR);
 
-		if($ext === null)
-			$ext = '';
-		else if($ext === '')
-			$ext = '.'.DWHO_TPL_FILE_EXT;
-		else
-			$ext = '.'.(string) $ext;
-
-		$path = $this->get_option('tpl_path').DWHO_SEP_DIR.$file.$ext;
+		$path = $this->get_option('tpl_path').
+			DWHO_SEP_DIR.
+			$file.
+			$this->get_file_extension($ext);
 
 		if(($path = dwho_file::is_f_r($path)) === false)
 			return(false);
@@ -439,7 +438,7 @@ class dwho_tpl
 		$this->set_file('tpl',$path);
 		$this->set_vars($arr);
 
-		if($this->get_option('overload_i18n') !== false)
+		if($this->get_option('preload_i18n') !== false || (bool) $preload_i18n === true)
 			$this->load_i18n_file($file);
 
 		unset($file,$arr,$path,$ext);
@@ -449,13 +448,12 @@ class dwho_tpl
 
 	function file_time($file)
 	{
-		$r = (string) $file;
-		$file = ltrim($r,DWHO_SEP_DIR);
+		if(($time = dwho_file::get_time($this->get_option('script_path').
+						DWHO_SEP_DIR.
+						ltrim($file,DWHO_SEP_DIR))) !== false)
+			$file .= '?'.$time;
 
-		if(($time = dwho_file::get_time($this->get_option('script_path').DWHO_SEP_DIR.$file)) !== false)
-			$r .= '?'.$time;
-
-		return($r);
+		return($file);
 	}
 
 	function url($url='',$absolute=false,$internal=true)
@@ -481,13 +479,8 @@ class dwho_tpl
 
 	function get_application($section,$nb=0,$path='',$ext='')
 	{
-		$section = (string) $section;
 		$nb = dwho_uint($nb,20);
 		$path = (string) $path;
-		$ext = (string) $ext;
-
-		if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
 
 		$search = array('@/+@','@^/@','@/$@','@\.\.@');
 		$replace = array(DWHO_SEP_DIR,'','','');
@@ -503,7 +496,7 @@ class dwho_tpl
 		{
 			$pathcleaned = preg_replace($search,$replace,$path);
 
-			if(($exp = explode(DWHO_SEP_DIR,$pathcleaned,$nb+1)) === false)
+			if(($exp = explode(DWHO_SEP_DIR,$pathcleaned,$nb + 1)) === false)
 				return(false);
 
 			$path = '';
@@ -530,7 +523,10 @@ class dwho_tpl
 		if(is_string($newpath) === true)
 			$filepath = $newpath;
 
-		return(dwho_file::is_f_r($this->get_option('application_path').DWHO_SEP_DIR.$filepath.'.'.$ext));
+		return(dwho_file::is_f_r($this->get_option('application_path').
+					 DWHO_SEP_DIR.
+					 $filepath.
+					 $this->get_file_extension($ext)));
 	}
 
 	function _apply_api_misc($api_path)

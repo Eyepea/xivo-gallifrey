@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'datastorage','helper','abstract.inc'));
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','datastorage','sql.inc'));
 
 class xivo_application_service_asterisk_abstract_sql extends dwho_datastorage_helper_abstract
 {

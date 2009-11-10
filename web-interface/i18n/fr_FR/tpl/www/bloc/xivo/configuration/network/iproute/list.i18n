@@ -1,0 +1,23 @@
+; col_name
+Nom
+
+; col_iface
+Interface
+
+; col_destination
+Destination
+
+; col_netmask
+Masque de sous-réseau
+
+; col_gateway
+Passerelle
+
+; no_iproute
+Aucune route IP statique trouvée
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette route IP statique ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces routes IP statiques ?

@@ -193,7 +193,7 @@ $array['element']['category']['value'] = array('queue','group');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['timeout'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['timeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['announce'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['strategy'] = array('set'	=> false,
@@ -206,9 +206,9 @@ $array['filter']['strategy'] = array('set'	=> false,
 							 'ringall'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
 $array['filter']['context'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['retry'] = array('set' => false,'chk' => 2,'key' => array(1,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['retry'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,60,5));
 $array['filter']['weight'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,10));
-$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['wrapuptime'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['maxlen'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,65535));
 $array['filter']['announce-frequency'] = array('set'	=> false,
 					       'chk'	=> 2,
@@ -221,7 +221,7 @@ $array['filter']['periodic-announce-frequency'] = array('set'	=> false,
 								       105,120,135,150,165,180,
 								       210,225,240,255,270,285,300));
 $array['filter']['announce-holdtime'] = array('set' => false,'chk' => 2,'key' => array('no','yes','once'));
-$array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['announce-round-seconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['monitor-format'] = array('set' => false,'chk' => 2,'key' => array('gsm','wav','wav49'));
 $array['filter']['monitor-type'] = array('set' => false,'chk' => 2,'key' => array('no','mixmonitor'));
 $array['filter']['joinempty'] = array('set' => false,'chk' => 2,'key' => array('no','yes','strict'));
@@ -230,7 +230,7 @@ $array['filter']['ringinuse'] = array('bool' => true);
 $array['filter']['eventwhencalled'] = array('bool' => true);
 $array['filter']['eventmemberstatus'] = array('bool' => true);
 $array['filter']['reportholdtime'] = array('bool' => true);
-$array['filter']['memberdelay'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['memberdelay'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['timeoutrestart'] = array('bool' => true);
 $array['filter']['queue-youarenext'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['queue-thereare'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);

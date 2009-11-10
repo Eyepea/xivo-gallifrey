@@ -239,6 +239,9 @@ $array['element']['category'] = array();
 $array['element']['category']['default'] = 'user';
 $array['element']['category']['forcedef'] = true;
 
+
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['type'] = array('set' => false,'chk' => 0);
@@ -313,12 +316,12 @@ $array['filter']['mohinterpret'] = array('set' => false,'chk' => 0);
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
-				 'callback'		=> 'dwho_filter::chk_ipv4_subnet',
-				 'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
+				 'callback'		=> 'dwho_network::valid_subnet_ipv4',
+				 'callbackarg'		=> array(null,DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
-				   'callback'		=> 'dwho_filter::chk_ipv4_subnet',
-				   'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
+				   'callback'		=> 'dwho_network::valid_subnet_ipv4',
+				   'callbackarg'	=> array(null,DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['sourceaddress'] = array('set' => false,'chk' => 0);
 $array['filter']['setvar'] = array('set'	=> false,
@@ -330,9 +333,14 @@ $array['filter']['host'] = array('set'		=> false,
 				 'chk'		=> 2,
 				 'key'		=> array('dynamic','static'),
 				 'strict'	=> false,
-				 'callback'	=> 'dwho_filter::chk_host_ipv4_strict');
+				 'callback'	=> 'dwho_network::valid_host',
+				 'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+							  DWHO_NETWORK_HOST_HOSTNAME)));
 $array['filter']['port'] = array('set' => false,'chk' => 0);
-$array['filter']['mask'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_ipv4_netmask_dotdec');
+$array['filter']['mask'] = array('set'		=> false,
+				 'chk'		=> 2,
+				 'callback'	=> 'dwho_network::valid_netmask_ipv4',
+				 'callbackarg'	=> array(DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['peercontext'] = array('set' => false,'chk' => 0);
 $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);

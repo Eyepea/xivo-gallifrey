@@ -87,7 +87,7 @@ $array['element']['custom_beep']['setdef'] = true;
 $array['filter'] = array();
 $array['filter']['ackcall'] = array('key' => array('no','yes','always'));
 $array['filter']['endcall'] = array('bool' => true);
-$array['filter']['autologoff'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['autologoff'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['autologoffunavail'] = array('bool' => true);
 $array['filter']['wrapuptime'] = array('key' => array(0,5000,10000,15000,20000,
 						      25000,30000,35000,40000,

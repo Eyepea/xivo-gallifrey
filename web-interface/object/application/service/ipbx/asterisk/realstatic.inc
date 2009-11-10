@@ -24,7 +24,7 @@ class xivo_application_service_asterisk_realstatic
 
 	function xivo_application_service_asterisk_realstatic(&$service)
 	{
-		if(dwho_instanceof($service,'xivo_service_asterisk') === false)
+		if(dwho_is_instance($service,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$service;

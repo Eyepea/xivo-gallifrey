@@ -1,0 +1,31 @@
+; load [global] util/network
+
+; col_name
+Nom
+
+; col_hwtype
+Type de matériel
+
+; col_hwaddress
+Adresse MAC
+
+; col_method
+Méthode
+
+; method(static)
+Statique
+
+; method(dhcp)
+DHCP
+
+; col_address
+Adresse
+
+; no_netiface
+Aucune interface trouvée
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette interface ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces interfaces ?

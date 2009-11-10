@@ -49,7 +49,7 @@ class xivo_service_asterisk_useriax extends xivo_service_asterisk_abstract
 		if(($pos = strrpos($data['mailbox'],'@')) !== false)
 		{
 			$data['voicemailmailbox'] = substr($data['mailbox'],0,$pos);
-			$data['voicemailcontext'] = substr($data['mailbox'],$pos+1);
+			$data['voicemailcontext'] = substr($data['mailbox'],$pos + 1);
 		}
 
 		return($data);

@@ -18,3 +18,12 @@ Serveurs LDAP
 
 ; mn_left_manage-accesswebservice
 Accès aux services Web
+
+; mn_left_ti_network
+Réseau
+
+; mn_left_network-interface
+Interfaces
+
+; mn_left_network-iproute
+Routes IP statiques

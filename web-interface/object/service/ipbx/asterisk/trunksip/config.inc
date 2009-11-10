@@ -315,6 +315,9 @@ $array['element']['category'] = array();
 $array['element']['category']['default'] = 'trunk';
 $array['element']['category']['forcedef'] = true;
 
+
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('user','peer','friend'));
@@ -342,7 +345,11 @@ $array['filter']['amaflags'] = array('set'	=> false,
 				     'key'	=> xivo_service_asterisk::get_amaflags_list());
 $array['filter']['allowtransfer'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['fromuser'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
-$array['filter']['fromdomain'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict');
+$array['filter']['fromdomain'] = array('set'		=> false,
+				       'chk'		=> 2,
+				       'callback'	=> 'dwho_network::valid_host',
+				       'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME)));
 $array['filter']['mailbox'] = array('set' => false,'chk' => 0);
 $array['filter']['subscribemwi'] = array('set' => false);
 $array['filter']['buggymwi'] = array('set' => false,'chk' => 0);
@@ -380,17 +387,17 @@ $array['filter']['t38pt_udptl'] = array('set' => false,'chk' => 2,'bool' => true
 $array['filter']['t38pt_rtp'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['t38pt_tcp'] = array('set' => false,'chk' => 2,'bool' => true);
 $array['filter']['t38pt_usertpsource'] = array('set' => false,'chk' => 2,'bool' => true);
-$array['filter']['rtptimeout'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['rtpholdtimeout'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['rtptimeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
+$array['filter']['rtpholdtimeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
+$array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
-				 'callback'		=> 'dwho_filter::chk_ipv4_subnet',
-				 'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
+				 'callback'		=> 'dwho_network::valid_subnet_ipv4',
+				 'callbackarg'		=> array(null,DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
-				   'callback'		=> 'dwho_filter::chk_ipv4_subnet',
-				   'callbackarg'	=> array(null,DWHO_IPV4_NETMASK_DOTDEC));
+				   'callback'		=> 'dwho_network::valid_subnet_ipv4',
+				   'callbackarg'	=> array(null,DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 0);
 $array['filter']['pickupgroup'] = array('set' => false,'chk' => 0);
@@ -399,7 +406,9 @@ $array['filter']['host'] = array('set'		=> false,
 				 'chk'		=> 2,
 				 'key'		=> array('dynamic','static'),
 				 'strict'	=> false,
-				 'callback'	=> 'dwho_filter::chk_host_ipv4_strict');
+				 'callback'	=> 'dwho_network::valid_host',
+				 'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+							  DWHO_NETWORK_HOST_HOSTNAME)));
 $array['filter']['port'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['regexten'] = array('set' => false,'chk' => 0);
 $array['filter']['subscribecontext'] = array('set' => false,'chk' => 0);

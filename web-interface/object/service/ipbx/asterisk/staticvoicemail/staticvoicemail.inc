@@ -33,7 +33,7 @@ class xivo_service_asterisk_realstatic_staticvoicemail extends xivo_service_aste
 			if(($pos = strpos($data['var_val'],'|')) !== false)
 			{
 				$data['timezone'] = substr($data['var_val'],0,$pos);
-				$data['msg_format'] = substr($data['var_val'],$pos+1);
+				$data['msg_format'] = substr($data['var_val'],$pos + 1);
 			}
 			else
 			{

@@ -62,7 +62,7 @@ $array['filter']['transfer_user'] = array('bool' => true);
 $array['filter']['transfer_call'] = array('bool' => true);
 $array['filter']['write_caller'] = array('bool' => true);
 $array['filter']['write_calling'] = array('bool' => true);
-$array['filter']['timeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['timeout'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
 
 ?>

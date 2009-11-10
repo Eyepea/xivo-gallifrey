@@ -20,7 +20,7 @@
 
 define('XIVO_PATH_ROOT',dirname(__FILE__));
 
-require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'object'.DIRECTORY_SEPARATOR.'xivo.inc');
+require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'xivo.inc');
 
 $_XIVO = &dwho_gct::set_get(new xivo());
 
@@ -33,6 +33,7 @@ $_I18N = &dwho_gct::get('dwho_i18n');
 $_I18N->load_file('xivo');
 
 $_QRY = &dwho_gct::get('dwho_query');
+$_XOBJ = &dwho_gct::get('xivo_object');
 $_SRE = &dwho_gct::get('xivo_service');
 $_USR = &dwho_gct::get('_USR');
 

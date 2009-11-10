@@ -339,7 +339,7 @@ class dwho_query
 		if($cnt > 20)
 			$cnt = 20;
 
-		$path = explode('/',$path_info,$cnt+1);
+		$path = explode('/',$path_info,$cnt + 1);
 
 		for($i = $beg;$i < $cnt;$i++)
 		{
@@ -378,10 +378,10 @@ class dwho_query
 			$r .= urlencode($match[$i][0]);
 			$mlen = strlen($match[$i][0]);
 
-			if(isset($match[$i+1]) === true)
+			if(isset($match[$i + 1]) === true)
 			{
 				$pos = $match[$i][1] + $mlen;
-				$r .= substr($str,$pos,$match[$i+1][1] - $pos);
+				$r .= substr($str,$pos,$match[$i + 1][1] - $pos);
 				continue;
 			}
 

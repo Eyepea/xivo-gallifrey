@@ -522,30 +522,9 @@ class dwho_datastorage_adapter_abstract
 		return(null);
 	}
 
-	function _set_limit($offset,$line='')
+	function _set_limit($offset,$line=null)
 	{
-		$r = array();
-
-		if(is_array($offset) === true && isset($offset[0]) === true)
-		{
-			if(isset($offset[1]) === true)
-				$line = $offset[1];
-
-			$offset = $offset[0];
-		}
-
-		$offset = (string) $offset;
-		$line = (string) $line;
-
-		if($offset === '')
-			return(false);
-
-		$r[0] = dwho_uint($offset);
-
-		if($line !== '')
-			$r[1] = dwho_uint($line);
-
-		return($r);
+		return(dwho_get_limit($offset,$line));
 	}
 }
 

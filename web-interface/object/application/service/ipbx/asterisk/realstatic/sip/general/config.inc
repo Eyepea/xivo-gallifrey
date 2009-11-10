@@ -480,9 +480,17 @@ $array['element']['subscribecontext']['default'] = '';
 $array['element']['subscribecontext']['forcedef'] = true;
 $array['element']['subscribecontext']['null'] = true;
 
+
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['bindaddr'] = array('set'		=> false,
+				     'chk'		=> 2,
+				     'callback'		=> 'dwho_network::valid_host',
+				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME)),
+				     'maxlen'		=> 64);
 $array['filter']['videosupport'] = array('bool' => true);
 $array['filter']['autocreatepeer'] = array('bool' => true);
 $array['filter']['allowguest'] = array('bool' => true);
@@ -490,14 +498,19 @@ $array['filter']['allowsubscribe'] = array('bool' => true);
 $array['filter']['allowoverlap'] = array('bool' => true);
 $array['filter']['promiscredir'] = array('bool' => true);
 $array['filter']['autodomain'] = array('bool' => true);
-$array['filter']['domain'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['domain'] = array('set'		=> false,
+				   'chk'		=> 2,
+				   'callback'		=> 'dwho_network::valid_host',
+				   'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME)),
+				   'maxlen'		=> 64);
 $array['filter']['allowexternaldomains'] = array('bool' => true);
 $array['filter']['usereqphone'] = array('bool' => true);
 $array['filter']['realm'] = array('regexp' => '/[^"]/','maxlen' => 64);
 $array['filter']['alwaysauthreject'] = array('bool' => true);
 $array['filter']['limitonpeer'] = array('bool' => true);
 $array['filter']['useragent'] = array('cast' => 'sgraph','maxlen' => 80);
-$array['filter']['checkmwi'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['checkmwi'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['buggymwi'] = array('bool' => true);
 $array['filter']['regcontext'] = array('set' => false,'chk' => 2,
 				       'callback' => 'xivo_service_asterisk::chk_context',
@@ -517,12 +530,31 @@ $array['filter']['t38pt_udptl'] = array('bool' => true);
 $array['filter']['t38pt_rtp'] = array('bool' => true);
 $array['filter']['t38pt_tcp'] = array('bool' => true);
 $array['filter']['t38pt_usertpsource'] = array('bool' => true);
-$array['filter']['localnet'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_subnet_ipv4_strict','maxlen' => 128);
-$array['filter']['externip'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
-$array['filter']['externhost'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['localnet'] = array('set'		=> false,
+				     'chk'		=> 2,
+				     'callback'		=> 'dwho_network::valid_host_subnet_ipv4',
+				     'callbackarg'	=> array(null,null,DWHO_NETWORK_HOST_IPV4_DOTDEC),
+				     'maxlen'		=> 128);
+$array['filter']['externip'] = array('set'		=> false,
+				     'chk'		=> 2,
+				     'callback'		=> 'dwho_network::valid_host',
+				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME)),
+				     'maxlen'		=> 64);
+$array['filter']['externhost'] = array('set'		=> false,
+				       'chk'		=> 2,
+				       'callback'	=> 'dwho_network::valid_host',
+				       'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME)),
+				       'maxlen'		=> 64);
 $array['filter']['externrefresh'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120,180,240,300,600,900,1200,1800));
 $array['filter']['matchexterniplocally'] = array('bool' => true);
-$array['filter']['outboundproxy'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_host_ipv4_strict','maxlen' => 64);
+$array['filter']['outboundproxy'] = array('set'		=> false,
+					  'chk'		=> 2,
+					  'callback'	=> 'dwho_network::valid_host',
+					  'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
+								  DWHO_NETWORK_HOST_HOSTNAME)),
+					  'maxlen'	=> 64);
 $array['filter']['outboundproxyport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['g726nonstandard'] = array('bool' => true);
 $array['filter']['disallow'] = array('set' => false,'chk' => 2,'key' => array('all'));
@@ -552,9 +584,9 @@ $array['filter']['t1min'] = array('key' => array(0,10,20,30,40,50,60,70,80,90,10
 $array['filter']['relaxdtmf'] = array('bool' => true);
 $array['filter']['rfc2833compensate'] = array('bool' => true);
 $array['filter']['compactheaders'] = array('bool' => true);
-$array['filter']['rtptimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['rtpholdtimeout'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
-$array['filter']['rtpkeepalive'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['rtptimeout'] = array('cast' => 'uint','between' => array(0,60,5));
+$array['filter']['rtpholdtimeout'] = array('cast' => 'uint','between' => array(0,60,5));
+$array['filter']['rtpkeepalive'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['directrtpsetup'] = array('bool' => true);
 $array['filter']['notifymimetype'] = array('set' => false,'chk' => 2,'maxlen' => 80,
 					   'regexp' => '#^(?:text|application)/[a-zA-Z][a-zA-Z0-9][a-zA-Z0-9\+][a-zA-Z0-9\-\+\.]*$#');
@@ -581,11 +613,8 @@ $array['filter']['defaultexpiry'] = array('key' => array(1,10,20,30,40,50,60,
 							 240,300,600,900,1200,1800,
 							 2400,2700,3000,3600,4500,
 							 5400,6300,7200));
-$array['filter']['registertimeout'] = array('key' => array(1,10,20,30,40,50,60,70,80,90,100,110,120));
-$array['filter']['registerattempts'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,
-							    50,55,60,65,70,75,80,85,90,95,
-							    100,105,110,115,120,125,130,135,140,145,
-							    150,155,160,165,170,175,180,185,190,195,200));
+$array['filter']['registertimeout'] = array('cast' => 'uint','between' => array(1,120,10));
+$array['filter']['registerattempts'] = array('cast' => 'uint','between' => array(0,200,5));
 $array['filter']['notifyringing'] = array('bool' => true);
 $array['filter']['notifyhold'] = array('bool' => true);
 $array['filter']['allowtransfer'] = array('bool' => true);

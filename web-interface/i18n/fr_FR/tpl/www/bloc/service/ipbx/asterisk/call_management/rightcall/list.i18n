@@ -18,3 +18,6 @@ Permettre
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce droit d'appel ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer ce ou ces droits d'appels ?

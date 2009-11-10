@@ -74,8 +74,7 @@ switch($act)
 		&& ($id = intval($_QR['id'])) > 0
 		&& $_SVR->delete($id) !== false)
 		{
-			$ipbx = &$_SRE->get('ipbx');
-			$serverfeatures = &$ipbx->get_module('serverfeatures');
+			$serverfeatures = &$_SRE->get_module('ipbx','serverfeatures');
 
 			$where = array();
 			$where['serverid'] = $id;
@@ -90,8 +89,7 @@ switch($act)
 		if(($values = dwho_issa_val('server',$_QR)) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/server'),$param);
 
-		$ipbx = &$_SRE->get('ipbx');
-		$serverfeatures = &$ipbx->get_module('serverfeatures');
+		$serverfeatures = &$_SRE->get_module('ipbx','serverfeatures');
 
 		$where = array();
 

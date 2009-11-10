@@ -22,18 +22,18 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libconfig.inc'));
 
 class xivo_application_abstract extends xivo_libconfig_abstract
 {
-	var $_cnt	= 0;
-	var $_errnb	= 0;
-	var $_error	= array();
-	var $_info	= array();
-	var $_origin	= array();
-	var $_result	= array();
-	var $_return	= array();
+	var $_abstract		= array();
+	var $_cnt		= 0;
+	var $_components	= false;
+	var $_errnb		= 0;
+	var $_error		= array();
+	var $_info		= array();
+	var $_origin		= array();
+	var $_result		= array();
+	var $_return		= array();
 
 	function _load_abstract_class($abstract)
 	{
-		$abstract = (string) $abstract;
-
 		$file = $abstract.'.inc';
 
 		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
@@ -114,17 +114,17 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 
 	function _reset_info()
 	{
-		$this->_info = array();
-		$this->_origin = array();
+		$this->_info	= array();
+		$this->_origin	= array();
 	}
 
 	function _reset()
 	{
-		$this->_errnb = 0;
-		$this->_error = array();
-		$this->_status = '';
-		$this->_result = array();
-		$this->_return = array();
+		$this->_errnb	= 0;
+		$this->_error	= array();
+		$this->_status	= '';
+		$this->_result	= array();
+		$this->_return	= array();
 	}
 
 	function get_cnt()
@@ -319,6 +319,18 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 			return(false);
 
 		return($this->_param[$name]);
+	}
+
+	function _get_data_from_json()
+	{
+		$_QRY = &dwho_gct::get('dwho_query');
+
+		if(dwho::load_class('dwho_json') === false
+		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
+		|| is_array($data) === false)
+			return(false);
+
+		return($data);
 	}
 }
 

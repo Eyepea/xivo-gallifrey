@@ -292,6 +292,23 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 		return($this->_dso->get_primary($arr,$disable));
 	}
 
+	function exists($arr,$disable=null,$id=null)
+	{
+		if(is_array($arr) === true
+		&& ($arr = $this->get_element_where($arr)) === false)
+			return(false);
+		else if($id !== null)
+		{
+			if(is_array($arr) === false
+			|| ($id = $this->_chk_primary_key($id)) === false)
+				return(false);
+
+			$arr = array_merge($arr,$id);
+		}
+
+		return((bool) $this->_dso->exists($arr,$disable));
+	}
+
 	function get_where($arr,$disable=null,$id=null)
 	{
 		if(isset($this->_origin) === true)

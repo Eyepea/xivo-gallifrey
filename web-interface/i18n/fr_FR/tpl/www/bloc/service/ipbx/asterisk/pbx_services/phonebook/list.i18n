@@ -21,3 +21,6 @@ Aucune entrée trouvée dans le carnet d'adresses
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cette entrée du carnet d'adresses ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces entrées du carnet d'adresses ?

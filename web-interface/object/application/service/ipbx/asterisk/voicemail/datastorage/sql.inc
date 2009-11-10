@@ -18,9 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','abstract','datastorage','abstract','sql.inc'),true);
+require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','datastorage','sql.inc'));
 
-class xivo_application_service_asterisk_voicemail_sql extends xivo_application_service_asterisk_abstract_sql
+class xivo_application_service_asterisk_voicemail_sql extends xivo_application_abstract_datastorage_sql
 {
 	var $_table	= array('voicemail'	=> '');
 

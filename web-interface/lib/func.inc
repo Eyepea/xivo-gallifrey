@@ -134,10 +134,10 @@ function dwho_has_len($val,$key=null)
 	return(isset($val{0}));
 }
 
-function dwho_digit($str=0,$def=null,$t=false)
+function dwho_digit($val=0,$def=null,$t=false)
 {
-	if(ctype_digit(strval($str)) === true)
-		return($str);
+	if(ctype_digit(strval($val)) === true)
+		return($val);
 	else if($def === null)
 		return(false);
 	else if((bool) $t === false)
@@ -146,10 +146,10 @@ function dwho_digit($str=0,$def=null,$t=false)
 	return((ctype_digit(strval($def)) === true ? $def : false));
 }
 
-function dwho_xdigit($str=0,$def=null,$t=false)
+function dwho_xdigit($val=0,$def=null,$t=false)
 {
-	if(ctype_xdigit(strval($str)) === true)
-		return($str);
+	if(ctype_xdigit(strval($val)) === true)
+		return($val);
 	else if($def === null)
 		return(false);
 	else if((bool) $t === false)
@@ -160,83 +160,109 @@ function dwho_xdigit($str=0,$def=null,$t=false)
 	return((ctype_xdigit(strval($def)) === true ? $def : false));
 }
 
-function dwho_uint($str,$def=0,$t=false)
+function dwho_uint($val,$def=0,$t=false)
 {
-	if(is_scalar($str) === false)
-		$str = 0;
+	if(is_scalar($val) === false)
+		$val = 0;
 	else
 	{
-		$str = intval($str);
+		$val = intval($val);
 
-		if($str < 0)
-			$str = (int) substr($str,1);
+		if($val < 0)
+			$val = (int) substr($val,1);
 	}
 
-	if($def !== 0 && $str === 0)
-		$str = (bool) $t === false ? $def : dwho_uint($def);
+	if($def !== 0 && $val === 0)
+		$val = (bool) $t === false ? $def : dwho_uint($def);
 
-	return($str);
+	return($val);
 }
 
-function dwho_ufloat($str,$def=0,$t=false)
+function dwho_ufloat($val,$def=0,$t=false)
 {
-	if(is_scalar($str) === false)
-		$str = 0;
+	if(is_scalar($val) === false)
+		$val = 0;
 	else
 	{
-		$str = floatval($str);
+		$val = sprintf('%.16F',$val);
 
-		if($str < 0)
-			$str = (float) substr($str,1);
+		if(isset($val{0}) === true && $val{0} === '-')
+			$val = substr($val,1);
+
+		$val = floatval($val);
 	}
 
-	if($def !== 0 && (string) $str === '0')
-		$str = (bool) $t === false ? $def : dwho_ufloat($def);
+	if($def !== 0 && (string) $val === '0')
+		$val = (bool) $t === false ? $def : dwho_ufloat($def);
 
-	if(is_scalar($str) === true && (string) $str === '0')
+	if(is_scalar($val) === true && (string) $val === '0')
 		return(0);
 
-	return($str);
+	return($val);
 }
 
-function dwho_ulongint($str,$def=0,$t=false)
+function dwho_ulongint($val,$def=0,$t=false)
 {
-	$str = strval($str);
-
-	if(preg_match('/^[1-9][0-9]{0,19}$/',$str) === 1)
-		return($str);
-
-	$str = (bool) $t === false ? strval($def) : dwho_ulongint($def);
-
-	if($str === '0')
-		$str = 0;
-
-	return($str);
-}
-
-function dwho_unumber($str,$def=0,$t=false)
-{
-	$str = strval($str);
-
-	if(preg_match('/^0*([0-9]+(?:\.[0-9]+)?)0*$/',$str,$match) === 1)
+	if(is_float($val) === false)
 	{
-		if(($str = rtrim($match[1],'.0')) === '')
-			$str = 0;
+		$val = strval($val);
 
-		return($str);
+		if(preg_match('/^[1-9][0-9]{0,19}$/',$val) === 1)
+			return($val);
+	}
+	else if(($fl = sprintf('%.16F',$val)) === sprintf('%.16F',floor($val)))
+	{
+		$val = substr($fl,(int) ($fl{0} === '-'),-17);
+
+		if($val !== '0')
+			return($val);
 	}
 
-	$str = (bool) $t === false ? strval($def) : dwho_unumber($def);
+	$val = (bool) $t === false ? strval($def) : dwho_ulongint($def);
 
-	if($str === '0')
-		$str = 0;
+	if($val === '0')
+		$val = 0;
 
-	return($str);
+	return($val);
 }
 
-function dwho_is_unumber($str)
+function dwho_is_number($val)
 {
-	return((bool) preg_match('/^[0-9]+(?:\.[0-9]+)?$/',strval($str)));
+	if(is_float($val) === true || is_int($val) === true)
+		return(true);
+
+	return((bool) preg_match('/^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/',strval($val)));
+}
+
+function dwho_is_unumber($val)
+{
+	if(is_float($val) === true || is_int($val) === true)
+		return(($val >= 0));
+
+	return((bool) preg_match('/^(?:0|[1-9][0-9]*)(?:\.[0-9]+)?$/',strval($val)));
+}
+
+function dwho_unumber($val,$def=0,$t=false)
+{
+	if(is_float($val) === false)
+		$val = strval($val);
+	else
+		$val = sprintf('%.16F',$val);
+
+	if(preg_match('/^-?0*([0-9]+(?:\.[0-9]+)?)0*$/',$val,$match) === 1)
+	{
+		if(($val = rtrim($match[1],'.0')) === '')
+			$val = 0;
+
+		return($val);
+	}
+
+	$val = (bool) $t === false ? strval($def) : dwho_unumber($def);
+
+	if($val === '0')
+		$val = 0;
+
+	return($val);
 }
 
 function dwho_sgraph($str='',$def=null,$t=false)
@@ -397,7 +423,7 @@ function dwho_ip2long($ip_address)
 	return($long);
 }
 
-function dwho_instanceof($obj,$name)
+function dwho_is_instance($obj,$name)
 {
 	if(is_object($obj) === false
 	|| is_string($name) === false
@@ -1182,15 +1208,29 @@ function dwho_implode($glue,$pieces)
 	else if(is_array($pieces) === false && is_object($pieces) === false)
 		return(false);
 
-	$pieces = (array) $pieces;
+	return(implode((string) $glue,
+		       array_filter((array) $pieces,'is_scalar')));
+}
 
-	foreach($pieces as $key => $value)
+function dwho_get_limit($offset,$line=null)
+{
+	if(is_array($offset) === true && isset($offset[0]) === true)
 	{
-		if(is_scalar($value) === false)
-			unset($pieces[$key]);
+		if(isset($offset[1]) === true)
+			$line = $offset[1];
+
+		$offset = $offset[0];
 	}
 
-	return(implode((string) $glue,$pieces));
+	if(dwho_has_len($offset) === false)
+		return(false);
+
+	$r = array(dwho_uint($offset));
+
+	if(dwho_has_len($line) === true)
+		$r[1] = dwho_uint($line);
+
+	return($r);
 }
 
 function dwho_is_max_digit($min,$max,$equal=false)

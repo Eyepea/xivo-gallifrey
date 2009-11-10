@@ -279,7 +279,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 
 		$this->set_file('dhtml',$path);
 
-		if($this->get_option('overload_i18n') !== false)
+		if($this->get_option('preload_i18n') !== false)
 			$this->load_i18n_file($file);
 
 		unset($file,$path);

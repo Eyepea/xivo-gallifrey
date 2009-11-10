@@ -9,3 +9,6 @@ Aucun fichier trouvé
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer ce fichier ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer ce ou ces fichiers ?

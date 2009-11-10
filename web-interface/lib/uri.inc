@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'network.inc'));
+
 class dwho_uri
 {
 	var $_encode		= array();
@@ -33,7 +35,7 @@ class dwho_uri
 		$sub_delims	= '\!\$&\'\(\)\*\+,;=';
 		$reserved	= $gen_delims.$sub_delims;
 		$unreserved	= 'a-zA-Z0-9-\._~';
-		$ipvfuture	= 'v[\da-fA-F]+\.['.$unreserved.$sub_delims.':]+';
+		$ipvfuture	= DWHO_NETWORK_RE_IPVFUTURE;
 		$port		= '[0-9]{0,5}';
 
 		$this->_encode = array();
@@ -54,7 +56,6 @@ class dwho_uri
 		$this->_regexp['port']		= '/^'.$port.'$/';
 		$this->_regexp['path']		= '/^['.$unreserved.$sub_delims.'%:@\/]+$/';
 		$this->_regexp['query']		= '/^['.$unreserved.$sub_delims.'%:@\/\?]+$/';
-		$this->_regexp['ipvfuture']	= '/^'.$ipvfuture.'$/';
 
 		$this->_reipvfutureport		= '/^\[([\da-fA-F:\.]+|'.$ipvfuture.')\](\:'.$port.')?$/';
 	}
@@ -100,7 +101,7 @@ class dwho_uri
 						return(false);
 					break;
 				case $this->_host['ipv4']:
-					if($this->valid_ipv4($arr['host']) === false)
+					if(dwho_network::valid_ipv4($arr['host']) === false)
 						return(false);
 					break;
 				case $this->_host['reg_name']:
@@ -115,7 +116,7 @@ class dwho_uri
 
 		if(dwho_has_len($arr,'port') === true)
 		{
-			if($this->valid_port($arr['port']) === false)
+			if(dwho_network::valid_port_number($arr['port']) === false)
 				return(false);
 
 			$hostport .= ':'.$arr['port'];
@@ -244,11 +245,12 @@ class dwho_uri
 			{
 				if($this->valid_host($authority['host']) === false)
 					return(false);
-				else if($decode === true && $this->get_host_type($authority['host']) === $this->_host['reg_name'])
+				else if($decode === true
+				&& $this->get_host_type($authority['host']) === $this->_host['reg_name'])
 					$authority['host'] = urldecode($authority['host']);
 			}
 
-			if(isset($authority['port']) === true && $this->valid_port($authority['port']) === false)
+			if(isset($authority['port']) === true && dwho_network::valid_port_number($authority['port']) === false)
 				return(false);
 		}
 
@@ -469,7 +471,7 @@ class dwho_uri
 
 		if($host{0} === '[')
 			return($this->_host['ipliteral']);
-		else if($this->valid_ipv4($host) === true)
+		else if(dwho_network::valid_ipv4($host) === true)
 			return($this->_host['ipv4']);
 		else
 			return($this->_host['reg_name']);
@@ -517,105 +519,6 @@ class dwho_uri
 		return(false);
 	}
 
-	function valid_ipv4($ip)
-	{
-		return((dwho_ip2long($ip) !== false));
-	}
-
-	function valid_ipv6($ip)
-	{
-		if(is_scalar($ip) === false)
-			return(false);
-
-		if(($pos = strpos($ip,'::')) === false)
-			return(($this->_valid_rightipv6($ip) === 8));
-		else if(substr_count($ip,'::') !== 1
-		|| ($right = $this->_valid_rightipv6(substr($ip,$pos + 2))) === false
-		|| ($left = $this->_valid_leftipv6(substr($ip,0,$pos))) === false)
-			return(false);
-
-		return(($right + $left < 8));
-	}
-
-	function _valid_h16($h16)
-	{
-		$h16 = (string) $h16;
-
-		if((($b16 = base_convert($h16,16,10)) !== '0'
-		   || ctype_digit($h16) === true) === true
-		&& $b16 >= 0 && $b16 <= 65535)
-			return(true);
-
-		return(false);
-	}
-
-	function _valid_rightipv6($ip)
-	{
-		if(((string) $ip) === '')
-			return(0);
-
-		$arr = explode(':',$ip,9);
-		$nb = count($arr);
-
-		if($nb > 8 || ($nb > 7 && strpos($ip,'.') !== false) === true
-		|| ($nb > 1 && ctype_xdigit(implode(array_slice($arr,0,-1))) === false) === true)
-			return(false);
-
-		$h16_cnt = 0;
-
-		if(strpos($arr[$nb-1],'.') !== false)
-		{
-			if($this->valid_ipv4($arr[$nb-1]) === false)
-				return(false);
-
-			$h16_cnt = 2;
-
-			if($nb === 1)
-				return($h16_cnt);
-
-			$nb--;
-			$arr = array_slice($arr,0,-1);
-		}
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($this->_valid_h16($arr[$i]) === false)
-				return(false);
-		}
-
-		return($h16_cnt + $nb);
-	}
-
-	function _valid_leftipv6($ip)
-	{
-		if(((string) $ip) === '')
-			return(0);
-
-		$arr = explode(':',$ip,8);
-		$nb = count($arr);
-
-		if($nb > 7
-		|| ($nb > 1 && ctype_xdigit(implode(array_slice($arr,0,-1))) === false) === true)
-			return(false);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($this->_valid_h16($arr[$i]) === false)
-				return(false);
-		}
-
-		return($nb);
-	}
-
-	function valid_ipvfuture($ip)
-	{
-		if(is_scalar($ip) === true
-		&& preg_match($this->_regexp['ipvfuture'],$ip) === 1)
-			return(true);
-
-		return(false);
-	}
-
 	function valid_ipliteral($ip)
 	{
 		if(is_scalar($ip) === false)
@@ -628,7 +531,7 @@ class dwho_uri
 
 		$ip = substr($ip,1,-1);
 
-		if($this->valid_ipv6($ip) === true || $this->valid_ipvfuture($ip) === true)
+		if(dwho_network::valid_ipv6($ip) === true || dwho_network::valid_ipvfuture($ip) === true)
 			return(true);
 
 		return(false);
@@ -674,7 +577,7 @@ class dwho_uri
 		|| ($passwd !== ''
 		   && $this->valid_passwd($passwd) === false) === true
 		|| ($port !== ''
-		   && $this->valid_port($port) === false) === true
+		   && dwho_network::valid_port_number($port) === false) === true
 		|| ($host === ''
 		   && $user === ''
 		   && $passwd === ''

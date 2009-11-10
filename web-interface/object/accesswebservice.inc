@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'abstract','libdatastorage.inc'));
 
 class xivo_accesswebservice extends xivo_libdatastorage_abstract
@@ -33,7 +35,6 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 	{
 		$this->_load_config(dirname(__FILE__).DWHO_SEP_DIR.'accesswebservice');
 		$this->_load_dso();
-		dwho::load_class('dwho_filter');
 	}
 
 	function _prepare($data)
@@ -119,7 +120,7 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 			if($user !== $rs[$i]['login'] || $passwd !== $rs[$i]['passwd'])
 				continue;
 			else if(dwho_has_len($rs[$i]['host']) === false
-			|| dwho_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true)
+			|| dwho_network::ipv4_in_lhost($host,$rs[$i]['host']) === true)
 				return($rs[$i]['id']);
 		}
 
@@ -135,7 +136,7 @@ class xivo_accesswebservice extends xivo_libdatastorage_abstract
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(dwho_filter::chk_ipv4_in_lhost($host,$rs[$i]['host']) === true
+			if(dwho_network::ipv4_in_lhost($host,$rs[$i]['host']) === true
 			&& dwho_has_len($rs[$i]['login']) === false
 			&& dwho_has_len($rs[$i]['passwd']) === false)
 				return($rs[$i]['id']);

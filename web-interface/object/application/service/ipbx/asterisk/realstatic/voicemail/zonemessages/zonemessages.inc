@@ -270,8 +270,8 @@ class xivo_application_service_asterisk_realstatic_voicemail_zonemessages extend
 
 		for($i = 0;$i < $nb;$i += 2)
 		{
-			$offset1 = $match[$i][1]+1;
-			$offset2 = $match[$i+1][1];
+			$offset1 = $match[$i][1] + 1;
+			$offset2 = $match[$i + 1][1];
 
 			if($offset1 === $offset2)
 				return(false);
@@ -283,24 +283,24 @@ class xivo_application_service_asterisk_realstatic_voicemail_zonemessages extend
 
 			if(preg_match('/^'.$regex.'$/',$msg) === 0)
 				return(false);
-			else if(isset($match[$i+2]) === false)
+			else if(isset($match[$i + 2]) === false)
 				break;
 
-			$offset3 = $match[$i+2][1];
+			$offset3 = $match[$i + 2][1];
 
-			if($offset3 <= $offset2+1)
+			if($offset3 <= $offset2 + 1)
 				continue;
 
-			$msg = substr($str,$offset2+1,$offset3-($offset2+1));
+			$msg = substr($str,$offset2 + 1,$offset3 - ($offset2 + 1));
 
 			if($this->_chk_letter_format($msg) === false)
 				return(false);
 		}
 
-		if($len <= $offset2+1)
+		if($len <= $offset2 + 1)
 			return(true);
 
-		$msg = substr($str,$offset2+1);
+		$msg = substr($str,$offset2 + 1);
 
 		return($this->_chk_letter_format($msg));
 	}

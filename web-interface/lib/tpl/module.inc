@@ -45,6 +45,11 @@ class dwho_tpl_module
 		return($this->_tpl->get_option($name));
 	}
 
+	function get_file_extension($ext)
+	{
+		return($this->_tpl->get_file_extension($ext));
+	}
+
 	function set_var($name,$value)
 	{
 		return($this->_tpl->set_var($name,$value));
@@ -67,9 +72,9 @@ class dwho_tpl_module
 		return(call_user_func_array(array(&$this->_tpl,'get_var_default'),$args));
 	}
 
-	function set_file($name,$value)
+	function set_file($name,$value,$preload_i18n=false)
 	{
-		return($this->_tpl->set_file($name,$value));
+		return($this->_tpl->set_file($name,$value,$preload_i18n));
 	}
 
 	function get_file($name)
@@ -77,9 +82,9 @@ class dwho_tpl_module
 		return($this->_tpl->get_file($name));
 	}
 
-	function file_include($file,$arr=array(),$ext='')
+	function file_include($file,$arr=array(),$preload_i18n=false,$ext='')
 	{
-		return($this->_tpl->file_include($file,$arr,$ext));
+		return($this->_tpl->file_include($file,$arr,$preload_i18n,$ext));
 	}
 
 	function file_time($file)

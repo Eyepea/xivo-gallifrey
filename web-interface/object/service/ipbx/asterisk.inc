@@ -592,10 +592,10 @@ class xivo_service_asterisk extends xivo_service_abstract
 			else
 				$r .= $this->_realexten_pattern($split[$i]);
 
-			if(isset($split[$i+1]) === false)
+			if(isset($split[$i + 1]) === false)
 				return($r);
 
-			$nsplit = $split[$i+1];
+			$nsplit = $split[$i + 1];
 
 			$arr = array();
 

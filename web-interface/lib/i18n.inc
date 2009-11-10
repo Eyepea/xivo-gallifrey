@@ -18,22 +18,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('DWHO_I18N_NAMESPACE_GLOBAL','_global_');
+define('DWHO_I18N_NAMESPACE_GLOBAL','global');
+define('DWHO_I18N_REGEXP_NAMESPACE','[a-z0-9:\-_]+');
 define('DWHO_I18N_ARG_ESCAPE','`');
 define('DWHO_I18N_ARG_SEPARATOR','|');
 
 class dwho_i18n
 {
-	var $_file	= null;
-	var $_dso	= null;
-	var $_load	= array();
-	var $_copy	= false;
-	var $_loop	= array();
+	var $_file		= null;
+	var $_dso		= null;
+	var $_load		= array();
+	var $_copy		= false;
+	var $_loop		= array();
+	var $_path_i18n		= '';
+	var $_path_i18n_len	= 0;
 
 	function dwho_i18n()
 	{
 		if(defined('DWHO_PATH_I18N') === false)
 			trigger_error('DWHO i18n path not defined',E_USER_ERROR);
+
+		$this->_path_i18n = rtrim(DWHO_PATH_I18N,DWHO_SEP_DIR);
+		$this->_path_i18n_len = mb_strlen($this->_path_i18n);
 
 		$dso = &dwho_gct::get('DWHO_DSO');
 		$name = 'dwho_i18n_'.$dso->get_type();
@@ -639,10 +645,7 @@ class dwho_i18n
 					if(isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name]) === true)
 						$namespace = DWHO_I18N_NAMESPACE_GLOBAL;
 					else
-					{
-						trigger_error('Missing translation for '.$name,E_USER_NOTICE);
 						return($name);
-					}
 				}
 
 				$r = $babelfish[$namespace][$name];
@@ -656,27 +659,18 @@ class dwho_i18n
 
 	function _chk_namespace($name)
 	{
-		$r = '';
-
-		$name = (string) $name;
-
-		if($name === '' || preg_match('/^[a-z0-9:\-_]+$/',$name) !== 1)
-			return($r);
-		else
+		if(preg_match('/^'.DWHO_I18N_REGEXP_NAMESPACE.'$/',$name) === 1)
 			return($name);
+
+		return('');
 	}
 
 	function _get_file_info($file,$namespace='')
 	{
-		$file = (string) $file;
-
 		$namespace = $this->_chk_namespace($namespace);
 
-		if(empty($file) === true)
-		{
-			$this->_file = false;
-			return(false);
-		}
+		if(dwho_has_len($file) === false)
+			return(($this->_file = false));
 
 		$dir = trim(dirname($file),'.'.DWHO_SEP_DIR);
 		$file = basename($file);
@@ -722,9 +716,10 @@ class dwho_i18n
 			$this->_file['language'] = DWHO_I18N_BABELFISH_LANGUAGE;
 		}
 
-		$filei18n = dwho_file::joinpath(DWHO_PATH_I18N,$this->_file['locale'],$this->_file['path']);
+		$filei18n = dwho_file::joinpath($this->_path_i18n,$this->_file['locale'],$this->_file['path']);
 
-		if(($this->_file['filei18n'] = dwho_file::is_f_r($filei18n)) === false)
+		if(($this->_file['filei18n'] = dwho_file::is_f_r($filei18n)) === false
+		|| strncmp($this->_path_i18n,$this->_file['filei18n'],$this->_path_i18n_len) !== 0)
 			return(($this->_file = false));
 
 		$this->_file['filemtime'] = dwho_uint(filemtime($this->_file['filei18n']));
@@ -817,7 +812,14 @@ class dwho_i18n
 			reset($ref['load']);
 
 			while(list($key) = each($ref['load']))
-				$this->_load_file($key,$ref['finfo']['namespace']);
+			{
+				$exp = explode(';',$key,2);
+
+				if(isset($exp[1]) === true)
+					$this->_load_file($exp[1],$exp[0]);
+				else
+					$this->_load_file($key,$ref['finfo']['namespace']);
+			}
 
 			$this->_file = $_file;
 		}
@@ -854,8 +856,8 @@ class dwho_i18n
 		$content = file($file);
 		$nb = count($content);
 		$priority = 0;
-		$txt = $copy = $load = $data = false;
-		$quote_sep_dir = preg_quote(DWHO_SEP_DIR);
+		$txt = false;
+		$quote_sep_dir = preg_quote(DWHO_SEP_DIR,'/');
 		$key = '';
 
 		$r = array();
@@ -876,7 +878,8 @@ class dwho_i18n
 					$txt = false;
 					break;
 				case ';':
-					if(preg_match('/^;[\t ]*copy[\t ]+([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
+					if(preg_match('/^;[\t ]*copy[\t ]+'.
+							'([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
 					&& ($locale = $this->chk_locale($matchcopy[1])) !== false)
 					{
 						if($priority !== 0)
@@ -884,17 +887,19 @@ class dwho_i18n
 
 						$priority |= 1;
 						$txt = false;
+
 						$_file = $this->_file;
 
 						$this->_file['locale'] = $locale;
-						if($this->_load_file($this->_file['filename'],$this->_file['namespace']) !== false);
+						if($this->_load_file($_file['filename'],$_file['namespace']) !== false)
 							$this->_copy = $locale;
 
 						$this->_file = $_file;
 					}
-					else if(preg_match('#^;[\t ]*load[\t ]+'.
-							   '(\.{1,2}'.$quote_sep_dir.')?'.
-							   '([a-z0-9-_'.$quote_sep_dir.']+)$#i',$line,$matchload) === 1)
+					else if(preg_match('/^;[\t ]*load[\t ]+'.
+							    '(?:\[('.DWHO_I18N_REGEXP_NAMESPACE.')\][\t ]*)?'.
+							    '(\.{1,2}'.$quote_sep_dir.')*'.
+							    '([a-z0-9-_'.$quote_sep_dir.']+)$/i',$line,$matchload) === 1)
 					{
 						if($priority > 3)
 							continue;
@@ -906,13 +911,18 @@ class dwho_i18n
 						$_load = $this->_load;
 						$_copy = $this->_copy;
 
-						$filename = $matchload[2];
+						if($matchload[1] === '')
+							$namespace = $_file['namespace'];
+						else
+							$namespace = $matchload[1];
 
-						if($matchload[1] !== '')
-							$filename = $this->_file['dirname'].DWHO_SEP_DIR.$matchload[1].$filename;
+						if($matchload[2] === '')
+							$filename = $matchload[3];
+						else
+							$filename = $_file['dirname'].DWHO_SEP_DIR.$matchload[2].$matchload[3];
 
-						if($this->_load_file($filename,$this->_file['namespace']) !== false)
-							$_load[$this->_file['filename']] = 1;
+						if($this->_load_file($filename,$namespace) !== false)
+							$_load[$namespace.';'.$this->_file['filename']] = 1;
 
 						$this->_copy = $_copy;
 						$this->_load = $_load;

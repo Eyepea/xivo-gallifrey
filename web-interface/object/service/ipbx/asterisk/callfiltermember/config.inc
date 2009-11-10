@@ -53,7 +53,7 @@ $array['filter'] = array();
 $array['filter']['callfilterid'] = array('cast' => 'ulongint');
 $array['filter']['type'] = array('key' => array('user'));
 $array['filter']['typeval'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/');
-$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60));
+$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['priority'] = array('cast' => 'uint','between' => array(0,16));
 $array['filter']['bstype'] = array('set' => false,'chk' => 2,'key' => array('boss','secretary'));
 $array['filter']['active'] = array('bool' => true);

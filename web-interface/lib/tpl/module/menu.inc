@@ -29,43 +29,42 @@ class dwho_tpl_menu extends dwho_tpl_module
 		$this->_tpl = &$tpl;
 	}
 
-	function set_top($file,$ext='')
+	function set_top($file,$preload_i18n=false,$ext='')
 	{
-		$this->_set_menu($file,'top',$ext);
+		$this->_set_menu($file,'top',$preload_i18n,$ext);
 	}
 
-	function set_left($file,$ext='')
+	function set_left($file,$preload_i18n=false,$ext='')
 	{
-		$this->_set_menu($file,'left',$ext);
+		$this->_set_menu($file,'left',$preload_i18n,$ext);
 	}
 
-	function set_bottom($file,$ext='')
+	function set_bottom($file,$preload_i18n=false,$ext='')
 	{
-		$this->_set_menu($file,'bottom',$ext);
+		$this->_set_menu($file,'bottom',$preload_i18n,$ext);
 	}
 
-	function set_right($file,$ext='')
+	function set_right($file,$preload_i18n=false,$ext='')
 	{
-		$this->_set_menu($file,'right',$ext);
+		$this->_set_menu($file,'right',$preload_i18n,$ext);
 	}
 
-	function set_toolbar($file,$ext='')
+	function set_toolbar($file,$preload_i18n=false,$ext='')
 	{
-		$this->_set_menu($file,'toolbar',$ext);
+		$this->_set_menu($file,'toolbar',$preload_i18n,$ext);
 	}
 
-	function _set_menu($file,$where,$ext='')
+	function _set_menu($file,$where,$preload_i18n=false,$ext='')
 	{
-		$where = (string) $where;
-		$ext = (string) $ext;
+		$file = dwho_file::joinpath('bloc',
+					    'menu',
+					    ltrim($file,DWHO_SEP_DIR).
+					    $this->get_file_extension($ext));
 
-		if($ext === '')
-			$ext = DWHO_TPL_FILE_EXT;
-
-		$file = dwho_file::joinpath('bloc','menu',ltrim($file,DWHO_SEP_DIR).'.'.$ext);
-
-		if(dwho_file::is_f_r($this->get_option('tpl_path').DWHO_SEP_DIR.$file) !== false)
-			$this->set_file('menu_'.$where,$file);
+		if(dwho_file::is_f_r($this->get_option('tpl_path').
+				     DWHO_SEP_DIR.
+				     $file) !== false)
+			$this->set_file('menu_'.$where,$file,$preload_i18n);
 	}
 
 	function mk_top()
@@ -95,8 +94,8 @@ class dwho_tpl_menu extends dwho_tpl_module
 
 	function _mk_menu($where)
 	{
-		if(($file = $this->get_file('menu_'.(string) $where)) !== null)
-			$this->file_include($file,null,null);
+		if(($file = $this->get_file('menu_'.$where)) !== null)
+			$this->file_include($file,null,false,null);
 	}
 }
 

@@ -18,8 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo::load_class('xivo_entity',XIVO_PATH_OBJECT,null,false);
-$_ETT = new xivo_entity();
+$appentity = &$_XOBJ->get_application('entity',null,false);
 
 xivo::load_class('xivo_server',XIVO_PATH_OBJECT,null,false);
 $_SVR = new xivo_server();
@@ -37,10 +36,10 @@ if(($enableuser = $_USR->get_nb(null,true)) !== false)
 if(($disableuser = $_USR->get_nb(null,false)) !== false)
 	$userstat['disable'] = $disableuser;
 
-if(($enableentity = $_ETT->get_nb(null,false)) !== false)
+if(($enableentity = $appentity->get_nb(null,false)) !== false)
 	$entitystat['enable'] = $enableentity;
 
-if(($disableentity = $_ETT->get_nb(null,true)) !== false)
+if(($disableentity = $appentity->get_nb(null,true)) !== false)
 	$entitystat['disable'] = $disableentity;
 
 $entitystat['total'] = $entitystat['enable'] + $entitystat['disable'];

@@ -31,7 +31,7 @@ Load average
 ; sysinfos_device
 Device
 
-; sysinfos_no-netinfo
+; sysinfos_no-netstats
 No device found
 
 ; sysinfos_cpu
@@ -91,7 +91,7 @@ Error
 ; sysinfos_col_drop
 Drop
 
-; sysinfos_no-netinfo
+; sysinfos_no-netstats
 No network interface found
 
 ; sysinfos_mon_telephony

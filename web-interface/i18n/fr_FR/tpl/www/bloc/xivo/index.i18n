@@ -31,7 +31,7 @@ Moyenne de la charge système
 ; sysinfos_device
 Périphérique
 
-; sysinfos_no-devinfo
+; sysinfos_no-devstats
 Aucun périphérique trouvé
 
 ; sysinfos_cpu
@@ -106,7 +106,7 @@ Erreur
 ; sysinfos_col_drop
 Perdu
 
-; sysinfos_no-netinfo
+; sysinfos_no-netstats
 Aucune interface réseau trouvée
 
 ; sysinfos_mon_grpundef

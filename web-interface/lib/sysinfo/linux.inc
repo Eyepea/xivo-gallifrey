@@ -20,37 +20,51 @@
 
 class dwho_sysinfo_linux
 {
-	function cpuinfo()
+	function net()
 	{
-		if(dwho_file::is_f_r('/proc/cpuinfo') === false
-		|| ($content = file('/proc/cpuinfo')) === false
+		if(dwho::load_class('dwho::sysinfo::linux::net') === false)
+			trigger_error('Failed to load SysInfo Net class for Linux',E_USER_ERROR);
+
+		$name = 'dwho_sysinfo_linux_net';
+
+		return(new $name());
+	}
+
+	function cpustats()
+	{
+		$path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','cpuinfo');
+
+		if(dwho_file::is_f_r($path) === false
+		|| ($content = file($path)) === false
 		|| ($nb = count($content)) === 0)
 			return(false);
 
-		$arr = array();
+		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
 			if(preg_match('/^([^:]+):\s+(.+)$/',$content[$i],$match) === 1)
-				$arr[str_replace(' ','_',trim(strtolower($match[1])))] = trim($match[2]);
+				$r[str_replace(' ','_',trim(strtolower($match[1])))] = trim($match[2]);
 		}
 
-		if(empty($arr) === true)
+		if(empty($r) === true)
 			return(null);
 
-		return($arr);
+		return($r);
 	}
 
-	function meminfo($byte=false)
+	function memstats($byte=false)
 	{
-		if(dwho_file::is_f_r('/proc/meminfo') === false
-		|| ($content = file('/proc/meminfo')) === false
+		$path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','meminfo');
+
+		if(dwho_file::is_f_r($path) === false
+		|| ($content = file($path)) === false
 		|| ($nb = count($content)) === 0)
 			return(false);
 
 		$byte = (bool) $byte;
 
-		$arr = array();
+		$r = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -61,71 +75,29 @@ class dwho_sysinfo_linux
 			$value = trim($match[2]);
 
 			if($byte === true && isset($match[3]) === true)
-				$arr[$key] = dwho_size_si_to_byte($match[3],$value);
+				$r[$key] = dwho_size_si_to_byte($match[3],$value);
 			else
-				$arr[$key] = $value;
+				$r[$key] = $value;
 		}
 
-		if(empty($arr) === true)
+		if(empty($r) === true)
 			return(null);
 
-		if(isset($arr['memtotal'],$arr['memfree']) === true)
-			$arr['memused'] = $arr['memtotal'] - $arr['memfree'];
+		if(isset($r['memtotal'],$r['memfree']) === true)
+			$r['memused'] = $r['memtotal'] - $r['memfree'];
 
-		if(isset($arr['swaptotal'],$arr['swapfree']) === true)
-			$arr['swapused'] = $arr['swaptotal'] - $arr['swapfree'];
+		if(isset($r['swaptotal'],$r['swapfree']) === true)
+			$r['swapused'] = $r['swaptotal'] - $r['swapfree'];
 
-		return($arr);
-	}
-
-	function netinfo()
-	{
-		if(dwho_file::is_f_r('/proc/net/dev') === false
-		|| ($content = file('/proc/net/dev')) === false
-		|| ($nb = count($content)) === 0)
-			return(false);
-
-		$arr = array();
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$line = trim($content[$i]);
-
-			if(($pos = strpos($line,':')) === false)
-				continue;
-
-			$data = preg_split('/\s+/',$line);
-			$name = substr($data[0],0,$pos);
-			$data[0] = substr($data[0],$pos + 1);
-
-			if(dwho_has_len($data[0]) === false)
-				array_shift($data);
-
-			$arr[$name] = array(
-				'rx'	=> array(
-						'bytes'		=> $data[0],
-						'packets'	=> $data[1],
-						'errs'		=> $data[2],
-						'drop'		=> $data[3]),
-				'tx'	=> array(
-						'bytes'		=> $data[8],
-						'packets'	=> $data[9],
-						'errs'		=> $data[10],
-						'drop'		=> $data[11]),
-				'total'	=> array(
-						'bytes'		=> ($data[0] + $data[8]),
-						'packets'	=> ($data[1] + $data[9]),
-						'errs'		=> ($data[2] + $data[10]),
-						'drop'		=> ($data[3] + $data[11])));
-		}
-
-		return($arr);
+		return($r);
 	}
 
 	function uptime()
 	{
-		if(dwho_file::is_f_r('/proc/uptime') === false
-		|| ($content = file('/proc/uptime')) === false
+		$path = dwho_file::joinpath(DWHO_SEP_DIR.'proc','uptime');
+
+		if(dwho_file::is_f_r($path) === false
+		|| ($content = file($path)) === false
 		|| isset($content[0]) === false
 		|| ($exp = explode('.',$content[0],2)) === false)
 			return(false);

@@ -50,9 +50,11 @@ $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
 
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
-$array['filter']['host'] = array('callback' => 'dwho_filter::chk_host_ipv4_strict');
+$array['filter']['host'] = array('callback' => 'dwho_network::valid_host');
 $array['filter']['port'] = array('cast' => 'uint','between' => array(1,65535));
 $array['filter']['securitylayer'] = array('set' => false,'chk' => 2,'key' => array('tls','ssl'));
 $array['filter']['protocolversion'] = array('key' => array('2','3'));

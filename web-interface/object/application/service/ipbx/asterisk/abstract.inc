@@ -26,7 +26,7 @@ class xivo_application_service_asterisk_abstract extends xivo_application_helper
 
 	function xivo_application_service_asterisk_abstract(&$ipbx)
 	{
-		if(dwho_instanceof($ipbx,'xivo_service_asterisk') === false)
+		if(dwho_is_instance($ipbx,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$ipbx;

@@ -1,0 +1,23 @@
+; title_content_name
+Routes IP statiques > Ajouter
+
+; fm_name
+Nom :
+
+; fm_iface
+Interface :
+
+; fm_destination
+Destination :
+
+; fm_netmask
+Masque de sous-réseau :
+
+; fm_gateway
+Passerelle :
+
+; fm_description
+Description :
+
+; create_interface
+Créer une interface

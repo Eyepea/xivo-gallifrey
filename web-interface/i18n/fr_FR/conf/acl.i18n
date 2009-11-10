@@ -1,9 +1,6 @@
 ; acl(xivo)
 XIVO
 
-; acl(xivo-user)
-Utilisateurs
-
 ; acl(service)
 Services
 
@@ -13,8 +10,29 @@ Configuration
 ; acl(xivo-configuration-manage)
 Gestion
 
+; acl(xivo-configuration-manage-user)
+Utilisateurs
+
 ; acl(xivo-configuration-manage-entity)
 Entités
+
+; acl(xivo-configuration-manage-server)
+Serveurs XIVO
+
+; acl(xivo-configuration-manage-ldapserver)
+Serveurs LDAP
+
+; acl(xivo-configuration-manage-accesswebservice)
+Accès aux services Web
+
+; acl(xivo-configuration-network)
+Réseau
+
+; acl(xivo-configuration-network-interface)
+Interfaces
+
+; acl(xivo-configuration-network-iproute)
+Routes IP statiques
 
 ; acl(service-ipbx)
 IPBX

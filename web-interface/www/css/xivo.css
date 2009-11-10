@@ -328,12 +328,12 @@ pre {text-align: left;}
 
 #r-home #leftinfo {float: left;width: 44%;padding-right: 5px;}
 #r-home #sysinfo table {width: 100%;padding-bottom: 10px;}
-#r-home #devinfo table {width: 100%;padding-bottom: 10px;}
-#r-home #cpuinfo {float: right;width: 55%;}
-#r-home #cpuinfo table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
-#r-home #netinfo {float: right;width: 55%;}
-#r-home #netinfo table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
-#r-home #meminfo table {width: 100%;padding-bottom: 10px;}
+#r-home #devstats table {width: 100%;padding-bottom: 10px;}
+#r-home #cpustats {float: right;width: 55%;}
+#r-home #cpustats table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
+#r-home #netstats {float: right;width: 55%;}
+#r-home #netstats table {width: 100%;padding-left: 5px;padding-bottom: 10px;}
+#r-home #memstats table {width: 100%;padding-bottom: 10px;}
 #r-home .monit-group table {width: 100%;padding-bottom: 10px;}
 #r-home .monit-group td img {vertical-align: bottom;}
 #r-home .monit-state-notaccessible {color: #bc0000;}

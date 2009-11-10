@@ -165,194 +165,6 @@ class dwho_filter
 		return(dwho_filter::chk_email($email,true));
 	}
 
-	function chk_macaddr($macaddr)
-	{
-		if(preg_match_all('/([A-F0-9]{2})[-: ]?/i',strval($macaddr),$match) !== 6)
-			return(false);
-
-		return(strtoupper(implode(':',$match[1])));
-	}
-
-	function chk_ipv4($ip)
-	{
-		return((dwho_ip2long($ip) !== false));
-	}
-
-	function chk_ipv4_in_lhost($ip,$host)
-	{
-		$ip = strval($ip);
-		$host = strval($host);
-
-		if(dwho_filter::chk_ipv4_strict($ip) === false)
-		{
-			$ip = gethostbyname($ip);
-
-			if(dwho_filter::chk_ipv4_strict($ip) === false)
-				return(false);
-		}
-
-		if(dwho_filter::chk_ipv4_strict($host) === true
-		|| dwho_filter::chk_ipv4_subnet($host) === true)
-			$lhost = (array) $host;
-		else if(($lhost = gethostbynamel($host)) === false)
-			return(false);
-
-		$nb = count($lhost);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			if($ip === $lhost[$i]
-			|| dwho_filter::chk_ipv4_in_subnet($ip,$lhost[$i]) !== false)
-				return(true);
-		}
-
-		return(false);
-	}
-
-	function chk_ipv4_in_subnet($ip,$sub)
-	{
-		$sub = strval($sub);
-
-		if(($pos = strrpos($sub,'/')) === false)
-			return(false);
-
-		$ipsub = substr($sub,0,$pos);
-		$mask = substr($sub,$pos+1);
-
-		if(dwho_filter::chk_ipv4_strict($ip) === false
-		|| ($mask = dwho_filter::chk_ipv4_subnet($ipsub,$mask,true)) === false)
-			return(false);
-
-		$r = array();
-		$r['ip'] = $ip;
-		$r['ipsubnet'] = $ipsub;
-		$r['mask'] = $mask;
-		$r['subnet'] = $sub;
-		$r['netmask'] = (0xFFFFFFFF>>(32-$mask))<<(32-$mask);
-		$r['wildcard'] =~ $r['netmask'];
-		$r['network'] = ip2long($ipsub);
-		$r['broadcast'] = $r['network'] | $r['wildcard'];
-
-		$ip = ip2long($ip);
-
-		if($ip > $r['network'] && $ip < $r['broadcast'])
-			return($r);
-
-		return(false);
-	}
-
-	function chk_ipv4_subnet($ip,$mask=null,$type=DWHO_IPV4_NETMASK_ALL,$ret=false)
-	{
-		$ip = strval($ip);
-
-		if($mask === null)
-		{
-			if(($pos = strrpos($ip,'/')) === false)
-				return(false);
-
-			$mask = substr($ip,$pos+1);
-			$ip = substr($ip,0,$pos);
-		}
-
-		$mask = strval($mask);
-
-		if(($mask = dwho_filter::chk_ipv4_netmask($mask,$type,$ret)) === false
-		|| dwho_filter::chk_ipv4_strict($ip) === false)
-			return(false);
-
-		return($mask);
-	}
-
-	function chk_ipv4_netmask($nm,$type=DWHO_IPV4_NETMASK_ALL,$ret=false)
-	{
-		$r = false;
-
-		$type = intval($type);
-
-		if(($type & DWHO_IPV4_NETMASK_ALL) === 0)
-			$type = DWHO_IPV4_NETMASK_ALL;
-
-		if(($type & DWHO_IPV4_NETMASK_BIT) !== 0)
-			$r = dwho_filter::chk_ipv4_netmask_bit($nm);
-
-		if($r === false && ($type & DWHO_IPV4_NETMASK_DOTDEC) !== 0)
-			$r = dwho_filter::chk_ipv4_netmask_dotdec($nm);
-
-		if($r !== false && (bool) $ret === false)
-			$r = true;
-
-		return($r);
-	}
-
-	function chk_ipv4_netmask_bit($bit)
-	{
-		if(dwho_is_uint($bit) === false
-		|| $bit > 32)
-			return(false);
-
-		return(true);
-	}
-
-	function chk_ipv4_netmask_dotdec($nm)
-	{
-		if(($nm = dwho_ip2long($nm)) === 0)
-			return(0);
-		else if($nm === -1)
-			return(32);
-		else if($nm === false
-		|| ($inv = ($nm ^ 0xFFFFFFFF)) === 0
-		|| ($inv & ($inv + 1)) !== 0)
-			return(false);
-
-		return(32 - intval(log($inv + 1,2)));
-	}
-
-	function chk_ipv4_strict($ip)
-	{
-		$ip = strval($ip);
-
-		return(($ip === long2ip(ip2long($ip))));
-	}
-
-	function chk_host($host)
-	{
-		$host = strval($host);
-		$len = strlen($host);
-
-		if($len > 3
-		&& $len < 256
-		&& preg_match('#^[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$#i',$host) === 1)
-			return(true);
-
-		return(false);
-	}
-
-	function chk_host_ipv4($value)
-	{
-		if(dwho_filter::chk_ipv4($value) === true || dwho_filter::chk_host($value) === true)
-			return(true);
-
-		return(false);
-	}
-
-	function chk_host_ipv4_strict($value)
-	{
-		if(dwho_filter::chk_ipv4_strict($value) === true || dwho_filter::chk_host($value) === true)
-			return(true);
-
-		return(false);
-	}
-
-	function chk_host_subnet_ipv4_strict($value)
-	{
-		if(dwho_filter::chk_ipv4_strict($value) === true
-		|| dwho_filter::chk_host($value) === true
-		|| dwho_filter::chk_ipv4_subnet($value) === true)
-			return(true);
-
-		return(false);
-	}
-
 	function chk_bool($value)
 	{
 		return((int) dwho_bool($value));
@@ -399,7 +211,6 @@ class dwho_filter
 				return(ctype_alnum($value));
 			case 'punct':
 				return(ctype_punct($value));
-			case 'num':
 			case 'digit':
 				return(ctype_digit($value));
 			case 'xdigit':
@@ -407,17 +218,14 @@ class dwho_filter
 			case 'uint':
 			case 'uinteger':
 			case 'unsigned-integer':
-				$cast = dwho_uint($value);
-				break;
+				return(dwho_is_uint($value));
 			case 'ureal':
 			case 'ufloat':
 			case 'udouble':
 			case 'unsigned-real':
 			case 'unsigned-float':
 			case 'unsigned-double':
-				$cast = dwho_ufloat($value,0,false);
-				$value = str_replace(',','.',strval($value));
-				break;
+				return(dwho_is_unumber($value));
 			case 'ulongint':
 			case 'ulonginteger':
 			case 'unsigned-longinteger':
@@ -430,9 +238,7 @@ class dwho_filter
 			case 'real':
 			case 'float':
 			case 'double':
-				$cast = floatval($value);
-				$value = str_replace(',','.',strval($value));
-				break;
+				return(dwho_is_number($value));
 			case 'string':
 				$cast = strval($value);
 				break;
@@ -445,9 +251,7 @@ class dwho_filter
 
 	function chk_minlen($min,$value)
 	{
-		$min = (int) $min;
-
-		if(strlen($value) < $min)
+		if(strlen($value) < (int) $min)
 			return(false);
 
 		return(true);
@@ -455,32 +259,44 @@ class dwho_filter
 
 	function chk_maxlen($max,$value)
 	{
-		$max = (int) $max;
-
-		if(strlen($value) > $max)
+		if(strlen($value) > (int) $max)
 			return(false);
 
 		return(true);
 	}
 
-	function chk_between($beg,$end,$value)
+	function chk_between($beg,$end,$value,$mod=null)
 	{
-		$beg = strval($beg);
-		$end = strval($end);
-		$value = strval($value);
+		$value_is_number = dwho_is_number($value);
+
+		if(dwho_is_number($beg) === false)
+		{
+			$beg = strval($beg);
+			$end = strval($end);
+			$value = strval($value);
+		}
+		else if(dwho_is_number($end) === false
+		|| $value_is_number === false)
+			return(false);
 
 		if($value < $beg || $value > $end)
 			return(false);
+		else if(is_numeric($mod) === false)
+			return(true);
+		else if($value_is_number === false)
+			return(false);
+		else if($value % $mod === 0
+		|| $beg === $value
+		|| $end === $value)
+			return(true);
 
-		return(true);
+		return(false);
 	}
 
 	function callback($func,$value,$param=null)
 	{
-		if(is_array($func) === false)
+		if(is_string($func) === true)
 		{
-			$func = (string) $func;
-
 			$afunc = explode('::',$func,2);
 
 			if(isset($afunc[0],$afunc[1]) === true)
@@ -491,8 +307,11 @@ class dwho_filter
 			else
 				$type = 'function';
 		}
-		else
+		else if(is_array($func) === true
+		&& isset($func[0],$func[1]) === true)
 			$type = 'method';
+		else
+			return(false);
 
 		if($type === 'method')
 		{
@@ -852,11 +671,19 @@ class dwho_filter
 			return(false);
 		}
 
-		if(dwho_issa('between',$arr) === true && isset($arr['between'][0],$arr['between'][1]) === true
-		&& $this->chk_between($arr['between'][0],$arr['between'][1],$value) === false)
+		if(dwho_issa('between',$arr) === true
+		&& isset($arr['between'][0],$arr['between'][1]) === true)
 		{
-			$this->_set_error($key,'between false');
-			return(false);
+			if(isset($arr['between'][2]) === true)
+				$mod = $arr['between'][2];
+			else
+				$mod = null;
+
+			if($this->chk_between($arr['between'][0],$arr['between'][1],$value,$mod) === false)
+			{
+				$this->_set_error($key,'between false');
+				return(false);
+			}
 		}
 
 		if(isset($arr['callback']) === true)

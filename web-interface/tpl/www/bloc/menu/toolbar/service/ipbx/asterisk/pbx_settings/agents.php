@@ -37,14 +37,14 @@ if($act === 'list'):
 	$toolbar_js = array();
 	$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-agentgroups-list\';';
 	$toolbar_js[] = 'var xivo_toolbar_form_list = \'agentgroups[]\';';
-	$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm-agentgroup')).'\';';
+	$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
 	$dhtml->write_js($toolbar_js);
 elseif($act === 'listagent'):
 	$toolbar_js = array();
 	$toolbar_js[] = 'var xivo_toolbar_form_name = \'fm-agents-list\';';
 	$toolbar_js[] = 'var xivo_toolbar_form_list = \'agents[]\';';
-	$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm-agent')).'\';';
+	$toolbar_js[] = 'var xivo_toolbar_adv_menu_delete_confirm = \''.$dhtml->escape($this->bbf('toolbar_adv_menu_delete_confirm')).'\';';
 
 	$dhtml->write_js($toolbar_js);
 endif;

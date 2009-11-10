@@ -27,12 +27,13 @@ if(isset($_QR['service'],$_QR['action']) === true)
 			$_QRY->go($_TPL->url('xivo'));
 			break;
 		default:
+			break;
 	}
 }
 
 $mon_telephony = $monitoring->get_group('telephony');
 $mon_grpundef = $monitoring->get_group_undefined();
-$devinfo = $monitoring->get_device();
+$devstats = $monitoring->get_device();
 
 $_SYSINFO = new dwho_sysinfo();
 
@@ -45,15 +46,15 @@ if(is_array($mon_telephony) === true)
 if(is_array($mon_grpundef) === true)
 	usort($mon_grpundef,array(&$sort,'strnat_usort'));
 
-if(is_array($devinfo) === true)
-	usort($devinfo,array(&$sort,'strnat_usort'));
+if(is_array($devstats) === true)
+	usort($devstats,array(&$sort,'strnat_usort'));
 
 $_TPL->set_var('sysinfo',$monitoring->get_system());
 $_TPL->set_var('uptime',$_SYSINFO->uptime());
-$_TPL->set_var('cpuinfo',$_SYSINFO->cpuinfo());
-$_TPL->set_var('devinfo',$devinfo);
-$_TPL->set_var('meminfo',$_SYSINFO->meminfo(true));
-$_TPL->set_var('netinfo',$_SYSINFO->netinfo());
+$_TPL->set_var('cpustats',$_SYSINFO->cpustats());
+$_TPL->set_var('devstats',$devstats);
+$_TPL->set_var('memstats',$_SYSINFO->memstats(true));
+$_TPL->set_var('netstats',$_SYSINFO->netstats());
 $_TPL->set_var('mon_telephony',$mon_telephony);
 $_TPL->set_var('mon_grpundef',$mon_grpundef);
 

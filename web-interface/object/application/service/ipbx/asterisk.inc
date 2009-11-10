@@ -23,14 +23,12 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','service','abstr
 class xivo_application_asterisk_abstract extends xivo_application_service_abstract
 {
 	var $_service		= null;
-	var $_abstract		= array();
 	var $_service_type	= 'ipbx';
 	var $_service_name	= 'asterisk';
-	var $_components	= false;
 
 	function xivo_application_asterisk_abstract(&$service)
 	{
-		if(dwho_instanceof($service,'xivo_service_asterisk') === false)
+		if(dwho_is_instance($service,'xivo_service_asterisk') === false)
 			trigger_error('Invalid service in '.__CLASS__,E_USER_ERROR);
 
 		$this->_service = &$service;
@@ -611,18 +609,6 @@ class xivo_application_asterisk_abstract extends xivo_application_service_abstra
 			return($r);
 
 		return(false);
-	}
-
-	function _get_data_from_json()
-	{
-		$_QRY = &dwho_gct::get('dwho_query');
-
-		if(dwho::load_class('dwho_json') === false
-		|| ($data = dwho_json::decode($_QRY->get_input(),true)) === false
-		|| is_array($data) === false)
-			return(false);
-
-		return($data);
 	}
 }
 

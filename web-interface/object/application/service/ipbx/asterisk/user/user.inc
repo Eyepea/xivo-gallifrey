@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
 class xivo_application_service_asterisk_user extends xivo_application_asterisk_abstract
@@ -1233,7 +1235,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$arr['iduserfeatures'] = 0;
 			$vendor = substr($arr['vendormodel'],0,$pos);
-			$model = substr($arr['vendormodel'],$pos+1);
+			$model = substr($arr['vendormodel'],$pos + 1);
 
 			if(($list = $this->get_autoprov_list()) === false)
 				return(false);
@@ -1246,7 +1248,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$arr['model'] = $model;
 			}
 
-			if(($macaddr = dwho_filter::chk_macaddr($arr['macaddr'])) !== false)
+			if(($macaddr = dwho_network::normalize_macaddr($arr['macaddr'])) !== false
+			&& dwho_network::valid_macaddr($macaddr) !== false)
 				$arr['macaddr'] = $macaddr;
 			else
 				$arr['macaddr'] = '';

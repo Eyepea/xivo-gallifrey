@@ -1,0 +1,170 @@
+; network_arphrd(netrom)
+NET/ROM
+
+; network_arphrd(ether)
+Ethernet
+
+; network_arphrd(eether)
+Ethernet expérimental
+
+; network_arphrd(ax25)
+AX.25
+
+; network_arphrd(pronet)
+PROnet
+
+; network_arphrd(chaos)
+Chaos
+
+; network_arphrd(ieee802)
+IEEE 802.2
+
+; network_arphrd(arcnet)
+ARCnet
+
+; network_arphrd(appletlk)
+APPLEtalk
+
+; network_arphrd(dlci)
+Relai de trame DLCI
+
+; network_arphrd(atm)
+ATM
+
+; network_arphrd(metricom)
+Metricom STRIP
+
+; network_arphrd(ieee1394)
+IEEE 1394
+
+; network_arphrd(eui64)
+EUI-64
+
+; network_arphrd(infiniband)
+InfiniBand
+
+; network_arphrd(slip)
+IP ligne série
+
+; network_arphrd(cslip)
+IP ligne série - VJ
+
+; network_arphrd(slip6)
+IP ligne série - 6 bits
+
+; network_arphrd(cslip6)
+IP ligne série - 6 bits VJ
+
+; network_arphrd(rsrvd)
+Notional KISS
+
+; network_arphrd(adapt)
+IP ligne série adaptative
+
+; network_arphrd(rose)
+Rose
+
+; network_arphrd(x25)
+CCITT X.25
+
+; network_arphrd(hwx25)
+Boards with X.25
+
+; network_arphrd(can)
+Bus CAN
+
+; network_arphrd(ppp)
+Protocole point à point
+
+; network_arphrd(cisco)
+(Cisco) HDLC
+
+; network_arphrd(hldc)
+(Cisco) HDLC
+
+; network_arphrd(LAPB)
+LAPB
+
+; network_arphrd(ddcmp)
+DDCMP
+
+; network_arphrd(rawhdlc)
+Raw HDLC
+
+; network_arphrd(tunnel)
+IPIP tunnel
+
+; network_arphrd(tunnel6)
+IP6IP6 tunnel
+
+; network_arphrd(frad)
+Périphérique d'accès au relai de trame
+
+; network_arphrd(skip)
+SKIP vif.
+
+; network_arphrd(loopback)
+Boucle locale
+
+; network_arphrd(localtlk)
+Localtalk
+
+; network_arphrd(fddi)
+Fiber Distributed Data Interface
+
+; network_arphrd(bif)
+AP1000 BIF
+
+; network_arphrd(sit)
+IPv6-dans-IPv4
+
+; network_arphrd(ipddp)
+IP-dans-DDP tunnel
+
+; network_arphrd(ipgre)
+Encapsulation Générique de Routage
+
+; network_arphrd(pimreg)
+Protocole de routage multidiffusion PIM-SM
+
+; network_arphrd(hippi)
+Interface parallèle à haute performance
+
+; network_arphrd(ash)
+ASH
+
+; network_arphrd(econet)
+Acorn Econet
+
+; network_arphrd(irda)
+IrLap
+
+; network_arphrd(fcpp)
+Fibre Channel point à point
+
+; network_arphrd(fcal)
+Fibre Channel en boucle
+
+; network_arphrd(fcpl)
+Fibre Channel en boucle publique
+
+; network_arphrd(fcfabric)
+Fibre Channel commutée
+
+; network_arphrd(ieee802_tr)
+IEEE 802.5
+
+; network_arphrd(ieee80211)
+IEEE 802.11
+
+; network_arphrd(ieee80211_prism)
+IEEE 802.11 Prism2
+
+; network_arphrd(ieee80211_radiotap)
+IEEE 802.11 Radiotap
+
+; network_arphrd(void)
+Inconnu
+
+; network_arphrd(none)
+Aucune

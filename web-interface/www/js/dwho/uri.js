@@ -23,11 +23,9 @@ else if(dwho_is_undef(dwho.uri) === true)
 
 dwho.uri = function()
 {
-	this._encode	= {};
 	this._host	= {'ipliteral':	1,
 			   'ipv4':	2,
 			   'reg_name':	3};
-	this._regexp	= {};
 
 	var gen_delims	= ':\\/\\?#\\[\\]@';
 	var sub_delims	= '\\!\\$&\\\'\\(\\)\\*\\+,;=';
@@ -35,7 +33,9 @@ dwho.uri = function()
 	var unreserved	= 'a-zA-Z0-9-\\._~';
 	var ipvfuture	= 'v[\\da-fA-F]+\\.[' + unreserved + sub_delims + ':]+';
 	var port	= '[0-9]{0,5}';
+	var fnescaped	= function(chr) { return('%' + chr.charCodeAt(0).toString(16).toUpperCase()); }
 
+	this._encode		= {};
 	this._encode.user	= new RegExp('([^' + unreserved + sub_delims + ']+)');
 	this._encode.password	= new RegExp('([^' + unreserved + sub_delims + ':]+)');
 	this._encode.reg_name	= new RegExp('([^' + unreserved + sub_delims + ']+)');
@@ -44,6 +44,7 @@ dwho.uri = function()
 	this._encode.query_val	= new RegExp('([^' + unreserved + '\\!\\$\\\'\\(\\)\\*,;:@\\/\\? =]+)');
 	this._encode.fragment	= new RegExp('([^' + unreserved + sub_delims + ':@\\/\\?]+)');
 
+	this._regexp		= {};
 	this._regexp.rfc3986	= new RegExp('^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?$');
 	this._regexp.scheme	= new RegExp('^[a-zA-Z][a-zA-Z0-9\\+\\-\\.]*$');
 	this._regexp.user	= new RegExp('^[' + unreserved + sub_delims + '%]+$');
@@ -56,6 +57,12 @@ dwho.uri = function()
 
 	this._reipvfutureport	= new RegExp('^\\[([\\da-fA-F:\\.]+|' + ipvfuture + ')\\]' +
 					     '(\\:' + port + ')?$');
+
+	this._fnencodeuri	= function(str)
+				  {
+					return(encodeURIComponent(dwho_string(str)).
+					       replace(/[!'\(\)\*~]/g,fnescaped));
+				  }
 }
 
 dwho.uri.prototype.build = function(obj,encode,type_host)
@@ -487,19 +494,8 @@ dwho.uri.prototype.encode = function(str,type)
 	str	= dwho_string(str);
 	type	= dwho_string(type);
 
-	var encode_uri = function(str)
-	{
-		return(encodeURIComponent(dwho_string(str)).
-		       replace(/!/g,'%21').
-		       replace(/'/g,'%27').
-		       replace(/\(/g,'%28').
-		       replace(/\)/g,'%29').
-		       replace(/\*/g,'%2A').
-		       replace(/~/g,'%7E'));
-	}
-
 	if(dwho_is_undef(this._encode[type]) === true)
-		return(encode_uri(str));
+		return(this._fnencodeuri(str));
 
 	var rs = str.split(this._encode[type]);
 
@@ -518,7 +514,7 @@ dwho.uri.prototype.encode = function(str,type)
 		r += rs[i];
 
 		if((i + 1) < nb)
-			r += encode_uri(rs[i + 1]);
+			r += this._fnencodeuri(rs[i + 1]);
 	}
 
 	if(type === 'query_key' || type === 'query_val')

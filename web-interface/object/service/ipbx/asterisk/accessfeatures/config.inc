@@ -28,8 +28,11 @@ $array['element']['feature'] = array();
 $array['element']['feature']['value'] = array('phonebook');
 $array['element']['feature']['default'] = 'phonebook';
 
+
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
-$array['filter']['host'] = array('callback' => 'dwho_filter::chk_host_subnet_ipv4_strict');
+$array['filter']['host'] = array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['feature'] = array('key' => array('phonebook'));
 
 ?>
