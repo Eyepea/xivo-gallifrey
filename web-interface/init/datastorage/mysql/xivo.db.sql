@@ -183,7 +183,7 @@ CREATE TABLE `session` (
  `key` char(32) NOT NULL DEFAULT '',
  `start` int(10) unsigned NOT NULL DEFAULT 0,
  `expire` int(10) unsigned NOT NULL DEFAULT 0,
- `userid` int(10) unsigned NOT NULL DEFAULT 0,v
+ `userid` int(10) unsigned NOT NULL DEFAULT 0,
  `data` longblob NOT NULL,
  PRIMARY KEY(`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
