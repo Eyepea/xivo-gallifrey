@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,26 +32,6 @@
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-2"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-register');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
-			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_register');?></a></span>
-			</div>
-			<span class="span-right">&nbsp;</span>
-		</li>
-		<li id="dwsm-tab-3"
-		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-signalling');"
-		    onmouseout="dwho_submenu.blur(this);"
-		    onmouseover="dwho_submenu.focus(this);">
-			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_signalling');?></a></span>
-			</div>
-			<span class="span-right">&nbsp;</span>
-		</li>
-		<li id="dwsm-tab-4"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"

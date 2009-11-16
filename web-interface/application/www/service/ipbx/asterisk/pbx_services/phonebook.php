@@ -57,7 +57,7 @@ switch($act)
 			$result['phonebooknumber'] = null;
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
@@ -97,7 +97,7 @@ switch($act)
 			$return['phonebooknumber'] = null;
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['phonebook']['id']);
 		$_TPL->set_var('info',$return);

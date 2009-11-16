@@ -54,7 +54,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction-application.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ipbxapplication.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/voicemenu.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		if(dwho_issa('voicemenu',$result) === false)
 			$result['voicemenu'] = null;
@@ -116,7 +116,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction-application.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ipbxapplication.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/voicemenu.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['voicemenu']['id']);
 		$_TPL->set_var('info',$return);

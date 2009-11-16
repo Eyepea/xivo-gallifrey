@@ -1,6 +1,12 @@
 ; title_content_name
 Interfaces > Ajouter
 
+; smenu_general
+Général
+
+; smenu_advanced
+Avancé
+
 ; fm_name
 Nom :
 
@@ -42,3 +48,6 @@ Interface physique du VLAN :
 
 ; fm_description
 Description :
+
+; fm_advconfig
+Configuration avancée :

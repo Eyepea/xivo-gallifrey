@@ -138,13 +138,13 @@ CREATE TABLE `netiface` (
  `mtu` smallint(4) unsigned,
  `vlan` varchar(64),
  `networktype` enum('data','voip') NOT NULL,
+ `advconfig` text NOT NULL,
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE INDEX `netiface__idx__name` ON `netiface`(`name`);
 CREATE INDEX `netiface__idx__hwtypeid` ON `netiface`(`hwtypeid`);
 CREATE INDEX `netiface__idx__type` ON `netiface`(`type`);
 CREATE INDEX `netiface__idx__family` ON `netiface`(`family`);

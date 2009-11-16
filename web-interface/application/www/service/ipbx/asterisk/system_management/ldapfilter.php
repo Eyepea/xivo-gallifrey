@@ -62,7 +62,7 @@ switch($act)
 		$_TPL->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ldapfilter.js');
 		break;
 	case 'edit':
@@ -106,7 +106,7 @@ switch($act)
 		$_TPL->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/ldapfilter.js');
 		break;
 	case 'delete':

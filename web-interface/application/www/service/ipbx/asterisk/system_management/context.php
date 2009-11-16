@@ -109,7 +109,7 @@ switch($act)
 		$_TPL->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/context.js');
 		break;
 	case 'edit':
@@ -203,7 +203,7 @@ switch($act)
 		$_TPL->set_var('entities',$appcontext->get_entities_list(null,array('displayname' => SORT_ASC)));
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/context.js');
 		break;
 	case 'delete':

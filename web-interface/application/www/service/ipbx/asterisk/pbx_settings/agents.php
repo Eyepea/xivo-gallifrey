@@ -122,7 +122,7 @@ switch($act)
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'edit':
 		$appagentgroup = &$ipbx->get_application('agentgroup');
@@ -223,7 +223,7 @@ switch($act)
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;
@@ -392,7 +392,7 @@ switch($act)
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'editagent':
 		$appagent = &$ipbx->get_application('agent');
@@ -510,7 +510,7 @@ switch($act)
 		$_TPL->set_var('agentgroup_list',$agentgroup_list);
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'deleteagent':
 		$appagent = &$ipbx->get_application('agent');

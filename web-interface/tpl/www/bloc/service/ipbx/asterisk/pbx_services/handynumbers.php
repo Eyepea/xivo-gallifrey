@@ -33,12 +33,14 @@ elseif($fm_save === false):
 	$handynumbers_js[] = 'xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');';
 endif;
 
-if(($smenu_tab = $this->get_var('fm_smenu_tab')) !== '' && ($smenu_part = $this->get_var('fm_smenu_part')) !== ''):
-	$handynumbers_js[] = 'xivo_smenu[\'tab\'] = \''.$dhtml->escape($smenu_tab).'\';';
-	$handynumbers_js[] = 'xivo_smenu[\'part\'] = \''.$dhtml->escape($smenu_part).'\';';
+if(($smenu_tab = $this->get_var('dwsm_form_tab')) !== ''
+&& ($smenu_part = $this->get_var('dwsm_form_part')) !== ''):
+	$handynumbers_js[] = 'dwho_submenu.set_options({
+				\'onload_tab\':		"'.$dhtml->escape($smenu_tab,ENT_NOQUOTES).'",
+				\'onload_part\':	"'.$dhtml->escape($smenu_part,ENT_NOQUOTES).'"});';
 
 	if($smenu_part === 'sb-part-last'):
-		$handynumbers_js[] = 'xivo_smenu[\'last\'] = true;';
+		$handynumbers_js[] = 'dwho_submenu.set_option(\'onload_last\',true);';
 	endif;
 endif;
 
@@ -69,21 +71,21 @@ $dhtml->write_js($handynumbers_js);
 
 <div class="sb-smenu">
 	<ul>
-		<li id="smenu-tab-1"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-first');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-1"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-first');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_emergency');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-2"
-		    class="moo-last"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-last',1);"
-		    onmouseout="xivo_smenu_out(this,'moo',1);"
-		    onmouseover="xivo_smenu_over(this,'mov',1);">
+		<li id="dwsm-tab-2"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_special');?></a></span>
 			</div>
@@ -104,7 +106,7 @@ if($this->get_var('trunkslist') === false):
 else:
 
 ?>
-<form action="#" method="post" accept-charset="utf-8" onsubmit="xivo_smenu_fmsubmit(this);">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho_submenu.submit_form(this);">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
@@ -112,10 +114,10 @@ else:
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
 
-		$form->hidden(array('name'	=> 'fm_smenu-tab',
-				    'value'	=> 'smenu-tab-1')),
+		$form->hidden(array('name'	=> 'dwsm-form-tab',
+				    'value'	=> 'dwsm-tab-1')),
 
-		$form->hidden(array('name'	=> 'fm_smenu-part',
+		$form->hidden(array('name'	=> 'dwsm-form-part',
 				    'value'	=> 'sb-part-first'));
 ?>
 	<div id="sb-part-first" class="b-nodisplay">

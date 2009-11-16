@@ -20,6 +20,7 @@
 
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
 $pager = $this->get_var('pager');
@@ -42,13 +43,12 @@ endif;
 
 $page = $exportcsv = '';
 
-$js_result = array();
-
 if($result === false):
-	$js_result[] = 'xivo_smenu[\'last\'] = true;';
+	$dhtml->write_js('dwho_submenu.set_option(\'onload_last\',true);');
 else:
-	$js_result[] = 'xivo_smenu[\'tab\'] = \'smenu-tab-2\';';
-	$js_result[] = 'xivo_smenu[\'part\'] = \'sb-part-result\';';
+	$dhtml->write_js('dwho_submenu.set_options({
+				\'onload_tab\':		"dwsm-tab-2",
+				\'onload_part\':	"sb-part-result"});');
 
 	if($info !== null):
 		$page_query = $info;
@@ -67,9 +67,6 @@ else:
 	$exportcsv_query['act'] = 'exportcsv';
 endif;
 
-$dhtml = &$this->get_module('dhtml');
-$dhtml->write_js($js_result);
-
 ?>
 <div id="sr-cdr" class="b-infos b-form">
 	<h3 class="sb-top xspan">
@@ -83,11 +80,11 @@ $dhtml->write_js($js_result);
 <?php
 	if($result === false):
 ?>
-		<li id="smenu-tab-1"
-		    class="moo-last"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-first',1);"
-		    onmouseout="xivo_smenu_out(this,'moo',1);"
-		    onmouseover="xivo_smenu_over(this,'mov',1);">
+		<li id="dwsm-tab-1"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-first',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_search');?></a></span>
 			</div>
@@ -96,33 +93,33 @@ $dhtml->write_js($js_result);
 <?php
 	else:
 ?>
-		<li id="smenu-tab-1"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-first');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-1"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-first');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_search');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-2"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-result');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-2"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-result');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_result');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-3"
-		    class="moo-last"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-result',1);
+		<li id="dwsm-tab-3"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-result',1);
 			     location.href = dwho.dom.node.firstchild(
 						dwho.dom.node.firstchild(
 							dwho.dom.node.firstchild(this)));"
-		    onmouseout="xivo_smenu_out(this,'moo',1);" onmouseover="xivo_smenu_over(this,'mov',1);">
+		    onmouseout="dwho_submenu.blur(this,1);" onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center"><?=$url->href_html($this->bbf('smenu_exportcsv'),
 									     'service/ipbx/call_management/cdr',

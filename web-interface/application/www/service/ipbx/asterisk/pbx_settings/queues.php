@@ -163,7 +163,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
@@ -320,7 +320,7 @@ switch($act)
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/dialaction.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/callerid.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/queues.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['queuefeatures']['id']);
 		$_TPL->set_var('info',$return);

@@ -263,7 +263,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		else if($vlan !== null)
 		{
 			if($this->_sysnet->netinfo_interface_is_physical($vlan) !== true
-			|| $this->_sysnet->netinfo_interface_is_physical($name) !== false
+			|| $this->_sysnet->netinfo_interface_is_physical($name) === true
 			|| $this->_sysnet->netinfo_interface_is_virtual($name) === true)
 				return(false);
 

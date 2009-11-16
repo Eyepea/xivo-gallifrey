@@ -53,11 +53,11 @@ endif;
 </h3>
 <div class="sb-smenu">
 	<ul>
-		<li id="smenu-tab-1"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-first');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-1"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-first');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
@@ -65,11 +65,11 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-2"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-voicemenu');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-2"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-voicemenu');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_voicemenu');?></a>
@@ -77,11 +77,11 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-3"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-email');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-3"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-email');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_email');?></a>
@@ -89,11 +89,11 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-4"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-pager');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-4"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-pager');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_pager');?></a>
@@ -101,11 +101,11 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-5"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-timezone');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-5"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-timezone');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_timezones');?></a>
@@ -113,11 +113,11 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-6"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-adsi');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-6"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-adsi');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_adsi');?></a>
@@ -125,11 +125,11 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-7"
-		    class="moo-last"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-last',1);"
-		    onmouseout="xivo_smenu_out(this,'moo',1);"
-		    onmouseover="xivo_smenu_over(this,'mov',1);">
+		<li id="dwsm-tab-7"
+		    class="dwsm-blur-last"
+		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
 					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a>

@@ -135,7 +135,7 @@ switch($act)
 			$rcallexten = null;
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('rcalluser',$rcalluser);
 		$_TPL->set_var('rcallgroup',$rcallgroup);
@@ -266,7 +266,7 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['rightcall']['id']);
 		$_TPL->set_var('rcalluser',$rcalluser);

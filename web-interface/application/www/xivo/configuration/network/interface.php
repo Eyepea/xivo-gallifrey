@@ -62,6 +62,7 @@ switch($act)
 		$_TPL->set_var('element',$appnetiface->get_elements());
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/xivo/configuration/network/interface.js');
 		break;
 	case 'edit':
@@ -99,6 +100,7 @@ switch($act)
 		$_TPL->set_var('interfaces',$interfaces);
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/xivo/configuration/network/interface.js');
 		break;
 	case 'delete':

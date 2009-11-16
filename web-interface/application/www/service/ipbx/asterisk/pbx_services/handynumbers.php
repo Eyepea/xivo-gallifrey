@@ -29,16 +29,16 @@ $info['emergency'] = $apphnumbersemergency->get();
 $info['special'] = $apphnumbersspecial->get();
 
 $fm_save = null;
-$fm_smenu_tab = $fm_smenu_part = '';
+$dwsm_form_tab = $dwsm_form_part = '';
 
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save = true;
 
-	if(isset($_QR['fm_smenu-tab'],$_QR['fm_smenu-part']) === true)
+	if(isset($_QR['dwsm-form-tab'],$_QR['dwsm-form-part']) === true)
 	{
-		$fm_smenu_tab = strval($_QR['fm_smenu-tab']);
-		$fm_smenu_part = strval($_QR['fm_smenu-part']);
+		$dwsm_form_tab = strval($_QR['dwsm-form-tab']);
+		$dwsm_form_part = strval($_QR['dwsm-form-part']);
 	}
 
 	$return = &$result;
@@ -99,8 +99,8 @@ if(($trunkslist = $apptrunk->get_trunks_list(null,null,null,null,true)) !== fals
 }
 
 $_TPL->set_var('fm_save',$fm_save);
-$_TPL->set_var('fm_smenu_tab',$fm_smenu_tab);
-$_TPL->set_var('fm_smenu_part',$fm_smenu_part);
+$_TPL->set_var('dwsm_form_tab',$dwsm_form_tab);
+$_TPL->set_var('dwsm_form_part',$dwsm_form_part);
 $_TPL->set_var('element',$apphnumbersemergency->get_elements());
 $_TPL->set_var('info',$return);
 $_TPL->set_var('error',$error);
@@ -108,7 +108,7 @@ $_TPL->set_var('trunkslist',$trunkslist);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+$dhtml->set_js('js/dwho/submenu.js');
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

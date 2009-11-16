@@ -101,7 +101,7 @@ $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 $menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');
 
 $dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+$dhtml->set_js('js/dwho/submenu.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/cdr.js');
 $dhtml->set_js('js/xivo_calendar.js');
 $dhtml->add_js('/struct/js/date.js.php');

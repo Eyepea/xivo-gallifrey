@@ -20,6 +20,7 @@
 
 $url = &$this->get_module('url');
 $menu = &$this->get_module('menu');
+
 $this->file_include('bloc/menu/top/user/loginbox');
 
 ?>
@@ -30,8 +31,8 @@ $this->file_include('bloc/menu/top/user/loginbox');
 <?php
 	if(xivo_user::chk_acl(null,null,'service') === true):
 ?>
-		<li onmouseout="this.className='moo';"
-		    onmouseover="this.className='mov';">
+		<li onmouseout="this.className = 'moo';"
+		    onmouseover="this.className = 'mov';">
 			<span class="span-left">&nbsp;</span>
 			<span class="span-center"><?=$this->bbf('mn_top_services');?></span>
 			<span class="span-right">&nbsp;</span>
@@ -51,8 +52,8 @@ $this->file_include('bloc/menu/top/user/loginbox');
 <?php
 	endif;
 ?>
-		<li onmouseout="this.className='moo';"
-		    onmouseover="this.className='mov';">
+		<li onmouseout="this.className = 'moo';"
+		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_preferences').'</span>
 					    <span class="span-right">&nbsp;</span>',
@@ -61,8 +62,8 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_preferences'));?>
 		</li>
-		<li onmouseout="this.className='moo';"
-		    onmouseover="this.className='mov';">
+		<li onmouseout="this.className = 'moo';"
+		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_help').'</span>
 					    <span class="span-right">&nbsp;</span>',
@@ -71,8 +72,8 @@ $this->file_include('bloc/menu/top/user/loginbox');
 					   null,
 					   $this->bbf('mn_top_help'));?>
 		</li>
-		<li onmouseout="this.className='moo';"
-		    onmouseover="this.className='mov';">
+		<li onmouseout="this.className = 'moo';"
+		    onmouseover="this.className = 'mov';">
 			<?=$url->href_html('<span class="span-left">&nbsp;</span>
 					    <span class="span-center">'.$this->bbf('mn_top_contact').'</span>
 					    <span class="span-right">&nbsp;</span>',

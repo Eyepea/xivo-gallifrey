@@ -56,6 +56,10 @@ dwho.json.prototype.escaped = function(str)
 
 dwho.json.prototype.encode = function(data)
 {
+	if(typeof(JSON) !== 'undefined'
+	&& dwho_is_function(JSON.stringify) === true)
+		return(JSON.stringify(data));
+
 	if(data === null || data === undefined || dwho_is_function(data) === true)
 		return('null');
 	else if(dwho_is_array(data) === true)

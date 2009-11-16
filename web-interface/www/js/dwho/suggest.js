@@ -149,15 +149,6 @@ dwho.suggest.prototype.set_field = function(id)
 	this._field.setAttribute('autocomplete','off');
 }
 
-dwho.suggest.prototype.set_options = function(options)
-{
-	if(dwho_is_object(options) === false)
-		return(false);
-
-	for(var property in options)
-		this.set_option(property,options[property]);
-}
-
 dwho.suggest.prototype.set_option = function(name,value)
 {
 	if(dwho_is_undef(this._options[name]) === true)
@@ -221,6 +212,15 @@ dwho.suggest.prototype.set_option = function(name,value)
 	this._options[name] = value;
 
 	return(true);
+}
+
+dwho.suggest.prototype.set_options = function(options)
+{
+	if(dwho_is_object(options) === false)
+		return(false);
+
+	for(var property in options)
+		this.set_option(property,options[property]);
 }
 
 dwho.suggest.prototype.get_option = function(name)

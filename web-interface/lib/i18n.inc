@@ -49,8 +49,6 @@ class dwho_i18n
 
 		$this->_dso = new $name($dso);
 
-		unset($_SESSION['_i18n']);
-
 		if(isset($_SESSION['_i18n']) === false)
 			$_SESSION['_i18n'] = array('babelfish' => array());
 	}

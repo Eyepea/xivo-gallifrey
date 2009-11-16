@@ -133,13 +133,13 @@ CREATE TABLE netiface (
  mtu smallint unsigned,
  vlan varchar(64),
  networktype char(4) NOT NULL,
+ advconfig text NOT NULL,
  disable tinyint(1) NOT NULL DEFAULT 0,
  dcreate integer unsigned NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(name)
 );
 
-CREATE INDEX netiface__idx__name ON netiface(name);
 CREATE INDEX netiface__idx__hwtypeid ON netiface(hwtypeid);
 CREATE INDEX netiface__idx__type ON netiface(type);
 CREATE INDEX netiface__idx__family ON netiface(family);

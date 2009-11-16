@@ -70,6 +70,9 @@ $array['element']['networktype'] = array();
 $array['element']['networktype']['value'] = array('data','voip');
 $array['element']['networktype']['default'] = 'data';
 
+$array['element']['advconfig'] = array();
+$array['element']['advconfig']['default'] = '';
+
 $array['element']['disable'] = array();
 $array['element']['disable']['value'] = array(0,1);
 $array['element']['disable']['default'] = 0;
@@ -106,6 +109,7 @@ $array['filter']['gateway'] = array('set'		=> false,
 $array['filter']['mtu'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(60,9000));
 $array['filter']['vlan'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_]+$/','minlen' => 1,'maxlen' => 64);
 $array['filter']['networktype'] = array('key' => array('data','voip'));
+$array['filter']['advconfig'] = array('set' => false,'chk' => 2,'maxlen' => 2000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['disable'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

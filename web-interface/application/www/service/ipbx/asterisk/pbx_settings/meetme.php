@@ -54,7 +54,7 @@ switch($act)
 		$_TPL->set_var('context_list',$appmeetme->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'edit':
 		$appmeetme = &$ipbx->get_application('meetme');
@@ -89,7 +89,7 @@ switch($act)
 		$_TPL->set_var('context_list',$appmeetme->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'delete':
 		$param['page'] = $page;

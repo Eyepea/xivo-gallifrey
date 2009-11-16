@@ -71,11 +71,11 @@ if(isset($error_js[0]) === true)
 
 	<div class="sb-smenu">
 	<ul>
-		<li id="smenu-tab-1"
-		    class="moo"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
-			<div onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-first');">
+		<li id="dwsm-tab-1"
+		    class="dwsm-blur"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-first');">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
 				</div>
@@ -84,52 +84,52 @@ if(isset($error_js[0]) === true)
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-call');
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-call');
 							return(false);"><?=$this->bbf('smenu_calls');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-transfer');
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-transfer');
 							return(false);"><?=$this->bbf('smenu_transfers');?></a></li>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-1'),'moc','sb-part-forward');
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-forward');
 							return(false);"><?=$this->bbf('smenu_forwards');?></a></li>
 				</ul>
 			</div>
 		</li>
-		<li id="smenu-tab-2"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-voicemail');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-2"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-voicemail');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_voicemail');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-3"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-agent');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-3"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-agent');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_agent');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-4"
-		    class="moo"
-		    onclick="xivo_smenu_click(this,'moc','sb-part-group');"
-		    onmouseout="xivo_smenu_out(this,'moo');"
-		    onmouseover="xivo_smenu_over(this,'mov');">
+		<li id="dwsm-tab-4"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-group');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
 				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_groups');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="smenu-tab-5"
-		    class="moo-last"
-		    onmouseout="xivo_smenu_out(this,'moo',1);"
-		    onmouseover="xivo_smenu_over(this,'mov',1);">
-			<div onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-last',1);">
+		<li id="dwsm-tab-5"
+		    class="dwsm-blur-last"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-last',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
@@ -138,7 +138,7 @@ if(isset($error_js[0]) === true)
 			<div class="stab">
 				<ul>
 					<li><a href="#"
-					       onclick="xivo_smenu_click(dwho_eid('smenu-tab-5'),'moc','sb-part-parking',1);
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-parking',1);
 							return(false);"><?=$this->bbf('smenu_parking');?></a></li>
 				</ul>
 			</div>

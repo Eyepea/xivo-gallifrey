@@ -72,7 +72,7 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
@@ -134,7 +134,7 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks/iax.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/trunks.js');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('id',$info['trunkfeatures']['id']);
 		$_TPL->set_var('info',$return);

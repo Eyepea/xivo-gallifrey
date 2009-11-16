@@ -85,7 +85,7 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
@@ -157,7 +157,7 @@ switch($act)
 		}
 
 		$dhtml = &$_TPL->get_module('dhtml');
-		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/outcall.js');
 
 		$_TPL->set_var('id',$info['outcall']['id']);

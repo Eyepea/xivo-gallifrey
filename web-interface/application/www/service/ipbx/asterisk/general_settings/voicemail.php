@@ -71,7 +71,7 @@ if(dwho_issa('format',$element['voicemail']) === true
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/general.js');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/submenu.js');
+$dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('element',$element);
