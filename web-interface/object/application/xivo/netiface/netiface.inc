@@ -49,7 +49,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$this->_origin['netiface'] = $this->_netiface->get_origin();
 
-		$this->_info['deletable'] = $this->_netiface->exists_virtual($this->_info['netiface']['name']) === false;
+		$this->_info['deletable'] = $this->_netiface->exists_link($this->_info['netiface']['name']) === false;
 
 		return($this->_info);
 	}
@@ -119,7 +119,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 							 'netiface'	=> $val);
 
 				$ref = &$r[$val['name']];
-				$ref['deletable'] = $this->_netiface->exists_virtual($val['name']) === false;
+				$ref['deletable'] = $this->_netiface->exists_link($val['name']) === false;
 				$ref['netiface']['hwtype'] = $hwtype;
 
 				if(isset($netinfo[$val['name']]) === true
@@ -386,7 +386,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		|| $rs === false)
 			return(false);
 		else if(strcmp($rs['name'],$this->_info['netiface']['name']) !== 0
-		&& $this->_netiface->exists_virtual($this->_info['netiface']['name']) !== false)
+		&& $this->_netiface->exists_link($this->_info['netiface']['name']) !== false)
 			return(false);
 
 		$rs['disable'] = $this->_info['netiface']['disable'];
@@ -510,6 +510,26 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$this->_return['netiface'] = $r;
 
 		return($r);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
+
+		return(true);
 	}
 }
 

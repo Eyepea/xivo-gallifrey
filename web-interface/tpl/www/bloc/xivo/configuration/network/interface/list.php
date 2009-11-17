@@ -76,6 +76,7 @@ $page = $url->pager($pager['pages'],
 			$netinfo = &$list[$i]['netinfo'];
 			$netiface = &$list[$i]['netiface'];
 
+			$id = '';
 			$name = '';
 			$hwtype = '';
 			$hwtypeid = 0;
@@ -85,6 +86,7 @@ $page = $url->pager($pager['pages'],
 			$icon = 'unavailable';
 
 			if(empty($netinfo) === false):
+				$id = $netinfo['interface'];
 				$name = $netinfo['interface'];
 
 				if($netinfo['hwtype'] !== false):
@@ -106,6 +108,7 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			if(empty($netiface) === false):
+				$id = $netiface['name'];
 				$name = $netiface['name'];
 				$hwtype = $netiface['hwtype'];
 				$hwtypeid = dwho_uint($netiface['hwtypeid']);
@@ -125,7 +128,7 @@ $page = $url->pager($pager['pages'],
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
 		<td class="td-left">
 			<?=$form->checkbox(array('name'		=> 'netiface[]',
-						 'value'	=> $name,
+						 'value'	=> $id,
 						 'label'	=> false,
 						 'id'		=> 'it-netiface-'.$i,
 						 'checked'	=> false,
@@ -154,7 +157,7 @@ $page = $url->pager($pager['pages'],
 								       'border="0"'),
 							'xivo/configuration/network/interface',
 							array('act'		=> 'add',
-							      'name'		=> $name,
+							      'id'		=> $id,
 							      'hwtypeid'	=> $hwtypeid),
 							null,
 							$this->bbf('opt_add'));
@@ -164,7 +167,7 @@ $page = $url->pager($pager['pages'],
 								       'border="0"'),
 							'xivo/configuration/network/interface',
 							array('act'		=> 'edit',
-							      'name'		=> $name,
+							      'id'		=> $id,
 							      'hwtypeid'	=> $hwtypeid),
 							null,
 							$this->bbf('opt_modify')),"\n";
@@ -175,7 +178,7 @@ $page = $url->pager($pager['pages'],
 									       'border="0"'),
 								'xivo/configuration/network/interface',
 								array('act'		=> 'delete',
-								      'name'		=> $name,
+								      'id'		=> $id,
 								      'hwtypeid'	=> $hwtypeid,
 								      'page'		=> $pager['page']),
 								'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',

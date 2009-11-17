@@ -64,6 +64,14 @@ $array['xivo/configuration/web_services/private/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
 	'define'	=> array(
 			'XIVO_TPL_WEBSERVICES_MODE'	=> 'private'));
+$array['xivo/configuration/web_services/private/network/interface'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/interface',
+	'define'	=> array(
+			'XIVO_TPL_WEBSERVICES_MODE'	=> 'private'));
+$array['xivo/configuration/web_services/private/network/iproute'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/iproute',
+	'define'	=> array(
+			'XIVO_TPL_WEBSERVICES_MODE'	=> 'private'));
 
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/agents',
@@ -132,6 +140,14 @@ $array['service/ipbx/asterisk/web_services/private/control_system/restart'] = ar
 
 $array['xivo/configuration/web_services/restricted/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
+	'define'	=> array(
+			'XIVO_TPL_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/network/interface'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/interface',
+	'define'	=> array(
+			'XIVO_TPL_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/network/iproute'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/iproute',
 	'define'	=> array(
 			'XIVO_TPL_WEBSERVICES_MODE'	=> 'restricted'));
 

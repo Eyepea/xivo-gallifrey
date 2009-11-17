@@ -68,9 +68,9 @@ class xivo_object_netiface extends xivo_object_abstract
 		return(parent::edit($id,$arr,$disable));
 	}
 
-	function exists_virtual($name)
+	function exists_link($name)
 	{
-		return($this->_dso->exists_virtual($name));
+		return($this->_dso->exists_link($name));
 	}
 }
 

@@ -127,28 +127,27 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 			default:
 				$action = 'list';
 
-				$rs = $this->_entity->get_all($disable,true,$order,$limit,$assoc);
+				$rs = $this->_entity->get_all($disable,true,$order,$limit);
 				$this->_cnt = $this->_entity->get_cnt();
 		}
 
-		if(empty($rs) === true)
+		if($rs === false || ($nb = count($rs)) === 0)
 			return(false);
 
 		$r = array();
 
-		foreach($rs as $key => $val)
+		for($i = 0;$i < $nb;$i++)
 		{
-			if(($nb_context = $this->_context->get_nb(array('entity' => $val['name']))) !== false)
-			{
-				$r[$key] = array();
-				$r[$key]['entity'] = $val;
-				$r[$key]['nb_context'] = $nb_context;
-			}
+			$r[$rs[$i]['id']]['entity'] = $rs[$i];
+
+			$ref = &$r[$rs[$i]['id']];
+			$ref['entity']['disable'] = (bool) $ref['entity']['disable'];
+			$ref['nb_context'] = dwho_ulongint($this->_context->get_nb(array('entity' => $rs[$i]['name'])));
 		}
 
 		if(empty($r) === true)
 			return(false);
-		else if($action !== 'list' && (bool) $assoc === false)
+		else if((bool) $assoc === false)
 			return(array_values($r));
 
 		return($r);

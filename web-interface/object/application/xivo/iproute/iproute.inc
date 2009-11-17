@@ -27,9 +27,14 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 	var $_iproute	= false;
 	var $_netiface	= false;
 
-	function xivo_application_xivo_object_iproute(&$xobj)
+	function xivo_application_xivo_object_iproute(&$xobj,&$dso)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
+
+		if(is_object($dso) === false)
+			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+
+		$this->_dso = &$dso;
 
 		if(($this->_iproute = &$this->_xobj->get_module('iproute')) === false
 		|| ($this->_netiface = &$this->_xobj->get_module('netiface')) === false)
@@ -72,28 +77,65 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 						$assoc));
 	}
 
-	function get_iproutes_list($disable=null,$order=null,$limit=null,$assoc=false)
+	function get_iproutes_search($search,$disable=null,$order=null,$limit=null,$assoc=false,$linked=true)
 	{
-		if(is_object($this->_netiface) === false)
+		return($this->_get_iproutes('search',$search,$disable,$order,$limit,$assoc,$linked));
+	}
+
+	function get_iproutes_list($disable=null,$order=null,$limit=null,$assoc=false,$linked=true)
+	{
+		return($this->_get_iproutes('list',null,$disable,$order,$limit,$assoc,$linked));
+	}
+
+	function _get_iproutes($action,$search='',$disable=null,$order=null,$limit=null,$assoc=false,$linked=true)
+	{
+		$search = strval($search);
+		$linked = (bool) $linked;
+
+		if($linked === true && is_object($this->_netiface) === false)
 		{
 			$this->_cnt = 0;
 			return(false);
 		}
 
-		$rs = $this->_iproute->get_all($disable,true,$order,$limit,$assoc);
-		$this->_cnt = $this->_iproute->get_cnt();
-
-		if(empty($rs) === true)
-			return(false);
-
-		foreach($rs as $key => $val)
+		switch($action)
 		{
-			$rs[$key]['linked'] = $this->_netiface->exists(
-								array('name'		=> $val['iface'],
-								      'hwtypeid'	=> 1));
+			case 'search':
+				$rs = $this->_dso->search($search,$disable,$order,$limit);
+				$this->_cnt = $this->_dso->get_cnt();
+				break;
+			case 'list':
+			default:
+				$action = 'list';
+
+				$rs = $this->_iproute->get_all($disable,true,$order,$limit);
+				$this->_cnt = $this->_iproute->get_cnt();
 		}
 
-		return($rs);
+		if($rs === false || ($nb = count($rs)) === 0)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			$r[$rs[$i]['id']] = $rs[$i];
+
+			$ref = &$r[$rs[$i]['id']];
+			$ref['disable'] = (bool) $ref['disable'];
+
+			if($linked === true)
+			{
+				$ref['linked'] = $this->_netiface->exists(
+								array('name'		=> $rs[$i]['iface'],
+								      'hwtypeid'	=> 1));
+			}
+		}
+
+		if(empty($r) === true)
+			return(false);
+		else if((bool) $assoc === false)
+			return(array_values($r));
 	}
 
 	function set_add($arr)
@@ -358,6 +400,26 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 			$this->_return['iproute'] = $r;
 
 		return($r);
+	}
+
+	function add_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_add($data) === false
+		|| $this->add() === false)
+			return(false);
+
+		return(true);
+	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
+
+		return(true);
 	}
 }
 

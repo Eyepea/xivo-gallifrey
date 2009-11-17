@@ -31,8 +31,8 @@ switch($act)
 	case 'add':
 		$result = $fm_save = null;
 
-		if(isset($_QR['name']) === true)
-			$name = $_QR['name'];
+		if(isset($_QR['id']) === true)
+			$name = $_QR['id'];
 		else
 			$name = null;
 
@@ -66,7 +66,7 @@ switch($act)
 		$dhtml->set_js('js/xivo/configuration/network/interface.js');
 		break;
 	case 'edit':
-		if(isset($_QR['name']) === false || ($info = $appnetiface->get($_QR['name'])) === false)
+		if(isset($_QR['id']) === false || ($info = $appnetiface->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 
 		$result = $fm_save = null;
@@ -93,7 +93,7 @@ switch($act)
 			uksort($interfaces,array(&$ifacesort,'str_usort'));
 		}
 
-		$_TPL->set_var('name',$info['netiface']['name']);
+		$_TPL->set_var('id',$info['netiface']['name']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appnetiface->get_elements());
@@ -106,7 +106,7 @@ switch($act)
 	case 'delete':
 		$param['page'] = $page;
 
-		if(isset($_QR['name']) === false || $appnetiface->get($_QR['name']) === false)
+		if(isset($_QR['id']) === false || $appnetiface->get($_QR['id']) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 
 		$appnetiface->delete();

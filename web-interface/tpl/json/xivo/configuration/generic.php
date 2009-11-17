@@ -18,25 +18,29 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','datastorage','sql.inc'),true);
+dwho::load_class('dwho_http');
+$http = new dwho_http();
 
-class xivo_object_netiface_sql extends xivo_object_abstract_sql
+if($this->get_var('act') === 'view')
+	$data = dwho_json::encode($this->get_var('info'));
+else
+	$data = dwho_json::encode($this->get_var('list'));
+
+if($data === false)
 {
-	function exists_link($name)
-	{
-		if(dwho_has_len($name) === false)
-			return(null);
-
-		$this->_dso->new_select($this->_table,array('name'));
-
-		// Test if exists a virtual interface
-		$this->_dso->wherebegin('name',$name.':');
-
-		// Test if exists a vlan-raw-device
-		$this->_dso->orwhere(array('vlan' => $name));
-
-		return($this->_dso->select_single());
-	}
+	$http->set_status(500);
+	$http->send(true);
 }
+
+$sum = $this->get_var('sum');
+
+if(isset($sum{0}) === true && $sum === md5($data))
+{
+	$http->set_status(304);
+	$http->send(true);
+}
+
+header(dwho_json::get_header());
+die($data);
 
 ?>

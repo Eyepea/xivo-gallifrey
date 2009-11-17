@@ -44,8 +44,8 @@ $form = &$this->get_module('form');
 			$form->hidden(array('name'	=> 'fm_send',
 					    'value'	=> 1)),
 
-			$form->hidden(array('name'	=> 'name',
-					    'value'	=> $this->get_var('name')));
+			$form->hidden(array('name'	=> 'id',
+					    'value'	=> $this->get_var('id')));
 
 		$this->file_include('bloc/xivo/configuration/network/interface/form');
 
