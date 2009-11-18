@@ -346,25 +346,25 @@ size: 76006473
 md5sum: 5beffe74f6dcd1efec1de74cc247b3be
 sha1sum: e584d67fb33eecba80b708dabd96aac47a1945fc
 
-# Siemens C470IP 021910000000
-[siemens_c470ip_02191]
+# Siemens C470IP 022140000000
+[siemens_c470ip_02214]
 brand: Siemens
 model: C470IP
-version: 191
-files: chagall191_02.bin
+version: 02214
+files: chagall214_02.bin
 
-# Siemens S675IP 021910000000
-[siemens_s675ip_02191]
+# Siemens S675IP 022140000000
+[siemens_s675ip_02214]
 brand: Siemens
 model: S675IP
-version: 191
-files: chagall191_02.bin
+version: 02214
+files: chagall214_02.bin
 
-[chagall191_02.bin]
-url: http://gigaset.siemens.com/chagall/2/chagall191_02.bin
+[chagall214_02.bin]
+url: http://gigaset.siemens.com/chagall/2/chagall214_02.bin
 size: 1835008
-md5sum: f85c4cca4f9a6b0072f3f8b342205066
-sha1sum: ac4bb09ca952b3db32dbd6cf42141052d40781d3
+md5sum: bd8c0cfc0d2007353c8f52d3cd20fc7c
+sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
 
 # Snom 300 7.3.7
 [sn300_737]

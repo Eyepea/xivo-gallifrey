@@ -28,6 +28,7 @@ import os
 import sha
 import logging
 import urllib2
+import socket
 import re
 
 from time import sleep
@@ -70,7 +71,7 @@ class SiemensHTTP:
         self.cj             = CookieJar()
         self.opener         = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 
-    def request(self, host, page, params=None):
+    def request(self, host, page, params=None, timeout=None):
         "Send a HTTP request to phone."
 
         if params is not None:
@@ -80,7 +81,17 @@ class SiemensHTTP:
 
         log.info("HTTP Request: %r", url)
 
-        return self.opener.open(urllib2.Request(url, params))
+        deftimeout = socket.getdefaulttimeout()
+
+        if timeout is not None:
+            socket.setdefaulttimeout(timeout)
+
+        res = self.opener.open(urllib2.Request(url, params))
+
+        if timeout is not None:
+            socket.setdefaulttimeout(deftimeout)
+
+        return res
 
     @staticmethod
     def set_ip_configuration_option(rcp, option, value):
@@ -102,7 +113,7 @@ class SiemensHTTP:
     def _prepare_ip_configuration(rcp):
         "Prepare and verify ip configuration for network options."
         if not rcp.has_option('ip_configuration', 'ip_address_type') \
-            or rcp.get('ip_configuration', 'ip_address_type') != '0':
+           or rcp.get('ip_configuration', 'ip_address_type') != '0':
             return False
 
         options = (('ip_address', False, network.is_ipv4_address_valid),
@@ -141,7 +152,7 @@ class SiemensHTTP:
         rcp = Siemens.get_config(self.common_dir, model, macaddr)
 
         if rcp.has_option('miscellaneous', 'user_firmware_url') \
-            and rcp.has_option('miscellaneous', 'user_firmware_filename'):
+           and rcp.has_option('miscellaneous', 'user_firmware_filename'):
             rcp.set('miscellaneous',
                     'user_firmware_url',
                     "%s/%s" % (rcp.get('miscellaneous', 'user_firmware_url').rstrip('/'),
@@ -184,8 +195,8 @@ class SiemensHTTP:
 
     def login(self, host):
         "Login from web-interface."
-        params  = { 'language': 1,
-                    'password': self.common_pin}
+        params  = {'language':  1,
+                   'password':  self.common_pin}
 
         request = self.request(host, 'login.html', params)
 
@@ -269,7 +280,7 @@ class Siemens(PhoneVendorMixin):
     SIEMENS_MODELS          = ('C470IP', 'S675IP')
     SIEMENS_MACADDR_PREFIX  = ('1:00:01:e3', '1:00:13:a9', '1:00:21:04')
     SIEMENS_COMMON_PIN      = '0000'
-    SIEMENS_FIRMWARE        = '021910000000'
+    SIEMENS_FIRMWARE        = '022140000000'
 
     SIEMENS_COMMON_DIR = None
 
@@ -375,9 +386,9 @@ class Siemens(PhoneVendorMixin):
     def do_upgradefw(self, force=True):
         "Entry point to send the firmware upgrade command to the phone."
 
-        model = self.phone['model']
-
-        if self.phone.get('from') == 'dhcp':
+        if self.phone.get('from') != 'dhcp':
+            model = self.phone['model']
+        else:
             model = self.discover_model(self.SIEMENS_COMMON_DIR,
                                         self.SIEMENS_COMMON_PIN,
                                         self.phone['ipv4'])
@@ -387,18 +398,18 @@ class Siemens(PhoneVendorMixin):
         rcp = Siemens.get_config(self.SIEMENS_COMMON_DIR, model, self.phone['macaddr'])
 
         if not force:
-            if not self.phone['firmware'] or self.phone['firmware'] == 'unknown':
+            if self.phone.get('firmware') \
+               and self.phone['firmware'] != 'unknown' \
+               and version.LooseVersion(self.SIEMENS_FIRMWARE) <= version.LooseVersion(self.phone['firmware']):
                 return False
-            elif version.LooseVersion(self.SIEMENS_FIRMWARE) <= version.LooseVersion(self.phone['firmware']):
-                return False
-            elif not rcp.has_option('miscellaneous', 'automatic_update') \
-                 or rcp.get('miscellaneous', 'automatic_update') == '0':
+            elif not rcp.has_option('miscellaneous', 'automatic_upgradefw') \
+                 or rcp.get('miscellaneous', 'automatic_upgradefw') == '0':
                 return False
 
-        params = {'execute_fw_download' : '1'}
+        params = {'execute_fw_download': '1'}
 
         if rcp.has_option('miscellaneous', 'user_firmware_url') \
-        and rcp.has_option('miscellaneous', 'user_firmware_filename'):
+           and rcp.has_option('miscellaneous', 'user_firmware_filename'):
             params['user_firmware_url'] = "%s/%s" % (rcp.get('miscellaneous', 'user_firmware_url').rstrip('/'),
                                                      rcp.get('miscellaneous', 'user_firmware_filename').lstrip('/'))
         elif rcp.has_option('miscellaneous', 'data_server'):
@@ -583,18 +594,13 @@ class Siemens(PhoneVendorMixin):
         if provinfo['sha1sum'] == '0' or not self.phone.get('ipv4'):
             return
 
-        phone_file = os.path.join(self.SIEMENS_COMMON_DIR,
-                                  Siemens.get_config_filename(self.phone['model'],
-                                                              self.phone['macaddr'])[1])
-
-        if not os.access(phone_file, os.F_OK):
-            http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
-            try:
-                request = http.request(self.phone['ipv4'], 'login.html')
-                request.close()
-            except urllib2.URLError, e:
-                log.exception(str(e))
-                return
+        http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+        try:
+            request = http.request(self.phone['ipv4'], 'login.html', None, 10)
+            request.close()
+        except urllib2.URLError, e:
+            log.exception("Unable to connect to host. (host: %r, error: %r)", self.phone['ipv4'], str(e))
+            return
 
         self.__generate(provinfo)
 
@@ -606,10 +612,18 @@ class Siemens(PhoneVendorMixin):
         elif self.phone.get('from') == 'dhcp':
             return
 
+        regenerate = False
+
         try:
             self.__provi()
+
+            if self.phone.get('from') == 'dhcp' and self.do_upgradefw(False):
+                regenerate = True
         except Exception, e: # pylint: disable-msg=W0703
+            regenerate = True
             log.exception(str(e))
+
+        if regenerate:
             log.debug("Trying to force provisioning on next reboot.")
             provinfo['sha1sum'] = '1'
             self.__generate(provinfo)
