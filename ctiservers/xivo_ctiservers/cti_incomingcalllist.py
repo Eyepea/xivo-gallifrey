@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 # XIVO Daemon
 
 __version__   = '$Revision$'
