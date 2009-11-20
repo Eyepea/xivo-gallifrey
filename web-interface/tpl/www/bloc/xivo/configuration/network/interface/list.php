@@ -55,10 +55,12 @@ $page = $url->pager($pager['pages'],
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
+		<th class="th-center"><?=$this->bbf('col_devname');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwtype');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwaddress');?></th>
 		<th class="th-center"><?=$this->bbf('col_method');?></th>
 		<th class="th-center"><?=$this->bbf('col_address');?></th>
+		<th class="th-center"><?=$this->bbf('col_vlanid');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -66,7 +68,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="8" class="td-single"><?=$this->bbf('no_netiface');?></td>
+		<td colspan="10" class="td-single"><?=$this->bbf('no_netiface');?></td>
 	</tr>
 <?php
 	else:
@@ -77,17 +79,18 @@ $page = $url->pager($pager['pages'],
 			$netiface = &$list[$i]['netiface'];
 
 			$id = '';
-			$name = '';
+			$name = '-';
+			$devname = '';
 			$hwtype = '';
 			$hwtypeid = 0;
 			$hwaddress = '-';
 			$method = '-';
 			$address = '-';
+			$vlanid = '-';
 			$icon = 'unavailable';
 
 			if(empty($netinfo) === false):
-				$id = $netinfo['interface'];
-				$name = $netinfo['interface'];
+				$devname = $netinfo['interface'];
 
 				if($netinfo['hwtype'] !== false):
 					$hwtype = $netinfo['hwtype'];
@@ -110,6 +113,7 @@ $page = $url->pager($pager['pages'],
 			if(empty($netiface) === false):
 				$id = $netiface['name'];
 				$name = $netiface['name'];
+				$devname = $netiface['devname'];
 				$hwtype = $netiface['hwtype'];
 				$hwtypeid = dwho_uint($netiface['hwtypeid']);
 				$method = $this->bbf('method',$netiface['method']);
@@ -118,9 +122,19 @@ $page = $url->pager($pager['pages'],
 					$address = $netiface['address'];
 				endif;
 
+				if(dwho_has_len($netiface['vlanid']) === true):
+					$vlanid = $netiface['vlanid'];
+				endif;
+
 				if($netiface['disable'] === true):
 					$icon = 'disable';
 				endif;
+			endif;
+
+			if($hwtypeid === 1):
+				$displayname = $name;
+			else:
+				$displayname = $devname;
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
@@ -133,23 +147,25 @@ $page = $url->pager($pager['pages'],
 						 'id'		=> 'it-netiface-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false,
-						 'disabled'	=> ($hwtypeid !== 1)));?>
+						 'disabled'	=> ($hwtypeid !== 1 || dwho_has_len($id) === false)));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($displayname);?>">
 			<label for="it-netiface-<?=$i?>" id="lb-netiface-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
-					dwho_htmlen(dwho_trunc($name,25,'...',false));
+					dwho_htmlen(dwho_trunc($displayname,10,'...',false));
 ?>
 			</label>
 		</td>
+		<td title="<?=dwho_alttitle($devname);?>"><?=dwho_htmlen(dwho_trunc($devname,10,'...',false));?></td>
 		<td><?=$this->bbf('network_arphrd',$hwtype);?></td>
 		<td><?=$hwaddress?></td>
 		<td><?=$method?></td>
 		<td><?=$address?></td>
+		<td><?=$vlanid?></td>
 		<td class="td-right" colspan="2">
 <?php
-			if(dwho_uint($hwtypeid) !== 1):
+			if($hwtypeid !== 1):
 				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
 			elseif(empty($netiface) === true):
 				echo	$url->href_html($url->img_html('img/site/button/add.gif',
@@ -157,7 +173,7 @@ $page = $url->pager($pager['pages'],
 								       'border="0"'),
 							'xivo/configuration/network/interface',
 							array('act'		=> 'add',
-							      'id'		=> $id,
+							      'devname'		=> $devname,
 							      'hwtypeid'	=> $hwtypeid),
 							null,
 							$this->bbf('opt_add'));
@@ -194,7 +210,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="6"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="8"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

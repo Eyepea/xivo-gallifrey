@@ -122,6 +122,8 @@ CREATE UNIQUE INDEX ldapserver__uidx__host_port ON ldapserver(host,port);
 DROP TABLE netiface;
 CREATE TABLE netiface (
  name varchar(64) NOT NULL DEFAULT '',
+ devname varchar(64) NOT NULL DEFAULT '',
+ networktype char(4) NOT NULL,
  hwtypeid smallint unsigned NOT NULL DEFAULT 65534,
  type char(5) NOT NULL,
  family varchar(5) NOT NULL,
@@ -131,8 +133,8 @@ CREATE TABLE netiface (
  broadcast varchar(39),
  gateway varchar(39),
  mtu smallint unsigned,
- vlan varchar(64),
- networktype char(4) NOT NULL,
+ vlanrawdevice varchar(64),
+ vlanid smallint unsigned,
  advconfig text NOT NULL,
  disable tinyint(1) NOT NULL DEFAULT 0,
  dcreate integer unsigned NOT NULL DEFAULT 0,
@@ -141,6 +143,7 @@ CREATE TABLE netiface (
 );
 
 CREATE INDEX netiface__idx__hwtypeid ON netiface(hwtypeid);
+CREATE INDEX netiface__idx__networktype ON netiface(networktype);
 CREATE INDEX netiface__idx__type ON netiface(type);
 CREATE INDEX netiface__idx__family ON netiface(family);
 CREATE INDEX netiface__idx__method ON netiface(method);
@@ -149,8 +152,10 @@ CREATE INDEX netiface__idx__netmask ON netiface(netmask);
 CREATE INDEX netiface__idx__broadcast ON netiface(broadcast);
 CREATE INDEX netiface__idx__gateway ON netiface(gateway);
 CREATE INDEX netiface__idx__mtu ON netiface(mtu);
-CREATE INDEX netiface__idx__vlan ON netiface(vlan);
-CREATE INDEX netiface__idx__networktype ON netiface(networktype);
+CREATE INDEX netiface__idx__vlanrawdevice ON netiface(vlanrawdevice);
+CREATE INDEX netiface__idx__vlanid ON netiface(vlanid);
+CREATE INDEX netiface__idx__disable ON netiface(disable);
+CREATE UNIQUE INDEX netiface__uidx__devname ON netiface(devname);
 
 
 DROP TABLE server;

@@ -4,11 +4,17 @@ Interfaces > Ajouter
 ; smenu_general
 Général
 
+; smenu_vlan
+VLAN
+
 ; smenu_advanced
 Avancé
 
 ; fm_name
 Nom :
+
+; fm_devname
+Nom de l'interface :
 
 ; fm_networktype
 Type de réseau :
@@ -43,8 +49,14 @@ Passerelle par défaut :
 ; fm_mtu
 MTU :
 
-; fm_vlan
+; fm_vlanrawdevice
 Interface physique du VLAN :
+
+; fm_vlanid
+ID du VLAN :
+
+; no_available_physical_interface
+Aucune interface physique disponible.
 
 ; fm_description
 Description :

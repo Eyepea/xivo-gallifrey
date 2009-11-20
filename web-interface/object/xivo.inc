@@ -23,6 +23,7 @@ class xivo_object
 	var $_conf		= array();
 	var $_module		= array();
 	var $_application	= array();
+	var $_identity		= array();
 	var $_dso		= null;
 	var $_dsoconf		= array();
 
@@ -53,6 +54,59 @@ class xivo_object
 		array_unshift($arr,dirname(__FILE__).DWHO_SEP_DIR.'xivo');
 
 		return(dwho_file::required($arr,$once,$includable));
+	}
+
+	function _load_identity_class($module)
+	{
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
+					   'xivo',
+					   $module);
+
+		$class = 'xivo_object_'.$module.'_identity';
+
+		if(dwho_file::load_file('identity.inc',$dir,true) === false
+		|| class_exists($class) === false)
+			return(false);
+
+		return($class);
+	}
+
+	function _load_identity($module)
+	{
+		if($this->chk_module_enable($module) === false)
+		{
+			trigger_error('Invalid module '.$module.' in XIVO Object to load identity class',E_USER_ERROR);
+			return(false);
+		}
+		else if(isset($this->_identity[$module]) === true)
+			return(true);
+		else if(($class = $this->_load_identity_class($module)) === false)
+		{
+			trigger_error($module.' identity class does not exist',E_USER_ERROR);
+			return(false);
+		}
+		else
+			$this->_identity[$module] = new $class($this);
+
+		return(true);
+	}
+
+	function &get_identity($module)
+	{
+		$r = false;
+
+		if($this->_load_identity($module) === true)
+			$r = &$this->_identity[$module];
+
+		return(($ref = &$r));
+	}
+
+	function identity($module,$arr,$full=true)
+	{
+		if(($identity = &$this->get_identity($module)) === false)
+			return(false);
+
+		return($identity->mk_identity($arr,$full));
 	}
 
 	function load_module_class($module)

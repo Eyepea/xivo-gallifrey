@@ -193,8 +193,8 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 								array('context' => $info['context']['name']))) === false)
 				$info['contextnumbers'] = false;
 
-			if($this->_contextnummember->get_where(array('context' => $info['context']['name'])) !== false
-			|| $this->_contextmember->get_where(array('context' => $info['context']['name'])) !== false)
+			if($this->_contextnummember->exists(array('context' => $info['context']['name'])) === true
+			|| $this->_contextmember->exists(array('context' => $info['context']['name'])) === true)
 				$info['deletable'] = false;
 			else
 				$info['deletable'] = true;

@@ -39,19 +39,36 @@ var xivo_fm_method = {
 
 xivo_attrib_register('fm_method',xivo_fm_method);
 
+var xivo_fm_vlanrawdevice = {
+	'it-vlanid':	{'property':	[{disabled: true,className: 'it-disabled'},
+					 {disabled: false,className: 'it-enabled'}]}};
+
+xivo_attrib_register('fm_vlanrawdevice',xivo_fm_vlanrawdevice);
+
 function xivo_network_chg_method()
 {
 	if((method = dwho_eid('it-method')) !== false)
 		xivo_chg_attrib('fm_method','fd-address',Number(method.value === 'static'));
 }
 
+function xivo_network_chg_vlanrawdevice()
+{
+	if((vlanrawdevice = dwho_eid('it-vlanrawdevice')) !== false)
+		xivo_chg_attrib('fm_vlanrawdevice','it-vlanid',Number(vlanrawdevice.value !== ''));
+}
+
 function xivo_network_onload()
 {
 	xivo_network_chg_method();
+	xivo_network_chg_vlanrawdevice();
 
 	dwho.dom.add_event('change',
 			   dwho_eid('it-method'),
 			   xivo_network_chg_method);
+	
+	dwho.dom.add_event('change',
+			   dwho_eid('it-vlanrawdevice'),
+			   xivo_network_chg_vlanrawdevice);
 }
 
 dwho.dom.set_onload(xivo_network_onload);

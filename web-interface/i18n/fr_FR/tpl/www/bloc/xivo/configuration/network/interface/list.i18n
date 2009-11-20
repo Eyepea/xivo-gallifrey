@@ -3,6 +3,9 @@
 ; col_name
 Nom
 
+; col_devname
+Nom de l'interface
+
 ; col_hwtype
 Type de matériel
 
@@ -20,6 +23,9 @@ DHCP
 
 ; col_address
 Adresse
+
+; col_vlanid
+ID du VLAN
 
 ; no_netiface
 Aucune interface trouvée

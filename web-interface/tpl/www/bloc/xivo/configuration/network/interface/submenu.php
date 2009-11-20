@@ -32,6 +32,16 @@
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-2"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-vlan');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_vlan');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-3"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"

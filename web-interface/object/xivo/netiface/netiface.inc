@@ -27,6 +27,7 @@ class xivo_object_netiface extends xivo_object_abstract
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
+	var $_identity		= false;
 
 	function xivo_object_netiface(&$xobj,&$dso)
 	{
@@ -36,10 +37,13 @@ class xivo_object_netiface extends xivo_object_abstract
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
 		$this->_dso = &$dso;
+		$this->_identity = &$this->_xobj->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
+		$this->_identity->_prepare_identity($data);
+
 		$data['disable'] = (bool) $data['disable'];
 
 		return($data);
@@ -55,6 +59,9 @@ class xivo_object_netiface extends xivo_object_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
+		if(isset($arr['devname']) === true)
+			$arr['devname'] = strtolower($arr['devname']);
+
 		return(parent::add($arr,$id));
 	}
 
@@ -65,12 +72,15 @@ class xivo_object_netiface extends xivo_object_abstract
 		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
+		if(isset($arr['devname']) === true)
+			$arr['devname'] = strtolower($arr['devname']);
+
 		return(parent::edit($id,$arr,$disable));
 	}
 
-	function exists_link($name)
+	function exists_link($devname)
 	{
-		return($this->_dso->exists_link($name));
+		return($this->_dso->exists_link($devname));
 	}
 }
 

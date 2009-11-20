@@ -29,12 +29,7 @@ $appnetiface = &$_XOBJ->get_application('netiface');
 switch($act)
 {
 	case 'add':
-		$result = $fm_save = null;
-
-		if(isset($_QR['id']) === true)
-			$name = $_QR['id'];
-		else
-			$name = null;
+		$result = $fm_save = $devname = null;
 
 		if(isset($_QR['fm_send']) === true)
 		{
@@ -43,23 +38,26 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appnetiface->get_result('netiface');
+				$devname = $appnetiface->get_result_var('netiface','devname');
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 		}
+		else if(isset($_QR['devname']) === true)
+			$devname = $_QR['devname'];
 
-		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$name)) !== false)
+		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$devname)) !== false)
 		{
 			dwho::load_class('dwho_sort');
 			$ifacesort = new dwho_sort();
 			uksort($interfaces,array(&$ifacesort,'str_usort'));
 		}
 
-		$_TPL->set_var('name',$name);
+		$_TPL->set_var('devname',$devname);
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
-		$_TPL->set_var('interfaces',$interfaces);
 		$_TPL->set_var('element',$appnetiface->get_elements());
+		$_TPL->set_var('interfaces',$interfaces);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
@@ -86,7 +84,7 @@ switch($act)
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 		}
 
-		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$info['netiface']['name'])) !== false)
+		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$return['devname'])) !== false)
 		{
 			dwho::load_class('dwho_sort');
 			$ifacesort = new dwho_sort();

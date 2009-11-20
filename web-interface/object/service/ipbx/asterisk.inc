@@ -61,15 +61,15 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($this->_discuss->cmd($cmd,$recv));
 	}
 
-	function _load_identity_class($name)
+	function _load_identity_class($module)
 	{
 		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'service',
 					   $this->_type,
 					   $this->_name,
-					   $name);
+					   $module);
 
-		$class = 'xivo_service_'.$this->_name.'_'.$name.'_identity';
+		$class = 'xivo_service_'.$this->_name.'_'.$module.'_identity';
 
 		if(dwho_file::load_file('identity.inc',$dir,true) === false
 		|| class_exists($class) === false)
@@ -78,32 +78,32 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($class);
 	}
 
-	function _load_identity($name)
+	function _load_identity($module)
 	{
-		if($this->chk_module_enable($name) === false)
+		if($this->chk_module_enable($module) === false)
 		{
-			trigger_error('Invalid module in '.$name.' '.$this->_name.' to load identity class',E_USER_ERROR);
+			trigger_error('Invalid module in '.$module.' '.$this->_name.' to load identity class',E_USER_ERROR);
 			return(false);
 		}
-		else if(isset($this->_identity[$name]) === true)
+		else if(isset($this->_identity[$module]) === true)
 			return(true);
-		else if(($class = $this->_load_identity_class($name)) === false)
+		else if(($class = $this->_load_identity_class($module)) === false)
 		{
-			trigger_error($name.' identity class does not exist in '.$this->_name,E_USER_ERROR);
+			trigger_error($module.' identity class does not exist in '.$this->_name,E_USER_ERROR);
 			return(false);
 		}
 		else
-			$this->_identity[$name] = new $class($this);
+			$this->_identity[$module] = new $class($this);
 
 		return(true);
 	}
 
-	function &get_identity($name)
+	function &get_identity($module)
 	{
 		$r = false;
 
-		if($this->_load_identity($name) === true)
-			$r = &$this->_identity[$name];
+		if($this->_load_identity($module) === true)
+			$r = &$this->_identity[$module];
 
 		return(($ref = &$r));
 	}

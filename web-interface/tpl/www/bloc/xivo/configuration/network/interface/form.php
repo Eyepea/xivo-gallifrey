@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,7 +38,14 @@ endif;
 				  'labelid'	=> 'name',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['name']['default'],
-				  'value'	=> $this->get_var_default('info','name',$this->get_var('name')))),
+				  'value'	=> $info['name'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_devname'),
+				  'name'	=> 'devname',
+				  'labelid'	=> 'devname',
+				  'size'	=> 15,
+				  'default'	=> $element['netiface']['devname']['default'],
+				  'value'	=> $this->get_var_default('info','devname',$this->get_var('devname')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_networktype'),
 				    'name'	=> 'networktype',
@@ -94,18 +101,6 @@ endif;
 				  'size'	=> 10,
 				  'default'	=> $element['netiface']['mtu']['default'],
 				  'value'	=> $info['mtu']));
-
-		if(($interfaces = $this->get_var('interfaces')) !== false):
-			echo	$form->select(array('desc'	=> $this->bbf('fm_vlan'),
-						    'name'	=> 'vlan',
-						    'labelid'	=> 'vlan',
-						    'empty'	=> true,
-						    'key'	=> 'name',
-						    'altkey'	=> 'name',
-						    'default'	=> $element['netiface']['vlan']['default'],
-						    'selected'	=> $info['vlan']),
-					      $interfaces);
-		endif;
 	?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -120,6 +115,33 @@ endif;
 					 'default'	=> $element['netiface']['description']['default']),
 				   $info['description']);?>
 	</div>
+</div>
+
+<div id="sb-part-vlan" class="b-nodisplay">
+<?php
+	if(($interfaces = $this->get_var('interfaces')) !== false):
+		echo	$form->select(array('desc'	=> $this->bbf('fm_vlanrawdevice'),
+					    'name'	=> 'vlanrawdevice',
+					    'labelid'	=> 'vlanrawdevice',
+					    'empty'	=> true,
+					    'key'	=> 'identity',
+					    'altkey'	=> 'name',
+					    'default'	=> $element['netiface']['vlanrawdevice']['default'],
+					    'selected'	=> $info['vlanrawdevice']),
+				      $interfaces),
+
+			$form->text(array('desc'	=> $this->bbf('fm_vlanid'),
+					  'name'	=> 'vlanid',
+					  'labelid'	=> 'vlanid',
+					  'size'	=> 10,
+					  'default'	=> $element['netiface']['vlanid']['default'],
+					  'value'	=> $info['vlanid']));
+	else:
+		echo	'<div class="txt-center">',
+			$this->bbf('no_available_physical_interface'),
+			'</div>';		
+	endif;
+?>
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">

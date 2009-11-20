@@ -97,7 +97,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=dwho_htmlen(dwho_trunc($ref['displayname'],25,'...',false));?></td>
+		<td title="<?=dwho_alttitle($ref['displayname']);?>"><?=dwho_htmlen(dwho_trunc($ref['displayname'],25,'...',false));?></td>
 		<td><?=(dwho_has_len($ref['phonenumber']) === true ? $ref['phonenumber'] : '-')?></td>
 		<td><?=(dwho_has_len($ref['email']) === true ? $ref['email'] : '-')?></td>
 		<td class="td-right" colspan="2">

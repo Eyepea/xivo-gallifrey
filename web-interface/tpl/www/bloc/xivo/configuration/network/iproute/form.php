@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 		echo	$form->select(array('desc'	=> $this->bbf('fm_iface'),
 					    'name'	=> 'iface',
 					    'labelid'	=> 'iface',
-					    'key'	=> 'name',
+					    'key'	=> 'identity',
 					    'altkey'	=> 'name',
 					    'default'	=> $element['iproute']['iface']['default'],
 					    'selected'	=> $info['iface']),

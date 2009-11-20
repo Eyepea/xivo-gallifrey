@@ -27,6 +27,7 @@ class xivo_object_entity extends xivo_object_abstract
 	var $_filter		= false;
 	var $_origin		= false;
 	var $_origin_list	= false;
+	var $_identity		= false;
 
 	function xivo_object_entity(&$xobj,&$dso)
 	{
@@ -36,12 +37,14 @@ class xivo_object_entity extends xivo_object_abstract
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
 		$this->_dso = &$dso;
+		$this->_identity = &$this->_xobj->get_identity($this->_name);
 	}
 
 	function _prepare($data)
 	{
+		$this->_identity->_prepare_identity($data);
+
 		$data['disable'] = (bool) $data['disable'];
-		$data['identity'] = $data['displayname'].' ('.$data['name'].')';
 
 		return($data);
 	}

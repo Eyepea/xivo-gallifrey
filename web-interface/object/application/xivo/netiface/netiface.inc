@@ -83,10 +83,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		while(list($key,$val) = each($rs))
 		{
-			if(isset($netinfo[$val['name']]) === false
-			|| (bool) $netinfo[$val['name']]['physical'] === false
+			if(isset($netinfo[$val['devname']]) === false
+			|| (bool) $netinfo[$val['devname']]['physical'] === false
 			|| $this->_sysnet->netinfo_hwtype_id2name($val['hwtypeid']) === false
-			|| (int) $val['hwtypeid'] !== (int) $netinfo[$val['name']]['hwtypeid'])
+			|| (int) $val['hwtypeid'] !== (int) $netinfo[$val['devname']]['hwtypeid'])
 				unset($rs[$key]);
 		}
 
@@ -94,6 +94,152 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			return(false);
 
 		return($rs);
+	}
+
+	function normalize_interface_method($arr)
+	{
+		if(is_array($arr) === false
+		|| isset($arr['method'],$arr['hwtypeid']) === false
+		|| ($arr['hwtypeid'] = dwho_uint($arr['hwtypeid'])) !== 1)
+			return(false);
+
+		switch($arr['method'])
+		{
+			case 'dhcp':
+				$arr['address'] = null;
+				$arr['netmask'] = null;
+				$arr['broadcast'] = null;
+				$arr['gateway'] = null;
+				$arr['mtu'] = null;
+				break;
+			case 'static':
+				if(dwho_has_len($arr,'address') === false
+				|| dwho_has_len($arr,'netmask') === false)
+					return(false);
+				else if(dwho_has_len($arr,'broadcast') === true
+				&& dwho_network::ipv4_in_subnet($arr['broadcast'],
+								$arr['address'].'/'.$arr['netmask']) === false)
+					return(false);
+				else if(dwho_has_len($arr,'gateway') === true
+				&& dwho_network::ipv4_in_subnet($arr['gateway'],
+								$arr['address'].'/'.$arr['netmask']) === false)
+					return(false);
+				break;
+		}
+
+		return($arr);
+	}
+
+	function valid_interface($devname,$hwtypeid=null,$address=null,$vlanrawdevice=null,$vlanid=null,$name=null)
+	{
+		if($hwtypeid !== null && $hwtypeid !== 0 && ($hwtypeid = dwho_uint($hwtypeid)) === 0)
+			return(false);
+		else if($vlanid !== null && $vlanrawdevice === null)
+			return(false);
+
+		if($address !== null)
+		{
+			$where = array();
+			$where['address'] = $address;
+
+			if($name === null)
+			{
+				if($this->_netiface->exists($where) === true)
+					return(false);
+			}
+			else
+			{
+				if(($netiface = $this->_netiface->get_primary($where)) !== false
+				&& $name !== $netiface)
+					return(false);
+			}
+		}
+
+		if($this->_sysnet->netinfo_interface_is_virtual($devname) === true)
+		{
+			if($vlanrawdevice !== null)
+				return(false);
+
+			$realdevname = $this->_sysnet->netinfo_interface_realname($devname);
+
+			if($this->_sysnet->netinfo_interface_exists($realdevname) === false)
+				return(false);
+
+			$where = array();
+			$where['devname'] = $realdevname;
+
+			if($hwtypeid !== null)
+				$where['hwtypeid'] = $hwtypeid;
+
+			if($this->_netiface->exists($where) !== true)
+				return(false);
+
+			if($hwtypeid !== null
+			&& (int) $this->_sysnet->netinfo_hwtypeid($realdevname) !== $hwtypeid)
+				return(false);
+
+			return(true);
+		}
+		else if($vlanrawdevice !== null)
+		{
+			if($vlanid === null
+			|| $this->_sysnet->netinfo_interface_is_physical($vlanrawdevice) !== true
+			|| $this->_sysnet->netinfo_interface_is_physical($devname) === true
+			|| $this->_sysnet->netinfo_interface_is_virtual($devname) === true)
+				return(false);
+
+			$where = array();
+			$where['devname'] = $vlanrawdevice;
+
+			if($hwtypeid !== null)
+				$where['hwtypeid'] = $hwtypeid;
+
+			if($this->_netiface->exists($where) !== true)
+				return(false);
+
+			$where = array();
+			$where['vlanid'] = $vlanid;
+
+			if($hwtypeid !== null)
+				$where['hwtypeid'] = $hwtypeid;
+
+			if($name === null)
+			{
+				if($this->_netiface->exists($where) === true)
+					return(false);
+			}
+			else
+			{
+				if(($netiface = $this->_netiface->get_primary($where)) !== false
+				&& $name !== $netiface)
+					return(false);
+			}
+
+			if($hwtypeid !== null)
+			{
+				if((int) $this->_sysnet->netinfo_hwtypeid($vlanrawdevice) !== $hwtypeid)
+					return(false);
+				else if($this->_sysnet->netinfo_interface_exists($devname) === true
+				&& (int) $this->_sysnet->netinfo_hwtypeid($devname) !== $hwtypeid)
+					return(false);
+			}
+
+			return(true);
+		}
+		else if($this->_sysnet->netinfo_interface_exists($devname) === true)
+		{
+			if($hwtypeid === null)
+				return(true);
+			else if((int) $this->_sysnet->netinfo_hwtypeid($devname) !== $hwtypeid)
+					return(false);
+			else if(($info = $this->_netiface->get_where(array('devname' => $devname))) !== false
+			&& (int) $info['hwtypeid'] !== $hwtypeid)
+					return(false);
+
+			return(true);
+		}
+
+		return(false);
 	}
 
 	function get_netifaces_list($disable=null,$order=null,$limit=null,$assoc=false)
@@ -115,18 +261,22 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 					continue;
 				}
 
-				$r[$val['name']] = array('netinfo'	=> false,
-							 'netiface'	=> $val);
+				$key = $val['name'].'-'.$val['devname'];
 
-				$ref = &$r[$val['name']];
-				$ref['deletable'] = $this->_netiface->exists_link($val['name']) === false;
+				$r[$key] = array('netinfo'	=> false,
+						 'netiface'	=> $val);
+
+				$ref = &$r[$key];
 				$ref['netiface']['hwtype'] = $hwtype;
+				$ref['netiface']['identity'] = $this->_xobj->identity('netiface',$ref['netiface']);
 
-				if(isset($netinfo[$val['name']]) === true
-				&& (int) $val['hwtypeid'] === (int) $netinfo[$val['name']]['hwtypeid'])
+				$ref['deletable'] = $this->_netiface->exists_link($val['devname']) === false;
+
+				if(isset($netinfo[$val['devname']]) === true
+				&& (int) $val['hwtypeid'] === (int) $netinfo[$val['devname']]['hwtypeid'])
 				{
-					$ref['netinfo'] = $netinfo[$val['name']];
-					unset($netinfo[$val['name']]);
+					$ref['netinfo'] = $netinfo[$val['devname']];
+					unset($netinfo[$val['devname']]);
 				}
 			}
 		}
@@ -135,9 +285,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		{
 			foreach($netinfo as $val)
 			{
-				$r[$val['interface']] = array('netinfo'		=> $val,
-							      'netiface'	=> false,
-							      'deletable'	=> false);
+				$key = $val['interface'].'-'.$val['interface'];
+				$r[$key] = array('netinfo'	=> $val,
+						 'netiface'	=> false,
+						 'deletable'	=> false);
 				$this->_cnt++;
 			}
 		}
@@ -213,12 +364,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$this->_set_error('netiface',$this->_netiface->get_filter_error());
 			return(false);
 		}
-		else if($this->valid_interface($rs['name'],$rs['hwtypeid'],$rs['vlan']) === false)
-		{
-			$this->_set_result('netiface',$rs);
-			$this->_set_error('netiface','interface not valid');
-			return(false);
-		}
 		else if(($normalized = $this->normalize_interface_method($rs)) === false)
 		{
 			$this->_set_result('netiface',$rs);
@@ -229,108 +374,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_set_result('netiface',$normalized);
 
 		return(true);
-	}
-
-	function valid_interface($name,$hwtypeid=null,$vlan=null)
-	{
-		if($hwtypeid !== null && $hwtypeid !== 0 && ($hwtypeid = dwho_uint($hwtypeid)) === 0)
-			return(false);
-		else if($this->_sysnet->netinfo_interface_is_virtual($name) === true)
-		{
-			if($vlan !== null)
-				return(false);
-
-			$realname = $this->_sysnet->netinfo_interface_realname($name);
-
-			if($this->_sysnet->netinfo_interface_exists($realname) === false)
-				return(false);
-
-			$where = array();
-			$where['name'] = $realname;
-
-			if($hwtypeid !== null)
-				$where['hwtypeid'] = $hwtypeid;
-
-			if($this->_netiface->get_where($where) === false)
-				return(false);
-
-			if($hwtypeid !== null
-			&& (int) $this->_sysnet->netinfo_hwtypeid($realname) !== $hwtypeid)
-				return(false);
-
-			return(true);
-		}
-		else if($vlan !== null)
-		{
-			if($this->_sysnet->netinfo_interface_is_physical($vlan) !== true
-			|| $this->_sysnet->netinfo_interface_is_physical($name) === true
-			|| $this->_sysnet->netinfo_interface_is_virtual($name) === true)
-				return(false);
-
-			$where = array();
-			$where['name'] = $vlan;
-
-			if($hwtypeid !== null)
-				$where['hwtypeid'] = $hwtypeid;
-
-			if($this->_netiface->get_where($where) === false)
-				return(false);
-
-			if($hwtypeid !== null)
-			{
-				if((int) $this->_sysnet->netinfo_hwtypeid($vlan) !== $hwtypeid)
-					return(false);
-				else if($this->_sysnet->netinfo_interface_exists($name) === true
-				&& (int) $this->_sysnet->netinfo_hwtypeid($name) !== $hwtypeid)
-					return(false);
-			}
-
-			return(true);
-		}
-		else if($this->_sysnet->netinfo_interface_exists($name) === true)
-		{
-			if($hwtypeid === null)
-				return(true);
-			else if((int) $this->_sysnet->netinfo_hwtypeid($name) !== $hwtypeid)
-					return(false);
-			else if(($info = $this->_netiface->get($name)) !== false
-			&& (int) $info['hwtypeid'] !== $hwtypeid)
-					return(false);
-
-			return(true);
-		}
-
-		return(false);
-	}
-
-	function normalize_interface_method($arr)
-	{
-		if(is_array($arr) === false
-		|| isset($arr['method'],$arr['hwtypeid']) === false
-		|| ($hwtypeid = dwho_uint($arr['hwtypeid'])) !== 1)
-			return(false);
-
-		switch($arr['method'])
-		{
-			case 'dhcp':
-				$arr['address'] = null;
-				$arr['netmask'] = null;
-				$arr['broadcast'] = null;
-				$arr['gateway'] = null;
-				$arr['mtu'] = null;
-				break;
-			case 'static':
-				if(dwho_has_len($arr,'address') === false
-				|| dwho_has_len($arr,'netmask') === false)
-					return(false);
-				else if(dwho_has_len($arr,'gateway') === true
-				&& dwho_network::ipv4_in_subnet($arr['gateway'],
-								$arr['address'].'/'.$arr['netmask']) === false)
-					return(false);
-				break;
-		}
-
-		return($arr);
 	}
 
 	function add()
@@ -352,7 +395,12 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	function add_netiface()
 	{
 		if(($rs = $this->get_result('netiface')) === null
-		|| $rs === false)
+		|| $rs === false
+		|| $this->valid_interface($rs['devname'],
+					  $rs['hwtypeid'],
+					  $rs['address'],
+					  $rs['vlanrawdevice'],
+					  $rs['vlanid']) === false)
 			return(false);
 
 		$this->_return['netiface'] = $this->_netiface->add($rs);
@@ -383,10 +431,16 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	{
 		if(dwho_issa('netiface',$this->_info) === false
 		|| ($rs = $this->get_result('netiface')) === null
-		|| $rs === false)
+		|| $rs === false
+		|| $this->valid_interface($rs['devname'],
+					  $rs['hwtypeid'],
+					  $rs['address'],
+					  $rs['vlanrawdevice'],
+					  $rs['vlanid'],
+					  $this->_info['netiface']['name']) === false)
 			return(false);
-		else if(strcmp($rs['name'],$this->_info['netiface']['name']) !== 0
-		&& $this->_netiface->exists_link($this->_info['netiface']['name']) !== false)
+		else if(strcmp($rs['devname'],$this->_info['netiface']['devname']) !== 0
+		&& $this->_netiface->exists_link($this->_info['netiface']['devname']) !== false)
 			return(false);
 
 		$rs['disable'] = $this->_info['netiface']['disable'];

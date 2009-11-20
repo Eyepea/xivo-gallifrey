@@ -18,26 +18,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','datastorage','sql.inc'),true);
-
-class xivo_object_netiface_sql extends xivo_object_abstract_sql
+class xivo_object_entity_identity
 {
-	var $_unique	= array('name','devname');
-
-	function exists_link($devname)
+	function _prepare_identity(&$data)
 	{
-		if(dwho_has_len($devname) === false)
-			return(null);
+		$data['identity'] = $data['displayname'].' ('.$data['name'].')';
 
-		$this->_dso->new_select($this->_table,array('devname'));
+		return($data);
+	}
 
-		// Test if exists a virtual interface
-		$this->_dso->wherebegin('devname',$devname.':');
+	function mk_identity($arr)
+	{
+		if(is_array($arr) === false
+		|| isset($arr['name'],$arr['displayname']) === false)
+			return(false);
 
-		// Test if exists a vlan-raw-device
-		$this->_dso->orwhere(array('vlanrawdevice' => $devname));
+		$this->_prepare_identity($arr);
 
-		return($this->_dso->select_single());
+		return($arr['identity']);
 	}
 }
 

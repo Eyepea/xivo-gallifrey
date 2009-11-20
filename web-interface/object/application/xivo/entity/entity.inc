@@ -142,6 +142,7 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 
 			$ref = &$r[$rs[$i]['id']];
 			$ref['entity']['disable'] = (bool) $ref['entity']['disable'];
+			$ref['entity']['identity'] = $this->_xobj->identity('entity',$ref['entity']);
 			$ref['nb_context'] = dwho_ulongint($this->_context->get_nb(array('entity' => $rs[$i]['name'])));
 		}
 
