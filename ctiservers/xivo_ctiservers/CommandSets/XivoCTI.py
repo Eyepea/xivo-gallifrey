@@ -939,7 +939,7 @@ class XivoCTICommand(BaseCommand):
         for vitem in vlist:
             try:
                 if not vitem.get('commented'):
-                    lvlist[vitem.get('id')] = { 'mailbox' :  vitem.get('mailbox'),
+                    lvlist[vitem.get('uniqueid')] = { 'mailbox' :  vitem.get('mailbox'),
                                                 'context' :  vitem.get('context'),
                                                 'fullname' : vitem.get('fullname'),
                                                 'password' : vitem.get('password'),
@@ -3006,6 +3006,7 @@ class XivoCTICommand(BaseCommand):
                                      'calleridname' : calleridname,
                                      'fromcalleridnum' : fromcalleridnum,
                                      'fromcalleridname' : fromcalleridname } }
+            #log.info('%s PARKEDCALL sending %s' % (astid, self.__cjson_encode__(tosend)))
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
             return
     
@@ -3015,9 +3016,11 @@ class XivoCTICommand(BaseCommand):
             exten   = event.get('Exten')
             uid     = event.get('Uniqueid')
             uidfrom = event.get('UniqueidFrom')
+            callerid = event.get('CallerID')
+            calleridname = event.get('CallerIDName')
             (channel, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, channel, uid, None, None)
             (cfrom, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, cfrom, uidfrom, None, None)
-            log.info('%s UNPARKEDCALL %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten))
+            log.info('%s UNPARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten, callerid, calleridname))
 
             phoneidsrc = self.__phoneid_from_channel__(astid, cfrom)
             uinfo = self.__userinfo_from_phoneid__(astid, phoneidsrc)
