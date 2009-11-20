@@ -1292,6 +1292,9 @@ class XivoCTICommand(BaseCommand):
                 break
         return [pf, country]
     
+    def sendsheet(self, eventtype, astid, context):
+        self.__sheet_alert__(eventtype, astid, context, {}, {}, None)
+
     def __sheet_construct__(self, where, astid, context, event, extraevent):
         actionopt = self.sheet_actions.get(where)
         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
@@ -4962,7 +4965,8 @@ class XivoCTICommand(BaseCommand):
                     # XXX define capas ?
                     fullstat = []
                     for uinfo in self.ulist_ng.keeplist.itervalues():
-                        if self.__check_astid_context__(userinfo, uinfo.get('astid')):
+                        #if self.__check_astid_context__(userinfo, uinfo.get('astid')):
+                        if self.__check_astid_context__(userinfo, uinfo.get('astid'), uinfo.get('context')):
                             duinfo = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                             icapaid = uinfo.get('capaid')
                             statedetails = {'color' : 'grey',
@@ -4992,8 +4996,8 @@ class XivoCTICommand(BaseCommand):
                             senduinfo['statedetails'] = statedetails
                             senduinfo['agentnumber'] = self.__agentnum__(uinfo)
                             senduinfo['voicemailnum'] = self.__voicemailnum__(uinfo)
-                            if context == None or context == senduinfo['context']:
-                                    fullstat.append(senduinfo)
+                            #if context == None or context == senduinfo['context']:
+                            fullstat.append(senduinfo)
                             
             elif ccomm == 'phones':
                 fullstat = {}
@@ -5708,7 +5712,8 @@ class XivoCTICommand(BaseCommand):
                         if mr in headerfields:
                             revindex.append(headerfields.index(mr))
                 else:
-                    ll = line.strip()
+#                    ll = line.strip()
+                    ll = line.decode('utf8').strip()
                     t = ll.split(z.delimiter)
                     matchme = False
                     for ri in revindex:
