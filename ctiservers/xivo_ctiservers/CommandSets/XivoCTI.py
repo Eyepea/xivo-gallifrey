@@ -2746,26 +2746,28 @@ class XivoCTICommand(BaseCommand):
             return
     
     def amiresponse_mailboxstatus(self, astid, event):
-            mailbox = event.get('Mailbox')
-            voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)
-            for userinfo in self.ulist_ng.keeplist.itervalues():
-                    if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
-                            if userinfo['mwi']:
-                                    log.debug('amiresponse_mailboxstatus voicemailid=%s user=%s %s=>%s'
-                                              % (voicemailid, userinfo.get('xivo_userid'), userinfo['mwi'][0], event.get('Waiting')))
-                                    if userinfo['mwi'][0] != event.get('Waiting'):
-                                        # only send if it has changed
-                                        userinfo['mwi'][0] = event.get('Waiting')
-                                        tosend = { 'class' : 'users',
-                                                   'function' : 'update',
-                                                   'user' : [userinfo.get('astid'),
-                                                             userinfo.get('xivo_userid')],
-                                                   'subclass' : 'mwi',
-                                                   'payload' : userinfo.get('mwi')
-                                                   }
-                                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
-                                                                         userinfo.get('astid'), userinfo.get('context'))
-            return
+        mailbox = event.get('Mailbox')
+        voicemailid = self.weblist['voicemail'][astid].reverse_index.get(mailbox)
+        for userinfo in self.ulist_ng.keeplist.itervalues():
+            if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
+                if userinfo['mwi']:
+                    log.debug('amiresponse_mailboxstatus voicemailid=%s user=%s %s=>%s'
+                              % (voicemailid, userinfo.get('xivo_userid'), userinfo['mwi'][0], event.get('Waiting')))
+                    #if userinfo['mwi'][0] != event.get('Waiting'): # only send if it has changed
+                    # the condition above is not the right one : there are cases when Waiting remains 1
+                    # while NewMessages changes, and we thus need to make some announcements
+                    if True:
+                        userinfo['mwi'][0] = event.get('Waiting')
+                        tosend = { 'class' : 'users',
+                                   'function' : 'update',
+                                   'user' : [userinfo.get('astid'),
+                                             userinfo.get('xivo_userid')],
+                                   'subclass' : 'mwi',
+                                   'payload' : userinfo.get('mwi')
+                                   }
+                        self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
+                                                         userinfo.get('astid'), userinfo.get('context'))
+        return
     
     sippresence = {
         '-2' : 'Removed',
@@ -3459,6 +3461,7 @@ class XivoCTICommand(BaseCommand):
             context_queue = self.weblist[queueorgroup][astid].getcontext(queueid)
             if location.startswith('Agent/'):
                 if self.weblist['agents'].has_key(astid):
+                    # watchout : for 'Agent/@2' locations (agent groups), this might fail
                     agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
                     if agent_id:
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
@@ -3487,6 +3490,7 @@ class XivoCTICommand(BaseCommand):
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
                 
             if location.startswith('Agent/'):
+                # watchout : for 'Agent/@2' locations (agent groups), this might fail
                 self.weblist['agents'][astid].queuememberadded(queueid, queueorgroup, location[6:], event)
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberadded')
                 tosend = { 'class' : 'agents',
@@ -3516,6 +3520,7 @@ class XivoCTICommand(BaseCommand):
             
             context_queue = self.weblist[queueorgroup][astid].getcontext(queueid)
             if location.startswith('Agent/'):
+                # watchout : for 'Agent/@2' locations (agent groups), this might fail
                 if self.weblist['agents'].has_key(astid):
                     agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
                     if agent_id:
@@ -3540,6 +3545,7 @@ class XivoCTICommand(BaseCommand):
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
                 
             if location.startswith('Agent/'):
+                # watchout : for 'Agent/@2' locations (agent groups), this might fail
                 self.weblist['agents'][astid].queuememberremoved(queueid, queueorgroup, location[6:], event)
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberremoved')
                 tosend = { 'class' : 'agents',
@@ -3574,6 +3580,7 @@ class XivoCTICommand(BaseCommand):
             context_queue = self.weblist[queueorgroup][astid].getcontext(queueid)
             if location.startswith('Agent/'):
                 if self.weblist['agents'].has_key(astid):
+                    # watchout : for 'Agent/@2' locations (agent groups), this might fail
                     agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
                     if agent_id:
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
@@ -3605,6 +3612,7 @@ class XivoCTICommand(BaseCommand):
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
                 
             if location.startswith('Agent/'):
+                # watchout : for 'Agent/@2' locations (agent groups), this might fail
                 if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
                     self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberstatus')
                     tosend = { 'class' : 'agents',
@@ -3685,6 +3693,7 @@ class XivoCTICommand(BaseCommand):
             context_queue = self.weblist[queueorgroup][astid].getcontext(queueid)
             if location.startswith('Agent/'):
                 if self.weblist['agents'].has_key(astid):
+                    # watchout : for 'Agent/@2' locations (agent groups), this might fail
                     agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
                     if agent_id:
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
@@ -3713,6 +3722,7 @@ class XivoCTICommand(BaseCommand):
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
                 
             if location.startswith('Agent/'):
+                # watchout : for 'Agent/@2' locations (agent groups), this might fail
                 if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
                     self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberpaused')
                     qorg = '%s_by_agent' % queueorgroup
@@ -3775,6 +3785,7 @@ class XivoCTICommand(BaseCommand):
             context_queue = self.weblist[queueorgroup][astid].getcontext(queueid)
             if location.startswith('Agent/'):
                 if self.weblist['agents'].has_key(astid):
+                    # watchout : for 'Agent/@2' locations (agent groups), this might fail
                     agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
                     if agent_id:
                         thisagent = self.weblist['agents'][astid].keeplist[agent_id]
@@ -3792,6 +3803,7 @@ class XivoCTICommand(BaseCommand):
             
             if location.startswith('Agent/'):
                 self.weblist[queueorgroup][astid].queuememberupdate(queueid, location, event)
+                # watchout : for 'Agent/@2' locations (agent groups), this might fail
                 if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
                     self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuemember')
                     tosend = { 'class' : 'agents',
@@ -4044,46 +4056,45 @@ class XivoCTICommand(BaseCommand):
             
             (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
             if meetmeref is None:
-                    log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, meetmenum))
-                    return
+                log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, meetmenum))
+                return
             
-            if uniqueid not in meetmeref['uniqueids']:
-                    phoneid = self.__phoneid_from_channel__(astid, channel)
-                    if phoneid:
-                            self.weblist['phones'][astid].ami_meetmejoin(phoneid, uniqueid, meetmenum)
-                            self.__update_phones_trunks__(astid, phoneid, None, None, None, 'ami_meetmejoin')
+            if uniqueid in meetmeref['uniqueids']:
+                log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
+                            % (astid, uniqueid, channel, meetmenum))
+            phoneid = self.__phoneid_from_channel__(astid, channel)
+            if phoneid:
+                self.weblist['phones'][astid].ami_meetmejoin(phoneid, uniqueid, meetmenum)
+                self.__update_phones_trunks__(astid, phoneid, None, None, None, 'ami_meetmejoin')
 
-                    uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
-                    if uinfo:
-                            userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
-                    else:
-                            userid = ''
-                    if isadmin:
-                            meetmeref['adminid'] = userid
-                    meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
-                                                         'mutestatus' : 'off',
-                                                         'recordstatus' : 'off',
-                                                         'time_start' : time.time(),
-                                                         'userid' : userid,
-                                                         'fullname' : calleridname,
-                                                         'phonenum' : calleridnum }
-                    log.info('%s ami_meetmejoin : (%s) channel %s added to meetme %s'
-                             % (astid, uniqueid, channel, meetmenum))
-                    tosend = { 'class' : 'meetme',
-                               'function' : 'update',
-                               'payload' : { 'action' : 'join',
-                                             'astid' : astid,
-                                             'meetmeid': meetmeid,
-                                             'roomnum' : meetmenum,
-                                             'roomname' : meetmeref['name'],
-                                             'adminid' : meetmeref['adminid'],
-                                             'uniqueid' : uniqueid,
-                                             'details' : meetmeref['uniqueids'][uniqueid] }
-                               }
-                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
+            if uinfo:
+                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
             else:
-                    log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
-                                % (astid, uniqueid, channel, meetmenum))
+                userid = ''
+            if isadmin:
+                meetmeref['adminid'] = userid
+            meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
+                                                 'mutestatus' : 'off',
+                                                 'recordstatus' : 'off',
+                                                 'time_start' : time.time(),
+                                                 'userid' : userid,
+                                                 'fullname' : calleridname,
+                                                 'phonenum' : calleridnum }
+            log.info('%s ami_meetmejoin : (%s) channel %s added to meetme %s'
+                     % (astid, uniqueid, channel, meetmenum))
+            tosend = { 'class' : 'meetme',
+                       'function' : 'update',
+                       'payload' : { 'action' : 'join',
+                                     'astid' : astid,
+                                     'meetmeid': meetmeid,
+                                     'roomnum' : meetmenum,
+                                     'roomname' : meetmeref['name'],
+                                     'adminid' : meetmeref['adminid'],
+                                     'uniqueid' : uniqueid,
+                                     'details' : meetmeref['uniqueids'][uniqueid] }
+                       }
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
             return
     
     def ami_meetmeleave(self, astid, event):
@@ -4094,26 +4105,25 @@ class XivoCTICommand(BaseCommand):
             
             (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
             if meetmeref is None:
-                    log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, meetmenum))
-                    return
+                log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, meetmenum))
+                return
             
-            if uniqueid in meetmeref['uniqueids']:
-                    tosend = { 'class' : 'meetme',
-                               'function' : 'update',
-                               'payload' : { 'action' : 'leave',
-                                             'astid' : astid,
-                                             'meetmeid' : meetmeid,
-                                             'roomnum' : meetmenum,
-                                             'uniqueid' : uniqueid,
-                                             'details' : meetmeref['uniqueids'][uniqueid] }
-                               }
-                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
-                    del meetmeref['uniqueids'][uniqueid]
-                    log.info('%s ami_meetmeleave : (%s) channel %s removed from meetme %s'
-                             % (astid, uniqueid, channel, meetmenum))
-            else:
-                    log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
-                                % (astid, uniqueid, channel, meetmenum))
+            if uniqueid not in meetmeref['uniqueids']:
+                log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
+                            % (astid, uniqueid, channel, meetmenum))
+            tosend = { 'class' : 'meetme',
+                       'function' : 'update',
+                       'payload' : { 'action' : 'leave',
+                                     'astid' : astid,
+                                     'meetmeid' : meetmeid,
+                                     'roomnum' : meetmenum,
+                                     'uniqueid' : uniqueid,
+                                     'details' : meetmeref['uniqueids'][uniqueid] }
+                       }
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            del meetmeref['uniqueids'][uniqueid]
+            log.info('%s ami_meetmeleave : (%s) channel %s removed from meetme %s'
+                     % (astid, uniqueid, channel, meetmenum))
             return
     
     def ami_meetmemute(self, astid, event):
