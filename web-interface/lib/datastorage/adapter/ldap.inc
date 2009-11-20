@@ -33,8 +33,8 @@ class dwho_datastorage_adapter_ldap extends dwho_datastorage_adapter_abstract
 {
 	var $_param		= array(
 					'host'		=> 'localhost',
-					'user'		=> '',
-					'pass'		=> '',
+					'user'		=> null,
+					'pass'		=> null,
 					'port'		=> 0,
 					'ssl'		=> false,
 					'tls'		=> false,
@@ -66,17 +66,21 @@ class dwho_datastorage_adapter_ldap extends dwho_datastorage_adapter_abstract
 		if(isset($param['host']) === true)
 			$this->_param['host'] = (string) $param['host'];
 
-		if(isset($param['user']) === true)
-			$this->_param['user'] = (string) $param['user'];
-		else if(isset($param['binddn']) === true)
-			$this->_param['user'] = (string) $param['binddn'];
-
 		if(isset($param['pass']) === true)
 			$this->_param['pass'] = (string) $param['pass'];
 		else if(isset($param['passwd']) === true)
 			$this->_param['pass'] = (string) $param['passwd'];
 		else if(isset($param['passdn']) === true)
 			$this->_param['pass'] = (string) $param['passdn'];
+		else
+			$this->_param['pass'] = null;
+
+		if(isset($param['user']) === true)
+			$this->_param['user'] = (string) $param['user'];
+		else if(isset($param['binddn']) === true)
+			$this->_param['user'] = (string) $param['binddn'];
+		else
+			$this->_param['user'] = $this->_param['pass'] = null;
 
 		if(isset($param['port']) === true)
 			$this->_param['port'] = dwho_uint($param['port']);

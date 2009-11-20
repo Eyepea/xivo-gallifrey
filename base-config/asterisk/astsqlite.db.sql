@@ -463,8 +463,8 @@ CREATE TABLE ldapfilter (
  id integer unsigned,
  ldapserverid integer unsigned NOT NULL,
  name varchar(128) NOT NULL DEFAULT '',
- user varchar(255) NOT NULL DEFAULT '',
- passwd varchar(255) NOT NULL DEFAULT '',
+ user varchar(255),
+ passwd varchar(255),
  basedn varchar(255) NOT NULL DEFAULT '',
  filter varchar(255) NOT NULL DEFAULT '',
  attrdisplayname varchar(255) NOT NULL DEFAULT '',
@@ -1179,7 +1179,7 @@ CREATE TABLE usercustom (
  interface varchar(128) NOT NULL,
  intfsuffix varchar(32) NOT NULL DEFAULT '',
  commented tinyint(1) NOT NULL DEFAULT 0,
- protocol char(5) NOT NULL DEFAULT 'custom',
+ protocol char(6) NOT NULL DEFAULT 'custom',
  category varchar(5) NOT NULL,
  PRIMARY KEY(id)
 );

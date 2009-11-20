@@ -29,9 +29,11 @@ $array['element']['ldapserverid']['default'] = '';
 
 $array['element']['user'] = array();
 $array['element']['user']['default'] = '';
+$array['element']['user']['null'] = true;
 
 $array['element']['passwd'] = array();
 $array['element']['passwd']['default'] = '';
+$array['element']['passwd']['null'] = true;
 
 $array['element']['basedn'] = array();
 $array['element']['basedn']['default'] = '';
@@ -64,8 +66,8 @@ $array['element']['description']['default'] = '';
 $array['filter'] = array();
 $array['filter']['name'] = array('maxlen' => 128,'regexp' => '/^[a-z0-9_-]+$/i');
 $array['filter']['ldapserverid'] = array('cast' => 'ulongint');
-$array['filter']['user'] = array('maxlen' => 255,'cast' => 'graph','notag' => false);
-$array['filter']['passwd'] = array('maxlen' => 255,'cast' => 'graph','notag' => false);
+$array['filter']['user'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'graph','notag' => false);
+$array['filter']['passwd'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'graph','notag' => false);
 $array['filter']['basedn'] = array('minlen' => 1,'maxlen' => 255,'callback' => 'ldap_explode_dn','callbackarg' => 1);
 $array['filter']['filter'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph','notag' => false);
 $array['filter']['attrdisplayname'] = array('minlen' => 1,'maxlen' => 255,'regexp' => '/^(?:(?:[a-zA-Z0-9-]+|[0-9]+(?:\.[0-9]+)*)[,]?)+$/');
