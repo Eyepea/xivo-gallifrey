@@ -57,7 +57,7 @@ def faxtomail(agi, cursor, args):
         try:
             mutt = subprocess.Popen([MUTT_BIN,
                                      "-e", "set copy=no",
-                                     "-e", "set from=fax-no-reply@xivo.fr",
+                                     "-e", "set from=no-reply+fax@xivo.fr",
                                      "-e", "set realname='XiVO Fax'",
                                      "-e", "set use_from=yes",
                                      "-s", "Reception de FAX vers %s" % dstnum,
