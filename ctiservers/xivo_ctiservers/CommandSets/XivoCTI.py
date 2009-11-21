@@ -4472,6 +4472,11 @@ class XivoCTICommand(BaseCommand):
     def ami_rename(self, astid, event):
             oldname = event.get('Oldname')
             newname = event.get('Newname')
+            # remove <MASQ> at the end. IGNORE
+            if oldname[-6:] == '<MASQ>':
+                oldname = oldname[:-6]
+            if newname[-6:] == '<MASQ>':
+                newname = newname[:-6]
             uid = event.get('Uniqueid')
             (oldname, _uid, _clid, _clidn) = self.__translate_local_channel_uid__(astid, oldname, uid)
             
