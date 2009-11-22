@@ -95,7 +95,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['agentfeatures']['fullname']);?>">
 			<label for="it-agents-<?=$i?>" id="lb-agents-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),

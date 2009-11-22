@@ -50,7 +50,7 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 			endif;
 ?>
 			<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
-				<td><?=dwho_trunc(dwho_htmlen($ref['name']),20,'...',false);?></td>
+				<td title="<?=dwho_alttitle($ref['name']);?>"><?=dwho_htmlen(dwho_trunc($ref['name'],20,'...',false));?></td>
 				<td class="monit-state-<?=$ref['state']?>"><b><?=$this->bbf('sysinfos_state-opt',$ref['state']);?></b></td>
 				<td class="txt-right"><?=$uptime?></td>
 				<td class="txt-right"><?=$cpupcent?></td>

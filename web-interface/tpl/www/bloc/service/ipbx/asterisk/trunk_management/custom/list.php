@@ -89,7 +89,9 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=dwho_htmlen(dwho_trunc($ref['interface'],40,'...',false))?></td>
+		<td title="<?=dwho_alttitle($ref['interface']);?>">
+			<?=dwho_htmlen(dwho_trunc($ref['interface'],40,'...',false))?>
+		</td>
 		<td><?=(dwho_has_len($ref['intfsuffix']) === true ? $ref['intfsuffix'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php

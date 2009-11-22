@@ -80,7 +80,7 @@ $page = $url->pager($pager['pages'],
 						 'id'		=> 'it-groups-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false));?></td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['name']);?>">
 			<label for="it-groups-<?=$i?>" id="lb-groups-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),

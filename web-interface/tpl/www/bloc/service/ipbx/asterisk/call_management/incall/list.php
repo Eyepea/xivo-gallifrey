@@ -126,7 +126,9 @@ $page = $url->pager($pager['pages'],
 		</td>
 		<td><?=$ref['context']?></td>
 		<td><?=$destination?></td>
-		<td><?=dwho_htmlen(dwho_trunc($destidentity,30,'...',false));?></td>
+		<td title="<?=dwho_alttitle($destidentity);?>">
+			<?=dwho_htmlen(dwho_trunc($destidentity,30,'...',false));?>
+		</td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

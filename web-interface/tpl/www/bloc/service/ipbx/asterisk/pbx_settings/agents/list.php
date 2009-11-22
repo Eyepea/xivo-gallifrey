@@ -88,6 +88,7 @@ $page = $url->pager($pager['pages'],
 						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
+		    title="<?=dwho_alttitle($ref['agentgroup']['name']);?>"
 		    onclick="location.href = dwho.dom.node.lastchild(this);">
 <?php
 			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),

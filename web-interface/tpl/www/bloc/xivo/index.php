@@ -155,7 +155,9 @@ endif;
 					endif;
 ?>
 					<tr class="l-infos-<?=(($i % 2) + 1)?>on2">
-						<td><?=dwho_trunc(dwho_htmlen($devstats[$i]['name']),20,'...',false);?></td>
+						<td title="<?=dwho_alttitle($devstats[$i]['name']);?>">
+							<?=dwho_htmlen(dwho_trunc($devstats[$i]['name'],20,'...',false));?>
+						</td>
 						<td class="gauge">
 							<div><div style="width: <?=round($devpercent);?>px;">&nbsp;</div></div>
 						</td>
@@ -221,7 +223,7 @@ endif;
 				$total_drop = dwho_size_iec($stats['statistics']['total']['drop']);
 ?>
 				<tr class="l-infos-<?=(($i++ % 2) + 1)?>on2">
-					<td><?=dwho_trunc(dwho_htmlen($devname),20,'...',false);?></td>
+					<td title="<?=dwho_alttitle($devname);?>"><?=dwho_htmlen(dwho_trunc($devname,20,'...',false));?></td>
 					<td class="txt-right"><?=$this->bbf('size_iec_'.$rx_bytes[1],$rx_bytes[0]);?></td>
 					<td class="txt-right"><?=$this->bbf('size_iec_'.$tx_bytes[1],$tx_bytes[0]);?></td>
 					<td class="txt-right"><?=$stats['statistics']['total']['errs']?></td>
@@ -258,7 +260,20 @@ endif;
 					<td><?=$this->bbf('sysinfos_physical-memory');?></td>
 					<td class="gauge">
 						<div><div style="width: <?=$memusedpcentrnd?>px;">
-							<img src="/img/z.gif" width="<?=$memrealusedpcentrnd?>" height="10" alt="<?=$this->bbf('sysinfos_used-memory',$memrealusedpercent);?>" /><img src="/img/z.gif" width="<?=$membufferspcentrnd?>" height="10" alt="<?=$this->bbf('sysinfos_buffers-memory',$membufferspercent);?>" style="background-color: #5dbc00;" /><img src="/img/z.gif" width="<?=$memcachedpcentrnd?>" height="10" alt="<?=$this->bbf('sysinfos_cached-memory',$memcachedpercent);?>" style="background-color: #f96101;" />
+							<img src="/img/z.gif"
+							     width="<?=$memrealusedpcentrnd?>"
+							     height="10"
+							     alt="<?=$this->bbf('sysinfos_used-memory',$memrealusedpercent);?>" /><img
+									src="/img/z.gif"
+									width="<?=$membufferspcentrnd?>"
+									height="10"
+									alt="<?=$this->bbf('sysinfos_buffers-memory',$membufferspercent);?>"
+									style="background-color: #5dbc00;" /><img
+										src="/img/z.gif"
+										width="<?=$memcachedpcentrnd?>"
+										height="10"
+										alt="<?=$this->bbf('sysinfos_cached-memory',$memcachedpercent);?>"
+										style="background-color: #f96101;" />
 						</div></div>
 					</td>
 					<td class="gaugepercent txt-right"><?=$this->bbf('number_percent',$memrealusedpercent);?></td>

@@ -18,19 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/pbx_settings/meetme',
-			    array('act' => $act));
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/pbx_settings/meetme',
+		    array('act' => $act));
+
 ?>
 <div class="b-list">
 <?php
@@ -88,7 +89,7 @@
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['name']);?>">
 			<label for="it-meetme-<?=$i?>" id="lb-meetme-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),

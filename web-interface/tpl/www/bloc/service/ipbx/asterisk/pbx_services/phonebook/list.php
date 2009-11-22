@@ -116,7 +116,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['phonebook']['displayname']);?>">
 			<label for="it-phonebook-<?=$i?>" id="lb-phonebook-<?=$i?>">
 				<?=dwho_htmlen(dwho_trunc($ref['phonebook']['displayname'],30,'...',false));?>
 			</label>

@@ -108,7 +108,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['fullname']);?>">
 			<label for="it-users-<?=$i?>" id="lb-users-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/phone/'.$icon.'.gif',null,'class="icons-list"'),

@@ -96,7 +96,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['fullname']);?>">
 			<label for="it-voicemails-<?=$i?>" id="lb-voicemails-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),

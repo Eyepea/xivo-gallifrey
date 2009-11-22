@@ -92,7 +92,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['name']);?>">
 			<label for="it-iproute-<?=$i?>" id="lb-iproute-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
@@ -100,7 +100,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=dwho_htmlen(dwho_trunc($ref['iface'],25,'...',false));?></td>
+		<td title="<?=dwho_alttitle($ref['iface']);?>"><?=dwho_htmlen(dwho_trunc($ref['iface'],25,'...',false));?></td>
 		<td><?=$ref['destination']?></td>
 		<td><?=$ref['netmask']?></td>
 		<td><?=$ref['gateway']?></td>

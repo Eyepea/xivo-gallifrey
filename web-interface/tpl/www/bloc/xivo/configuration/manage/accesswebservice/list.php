@@ -107,7 +107,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['name']);?>">
 			<label for="it-accesswebservice-<?=$i?>" id="lb-accesswebservice-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
@@ -115,9 +115,9 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$login?></td>
-		<td><?=$passwd?></td>
-		<td><?=$host?></td>
+		<td title="<?=dwho_alttitle($login);?>"><?=$login?></td>
+		<td title="<?=dwho_alttitle($passwd);?>"><?=$passwd?></td>
+		<td title="<?=dwho_alttitle($host);?>"><?=$host?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

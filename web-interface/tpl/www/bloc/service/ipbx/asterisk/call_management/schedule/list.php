@@ -148,7 +148,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left">
+		<td class="txt-left" title="<?=dwho_alttitle($ref['name']);?>">
 			<label for="it-schedules-<?=$i?>" id="lb-schedules-<?=$i?>">
 <?php
 				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
@@ -160,7 +160,9 @@ $page = $url->pager($pager['pages'],
 		<td><?=$ref['dayname']?></td>
 		<td><?=$ref['daynum']?></td>
 		<td><?=$ref['month']?></td>
-		<td><?=dwho_htmlen(dwho_trunc($destination,15,'...',false));?></td>
+		<td title="<?=dwho_alttitle($destination);?>">
+			<?=dwho_htmlen(dwho_trunc($destination,15,'...',false));?>
+		</td>
 		<td><?=$this->bbf('schedule_publicholiday-'.$ref['publicholiday']);?></td>
 		<td class="td-right" colspan="2">
 <?php
