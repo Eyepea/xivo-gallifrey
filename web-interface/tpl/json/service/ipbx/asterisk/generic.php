@@ -19,7 +19,7 @@
 #
 
 dwho::load_class('dwho_http');
-$http = new dwho_http();
+$http_response = dwho_http::factory('response');
 
 if($this->get_var('act') === 'view')
 	$data = dwho_json::encode($this->get_var('info'));
@@ -28,16 +28,16 @@ else
 
 if($data === false)
 {
-	$http->set_status(500);
-	$http->send(true);
+	$http_response->set_status_line(500);
+	$http_response->send(true);
 }
 
 $sum = $this->get_var('sum');
 
 if(isset($sum{0}) === true && $sum === md5($data))
 {
-	$http->set_status(304);
-	$http->send(true);
+	$http_response->set_status_line(304);
+	$http_response->send(true);
 }
 
 header(dwho_json::get_header());

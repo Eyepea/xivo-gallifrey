@@ -32,8 +32,8 @@ switch($act)
 	case 'view':
 		if(($info = $appphonebook->get($_QRY->get('id'))) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -41,8 +41,8 @@ switch($act)
 	case 'add':
 		$status = $appphonebook->add_from_json() === true ? 200 : 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		if($appphonebook->get($_QRY->get('id')) === false)
@@ -52,14 +52,14 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		if(($list = $appphonebook->get_phonebook_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -70,8 +70,8 @@ switch($act)
 
 		if(($list = $appphonebook->get_phonebook_list()) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

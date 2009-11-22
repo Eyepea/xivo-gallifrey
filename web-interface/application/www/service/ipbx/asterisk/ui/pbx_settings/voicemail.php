@@ -48,8 +48,8 @@ switch($act)
 					       null,
 					       $nocomponents)) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -61,8 +61,8 @@ switch($act)
 
 		if(($list = $appvoicemail->get_voicemail_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

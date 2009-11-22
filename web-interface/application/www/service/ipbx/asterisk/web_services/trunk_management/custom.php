@@ -37,8 +37,8 @@ switch($act)
 					   null,
 					   $nocomponents)) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -49,8 +49,8 @@ switch($act)
 
 		$status = $apptrunk->add_from_json() === true ? 200 : 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -63,8 +63,8 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		$apptrunk = &$ipbx->get_application('trunk',
@@ -73,8 +73,8 @@ switch($act)
 
 		if(($list = $apptrunk->get_trunks_search($_QRY->get('search'),true)) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -89,8 +89,8 @@ switch($act)
 
 		if(($list = $apptrunk->get_trunks_list(true)) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

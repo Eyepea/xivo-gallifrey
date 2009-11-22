@@ -27,7 +27,7 @@ $ami = &$ipbx->get_module('ami');
 
 $status = $ami->cmd('restart now',true) === false ? 500 : 200;
 
-$http->set_status($status);
-$http->send(true);
+$http_response->set_status_line($status);
+$http_response->send(true);
 
 ?>

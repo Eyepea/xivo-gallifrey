@@ -32,8 +32,8 @@ switch($act)
 
 		if(($info = $appentity->get($_QRY->get('id'))) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info['entity']);
@@ -43,8 +43,8 @@ switch($act)
 
 		$status = $appentity->add_from_json() === true ? 200 : 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		$appentity = &$_XOBJ->get_application('entity');
@@ -58,16 +58,16 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		$appentity = &$_XOBJ->get_application('entity');
 
 		if(($list = $appentity->get_entities_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -80,8 +80,8 @@ switch($act)
 
 		if(($list = $appentity->get_entities_list()) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

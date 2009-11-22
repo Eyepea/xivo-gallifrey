@@ -59,9 +59,9 @@ switch($tpl_space)
 		if(dwho::load_class('dwho_json') === false)
 		{
 			dwho::load_class('dwho_http');
-			$http = new dwho_http();
-			$http->set_status(500);
-			$http->send(true);
+			$http_response = dwho_http::factory('response');
+			$http_response->set_status_line(500);
+			$http_response->send(true);
 		}
 		break;
 	default:

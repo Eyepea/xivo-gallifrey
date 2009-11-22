@@ -32,8 +32,8 @@ switch($act)
 	case 'view':
 		if(($info = $appcontext->get($_QRY->get('id'))) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -44,8 +44,8 @@ switch($act)
 		else
 			$status = 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		if($appcontext->get($_QRY->get('id')) === false)
@@ -55,14 +55,14 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		if(($list = $appcontext->get_contexts_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -73,8 +73,8 @@ switch($act)
 
 		if(($list = $appcontext->get_contexts_list()) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

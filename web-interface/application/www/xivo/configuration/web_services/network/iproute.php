@@ -32,8 +32,8 @@ switch($act)
 
 		if(($info = $appiproute->get($_QRY->get('id'))) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info['iproute']);
@@ -43,8 +43,8 @@ switch($act)
 
 		$status = $appiproute->add_from_json() === true ? 200 : 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		$appiproute = &$_XOBJ->get_application('iproute');
@@ -56,16 +56,16 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		$appiproute = &$_XOBJ->get_application('iproute');
 
 		if(($list = $appiproute->get_iproutes_search($_QRY->get('search'),null,null,null,false,false)) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -78,8 +78,8 @@ switch($act)
 
 		if(($list = $appiproute->get_iproutes_list(null,null,null,false,false)) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

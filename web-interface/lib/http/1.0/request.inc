@@ -18,27 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if(isset($access_category,$access_subcategory) === false)
-{
-	$http_response->set_status_line(403);
-	$http_response->send(true);
-}
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'http','1.0','abstract.inc'));
 
-xivo::load_class('xivo_accesswebservice',XIVO_PATH_OBJECT,null,false);
-$_AWS = new xivo_accesswebservice();
-
-$http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
-
-if($http_access === null)
+class dwho_http_1_0_request extends dwho_http_1_0_abstract
 {
-	$http_response->authent_basic('Access Restricted');
-	$http_response->set_status_line(401);
-	$http_response->send(true);
-}
-else if(empty($http_access) === true)
-{
-	$http_response->set_status_line(403);
-	$http_response->send(true);
+	function dwho_http_1_0_request()
+	{
+		$this->dwho_http_1_0_abstract();
+	}
 }
 
 ?>

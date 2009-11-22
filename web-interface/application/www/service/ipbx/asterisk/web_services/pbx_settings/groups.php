@@ -38,8 +38,8 @@ switch($act)
 					   null,
 					   $nocomponents)) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -55,8 +55,8 @@ switch($act)
 		else
 			$status = 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		$appgroup = &$ipbx->get_application('group');
@@ -71,16 +71,16 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		$appgroup = &$ipbx->get_application('group',null,false);
 
 		if(($list = $appgroup->get_groups_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -93,8 +93,8 @@ switch($act)
 
 		if(($list = $appgroup->get_groups_list()) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

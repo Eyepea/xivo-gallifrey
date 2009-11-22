@@ -39,8 +39,8 @@ switch($act)
 					    null,
 					    $nocomponents)) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -50,8 +50,8 @@ switch($act)
 
 		$status = $appmeetme->add_from_json() === true ? 200 : 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		$appmeetme = &$ipbx->get_application('meetme');
@@ -63,16 +63,16 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		$appmeetme = &$ipbx->get_application('meetme',null,false);
 
 		if(($list = $appmeetme->get_meetme_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -85,8 +85,8 @@ switch($act)
 
 		if(($list = $appmeetme->get_meetme_list()) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

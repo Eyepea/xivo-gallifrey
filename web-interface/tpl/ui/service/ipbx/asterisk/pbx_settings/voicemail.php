@@ -19,7 +19,7 @@
 #
 
 dwho::load_class('dwho_http');
-$http = new dwho_http();
+$http_response = dwho_http::factory('response');
 
 switch($this->get_var('act'))
 {
@@ -28,8 +28,8 @@ switch($this->get_var('act'))
 
 		if(is_array($data) === false)
 		{
-			$http->set_status(500);
-			$http->send(true);
+			$http_response->set_status_line(500);
+			$http_response->send(true);
 		}
 		break;
 	case 'search':
@@ -38,13 +38,13 @@ switch($this->get_var('act'))
 
 		if(is_array($list) === false)
 		{
-			$http->set_status(500);
-			$http->send(true);
+			$http_response->set_status_line(500);
+			$http_response->send(true);
 		}
 		else if(($nb = count($list)) === 0)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$except = $this->get_var('except');
@@ -72,8 +72,8 @@ $data = dwho_json::encode($data);
 
 if($data === false)
 {
-	$http->set_status(500);
-	$http->send(true);
+	$http_response->set_status_line(500);
+	$http_response->send(true);
 }
 
 header(dwho_json::get_header());

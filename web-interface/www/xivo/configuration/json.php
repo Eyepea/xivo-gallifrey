@@ -28,9 +28,9 @@ $application = $_TPL->get_application('xivo/configuration/web_services/',3);
 if($application === false)
 {
 	dwho::load_class('dwho_http');
-	$http = new dwho_http();
-	$http->set_status(404);
-	$http->send(true);
+	$http_response = dwho_http::factory('response');
+	$http_response->set_status_line(404);
+	$http_response->send(true);
 }
 
 die(include($application));

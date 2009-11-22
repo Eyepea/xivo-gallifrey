@@ -47,8 +47,8 @@ switch($act)
 
 		if(($list = $appagent->get_agents_search($_QRY->get('search'),false)) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

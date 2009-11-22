@@ -1086,8 +1086,8 @@ function dwho_gmlcstrftime($format,$time)
 
 	if($o{0} === '-')
 	{
-		$h = $arr[0]-$h;
-		$m = $arr[1]-$m;
+		$h = $arr[0] - $h;
+		$m = $arr[1] - $m;
 	}
 	else
 	{

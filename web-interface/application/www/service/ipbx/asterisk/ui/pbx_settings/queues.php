@@ -46,8 +46,8 @@ switch($act)
 
 		if(($list = $appqueue->get_queues_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

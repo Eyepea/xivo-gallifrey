@@ -36,14 +36,14 @@ switch($_QRY->get('act'))
 		{
 			if($result === null)
 			{
-				$http->set_status(204);
-				$http->send(true);
+				$http_response->set_status_line(204);
+				$http_response->send(true);
 			}
 		}
 		else
 		{
-			$http->set_status(400);
-			$http->send(true);
+			$http_response->set_status_line(400);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('result',$result);

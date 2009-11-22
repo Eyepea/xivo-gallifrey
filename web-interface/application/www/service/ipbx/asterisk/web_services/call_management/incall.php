@@ -36,8 +36,8 @@ switch($act)
 					    null,
 					    $nocomponents)) === false)
 		{
-			$http->set_status(404);
-			$http->send(true);
+			$http_response->set_status_line(404);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
@@ -46,8 +46,8 @@ switch($act)
 		$appincall = &$ipbx->get_application('incall');
 		$status = $appincall->add_from_json() === true ? 200 : 400;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'delete':
 		$appincall = &$ipbx->get_application('incall');
@@ -59,16 +59,16 @@ switch($act)
 		else
 			$status = 500;
 
-		$http->set_status($status);
-		$http->send(true);
+		$http_response->set_status_line($status);
+		$http_response->send(true);
 		break;
 	case 'search':
 		$appincall = &$ipbx->get_application('incall',null,false);
 
 		if(($list = $appincall->get_incalls_search($_QRY->get('search'))) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);
@@ -81,8 +81,8 @@ switch($act)
 
 		if(($list = $appincall->get_incalls_list()) === false)
 		{
-			$http->set_status(204);
-			$http->send(true);
+			$http_response->set_status_line(204);
+			$http_response->send(true);
 		}
 
 		$_TPL->set_var('list',$list);

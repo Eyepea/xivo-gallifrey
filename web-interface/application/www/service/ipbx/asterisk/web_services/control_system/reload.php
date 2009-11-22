@@ -31,7 +31,7 @@ if($ami->cmd('module reload',true) === false
 else
 	$status = 200;
 
-$http->set_status($status);
-$http->send(true);
+$http_response->set_status_line($status);
+$http_response->send(true);
 
 ?>
