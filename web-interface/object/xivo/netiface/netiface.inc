@@ -23,6 +23,7 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 class xivo_object_netiface extends xivo_object_abstract
 {
 	var $_dso		= null;
+	var $_sysnet		= null;
 	var $_name		= 'netiface';
 	var $_filter		= false;
 	var $_origin		= false;
@@ -37,6 +38,10 @@ class xivo_object_netiface extends xivo_object_abstract
 			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
 
 		$this->_dso = &$dso;
+
+		$sysinfo = new dwho_sysinfo();
+		$this->_sysnet = $sysinfo->net();
+
 		$this->_identity = &$this->_xobj->get_identity($this->_name);
 	}
 
@@ -45,6 +50,21 @@ class xivo_object_netiface extends xivo_object_abstract
 		$this->_identity->_prepare_identity($data);
 
 		$data['disable'] = (bool) $data['disable'];
+
+		if($data['disable'] === true)
+			$data['state'] = 'disable';
+		else if($this->_sysnet->netinfo_interface_is_virtual($data['devname']) === false)
+			$data['state'] = 'enable';
+		else
+		{
+			$realname = $this->_sysnet->netinfo_interface_realname($data['devname']);
+
+			if((int) $data['hwtypeid'] === (int) $this->_sysnet->netinfo_hwtypeid($realname)
+			&& $this->_sysnet->netinfo_carrier($realname) === false)
+				$data['state'] = 'unavailable';
+			else
+				$data['state'] = 'unknown';
+		}
 
 		return($data);
 	}

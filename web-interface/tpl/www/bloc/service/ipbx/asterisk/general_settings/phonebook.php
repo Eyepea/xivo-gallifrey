@@ -147,7 +147,7 @@ endif;
 				   onclick="dwho.form.move_selected('it-xivoserverlist','it-xivoserver');
 					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inxivoserver');?>">
-					<?=$url->img_html('img/site/button/row-left.gif',
+					<?=$url->img_html('img/site/button/arrow-left.gif',
 							  $this->bbf('bt_inxivoserver'),
 							  'class="bt-inlist" id="bt-inxivoserver" border="0"');?></a><br />
 
@@ -155,7 +155,7 @@ endif;
 				   onclick="dwho.form.move_selected('it-xivoserver','it-xivoserverlist');
 					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outxivoserver');?>">
-					<?=$url->img_html('img/site/button/row-right.gif',
+					<?=$url->img_html('img/site/button/arrow-right.gif',
 							  $this->bbf('bt_outxivoserver'),
 							  'class="bt-outlist" id="bt-outxivoserver" border="0"');?></a>
 			</div>
@@ -208,14 +208,14 @@ endif;
 				   onclick="dwho.form.move_selected('it-ldapfilterlist','it-ldapfilter');
 					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inldapfilter');?>">
-					<?=$url->img_html('img/site/button/row-left.gif',
+					<?=$url->img_html('img/site/button/arrow-left.gif',
 							  $this->bbf('bt_inldapfilter'),
 							  'class="bt-inlist" id="bt-inldapfilter" border="0"');?></a><br />
 				<a href="#"
 				   onclick="dwho.form.move_selected('it-ldapfilter','it-ldapfilterlist');
 					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outldapfilter');?>">
-					<?=$url->img_html('img/site/button/row-right.gif',
+					<?=$url->img_html('img/site/button/arrow-right.gif',
 							  $this->bbf('bt_outldapfilter'),
 							  'class="bt-outlist" id="bt-outldapfilter" border="0"');?></a>
 			</div>

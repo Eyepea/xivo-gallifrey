@@ -69,14 +69,14 @@ endif;
 		   onclick="dwho.form.move_selected('it-agentlist','it-agent');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inagent');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inagent'),
 					  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 		<a href="#"
 		   onclick="dwho.form.move_selected('it-agent','it-agentlist');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outagent');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outagent'),
 					  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 	</div>
@@ -139,14 +139,14 @@ endif;
 		   onclick="xivo_ast_inqueue();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inqueue');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inqueue'),
 					  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_outqueue();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outqueue');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outqueue'),
 					  'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 

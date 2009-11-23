@@ -143,7 +143,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 						  'it-context');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incontext');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_incontext'),
 					  'class="bt-inlist" id="bt-incontext" border="0"');?></a><br />
 		<a href="#"
@@ -151,7 +151,7 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 						  'it-contextlist');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcontext');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outcontext'),
 					  'class="bt-outlist" id="bt-outcontext" border="0"');?></a>
 	</div>
@@ -173,14 +173,14 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 			   onclick="dwho.form.order_selected('it-context',1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcontext');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_upcontext'),
 						  'class="bt-uplist" id="bt-upcontext" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-context',-1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcontext');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_downcontext'),
 						  'class="bt-downlist" id="bt-downcontext" border="0"');?></a>
 		</div>

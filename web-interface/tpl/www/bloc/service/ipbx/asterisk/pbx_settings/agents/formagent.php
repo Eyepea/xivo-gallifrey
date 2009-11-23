@@ -138,14 +138,14 @@ endif;
 		   onclick="dwho.form.move_selected('it-userlist','it-user');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inuser');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inuser'),
 					  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 		<a href="#"
 		   onclick="dwho.form.move_selected('it-user','it-userlist');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outuser');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outuser'),
 					  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 	</div>
@@ -200,14 +200,14 @@ endif;
 		   onclick="xivo_ast_inqueue();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inqueue');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inqueue'),
 					  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_outqueue();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outqueue');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outqueue'),
 					  'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 

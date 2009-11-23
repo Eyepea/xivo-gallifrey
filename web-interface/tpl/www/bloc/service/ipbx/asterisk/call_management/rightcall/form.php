@@ -152,14 +152,14 @@ endif;
 			   onclick="dwho.form.move_selected('it-userlist','it-user');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inuser');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_inuser'),
 						  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.move_selected('it-user','it-userlist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outuser');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outuser'),
 						  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 		</div>
@@ -210,14 +210,14 @@ endif;
 			   onclick="dwho.form.move_selected('it-grouplist','it-group');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_ingroup');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_ingroup'),
 						  'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.move_selected('it-group','it-grouplist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outgroup');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outgroup'),
 						  'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 		</div>
@@ -267,14 +267,14 @@ endif;
 			   onclick="dwho.form.move_selected('it-incalllist','it-incall');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inincall');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_inincall'),
 						  'class="bt-inlist" id="bt-inincall" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.move_selected('it-incall','it-incalllist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outincall');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outincall'),
 						  'class="bt-outlist" id="bt-outincall" border="0"');?></a>
 		</div>
@@ -325,14 +325,14 @@ endif;
 			   onclick="dwho.form.move_selected('it-outcalllist','it-outcall');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inoutcall');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_inoutcall'),
 						  'class="bt-inlist" id="bt-inoutcall" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.move_selected('it-outcall','it-outcalllist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outoutcall');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outoutcall'),
 						  'class="bt-outlist" id="bt-outoutcall" border="0"');?></a>
 		</div>

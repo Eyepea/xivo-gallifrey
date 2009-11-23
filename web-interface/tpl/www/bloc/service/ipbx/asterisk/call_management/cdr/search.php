@@ -164,7 +164,7 @@ endif;
 	    xivo_calendar_display('cal-dbeg','it-dbeg');"
    onmouseover="xivo_calendar_body();"
    onmouseout="xivo_calendar_body('cal-dbeg','it-dbeg');"
-   title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',
+   title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/arrow-down.gif',
 								 $this->bbf('bt_showcalendar'),
 								 'id="bt-showcalbeg"
 								  border="0"
@@ -189,7 +189,7 @@ endif;
 	    xivo_calendar_display('cal-dend','it-dend');"
    onmouseover="xivo_calendar_body();"
    onmouseout="xivo_calendar_body('cal-dend','it-dend');"
-   title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/row-down.gif',
+   title="<?=$this->bbf('bt_showcalendar');?>"><?=$url->img_html('img/site/button/arrow-down.gif',
 								 $this->bbf('bt_showcalendar'),
 								 'id="bt-showcalend"
 								  border="0"

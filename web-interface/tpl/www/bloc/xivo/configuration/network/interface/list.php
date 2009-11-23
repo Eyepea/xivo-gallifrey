@@ -19,6 +19,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 $url = &$this->get_module('url');
 $form = &$this->get_module('form');
 $dhtml = &$this->get_module('dhtml');
@@ -72,22 +74,20 @@ $page = $url->pager($pager['pages'],
 	</tr>
 <?php
 	else:
-		dwho::load_class('dwho_network');
-
 		for($i = 0;$i < $nb;$i++):
 			$netinfo = &$list[$i]['netinfo'];
 			$netiface = &$list[$i]['netiface'];
 
-			$id = '';
-			$name = '-';
-			$devname = '';
-			$hwtype = '';
-			$hwtypeid = 0;
-			$hwaddress = '-';
-			$method = '-';
-			$address = '-';
-			$vlanid = '-';
-			$icon = 'unavailable';
+			$id		= '';
+			$name		= '-';
+			$devname	= '';
+			$hwtype		= '';
+			$hwtypeid	= 0;
+			$hwaddress	= '-';
+			$method		= '-';
+			$address	= '-';
+			$vlanid		= '-';
+			$icon		= 'unavailable';
 
 			if(empty($netinfo) === false):
 				$devname = $netinfo['interface'];
@@ -111,12 +111,12 @@ $page = $url->pager($pager['pages'],
 			endif;
 
 			if(empty($netiface) === false):
-				$id = $netiface['name'];
-				$name = $netiface['name'];
-				$devname = $netiface['devname'];
-				$hwtype = $netiface['hwtype'];
-				$hwtypeid = dwho_uint($netiface['hwtypeid']);
-				$method = $this->bbf('method',$netiface['method']);
+				$id		= $netiface['name'];
+				$name		= $netiface['name'];
+				$devname	= $netiface['devname'];
+				$hwtype		= $netiface['hwtype'];
+				$hwtypeid	= dwho_uint($netiface['hwtypeid']);
+				$method		= $this->bbf('method',$netiface['method']);
 
 				if(dwho_has_len($netiface['address']) === true):
 					$address = $netiface['address'];
@@ -126,8 +126,8 @@ $page = $url->pager($pager['pages'],
 					$vlanid = $netiface['vlanid'];
 				endif;
 
-				if($netiface['disable'] === true):
-					$icon = 'disable';
+				if($netiface['state'] !== 'enable'):
+					$icon = $netiface['state'];
 				endif;
 			endif;
 

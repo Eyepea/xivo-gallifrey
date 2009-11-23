@@ -265,13 +265,13 @@ endif;
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-voicemenu-flow',1,true); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_voicemenu-application');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_up_voicemenu-application'),
 						  'class="bt-uplist" id="bt-voicemenu-application-up" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-voicemenu-flow',-1,true); return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_down_voicemenu-application');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_down_voicemenu-application'),
 						  'class="bt-downlist" id="bt-voicemenu-application-down" border="0"');?></a>
 		</div>

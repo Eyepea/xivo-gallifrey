@@ -165,7 +165,7 @@ endif;
 			   onclick="dwho.form.order_selected('it-ldapfilter-attrdisplayname',1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_ldapfilter-attrdisplayname');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_up_ldapfilter-attrdisplayname'),
 						  'class="bt-uplist"
 						   id="bt-ldapfilter-attrdisplayname-up"
@@ -174,7 +174,7 @@ endif;
 			   onclick="dwho.form.order_selected('it-ldapfilter-attrdisplayname',-1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_down_ldapfilter-attrdisplayname');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_down_ldapfilter-attrdisplayname'),
 						  'class="bt-downlist"
 						   id="bt-ldapfilter-attrdisplayname-down"
@@ -227,7 +227,7 @@ endif;
 			   onclick="dwho.form.order_selected('it-ldapfilter-attrphonenumber',1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_up_ldapfilter-attrphonenumber');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_up_ldapfilter-attrphonenumber'),
 						  'class="bt-uplist"
 						   id="bt-ldapfilter-attrphonenumber-up"
@@ -236,7 +236,7 @@ endif;
 			   onclick="dwho.form.order_selected('it-ldapfilter-attrphonenumber',-1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_down_ldapfilter-attrphonenumber');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_down_ldapfilter-attrphonenumber'),
 						  'class="bt-downlist"
 						   id="bt-ldapfilter-attrphonenumber-down"

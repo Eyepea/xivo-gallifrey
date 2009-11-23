@@ -57,14 +57,14 @@ $qmember = $this->get_var('qmember');
 		   onclick="xivo_ast_user_ingroup();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_ingroup');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_ingroup'),
 					  'class="bt-inlist" id="bt-ingroup" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_user_outgroup();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outgroup');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outgroup'),
 					  'class="bt-outlist" id="bt-outgroup" border="0"');?></a>
 	</div>
@@ -171,14 +171,14 @@ $qmember = $this->get_var('qmember');
 		   onclick="xivo_ast_inqueue();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inqueue');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inqueue'),
 					  'class="bt-inlist" id="bt-inqueue" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_ast_outqueue();
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outqueue');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outqueue'),
 					  'class="bt-outlist" id="bt-outqueue" border="0"');?></a>
 

@@ -242,13 +242,13 @@ endif;
 		<a href="#"
 		   onclick="xivo_voicemail_format('in'); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_informat');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_informat'),
 					  'class="bt-inlist" id="bt-informat" border="0"');?></a><br />
 		<a href="#"
 		   onclick="xivo_voicemail_format('out'); return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outformat');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outformat'),
 					  'class="bt-outlist" id="bt-outformat" border="0"');?></a>
 	</div>

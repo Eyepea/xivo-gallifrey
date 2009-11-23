@@ -178,14 +178,14 @@ if($outcalltrunk['list'] !== false):
 		   onclick="dwho.form.move_selected('it-outcalltrunklist','it-outcalltrunk');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inoutcalltrunk');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inoutcalltrunk'),
 					  'class="bt-inlist" id="bt-inoutcalltrunk" border="0"');?></a><br />
 		<a href="#"
 		   onclick="dwho.form.move_selected('it-outcalltrunk','it-outcalltrunklist');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outoutcalltrunk');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outoutcalltrunk'),
 					  'class="bt-outlist" id="bt-outoutcalltrunk" border="0"');?></a>
 	</div>
@@ -205,14 +205,14 @@ if($outcalltrunk['list'] !== false):
 			   onclick="dwho.form.order_selected('it-outcalltrunk',1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upoutcalltrunk');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_upoutcalltrunk'),
 						  'class="bt-uplist" id="bt-upoutcalltrunk" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-outcalltrunk',-1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downoutcalltrunk');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_downoutcalltrunk'),
 						  'class="bt-downlist" id="bt-downoutcalltrunk" border="0"');?></a>
 		</div>
@@ -254,14 +254,14 @@ endif;
 			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outrightcall'),
 						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 		</div>

@@ -754,7 +754,7 @@ endif;
 						  'it-codec');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_incodec');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_incodec'),
 					  'class="bt-inlist" id="bt-incodec" border="0"');?></a><br />
 		<a href="#"
@@ -762,7 +762,7 @@ endif;
 						  'it-codeclist');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outcodec');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outcodec'),
 					  'class="bt-outlist" id="bt-outcodec" border="0"');?></a>
 	</div>
@@ -785,14 +785,14 @@ endif;
 			   onclick="dwho.form.order_selected('it-codec',1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_upcodec');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_upcodec'),
 						  'class="bt-uplist" id="bt-upcodec" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-codec',-1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downcodec');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_downcodec'),
 						  'class="bt-downlist" id="bt-downcodec" border="0"');?></a>
 		</div>
@@ -878,14 +878,14 @@ endif;
 			   onclick="dwho.form.move_selected('it-rightcalllist','it-rightcall');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inrightcall');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_inrightcall'),
 						  'class="bt-inlist" id="bt-inrightcall" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.move_selected('it-rightcall','it-rightcalllist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outrightcall');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outrightcall'),
 						  'class="bt-outlist" id="bt-outrightcall" border="0"');?></a>
 		</div>

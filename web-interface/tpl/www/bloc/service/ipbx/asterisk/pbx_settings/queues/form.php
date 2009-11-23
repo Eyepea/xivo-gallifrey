@@ -272,7 +272,7 @@ endif;
 						  'it-queue-periodic-announce');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_inpannounce');?>">
-			<?=$url->img_html('img/site/button/row-left.gif',
+			<?=$url->img_html('img/site/button/arrow-left.gif',
 					  $this->bbf('bt_inpannounce'),
 					  'class="bt-inlist" id="bt-inpannounce" border="0"');?></a><br />
 		<a href="#"
@@ -280,7 +280,7 @@ endif;
 						  'it-pannouncelist');
 			    return(dwho.dom.free_focus());"
 		   title="<?=$this->bbf('bt_outpannounce');?>">
-			<?=$url->img_html('img/site/button/row-right.gif',
+			<?=$url->img_html('img/site/button/arrow-right.gif',
 					  $this->bbf('bt_outpannounce'),
 					  'class="bt-outlist" id="bt-outpannounce" border="0"');?></a>
 	</div>
@@ -300,14 +300,14 @@ endif;
 			   onclick="dwho.form.order_selected('it-queue-periodic-announce',1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_uppannounce');?>">
-				<?=$url->img_html('img/site/button/row-up.gif',
+				<?=$url->img_html('img/site/button/arrow-up.gif',
 						  $this->bbf('bt_uppannounce'),
 						  'class="bt-uplist" id="bt-uppannounce" border="0"');?></a><br />
 			<a href="#"
 			   onclick="dwho.form.order_selected('it-queue-periodic-announce',-1);
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_downpannounce');?>">
-				<?=$url->img_html('img/site/button/row-down.gif',
+				<?=$url->img_html('img/site/button/arrow-down.gif',
 						  $this->bbf('bt_downpannounce'),
 						  'class="bt-downlist" id="bt-downpannounce" border="0"');?></a>
 		</div>
@@ -363,7 +363,7 @@ endif;
 							  'it-user');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_inuser');?>">
-				<?=$url->img_html('img/site/button/row-left.gif',
+				<?=$url->img_html('img/site/button/arrow-left.gif',
 						  $this->bbf('bt_inuser'),
 						  'class="bt-inlist" id="bt-inuser" border="0"');?></a><br />
 			<a href="#"
@@ -371,7 +371,7 @@ endif;
 							  'it-userlist');
 				    return(dwho.dom.free_focus());"
 			   title="<?=$this->bbf('bt_outuser');?>">
-				<?=$url->img_html('img/site/button/row-right.gif',
+				<?=$url->img_html('img/site/button/arrow-right.gif',
 						  $this->bbf('bt_outuser'),
 						  'class="bt-outlist" id="bt-outuser" border="0"');?></a>
 		</div>
@@ -430,7 +430,7 @@ endif;
 								  'it-agentgroup');
 					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_inagentgroup');?>">
-					<?=$url->img_html('img/site/button/row-left.gif',
+					<?=$url->img_html('img/site/button/arrow-left.gif',
 							  $this->bbf('bt_inagentgroup'),
 							  'class="bt-inlist" id="bt-inagentgroup" border="0"');?></a><br />
 				<a href="#"
@@ -438,7 +438,7 @@ endif;
 								  'it-agentgrouplist');
 					    return(dwho.dom.free_focus());"
 				   title="<?=$this->bbf('bt_outagentgroup');?>">
-					<?=$url->img_html('img/site/button/row-right.gif',
+					<?=$url->img_html('img/site/button/arrow-right.gif',
 							  $this->bbf('bt_outagentgroup'),
 							  'class="bt-outlist" id="bt-outagentgroup" border="0"');?></a>
 			</div>
@@ -486,7 +486,7 @@ endif;
 									  'it-agent');
 						    return(dwho.dom.free_focus());"
 					   title="<?=$this->bbf('bt_inagent');?>">
-						<?=$url->img_html('img/site/button/row-left.gif',
+						<?=$url->img_html('img/site/button/arrow-left.gif',
 								  $this->bbf('bt_inagent'),
 								  'class="bt-inlist" id="bt-inagent" border="0"');?></a><br />
 					<a href="#"
@@ -494,7 +494,7 @@ endif;
 									  'it-agentlist');
 						    return(dwho.dom.free_focus());"
 					   title="<?=$this->bbf('bt_outagent');?>">
-						<?=$url->img_html('img/site/button/row-right.gif',
+						<?=$url->img_html('img/site/button/arrow-right.gif',
 								  $this->bbf('bt_outagent'),
 								  'class="bt-outlist" id="bt-outagent" border="0"');?></a>
 				</div>
