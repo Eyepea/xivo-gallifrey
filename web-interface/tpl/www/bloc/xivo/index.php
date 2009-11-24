@@ -18,6 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$dhtml = &$this->get_module('dhtml');
+$dhtml->write_js('dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,\'services\');');
+
 $sysinfo = $this->get_var('sysinfo');
 $cpustats = $this->get_var('cpustats');
 $devstats = $this->get_var('devstats');
@@ -297,6 +300,7 @@ endif;
 				</tr>
 			</table>
 		</div>
+		<div id="services">
 <?php
 	$this->file_include('bloc/xivo/monitoring/group',
 			    array('group_name'	=> 'mon_server'));
@@ -307,6 +311,7 @@ endif;
 	$this->file_include('bloc/xivo/monitoring/group',
 			    array('group_name'	=> 'mon_grpundef'));
 ?>
+		</div>
 	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>

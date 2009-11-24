@@ -138,3 +138,8 @@ function xivo_fm_select_add_exten(id,value)
 
 	return(dwho.form.select_add_entry(id,pattern,pattern));
 }
+
+dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,
+		    'mn-control-system--reload');
+dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,
+		    'mn-control-system--restart');

@@ -19,6 +19,7 @@
 #
 
 dwho::load_class('dwho_query');
+dwho::load_class('dwho_uri');
 
 require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
