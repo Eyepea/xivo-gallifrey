@@ -18,19 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$url = &$this->get_module('url');
-	$form = &$this->get_module('form');
-	$dhtml = &$this->get_module('dhtml');
+$url = &$this->get_module('url');
+$form = &$this->get_module('form');
+$dhtml = &$this->get_module('dhtml');
 
-	$pager = $this->get_var('pager');
-	$act = $this->get_var('act');
+$pager = $this->get_var('pager');
+$act = $this->get_var('act');
 
-	$page = $url->pager($pager['pages'],
-			    $pager['page'],
-			    $pager['prev'],
-			    $pager['next'],
-			    'service/ipbx/system_management/ldapfilter',
-			    array('act' => $act));
+$page = $url->pager($pager['pages'],
+		    $pager['page'],
+		    $pager['prev'],
+		    $pager['next'],
+		    'service/ipbx/system_management/ldapfilter',
+		    array('act' => $act));
+
 ?>
 <div class="b-list">
 <?php
@@ -39,10 +40,17 @@
 	endif;
 ?>
 <form action="#" name="fm-ldapfilter-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
-<table cellspacing="0" cellpadding="0" border="0">
+<?php
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> $act)),
+
+		$form->hidden(array('name'	=> 'page',
+				    'value'	=> $pager['page']));
+?>
+<table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>

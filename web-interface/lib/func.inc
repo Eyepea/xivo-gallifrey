@@ -411,18 +411,6 @@ function dwho_is_alnumpunct($str)
 	return(dwho_is_spunct($str,'alphanum',false));
 }
 
-function dwho_ip2long($ip_address)
-{
-	if(is_scalar($ip_address) === false)
-		return(false);
-	else if(($long = ip2long($ip_address)) === -1
-	&& $ip_address !== 0xFFFFFFFF
-	&& $ip_address !== '255.255.255.255')
-		return(false);
-
-	return($long);
-}
-
 function dwho_is_instance($obj,$name)
 {
 	if(is_object($obj) === false
@@ -753,8 +741,6 @@ function dwho_unserialize(&$str)
 
 function dwho_print_r($a,$n='')
 {
-	$n = (string) $n;
-
 	if(dwho_empty($n) === false)
 		print '<b>'.$n.'</b> : ';
 	print '<pre>'; print_r($a); print '</pre>';
@@ -762,8 +748,6 @@ function dwho_print_r($a,$n='')
 
 function dwho_var_dump($a,$n='')
 {
-	$n = (string) $n;
-
 	if(dwho_empty($n) === false)
 		print '<b>'.$n.'</b> : ';
 	print '<pre>'; var_dump($a); print '</pre>';

@@ -220,6 +220,11 @@ dwho.dom.free_focus = function()
 	return(false);
 }
 
+dwho.dom.confirm_newlocation = function(msg,newlocation)
+{
+	window.location = confirm(msg) === true ? newlocation : '#';
+}
+
 dwho.dom.get_offset_position = function(obj)
 {
 	if(dwho_is_object(obj) === false)
@@ -424,6 +429,20 @@ dwho.dom.node.lastchild = function(node)
 	}
 
 	return(false);
+}
+
+dwho.dom.set_confirm_newlocation = function(obj,msg)
+{
+	if(dwho_is_object(obj) === false
+	|| dwho_is_undef(obj.href) === true
+	|| dwho_strcasecmp(obj.href,'javascript:',11) === 0
+	|| dwho_is_function(obj.onclick) === false
+	|| (rs = obj.onclick.toString().match(/return confirm\((.*)\);/)) === null)
+		return(false);
+
+	obj.href = 'javascript:dwho.dom.confirm_newlocation(' + rs[1] + ',\'' + obj.href + '\');';
+
+	return(true);
 }
 
 dwho.dom.set_onload = function(fn,args)

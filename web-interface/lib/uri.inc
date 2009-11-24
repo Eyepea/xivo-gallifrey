@@ -60,7 +60,7 @@ class dwho_uri
 		$this->_reipvfutureport		= '/^\[([\da-fA-F:\.]+|'.$ipvfuture.')\](\:'.$port.')?$/';
 	}
 
-	function build_uri($arr,$encode=true,$type_host=null)
+	function build_uri($arr,$encode=true,$type_host=null,$query_sep=null)
 	{
 		$encode = (bool) $encode;
 		$scheme = $authority = $userinfo = $hostport = $path = $query = $fragment = '';
@@ -170,7 +170,7 @@ class dwho_uri
 		}
 
 		if(dwho_issa('query',$arr) === true)
-			$query = $this->build_query($arr['query'],$encode);
+			$query = $this->build_query($arr['query'],$encode,$query_sep);
 
 		if(dwho_has_len($arr,'fragment') === true)
 		{
@@ -206,7 +206,7 @@ class dwho_uri
 		return($r);
 	}
 
-	function parse_uri($uri,$decode=true)
+	function parse_uri($uri,$decode=true,$query_sep=null)
 	{
 		$decode = (bool) $decode;
 
@@ -216,7 +216,7 @@ class dwho_uri
 		&& ($uri['authority'] = $this->split_authority($uri['authority'])) === false)
 			return(false);
 		else if(isset($uri['query']) === true
-		&& ($uri['query'] = $this->split_query($uri['query'])) === false)
+		&& ($uri['query'] = $this->split_query($uri['query'],$query_sep)) === false)
 			return(false);
 		else if(isset($uri['scheme']) === true && $this->valid_scheme($uri['scheme']) === false)
 			return(false);
@@ -385,11 +385,14 @@ class dwho_uri
 		return($r);
 	}
 
-	function split_query($query)
+	function split_query($query,$separator=null)
 	{
 		$query = (string) $query;
 
-		if($query === '' || ($assignments = explode('&',$query)) === false)
+		if(dwho_has_len($separator) === false)
+			$separator = '&';
+
+		if($query === '' || ($assignments = explode($separator,$query)) === false)
 			return(false);
 
 		$nb = count($assignments);
@@ -411,9 +414,12 @@ class dwho_uri
 		return($r);
 	}
 
-	function build_query($query,$encode=true)
+	function build_query($query,$encode=true,$separator=null)
 	{
 		$encode = (bool) $encode;
+
+		if(dwho_has_len($separator) === false)
+			$separator = '&';
 
 		$r = '';
 
@@ -459,7 +465,7 @@ class dwho_uri
 				$r[$i] .= '='.$ref[1];
 		}
 
-		return(implode('&',$r));
+		return(implode($separator,$r));
 	}
 
 	function get_host_type($host)

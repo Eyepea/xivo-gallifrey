@@ -18,58 +18,89 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_query');
+
 require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
 class dwho_tpl_url extends dwho_tpl_module
 {
 	var $_tpl	= null;
+	var $_query	= null;
+	var $_uri	= null;
 
 	function dwho_tpl_url(&$tpl)
 	{
-		$this->_tpl = &$tpl;
+		$this->_tpl		= &$tpl;
+		$this->_query		= &dwho_gct::set_get(new dwho_query());
+		$this->_uri		= new dwho_uri();
+		$this->_separator	= '&amp;';
 	}
 
-	function href($url='',$param='',$absolute=false,$sep=null,$sid=true,$internal=true)
+	function get_separator($sep=null)
 	{
-		$url = $this->url($url,$absolute,$internal);
+		if(dwho_has_len($sep) === true)
+			return($sep);
 
-		if(isset($url{0}) === true && $url{0} === '#')
-			return($url);
-
-		$url .= $this->_mk_param($param,$sep,$sid);
-
-		return($url);
+		return($this->_separator);
 	}
 
-	function _mk_param($param='',$sep=null,$sid=true)
+	function _build_query($query=null,$encode=true,$sep=null,$sid=true)
 	{
 		$sid = (bool) $sid;
-		$sep = $sep === null ? '&amp;' : (string) $sep;
+		$sep = $this->get_separator($sep);
 
-		if(is_array($param) === true)
-			$param = dwho_query::mk_query_str($param,$sep);
+		if(is_array($query) === true)
+			$query = $this->_query->build_query_str($query,$encode,$sep);
 		else
-			$param = (string) $param;
+			$query = strval($query);
 
-		if(isset($param{0}) === true)
-			return('?'.$param.($sid === true ? $sep.DWHO_SESS_STR : ''));
+		if(isset($query{0}) === true)
+			return('?'.$query.($sid === true ? $sep.DWHO_SESS_STR : ''));
 		else if($sid === true)
 			return('?'.DWHO_SESS_STR);
 
 		return('');
 	}
 
-	function href_html($content,$url='',$param='',$opt='',$title=null,$absolute=false,$sep='&amp;',$sid=true,$internal=true)
+	function href($url=null,$query=null,$absolute=false,$sep=null,$sid=true,$internal=true,$encode=true)
 	{
-		$url = $this->href($url,$param,$absolute,$sep,$sid,$internal);
+		$url = $this->url($url,$absolute,$internal);
+		$sep = $this->get_separator($sep);
+
+		if(substr($url,0,1) !== '#')
+			$url .= $this->_build_query($query,$encode,$sep,$sid);
+
+		if((bool) $encode === false)
+			return($url);
+
+		return($this->_uri->build_uri($this->_uri->parse_uri($url,true,$sep),true,null,$sep));
+	}
+
+	function href_html($content,
+			   $url=null,
+			   $query=null,
+			   $opt=null,
+			   $title=null,
+			   $absolute=false,
+			   $sep='&amp;',
+			   $sid=true,
+			   $internal=true,
+			   $encode=true)
+	{
+		$url = $this->href($url,$query,$absolute,$sep,$sid,$internal,$encode);
 
 		return($this->_mk_href_html($content,$url,$opt,$title));
 	}
 
-	function _mk_href_html($content,$url='',$opt='',$title=null)
+	function href_html_std($content,$url=null,$query=null,$opt=null,$title=null,$encode=true)
 	{
-		$content = (string) $content;
-		$opt = (string) $opt;
+		return($this->href_html($content,$url,$query,$opt,$title,false,null,false,false,$encode));
+	}
+
+	function _mk_href_html($content,$url=null,$opt=null,$title=null)
+	{
+		$content	= (string) $content;
+		$opt		= (string) $opt;
 
 		if($title !== null)
 			$title = (string) $title;
@@ -92,26 +123,36 @@ class dwho_tpl_url extends dwho_tpl_module
 		else if((bool) $i18n === false)
 			return($this->get_option('script_root').'/'.$url);
 
-		$usr = &$this->_get_module('user');
-		return($this->get_option('script_root').'/img/i18n/'.$usr->get_info('language').'/'.$url);
+		$user = &$this->_get_module('user');
+
+		return($this->get_option('script_root').'/img/i18n/'.$user->get_info('language').'/'.$url);
 	}
 
-	function img_html($url,$alt='',$opt='',$i18n=false,$internal=true)
+	function img_html($url,$alt=null,$opt=null,$query=null,$i18n=false,$internal=true)
 	{
-		$opt = (string) $opt;
+		$opt = dwho_has_len($opt) === true ? ' '.$opt : '';
+		$alt = trim(dwho_alttitle($alt));
 
-		$url = $this->img($url,$i18n,$internal);
-
-		return('<img src="'.$url.'"'.(isset($opt{0}) === true ? ' '.$opt : '').' alt="'.trim(dwho_alttitle($alt)).'" />');
+		return('<img src="'.$this->img($url,$i18n,$internal).'"'.$opt.' alt="'.$alt.'" />');
 	}
 
-	function pager($nb,$page,$prev=false,$next=false,$url='',$param='',$opt='',$absolute=false,$sep=null,$sid=true,$internal=true)
+	function pager($nb,
+		       $page,
+		       $prev=false,
+		       $next=false,
+		       $url=null,
+		       $query=null,
+		       $opt=null,
+		       $absolute=false,
+		       $sep=null,
+		       $sid=true,
+		       $internal=true,
+		       $encode=true)
 	{
-		$r = '';
-
-		$nb = dwho_uint($nb);
-		$page = dwho_uint($page,1);
-		$sep = $sep === null ? '&amp;' : (string) $sep;
+		$r	= '';
+		$nb	= dwho_uint($nb);
+		$page	= dwho_uint($page,1);
+		$sep	= $this->get_separator($sep);
 
 		if($nb < 2)
 			return($r);
@@ -120,7 +161,10 @@ class dwho_tpl_url extends dwho_tpl_module
 			$a = array_fill(1,$nb,0);
 		else
 		{
-			$a = array(1 => 0,2 => 0,3 => 0);
+			$a = array(1	=> 0,
+				   2	=> 0,
+				   3	=> 0);
+
 			$page1 = $page - 1;
 			$page2 = $page + 1;
 
@@ -142,12 +186,12 @@ class dwho_tpl_url extends dwho_tpl_module
 			ksort($a);
 		}
 
-		if(($param = $this->_mk_param($param,$sep,$sid)) === '')
-			$param = '?';
+		if(($query = $this->_build_query($query,$encode,$sep,$sid)) === '')
+			$query = '?';
 		else
-			$param .= $sep;
+			$query .= $sep;
 
-		$url = $this->url($url,$absolute,$internal).$param.'page=';
+		$url = $this->url($url,$absolute,$internal).$query.'page=';
 
 		if((bool) $prev === true)
 			$r .= $this->_mk_href_html($this->bbf('page_previous'),
@@ -161,11 +205,14 @@ class dwho_tpl_url extends dwho_tpl_module
 		{
 			$pagek = $k === $page ? '<b>'.$k.'</b>' : $k;
 
-			$slt = $this->_mk_href_html($pagek,$url.$k,$opt,$this->bbf('page_number',$k));
+			$slt = $this->_mk_href_html($pagek,
+						    $url.$k,
+						    $opt,
+						    $this->bbf('page_number',$k));
 
 			if($k > 4 && isset($a[$k - 1]) === false)
 				$r .= ' ... '.$slt.', ';
-			else if($k > 4 && $k < $nb-5 && isset($a[$k-1]) === false)
+			else if($k > 4 && $k < $nb-5 && isset($a[$k - 1]) === false)
 				$r .= $slt.' ... ';
 			else if(isset($a[$k + 1]) === true)
 				$r .= $slt.', ';
@@ -174,7 +221,10 @@ class dwho_tpl_url extends dwho_tpl_module
 		}
 
 		if((bool) $next === true)
-			$r .= ' - '.$this->_mk_href_html($this->bbf('page_next'),$url.($page + 1),$opt,$this->bbf('page_next'));
+			$r .= ' - '.$this->_mk_href_html($this->bbf('page_next'),
+							 $url.($page + 1),
+							 $opt,
+							 $this->bbf('page_next'));
 
 		return($r);
 	}

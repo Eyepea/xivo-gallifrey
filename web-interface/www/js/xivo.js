@@ -315,4 +315,20 @@ function xivo_form_result(success,str)
 	xivo_chg_property_attrib(dwho_eid('tooltips'),property);
 }
 
+function xivo_set_confirm_uri_for_main_listing()
+{
+	if((listing = dwho_eid('table-main-listing')) === false
+	|| dwho_is_function(listing.getElementsByTagName) === false)
+		return(false);
+
+	var list = listing.getElementsByTagName('a');
+	var nb = list.length;
+
+	for(var i = 0;i < nb;i++)
+		dwho.dom.set_confirm_newlocation(list[i]);
+
+	return(true);
+}
+
+dwho.dom.set_onload(xivo_set_confirm_uri_for_main_listing);
 dwho.dom.set_onload(xivo_menu_active);

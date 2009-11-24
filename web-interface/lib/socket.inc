@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 class dwho_socket
 {
 	var $_param	= array(
@@ -68,7 +70,7 @@ class dwho_socket
 				else
 					$this->open = false;
 			}
-			else if(dwho_ip2long($param['address']) !== false)
+			else if(dwho_network::valid_ipv4($param['address']) === true)
 				$this->_param['address'] = $param['address'];
 			else
 				$this->_param['address'] = gethostbyname($param['address']);

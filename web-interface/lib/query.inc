@@ -24,9 +24,17 @@ define('DWHO_QUERY_MODE_UNTRIM',4);
 define('DWHO_QUERY_MODE_URAW',DWHO_QUERY_MODE_RAW | DWHO_QUERY_MODE_UNTRIM);
 define('DWHO_QUERY_MODE_UQOT',DWHO_QUERY_MODE_QOT | DWHO_QUERY_MODE_UNTRIM);
 
+dwho::load_class('dwho_uri');
+
 class dwho_query
 {
-	var $orig	= array('request' => array(),'qstring' => array());
+	var $_uri	= null;
+	var $_separator	= array('in'	=> '&',
+				'out'	=> '&');
+	var $_mquotes	= false;
+
+	var $orig	= array('request'	=> array(),
+				'qstring'	=> array());
 	var $raw	= array();
 	var $uraw	= array();
 	var $qot	= array();
@@ -34,11 +42,11 @@ class dwho_query
 	var $uqo	= array();
 	var $qraw	= array();
 	var $input	= null;
-	var $_separator	= array('in' => '&','out' => '&');
-	var $_mquotes	= false;
 
 	function dwho_query()
 	{
+		$this->_uri = new dwho_uri();
+
 		if(isset($_SERVER['QUERY_STRING']) === true)
 			parse_str($_SERVER['QUERY_STRING'],$this->_orig['qstring']);
 
@@ -102,7 +110,7 @@ class dwho_query
 				$query = false;
 		}
 		else if(is_array($query) === true)
-			$q = $this->mk_query_str($query);
+			$q = $this->build_query_str($query);
 		else
 			$q = strval($query);
 
@@ -253,9 +261,9 @@ class dwho_query
 		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_RAW)));
 	}
 
-	function request_meth_raw_str($sep='')
+	function request_meth_raw_str($sep=null)
 	{
-		return($this->mk_query_str($this->request_meth_raw(),$sep));
+		return($this->build_query_str($this->request_meth_raw(),true,$sep));
 	}
 
 	function &request_meth_uraw()
@@ -263,9 +271,9 @@ class dwho_query
 		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_URAW)));
 	}
 
-	function request_meth_uraw_str($sep='')
+	function request_meth_uraw_str($sep=null)
 	{
-		return($this->mk_query_str($this->request_meth_uraw(),$sep));
+		return($this->build_query_str($this->request_meth_uraw(),true,$sep));
 	}
 
 	function &request_meth_qot()
@@ -273,9 +281,9 @@ class dwho_query
 		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_QOT)));
 	}
 
-	function request_meth_qot_str($sep='')
+	function request_meth_qot_str($sep=null)
 	{
-		return($this->mk_query_str($this->request_meth_qot(),$sep));
+		return($this->build_query_str($this->request_meth_qot(),true,$sep));
 	}
 
 	function &request_orig()
@@ -283,9 +291,9 @@ class dwho_query
 		return(($ref = &$this->_orig['request']));
 	}
 
-	function request_orig_str($sep='')
+	function request_orig_str($sep=null)
 	{
-		return($this->mk_query_str($this->_orig['request'],$sep));
+		return($this->build_query_str($this->_orig['request'],true,$sep));
 	}
 
 	function &qstring_raw()
@@ -293,9 +301,9 @@ class dwho_query
 		return(($ref = &$this->query_string('qstring',DWHO_QUERY_MODE_RAW)));
 	}
 
-	function qstring_raw_str($sep='')
+	function qstring_raw_str($sep=null)
 	{
-		return($this->mk_query_str($this->qstring_raw(),$sep));
+		return($this->build_query_str($this->qstring_raw(),true,$sep));
 	}
 
 	function &qstring_qot()
@@ -303,9 +311,9 @@ class dwho_query
 		return(($ref = $this->query_string('qstring',DWHO_QUERY_MODE_QOT)));
 	}
 
-	function qstring_qot_str($sep='')
+	function qstring_qot_str($sep=null)
 	{
-		return($this->mk_query_str($this->qstring_qot(),$sep));
+		return($this->build_query_str($this->qstring_qot(),true,$sep));
 	}
 
 	function qstring_orig()
@@ -350,75 +358,29 @@ class dwho_query
 		return($r);
 	}
 
-	function encode_query($str,$type='')
+	function build_query_str($query,$encode=true,$sep=null)
 	{
-		$str = (string) $str;
+		$r	= '';
+		$query	= (array) $query;
 
-		$regexp = 'a-zA-Z0-9-\._~\!\$\'\(\)\*,;:@\/\? ';
+		if($sep === null)
+			$sep = $this->_separator['out'];
 
-		if($type === 'val')
-			$regexp .= '=';
-		else if($type !== 'key')
-			return(urlencode($str));
-
-		if(preg_match_all('/[^'.$regexp.']+/',$str,$match,PREG_OFFSET_CAPTURE) === 0)
-			return($str);
-
-		$match = $match[0];
-		$nb = count($match);
-
-		$r = '';
-		$len = strlen($str);
-
-		if($match[0][1] > 0)
-			$r = substr($str,0,$match[0][1]);
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			$r .= urlencode($match[$i][0]);
-			$mlen = strlen($match[$i][0]);
-
-			if(isset($match[$i + 1]) === true)
-			{
-				$pos = $match[$i][1] + $mlen;
-				$r .= substr($str,$pos,$match[$i + 1][1] - $pos);
-				continue;
-			}
-
-			if(($match[$i][1] + $mlen) < $len)
-				$r .= substr($str,$match[$i][1] + $mlen);
-		}
-
-		$r = str_replace(' ','+',$r);
-
-		return($r);
-	}
-
-	function mk_query_str($a,$sep='')
-	{
-		$r = '';
-		$a = (array) $a;
-		$sep = (string) $sep;
-
-		if($sep === '')
-		{
-			if(defined('DWHO_SEP_ARG_OUT') === true)
-				$sep = DWHO_SEP_ARG_OUT;
-			else
-				$sep = '&';
-		}
-
-		if(empty($a) === true)
+		if(empty($query) === true)
 			return($r);
 
 		$r = array();
 
-		foreach($a as $k => $v)
+		foreach($query as $key => $value)
 		{
-			if(is_array($v) === true || is_object($v) === true)
-				$r[] = dwho_query::mk_query_str($v,$sep);
-			else if(($val = dwho_query::encode_query($v,'val')) !== '')
-				$r[] = dwho_query::encode_query($k,'key').'='.$val;
+			if(is_array($value) === true
+			|| is_object($value) === true)
+			{
+				if(empty($value) === false)
+					$r[] = $this->build_query_str($value,$encode,$sep);
+			}
+			else if(($arg = $this->_uri->build_query(array(array($key,$value)),$encode)) !== '')
+				$r[] = $arg;
 		}
 
 		return(implode($sep,$r));

@@ -50,7 +50,7 @@ $page = $url->pager($pager['pages'],
 		$form->hidden(array('name'	=> 'page',
 				    'value'	=> $pager['page']));
 ?>
-<table cellspacing="0" cellpadding="0" border="0">
+<table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>

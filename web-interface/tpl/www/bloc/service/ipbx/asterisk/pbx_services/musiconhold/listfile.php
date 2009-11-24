@@ -40,7 +40,7 @@ $page = $url->pager($pager['pages'],
 		echo '<div class="b-page">',$page,'</div>';
 	endif;
 ?>
-<table cellspacing="0" cellpadding="0" border="0">
+<table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_file');?></th>

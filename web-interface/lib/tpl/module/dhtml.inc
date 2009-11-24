@@ -18,45 +18,106 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_uri');
+
 require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module.inc'));
 
 class dwho_tpl_dhtml extends dwho_tpl_module
 {
 	var $_css	= array();
 	var $_js	= array();
-	var $_inc	= array('js' => array('head' => array(),'foot' => array()),'css' => array('head' => array()));
-	var $_content	= array('js' => array('head' => array(),'foot' => array()),'css' => array('head' => array()));
+	var $_inc	= array(
+				'js'	=> array(
+					'head'	=> array(),
+					'foot'	=> array()),
+				'css'	=> array(
+					'head'	=> array()));
+	var $_content	= array('js'	=> array(
+					'head'	=> array(),
+					'foot'	=> array()),
+				'css'	=> array(
+					'head' => array()));
 	var $_tpl	= null;
+	var $_query	= null;
 
 	function dwho_tpl_dhtml(&$tpl)
 	{
-		$this->_tpl = &$tpl;
+		$this->_tpl	= &$tpl;
+		$this->_uri	= new dwho_uri();
 	}
 
 	function escape($str,$entquote=ENT_COMPAT)
 	{
-		$str = preg_replace('/\s+/',' ',strval($str));
+		$str		= preg_replace('/\s+/',' ',strval($str));
 
-		$search = array('\'');
-		$replace = array('\\\'');
+		$search		= array('\'');
+		$replace	= array('\\\'');
 
-		if($entquote === true)
+		if(($specialchars = (($entquote & DWHO_ENT_NOSPECIALCHARS) === 0)))
+			$entquote &= ~DWHO_ENT_NOSPECIALCHARS;
+
+		switch($entquote)
 		{
-			$entquote = ENT_NOQUOTES;
-			$search[1] = '"';
-			$replace = array('&#039;','\"');
+			case ENT_NOQUOTES:
+				$search[1]	= '"';
+				$replace[1]	= '\"';
+				break;
+			case ENT_QUOTES:
+				return(dwho_htmlsc($str,ENT_QUOTES));
+			case DWHO_ENT_APOSTROPHE:
+				$entquote	= ENT_NOQUOTES;
+				$search[1]	= '"';
+				$replace	= array('&#039;','\"');
+				break;
+			default:
+				$entquote	= ENT_COMPAT;
 		}
-		else if($entquote === ENT_NOQUOTES)
-		{
-			$search[1] = '"';
-			$replace[1] = '\"';
-		}
-		else if($entquote === ENT_QUOTES)
-			return(dwho_htmlsc($str,ENT_QUOTES));
-		else
-			$entquote = ENT_COMPAT;
 
-		return(str_replace($search,$replace,dwho_htmlsc($str,$entquote)));
+		if($specialchars === true)
+			$str = dwho_htmlsc($str,$entquote);
+
+		return(str_replace($search,$replace,$str));
+	}
+
+	function escape_walk(&$value,$key,$entquote=ENT_COMPAT)
+	{
+		switch(gettype($value))
+		{
+			case 'boolean':
+			case 'integer':
+			case 'double':
+				return($value);
+			case 'object':
+				if(isset($value->scalar) === true)
+					return(($value = $value->scalar));
+		}
+
+		return(($value = '\''.$this->escape($value,$entquote).'\''));
+	}
+
+	function valid_js_function_name($name)
+	{
+		return((bool) preg_match('/^[a-zA-Z\$_][a-zA-Z0-9\.\$_]*(?<!\.)$/',$name));
+	}
+
+	function js_uri($function,$parameters=null,$entquote=ENT_COMPAT)
+	{
+		if($this->valid_js_function_name($function) === false)
+			return(false);
+
+		$entquote = (dwho_uint($entquote) | DWHO_ENT_NOSPECIALCHARS);
+
+		$uri = array('scheme'	=> 'javascript',
+			     'path'	=> $function.'();');
+
+		if(is_array($parameters) === false || empty($parameters) === true)
+			return($this->_uri->build_uri($uri));
+
+		array_walk($parameters,array(&$this,'escape_walk'),$entquote);
+
+		$uri['path'] = $function.'('.implode(',',$parameters).');';
+
+		return(str_replace('+','%20',$this->_uri->build_uri($uri)));
 	}
 
 	function add_css($css)

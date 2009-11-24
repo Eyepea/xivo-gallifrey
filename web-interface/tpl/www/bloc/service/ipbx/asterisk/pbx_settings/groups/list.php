@@ -40,10 +40,17 @@ $page = $url->pager($pager['pages'],
 	endif;
 ?>
 <form action="#" name="fm-group-list" method="post" accept-charset="utf-8">
-<?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
-<?=$form->hidden(array('name' => 'act','value' => $act));?>
-<?=$form->hidden(array('name' => 'page','value' => $pager['page']));?>
-<table cellspacing="0" cellpadding="0" border="0">
+<?php
+	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+				    'value'	=> DWHO_SESS_ID)),
+
+		$form->hidden(array('name'	=> 'act',
+				    'value'	=> $act)),
+
+		$form->hidden(array('name'	=> 'page',
+				    'value'	=> $pager['page']));
+?>
+<table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
@@ -107,7 +114,8 @@ $page = $url->pager($pager['pages'],
 					array('act'	=> 'delete',
 					      'id'	=> $ref['id'],
 					      'page'	=> $pager['page']),
-					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+					'onclick="return confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\');"
+					 id="toto"',
 					$this->bbf('opt_delete'));
 ?>
 		</td>
