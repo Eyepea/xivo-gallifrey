@@ -8,16 +8,14 @@ SrcUniqueid:
 DstChannel:
 DstUniqueid:
 
-Index: asterisk-1.4.26/res/res_features.c
+Index: asterisk-1.4.26.2/res/res_features.c
 ===================================================================
---- asterisk-1.4.26.orig/res/res_features.c	2009-07-22 18:55:02.000000000 +0200
-+++ asterisk-1.4.26/res/res_features.c	2009-07-22 18:55:14.000000000 +0200
-@@ -1000,7 +1000,17 @@
+--- asterisk-1.4.26.2.orig/res/res_features.c	2009-11-24 11:12:43.000000000 +0100
++++ asterisk-1.4.26.2/res/res_features.c	2009-11-24 11:13:56.000000000 +0100
+@@ -1000,6 +1000,16 @@
  			return -1;
  		return FEATURE_RETURN_SUCCESS;
  	}
--	ast_log(LOG_DEBUG, "do_atxfer newchan=%s\n", newchan->name);
-+	ast_log(LOG_DEBUG, "do_atxfer newchan=%s %s\n", newchan->name, chan->uniqueid);
 +	/* atxfer ami event */
 +	manager_event(EVENT_FLAG_CALL, "Atxfer",
 +	                               "SrcChannel: %s\r\n"
