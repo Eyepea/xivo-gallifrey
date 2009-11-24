@@ -4058,6 +4058,7 @@ class XivoCTICommand(BaseCommand):
             if meetmeref is None:
                 log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, meetmenum))
                 return
+            context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
             
             if uniqueid in meetmeref['uniqueids']:
                 log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
@@ -4094,7 +4095,7 @@ class XivoCTICommand(BaseCommand):
                                      'uniqueid' : uniqueid,
                                      'details' : meetmeref['uniqueids'][uniqueid] }
                        }
-            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             return
     
     def ami_meetmeleave(self, astid, event):
@@ -4107,6 +4108,7 @@ class XivoCTICommand(BaseCommand):
             if meetmeref is None:
                 log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, meetmenum))
                 return
+            context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
             
             if uniqueid not in meetmeref['uniqueids']:
                 log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
@@ -4120,7 +4122,7 @@ class XivoCTICommand(BaseCommand):
                                      'uniqueid' : uniqueid,
                                      'details' : meetmeref['uniqueids'][uniqueid] }
                        }
-            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             del meetmeref['uniqueids'][uniqueid]
             log.info('%s ami_meetmeleave : (%s) channel %s removed from meetme %s'
                      % (astid, uniqueid, channel, meetmenum))
@@ -4134,25 +4136,26 @@ class XivoCTICommand(BaseCommand):
             
             (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
             if meetmeref is None:
-                    log.warning('%s ami_meetmemute : unable to find room %s' % (astid, meetmenum))
-                    return
+                log.warning('%s ami_meetmemute : unable to find room %s' % (astid, meetmenum))
+                return
+            context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
             
             mutestatus = event.get('Status')
             if uniqueid in meetmeref['uniqueids']:
-                    meetmeref['uniqueids'][uniqueid]['mutestatus'] = mutestatus
-                    tosend = { 'class' : 'meetme',
-                               'function' : 'update',
-                               'payload' : { 'action' : 'mutestatus',
-                                             'astid' : astid,
-                                             'meetmeid' : meetmeid,
-                                             'roomnum' : meetmenum,
-                                             'uniqueid' : uniqueid,
-                                             'details' : meetmeref['uniqueids'][uniqueid] }
-                               }
-                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+                meetmeref['uniqueids'][uniqueid]['mutestatus'] = mutestatus
+                tosend = { 'class' : 'meetme',
+                           'function' : 'update',
+                           'payload' : { 'action' : 'mutestatus',
+                                         'astid' : astid,
+                                         'meetmeid' : meetmeid,
+                                         'roomnum' : meetmenum,
+                                         'uniqueid' : uniqueid,
+                                         'details' : meetmeref['uniqueids'][uniqueid] }
+                           }
+                self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             else:
-                    log.warning('%s ami_meetmemute : (%s) channel %s not in meetme %s'
-                                % (astid, uniqueid, channel, meetmenum))
+                log.warning('%s ami_meetmemute : (%s) channel %s not in meetme %s'
+                            % (astid, uniqueid, channel, meetmenum))
             return
     
     def ami_meetmetalking(self, astid, event):
@@ -5732,8 +5735,9 @@ class XivoCTICommand(BaseCommand):
                     t = ll.split(z.delimiter)
                     matchme = False
                     for ri in revindex:
-                        if t[ri].lower().find(searchpattern.lower()) >= 0:
-                            matchme = True
+                        if ri < len(t):
+                            if t[ri].lower().find(searchpattern.lower()) >= 0:
+                                matchme = True
                     if matchme:
                         # XXX problem when badly set delimiter + index()
                         futureline = {'xivo-dir' : z.name}
