@@ -1,0 +1,33 @@
+Author : Thomas Bernard
+
+Add an ami event when ATXFER is in progress.
+
+Event: Atxfer
+SrcChannel:
+SrcUniqueid:
+DstChannel:
+DstUniqueid:
+
+Index: asterisk-1.4.26/res/res_features.c
+===================================================================
+--- asterisk-1.4.26.orig/res/res_features.c	2009-07-22 18:55:02.000000000 +0200
++++ asterisk-1.4.26/res/res_features.c	2009-07-22 18:55:14.000000000 +0200
+@@ -1000,7 +1000,17 @@
+ 			return -1;
+ 		return FEATURE_RETURN_SUCCESS;
+ 	}
+-	ast_log(LOG_DEBUG, "do_atxfer newchan=%s\n", newchan->name);
++	ast_log(LOG_DEBUG, "do_atxfer newchan=%s %s\n", newchan->name, chan->uniqueid);
++	/* atxfer ami event */
++	manager_event(EVENT_FLAG_CALL, "Atxfer",
++	                               "SrcChannel: %s\r\n"
++	                               "SrcUniqueid: %s\r\n"
++	                               "DstChannel: %s\r\n"
++	                               "DstUniqueid: %s\r\n",
++	                               transferer->name,
++	                               transferer->uniqueid,
++	                               newchan->name,
++	                               newchan->uniqueid);
+ 
+ 	if (check_compat(transferer, newchan)) {
+ 		/* we do mean transferee here, NOT transferer */

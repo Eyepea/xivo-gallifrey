@@ -42,12 +42,12 @@ deadlock_chan_local_issue14112.patch
 pf_manager_parking.patch
 
 pf_chan_dahdi_pripreferred.patch
-atxfer_cid_display.patch
+pf_atxfer_cid_display.patch
 
 agentcalled_event
 pf_magic_pickupmark.patch
 pf_astdevmode.patch
-atxfer_ami_event.patch
+pf_atxfer_ami_event.patch
 
 pf_sip_fix_masquerade.patch
 pf_sip_fix_local_attended.patch
