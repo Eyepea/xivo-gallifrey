@@ -808,8 +808,8 @@ def sighandler_reload(signum, frame):
 # ==============================================================================
 
 # print sys.getdefaultencoding()
-logging.basicConfig(level=logging.INFO)
-#logging.basicConfig(level=logging.DEBUG)
+#logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 log = logging.getLogger('main')
 

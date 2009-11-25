@@ -710,6 +710,8 @@ class XivoCTICommand(BaseCommand):
                     self.capas[name].setwatchedpresenceid(val)
                     if val not in self.presence_sections:
                         self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
+                else:
+                    log.warning('set_options unknown prop %s (%s)' % (prop, val))
         for v, vv in allconf.read_section('phonehints', 'phonehints').iteritems():
             vvv = vv.split(',')
             if len(vvv) > 1:
@@ -4073,8 +4075,13 @@ class XivoCTICommand(BaseCommand):
                 userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
             else:
                 userid = ''
+            if 'adminlist' not in meetmeref:
+                meetmeref['adminlist'] = []
             if isadmin:
                 meetmeref['adminid'] = userid
+                # supporting several ids in one conference room
+                if userid not in meetmeref['adminlist']:
+                    meetmeref['adminlist'].append(userid)
             meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                                  'mutestatus' : 'off',
                                                  'recordstatus' : 'off',
@@ -4092,6 +4099,7 @@ class XivoCTICommand(BaseCommand):
                                      'roomnum' : meetmenum,
                                      'roomname' : meetmeref['name'],
                                      'adminid' : meetmeref['adminid'],
+                                     'adminlist' : meetmeref['adminlist'],
                                      'uniqueid' : uniqueid,
                                      'details' : meetmeref['uniqueids'][uniqueid] }
                        }
@@ -4110,6 +4118,23 @@ class XivoCTICommand(BaseCommand):
                 return
             context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
             
+            phoneid = self.__phoneid_from_channel__(astid, channel)
+            uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
+            if uinfo:
+                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+            else:
+                userid = ''
+
+            # supporting several ids in one conference room
+            if userid in meetmeref['adminlist']:
+                meetmeref['adminlist'].remove(userid)
+
+            if userid == meetmeref['adminid']:
+                if len(meetmeref['adminlist']) > 0:
+                    meetmeref['adminid'] = meetmeref['adminlist'][0]
+                else:
+                    meetmeref['adminid'] = ''
+
             if uniqueid not in meetmeref['uniqueids']:
                 log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
                             % (astid, uniqueid, channel, meetmenum))
@@ -4120,6 +4145,8 @@ class XivoCTICommand(BaseCommand):
                                      'meetmeid' : meetmeid,
                                      'roomnum' : meetmenum,
                                      'uniqueid' : uniqueid,
+                                     'adminid' : meetmeref['adminid'],
+                                     'adminlist' : meetmeref['adminlist'],
                                      'details' : meetmeref['uniqueids'][uniqueid] }
                        }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
@@ -4178,18 +4205,24 @@ class XivoCTICommand(BaseCommand):
             
             (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
             if meetmeref is None:
-                    log.warning('%s ami_meetmelist : unable to find room %s' % (astid, meetmenum))
-                    return
+                log.warning('%s ami_meetmelist : unable to find room %s' % (astid, meetmenum))
+                return
             
+            if 'adminlist' not in meetmeref:
+                meetmeref['adminlist'] = []
+
             if uniqueid not in meetmeref['uniqueids']:
                     phoneid = self.__phoneid_from_channel__(astid, channel)
                     uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
                     if uinfo:
-                            userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                        userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                     else:
-                            userid = ''
+                        userid = ''
                     if isadmin:
-                            meetmeref['adminid'] = userid
+                        meetmeref['adminid'] = userid
+                        # supporting several ids in one conference room
+                        if userid not in meetmeref['adminlist']:
+                            meetmeref['adminlist'].append(userid)
                     meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                                          'mutestatus' : mutestatus,
                                                          'recordstatus' : recordstatus,
