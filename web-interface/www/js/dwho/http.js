@@ -17,7 +17,7 @@
  */
 
 if(typeof(dwho) === 'undefined')
-	dwho = {'http': {}};
+	var dwho = {'http': {}};
 else if(dwho_is_undef(dwho.http) === true)
 	dwho.http = {};
 

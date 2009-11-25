@@ -477,7 +477,7 @@ class dwho_tpl
 		return($r);
 	}
 
-	function get_application($section,$nb=0,$path='',$ext='')
+	function get_app_path($section,$nb=0,$path='',$ext='')
 	{
 		$nb = dwho_uint($nb,20);
 		$path = (string) $path;

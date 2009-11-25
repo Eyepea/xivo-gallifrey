@@ -17,7 +17,7 @@
  */
 
 if(typeof(dwho) === 'undefined')
-	dwho = {'dom': {'node': {}}};
+	var dwho = {'dom': {'node': {}}};
 else if(dwho_is_undef(dwho.dom) === true)
 	dwho.dom = {'node': {}};
 else if(dwho_is_undef(dwho.dom.node) === true)
@@ -37,7 +37,7 @@ dwho.dom.eid = function(id,forcereload)
 	return(false);
 }
 
-dwho_eid = dwho.dom.eid;
+var dwho_eid = dwho.dom.eid;
 
 dwho.dom.add_cssclass = function(obj,classname)
 {
@@ -229,7 +229,7 @@ dwho.dom.set_confirm_newlocation = function(obj)
 {
 	if(dwho_is_object(obj) === false
 	|| dwho_is_undef(obj.href) === true
-	|| dwho_strcasecmp(obj.href,'javascript:',11) === 0
+	|| dwho_strcasecmp('javascript:',obj.href,11) === 0
 	|| dwho_is_function(obj.onclick) === false
 	|| (rs = obj.onclick.toString().match(/return confirm\((.*)\);/)) === null)
 		return(false);

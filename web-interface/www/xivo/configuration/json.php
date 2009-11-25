@@ -23,7 +23,7 @@ define('XIVO_TPL_SPACE','json');
 
 require_once('xivo.php');
 
-$application = $_TPL->get_application('xivo/configuration/web_services/',3);
+$application = $_TPL->get_app_path('xivo/configuration/web_services/',3);
 
 if($application === false)
 {

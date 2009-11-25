@@ -17,7 +17,7 @@
  */
 
 if(typeof(dwho) === 'undefined')
-	dwho = {'form': {}};
+	var dwho = {'form': {}};
 else if(dwho_is_undef(dwho.form) === true)
 	dwho.form = {};
 

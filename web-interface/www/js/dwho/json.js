@@ -17,7 +17,7 @@
  */
 
 if(typeof(dwho) === 'undefined')
-	dwho = {'json': {}};
+	var dwho = {'json': {}};
 else if(dwho_is_undef(dwho.json) === true)
 	dwho.json = {};
 
