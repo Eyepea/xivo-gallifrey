@@ -18,13 +18,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('XIVO_TPL_SPACE','ui');
+define('XIVO_TPL_AREA','ui');
 
 require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
-$application = $_TPL->get_app_path('service/ipbx/'.$ipbx->get_name().'/ui/',4);
+$application = $_LOC->get_app_path('service/ipbx/'.$ipbx->get_name().'/ui/',4);
 
 if($application === false)
 {

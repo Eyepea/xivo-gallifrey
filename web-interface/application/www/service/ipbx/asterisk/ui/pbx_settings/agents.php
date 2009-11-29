@@ -19,11 +19,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if(defined('XIVO_TPL_UI_ACL_CATEGORY') === true
-&& defined('XIVO_TPL_UI_ACL_SUBCATEGORY') === true)
+if(defined('XIVO_LOC_UI_ACL_CATEGORY') === true
+&& defined('XIVO_LOC_UI_ACL_SUBCATEGORY') === true)
 {
-	$access_category = XIVO_TPL_UI_ACL_CATEGORY;
-	$access_subcategory = XIVO_TPL_UI_ACL_SUBCATEGORY;
+	$access_category = XIVO_LOC_UI_ACL_CATEGORY;
+	$access_subcategory = XIVO_LOC_UI_ACL_SUBCATEGORY;
 }
 else
 {
@@ -33,8 +33,8 @@ else
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
-if(defined('XIVO_TPL_UI_ACTION') === true)
-	$act = XIVO_TPL_UI_ACTION;
+if(defined('XIVO_LOC_UI_ACTION') === true)
+	$act = XIVO_LOC_UI_ACTION;
 else
 	$act = $_QRY->get('act');
 

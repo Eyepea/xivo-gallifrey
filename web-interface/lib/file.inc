@@ -64,6 +64,28 @@ class dwho_file
 		return(new dwho_file_fileinfo());
 	}
 
+	function _fileinfo($file)
+	{
+		static $fileinfo = null;
+
+		if($fileinfo === null)
+		{
+			if(dwho::load_extension('fileinfo') === false)
+				return(($fileinfo = false));
+
+			$fileinfo = finfo_open(FILEINFO_MIME);
+		}
+
+		if($fileinfo === false)
+			return(false);
+
+		$str = finfo_file($fileinfo,$file);
+
+		finfo_close($fileinfo);
+
+		return($str);
+	}
+
 	function get_info($file)
 	{
 		$file = (string) $file;

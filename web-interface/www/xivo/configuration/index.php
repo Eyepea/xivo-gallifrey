@@ -26,7 +26,7 @@ if(xivo_user::chk_authorize('root') === false)
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_css('css/xivo/configuration.css');
 
-$application = $_TPL->get_app_path('xivo/configuration',2);
+$application = $_LOC->get_app_path('xivo/configuration',2);
 
 if($application === false)
 	$_QRY->go($_TPL->url('xivo'));

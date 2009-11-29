@@ -20,6 +20,13 @@
 
 require_once('xivo.php');
 
+if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
+{
+	$_TPL->set_struct('wizard/index');
+	$_TPL->display('wizard');
+	die();
+}
+
 if(xivo_user::is_valid() === true)
 	$_QRY->go($_TPL->url('xivo'));
 

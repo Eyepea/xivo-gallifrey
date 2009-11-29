@@ -250,12 +250,12 @@ class dwho
 			$dso = dwho_datastorage::set_param_from_uri($dso);
 
 		if(is_array($dso) === false)
-			die('ERR: Invalid datastorage configuration in init file');
+			die('ERR: Invalid datastorage configuration');
 		else if(isset($dso['type']) === false)
-			die('ERR: Missing datastorage "type" configuration in init file');
+			die('ERR: Missing datastorage "type" configuration');
 
 		if(dwho_datastorage::is_valid($dso['type']) === false)
-			die('ERR: Invalid datastorage "type" configuration in init file');
+			die('ERR: Invalid datastorage "type" configuration');
 		else if(dwho_datastorage::chk_extension_loaded($dso['type'],true) === false)
 			die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
 		else if(($datastorage = &dwho_gct::set_get(
@@ -270,60 +270,56 @@ class dwho
 		$this->_conf['dwho']['ini']['datastorage']['param'] = $dso;
 	}
 
+	function _cfg_ini_location($location)
+	{
+		if(is_array($location) === false || empty($location) === true)
+			die('ERR: Invalid location configuration');
+		else if(dwho_issa('general',$location) === false)
+			die('ERR: Missing general section for location configuration');
+
+		$this->_conf['location'] = array(
+					'script'	=> null,
+					'application'	=> null,
+					'root_url'	=> null);
+
+		if(isset($location['general']['script']) === false)
+			die('ERR: Missing script option in general for location configuration');
+		else if(($this->_conf['location']['script'] = dwho_file::is_d_r($location['general']['script'])) === false)
+			die('ERR: Invalid script option in general for path configuration');
+
+		if(isset($location['general']['application']) === false)
+			die('ERR: Missing application option in general for location configuration');
+		else if(($this->_conf['location']['application'] = dwho_file::is_d_r($location['general']['application'])) === false)
+			die('ERR: Invalid application option in general for path configuration');
+
+		if(isset($location['general']['root_url']) === true)
+		{
+			if(is_string($location['general']['root_url']) === true)
+				$this->_conf['location']['root_url'] = rtrim($location['general']['root_url'],'/');
+			else
+				die('ERR: Invalid root_url option in general for location configuration');
+		}
+
+		return(true);
+	}
+
 	function _cfg_ini_template($template)
 	{
-		if(is_array($template) === false || empty($template) === true)
-			die('ERR: Invalid template configuration in init file');
+		if(is_array($template) == false)
+			die('ERR: Invalid template configuration');
 
-		$def_script_path = $def_application_path = $def_tpl_path = false;
-
-		if(isset($template['script_path']) === true
-		&& ($def_script_path = dwho_file::is_d_r($template['script_path'])) === false)
-			die('ERR: Missing or invalid script_path for template configuration in init file');
-
-		if(isset($template['application_path']) === true
-		&& ($def_application_path = dwho_file::is_d_r($template['application_path'])) === false)
-			die('ERR: Missing or invalid application_path for template configuration in init file');
-
-		if(isset($template['tpl_path']) === true
-		&& ($def_tpl_path = dwho_file::is_d_r($template['tpl_path'])) === false)
-			die('ERR: Missing or invalid tpl_path for template configuration in init file');
-
-		unset($template['script_path'],$template['application_path'],$template['tpl_path']);
-
-		if(empty($template) === true)
-			die('ERR: Invalid template configuration in init file');
+		$this->_conf['template'] = array();
 
 		foreach($template as $key => $value)
 		{
-			if(is_array($value) === false)
-				die('ERR: Missing information in '.$key.' for template configuration in init file');
-			else if(isset($value['script_path']) === true && ($script_path = dwho_file::is_d_r($value['script_path'])) !== false)
-				$this->_conf['tpl'][$key]['script_path'] = $script_path;
-			else if($def_script_path !== false)
-				$this->_conf['tpl'][$key]['script_path'] = $def_script_path;
+			if(isset($value['path']) === true
+			&& ($path = dwho_file::is_d_r($value['path'])) !== false)
+				$this->_conf['template'][$key]['path'] = $path;
 			else
-				die('ERR: Missing or invalid script_path in '.$key.' for template configuration in init file');
-
-			if(isset($value['application_path']) === true && ($application_path = dwho_file::is_d_r($value['application_path'])) !== false)
-				$this->_conf['tpl'][$key]['application_path'] = $application_path;
-			else if($def_application_path !== false)
-				$this->_conf['tpl'][$key]['application_path'] = $def_application_path;
-			else
-				die('ERR: Missing or invalid application_path in '.$key.' for template configuration in init file');
-
-			if(isset($value['tpl_path']) === true && ($tpl_path = dwho_file::is_d_r($value['tpl_path'])) !== false)
-				$this->_conf['tpl'][$key]['tpl_path'] = $tpl_path;
-			else if($def_tpl_path !== false)
-				$this->_conf['tpl'][$key]['tpl_path'] = $def_tpl_path;
-			else
-				die('ERR: Missing or invalid tpl_path in '.$key.' for template configuration in init file');
-
-			if(isset($value['script_root']) === true)
-				$this->_conf['tpl'][$key]['script_root'] = rtrim($value['script_root'],DIRECTORY_SEPARATOR);
-			else
-				$this->_conf['tpl'][$key]['script_root'] = '';
+				die('ERR: Missing or invalid option path in '.$key.' for template configuration');
 		}
+
+		return(true);
 	}
 
 	function chk_extension_loaded($ext)
@@ -387,7 +383,7 @@ class dwho
 			$dir = DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.dirname($path);
 			$file .= '.inc';
 		}
-		else if(substr($class,0,5) === 'dwho_')
+		else if(strncmp('dwho_',$class,5) === 0)
 		{
 			if((bool) $lib === true)
 				$dir = rtrim(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.ltrim($dir,DIRECTORY_SEPARATOR),DIRECTORY_SEPARATOR.'.');
@@ -422,52 +418,49 @@ class dwho
 
 		$r = array();
 
-		foreach($init as $k => $v)
+		foreach($init as $section => $options)
 		{
-			if($name !== '' && $name !== $k)
+			if($name !== '' && $name !== $section)
 				continue;
-			else if(is_array($v) === false)
+			else if(is_array($options) === false)
 			{
-				$r[$k] = $v;
+				$r[$section] = $options;
 				continue;
 			}
-			else if(empty($v) === true)
+			else if(empty($options) === true)
 				continue;
 
-			foreach($v as $ks => $vs)
+			foreach($options as $optname => $optvalue)
 			{
-				if(($pos = strpos($ks,'.')) === false)
+				if(($pos = strpos($optname,'.')) === false)
 				{
-					if(isset($r[$k]) === false)
-						$r[$k] = array();
+					if(isset($r[$section]) === false)
+						$r[$section] = array();
 
-					$r[$k][$ks] = $vs;
+					$r[$section][$optname] = $optvalue;
 					continue;
 				}
-				else if($pos === 0 || ($key2 = substr($ks,$pos + 1)) === '')
+				else if($pos === 0 || ($optnamepart2 = substr($optname,$pos + 1)) === '')
 					continue;
 
-				$key1 = substr($ks,0,$pos);
+				$optnamepart1 = substr($optname,0,$pos);
 
-				if(isset($r[$k]) === false)
-					$r[$k] = array();
+				if(isset($r[$section]) === false)
+					$r[$section] = array();
 
-				if(isset($r[$k][$key1]) === false)
-					$r[$k][$key1] = array();
+				if(isset($r[$section][$optnamepart1]) === false)
+					$r[$section][$optnamepart1] = array();
 
-				$r[$k][$key1][$key2] = $vs;
+				$r[$section][$optnamepart1][$optnamepart2] = $optvalue;
 			}
 		}
 
-		if($name !== '')
-		{
-			if(isset($r[$name]) === true)
-				$r = &$r[$name];
-			else
-				$r = false;
-		}
+		if($name === '')
+			return($r);
+		else if(isset($r[$name]) === true)
+			return($r[$name]);
 
-		return($r);
+		return(false);
 	}
 
 	function load_array($file,$once=true)

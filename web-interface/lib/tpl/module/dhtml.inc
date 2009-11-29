@@ -149,7 +149,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 				$file = DWHO_SEP_DIR.'bloc'.DWHO_SEP_DIR.$files[$i];
 
 			if(dwho_issa($type,$this->_inc) === true
-			&& dwho_file::is_f_r($this->get_option('tpl_path').$file) !== false
+			&& dwho_file::is_f_r($this->get_path().$file) !== false
 			&& dwho_issa($where,$this->_inc[$type]) === true)
 				$this->_inc[$type][$where][] = $file;
 		}
@@ -194,7 +194,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 			if(isset($a[$i]) === false)
 				continue;
 
-			$path = $this->get_option('script_path').DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
+			$path = DWHO_LOCATION_SCRIPT.DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
 			if(dwho_file::is_f_r($path) !== false)
 				$this->_css[] = $a[$i];
@@ -213,7 +213,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 			if(isset($a[$i]) === false)
 				continue;
 
-			$path = $this->get_option('script_path').DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
+			$path = DWHO_LOCATION_SCRIPT.DWHO_SEP_DIR.ltrim($a[$i],DWHO_SEP_DIR);
 
 			if(dwho_file::is_f_r($path) !== false)
 				$this->_js[] = $a[$i];
@@ -237,7 +237,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 			$file = $this->file_time($file);
 
 			if($file{0} !== '/')
-				$file = $this->get_option('script_root').'/'.$file;
+				$file = DWHO_LOCATION_ROOT_URL.'/'.$file;
 
 			$r .= '<script type="text/javascript" src="'.$file.'"></script>'."\n";
 		}
@@ -262,7 +262,7 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 			$file = $this->file_time($file);
 
 			if($file{0} !== '/')
-				$file = $this->get_option('script_root').'/'.$file;
+				$file = DWHO_LOCATION_ROOT_URL.'/'.$file;
 
 			$r .= '<link rel="stylesheet" type="text/css" href="'.$file.'">'."\n";
 		}
@@ -308,8 +308,8 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 
 	function load_css()
 	{
-		$r = '';
-		$where = 'head';
+		$r	= '';
+		$where	= 'head';
 
 		if(dwho_issa($where,$this->_inc['css']) !== false
 		&& ($nb = count($this->_inc['css'][$where])) !== 0)
@@ -331,12 +331,10 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 
 	function _load_file($file)
 	{
-		$r = '';
-
-		$path = $this->get_option('tpl_path').DWHO_SEP_DIR.ltrim($file,DWHO_SEP_DIR);
+		$path = $this->get_path().DWHO_SEP_DIR.ltrim($file,DWHO_SEP_DIR);
 
 		if(($path = dwho_file::is_f_r($path)) === false)
-			return($r);
+			return('');
 
 		$this->set_file('dhtml',$path);
 

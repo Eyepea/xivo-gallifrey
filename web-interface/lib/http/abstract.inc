@@ -129,7 +129,7 @@ class dwho_http_abstract
 		if(is_scalar($str) === false)
 			return(false);
 
-		return((bool) preg_match($this->_regexp['token'],$str));
+		return((bool) preg_match('/^'.$this->_regexp['token'].'$/',$str));
 	}
 
 	function valid_quotedstring($text)
@@ -137,7 +137,7 @@ class dwho_http_abstract
 		if(is_scalar($text) === false)
 			return(false);
 
-		return((bool) preg_match($this->_regexp['quoted-string'],$text));
+		return((bool) preg_match('/^'.$this->_regexp['quoted-string'].'$/',$text));
 	}
 
 	function valid_token_word($text,$word_optional=true)
@@ -172,6 +172,35 @@ class dwho_http_abstract
 		}
 
 		return(implode('; ',$r));
+	}
+
+	function parse_parameters($parameters)
+	{
+		if(is_scalar($parameters) === false)
+			return(false);
+
+		$parameters = trim($parameters);
+
+		if(substr($parameters,-1) !== ';')
+			$parameters .= ';';
+
+		if(($nb = preg_match_all('/\s*'.$this->_regexp['parameter'].';\s*/',
+				  $parameters,
+				  $match,
+				  PREG_SET_ORDER)) === 0)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(isset($match[$i][2]{0}) === true)
+				$r[$match[$i][1]] = $match[$i][2];
+			else
+				$r[$match[$i][1]] = stripslashes($match[$i][3]);
+		}
+
+		return($r);
 	}
 
 	function build_date($timestamp,$format='rfc1123')

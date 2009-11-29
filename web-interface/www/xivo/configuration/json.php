@@ -19,11 +19,11 @@
 #
 
 define('DWHO_SESS_ENABLE',false);
-define('XIVO_TPL_SPACE','json');
+define('XIVO_TPL_AREA','json');
 
 require_once('xivo.php');
 
-$application = $_TPL->get_app_path('xivo/configuration/web_services/',3);
+$application = $_LOC->get_app_path('xivo/configuration/web_services/',3);
 
 if($application === false)
 {

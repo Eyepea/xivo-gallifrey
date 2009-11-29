@@ -69,21 +69,26 @@ class dwho_http_1_1_abstract extends dwho_http_abstract
 	{
 		$this->dwho_http_abstract();
 
+		$tchar		= '!#\$%\&\'\*\+\-\.0-9A-Z\^\_`a-z\|~';
 		$separators	= '\(\)\<\>@,;:\/\\"\\\[\]\?=\{\} \t';
 		$ctls		= '\x00-\x1F\x7F';
+		$lws		= '\x09\x0A\x0D\x20';
+		$qdtext		= $lws.'\x21\x23-\x5B\x5D-\x7E\x80-\xFF';
+		$quoted_text	= '\x01-\x09\x0B\x0C\x0E-\xFF';
 
-		$this->_regexp['token']		= '/^[^'.$ctls.$separators.']+$/';
-		$this->_regexp['quoted-string']	= '/(?:^[^'.$ctls.$separators.']+$'.
-						  '|^"(?:[^"]|\\\")+"$)/';
+		$this->_regexp['token']		= '['.$tchar.']+';
+		$this->_regexp['quoted-string']	= '(?:['.$tchar.']+|"(?:['.$qdtext.']|\\\['.$quoted_text.'])+")';
+		$this->_regexp['parameter']	= '(['.$tchar.']+)='.
+						  '(?:(['.$tchar.']+)|"((?:['.$qdtext.']|\\\['.$quoted_text.'])+)")';
 	}
 
 	function quote_word($str)
 	{
 		$str = strval($str);
 
-		if(preg_match($this->_regexp['token'],$str) === 1)
+		if(preg_match('/^'.$this->_regexp['token'].'$/',$str) === 1)
 			return('"'.$str.'"');
-		else if(preg_match($this->_regexp['quoted-string'],$str) === 1)
+		else if(preg_match('/^'.$this->_regexp['quoted-string'].'$/',$str) === 1)
 			return($str);
 
 		return('"'.preg_replace('/(?<!\\\)"/','\"',$str).'"');

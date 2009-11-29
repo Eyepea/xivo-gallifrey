@@ -18,6 +18,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+function dwho_constant($name,$default=null)
+{
+	if(defined($name) === true)
+		return(constant($name));
+
+	return($default);
+}
+
 function dwho_get_memory($value,$name=true)
 {
 	$get_name = strtolower($value);

@@ -27,24 +27,29 @@ class dwho_session
 		if(defined('DWHO_SESS_HANDLER') === false)
 		{
 			define('DWHO_SESS_HANDLER',true);
-			$dso = &dwho_gct::get('DWHO_DSO');
-			$name = 'dwho_session_'.$dso->get_type();
 
-			if(dwho::load_class('dwho::session::'.$dso->get_type()) === false)
-				trigger_error('Failed to load Session Datastorage',E_USER_ERROR);
+			if(($dso = &dwho_gct::get('DWHO_DSO')) !== false)
+			{
+				$name = 'dwho_session_'.$dso->get_type();
 
-			$this->_dso = new $name($dso);
+				if(dwho::load_class('dwho::session::'.$dso->get_type()) === false)
+					trigger_error('Failed to load Session Datastorage',E_USER_ERROR);
 
-			session_module_name('user');
-			session_set_save_handler(
-				array(&$this->_dso,'open'),
-				array(&$this->_dso,'close'),
-				array(&$this->_dso,'read'),
-				array(&$this->_dso,'write'),
-				array(&$this->_dso,'destroy'),
-				array(&$this->_dso,'gc'));
+				$this->_dso = new $name($dso);
 
-			register_shutdown_function(array(&$this->_dso,'write_close'));
+				session_module_name('user');
+				session_set_save_handler(
+					array(&$this->_dso,'open'),
+					array(&$this->_dso,'close'),
+					array(&$this->_dso,'read'),
+					array(&$this->_dso,'write'),
+					array(&$this->_dso,'destroy'),
+					array(&$this->_dso,'gc'));
+
+				register_shutdown_function(array(&$this->_dso,'write_close'));
+			}
+			else
+				session_module_name('files');
 		}
 
 		session_set_cookie_params(DWHO_SESS_TIME,DWHO_SESS_PATH);

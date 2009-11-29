@@ -61,7 +61,7 @@ class dwho_tpl_menu extends dwho_tpl_module
 					    ltrim($file,DWHO_SEP_DIR).
 					    $this->get_file_extension($ext));
 
-		if(dwho_file::is_f_r($this->get_option('tpl_path').
+		if(dwho_file::is_f_r($this->get_path().
 				     DWHO_SEP_DIR.
 				     $file) !== false)
 			$this->set_file('menu_'.$where,$file,$preload_i18n);

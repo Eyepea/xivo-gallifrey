@@ -35,6 +35,11 @@ class dwho_tpl_module
 		return($this->_tpl->load_i18n_file($file,$namespace));
 	}
 
+	function get_path()
+	{
+		return($this->_tpl->get_path());
+	}
+
 	function set_option($name,$value)
 	{
 		return($this->_tpl->set_option($name,$value));

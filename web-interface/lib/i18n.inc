@@ -41,16 +41,15 @@ class dwho_i18n
 		$this->_path_i18n = rtrim(DWHO_PATH_I18N,DWHO_SEP_DIR);
 		$this->_path_i18n_len = mb_strlen($this->_path_i18n);
 
-		$dso = &dwho_gct::get('DWHO_DSO');
-		$name = 'dwho_i18n_'.$dso->get_type();
+		if(($dso = &dwho_gct::get('DWHO_DSO')) !== false)
+		{
+			$name = 'dwho_i18n_'.$dso->get_type();
 
-		if(dwho::load_class($name,'i18n::datastorage',$dso->get_type()) === false)
-			trigger_error('Failed to load i18n Datastorage',E_USER_ERROR);
+			if(dwho::load_class($name,'i18n::datastorage',$dso->get_type()) === false)
+				trigger_error('Failed to load i18n Datastorage',E_USER_ERROR);
 
-		$this->_dso = new $name($dso);
-
-		if(isset($_SESSION['_i18n']) === false)
-			$_SESSION['_i18n'] = array('babelfish' => array());
+			$this->_dso = new $name($dso);
+		}
 	}
 
 	function get_language($locale='')
@@ -727,7 +726,7 @@ class dwho_i18n
 
 	function _mk_cache_file()
 	{
-		if(is_array($this->_file) === false)
+		if(is_array($this->_file) === false || is_object($this->_dso) === false)
 			return(false);
 
 		$cache = array('obj' => array());
@@ -757,7 +756,7 @@ class dwho_i18n
 	{
 		static $cached = array();
 
-		if(is_array($this->_file) === false)
+		if(is_array($this->_file) === false || is_object($this->_dso) === false)
 			return(false);
 
 		$namespace = $this->_file['namespace'];

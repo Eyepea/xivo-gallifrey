@@ -33,4 +33,12 @@ $array['ini']['locale'] = array(
 				'territory'	=> 'FR',
 				'charset'	=> 'UTF-8');
 
+$array['ini']['error'] = array(
+				'level'		=> 2047,
+				'report_type'	=> 7,
+				'report_mode'	=> 1,
+				'report_func'	=> 1,
+				'email'		=> null,
+				'file'		=> null);
+
 ?>

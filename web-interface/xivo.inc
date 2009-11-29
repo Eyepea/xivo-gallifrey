@@ -42,9 +42,13 @@ class xivo extends dwho
 		$this->_set_query();
 		$this->_set_session();
 		$this->_set_i18n();
-		$this->_set_xivo_object();
-		$this->_set_service();
-		$this->_set_user();
+
+		if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === true)
+		{
+			$this->_set_xivo_object();
+			$this->_set_service();
+			$this->_set_user();
+		}
 
 		dwho_gat::set('_CF',$this->_conf);
 	}
@@ -52,7 +56,9 @@ class xivo extends dwho
 	function _init_cfg()
 	{
 		if(($xivo_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini')) === false)
-			die('ERR: XIVO init file not found or unreadable');
+			define('XIVO_WEBI_CONFIGURED',false);
+		else
+			define('XIVO_WEBI_CONFIGURED',true);
 
 		if(dwho_issa('locale',$xivo_ini) === true)
 			$this->_cfg_ini_locale($xivo_ini['locale']);
@@ -71,6 +77,19 @@ class xivo extends dwho
 
 		ini_set('include_path',XIVO_PATH_ROOT.DWHO_SEP_PATH.ini_get('include_path'));
 
+		if(($location_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'location.ini')) !== false)
+			$this->_cfg_ini_location($location_ini);
+		else
+			die('ERR: Missing location init file');
+
+		if(($template_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'template.ini')) !== false)
+			$this->_cfg_ini_template($template_ini);
+		else
+			die('ERR: Missing template init file');
+
+		if(XIVO_WEBI_CONFIGURED === false)
+			return(null);
+
 		if(dwho_issa('general',$xivo_ini) === true && isset($xivo_ini['general']['datastorage']) === true)
 			$this->_cfg_ini_datastorage($xivo_ini['general']['datastorage']);
 		else if(dwho_issa('datastorage',$xivo_ini) === true)
@@ -83,8 +102,7 @@ class xivo extends dwho
 		else
 			die('ERR: Missing service configuration in XIVO init file');
 
-		if(dwho_issa('template',$xivo_ini) === true)
-			$this->_cfg_ini_template($xivo_ini['template']);
+		return(true);
 	}
 
 	function _set_xivo_object()
@@ -115,7 +133,7 @@ class xivo extends dwho
 
 	function load_class($class,$dir='',$file='',$lib=true)
 	{
-		if(substr($class,0,5) === 'xivo_'
+		if(strncmp('xivo_',$class,5) === 0
 		&& dwho_has_len($file) === false)
 			$file = substr($class,5);
 

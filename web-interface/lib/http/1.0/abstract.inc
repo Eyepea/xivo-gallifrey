@@ -44,21 +44,25 @@ class dwho_http_1_0_abstract extends dwho_http_abstract
 	{
 		$this->dwho_http_abstract();
 
+		$tchar		= '!#\$%\&\'\*\+\-\.0-9A-Z\^\_`a-z\|~';
 		$separators	= '\(\)\<\>@,;:\/\\"\\\[\]\?=\{\} \t';
 		$ctls		= '\x00-\x1F\x7F';
+		$lws		= '\x09\x0A\x0D\x20';
+		$qdtext		= $lws.'\x21\x23\x7E';
 
-		$this->_regexp['token']		= '/^[^'.$ctls.$separators.']+$/';
-		$this->_regexp['quoted-string']	= '/(?:^[^'.$ctls.$separators.']+$'.
-						  '|^"[^"\x00-\x08\x0B\x0C\x0E-\x1F]+"$)/';
+		$this->_regexp['token']		= '['.$tchar.']+';
+		$this->_regexp['quoted-string']	= '(?:['.$tchar.']+|"['.$qdtext.']+")';
+		$this->_regexp['parameter']	= '(['.$tchar.']+)='.
+						  '(?:(['.$tchar.']+)|"(['.$qdtext.']+)")';
 	}
 
 	function quote_word($str)
 	{
 		$str = strval($str);
 
-		if(preg_match($this->_regexp['token'],$str) === 1)
+		if(preg_match('/^'.$this->_regexp['token'].'$/',$str) === 1)
 			return('"'.$str.'"');
-		else if(preg_match($this->_regexp['quoted-string'],$str) === 1)
+		else if(preg_match('/^'.$this->_regexp['quoted-string'].'$/',$str) === 1)
 			return($str);
 
 		return(false);

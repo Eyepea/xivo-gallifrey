@@ -122,11 +122,11 @@ class dwho_tpl_url extends dwho_tpl_module
 		else if($url{0} === '/' || (bool) $internal === false)
 			return($url);
 		else if((bool) $i18n === false)
-			return($this->get_option('script_root').'/'.$url);
+			return(DWHO_LOCATION_ROOT_URL.'/'.$url);
 
 		$user = &$this->_get_module('user');
 
-		return($this->get_option('script_root').'/img/i18n/'.$user->get_info('language').'/'.$url);
+		return(DWHO_LOCATION_ROOT_URL.'/img/i18n/'.$user->get_info('language').'/'.$url);
 	}
 
 	function img_html($url,$alt=null,$opt=null,$query=null,$i18n=false,$internal=true)

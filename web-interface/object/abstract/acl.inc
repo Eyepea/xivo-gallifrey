@@ -220,19 +220,9 @@ class xivo_acl_abstract
 
 		if($section === '')
 		{
-			if(defined('XIVO_SCRIPT_ROOT') === true)
-				$script_root = XIVO_SCRIPT_ROOT;
-			else
-				$script_root = '';
-
-			if(($len = strlen($script_root)) === 0)
-				$section = $_SERVER['SCRIPT_NAME'];
-			else if(strncmp($script_root,$_SERVER['SCRIPT_NAME'],$len) === 0)
-				$section = substr($_SERVER['SCRIPT_NAME'],$len);
-			else
+			if((($section = dwho_location::get_current_location())) === false)
 				return(false);
-
-			if(($pos = strrpos($section,'/')) !== false)
+			else if(($pos = strrpos($section,'/')) !== false)
 				$section = substr($section,0,$pos);
 		}
 
