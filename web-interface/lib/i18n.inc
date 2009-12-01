@@ -50,6 +50,8 @@ class dwho_i18n
 
 			$this->_dso = new $name($dso);
 		}
+		else
+			$this->_dso = false;
 	}
 
 	function get_language($locale='')
@@ -428,8 +430,8 @@ class dwho_i18n
 
 		$this->_loop[$this->_file['filei18n']] = 1;
 
-		if($this->_mk_cache_file() !== false)
-			return($this->_get_cache_file());
+		if(($cache = $this->_mk_cache_file()) !== false)
+			return($this->_get_cache_file($cache));
 
 		return(false);
 	}
@@ -690,28 +692,21 @@ class dwho_i18n
 		$this->_file['path'] = $path;
 		$this->_file['filename'] = $dir.DWHO_SEP_DIR.$file;
 
-		if(defined('DWHO_I18N_BABELFISH_PATH') === false && $this->set_babelfish_path() === false)
+		if(defined('DWHO_I18N_BABELFISH_PATH') === false
+		&& $this->set_babelfish_path() === false)
 		{
 			trigger_error('Invalid I18N Babelfish path',E_USER_ERROR);
 			return(false);
 		}
-
-		if(isset($this->_file['locale']) === true && ($lc = $this->chk_locale($this->_file['locale'])) !== false)
+		else if(isset($this->_file['locale']) === true
+		&& ($lc = $this->chk_locale($this->_file['locale'])) !== DWHO_I18N_BABELFISH_LOCALE)
 		{
-			if($lc !== DWHO_I18N_BABELFISH_LOCALE)
-			{
-				trigger_error('Invalid I18N locale',E_USER_ERROR);
-				return(false);
-			}
+			trigger_error('Invalid I18N locale',E_USER_ERROR);
+			return(false);
+		}
 
-			$this->_file['locale'] = DWHO_I18N_BABELFISH_LOCALE;
-			$this->_file['language'] = DWHO_I18N_BABELFISH_LANGUAGE;
-		}
-		else
-		{
-			$this->_file['locale'] = DWHO_I18N_BABELFISH_LOCALE;
-			$this->_file['language'] = DWHO_I18N_BABELFISH_LANGUAGE;
-		}
+		$this->_file['locale'] = DWHO_I18N_BABELFISH_LOCALE;
+		$this->_file['language'] = DWHO_I18N_BABELFISH_LANGUAGE;
 
 		$filei18n = dwho_file::joinpath($this->_path_i18n,$this->_file['locale'],$this->_file['path']);
 
@@ -726,37 +721,42 @@ class dwho_i18n
 
 	function _mk_cache_file()
 	{
-		if(is_array($this->_file) === false || is_object($this->_dso) === false)
+		if(is_array($this->_file) === false)
 			return(false);
 
-		$cache = array('obj' => array());
+		$cache = array();
+		$cache['dcreate']	= isset($this->_file['filectime']) === true ? $this->_file['filectime'] : 0;
+		$cache['dupdate']	= $this->_file['filemtime'];
+		$cache['locale']	= $this->_file['locale'];
 
-		$cache['dcreate'] = isset($this->_file['filectime']) === true ? $this->_file['filectime'] : 0;
-		$cache['dupdate'] = $this->_file['filemtime'];
+		$cache['obj'] = array();
+		$cache['obj']['content']	= $this->_parse_file();
+		$cache['obj']['copy']		= $this->_copy;
+		$cache['obj']['load']		= $this->_load;
 
-		$cache['locale'] = $this->chk_locale($this->_file['locale']);
-
-		$cache['obj']['content'] = $this->_parse_file();
-		$cache['obj']['copy'] = $this->_copy;
-		$cache['obj']['load'] = $this->_load;
-
-		if($cache['locale'] === false || $cache['obj']['content'] === false)
+		if($this->chk_locale($cache['locale']) === false
+		|| $cache['obj']['content'] === false)
 		{
-			trigger_error('Wrong locale or unavaivable file content',E_USER_WARNING);
+			trigger_error('Wrong locale or unavailable file content',E_USER_WARNING);
 			return(false);
 		}
 
-		$cache['language'] = $this->get_language($cache['locale']);
-		$cache['path'] = $this->_file['path'];
+		$cache['language']	= $this->get_language($cache['locale']);
+		$cache['path']		= $this->_file['path'];
 
-		return($this->_dso->save_cache($cache));
+		if(is_object($this->_dso) === true)
+			return($this->_dso->save_cache($cache));
+
+		$cache['filectime'] = $cache['dcreate'];
+
+		return($cache);
 	}
 
-	function _get_cache_file()
+	function _get_cache_file($cache=null)
 	{
 		static $cached = array();
 
-		if(is_array($this->_file) === false || is_object($this->_dso) === false)
+		if(is_array($this->_file) === false)
 			return(false);
 
 		$namespace = $this->_file['namespace'];
@@ -771,7 +771,12 @@ class dwho_i18n
 
 		if(isset($cached[$namespace][$this->_file['locale']][$this->_file['path']]) === false)
 		{
-			if(($cache = $this->_dso->get_cache($this->_file)) === false
+			if(is_array($cache) === false
+			&& (is_object($this->_dso) === false
+			   || ($cache = $this->_dso->get_cache($this->_file)) === false) === true)
+				return(false);
+			else if($cache['locale'] !== $this->_file['locale']
+			|| $cache['path'] !== $this->_file['path']
 			|| dwho_issa('obj',$cache) === false)
 				return(false);
 
@@ -793,17 +798,17 @@ class dwho_i18n
 
 		if($ref['copy'] !== false)
 		{
-			$_file = $this->_file;
+			$file = $this->_file;
 			$this->_file = $ref['finfo'];
 			$this->_file['locale'] = $ref['copy'];
 			$this->_load_file($ref['finfo']['filename'],$ref['finfo']['namespace']);
-			$this->_file = $_file;
+			$this->_file = $file;
 		}
 
 		if(is_array($ref['load']) === true
 		&& empty($ref['load']) === false)
 		{
-			$_file = $this->_file;
+			$file = $this->_file;
 			$this->_file = $ref['finfo'];
 
 			reset($ref['load']);
@@ -818,7 +823,7 @@ class dwho_i18n
 					$this->_load_file($key,$ref['finfo']['namespace']);
 			}
 
-			$this->_file = $_file;
+			$this->_file = $file;
 		}
 
 		if(is_array($content) === true)
@@ -844,13 +849,13 @@ class dwho_i18n
 	{
 		if(is_array($this->_file) === false)
 			return(false);
-		else if(($file = dwho_file::is_f_r($this->_file['filei18n'])) === false)
+		else if(($filei18n = dwho_file::is_f_r($this->_file['filei18n'])) === false)
 		{
 			trigger_error('I18N file not found',E_USER_WARNING);
 			return(false);
 		}
 
-		$content = file($file);
+		$content = file($filei18n);
 		$nb = count($content);
 		$priority = 0;
 		$txt = false;
@@ -885,13 +890,13 @@ class dwho_i18n
 						$priority |= 1;
 						$txt = false;
 
-						$_file = $this->_file;
+						$file = $this->_file;
 
 						$this->_file['locale'] = $locale;
-						if($this->_load_file($_file['filename'],$_file['namespace']) !== false)
+						if($this->_load_file($file['filename'],$file['namespace']) !== false)
 							$this->_copy = $locale;
 
-						$this->_file = $_file;
+						$this->_file = $file;
 					}
 					else if(preg_match('/^;[\t ]*load[\t ]+'.
 							    '(?:\[('.DWHO_I18N_REGEXP_NAMESPACE.')\][\t ]*)?'.
@@ -904,26 +909,26 @@ class dwho_i18n
 						$txt = false;
 						$priority |= 2;
 
-						$_file = $this->_file;
-						$_load = $this->_load;
-						$_copy = $this->_copy;
+						$file = $this->_file;
+						$load = $this->_load;
+						$copy = $this->_copy;
 
 						if($matchload[1] === '')
-							$namespace = $_file['namespace'];
+							$namespace = $file['namespace'];
 						else
 							$namespace = $matchload[1];
 
 						if($matchload[2] === '')
 							$filename = $matchload[3];
 						else
-							$filename = $_file['dirname'].DWHO_SEP_DIR.$matchload[2].$matchload[3];
+							$filename = $file['dirname'].DWHO_SEP_DIR.$matchload[2].$matchload[3];
 
 						if($this->_load_file($filename,$namespace) !== false)
-							$_load[$namespace.';'.$this->_file['filename']] = 1;
+							$load[$namespace.';'.$this->_file['filename']] = 1;
 
-						$this->_copy = $_copy;
-						$this->_load = $_load;
-						$this->_file = $_file;
+						$this->_copy = $copy;
+						$this->_load = $load;
+						$this->_file = $file;
 					}
 					else if(preg_match('/^;[\t ]*([a-zA-Z0-9-_]+)(\(.*\))?$/',$line,$match) === 1)
 					{

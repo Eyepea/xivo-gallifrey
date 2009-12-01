@@ -56,7 +56,11 @@ class dwho_i18n_abstract_sql
 		if(is_array($arr) === false)
 			return(false);
 
-		$this->_dso->new_select($this->_param['table'],array('dcreate','dupdate','obj'));
+		$this->_dso->new_select($this->_param['table'],array('locale',
+								     'path',
+								     'dcreate',
+								     'dupdate',
+								     'obj'));
 		$this->_dso->where(array('locale' => $arr['locale'],
 					 'path'	=> $arr['path']));
 
