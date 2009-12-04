@@ -58,7 +58,7 @@ def incoming_meetme_set_features(agi, cursor, args):
     if meetme.announcejoinleave:
         options += "i"
 
-    if meetme.announcejoinleave:
+    if meetme.alwayspromptpin:
         options += "P"
 
     if meetme.starmenu:
