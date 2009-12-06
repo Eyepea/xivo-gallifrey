@@ -18,7 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
 dwho::load_class('dwho_network');
+dwho::load_class('dwho_http');
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk.inc'),true);
 
@@ -62,7 +64,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_load_config(dirname(__FILE__));
 
-		if(($size = $this->_chk_upload_file()) === false)
+		if(($size = $this->_verify_can_upload_file()) === false)
 			die();
 
 		$this->_conf['import']['file']['size'] = $size;
@@ -2410,19 +2412,22 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 	function import_csv()
 	{
-		$file = new dwho_file();
-
 		if(dwho::load_class('dwho::file::csv') === false
-		|| $file->get_upload('import',$this->_conf['import']['file']) === false)
+		|| ($http_response = dwho_http::factory('response')) === false
+		|| ($fileinfo = $http_response->upload_file('import',$this->_conf['import']['file'])) === false)
 			return(false);
 
 		$filecsv = new dwho_file_csv();
 
-		if(($data = $filecsv->parse($file->info['tmp_name'],0,'|',null,true,
+		if(($data = $filecsv->parse($fileinfo['tmp_name'],
+					    0,
+					    '|',
+					    null,
+					    true,
 					    $this->_conf['import']['field'])) === false
 		|| ($nb = count($data)) === 0)
 		{
-			dwho_file::rm($file->info['tmp_name']);
+			dwho_file::rm($fileinfo['tmp_name']);
 			return(false);
 		}
 
@@ -2459,7 +2464,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			}
 		}
 
-		dwho_file::rm($file->info['tmp_name']);
+		dwho_file::rm($fileinfo['tmp_name']);
 	}
 
 	function add_from_json()

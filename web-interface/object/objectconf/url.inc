@@ -30,6 +30,7 @@ $array['xivo/configuration/manage/ldapserver'] = 'xivo/configuration/index.php/m
 $array['xivo/configuration/manage/accesswebservice'] = 'xivo/configuration/index.php/manage/accesswebservice/';
 $array['xivo/configuration/network/interface'] = 'xivo/configuration/index.php/network/interface/';
 $array['xivo/configuration/network/iproute'] = 'xivo/configuration/index.php/network/iproute/';
+$array['xivo/configuration/network/resolvconf'] = 'xivo/configuration/index.php/network/resolvconf/';
 $array['xivo/preferences'] = 'xivo/preferences.php';
 $array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';

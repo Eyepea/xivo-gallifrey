@@ -378,7 +378,7 @@ class xivo_libconfig_abstract
 		return($defval);
 	}
 
-	function _chk_upload_file()
+	function _verify_can_upload_file()
 	{
 		$_CF = &dwho_gat::get('_CF');
 

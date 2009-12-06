@@ -25,7 +25,7 @@ class dwho_location
 
 	function dwho_location($options=array(),$app_misc=null)
 	{
-		$options	= (array) $options;
+		$options = (array) $options;
 
 		if(isset($options['application']) === false
 		|| ($application = dwho_file::is_d_r($options['application'])) === false)
@@ -48,7 +48,7 @@ class dwho_location
 			$this->_app_misc = $app_misc;
 	}
 
-	function get_current_location()
+	function get_current_location($ret=true)
 	{
 		$root_url = DWHO_LOCATION_ROOT_URL;
 
@@ -57,15 +57,17 @@ class dwho_location
 		else if(strncmp($root_url.'/',$_SERVER['SCRIPT_NAME'],$len + 1) === 0)
 			return(substr($_SERVER['SCRIPT_NAME'],$len));
 
-		return(false);
+		return(((bool) $ref === true ? $_SERVER['SCRIPT_NAME'] : false));
 	}
 
 	function cmp_to_current_location($location)
 	{
 		if(is_scalar($location) === false)
 			return(false);
-
-		$url = DWHO_LOCATION_ROOT_URL.'/'.$location;
+		else if(DWHO_LOCATION_ROOT_URL === '')
+			$url = $location;
+		else
+			$url = DWHO_LOCATION_ROOT_URL.'/'.ltrim($location,'/');
 
 		return((strcmp($url,$_SERVER['SCRIPT_NAME']) === 0));
 	}

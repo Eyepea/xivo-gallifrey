@@ -34,6 +34,9 @@ Interfaces
 ; acl(xivo-configuration-network-iproute)
 Routes IP statiques
 
+; acl(xivo-configuration-network-resolvconf)
+Résolution DNS
+
 ; acl(service-ipbx)
 IPBX
 

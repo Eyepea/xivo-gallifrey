@@ -20,6 +20,8 @@
 
 require_once('xivo.php');
 
+$date = 'Sat, 29 Oct 1994 19:43:31 GMT';
+
 if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
 {
 	$_TPL->set_struct('wizard/index');

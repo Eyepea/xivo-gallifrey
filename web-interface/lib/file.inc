@@ -37,129 +37,41 @@ define('FILE_R_OK',4);
 
 class dwho_file
 {
-	var $_finfo	= null;
-	var $info	= array(
-				'dir'		=> '',
-				'ext'		=> '',
-				'size'		=> 0,
-				'name'		=> '',
-				'path'		=> '',
-				'mtime'		=> '',
-				'pathnoext'	=> '',
-				'mime'		=> false,
-				'charset'	=> false,
-				'upload'	=> false);
-
-	function dwho_file()
+	function fileinfo($file)
 	{
-		$this->_finfo = $this->_load_fileinfo();
-	}
+		static $mime_cim = null;
 
-	function _load_fileinfo()
-	{
-		if(dwho::load_extension('fileinfo') === false
-		|| dwho::load_class('dwho_file_fileinfo','file','fileinfo') === false)
+		if(dwho::load_extension('fileinfo') === false)
 			return(false);
 
-		return(new dwho_file_fileinfo());
-	}
-
-	function _fileinfo($file)
-	{
-		static $fileinfo = null;
-
-		if($fileinfo === null)
+		if($mime_cim === null)
 		{
-			if(dwho::load_extension('fileinfo') === false)
-				return(($fileinfo = false));
+			if(dwho::load_class('dwho_mime_cim',
+					    array('mime','abstract'),
+					    'cim') === false)
+				return(($mime_cim = false));
 
-			$fileinfo = finfo_open(FILEINFO_MIME);
+			$mime_cim = new dwho_mime_cim();
 		}
 
-		if($fileinfo === false)
+		if(is_object($mime_cim) === false
+		|| ($fileinfo = finfo_open(FILEINFO_MIME)) === false)
 			return(false);
 
-		$str = finfo_file($fileinfo,$file);
+		$r = $mime_cim->parse_content_type(finfo_file($fileinfo,$file));
 
 		finfo_close($fileinfo);
 
-		return($str);
+		return($r);
 	}
 
-	function get_info($file)
+	function get_mime($file)
 	{
-		$file = (string) $file;
-
 		if(($file = dwho_file::is_f($file)) === false)
 			return(false);
-
-		$pinfo = pathinfo($file);
-
-		if(isset($pinfo['extension']) === false)
-			$pinfo['extension'] = '';
-
-		$info = array();
-		$info['path'] = $file;
-		$info['dir'] = $pinfo['dirname'];
-		$info['name'] = $pinfo['basename'];
-		$info['ext'] = $pinfo['extension'];
-
-		if(($extlen = strlen($pinfo['extension'])) > 0)
-			$info['filename'] = substr($pinfo['basename'],0,-($extlen + 1));
-		else
-			$info['filename'] = $info['name'];
-
-		$info['pathnoext'] = $pinfo['dirname'].DIRECTORY_SEPARATOR.$info['filename'];
-		$info['mime'] = dwho_file::get_mime($info['path']);
-		$info['charset'] = dwho_file::get_charset($info['path']);
-		$info['mtime'] = filemtime($info['path']);
-		$info['size'] = filesize($info['path']);
-
-		if(isset($this) === true && dwho_is_instance($this,__CLASS__) === true)
-			$this->info = $info;
-
-		return($info);
-	}
-
-	function download($file)
-	{
-		if($this->is_f_r($file) === false || $this->get_info($file) === false)
-			return(false);
-
-		header('Pragma: no-cache');
-		header('Expires: 0');
-		header('Last-Modified: '.date('D, d M Y H:i:s',$this->info['mtime']).' '.strftime('%Z'));
-		header('Cache-Control: no-cache, must-revalidate');
-		header('Content-Transfer-Encoding: binary');
-		header('Content-Type: '.$this->info['mime']);
-		header('Content-Length: '.$this->info['size']);
-		header('Content-Disposition: attachment; filename="'.$this->info['name'].'"');
-		readfile($this->info['path']);
-	}
-
-	function get_finfo_info($file='')
-	{
-		$file = $file === '' && $this->info['path'] !== '' ? $this->info['path'] : $file;
-
-		if(is_object($this->_finfo) === false || $this->_finfo->get_info($file) === false)
-			return(false);
-
-		return($this->_finfo->info);
-	}
-
-	function get_mime($file='')
-	{
-		if(isset($this) === true && dwho_is_instance($this,__CLASS__) === true)
-			$static = false;
-		else
-			$static = true;
-
-		if($file === '' && $static === false && $this->info['path'] !== '')
-			$file = $this->info['path'];
-
-		if($static === false && is_object($this->_finfo) === true)
-			$r = $this->_finfo->get_mime($file);
-		else if(($file = dwho_file::is_f($file)) !== false && dwho::load_extension('mime_magic') !== false)
+		else if(($fileinfo = dwho_file::fileinfo($file)) !== false)
+			$r = $fileinfo['type'].'/'.$fileinfo['subtype'];
+		else if(dwho::load_extension('mime_magic') !== false)
 			$r = mime_content_type($file);
 		else
 			$r = false;
@@ -167,17 +79,15 @@ class dwho_file
 		return($r);
 	}
 
-	function get_charset($file='')
+	function get_charset($file=null)
 	{
-		if(isset($this) === false
-		|| dwho_is_instance($this,__CLASS__) === false
-		|| is_object($this->_finfo) === false)
-			return(false);
+		if(($file = dwho_file::is_f($file)) !== false
+		&& ($fileinfo = dwho_file::fileinfo($file)) !== false
+		&& dwho_issa('parameters',$fileinfo) === true
+		&& isset($fileinfo['parameters']['charset']) === true)
+			return($fileinfo['parameters']['charset']);
 
-		if($file === '' && $this->info['path'] !== '')
-			$file = $this->info['path'];
-
-		return($this->_finfo->get_charset($file));
+		return(false);
 	}
 
 	function get_time($file)
@@ -190,147 +100,34 @@ class dwho_file
 		return($r);
 	}
 
-	function get_upload($name,$chk_param=array())
+	function get_info($file)
 	{
-		$name = (string) $name;
-		$chk_param = (array) $chk_param;
-
-		if($this->chk_upload_err($name) === false
-		|| isset($_FILES[$name]['tmp_name'],
-			 $_FILES[$name]['name'],
-			 $_FILES[$name]['type'],
-			 $_FILES[$name]['size']) === false)
+		if(($file = dwho_file::is_f($file)) === false)
 			return(false);
 
-		if(is_uploaded_file($_FILES[$name]['tmp_name']) === false)
-		{
-			$this->rm($_FILES[$name]['tmp_name']);
-			return(false);
-		}
+		$pinfo = pathinfo($file);
 
-		$this->info['upload'] = $_FILES[$name];
+		if(isset($pinfo['extension']) === false)
+			$pinfo['extension'] = '';
 
-		$this->info['mime'] = $_FILES[$name]['type'];
-		$this->info['tmp_name'] = $_FILES[$name]['tmp_name'];
-		$this->info['name'] = $this->info['upload']['name'];
-		$this->info['size'] = $this->info['upload']['size'];
+		$info = array();
+		$info['path']	= $file;
+		$info['dir']	= $pinfo['dirname'];
+		$info['name']	= $pinfo['basename'];
+		$info['ext']	= $pinfo['extension'];
 
-		if(($this->info['mime'] = $this->get_mime($this->info['tmp_name'])) === false)
-			$this->info['mime'] = $this->info['upload']['mime'];
-
-		$r = false;
-
-		if(empty($chk_param) === false && ($r = $this->_chk_upload($chk_param)) === false)
-			$this->rm($this->info['tmp_name']);
+		if(($extlen = strlen($pinfo['extension'])) > 0)
+			$info['filename'] = substr($pinfo['basename'],0,-($extlen + 1));
 		else
-			$r = true;
+			$info['filename'] = $info['name'];
 
-		return($r);
-	}
+		$info['pathnoext']	= $pinfo['dirname'].DIRECTORY_SEPARATOR.$info['filename'];
+		$info['mime']		= dwho_file::get_mime($info['path']);
+		$info['charset']	= dwho_file::get_charset($info['path']);
+		$info['mtime']		= filemtime($info['path']);
+		$info['size']		= filesize($info['path']);
 
-	function _chk_upload($param)
-	{
-		if(is_array($param) === false)
-			return(false);
-		else if(isset($param['size']) === true)
-		{
-			$param['size'] = dwho_uint($param['size']);
-
-			if($this->info['size'] > $param['size'])
-				return(false);
-		}
-
-		if(isset($param['mime']) === true)
-		{
-			$param['mime'] = (array) $param['mime'];
-
-			if(isset($param['mime'][0]) === false
-			|| in_array($this->info['mime'],$param['mime']) === false)
-				return(false);
-		}
-
-		if(isset($param['name']) === true)
-		{
-			$param['name'] = (string) $param['name'];
-
-			if(preg_match($param['name'],$this->info['name']) !== 1)
-				return(false);
-		}
-
-		if(isset($param['extension']) === true)
-		{
-			$param['extension'] = (array) $param['extension'];
-
-			if(($pos = strrpos($this->info['name'],'.')) === false)
-				return(false);
-
-			$ext = strtolower(substr($this->info['name'],$pos + 1));
-
-			if(isset($param['extension'][0]) === true)
-			{
-				if(in_array($ext,$param['extension']) === false)
-					return(false);
-			}
-
-			if(dwho_issa($ext,$param['extension']) === true
-			&& in_array($this->info['mime'],$param['extension'][$ext]) === false)
-				return(false);
-		}
-
-		return(true);
-	}
-
-	function chk_upload_err($name)
-	{
-		$name = (string) $name;
-
-		if(dwho_issa($name,$_FILES) === false || isset($_FILES[$name]['error']) === false)
-			return(false);
-		else if(($upload = dwho_get_memory('upload_max_filesize')) === false)
-			trigger_error('Invalid upload_max_filesize php.ini directive',E_USER_ERROR);
-
-		if(($post = dwho_get_memory('post_max_size')) === false)
-			trigger_error('Invalid post_max_size php.ini directive',E_USER_ERROR);
-
-		if(($mlimit = dwho_get_memory('memory_limit')) === false)
-			trigger_error('Invalid memory_limit php.ini directive',E_USER_ERROR);
-
-		if($post < $upload)
-			trigger_error('post_max_size php.ini directive shoud be less than upload_max_filesize php.ini directive',E_USER_ERROR);
-
-		if($mlimit < $post)
-			trigger_error('memory_limit php.ini directive shoud be less than post_max_size php.ini directive',E_USER_ERROR);
-
-		$r = false;
-
-		switch($_FILES[$name]['error'])
-		{
-			case UPLOAD_ERR_OK:
-				$r = true;
-				break;
-			case UPLOAD_ERR_INI_SIZE:
-				//trigger_error('Uploaded file exceeds the upload_max_filesize directive',E_USER_WARNING);
-				break;
-			case UPLOAD_ERR_FORM_SIZE:
-				//trigger_error('Uploaded file exceeds the MAX_FILE_SIZE directive',E_USER_WARNING);
-				break;
-			case UPLOAD_ERR_PARTIAL:
-				//trigger_error('Uploaded file was only partially uploaded',E_USER_WARNING);
-				break;
-			case UPLOAD_ERR_NO_FILE:
-				//trigger_error('No file was uploaded',E_USER_WARNING);
-				break;
-			case UPLOAD_ERR_NO_TMP_DIR:
-				trigger_error('Missing a temporary folder',E_USER_WARNING);
-				break;
-			case UPLOAD_ERR_CANT_WRITE:
-				trigger_error('Failed to write file to disk',E_USER_WARNING);
-				break;
-			default:
-				trigger_error('Unknown File Error',E_USER_WARNING);
-		}
-
-		return($r);
+		return($info);
 	}
 
 	function load_file($file,$dir='',$once=false,$verif=true)

@@ -27,3 +27,6 @@ Interfaces
 
 ; mn_left_network-iproute
 Routes IP statiques
+
+; mn_left_network-resolvconf
+Résolution DNS

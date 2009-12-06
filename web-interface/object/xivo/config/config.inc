@@ -37,6 +37,9 @@ $array['module']['ldapserver']['datastorage'] = true;
 $array['module']['netiface'] = array();
 $array['module']['netiface']['datastorage'] = true;
 
+$array['module']['resolvconf'] = array();
+$array['module']['resolvconf']['datastorage'] = true;
+
 $array['module']['server'] = array();
 $array['module']['server']['datastorage'] = true;
 

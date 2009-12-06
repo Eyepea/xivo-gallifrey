@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_http');
+
 xivo_service_asterisk::required(array('staticconf','staticconf.inc'),true);
 
 class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
@@ -26,7 +28,6 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 	var $_name		= 'musiconhold';
 	var $_filename		= 'musiconhold.conf';
 	var $_filter		= false;
-	var $_file		= false;
 	var $_mohpath		= '';
 	var $_musiconhold	= array();
 	var $_fileoption	= array();
@@ -53,7 +54,7 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 
 		$this->_set_element_default('directory',$this->_mohpath);
 
-		if(($size = $this->_chk_upload_file()) === false)
+		if(($size = $this->_verify_can_upload_file()) === false)
 			die();
 
 		$this->_conf['option']['file']['size'] = $size;
@@ -319,15 +320,14 @@ class xivo_service_asterisk_musiconhold extends xivo_service_asterisk_staticconf
 		return($r);
 	}
 
-	function get_upload($name)
+	function uploaded_fileinfo($name)
 	{
-		if((is_object($this->_file) === false
-		   && ($this->_file = new dwho_file()) === false) === true
+		if(($http_response = dwho_http::factory('response')) === false
 		|| $this->_get_option_file() === false
-		|| $this->_file->get_upload($name,$this->_fileoption) === false)
+		|| ($fileinfo = $http_response->upload_file($name,$this->_fileoption)) === false)
 			return(false);
 
-		return($this->_file->info);
+		return($fileinfo);
 	}
 
 	function add_file($name,$tmpname)

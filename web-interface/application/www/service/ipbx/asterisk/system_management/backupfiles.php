@@ -29,17 +29,15 @@ $backupfiles = &$ipbx->get_module('backupfiles');
 switch($act)
 {
 	case 'download':
+		dwho::load_class('dwho_http');
+
 		$param['page'] = $page;
 
-		if(isset($_QR['id']) === false || ($info = $backupfiles->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false
+		|| ($info = $backupfiles->get($_QR['id'])) === false
+		|| ($http_response = dwho_http::factory('response')) === false
+		|| $http_response->send_file_download($info['file']) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/backupfiles'),$param);
-
-		$file = new dwho_file();
-
-		if(($file->download($info['file'])) === false)
-			$_QRY->go($_TPL->url('service/ipbx/system_management/backupfiles'),$param);
-
-		die();
 		break;
 	default:
 		$act = 'list';

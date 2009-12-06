@@ -25,7 +25,7 @@ $fm_save = null;
 
 if(isset($_QR['fm_send'],$_QR['category']) === false
 || ($infos = $musiconhold->get_category($_QR['category'])) === false
-|| ($fileuploaded = $musiconhold->get_upload('filename')) === false
+|| ($fileuploaded = $musiconhold->uploaded_fileinfo('filename')) === false
 || ($info['category'] = $musiconhold->chk_value('category',$infos['cat']['category'])) === false
 || ($info['filename'] = $musiconhold->chk_value('filename',$fileuploaded['name'])) === false)
 {

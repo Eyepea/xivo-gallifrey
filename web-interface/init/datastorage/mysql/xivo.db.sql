@@ -163,6 +163,21 @@ CREATE INDEX `netiface__idx__disable` ON `netiface`(`disable`);
 CREATE UNIQUE INDEX `netiface__uidx__devname` ON `netiface`(`devname`);
 
 
+DROP TABLE IF EXISTS `resolvconf`;
+CREATE TABLE `resolvconf` (
+ `id` tinyint(1) auto_increment,
+ `hostname` varchar(63) NOT NULL DEFAULT 'xivo',
+ `nameserver1` varchar(255),
+ `nameserver2` varchar(255),
+ `nameserver3` varchar(255),
+ `search` varchar(255),
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+
+CREATE UNIQUE INDEX `resolvconf__uidx__hostname` ON `resolvconf`(`hostname`);
+
+
 DROP TABLE IF EXISTS `server`;
 CREATE TABLE `server` (
  `id` int(10) unsigned auto_increment,

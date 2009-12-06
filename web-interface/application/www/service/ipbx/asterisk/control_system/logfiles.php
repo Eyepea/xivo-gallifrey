@@ -29,17 +29,15 @@ $logfiles = &$ipbx->get_module('logfiles');
 switch($act)
 {
 	case 'download':
+		dwho::load_class('dwho_http');
+
 		$param['page'] = $page;
 
-		if(isset($_QR['id']) === false || ($info = $logfiles->get($_QR['id'])) === false)
+		if(isset($_QR['id']) === false
+		|| ($info = $logfiles->get($_QR['id'])) === false
+		|| ($http_response = dwho_http::factory('response')) === false
+		|| $http_response->send_file_download($info['file']) === false)
 			$_QRY->go($_TPL->url('service/ipbx/control_system/logfiles'),$param);
-
-		$file = new dwho_file();
-
-		if(($file->download($info['file'])) === false)
-			$_QRY->go($_TPL->url('service/ipbx/control_system/logfiles'),$param);
-
-		die();
 		break;
 	default:
 		$act = 'list';

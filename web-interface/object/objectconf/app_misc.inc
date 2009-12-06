@@ -72,6 +72,10 @@ $array['xivo/configuration/web_services/private/network/iproute'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/iproute',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['xivo/configuration/web_services/private/network/resolvconf'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/resolvconf',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/agents',
@@ -148,6 +152,10 @@ $array['xivo/configuration/web_services/restricted/network/interface'] = array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['xivo/configuration/web_services/restricted/network/iproute'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/iproute',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/network/resolvconf'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/resolvconf',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 

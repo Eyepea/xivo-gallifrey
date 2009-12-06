@@ -102,7 +102,7 @@ switch($act)
 
 		if(isset($_QR['fm_send'],$_QR['dirname']) === false
 		|| ($info['directory'] = $sounds->get_dir($_QR['dirname'])) === false
-		|| ($fileuploaded = $sounds->get_upload('filename')) === false
+		|| ($fileuploaded = $sounds->uploaded_fileinfo('filename')) === false
 		|| ($info['dirname'] = $sounds->chk_value('dirname',$info['directory']['dirname'])) === false
 		|| ($info['filename'] = $sounds->chk_value('filename',$fileuploaded['name'])) === false)
 		{
@@ -224,6 +224,8 @@ switch($act)
 		$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
 		break;
 	case 'download':
+		dwho::load_class('dwho_http');
+
 		$param['dir'] = $dir;
 		$param['page'] = $page;
 
@@ -232,15 +234,11 @@ switch($act)
 		if(($info['directory'] = $sounds->get_dir($dir)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
-		if(isset($_QR['id']) === false || ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false)
+		if(isset($_QR['id']) === false
+		|| ($info['file'] = $sounds->get($_QR['id'],$info['directory']['dirname'])) === false
+		|| ($http_response = dwho_http::factory('response')) === false
+		|| $http_response->send_file_download($info['file']['path']) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
-
-		$file = new dwho_file();
-
-		if(($file->download($info['file']['path'])) === false)
-			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),$param);
-
-		die();
 		break;
 	case 'list':
 		$total = 0;

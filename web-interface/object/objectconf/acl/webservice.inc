@@ -28,6 +28,7 @@ $array['tree']['xivo']['configuration']['manage']['entity'] = true;
 $array['tree']['xivo']['configuration']['network'] = array();
 $array['tree']['xivo']['configuration']['network']['interface'] = true;
 $array['tree']['xivo']['configuration']['network']['iproute'] = true;
+$array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();

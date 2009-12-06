@@ -360,6 +360,16 @@ class dwho_network
 		return(false);
 	}
 
+	function valid_hostname_part($hostpart)
+	{
+		if(is_scalar($hostpart) === true
+		&& preg_match('/^('.DWHO_NETWORK_RE_HOSTNAME.')$/',$hostpart,$match) === 1
+		&& ctype_digit($match[1]) === false)
+			return(true);
+
+		return(false);
+	}
+
 	function valid_hostname($host)
 	{
 		if(is_scalar($host) === true
@@ -384,6 +394,35 @@ class dwho_network
 			return(true);
 
 		return(false);
+	}
+
+	function valid_hostname_list($list,$mode=null,$max=6,$sep=null)
+	{
+		if(is_scalar($list) === false)
+			return(false);
+
+		$mode = intval($mode);
+
+		if(($mode & (DWHO_NETWORK_HOST_HOSTNAME | DWHO_NETWORK_HOST_HOSTNAME_TLD)) === 0)
+			$mode = (DWHO_NETWORK_HOST_HOSTNAME | DWHO_NETWORK_HOST_HOSTNAME_TLD);
+
+		$max = dwho_uint($max,6);
+
+		if(dwho_has_len($sep) === false)
+			$sep = ' ';
+
+		$hosts = explode($sep,$list,$max + 1);
+
+		if(($nb = count($hosts)) > $max)
+			return(false);
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			if(dwho_network::valid_host($hosts[$i],$mode) === false)
+				return(false);
+		}
+
+		return(true);
 	}
 
 	function valid_host($host,$mode=null)

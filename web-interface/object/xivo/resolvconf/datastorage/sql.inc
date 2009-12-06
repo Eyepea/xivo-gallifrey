@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2009  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,17 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$param['page'] = $page;
+xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
-if(($infos = $musiconhold->get_category($cat)) === false)
-	$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),'act=list');
-
-dwho::load_class('dwho_http');
-
-if(isset($_QR['id']) === false
-|| ($info = $musiconhold->get_file($_QR['id'],$infos['cat']['category'])) === false
-|| ($http_response = dwho_http::factory('response')) === false
-|| $http_response->send_file_download($info['path']) === false)
-	$_QRY->go($_TPL->url('service/ipbx/pbx_services/musiconhold'),$param);
+class xivo_object_resolvconf_sql extends xivo_object_abstract_sql
+{
+	var $_disable	= null;
+	var $_unique	= 'hostname';
+}
 
 ?>

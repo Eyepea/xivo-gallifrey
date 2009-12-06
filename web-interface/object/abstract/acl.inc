@@ -220,7 +220,7 @@ class xivo_acl_abstract
 
 		if($section === '')
 		{
-			if((($section = dwho_location::get_current_location())) === false)
+			if((($section = dwho_location::get_current_location(false))) === false)
 				return(false);
 			else if(($pos = strrpos($section,'/')) !== false)
 				$section = substr($section,0,$pos);

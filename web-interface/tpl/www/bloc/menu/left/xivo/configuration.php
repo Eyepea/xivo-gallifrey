@@ -68,6 +68,10 @@ $url = &$this->get_module('url');
 						   'xivo/configuration/network/iproute',
 						   'act=list');?>
 			</dd>
+			<dd id="mn-network--resolvconf">
+				<?=$url->href_html($this->bbf('mn_left_network-resolvconf'),
+						   'xivo/configuration/network/resolvconf');?>
+			</dd>
 		</dl>
 	</dd>
 	<dd class="b-nosize">

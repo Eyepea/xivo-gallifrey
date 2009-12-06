@@ -1,0 +1,41 @@
+; title_content_name
+Résolution DNS
+
+; smenu_general
+Général
+
+; smenu_search
+Recherche des noms d'hôte
+
+; fm_hostname
+Nom d'hôte :
+
+; fm_nameserver1
+Serveur DNS primaire :
+
+; fm_nameserver2
+Serveur DNS secondaire :
+
+; fm_nameserver3
+Serveur DNS tertiaire :
+
+; fm_description
+Description :
+
+; fm_search1
+Premier domaine :
+
+; fm_search2
+Deuxième domaine :
+
+; fm_search3
+Troisième domaine :
+
+; fm_search4
+Quatrième domaine :
+
+; fm_search5
+Cinquième domaine :
+
+; fm_search6
+Sixième domaine :

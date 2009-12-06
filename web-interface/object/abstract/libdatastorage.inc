@@ -282,6 +282,9 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 		else if($id !== null)
 		{
+			if($arr === null)
+				$arr = array();
+
 			if(is_array($arr) === false
 			|| ($id = $this->_chk_primary_key($id)) === false)
 				return(false);
@@ -299,6 +302,9 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			return(false);
 		else if($id !== null)
 		{
+			if($arr === null)
+				$arr = array();
+
 			if(is_array($arr) === false
 			|| ($id = $this->_chk_primary_key($id)) === false)
 				return(false);
