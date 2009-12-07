@@ -1,7 +1,7 @@
 Index: asterisk-1.4.26.2/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.26.2.orig/apps/app_meetme.c	2009-12-04 11:03:54.000000000 +0100
-+++ asterisk-1.4.26.2/apps/app_meetme.c	2009-12-07 18:00:21.000000000 +0100
++++ asterisk-1.4.26.2/apps/app_meetme.c	2009-12-07 18:27:55.000000000 +0100
 @@ -81,9 +81,12 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -132,14 +132,14 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  	}
  
 -	if (!(confflags & CONFFLAG_QUIET) && (confflags & CONFFLAG_ANNOUNCEUSERCOUNT) && conf->users > 1) {
-+	if (!(confflags & CONFFLAG_QUIET) && 
++	if (!(confflags & CONFFLAG_QUIET) &&
 +	    (confflags & CONFFLAG_ANNOUNCEUSERCOUNT) &&
 +	    (conf->users - conf->noauthorized) > 1 &&
 +	    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
  		int keepplaying = 1;
  
 -		if (conf->users == 2) { 
-+		if ((conf->users - conf->noauthorized) == 2) { 
++		if ((conf->users - conf->noauthorized) == 2) {
  			if (!ast_streamfile(chan,"conf-onlyone",chan->language)) {
  				res = ast_waitstream(chan, AST_DIGIT_ANY);
  				ast_stopstream(chan);
@@ -157,7 +157,7 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  	ztc.confno = conf->zapconf;
  
 -	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
-+	if (!(confflags & CONFFLAG_QUIET) && 
++	if (!(confflags & CONFFLAG_QUIET) &&
 +	    ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) &&
 +	    conf->users > 1 &&
 +	    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
@@ -215,32 +215,30 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  				if (conf->users == 1 && ! (confflags & CONFFLAG_MARKEDUSER))
  					if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
  						ast_waitstream(chan, "");
-@@ -1923,10 +1967,13 @@
+@@ -1923,10 +1967,11 @@
  			/* Update the struct with the actual confflags */
  			user->userflags = confflags;
  
 -			if (confflags & CONFFLAG_WAITMARKED) {
-+			if (((confflags & CONFFLAG_WAITMARKED) || (confflags & CONFFLAG_MODERATION))
-+			     && !(user->adminflags & (ADMINFLAG_SILENCED_KICK|ADMINFLAG_NOAUTHED))) {
++			if ((confflags & CONFFLAG_WAITMARKED) || (confflags & CONFFLAG_MODERATION)) {
  				if(currentmarked == 0) {
--					if (lastmarked != 0) {
--						if (!(confflags & CONFFLAG_QUIET))
 +					/* Marked users left, or a new no authorized user joined. */
-+					if (lastmarked != 0 && lastnoauth == 0) {
-+						ast_verbose(VERBOSE_PREFIX_3 "%s - Start music fool\n", user->chan->cid.cid_num);
+ 					if (lastmarked != 0) {
+-						if (!(confflags & CONFFLAG_QUIET))
 +						if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MARKEDUSER))
  							if (!ast_streamfile(chan, "conf-leaderhasleft", chan->language))
  								ast_waitstream(chan, "");
  						if(confflags & CONFFLAG_MARKEDEXIT)
-@@ -1946,6 +1993,7 @@
+@@ -1944,7 +1989,7 @@
+ 						ast_moh_start(chan, NULL, NULL);
+ 						musiconhold = 1;
  					}
- 				} else if(currentmarked >= 1 && lastmarked == 0) {
+-				} else if(currentmarked >= 1 && lastmarked == 0) {
++				} else if(currentmarked >= 1 && lastmarked == 0 && !(user->adminflags & (ADMINFLAG_SILENCED_KICK|ADMINFLAG_NOAUTHED))) {
  					/* Marked user entered, so cancel timeout */
-+					ast_verbose(VERBOSE_PREFIX_3 "%s - Stop music fool\n", user->chan->cid.cid_num);
  					timeout = 0;
  					if (confflags & CONFFLAG_MONITOR)
- 						ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
-@@ -1970,6 +2018,47 @@
+@@ -1970,6 +2015,47 @@
  				}
  			}
  
@@ -248,26 +246,27 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
 +				/* There are new unauthorized people.
 +				 *
 +				 * Find a no authorized user who is not yet in a
-+				 * auth request process. Then ask admin to kick 
++				 * auth request process. Then ask admin to kick
 +				 * or authorize him.
 +				 */
 +				if (auth_requested || user->adminflags & ADMINFLAG_AUTH_REQUESTING)
 +				{
 +					conf->markedusers = 0;
-+					ast_verbose(VERBOSE_PREFIX_3 "There are %d no auth users (%d previous)\n", currentnoauth, lastnoauth);
 +					AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
-+						if ((usr->adminflags & ADMINFLAG_NOAUTHED) && 
++						if ((usr->adminflags & ADMINFLAG_NOAUTHED) &&
 +						   !(usr->adminflags & ADMINFLAG_AUTH_REQUESTING) &&
 +						   !(usr->adminflags & ADMINFLAG_SILENCED_KICK))
 +							break;
 +					}
 +					if(usr)
 +					{
++						if (musiconhold) {
++							ast_moh_stop(chan);
++						}
 +						usr->adminflags |= ADMINFLAG_AUTH_REQUESTING;
 +						if (!ast_streamfile(chan, "conf-moderation-ask", chan->language))
 +							ast_waitstream(chan, "");
 +
-+						ast_verbose(VERBOSE_PREFIX_3 "Admin requested for %s\n", usr->chan->cid.cid_num);
 +						menu_active = auth_requesting = 1;
 +					}
 +					else
@@ -280,7 +279,6 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
 +				}
 +			}
 +			else if (currentnoauth == 0 && lastnoauth > 0 && (confflags & CONFFLAG_MARKEDUSER)) {
-+				ast_verbose(VERBOSE_PREFIX_3 "%s - I'm markeduser and I joined the conf!", user->chan->cid.cid_num);
 +				conf->markedusers++;
 +				user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
 +			}
@@ -288,7 +286,7 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  			/* trying to add moh for single person conf */
  			if ((confflags & CONFFLAG_MOH) && !(confflags & CONFFLAG_WAITMARKED)) {
  				if (conf->users == 1) {
-@@ -2033,7 +2122,7 @@
+@@ -2033,7 +2119,7 @@
  			if (user->adminflags & ADMINFLAG_KICKME) {
  				//You have been kicked.
  				if (!(confflags & CONFFLAG_QUIET) && 
@@ -297,7 +295,7 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  					ast_waitstream(chan, "");
  				}
  				ret = 0;
-@@ -2146,7 +2235,33 @@
+@@ -2146,7 +2232,31 @@
  					if (musiconhold) {
  			   			ast_moh_stop(chan);
  					}
@@ -310,13 +308,11 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
 +						} else if (dtmf) {
 +							switch(dtmf) {
 +							case '1':
-+								ast_verbose(VERBOSE_PREFIX_3 "Kicked\n");
 +								usr->adminflags |= ADMINFLAG_SILENCED_KICK;
 +								conf->noauthorized--;
 +								auth_requesting = menu_active = 0;
 +								break;
 +							case '2':
-+								ast_verbose(VERBOSE_PREFIX_3 "Authorized\n");
 +								usr->adminflags &= ~(ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING);
 +								conf->noauthorized--;
 +								auth_requesting = menu_active = 0;
@@ -332,7 +328,7 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  						/* Admin menu */
  						if (!menu_active) {
  							menu_active = 1;
-@@ -2214,6 +2329,9 @@
+@@ -2214,6 +2324,9 @@
  							case '9':
  								tweak_talk_volume(user, VOL_UP);
  								break;
@@ -342,7 +338,7 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  							default:
  								menu_active = 0;
  								/* Play an error message! */
-@@ -2380,6 +2498,7 @@
+@@ -2380,6 +2493,7 @@
  					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
  			}
  			lastmarked = currentmarked;
@@ -350,19 +346,19 @@ Index: asterisk-1.4.26.2/apps/app_meetme.c
  		}
  	}
  
-@@ -2403,7 +2522,10 @@
+@@ -2403,7 +2517,10 @@
  	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
  		conf_play(chan, conf, LEAVE);
  
 -	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
-+	if (!(confflags & CONFFLAG_QUIET) && 
-+	    ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && 
++	if (!(confflags & CONFFLAG_QUIET) &&
++	    ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) &&
 +	    conf->users > 1 &&
 +	    !(user->adminflags & (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK))) {
  		struct announce_listitem *item;
  		if (!(item = ao2_alloc(sizeof(*item), NULL)))
  			return -1;
-@@ -2869,7 +2991,7 @@
+@@ -2869,7 +2986,7 @@
  								/* Pin correct */
  								allowretry = 0;
  								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
