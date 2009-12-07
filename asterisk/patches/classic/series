@@ -62,3 +62,4 @@ pf_bugfix_misdn_16041.patch
 
 pf_queue_incoming_limit.patch
 pf_atxfer_moh.patch
+pf_meetme.patch
