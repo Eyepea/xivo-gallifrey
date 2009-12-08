@@ -1,8 +1,8 @@
 2009-03-27  Adrien DELLE CAVE <decryptus@proformatique.com>
 
-	pf_chan_dahdi_pripreferred.patch
-	$Revision$
-	$Date$
+	pf_chan_dahdi_pripreferred
+	$Revision: 7172 $
+	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
 
 	Added option pripreferred in DAHDI channel.
 
@@ -10,25 +10,25 @@
 	If both priexclusive and pripreferred are TRUE, the behavior will be the same
 	as if only priexclusive were TRUE.
 
-Index: asterisk-1.4.26/channels/chan_dahdi.c
+Index: asterisk-1.4.27/channels/chan_dahdi.c
 ===================================================================
---- asterisk-1.4.26.orig/channels/chan_dahdi.c	2009-07-22 19:34:09.000000000 +0200
-+++ asterisk-1.4.26/channels/chan_dahdi.c	2009-07-22 19:37:42.000000000 +0200
-@@ -588,6 +588,13 @@
- 	 * \note Set from the "priexclusive" value read in from chan_dahdi.conf
+--- asterisk-1.4.27.orig/channels/chan_dahdi.c	2009-11-24 11:30:27.000000000 +0100
++++ asterisk-1.4.27/channels/chan_dahdi.c	2009-11-24 13:01:52.000000000 +0100
+@@ -595,6 +595,13 @@
  	 */
  	unsigned int priexclusive:1;
-+	/*!
+ 	/*!
 +	 * \brief TRUE if PRI B channels are never exclusively selected.
 +	 * \note If both priexclusive and pripreferred are TRUE, the behavior will be the same
 +	 *   as if only priexclusive were TRUE.
 +	 * \note Set from the "pripreferred" value read in from chan_dahdi.conf
 +	 */
 +	unsigned int pripreferred:1;
- 	/*!
++	/*!
  	 * \brief TRUE if we will pulse dial.
  	 * \note Set from the "pulsedial" value read in from chan_dahdi.conf
-@@ -2464,7 +2471,11 @@
+ 	 */
+@@ -2470,7 +2477,11 @@
  		p->digital = IS_DIGITAL(ast->transfercapability);
  
  		/* Should the picked channel be used exclusively? */
@@ -41,15 +41,15 @@ Index: asterisk-1.4.26/channels/chan_dahdi.c
  			exclusive = 1;
  		} else {
  			exclusive = 0;
-@@ -7946,6 +7957,7 @@
+@@ -7971,6 +7982,7 @@
+ 		tmp->restrictcid = conf->chan.restrictcid;
  		tmp->use_callingpres = conf->chan.use_callingpres;
- 		tmp->priindication_oob = conf->chan.priindication_oob;
  		tmp->priexclusive = conf->chan.priexclusive;
 +		tmp->pripreferred = conf->chan.pripreferred;
  		if (tmp->usedistinctiveringdetection) {
  			if (!tmp->use_callerid) {
  				ast_log(LOG_NOTICE, "Distinctive Ring detect requires 'usecallerid' be on\n");
-@@ -11786,6 +11798,8 @@
+@@ -11841,6 +11853,8 @@
  						v->value, v->lineno);
  			} else if (!strcasecmp(v->name, "priexclusive")) {
  				confp->chan.priexclusive = ast_true(v->value);

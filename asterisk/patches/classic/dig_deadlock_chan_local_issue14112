@@ -1,19 +1,19 @@
 2009-05-26  Adrien DELLE CAVE <decryptus@proformatique.com>
 
-	deadlock_chan_local_issue14112.patch
-	$Revision$
-	$Date$
+	dig_deadlock_chan_local_issue14112
+	$Revision: 7172 $
+	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
 
 	https://issues.asterisk.org/view.php?id=14112
 	https://issues.asterisk.org/file_download.php?file_id=21855&type=bug
 
 	Fixed deadlock in local channel.
 
-Index: asterisk-1.4.26/channels/chan_local.c
+Index: asterisk-1.4.27/channels/chan_local.c
 ===================================================================
---- asterisk-1.4.26.orig/channels/chan_local.c	2009-07-22 18:17:54.000000000 +0200
-+++ asterisk-1.4.26/channels/chan_local.c	2009-07-22 18:47:50.000000000 +0200
-@@ -377,7 +377,9 @@
+--- asterisk-1.4.27.orig/channels/chan_local.c	2009-11-24 11:30:27.000000000 +0100
++++ asterisk-1.4.27/channels/chan_local.c	2009-11-24 13:01:30.000000000 +0100
+@@ -381,7 +381,9 @@
  		ast_moh_stop(ast);
  	} else {
  		/* Queue up a frame representing the indication as a control frame */

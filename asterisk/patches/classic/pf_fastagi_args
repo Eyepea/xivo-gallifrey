@@ -1,8 +1,8 @@
 2008-06-27  Guillaume Knispel <gknispel@proformatique.com>
 
-	pf_fastagi_args.patch
-	$Revision$
-	$Date$
+	pf_fastagi_args
+	$Revision: 7172 $
+	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
 	FastAgi interface change (backport from Asterisk 1.6 for 1.4)
 
 	XIVO needs this Asterisk 1.6 style fastagi interface, so we backported

@@ -1,0 +1,31 @@
+badshell is disallowing tildes (~) in the DESTDIR directory to warn people
+who use a shell that doesn't expand it to $HOMEDIR.
+
+However, we have such a tilde in our directory (~dfsg) that isn't expanded
+to $HOMEDIR nor shouldn't be.
+
+Should be reported upstream.
+
+ -- Faidon Liambotis <paravoid@debian.org>
+
+Index: asterisk-1.4.27/Makefile
+===================================================================
+--- asterisk-1.4.27.orig/Makefile	2009-10-23 16:00:01.000000000 +0200
++++ asterisk-1.4.27/Makefile	2009-11-26 09:47:46.000000000 +0100
+@@ -521,7 +521,7 @@
+ 	@exit 1
+ endif
+ 
+-install: badshell datafiles bininstall
++install: datafiles bininstall
+ 	@if [ -x /usr/sbin/asterisk-post-install ]; then \
+ 		/usr/sbin/asterisk-post-install $(DESTDIR) . ; \
+ 	fi
+@@ -788,7 +788,6 @@
+ .PHONY: _uninstall
+ .PHONY: uninstall-all
+ .PHONY: dont-optimize
+-.PHONY: badshell
+ .PHONY: installdirs
+ .PHONY: _clean
+ .PHONY: $(SUBDIRS_INSTALL)

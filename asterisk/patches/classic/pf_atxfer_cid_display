@@ -1,15 +1,15 @@
 2009-04-08  Thomas BERNARD <tbernard@proformatique.com>
 
-    pf_atxfer_cid_display.patch
-    $Revision$
-    $Date$
+    pf_atxfer_cid_display
+    $Revision: 7172 $
+    $Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
 
     Fix some callerid displaying during ATXFER.
 
-Index: asterisk-1.4.26.2/res/res_features.c
+Index: asterisk-1.4.27/res/res_features.c
 ===================================================================
---- asterisk-1.4.26.2.orig/res/res_features.c	2009-11-24 11:03:56.000000000 +0100
-+++ asterisk-1.4.26.2/res/res_features.c	2009-11-24 11:07:46.000000000 +0100
+--- asterisk-1.4.27.orig/res/res_features.c	2009-11-24 13:01:49.000000000 +0100
++++ asterisk-1.4.27/res/res_features.c	2009-11-24 13:02:03.000000000 +0100
 @@ -986,8 +986,9 @@
  		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
  	}
@@ -74,15 +74,7 @@ Index: asterisk-1.4.26.2/res/res_features.c
  		if (!ast_call(chan, data, timeout)) {
  			struct timeval started;
  			int x, len = 0;
-@@ -1539,6 +1563,7 @@
- 							ready=1;
- 							break;
- 						} else if (f->subclass != -1) {
-+							// Do something with AST_CONTROL_CONNECTEDLINE
- 							ast_log(LOG_NOTICE, "Don't know what to do about control frame: %d\n", f->subclass);
- 						}
- 						/* else who cares */
-@@ -1608,6 +1633,9 @@
+@@ -1612,6 +1636,9 @@
  	if (outstate)
  		*outstate = state;
  

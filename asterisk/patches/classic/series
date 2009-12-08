@@ -1,65 +1,53 @@
 # upstream fixes
-allow-tilde-destdir
+pf_profor-banner
 
-profor-banner
-
-hack-multiple-app-voicemail
-astvarrundir
-make-clean-fixes
-safe_asterisk-config
-safe_asterisk-nobg
-h323-workaround-openh323-segfault
+deb_allow-tilde-destdir
+deb_astvarrundir
+deb_make-clean-fixes
+deb_safe_asterisk-config
+deb_safe_asterisk-nobg
+deb_h323-workaround-openh323-segfault
 
 # new features
-pubkey_jnctn
-func_devstate
+deb_pubkey_jnctn
+dig_func_devstate
 
 # for chan_vpb
-vpb-handle-nocards
+deb_vpb-handle-nocards
 
-# for chan_misdn (even though it's not enabled yet)
-misdn_FOP
+deb_astgenkey-security
+deb_apptest_sleep
 
-astgenkey-security
-apptest_sleep
+pf_fastagi_args
 
-pf_fastagi_args.patch
+dig_pickup_issue5014-1.4
+pf_manager_dtmf
+pf_manager_atxfer
+pf_manager_misc
 
-pickup_issue5014-1.4
-pf_manager_dtmf.patch
-pf_manager_atxfer.patch
-pf_manager_misc.patch
-
-pf_macro_loop_verbose.patch
+pf_macro_loop_verbose
 
 # patch for 1.4.22 but only pushed in trunk
-chan-sip_sipremoveheader_issue14246-trunk
+dig_chan-sip_sipremoveheader_issue14246-trunk
 
-pf_sip_mwi_for_thomson_st20XXs.patch
+pf_sip_mwi_for_thomson_st20XXs
 
-passerted_issue8824.patch
-deadlock_chan_local_issue14112.patch
-pf_manager_parking.patch
+dig_passerted_issue8824
+dig_deadlock_chan_local_issue14112
+pf_manager_parking
 
-pf_chan_dahdi_pripreferred.patch
-pf_atxfer_cid_display.patch
+pf_chan_dahdi_pripreferred
+pf_atxfer_cid_display
 
-agentcalled_event
-pf_magic_pickupmark.patch
-pf_astdevmode.patch
-pf_atxfer_ami_event.patch
-
-pf_sip_fix_masquerade.patch
-pf_sip_fix_local_attended.patch
-pf_voicemail_date_language.patch
-pf_silly_build_fix
+pf_agentcalled_event
+pf_magic_pickupmark
+pf_astdevmode
+pf_atxfer_ami_event
+pf_sip_fix_masquerade
+pf_sip_fix_local_attended
+pf_voicemail_date_language
 
 deb_bridge-1.4-backport
 
-pf_gosub_args.patch
-
-pf_bugfix_misdn_16041.patch
-
-pf_queue_incoming_limit.patch
-pf_atxfer_moh.patch
-meetme_moderation.patch
+pf_queue_incoming_limit
+pf_atxfer_moh

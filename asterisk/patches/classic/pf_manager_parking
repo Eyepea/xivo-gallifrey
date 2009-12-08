@@ -1,8 +1,8 @@
 2009-03-25  Corentin Le Gall <clegall@proformatique.com>
 
-	pf_manager_parking.patch
-	$Revision$
-	$Date$
+	pf_manager_parking
+	$Revision: 7172 $
+	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
         When parking from AMI, the callback channel is not the good one.
 
 Index: asterisk-1.4.24/res/res_features.c

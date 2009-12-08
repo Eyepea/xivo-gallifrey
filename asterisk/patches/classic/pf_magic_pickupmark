@@ -1,17 +1,17 @@
 2009-04-15  Adrien DELLE CAVE <decryptus@proformatique.com>
 
-	pf_magic_pickupmark.patch
-	$Revision$
-	$Date$
+	pf_magic_pickupmark
+	$Revision: 7172 $
+	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
 
 	Added possibility to do a magic pickup with PICKUPMARK.
 	PICKUPMARK variable can contains multiple extensions separated by an '&'.
 
-Index: asterisk-1.4.26/channels/chan_sip.c
+Index: asterisk-1.4.27/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.26.orig/channels/chan_sip.c	2009-07-22 18:43:32.000000000 +0200
-+++ asterisk-1.4.26/channels/chan_sip.c	2009-07-22 18:55:09.000000000 +0200
-@@ -14625,7 +14625,10 @@
+--- asterisk-1.4.27.orig/channels/chan_sip.c	2009-11-24 13:00:41.000000000 +0100
++++ asterisk-1.4.27/channels/chan_sip.c	2009-11-24 13:03:29.000000000 +0100
+@@ -14864,7 +14864,10 @@
  		return -1;
  	}
  
@@ -23,7 +23,7 @@ Index: asterisk-1.4.26/channels/chan_sip.c
  
  	/* There is no point in capturing the return value since pickup_exec
  	   doesn't return anything meaningful unless the passed data is an empty
-@@ -14834,8 +14837,18 @@
+@@ -15075,8 +15078,18 @@
  					error = 1;
  				} else {
  					ast_log(LOG_NOTICE, "Trying to pick up %s@%s\n", subscription->exten, subscription->context);
@@ -44,10 +44,10 @@ Index: asterisk-1.4.26/channels/chan_sip.c
  					ast_mutex_unlock(&subscription->lock);
  					if (subscription->owner) {
  						ast_channel_unlock(subscription->owner);
-Index: asterisk-1.4.26/apps/app_directed_pickup.c
+Index: asterisk-1.4.27/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-1.4.26.orig/apps/app_directed_pickup.c	2009-07-22 18:17:54.000000000 +0200
-+++ asterisk-1.4.26/apps/app_directed_pickup.c	2009-07-22 18:55:09.000000000 +0200
+--- asterisk-1.4.27.orig/apps/app_directed_pickup.c	2009-11-24 11:30:27.000000000 +0100
++++ asterisk-1.4.27/apps/app_directed_pickup.c	2009-11-24 13:03:29.000000000 +0100
 @@ -115,22 +115,35 @@
  /* Attempt to pick up specified mark */
  static int pickup_by_mark(struct ast_channel *chan, char *mark)

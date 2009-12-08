@@ -1,8 +1,8 @@
 2009-11-24 Thomas Bernard <tbernard@proformatique.com>
 
-	pf_atxfer_moh.patch
-	$Revision$
-	$Date$
+	pf_atxfer_moh
+	$Revision: 7134 $
+	$Date: 2009-11-24 11:35:32 +0100 (mar 24 nov 2009) $
 
 	This patch fixes the bug of the waiting music being stopped during
 	an atxfer when the transferer hang up before the target of the transfer
@@ -10,10 +10,10 @@
 
 	The patch was in fact done by Guillaume Knispel
 
-Index: asterisk-1.4.26.2/res/res_features.c
+Index: asterisk-1.4.27/res/res_features.c
 ===================================================================
---- asterisk-1.4.26.2.orig/res/res_features.c	2009-11-24 11:22:53.000000000 +0100
-+++ asterisk-1.4.26.2/res/res_features.c	2009-11-24 11:26:19.000000000 +0100
+--- asterisk-1.4.27.orig/res/res_features.c	2009-11-28 00:04:33.662156677 +0100
++++ asterisk-1.4.27/res/res_features.c	2009-11-28 00:04:33.690154595 +0100
 @@ -1032,23 +1032,55 @@
  	                               newchan->name,
  	                               newchan->uniqueid);
