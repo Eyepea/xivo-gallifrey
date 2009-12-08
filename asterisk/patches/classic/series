@@ -51,3 +51,4 @@ deb_bridge-1.4-backport
 
 pf_queue_incoming_limit
 pf_atxfer_moh
+pf_meetme_moderation

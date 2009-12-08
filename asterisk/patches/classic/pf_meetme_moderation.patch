@@ -1,0 +1,369 @@
+Index: asterisk-1.4.26.2/apps/app_meetme.c
+===================================================================
+--- asterisk-1.4.26.2.orig/apps/app_meetme.c	2009-12-04 11:03:54.000000000 +0100
++++ asterisk-1.4.26.2/apps/app_meetme.c	2009-12-07 18:27:55.000000000 +0100
+@@ -81,9 +81,12 @@
+ #define DEFAULT_AUDIO_BUFFERS  32
+ 
+ enum {
+-	ADMINFLAG_MUTED =     (1 << 1), /*!< User is muted */
+-	ADMINFLAG_SELFMUTED = (1 << 2), /*!< User muted self */
+-	ADMINFLAG_KICKME =    (1 << 3)  /*!< User has been kicked */
++	ADMINFLAG_MUTED =           (1 << 1), /*!< User is muted */
++	ADMINFLAG_SELFMUTED =       (1 << 2), /*!< User muted self */
++	ADMINFLAG_KICKME =          (1 << 3), /*!< User has been kicked */
++	ADMINFLAG_NOAUTHED =        (1 << 4), /*!< User is currently waiting for acceptance */
++	ADMINFLAG_AUTH_REQUESTING = (1 << 5), /*!< User is in a auth requesting process by an admin */
++	ADMINFLAG_SILENCED_KICK   = (1 << 6), /*!< Silenced kicked */
+ };
+ 
+ #define MEETME_DELAYDETECTTALK     300
+@@ -167,6 +170,10 @@
+ 	CONFFLAG_SLA_TRUNK = (1 << 27),
+ 	/*! Do not write any audio to this channel until the state is up. */
+ 	CONFFLAG_NO_AUDIO_UNTIL_UP = (1 << 28),
++	/*! Administrator moderates users who join. */
++	CONFFLAG_MODERATION = (1 << 29),
++	/*! No hidden calls. */
++	CONFFLAG_NOHIDDEN = (1 << 30),
+ };
+ 
+ enum {
+@@ -184,8 +191,10 @@
+ 	AST_APP_OPTION('E', CONFFLAG_EMPTYNOPIN ),
+ 	AST_APP_OPTION('e', CONFFLAG_EMPTY ),
+ 	AST_APP_OPTION('F', CONFFLAG_PASS_DTMF ),
++	AST_APP_OPTION('h', CONFFLAG_NOHIDDEN ),
+ 	AST_APP_OPTION('i', CONFFLAG_INTROUSER ),
+ 	AST_APP_OPTION('I', CONFFLAG_INTROUSERNOREVIEW ),
++	AST_APP_OPTION('k', CONFFLAG_MODERATION ),
+ 	AST_APP_OPTION('M', CONFFLAG_MOH ),
+ 	AST_APP_OPTION('m', CONFFLAG_STARTMUTED ),
+ 	AST_APP_OPTION('o', CONFFLAG_OPTIMIZETALKER ),
+@@ -344,6 +353,7 @@
+ 	int zapconf;                            /*!< Zaptel Conf # */
+ 	int users;                              /*!< Number of active users */
+ 	int markedusers;                        /*!< Number of marked users */
++	int noauthorized;                       /*!< Number of no authorized users */
+ 	time_t start;                           /*!< Start time (s) */
+ 	int refcount;                           /*!< reference count of usage */
+ 	enum recording_state recording:2;       /*!< recording status */
+@@ -962,7 +972,7 @@
+ 			min = ((now - user->jointime) % 3600) / 60;
+ 			sec = (now - user->jointime) % 60;
+ 			if ( !concise )
+-				ast_cli(fd, "User #: %-2.2d %12.12s %-20.20s Channel: %s %s %s %s %s %02d:%02d:%02d\n",
++				ast_cli(fd, "User #: %-2.2d %12.12s %-20.20s Channel: %s %s %s %s %s %s %02d:%02d:%02d\n",
+ 					user->user_no,
+ 					S_OR(user->chan->cid.cid_num, "<unknown>"),
+ 					S_OR(user->chan->cid.cid_name, "<no name>"),
+@@ -970,9 +980,10 @@
+ 					user->userflags & CONFFLAG_ADMIN ? "(Admin)" : "",
+ 					user->userflags & CONFFLAG_MONITOR ? "(Listen only)" : "",
+ 					user->adminflags & ADMINFLAG_MUTED ? "(Admin Muted)" : user->adminflags & ADMINFLAG_SELFMUTED ? "(Muted)" : "",
++					user->adminflags & ADMINFLAG_NOAUTHED ? "(Noauthed)" : "",
+ 					istalking(user->talking), hr, min, sec); 
+ 			else 
+-				ast_cli(fd, "%d!%s!%s!%s!%s!%s!%s!%d!%02d:%02d:%02d\n",
++				ast_cli(fd, "%d!%s!%s!%s!%s!%s!%s!%s!%d!%02d:%02d:%02d\n",
+ 					user->user_no,
+ 					S_OR(user->chan->cid.cid_num, ""),
+ 					S_OR(user->chan->cid.cid_name, ""),
+@@ -980,6 +991,7 @@
+ 					user->userflags  & CONFFLAG_ADMIN   ? "1" : "",
+ 					user->userflags  & CONFFLAG_MONITOR ? "1" : "",
+ 					user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)  ? "1" : "",
++					user->adminflags & ADMINFLAG_NOAUTHED ? "1" : "",
+ 					user->talking, hr, min, sec);
+ 			
+ 		}
+@@ -1508,9 +1520,12 @@
+ 	int firstpass = 0;
+ 	int lastmarked = 0;
+ 	int currentmarked = 0;
++	int lastnoauth = 0;
++	int currentnoauth = 0;
+ 	int ret = -1;
+ 	int x;
+ 	int menu_active = 0;
++	int auth_requesting = 0;
+ 	int using_pseudo = 0;
+ 	int duration=20;
+ 	int hr, min, sec;
+@@ -1633,10 +1648,26 @@
+ 			goto outrun;
+ 	}
+ 
++	/* Disallow users who call with a hidden number to join this conference. */
++	if ((confflags & CONFFLAG_NOHIDDEN) && !user->chan->cid.cid_num)
++	{
++		if (!ast_streamfile(chan, "conf-nohidden", chan->language))
++			ast_waitstream(chan, "");
++		goto outrun;
++	}
++
+ 	ast_mutex_lock(&conf->playlock);
+ 
+-	if (confflags & CONFFLAG_MARKEDUSER)
+-		conf->markedusers++;
++	if (confflags & CONFFLAG_MARKEDUSER) {
++		if(conf->noauthorized == 0)
++			conf->markedusers++;
++		else
++			/* Directly request admin about waiting users. */
++			user->adminflags |= ADMINFLAG_AUTH_REQUESTING;
++	} else if (confflags & CONFFLAG_MODERATION) {
++		user->adminflags |= ADMINFLAG_NOAUTHED;
++		conf->noauthorized++;
++	}
+ 	conf->users++;
+ 	/* Update table */
+ 	snprintf(members, sizeof(members), "%d", conf->users);
+@@ -1662,15 +1693,20 @@
+ 		if (conf->users == 1 && !(confflags & CONFFLAG_WAITMARKED))
+ 			if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
+ 				ast_waitstream(chan, "");
+-		if ((confflags & CONFFLAG_WAITMARKED) && conf->markedusers == 0)
++		if ((confflags & CONFFLAG_WAITMARKED) &&
++		    (conf->markedusers == 0 || user->adminflags & ADMINFLAG_NOAUTHED) &&
++		    !(confflags & CONFFLAG_MARKEDUSER))
+ 			if (!ast_streamfile(chan, "conf-waitforleader", chan->language))
+ 				ast_waitstream(chan, "");
+ 	}
+ 
+-	if (!(confflags & CONFFLAG_QUIET) && (confflags & CONFFLAG_ANNOUNCEUSERCOUNT) && conf->users > 1) {
++	if (!(confflags & CONFFLAG_QUIET) &&
++	    (confflags & CONFFLAG_ANNOUNCEUSERCOUNT) &&
++	    (conf->users - conf->noauthorized) > 1 &&
++	    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
+ 		int keepplaying = 1;
+ 
+-		if (conf->users == 2) { 
++		if ((conf->users - conf->noauthorized) == 2) {
+ 			if (!ast_streamfile(chan,"conf-onlyone",chan->language)) {
+ 				res = ast_waitstream(chan, AST_DIGIT_ANY);
+ 				ast_stopstream(chan);
+@@ -1689,7 +1725,7 @@
+ 					goto outrun;
+ 			}
+ 			if (keepplaying) {
+-				res = ast_say_number(chan, conf->users - 1, AST_DIGIT_ANY, chan->language, (char *) NULL);
++				res = ast_say_number(chan, (conf->users - conf->noauthorized) - 1, AST_DIGIT_ANY, chan->language, (char *) NULL);
+ 				if (res > 0)
+ 					keepplaying=0;
+ 				else if (res == -1)
+@@ -1779,14 +1815,17 @@
+ 	ztc.chan = 0;	
+ 	ztc.confno = conf->zapconf;
+ 
+-	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
++	if (!(confflags & CONFFLAG_QUIET) &&
++	    ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) &&
++	    conf->users > 1 &&
++	    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
+ 		struct announce_listitem *item;
+ 		if (!(item = ao2_alloc(sizeof(*item), NULL)))
+ 			return -1;
+ 		ast_copy_string(item->namerecloc, user->namerecloc, sizeof(item->namerecloc));
+ 		ast_copy_string(item->language, chan->language, sizeof(item->language));
+ 		item->confchan = conf->chan;
+-		item->confusers = conf->users;
++		item->confusers = conf->users - conf->noauthorized;
+ 		item->announcetype = CONF_HASJOIN;
+ 		ast_mutex_lock(&conf->announcelistlock);
+ 		ao2_ref(item, +1); /* add one more so we can determine when announce_thread is done playing it */
+@@ -1800,7 +1839,7 @@
+ 		ao2_ref(item, -1);
+ 	}
+ 
+-	if (confflags & CONFFLAG_WAITMARKED && !conf->markedusers)
++	if (confflags & CONFFLAG_WAITMARKED && (!conf->markedusers || (user->adminflags & ADMINFLAG_NOAUTHED)))
+ 		ztc.confmode = DAHDI_CONF_CONF;
+ 	else if (confflags & CONFFLAG_MONITOR)
+ 		ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
+@@ -1885,6 +1924,7 @@
+ 		}
+ 		for(;;) {
+ 			int menu_was_active = 0;
++			int auth_requested = 0;
+ 
+ 			outfd = -1;
+ 			ms = -1;
+@@ -1894,13 +1934,16 @@
+ 
+ 			/* if we have just exited from the menu, and the user had a channel-driver
+ 			   volume adjustment, restore it
+-			*/
++			   */
+ 			if (!menu_active && menu_was_active && user->listen.desired && !user->listen.actual)
+ 				set_talk_volume(user, user->listen.desired);
+ 
+ 			menu_was_active = menu_active;
++			auth_requested = auth_requesting;
+ 
+ 			currentmarked = conf->markedusers;
++			currentnoauth = conf->noauthorized;
++
+ 			if (!(confflags & CONFFLAG_QUIET) &&
+ 			    (confflags & CONFFLAG_MARKEDUSER) &&
+ 			    (confflags & CONFFLAG_WAITMARKED) &&
+@@ -1915,6 +1958,7 @@
+ 							ast_waitstream(chan, "");
+ 					}
+ 				}
++				/* How does this happen, as we check above that user is marked... */
+ 				if (conf->users == 1 && ! (confflags & CONFFLAG_MARKEDUSER))
+ 					if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
+ 						ast_waitstream(chan, "");
+@@ -1923,10 +1967,11 @@
+ 			/* Update the struct with the actual confflags */
+ 			user->userflags = confflags;
+ 
+-			if (confflags & CONFFLAG_WAITMARKED) {
++			if ((confflags & CONFFLAG_WAITMARKED) || (confflags & CONFFLAG_MODERATION)) {
+ 				if(currentmarked == 0) {
++					/* Marked users left, or a new no authorized user joined. */
+ 					if (lastmarked != 0) {
+-						if (!(confflags & CONFFLAG_QUIET))
++						if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MARKEDUSER))
+ 							if (!ast_streamfile(chan, "conf-leaderhasleft", chan->language))
+ 								ast_waitstream(chan, "");
+ 						if(confflags & CONFFLAG_MARKEDEXIT)
+@@ -1944,7 +1989,7 @@
+ 						ast_moh_start(chan, NULL, NULL);
+ 						musiconhold = 1;
+ 					}
+-				} else if(currentmarked >= 1 && lastmarked == 0) {
++				} else if(currentmarked >= 1 && lastmarked == 0 && !(user->adminflags & (ADMINFLAG_SILENCED_KICK|ADMINFLAG_NOAUTHED))) {
+ 					/* Marked user entered, so cancel timeout */
+ 					timeout = 0;
+ 					if (confflags & CONFFLAG_MONITOR)
+@@ -1970,6 +2015,47 @@
+ 				}
+ 			}
+ 
++			if ((confflags & CONFFLAG_ADMIN) && currentnoauth > 0 && !auth_requesting) {
++				/* There are new unauthorized people.
++				 *
++				 * Find a no authorized user who is not yet in a
++				 * auth request process. Then ask admin to kick
++				 * or authorize him.
++				 */
++				if (auth_requested || user->adminflags & ADMINFLAG_AUTH_REQUESTING)
++				{
++					conf->markedusers = 0;
++					AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
++						if ((usr->adminflags & ADMINFLAG_NOAUTHED) &&
++						   !(usr->adminflags & ADMINFLAG_AUTH_REQUESTING) &&
++						   !(usr->adminflags & ADMINFLAG_SILENCED_KICK))
++							break;
++					}
++					if(usr)
++					{
++						if (musiconhold) {
++							ast_moh_stop(chan);
++						}
++						usr->adminflags |= ADMINFLAG_AUTH_REQUESTING;
++						if (!ast_streamfile(chan, "conf-moderation-ask", chan->language))
++							ast_waitstream(chan, "");
++
++						menu_active = auth_requesting = 1;
++					}
++					else
++						user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
++				} else if (currentnoauth != lastnoauth) {
++					/* During conversation, beep marked user to tell him that there are
++					 * no authorized users who wait. */
++					if (!ast_streamfile(chan, "beep", chan->language))
++						ast_waitstream(chan, "");
++				}
++			}
++			else if (currentnoauth == 0 && lastnoauth > 0 && (confflags & CONFFLAG_MARKEDUSER)) {
++				conf->markedusers++;
++				user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
++			}
++
+ 			/* trying to add moh for single person conf */
+ 			if ((confflags & CONFFLAG_MOH) && !(confflags & CONFFLAG_WAITMARKED)) {
+ 				if (conf->users == 1) {
+@@ -2033,7 +2119,7 @@
+ 			if (user->adminflags & ADMINFLAG_KICKME) {
+ 				//You have been kicked.
+ 				if (!(confflags & CONFFLAG_QUIET) && 
+-					!ast_streamfile(chan, "conf-kicked", chan->language)) {
++				    !ast_streamfile(chan, "conf-kicked", chan->language)) {
+ 					ast_waitstream(chan, "");
+ 				}
+ 				ret = 0;
+@@ -2146,7 +2232,31 @@
+ 					if (musiconhold) {
+ 			   			ast_moh_stop(chan);
+ 					}
+-					if ((confflags & CONFFLAG_ADMIN)) {
++					if (auth_requesting) {
++						dtmf = f->subclass;
++						if (!usr) {
++							ast_log(LOG_WARNING, "There isn't any user requested for auth.\n");
++							auth_requesting = menu_active = 0;
++						} else if (dtmf) {
++							switch(dtmf) {
++							case '1':
++								usr->adminflags |= ADMINFLAG_SILENCED_KICK;
++								conf->noauthorized--;
++								auth_requesting = menu_active = 0;
++								break;
++							case '2':
++								usr->adminflags &= ~(ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING);
++								conf->noauthorized--;
++								auth_requesting = menu_active = 0;
++								break;
++							default:
++								if (!ast_streamfile(chan, "conf-errormenu", chan->language))
++									ast_waitstream(chan, "");
++								auth_requesting = menu_active = 0;
++								break;
++							}
++						}
++					} else if ((confflags & CONFFLAG_ADMIN)) {
+ 						/* Admin menu */
+ 						if (!menu_active) {
+ 							menu_active = 1;
+@@ -2214,6 +2324,9 @@
+ 							case '9':
+ 								tweak_talk_volume(user, VOL_UP);
+ 								break;
++							case '*':
++								user->adminflags |= ADMINFLAG_AUTH_REQUESTING;
++								break;
+ 							default:
+ 								menu_active = 0;
+ 								/* Play an error message! */
+@@ -2380,6 +2493,7 @@
+ 					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
+ 			}
+ 			lastmarked = currentmarked;
++			lastnoauth = currentnoauth;
+ 		}
+ 	}
+ 
+@@ -2403,7 +2517,10 @@
+ 	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
+ 		conf_play(chan, conf, LEAVE);
+ 
+-	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
++	if (!(confflags & CONFFLAG_QUIET) &&
++	    ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) &&
++	    conf->users > 1 &&
++	    !(user->adminflags & (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK))) {
+ 		struct announce_listitem *item;
+ 		if (!(item = ao2_alloc(sizeof(*item), NULL)))
+ 			return -1;
+@@ -2869,7 +2986,7 @@
+ 								/* Pin correct */
+ 								allowretry = 0;
+ 								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
+-									ast_set_flag(&confflags, CONFFLAG_ADMIN);
++									ast_set_flag(&confflags, CONFFLAG_ADMIN|CONFFLAG_MARKEDUSER);
+ 								/* Run the conference */
+ 								res = conf_run(chan, cnf, confflags.flags, optargs);
+ 								break;
