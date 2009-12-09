@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.27.orig/apps/app_meetme.c	2009-12-08 11:04:19.000000000 +0100
-+++ asterisk-1.4.27/apps/app_meetme.c	2009-12-09 10:53:35.000000000 +0100
++++ asterisk-1.4.27/apps/app_meetme.c	2009-12-09 11:14:28.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -123,7 +123,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  	int ret = -1;
  	int x;
  	int menu_active = 0;
-+	int auth_requesting = 0;
++	int auth_requesting = 0; /* 0 if no request, or user_no of moderated user. */
  	int using_pseudo = 0;
  	int duration=20;
  	int hr, min, sec;
@@ -268,7 +268,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
  						ast_waitstream(chan, "");
  			}
-@@ -1925,10 +1978,42 @@
+@@ -1925,10 +1978,41 @@
  			/* Update the struct with the actual confflags */
  			user->userflags = confflags;
  
@@ -288,7 +288,6 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +				}
 +			} else if (!(user->adminflags & ADMINFLAG_TALK_TO_ADMIN) &&
 +			           (ztc.confmode & DAHDI_CONF_TALKER) &&
-+			           !(confflags & CONFFLAG_MARKEDUSER) &&
 +			           ((user->adminflags & ADMINFLAG_NOAUTHED) || !currentmarked)) {
 +				ast_verbose(VERBOSE_PREFIX_3 "%s - Stop to talk\n", user->chan->cid.cid_num);
 +				ztc.confmode = DAHDI_CONF_CONF;
@@ -313,7 +312,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							if (!ast_streamfile(chan, "conf-leaderhasleft", chan->language))
  								ast_waitstream(chan, "");
  						if(confflags & CONFFLAG_MARKEDEXIT)
-@@ -1942,13 +2027,14 @@
+@@ -1942,13 +2026,14 @@
  							}
  						}
  					}
@@ -330,7 +329,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (confflags & CONFFLAG_MONITOR)
  						ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
  					else if (confflags & CONFFLAG_TALKER)
-@@ -1972,9 +2058,52 @@
+@@ -1972,9 +2057,53 @@
  				}
  			}
  
@@ -361,7 +360,8 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +						if (!ast_streamfile(chan, "conf-moderation-ask", chan->language))
 +							ast_waitstream(chan, "");
 +
-+						menu_active = auth_requesting = 1;
++						auth_requesting = usr->user_no;
++						menu_active = 1;
 +					}
 +					else
 +						user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
@@ -405,36 +405,42 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					ast_waitstream(chan, "");
  				}
  				ret = 0;
-@@ -2144,9 +2276,42 @@
- 						set_talk_volume(user, 0);
- 
+@@ -2146,7 +2278,48 @@
  					if (musiconhold) {
-+						ast_verbose(VERBOSE_PREFIX_3 "%s - Entered in menu\n", user->chan->cid.cid_num);
  			   			ast_moh_stop(chan);
  					}
 -					if ((confflags & CONFFLAG_ADMIN)) {
 +					if (auth_requesting) {
++						/* Request authorization from admin for a user. */
 +						dtmf = f->subclass;
-+						if (!usr) {
-+							ast_log(LOG_WARNING, "There isn't any user requested for auth.\n");
++
++						AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
++							if (usr->user_no == auth_requesting)
++								break;
++						}
++
++						if (!usr || !(usr->adminflags & ADMINFLAG_AUTH_REQUESTING)) {
++							ast_log(LOG_WARNING, "The moderated user left.\n");
 +							auth_requesting = menu_active = 0;
 +						} else if (dtmf) {
 +							switch(dtmf) {
-+							case '1':
++							case '1': /* Silenced kick */
 +								usr->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
 +								usr->adminflags |= ADMINFLAG_SILENCED_KICK;
 +								user->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
 +								conf->noauthorized--;
 +								conf->kicked++;
++								usr = NULL;
 +								auth_requesting = menu_active = 0;
 +								break;
-+							case '2':
++							case '2': /* Authorized */
 +								usr->adminflags &= ~(ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
 +								user->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
 +								conf->noauthorized--;
++								usr = NULL;
 +								auth_requesting = menu_active = 0;
 +								break;
-+							case '3':
++							case '3': /* Talk to user. */
 +								user->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
 +								usr->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
 +								break;
@@ -449,7 +455,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  						/* Admin menu */
  						if (!menu_active) {
  							menu_active = 1;
-@@ -2214,6 +2379,9 @@
+@@ -2214,6 +2387,9 @@
  							case '9':
  								tweak_talk_volume(user, VOL_UP);
  								break;
@@ -459,47 +465,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							default:
  								menu_active = 0;
  								/* Play an error message! */
-@@ -2274,6 +2442,7 @@
- 						}
- 					}
- 					if (musiconhold) {
-+						ast_verbose(VERBOSE_PREFIX_3 "%s - Left from menu\n", user->chan->cid.cid_num);
- 			   			ast_moh_start(chan, NULL, NULL);
- 					}
- 
-@@ -2354,6 +2523,7 @@
- 							    can_write(chan, confflags)) {
- 								struct ast_frame *cur;
- 								if (musiconhold && !ast_dsp_silence(dsp, conf->transframe[index], &confsilence) && confsilence < MEETME_DELAYDETECTTALK) {
-+									ast_verbose(VERBOSE_PREFIX_3 "%s - Somewhere fuck 1\n", user->chan->cid.cid_num);
- 									ast_moh_stop(chan);
- 									mohtempstopped = 1;
- 								}
-@@ -2369,6 +2539,7 @@
- 								}
- 								if (musiconhold && mohtempstopped && confsilence > MEETME_DELAYDETECTENDTALK) {
- 									mohtempstopped = 0;
-+									ast_verbose(VERBOSE_PREFIX_3 "%s - Somewhere fuck 2\n", user->chan->cid.cid_num);
- 									ast_moh_start(chan, NULL, NULL);
- 								}
- 							}
-@@ -2380,6 +2551,7 @@
- 					} else {
- bailoutandtrynormal:
- 						if (musiconhold && !ast_dsp_silence(dsp, &fr, &confsilence) && confsilence < MEETME_DELAYDETECTTALK) {
-+							ast_verbose(VERBOSE_PREFIX_3 "%s - Somewhere fuck 3\n", user->chan->cid.cid_num);
- 							ast_moh_stop(chan);
- 							mohtempstopped = 1;
- 						}
-@@ -2390,6 +2562,7 @@
- 						}
- 						if (musiconhold && mohtempstopped && confsilence > MEETME_DELAYDETECTENDTALK) {
- 							mohtempstopped = 0;
-+							ast_verbose(VERBOSE_PREFIX_3 "%s - Somewhere fuck 4\n", user->chan->cid.cid_num);
- 							ast_moh_start(chan, NULL, NULL);
- 						}
- 					}
-@@ -2397,6 +2570,7 @@
+@@ -2397,6 +2573,7 @@
  					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
  			}
  			lastmarked = currentmarked;
@@ -507,7 +473,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  	}
  
-@@ -2421,20 +2595,25 @@
+@@ -2421,20 +2598,25 @@
  	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
  		conf_play(chan, conf, LEAVE);
  
@@ -536,7 +502,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		/* Last person is leaving, so no reason to try and announce, but should delete the name recording */
  		ast_filedelete(user->namerecloc, NULL);
  	}
-@@ -2476,6 +2655,10 @@
+@@ -2476,6 +2658,10 @@
  			ast_update_realtime("meetme", "confno", conf->confno, "members", members, NULL);
  			if (confflags & CONFFLAG_MARKEDUSER) 
  				conf->markedusers--;
@@ -547,7 +513,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  		/* Remove ourselves from the list */
  		AST_LIST_REMOVE(&conf->userlist, user, list);
-@@ -2676,7 +2859,7 @@
+@@ -2676,7 +2862,7 @@
  	conf = find_conf(chan, args.confno, 0, 0, NULL, 0, 1, NULL);
  
  	if (conf) {
@@ -556,7 +522,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		dispose_conf(conf);
  		conf = NULL;
  	} else
-@@ -2887,7 +3070,7 @@
+@@ -2887,7 +3073,7 @@
  								/* Pin correct */
  								allowretry = 0;
  								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
