@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.27.orig/apps/app_meetme.c	2009-12-08 11:04:19.000000000 +0100
-+++ asterisk-1.4.27/apps/app_meetme.c	2009-12-10 10:18:20.000000000 +0100
++++ asterisk-1.4.27/apps/app_meetme.c	2009-12-10 10:53:43.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -336,7 +336,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (confflags & CONFFLAG_MONITOR)
  						ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
  					else if (confflags & CONFFLAG_TALKER)
-@@ -1972,9 +2060,48 @@
+@@ -1972,9 +2060,56 @@
  				}
  			}
  
@@ -360,8 +360,16 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +							musiconhold = 0;
 +						}
 +						usr->adminflags |= ADMINFLAG_AUTH_REQUESTING;
-+						if (!ast_streamfile(chan, "conf-moderation-ask", chan->language))
++
++						/* Say request to admin. */
++						if ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) {
++							if (!ast_streamfile(chan, usr->namerecloc, chan->language))
++								ast_waitstream(chan, "");
++							if (!ast_streamfile(chan, "conf-moderation-ask", chan->language))
++								ast_waitstream(chan, "");
++						} else if (!ast_streamfile(chan, "conf-moderation-ask-nonamed", chan->language)) {
 +							ast_waitstream(chan, "");
++						}
 +
 +						auth_requesting = usr->user_no;
 +						menu_active = 1;
@@ -386,7 +394,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (musiconhold == 0) {
  						ast_moh_start(chan, NULL, NULL);
  						musiconhold = 1;
-@@ -1988,7 +2115,7 @@
+@@ -1988,7 +2123,7 @@
  			}
  			
  			/* Leave if the last marked user left */
@@ -395,7 +403,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  				ret = -1;
  				break;
  			}
-@@ -2014,7 +2141,10 @@
+@@ -2014,7 +2149,10 @@
  			}
  
  			/* If I should be un-muted but am not talker, un-mute me */
@@ -407,7 +415,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  				ztc.confmode |= DAHDI_CONF_TALKER;
  				if (ioctl(fd, DAHDI_SETCONF, &ztc)) {
  					ast_log(LOG_WARNING, "Error setting conference - Un/Mute \n");
-@@ -2035,7 +2165,7 @@
+@@ -2035,7 +2173,7 @@
  			if (user->adminflags & ADMINFLAG_KICKME) {
  				//You have been kicked.
  				if (!(confflags & CONFFLAG_QUIET) && 
@@ -416,7 +424,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					ast_waitstream(chan, "");
  				}
  				ret = 0;
-@@ -2146,7 +2276,74 @@
+@@ -2146,7 +2284,74 @@
  					if (musiconhold) {
  			   			ast_moh_stop(chan);
  					}
@@ -492,7 +500,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  						/* Admin menu */
  						if (!menu_active) {
  							menu_active = 1;
-@@ -2159,6 +2356,14 @@
+@@ -2159,6 +2364,14 @@
  						} else 
  							dtmf = f->subclass;
  						if (dtmf) {
@@ -507,7 +515,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							switch(dtmf) {
  							case '1': /* Un/Mute */
  								menu_active = 0;
-@@ -2214,6 +2419,9 @@
+@@ -2214,6 +2427,9 @@
  							case '9':
  								tweak_talk_volume(user, VOL_UP);
  								break;
@@ -517,7 +525,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							default:
  								menu_active = 0;
  								/* Play an error message! */
-@@ -2397,6 +2605,7 @@
+@@ -2397,6 +2613,7 @@
  					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
  			}
  			lastmarked = currentmarked;
@@ -525,7 +533,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  	}
  
-@@ -2421,20 +2630,25 @@
+@@ -2421,20 +2638,25 @@
  	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
  		conf_play(chan, conf, LEAVE);
  
@@ -554,7 +562,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		/* Last person is leaving, so no reason to try and announce, but should delete the name recording */
  		ast_filedelete(user->namerecloc, NULL);
  	}
-@@ -2474,8 +2688,30 @@
+@@ -2474,8 +2696,30 @@
  			/* Update table */
  			snprintf(members, sizeof(members), "%d", conf->users);
  			ast_update_realtime("meetme", "confno", conf->confno, "members", members, NULL);
@@ -587,7 +595,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  		/* Remove ourselves from the list */
  		AST_LIST_REMOVE(&conf->userlist, user, list);
-@@ -2676,7 +2912,7 @@
+@@ -2676,7 +2920,7 @@
  	conf = find_conf(chan, args.confno, 0, 0, NULL, 0, 1, NULL);
  
  	if (conf) {
@@ -596,7 +604,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		dispose_conf(conf);
  		conf = NULL;
  	} else
-@@ -2887,7 +3123,7 @@
+@@ -2887,7 +3131,7 @@
  								/* Pin correct */
  								allowretry = 0;
  								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
