@@ -22,9 +22,12 @@ require_once('xivo.php');
 
 if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
 {
-	$_TPL->set_struct('wizard/index');
-	$_TPL->display('wizard');
-	die();
+	$application = $_LOC->get_app_path('wizard/index',0);
+
+	if($application === false)
+		dwho_die('XIVO is not configured');
+
+	die(include($application));
 }
 
 if(xivo_user::is_valid() === true)

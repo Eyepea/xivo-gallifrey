@@ -207,6 +207,14 @@ CREATE INDEX session__idx__expire ON session(expire);
 CREATE INDEX session__idx__userid ON session(userid);
 
 
+DROP TABLE smtpconf;
+CREATE TABLE smtpconf (
+ mailname varchar(255) NOT NULL,
+ relayhost varchar(255),
+ fallbackrelay varchar(255),
+);
+
+
 DROP TABLE user;
 CREATE TABLE user (
  id integer unsigned,
