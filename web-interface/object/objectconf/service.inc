@@ -22,7 +22,9 @@ define('XIVO_SRE_CLASS_PRE','_sre_');
 
 $array = array();
 
-$array['ipbx'] = array('asterisk' => 1);
-$array['monitoring'] = array('monit' => 1);
+$array['ipbx'] = array(
+		'asterisk'	=> array('label'	=> 'Asterisk'));
+$array['monitoring'] = array(
+		'monit'		=> array('label'	=> 'Monit'));
 
 ?>

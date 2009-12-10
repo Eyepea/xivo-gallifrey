@@ -129,8 +129,8 @@ function dwho_empty($val,$var=true)
 
 function dwho_has_len($val,$key=null)
 {
-	if($key !== null &&
-	is_array($val) === true
+	if($key !== null
+	&& is_array($val) === true
 	&& isset($val[$key]) === true)
 		$val = $val[$key];
 

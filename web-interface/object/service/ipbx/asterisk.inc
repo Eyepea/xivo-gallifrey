@@ -39,7 +39,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		$this->_ini = $ini;
 
-		$this->_get_service_information();
+		$this->_load_service_information();
 	}
 
 	function required($arr,$once=false,$includable=false)
@@ -267,11 +267,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(true);
 	}
 
-	function _get_service_information()
+	function _load_service_information()
 	{
-		$uppertype = strtoupper($this->_type);
-		$define_label = 'XIVO_SRE_'.$uppertype.'_LABEL';
-		$define_version = 'XIVO_SRE_'.$uppertype.'_VERSION';
+		$uppertype	= strtoupper($this->_type);
+		$define_label	= 'XIVO_SRE_'.$uppertype.'_LABEL';
+		$define_version	= 'XIVO_SRE_'.$uppertype.'_VERSION';
 
 		if(isset($_SESSION['_SRE'][$this->_type][$this->_name]) === false)
 		{
@@ -288,8 +288,8 @@ class xivo_service_asterisk extends xivo_service_abstract
 		&& isset($sess_sre['info']['label'],
 			 $sess_sre['info']['version']) === true)
 		{
-			$label = (string) $sess_sre['info']['label'];
-			$version = (string) $sess_sre['info']['version'];
+			$label		= $sess_sre['info']['label'];
+			$version	= $sess_sre['info']['version'];
 		}
 		else if(($nversion = $this->_get_service_info_from_discuss()) !== false)
 		{
@@ -300,11 +300,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 				$version = $sess_sre['info']['version'] = $nversion['version'];
 		}
 
-		if($label === false
-		&& dwho_issa('ini',$sess_sre) === true
-		&& dwho_issa('general',$sess_sre['ini']) === true
-		&& isset($sess_sre['ini']['general']['label']) === true)
-			$label = (string) $sess_sre['ini']['general']['label'];
+		if(dwho_issa('ini',$sess_sre) === true
+		&& dwho_issa('general',$sess_sre['ini']) === true)
+		{
+			if($label === false
+			&& isset($sess_sre['ini']['general']['label']) === true)
+				$label = $sess_sre['ini']['general']['label'];
+
+			if($version === false
+			&& isset($sess_sre['ini']['general']['version']) === true)
+				$version = $sess_sre['ini']['general']['version'];
+		}
 
 		if($label === false)
 			$label = 'unknown';

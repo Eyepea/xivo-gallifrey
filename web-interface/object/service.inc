@@ -37,67 +37,77 @@ class xivo_service
 			$_SESSION['_SRE'] = array();
 	}
 
-	function _load_service($name)
+	function _load_service($service)
 	{
-		if($this->is_valid($name) === true)
+		if($this->is_valid($service) === true)
 			return(null);
-		else if((bool) dwho_ak($name,$this->_ini,true) === false)
+		else if((bool) dwho_ak($service,$this->_ini,true) === false)
 			return(false);
-		else if(dwho_issa($name,$this->_conf) === false
-		|| ($init = $this->_load_init_file($name)) === false
+		else if(dwho_issa($service,$this->_conf) === false
+		|| ($init = $this->_load_init_file($service)) === false
 		|| dwho_issa('general',$init) === false
-		|| isset($init['general']['name'],$this->_conf[$name][$init['general']['name']]) === false)
+		|| isset($init['general']['name'],
+			 $this->_conf[$service][$init['general']['name']]) === false)
 			return(false);
 
-		$sname = $init['general']['name'];
-		$cname = 'xivo_service_'.$sname;
-		$name_up = strtoupper($name);
+		$enginename	= $init['general']['name'];
+		$classname	= 'xivo_service_'.$enginename;
 
-		$label = 'XIVO_SRE_'.$name_up.'_LABEL';
-		$version = 'XIVO_SRE_'.$name_up.'_VERSION';
+		if(isset($_SESSION['_SRE'][$service]) === false)
+			$_SESSION['_SRE'][$service] = array();
 
-		if(isset($_SESSION['_SRE'][$name]) === false)
-			$_SESSION['_SRE'][$name] = array();
+		if(isset($_SESSION['_SRE'][$service][$enginename]) === false)
+			$_SESSION['_SRE'][$service][$enginename] = array();
 
-		if(isset($_SESSION['_SRE'][$name][$sname]) === false)
-			$_SESSION['_SRE'][$name][$sname] = array();
+		if(isset($_SESSION['_SRE'][$service][$enginename]['ini']) === false)
+			$_SESSION['_SRE'][$service][$enginename]['ini'] = array('general' => array());
 
-		if(isset($_SESSION['_SRE'][$name][$sname]['ini']) === false)
-			$_SESSION['_SRE'][$name][$sname]['ini'] = array('general' => array());
+		$sess_general = &$_SESSION['_SRE'][$service][$enginename]['ini']['general'];
 
-		if(isset($_SESSION['_SRE'][$name][$sname]['infos']) === false)
-			$_SESSION['_SRE'][$name][$sname]['infos'] = array();
+		if(dwho_has_len($this->_conf[$service][$enginename],'label') === true)
+			$sess_general['label'] = $this->_conf[$service][$enginename]['label'];
 
-		$sess_ini = &$_SESSION['_SRE'][$name][$sname]['ini'];
+		if(dwho_has_len($init['general'],'label') === true)
+			$sess_general['label'] = $init['general']['label'];
 
-		if(isset($init['general']['label']) === true && is_string($init['general']['label']) === true)
-			$sess_ini['general']['label'] = $init['general']['label'];
+		if(dwho_has_len($this->_conf[$service][$enginename],'version') === true)
+			$sess_general['version'] = $this->_conf[$service][$enginename]['version'];
 
-		if(isset($init['general']['version']) === true && is_string($init['general']['version']) === true)
-			$sess_ini['general']['version'] = $init['general']['version'];
+		if(dwho_has_len($init['general'],'version') === true)
+			$sess_general['version'] = $init['general']['version'];
 
-		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,'service',$name);
+		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,'service',$service);
 
-		if(xivo::load_class($cname,$dir,$sname,false) === false)
-			trigger_error('Failed to load '.$name.' '.$sname.' service',E_USER_ERROR);
+		if(xivo::load_class($classname,$dir,$enginename,false) === false)
+			trigger_error('Failed to load '.$service.' '.$enginename.' service',E_USER_ERROR);
 
 		if(isset($init['general']['datastorage']) === true)
 		{
+			dwho::load_class('dwho_datastorage');
+
 			if(is_string($init['general']['datastorage']) === true)
 				$init['general']['datastorage'] = dwho_datastorage::set_param_from_uri($init['general']['datastorage']);
 			else if(isset($init['general']['datastorage']['type']) === false)
 				$init['general']['datastorage'] = false;
 
 			if($init['general']['datastorage'] === false)
-				trigger_error('Invalid datastorage in '.$name.' init file',E_USER_ERROR);
+				trigger_error('Invalid datastorage in '.$service.' init file',E_USER_ERROR);
 		}
 
-		$instance = new $cname($init);
+		$instance = new $classname($init);
 
 		if(method_exists($instance,'__instance') === true)
-			return($this->_set($name,$instance->__instance()));
+			return($this->_set($service,$instance->__instance()));
 
-		return($this->_set($name,$instance));
+		return($this->_set($service,$instance));
+	}
+
+	function get_engines($service)
+	{
+		if(dwho_issa($service,$this->_conf) === true)
+			return($this->_conf[$service]);
+
+		return(false);
 	}
 
 	function &get_module($service,$module)
@@ -113,7 +123,7 @@ class xivo_service
 
 	function _load_init_file($name)
 	{
-		if(preg_match('/^[a-z0-9\-_]+$/i',$name) !== 1)
+		if(preg_match('/^[a-zA-Z0-9\-_]+$/',$name) !== 1)
 			return(false);
 
 		return(xivo::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.$name.'.ini'));

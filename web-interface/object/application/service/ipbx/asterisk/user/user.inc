@@ -2410,8 +2410,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($arr);
 	}
 
-	function import_csv()
+	function import_csv($save=true)
 	{
+		$save = (bool) $save;
+
 		if(dwho::load_class('dwho::file::csv') === false
 		|| ($http_response = dwho_http::factory('response')) === false
 		|| ($fileinfo = $http_response->upload_file('import',$this->_conf['import']['file'])) === false)
@@ -2436,35 +2438,79 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$incall = array();
 		$incall['dialaction'] = array();
 
-		for($i = 0;$i < $nb;$i++)
+		$r = array();
+		$r['lines'] = array();
+		$r['total'] = array();
+		$r['total']['success'] = 0;
+		$r['total']['error'] = 0;
+		$r['total']['count'] = $nb;
+
+		for($i = 0,$row = 1;$i < $nb;$i++,$row++)
 		{
 			if(($arr = $this->_prepare_import($data[$i])) === false
-			|| $this->set_add($arr,$arr['protocol']['protocol']) === false
-			|| $this->add() === false)
-				continue;
-
-			if(dwho_issa('incall',$arr) === true
-			&& dwho_has_len($arr['incall'],'exten') === true)
+			|| $this->set_add($arr,$arr['protocol']['protocol']) === false)
 			{
-				$incall['incall'] = $arr['incall'];
-
-				$incall['dialaction']['answer'] = array();
-				$incall['dialaction']['answer']['actiontype'] = 'user';
-				$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
-
-				if(dwho_has_len($arr['incall'],'ringseconds') === true)
-					$incall['dialaction']['answer']['actionarg2'] = $arr['incall']['ringseconds'];
-				else
-					$incall['dialaction']['answer']['actionarg2'] = '';
-
-				unset($incall['incall']['ringseconds']);
-
-				if($appincall->set_add($incall) === true)
-					$appincall->add();
+				$r['lines'][$row] = 'error';
+				$r['total']['error']++;
+				continue;
 			}
+			else if(dwho_issa('incall',$arr) === false
+			|| dwho_has_len($arr['incall'],'exten') === false)
+			{
+				if($save === true && $this->add() === false)
+				{
+					$r['lines'][$row] = 'error';
+					$r['total']['error']++;
+				}
+				else
+				{
+					$r['lines'][$row] = 'success';
+					$r['total']['success']++;
+				}
+				continue;
+			}
+
+			$incall['incall'] = $arr['incall'];
+
+			$incall['dialaction']['answer'] = array();
+			$incall['dialaction']['answer']['actiontype'] = 'user';
+			$incall['dialaction']['answer']['actionarg1'] = 1;
+
+			if(dwho_has_len($arr['incall'],'ringseconds') === true)
+				$incall['dialaction']['answer']['actionarg2'] = $arr['incall']['ringseconds'];
+			else
+				$incall['dialaction']['answer']['actionarg2'] = '';
+
+			unset($incall['incall']['ringseconds']);
+
+			if($appincall->set_add($incall) === false)
+			{
+				$r['lines'][$row] = 'error';
+				$r['total']['error']++;
+				continue;
+			}
+			else if($save === false)
+			{
+				$r['lines'][$row] = 'success';
+				$r['total']['success']++;
+				continue;
+			}
+			else if($this->add() === false)
+			{
+				$r['lines'][$row] = 'error';
+				$r['total']['error']++;
+				continue;
+			}
+
+			$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');	
+
+			if($appincall->set_add($incall) === true)
+				$appincall->add();
 		}
 
 		dwho_file::rm($fileinfo['tmp_name']);
+
+		return($r);
 	}
 
 	function add_from_json()
