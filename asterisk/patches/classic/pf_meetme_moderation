@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.27.orig/apps/app_meetme.c	2009-12-08 11:04:19.000000000 +0100
-+++ asterisk-1.4.27/apps/app_meetme.c	2009-12-10 14:39:17.000000000 +0100
++++ asterisk-1.4.27/apps/app_meetme.c	2009-12-11 15:22:02.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -149,7 +149,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  	/* Possible timeout waiting for marked user */
  	if ((confflags & CONFFLAG_WAITMARKED) &&
  		!ast_strlen_zero(optargs[OPT_ARG_WAITMARKED]) &&
-@@ -1634,10 +1668,26 @@
+@@ -1634,10 +1668,33 @@
  			goto outrun;
  	}
  
@@ -163,13 +163,20 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  	ast_mutex_lock(&conf->playlock);
  
 -	if (confflags & CONFFLAG_MARKEDUSER)
-+	if (confflags & CONFFLAG_MARKEDUSER) {
- 		conf->markedusers++;
-+		conf->paused = 0;
-+
++	if (confflags & CONFFLAG_ADMIN) {
++		if (conf->paused) {
++			manager_event(EVENT_FLAG_CALL, "MeetmePause",
++						"Meetme: %s\r\n"
++						"Status: off\r\n",
++						conf->confno);
++			conf->paused = 0;
++		}
 +		/* Directly request admin about waiting users. */
 +		if(conf->noauthorized > 0)
 +			user->adminflags |= ADMINFLAG_AUTH_REQUESTING;
++	}
++	if (confflags & CONFFLAG_MARKEDUSER) {
+ 		conf->markedusers++;
 +	} else if (confflags & CONFFLAG_MODERATION) {
 +		user->adminflags |= ADMINFLAG_NOAUTHED;
 +		conf->noauthorized++;
@@ -177,7 +184,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  	conf->users++;
  	/* Update table */
  	snprintf(members, sizeof(members), "%d", conf->users);
-@@ -1660,18 +1710,23 @@
+@@ -1660,18 +1717,23 @@
  	}
  
  	if ( !(confflags & (CONFFLAG_QUIET | CONFFLAG_NOONLYPERSON)) ) {
@@ -205,7 +212,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  			if (!ast_streamfile(chan,"conf-onlyone",chan->language)) {
  				res = ast_waitstream(chan, AST_DIGIT_ANY);
  				ast_stopstream(chan);
-@@ -1690,7 +1745,7 @@
+@@ -1690,7 +1752,7 @@
  					goto outrun;
  			}
  			if (keepplaying) {
@@ -214,7 +221,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  				if (res > 0)
  					keepplaying=0;
  				else if (res == -1)
-@@ -1780,14 +1835,17 @@
+@@ -1780,14 +1842,17 @@
  	ztc.chan = 0;	
  	ztc.confno = conf->zapconf;
  
@@ -234,7 +241,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		item->announcetype = CONF_HASJOIN;
  		ast_mutex_lock(&conf->announcelistlock);
  		ao2_ref(item, +1); /* add one more so we can determine when announce_thread is done playing it */
-@@ -1801,7 +1859,7 @@
+@@ -1801,7 +1866,7 @@
  		ao2_ref(item, -1);
  	}
  
@@ -243,7 +250,48 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		ztc.confmode = DAHDI_CONF_CONF;
  	else if (confflags & CONFFLAG_MONITOR)
  		ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
-@@ -1887,6 +1945,7 @@
+@@ -1819,22 +1884,24 @@
+ 
+ 	if (!sent_event) {
+ 		manager_event(EVENT_FLAG_CALL, "MeetmeJoin", 
+-                              "Channel: %s\r\n"
+-                              "Uniqueid: %s\r\n"
+-                              "Meetme: %s\r\n"
+-                              "PseudoChan: %s\r\n"
+-                              "Admin: %s\r\n"
+-                              "Usernum: %d\r\n"
+-                              "CallerIDnum: %s\r\n"
+-                              "CallerIDname: %s\r\n",
+-                              chan->name,
+-                              chan->uniqueid,
+-                              conf->confno,
+-                              conf->chan->name,
+-                              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
+-                              user->user_no,
+-                              S_OR(user->chan->cid.cid_num, "<unknown>"),
+-                              S_OR(user->chan->cid.cid_name, "<unknown>"));
++		              "Channel: %s\r\n"
++		              "Uniqueid: %s\r\n"
++		              "Meetme: %s\r\n"
++		              "PseudoChan: %s\r\n"
++		              "Admin: %s\r\n"
++		              "NoAuthed: %s\r\n"
++		              "Usernum: %d\r\n"
++		              "CallerIDnum: %s\r\n"
++		              "CallerIDname: %s\r\n",
++		              chan->name,
++		              chan->uniqueid,
++		              conf->confno,
++		              conf->chan->name,
++		              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
++		              user->adminflags & ADMINFLAG_NOAUTHED ? "Yes" : "No",
++		              user->user_no,
++		              S_OR(user->chan->cid.cid_num, "<unknown>"),
++		              S_OR(user->chan->cid.cid_name, "<unknown>"));
+ 		sent_event = 1;
+ 	}
+ 
+@@ -1887,6 +1954,7 @@
  		}	
  		for(;;) {
  			int menu_was_active = 0;
@@ -251,7 +299,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  
  			outfd = -1;
  			ms = -1;
-@@ -1901,15 +1960,18 @@
+@@ -1901,15 +1969,18 @@
  				set_talk_volume(user, user->listen.desired);
  
  			menu_was_active = menu_active;
@@ -273,7 +321,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  						if (!ast_streamfile(chan, "conf-userwilljoin", chan->language))
  							ast_waitstream(chan, "");
  					} else {
-@@ -1917,7 +1979,8 @@
+@@ -1917,7 +1988,8 @@
  							ast_waitstream(chan, "");
  					}
  				}
@@ -283,7 +331,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
  						ast_waitstream(chan, "");
  			}
-@@ -1925,13 +1988,44 @@
+@@ -1925,13 +1997,44 @@
  			/* Update the struct with the actual confflags */
  			user->userflags = confflags;
  
@@ -333,7 +381,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							break;
  						else {
  							ztc.confmode = DAHDI_CONF_CONF;
-@@ -1942,13 +2036,16 @@
+@@ -1942,13 +2045,16 @@
  							}
  						}
  					}
@@ -352,11 +400,11 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (confflags & CONFFLAG_MONITOR)
  						ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
  					else if (confflags & CONFFLAG_TALKER)
-@@ -1972,9 +2069,52 @@
+@@ -1972,9 +2078,56 @@
  				}
  			}
  
-+			if ((confflags & CONFFLAG_ADMIN) && currentnoauth > 0 && !auth_requesting) {
++			if ((confflags & CONFFLAG_ADMIN) && currentnoauth > 0 && (!auth_requesting || lastnoauth != currentnoauth)) {
 +				/* There are new unauthorized people.
 +				 *
 +				 * Find a no authorized user who is not yet in
@@ -387,7 +435,10 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +						menu_active = 1;
 +					}
 +					else
++					{
 +						user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
++						auth_requesting = 0;
++					}
 +				} else if (currentnoauth != lastnoauth) {
 +					/* During conversation, beep marked user to tell him that there are
 +					 * no authorized users who wait. */
@@ -397,6 +448,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +			}
 +			else if (currentnoauth == 0 && lastnoauth > 0 && (confflags & CONFFLAG_MARKEDUSER)) {
 +				user->adminflags &= ~ADMINFLAG_AUTH_REQUESTING;
++				auth_requesting = 0;
 +			}
 +
  			/* trying to add moh for single person conf */
@@ -406,7 +458,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					if (musiconhold == 0) {
  						ast_moh_start(chan, NULL, NULL);
  						musiconhold = 1;
-@@ -1988,7 +2128,7 @@
+@@ -1988,7 +2141,7 @@
  			}
  			
  			/* Leave if the last marked user left */
@@ -415,7 +467,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  				ret = -1;
  				break;
  			}
-@@ -2014,7 +2154,10 @@
+@@ -2014,7 +2167,10 @@
  			}
  
  			/* If I should be un-muted but am not talker, un-mute me */
@@ -427,7 +479,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  				ztc.confmode |= DAHDI_CONF_TALKER;
  				if (ioctl(fd, DAHDI_SETCONF, &ztc)) {
  					ast_log(LOG_WARNING, "Error setting conference - Un/Mute \n");
-@@ -2035,7 +2178,7 @@
+@@ -2035,7 +2191,7 @@
  			if (user->adminflags & ADMINFLAG_KICKME) {
  				//You have been kicked.
  				if (!(confflags & CONFFLAG_QUIET) && 
@@ -436,7 +488,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  					ast_waitstream(chan, "");
  				}
  				ret = 0;
-@@ -2146,7 +2289,82 @@
+@@ -2146,7 +2302,89 @@
  					if (musiconhold) {
  			   			ast_moh_stop(chan);
  					}
@@ -468,7 +520,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +							case '1': /* Silenced kick */
 +								usr->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
 +								usr->adminflags |= ADMINFLAG_SILENCED_KICK;
-+								if (user->adminflags & ADMINFLAG_TALK_TO_ADMIN) {
++								if (user->adminflags & ADMINFLAG_TALK_TO_ADMIN && !conf->markedusers) {
 +									AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
 +										if (usr->userflags & CONFFLAG_MARKEDUSER)
 +											conf->markedusers++;
@@ -482,7 +534,14 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +								break;
 +							case '2': /* Authorized */
 +								usr->adminflags &= ~(ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
-+								if (user->adminflags & ADMINFLAG_TALK_TO_ADMIN) {
++								manager_event(EVENT_FLAG_CALL, "MeetmeNoAuthed",
++								              "Channel: %s\r\n"
++								              "Uniqueid: %s\r\n"
++								              "Meetme: %s\r\n"
++								              "Usernum: %d\r\n"
++								              "Status: off\r\n",
++								              usr->chan->name, usr->chan->uniqueid, conf->confno, usr->user_no);
++								if (user->adminflags & ADMINFLAG_TALK_TO_ADMIN && !conf->markedusers) {
 +									AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
 +										if (usr->userflags & CONFFLAG_MARKEDUSER)
 +											conf->markedusers++;
@@ -520,12 +579,17 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  						/* Admin menu */
  						if (!menu_active) {
  							menu_active = 1;
-@@ -2159,6 +2377,14 @@
+@@ -2159,6 +2397,19 @@
  						} else 
  							dtmf = f->subclass;
  						if (dtmf) {
 +							/* Check here to break the main loop. */
 +							if (dtmf == '#') {
++								manager_event(EVENT_FLAG_CALL, "MeetmePause",
++											"Meetme: %s\r\n"
++											"Status: on\r\n",
++											conf->confno);
++
 +								conf->paused = 1;
 +								ret = 0;
 +								ast_frfree(f);
@@ -535,7 +599,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							switch(dtmf) {
  							case '1': /* Un/Mute */
  								menu_active = 0;
-@@ -2214,6 +2440,15 @@
+@@ -2214,6 +2465,15 @@
  							case '9':
  								tweak_talk_volume(user, VOL_UP);
  								break;
@@ -551,7 +615,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  							default:
  								menu_active = 0;
  								/* Play an error message! */
-@@ -2397,6 +2632,7 @@
+@@ -2397,6 +2657,7 @@
  					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
  			}
  			lastmarked = currentmarked;
@@ -559,7 +623,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  	}
  
-@@ -2421,20 +2657,25 @@
+@@ -2421,20 +2682,25 @@
  	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
  		conf_play(chan, conf, LEAVE);
  
@@ -588,7 +652,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		/* Last person is leaving, so no reason to try and announce, but should delete the name recording */
  		ast_filedelete(user->namerecloc, NULL);
  	}
-@@ -2474,8 +2715,31 @@
+@@ -2474,8 +2740,31 @@
  			/* Update table */
  			snprintf(members, sizeof(members), "%d", conf->users);
  			ast_update_realtime("meetme", "confno", conf->confno, "members", members, NULL);
@@ -622,7 +686,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  		/* Remove ourselves from the list */
  		AST_LIST_REMOVE(&conf->userlist, user, list);
-@@ -2676,7 +2940,7 @@
+@@ -2676,7 +2965,7 @@
  	conf = find_conf(chan, args.confno, 0, 0, NULL, 0, 1, NULL);
  
  	if (conf) {
@@ -631,7 +695,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		dispose_conf(conf);
  		conf = NULL;
  	} else
-@@ -2887,7 +3151,7 @@
+@@ -2887,7 +3176,7 @@
  								/* Pin correct */
  								allowretry = 0;
  								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
@@ -640,3 +704,138 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  								/* Run the conference */
  								res = conf_run(chan, cnf, confflags.flags, optargs);
  								break;
+@@ -3113,6 +3402,121 @@
+ 	return 0;
+ }
+ 
++static int meetme_moderation(struct mansession *s, const struct message *m, int action)
++{
++	struct ast_conference *conf;
++	struct ast_conf_user *user, *admin;
++	const char *confid = astman_get_header(m, "Meetme");
++	char *userid = ast_strdupa(astman_get_header(m, "Usernum"));
++	int userno;
++
++	if (ast_strlen_zero(confid)) {
++		astman_send_error(s, m, "Meetme conference not specified");
++		return 0;
++	}
++
++	if (ast_strlen_zero(userid)) {
++		astman_send_error(s, m, "Meetme user number not specified");
++		return 0;
++	}
++
++	userno = strtoul(userid, &userid, 10);
++
++	if (*userid) {
++		astman_send_error(s, m, "Invalid user number");
++		return 0;
++	}
++
++	/* Look in the conference list */
++	AST_LIST_LOCK(&confs);
++	AST_LIST_TRAVERSE(&confs, conf, list) {
++		if (!strcmp(confid, conf->confno))
++			break;
++	}
++
++	if (!conf) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "Meetme conference does not exist");
++		return 0;
++	}
++
++	AST_LIST_TRAVERSE(&conf->userlist, user, list)
++		if (user->user_no == userno)
++			break;
++
++	if (!user) {
++		AST_LIST_UNLOCK(&confs);
++		astman_send_error(s, m, "User number not found");
++		return 0;
++	}
++
++	if (action == ADMINFLAG_TALK_TO_ADMIN) {
++		if (conf->paused) {
++			astman_send_error(s, m, "A talk is already started.");
++		} else {
++			AST_LIST_TRAVERSE(&conf->userlist, admin, list)
++				if (admin->userflags & CONFFLAG_ADMIN)
++					admin->adminflags |= (ADMINFLAG_TALK_TO_ADMIN);
++			user->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
++			conf->markedusers = 0;
++			conf->paused = 1;
++			astman_send_ack(s, m, "Start talk");
++		}
++	}
++	else {
++		if (action == ADMINFLAG_AUTH_REQUESTING) {
++			user->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_NOAUTHED|ADMINFLAG_TALK_TO_ADMIN);
++			manager_event(EVENT_FLAG_CALL, "MeetmeNoAuthed",
++				      "Channel: %s\r\n"
++				      "Uniqueid: %s\r\n"
++				      "Meetme: %s\r\n"
++				      "Usernum: %d\r\n"
++				      "Status: off\r\n",
++				      user->chan->name, user->chan->uniqueid, conf->confno, user->user_no);
++			conf->noauthorized--;
++			astman_send_ack(s, m, "User authorized");
++		} else if (action == ADMINFLAG_SILENCED_KICK) {
++			user->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
++			user->adminflags |= ADMINFLAG_SILENCED_KICK;
++			conf->noauthorized--;
++			conf->kicked++;
++			astman_send_ack(s, m, "User is kicked");
++		} else {
++			AST_LIST_UNLOCK(&confs);
++			astman_send_error(s, m, "Action is invalid.");
++			return 0;
++		}
++
++		if (conf->markedusers == 0) {
++			AST_LIST_TRAVERSE(&conf->userlist, user, list) {
++				if (user->userflags & CONFFLAG_MARKEDUSER)
++					conf->markedusers++;
++				user->adminflags &= ADMINFLAG_TALK_TO_ADMIN;
++			}
++			conf->paused = 0;
++		}
++	}
++
++	AST_LIST_UNLOCK(&confs);
++
++	return 0;
++}
++
++static int action_meetmeaccept(struct mansession *s, const struct message *m)
++{
++	return meetme_moderation(s, m, ADMINFLAG_AUTH_REQUESTING);
++}
++
++static int action_meetmekick(struct mansession *s, const struct message *m)
++{
++	return meetme_moderation(s, m, ADMINFLAG_SILENCED_KICK);
++}
++
++static int action_meetmetalk(struct mansession *s, const struct message *m)
++{
++	return meetme_moderation(s, m, ADMINFLAG_TALK_TO_ADMIN);
++}
++
+ static int meetmemute(struct mansession *s, const struct message *m, int mute)
+ {
+ 	struct ast_conference *conf;
+@@ -5120,6 +5524,12 @@
+ 				    action_meetmeunmute, "Unmute a Meetme user");
+ 	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
+                                      action_meetmelist, "List participants in a conference", mandescr_meetmelist);
++	res |= ast_manager_register("MeetmeAccept", EVENT_FLAG_CALL,
++                                    action_meetmeaccept, "Accept a no authorized user in a conference");
++	res |= ast_manager_register("MeetmeKick", EVENT_FLAG_CALL,
++                                    action_meetmekick, "Kick a user from a conference");
++	res |= ast_manager_register("MeetmeTalk", EVENT_FLAG_CALL,
++                                    action_meetmetalk, "Talk to a no authorized user");
+ 	res |= ast_register_application(app3, admin_exec, synopsis3, descrip3);
+ 	res |= ast_register_application(app2, count_exec, synopsis2, descrip2);
+ 	res |= ast_register_application(app, conf_exec, synopsis, descrip);
