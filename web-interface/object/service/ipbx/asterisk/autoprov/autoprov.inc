@@ -183,7 +183,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 				$data = true;
 			else if($data === false && isset($header[0],$header[1]) === true)
 				$r[$header[0]] = $header[1];
-			else if($i === $nb-1 && $recv[$i] === '')
+			else if($i === ($nb - 1) && $recv[$i] === '')
 				continue;
 			else
 				$r['data'][] = $recv[$i];

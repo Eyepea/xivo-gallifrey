@@ -207,7 +207,7 @@ $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_co
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['voicemailid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
 $array['filter']['agentid'] = array('set' => false,'chk' => 2,'cast' => 'ulongint');
-$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','key' => array(0,60,5));
+$array['filter']['ringseconds'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
 $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,20));
 $array['filter']['enableclient'] = array('bool' => true);
 $array['filter']['loginclient'] = array('set'		=> false,
