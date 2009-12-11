@@ -81,7 +81,7 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
-		$_TPL->set_var('id',$info['meetmeroom']['id']);
+		$_TPL->set_var('id',$info['meetmefeatures']['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appmeetme->get_elements());
