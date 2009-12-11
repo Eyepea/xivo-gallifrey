@@ -1,8 +1,8 @@
 2009-11-24 Thomas Bernard <tbernard@proformatique.com>
 
 	pf_atxfer_moh
-	$Revision: 7134 $
-	$Date: 2009-11-24 11:35:32 +0100 (mar 24 nov 2009) $
+	$Revision$
+	$Date$
 
 	This patch fixes the bug of the waiting music being stopped during
 	an atxfer when the transferer hang up before the target of the transfer
@@ -12,8 +12,8 @@
 
 Index: asterisk-1.4.27/res/res_features.c
 ===================================================================
---- asterisk-1.4.27.orig/res/res_features.c	2009-11-28 00:04:33.662156677 +0100
-+++ asterisk-1.4.27/res/res_features.c	2009-11-28 00:04:33.690154595 +0100
+--- asterisk-1.4.27.orig/res/res_features.c	2009-12-11 18:27:37.000000000 +0100
++++ asterisk-1.4.27/res/res_features.c	2009-12-11 19:48:29.000000000 +0100
 @@ -1032,23 +1032,55 @@
  	                               newchan->name,
  	                               newchan->uniqueid);
@@ -54,12 +54,11 @@ Index: asterisk-1.4.27/res/res_features.c
 +			return FEATURE_RETURN_SUCCESS;
 +		}
 +	} else {
-+		int connected;
-+		switch ((int)newchan->_state) {
-+		case AST_STATE_DIALING:
-+		case AST_STATE_RING:
-+		case AST_STATE_RINGING:
-+			connected = 0;
++		ast_log(LOG_DEBUG, "transferer hangup; outstate = %d\n", outstate);
++		switch (outstate) {
++		case AST_CONTROL_RINGING:
++		    {
++			int connected = 0;
 +			while (!connected && (ast_waitfor(newchan, -1) >= 0)) {
 +				f = ast_read(newchan);
 +				if (f == NULL)
@@ -75,8 +74,9 @@ Index: asterisk-1.4.27/res/res_features.c
 +				return -1;
 +			}
 +			/* fall through */
-+
-+		case AST_STATE_UP:
++		    }
++		case AST_CONTROL_ANSWER:
++			ast_log(LOG_DEBUG, "transferer hangup; callee answered\n");
 +			break;
 +
 +		default:
