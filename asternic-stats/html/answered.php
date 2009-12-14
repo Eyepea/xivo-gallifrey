@@ -312,7 +312,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
         </TR>
         </THEAD>
         </TABLE>
-        <BR>    
+        <BR>
         <a name='1'></a>
         <TABLE width='99%' cellpadding=3 cellspacing=3 border=0 class='sortable' id='table1' >
         <CAPTION>
@@ -332,7 +332,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                   <TH><?=$lang["$language"]['avg']?> <?=$lang["$language"]['calltime']?></TH>
                   <TH><?=$lang["$language"]['holdtime']?></TH>
                   <TH><?=$lang["$language"]['avg']?> <?=$lang["$language"]['holdtime']?></TH>
-                  <TH>Nb appels traités/h</TH>
+                  <TH>Nb appels traités/h loggé</TH>
             </TR>
             </THEAD>
             <TBODY>
@@ -346,7 +346,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                 $query2 = "";
                 if($total_calls2>0) {
                 foreach($total_calls2 as $agent=>$val) {
-		    $aa = populate_agents(array($agent)); 
+		    		$aa = populate_agents(array($agent)); 
                     $contavar = $contador +1;
                     $cual = $contador % 2;
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
@@ -386,25 +386,31 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                     echo "<TD>".print_human_hour($avg_hold)."</TD>\n";
 ################################################################################
 
-$db = sqlite_open('/var/lib/pf-xivo-cti-server/sqlite/xivo.db', 0666, $sqliteerror) or die ('Error DB : ' . $sqliteerror);
 
-$query = sqlite_query($db,'SELECT * FROM ctilog WHERE action IN(\'cti_login\',\'cti_logout\',\'cticommand:availstate\') '.
-			  'AND eventdate >= \''.$start.'\' AND eventdate <= \''.$end.'\' '.
-			  'AND loginclient = \''.$aa[0]['loginclient'].'\' '.
-			  'ORDER BY loginclient ASC, eventdate ASC');
-$res_login_logout_time = sqlite_fetch_all($query);
+	$mysqlconnect = mysql_connect("localhost", "xivo", "proformatique") or die("connect impossible : " . mysql_error());
+
+	$db = mysql_select_db('xivo', $mysqlconnect);
+	if (!$db) {
+   		die ('connect bdd impossible : ' . mysql_error());
+	}
+
+$query = "SELECT * FROM ctilog WHERE action IN('cti_login','cti_logout','cticommand:availstate') ";
+$query.= "AND eventdate >= '$start' AND eventdate <= '$end' ";
+$query.= "AND loginclient = '".$aa[0]['loginclient']."' ";
+$query.= "ORDER BY loginclient ASC, eventdate ASC";
+
+$res_cti = mysql_query($query);
 
 $data = array();
 $tmp = array();
-
-$nb = count($res_login_logout_time);
+$llt=0;
 $nbminus1 = $nb-1;
 
 $datenow = mktime();
+    
+while($row=mysql_fetch_assoc($res_cti)) {
 
-for ($llt=0;$llt<$nb;$llt++)
-{
-	$ref = &$res_login_logout_time[$llt];
+	$ref = $row;
 
 	if(isset($data[$ref['loginclient']]) === false)
 		$data[$ref['loginclient']] = array('total'	=> 0,
@@ -454,11 +460,12 @@ for ($llt=0;$llt<$nb;$llt++)
 	}
 
 	$loginclient = $ref['loginclient'];
+	
+	$llt++;
 }
 
-        echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels traités/h</TD>\n";
+echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels traités/h</TD>\n";
 
-sqlite_close($db);
 ################################################################################
                     echo "</TR>\n";
 

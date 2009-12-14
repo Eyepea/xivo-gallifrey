@@ -15,7 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with Asternic call center stats.  If not, see <http://www.gnu.org/licenses/>.
 */
-error_reporting(0);
 
 function return_timestamp($date_string)
 {
@@ -62,6 +61,10 @@ function print_human_hour($sec) {
 		$res .= $sec['m'] . 'm ';
 	if($sec['s'] != 0)
 		$res .= round($sec['s'], 0) . 's';
+		
+		
+	if($sec['s'] == 0)
+		$res = 0;
 	
 	return $res;
 }
