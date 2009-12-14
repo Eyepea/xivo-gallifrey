@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.27.orig/apps/app_meetme.c	2009-12-08 11:04:19.000000000 +0100
-+++ asterisk-1.4.27/apps/app_meetme.c	2009-12-14 11:53:20.000000000 +0100
+--- asterisk-1.4.27.orig/apps/app_meetme.c	2009-12-14 12:55:43.000000000 +0100
++++ asterisk-1.4.27/apps/app_meetme.c	2009-12-14 12:57:18.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -141,7 +141,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +}
 +
 +static void meetme_mod_silence_kick(struct ast_conference *conf, struct ast_conf_user* admin,
-+		struct ast_conf_user* usr)
++                                    struct ast_conf_user* usr)
 +{
 +	usr->adminflags &= ~(ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
 +	usr->adminflags |= ADMINFLAG_SILENCED_KICK;
@@ -154,7 +154,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +}
 +
 +static void meetme_mod_authorize(struct ast_conference *conf, struct ast_conf_user* admin,
-+		struct ast_conf_user* usr)
++                                 struct ast_conf_user* usr)
 +{
 +	usr->adminflags &= ~(ADMINFLAG_NOAUTHED|ADMINFLAG_AUTH_REQUESTING|ADMINFLAG_TALK_TO_ADMIN);
 +	manager_event(EVENT_FLAG_CALL, "MeetmeNoAuthed",
@@ -171,7 +171,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +}
 +
 +static void meetme_mod_talk(struct ast_conference *conf, struct ast_conf_user* admin,
-+		struct ast_conf_user* usr)
++                            struct ast_conf_user* usr)
 +{
 +	if (!(admin->adminflags & ADMINFLAG_TALK_TO_ADMIN)) {
 +		admin->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
@@ -185,7 +185,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 + * @return  if the menu is still active.
 + */
 +static int meetme_moderation_menu(struct ast_channel *chan, struct ast_conference *conf,
-+		struct ast_conf_user* admin, int dtmf, int* auth_requesting)
++                                  struct ast_conf_user* admin, int dtmf, int* auth_requesting)
 +{
 +	struct ast_conf_user* usr;
 +	int menu_active = 1;
@@ -275,7 +275,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +	if (confflags & CONFFLAG_ADMIN) {
 +		if (conf->paused)
 +		{
-+			/* Check if there is a talk before disable pause. */
++			/* Check if there isn't any talk before disable pause. */
 +			AST_LIST_TRAVERSE(&conf->userlist, usr, list) {
 +				if (usr->adminflags & ADMINFLAG_TALK_TO_ADMIN)
 +					break;
@@ -377,7 +377,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 -                              chan->name,
 -                              chan->uniqueid,
 -                              conf->confno,
--                              conf->chan->name,
+-                              (conf->chan ? conf->chan->name : "<unknown>"),
 -                              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
 -                              user->user_no,
 -                              S_OR(user->chan->cid.cid_num, "<unknown>"),
@@ -394,7 +394,7 @@ Index: asterisk-1.4.27/apps/app_meetme.c
 +		              chan->name,
 +		              chan->uniqueid,
 +		              conf->confno,
-+		              conf->chan->name,
++		              (conf->chan ? conf->chan->name : "<unknown>"),
 +		              user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
 +		              user->adminflags & ADMINFLAG_NOAUTHED ? "Yes" : "No",
 +		              user->user_no,
@@ -862,7 +862,23 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  static int meetmemute(struct mansession *s, const struct message *m, int mute)
  {
  	struct ast_conference *conf;
-@@ -5120,6 +5554,12 @@
+@@ -3232,6 +3666,7 @@
+                                       "Channel: %s\r\n"
+                                       "Uniqueid: %s\r\n"
+                                       "Admin: %s\r\n"
++                                      "NoAuthed: %s\r\n"
+                                       "Role: %s\r\n"
+                                       "MarkedUser: %s\r\n"
+                                       "Muted: %s\r\n"
+@@ -3246,6 +3681,7 @@
+                                       user->chan->name,
+                                       user->chan->uniqueid,
+                                       user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
++                                      user->adminflags & ADMINFLAG_NOAUTHED ? "Yes" : "No",
+                                       user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
+                                       user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
+                                       user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
+@@ -5120,6 +5556,12 @@
  				    action_meetmeunmute, "Unmute a Meetme user");
  	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
                                       action_meetmelist, "List participants in a conference", mandescr_meetmelist);
