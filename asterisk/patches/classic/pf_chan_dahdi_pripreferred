@@ -1,8 +1,8 @@
 2009-03-27  Adrien DELLE CAVE <decryptus@proformatique.com>
 
 	pf_chan_dahdi_pripreferred
-	$Revision: 7172 $
-	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
+	$Revision$
+	$Date$
 
 	Added option pripreferred in DAHDI channel.
 

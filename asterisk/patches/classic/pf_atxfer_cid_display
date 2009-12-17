@@ -1,8 +1,8 @@
 2009-04-08  Thomas BERNARD <tbernard@proformatique.com>
 
     pf_atxfer_cid_display
-    $Revision: 7172 $
-    $Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
+    $Revision$
+    $Date$
 
     Fix some callerid displaying during ATXFER.
 

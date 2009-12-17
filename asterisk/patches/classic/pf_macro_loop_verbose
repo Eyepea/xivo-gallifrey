@@ -1,8 +1,8 @@
 2009-03-13  Adrien DELLE CAVE <decryptus@proformatique.com>
 
 	pf_macro_loop_verbose
-	$Revision: 7172 $
-	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
+	$Revision$
+	$Date$
 
 	Added Macro() arguments information in log if there is a possible infinite loop.
 

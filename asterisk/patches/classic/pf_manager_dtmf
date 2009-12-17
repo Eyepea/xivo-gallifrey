@@ -1,8 +1,8 @@
 2008-11-03  Corentin Le Gall <clegall@proformatique.com>
 
 	pf_manager_dtmf
-	$Revision: 7172 $
-	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
+	$Revision$
+	$Date$
 	DTMF manager events (backport from Asterisk 1.6 for 1.4)
 
 	XIVO needs these Asterisk 1.6 events, in order to filter out

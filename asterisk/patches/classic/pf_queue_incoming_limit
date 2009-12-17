@@ -1,8 +1,8 @@
 2009-11-01  Adrien DELLE CAVE <decryptus@proformatique.com>
 
 	pf_queue_incoming_limit
-	$Revision: 7172 $
-	$Date: 2009-11-26 05:07:08 -0500 (Thu, 26 Nov 2009) $
+	$Revision$
+	$Date$
 
 	This patch adds an incominglimit option per queue member so that one can
 	still pass outgoing calls when this limit is reached.

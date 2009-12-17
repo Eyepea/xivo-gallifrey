@@ -1,7 +1,7 @@
-Index: asterisk-1.4.27/channels/chan_sip.c
+Index: asterisk-1.4.27.1/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.27.orig/channels/chan_sip.c	2009-11-24 11:04:22.000000000 +0100
-+++ asterisk-1.4.27/channels/chan_sip.c	2009-11-24 11:08:09.000000000 +0100
+--- asterisk-1.4.27.1.orig/channels/chan_sip.c	2009-12-14 16:13:53.000000000 +0100
++++ asterisk-1.4.27.1/channels/chan_sip.c	2009-12-14 16:14:46.000000000 +0100
 @@ -1471,6 +1471,7 @@
  static int function_sipchaninfo_read(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len);
  static int sip_dtmfmode(struct ast_channel *chan, void *data);
@@ -10,7 +10,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  static int sip_do_reload(enum channelreloadreason reason);
  static int sip_reload(int fd, int argc, char *argv[]);
  static int acf_channel_read(struct ast_channel *chan, char *funcname, char *preparse, char *buf, size_t buflen);
-@@ -19226,6 +19227,26 @@
+@@ -19234,6 +19235,26 @@
  "Adding the wrong headers may jeopardize the SIP dialog.\n"
  "Always returns 0\n";
  
@@ -37,7 +37,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  
  /*! \brief Set the DTMFmode for an outbound SIP call (application) */
  static int sip_dtmfmode(struct ast_channel *chan, void *data)
-@@ -19316,6 +19337,38 @@
+@@ -19324,6 +19345,38 @@
  	return 0;
  }
  
@@ -48,7 +48,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
 +	struct varshead *headp;
 +	int removeall = 0;
 +	char *inbuf = (char *) data;
-+	
++
 +	if (ast_strlen_zero(inbuf)) {
 +		removeall = 1;
 +	}
@@ -59,8 +59,8 @@ Index: asterisk-1.4.27/channels/chan_sip.c
 +		if (strncasecmp(ast_var_name(newvariable), "SIPADDHEADER", strlen("SIPADDHEADER")) == 0) {
 +			if (removeall || (!strncasecmp(ast_var_value(newvariable),inbuf,strlen(inbuf)))) {
 +				if (sipdebug)
-+					ast_log(LOG_DEBUG,"removing SIP Header \"%s\" as %s\n", 
-+						ast_var_value(newvariable), 
++					ast_log(LOG_DEBUG,"removing SIP Header \"%s\" as %s\n",
++						ast_var_value(newvariable),
 +						ast_var_name(newvariable));
 +				AST_LIST_REMOVE_CURRENT(headp, entries);
 +				ast_var_delete(newvariable);
@@ -76,7 +76,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  /*! \brief Transfer call before connect with a 302 redirect
  \note	Called by the transfer() dialplan application through the sip_transfer()
  	pbx interface function if the call is in ringing state 
-@@ -19626,6 +19679,7 @@
+@@ -19634,6 +19687,7 @@
  	/* Register dialplan applications */
  	ast_register_application(app_dtmfmode, sip_dtmfmode, synopsis_dtmfmode, descrip_dtmfmode);
  	ast_register_application(app_sipaddheader, sip_addheader, synopsis_sipaddheader, descrip_sipaddheader);
@@ -84,7 +84,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  
  	/* Register dialplan functions */
  	ast_custom_function_register(&sip_header_function);
-@@ -19665,6 +19719,7 @@
+@@ -19673,6 +19727,7 @@
  	/* Unregister dial plan applications */
  	ast_unregister_application(app_dtmfmode);
  	ast_unregister_application(app_sipaddheader);

@@ -1,7 +1,7 @@
-Index: asterisk-1.4.27/channels/chan_sip.c
+Index: asterisk-1.4.27.1/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.27.orig/channels/chan_sip.c	2009-11-26 10:17:09.000000000 +0100
-+++ asterisk-1.4.27/channels/chan_sip.c	2009-11-26 10:20:39.000000000 +0100
+--- asterisk-1.4.27.1.orig/channels/chan_sip.c	2009-12-14 16:13:20.000000000 +0100
++++ asterisk-1.4.27.1/channels/chan_sip.c	2009-12-14 16:13:42.000000000 +0100
 @@ -886,6 +886,13 @@
          REFER_NOAUTH                   /*!< We had no auth for REFER */
  };
@@ -24,7 +24,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  
  /*--- Device monitoring and Device/extension state handling */
  static int cb_extensionstate(char *context, char* exten, int state, void *data);
-@@ -7830,11 +7838,25 @@
+@@ -7838,11 +7846,25 @@
  		break;
  	case DIALOG_INFO_XML: /* SNOM subscribes in this format */
  		ast_build_string(&t, &maxbytes, "<?xml version=\"1.0\"?>\n");
@@ -54,7 +54,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  		ast_build_string(&t, &maxbytes, "<state>%s</state>\n", statestring);
  		if (state == AST_EXTENSION_ONHOLD) {
  			ast_build_string(&t, &maxbytes, "<local>\n<target uri=\"%s\">\n"
-@@ -14725,6 +14747,36 @@
+@@ -14733,6 +14755,36 @@
  	return sip_uri_params_cmp(params1, params2);
  }
  
@@ -91,7 +91,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  
  /*! \brief Handle incoming INVITE request
  \note 	If the INVITE has a Replaces header, it is part of an
-@@ -14742,6 +14794,7 @@
+@@ -14750,6 +14802,7 @@
  	unsigned int required_profile = 0;
  	struct ast_channel *c = NULL;		/* New channel */
  	int reinvite = 0;
@@ -99,7 +99,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  
  	/* Find out what they support */
  	if (!p->sipoptions) {
-@@ -14906,10 +14959,35 @@
+@@ -14914,10 +14967,35 @@
  			ast_log(LOG_DEBUG,"Invite/replaces: Will use Replace-Call-ID : %s Fromtag: %s Totag: %s\n", replace_id, fromtag ? fromtag : "<no from tag>", totag ? totag : "<no to tag>");
  
  
@@ -139,7 +139,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  			ast_log(LOG_NOTICE, "Supervised transfer attempted to replace non-existent call id (%s)!\n", replace_id);
  			transmit_response_reliable(p, "481 Call Leg Does Not Exist (Replaces)", req);
  			error = 1;
-@@ -14928,7 +15006,7 @@
+@@ -14936,7 +15014,7 @@
  			error = 1;
  		}
  
@@ -148,7 +148,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  			/* Oops, someting wrong anyway, no owner, no call */
  			ast_log(LOG_NOTICE, "Supervised transfer attempted to replace non-existing call id (%s)!\n", replace_id);
  			/* Check for better return code */
-@@ -14936,7 +15014,7 @@
+@@ -14944,7 +15022,7 @@
  			error = 1;
  		}
  
@@ -157,7 +157,7 @@ Index: asterisk-1.4.27/channels/chan_sip.c
  			ast_log(LOG_NOTICE, "Supervised transfer attempted to replace non-ringing or active call id (%s)!\n", replace_id);
  			transmit_response_reliable(p, "603 Declined (Replaces)", req);
  			error = 1;
-@@ -15141,10 +15219,32 @@
+@@ -15149,10 +15227,32 @@
  		p->lastinvite = seqno;
  
  	if (replace_id) { 	/* Attended transfer or call pickup - we're the target */
