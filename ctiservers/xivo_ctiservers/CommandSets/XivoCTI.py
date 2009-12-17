@@ -4044,6 +4044,33 @@ class XivoCTICommand(BaseCommand):
         context = event.get('Context', CONTEXT_UNKNOWN)
         self.__sheet_alert__('faxreceived', astid, context, event)
         return
+
+    def ami_meetmenoauthed(self, astid, event):
+            log.debug('%s ami_meetmenoauthed %s' % (astid, event))
+            channel = event.get('Channel')
+            uniqueid = event.get('Uniqueid')
+            meetmenum = event.get('Meetme')
+            usernum = event.get('Usernum')
+            status = (event.get('Status') == 'off')
+
+
+            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
+
+            meetmeref['uniqueids'][uniqueid]['authed'] = status
+
+            tosend = { 'class' : 'meetme',
+                       'function' : 'update',
+                       'payload' : { 'action' : 'auth',
+                                     'authed' : status,
+                                     'astid' : astid,
+                                     'meetmeid': meetmeid,
+                                     'roomnum' : meetmenum,
+                                     'uniqueid' : uniqueid,
+                                     'details' : meetmeref['uniqueids'][uniqueid] }
+                     }
+
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            return
     
     def ami_meetmejoin(self, astid, event):
             #log.debug('%s ami_meetmejoin %s' % (astid, event))
@@ -4055,6 +4082,8 @@ class XivoCTICommand(BaseCommand):
             pseudochan = event.get('PseudoChan')
             calleridnum = event.get('CallerIDnum')
             calleridname = event.get('CallerIDname')
+            # here we flip/flop the 'not authed' event to an 'authed' event
+            authed = ( event.get('NoAuthed') == 'No' )
             
             (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
             if meetmeref is None:
@@ -4079,16 +4108,20 @@ class XivoCTICommand(BaseCommand):
                 meetmeref['adminlist'] = []
             if isadmin:
                 meetmeref['adminid'] = userid
+                meetmeref['adminnum'] = usernum
+
                 # supporting several ids in one conference room
                 if userid not in meetmeref['adminlist']:
                     meetmeref['adminlist'].append(userid)
+
             meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                                  'mutestatus' : 'off',
                                                  'recordstatus' : 'off',
                                                  'time_start' : time.time(),
                                                  'userid' : userid,
                                                  'fullname' : calleridname,
-                                                 'phonenum' : calleridnum }
+                                                 'phonenum' : calleridnum,
+                                                 'authed' : authed }
             log.info('%s ami_meetmejoin : (%s) channel %s added to meetme %s'
                      % (astid, uniqueid, channel, meetmenum))
             tosend = { 'class' : 'meetme',
@@ -4097,12 +4130,14 @@ class XivoCTICommand(BaseCommand):
                                      'astid' : astid,
                                      'meetmeid': meetmeid,
                                      'roomnum' : meetmenum,
+                                     'adminnum' : meetmeref['adminnum'],
                                      'roomname' : meetmeref['name'],
                                      'adminid' : meetmeref['adminid'],
                                      'adminlist' : meetmeref['adminlist'],
                                      'uniqueid' : uniqueid,
-                                     'details' : meetmeref['uniqueids'][uniqueid] }
-                       }
+                                     'details' : meetmeref['uniqueids'][uniqueid],
+                                     'authed' : authed }
+                     }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             return
     
@@ -4658,6 +4693,19 @@ class XivoCTICommand(BaseCommand):
                                                             else:
                                                                     log.warning('(%s) either astid %s or uniqueid %s is unknown'
                                                                                 % (function, castid, uniqueid))
+                                                    elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
+                                                            castid = argums[0]
+                                                            meetmenum = argums[1]
+                                                            usernum = argums[2]
+                                                            adminnum = argums[3]
+                                                            if castid in self.uniqueids:
+                                                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomnum(meetmenum)
+                                                                    if userid == meetmeref['adminid']:
+                                                                            self.__ami_execute__(castid, 'sendcommand',
+                                                                                                 function, [('Meetme', '%s' % (meetmenum)), 
+                                                                                                            ('Usernum', '%s' % (usernum)),
+                                                                                                            ('Adminnum', '%s' % (adminnum)),
+                                                                                                                    ])
                                                     elif function in ['kick', 'mute', 'unmute'] and len(argums) > 2:
                                                             castid = argums[0]
                                                             meetmenum = argums[1]
