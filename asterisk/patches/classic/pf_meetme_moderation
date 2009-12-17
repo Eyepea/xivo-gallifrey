@@ -1,7 +1,7 @@
-Index: asterisk-1.4.27/apps/app_meetme.c
+Index: asterisk-1.4.27.1/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.27.orig/apps/app_meetme.c	2009-12-14 12:55:43.000000000 +0100
-+++ asterisk-1.4.27/apps/app_meetme.c	2009-12-17 10:29:46.000000000 +0100
+--- asterisk-1.4.27.1.orig/apps/app_meetme.c	2009-12-17 10:45:09.000000000 +0100
++++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-17 15:21:29.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -774,8 +774,12 @@ Index: asterisk-1.4.27/apps/app_meetme.c
  		}
  	}
  
-@@ -2421,20 +2752,25 @@
- 	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
+@@ -2418,23 +2749,28 @@
+ 
+ 	reset_volumes(user);
+ 
+-	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN))
++	if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MONITOR) && !(confflags & CONFFLAG_ADMIN) && !(user->adminflags & (ADMINFLAG_NOAUTHED|ADMINFLAG_SILENCED_KICK)))
  		conf_play(chan, conf, LEAVE);
  
 -	if (!(confflags & CONFFLAG_QUIET) && ((confflags & CONFFLAG_INTROUSER) || (confflags & CONFFLAG_INTROUSERNOREVIEW)) && conf->users > 1) {
