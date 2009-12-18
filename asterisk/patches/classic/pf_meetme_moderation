@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27.1/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.27.1.orig/apps/app_meetme.c	2009-12-17 10:45:09.000000000 +0100
-+++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-18 11:42:44.000000000 +0100
++++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-18 17:42:50.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -588,10 +588,10 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
 +				if((confflags & CONFFLAG_WAITMARKED && currentmarked == 0) || (user->adminflags & ADMINFLAG_NOAUTHED) || ispaused) {
 +					/* Marked users left, or a new no authorized user joined. */
 +					if (((currentmarked == 0 && lastmarked != 0) ||
-+					     (ispaused && !waspaused && !(confflags & CONFFLAG_ADMIN))) &&
++					     (ispaused && !waspaused)) &&
 +					    !(user->adminflags & ADMINFLAG_NOAUTHED)) {
 +						ast_verbose(VERBOSE_PREFIX_3 "%s - Marked users left\n", user->chan->cid.cid_num);
-+						if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MARKEDUSER) && !(user->adminflags & ADMINFLAG_NOAUTHED))
++						if (!(confflags & CONFFLAG_QUIET) && !(confflags & CONFFLAG_MARKEDUSER))
  							if (!ast_streamfile(chan, "conf-leaderhasleft", chan->language))
  								ast_waitstream(chan, "");
 -						if(confflags & CONFFLAG_MARKEDEXIT)
