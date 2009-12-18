@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27.1/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.27.1.orig/apps/app_meetme.c	2009-12-17 10:45:09.000000000 +0100
-+++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-18 11:31:14.000000000 +0100
++++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-18 11:42:44.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -1054,7 +1054,7 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -5120,6 +5647,15 @@
+@@ -5120,6 +5647,14 @@
  				    action_meetmeunmute, "Unmute a Meetme user");
  	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
                                       action_meetmelist, "List participants in a conference", mandescr_meetmelist);
@@ -1066,7 +1066,6 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
 +                                    action_meetmetalk, "Talk to a no authorized user");
 +	res |= ast_manager_register("MeetmePause", EVENT_FLAG_CALL,
 +                                    action_meetmepause, "Pause/unpause conference");
-+	res |= ast_register_application(app3, admin_exec, synopsis3, descrip3);
  	res |= ast_register_application(app3, admin_exec, synopsis3, descrip3);
  	res |= ast_register_application(app2, count_exec, synopsis2, descrip2);
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
