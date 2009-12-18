@@ -652,7 +652,8 @@ evfunction_to_method_name = {
         'FaxSent':              'ami_faxsent',
         'FaxReceived':          'ami_faxreceived',
         'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
-        'MeetmeNoAuthed':       'ami_meetmenoauthed',           # when a menber was accepted or not by an admin
+        'MeetmeNoAuthed':       'ami_meetmenoauthed',           # when a member was accepted or not by an admin
+        'MeetmePause':          'ami_meetmepause',              # when a conf chamber is put in pause or activated
         'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
         'MeetmeMute':           'ami_meetmemute',               # when a member is (un)muted
         'MeetmeTalking':        'ami_meetmetalking',

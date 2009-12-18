@@ -4055,6 +4055,7 @@ class XivoCTICommand(BaseCommand):
 
 
             (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
+            context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
 
             meetmeref['uniqueids'][uniqueid]['authed'] = status
 
@@ -4069,8 +4070,34 @@ class XivoCTICommand(BaseCommand):
                                      'details' : meetmeref['uniqueids'][uniqueid] }
                      }
 
-            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             return
+
+    def ami_meetmepause(self, astid, event):
+            meetmenum = event.get('Meetme')
+            status = (event.get('Status') == 'on')
+
+            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnum(meetmenum)
+
+            context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
+
+            if meetmeref is None:
+                log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, meetmenum))
+                return
+
+            meetmeref['paused'] = status
+
+            tosend = { 'class' : 'meetme',
+                       'function' : 'update',
+                       'payload' : { 'action' : 'changeroompausedstate',
+                                     'astid' : astid,
+                                     'meetmeid': meetmeid,
+                                     'roomnum' : meetmenum,
+                                     'paused': status
+                                   }
+                     }
+
+            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
     
     def ami_meetmejoin(self, astid, event):
             #log.debug('%s ami_meetmejoin %s' % (astid, event))
@@ -4693,6 +4720,17 @@ class XivoCTICommand(BaseCommand):
                                                             else:
                                                                     log.warning('(%s) either astid %s or uniqueid %s is unknown'
                                                                                 % (function, castid, uniqueid))
+
+                                                    elif function in ['MeetmePause']:
+                                                            castid = argums[0]
+                                                            meetmenum = argums[1]
+                                                            status = argums[2]
+                                                            if castid in self.uniqueids:
+                                                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomnum(meetmenum)
+                                                                    self.__ami_execute__(castid, 'sendcommand',
+                                                                                         function, [('Meetme', '%s' % (meetmenum)),
+                                                                                                    ('status', '%s' % (status))])
+
                                                     elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
                                                             castid = argums[0]
                                                             meetmenum = argums[1]
@@ -4704,8 +4742,7 @@ class XivoCTICommand(BaseCommand):
                                                                             self.__ami_execute__(castid, 'sendcommand',
                                                                                                  function, [('Meetme', '%s' % (meetmenum)), 
                                                                                                             ('Usernum', '%s' % (usernum)),
-                                                                                                            ('Adminnum', '%s' % (adminnum)),
-                                                                                                                    ])
+                                                                                                            ('Adminnum', '%s' % (adminnum))])
                                                     elif function in ['kick', 'mute', 'unmute'] and len(argums) > 2:
                                                             castid = argums[0]
                                                             meetmenum = argums[1]
