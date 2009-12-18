@@ -5735,14 +5735,14 @@ class XivoCTICommand(BaseCommand):
                     mylines.append(';'.join(myitems))
                     
             mylines.sort()
-##                uniq = {}
-##                fullstat_body = []
-##                for fsl in [uniq.setdefault(e,e) for e in fullstatlist if e not in uniq]:
-##                        fullstat_body.append(fsl)
-##                return fullstat_body
+            uniq = {}
+            uniq_mylines = []
+            for fsl in [uniq.setdefault(e,e) for e in mylines if e not in uniq]:
+                uniq_mylines.append(fsl)
+                
             tosend = { 'class' : 'directory',
                        'headers' : self.ctxlist.display_header[ctx],
-                       'resultlist' : mylines }
+                       'resultlist' : uniq_mylines }
             return self.__cjson_encode__(tosend)
     
     def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
