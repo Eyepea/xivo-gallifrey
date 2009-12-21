@@ -40,7 +40,6 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['type']		= 'text';
 		$this->_param['help']		= '';		# Help text for this field
 		$this->_param['comment']	= '';		# Comment to be added under the field
-		$this->_param['regexp']		= '';		# Regexp to check entry
 		$this->_param['desc']		= false;
 		$this->_param['default']	= false;
 		$this->_param['value']		= false;
@@ -50,8 +49,9 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['rows']		= 5;
 		$this->_param['cols']		= 50;
 		$this->_param['multiple']	= false;
-		$this->_param['required']	= false;
 		$this->_param['disabled']	= false;
+		$this->_param['required']	= false;
+		$this->_param['regexp']		= '';		# Regexp to check entry
 		$this->_param['id']		= false;
 		$this->_param['class']		= false;
 		$this->_param['label']		= true;
@@ -74,14 +74,11 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(isset($v['type']) === true)
 			$this->_param['type'] = (string) $v['type'];
 
-		if(isset($v['comment']) === true)
-			$this->_param['comment'] = (string) $v['comment'];
-
-		if(isset($v['regexp']) === true)
-			$this->_param['regexp'] = (string) $v['regexp'];
-
 		if(isset($v['help']) === true)
 			$this->_param['help'] = (string) $v['help'];
+
+		if(isset($v['comment']) === true)
+			$this->_param['comment'] = (string) $v['comment'];
 
 		if(isset($v['desc']) === true)
 			$this->_param['desc'] = $v['desc'];
@@ -115,6 +112,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['required']) === true)
 			$this->_param['required'] = (bool) $v['required'];
+
+		if(isset($v['regexp']) === true)
+			$this->_param['regexp'] = (string) $v['regexp'];
 
 		if(isset($v['multiple']) === true)
 			$this->_param['multiple'] = (bool) $v['multiple'];
