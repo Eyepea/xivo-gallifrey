@@ -2508,7 +2508,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$appincall->add();
 		}
 
-		dwho_file::rm($fileinfo['tmp_name']);
+		if($save === true)
+			dwho_file::rm($fileinfo['tmp_name']);
 
 		return($r);
 	}
