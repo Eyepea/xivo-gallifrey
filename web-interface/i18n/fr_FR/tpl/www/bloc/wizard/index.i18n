@@ -1,0 +1,98 @@
+; prev
+< Préc.
+
+; next
+Suiv. >
+
+; wz-title
+Installation XIVO
+
+; wz-steps-welcome
+Bienvenue
+
+; wz-steps-lang
+Choix de la langue
+
+; wz-steps-license
+License d'utilisation
+
+; wz-license-validation
+Vous devez accepter cette licence pour continuer
+
+; wz-steps-check
+Vérification des composants
+
+; wz-not-available
+Information non disponible
+
+; wz-steps-ipbxengine
+Moteur IPBX
+
+; fm-ipbx-engine
+Moteur IPBX
+
+; wz-steps-dbconfig
+Configuration de la base de données
+
+; wz-db-sqlite-missing-xivo
+&nbsp; Le chemin absolu du fichier XIVO doit être spécifié
+
+; wz-db-sqlite-missing-ipbx
+&nbsp; Le chemin absolu du fichier IPBX doit être spécifié
+
+; wz-db-mysql-missing-host
+L'hôte MySQL doit être spécifié
+
+; wz-db-mysql-missing-info
+Le nom d'utilisateur, la base de donnée et le mot de passe doivent être spécifiés pour chaque base
+
+; wz-steps-adminsetup
+Configuration administrateur
+
+; wz-admin-server-blank
+Le nom du serveur doit être spécifié
+
+; wz-admin-password-blank
+Le mot de passe doit être spécifié
+
+; wz-admin-password-match
+Les mots de passe ne correspondent pas
+
+; wz-steps-entctx
+Entité & contexte par défaut
+
+; wz-entity-missing-name
+Le nom doit être spécifié
+
+; wz-entity-missing-displayname
+Le nom affiché doit être spécifié
+
+; wz-steps-ipbxcontext
+Contexte
+
+; wz-context-missing-name
+Le nom doit être spécifié
+
+; wz-context-missing-displayname
+Le nom affiché doit être spécifié 
+
+; wz-steps-ipbximportuser
+Import utilisateurs
+
+; fm_import
+Importer le fichier
+
+; wz-import-lines-imported
+ligne(s) importées
+
+; wz-import-failed-fields
+Nombre de champs insuffisant
+
+; wz-import-failed-number
+Le numéro spécifié est hors de la plage définie
+
+; wz-steps-validate
+Validation finale
+
+; wz-steps-send
+Transmission de la configuration

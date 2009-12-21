@@ -1,0 +1,35 @@
+; mn_left_name
+Installation XIVO
+
+; mn_left_ti_wizard
+Étapes d'installation
+
+; mn_left_wizard-welcome
+Bienvenue
+
+; mn_left_wizard-lang
+Choix de la langue
+
+; mn_left_wizard-license
+License d'utilisation
+
+; mn_left_wizard-check
+Vérification des composants
+
+; mn_left_wizard-ipbxengine
+Moteur IPBX
+
+; mn_left_wizard-dbconfig
+Configuration de la base de données
+
+; mn_left_wizard-adminsetup
+Configuration administrateur
+
+; mn_left_wizard-entctx
+Entité & contexte
+
+; mn_left_wizard-ipbximportuser
+Import utilisateurs
+
+; mn_left_wizard-validate
+Validation

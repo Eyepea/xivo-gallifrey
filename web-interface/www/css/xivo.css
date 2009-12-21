@@ -366,3 +366,20 @@ pre {text-align: left;}
 .dwho-suggest dl dd {padding-left: 6px;color: #888;}
 .dwho-suggest dl dt.dws-highlight {background-color: #055a82;color: #fff;}
 .dwho-suggest dl dd.dws-highlight {background-color: #055a82;color: #888;}
+
+#wz-steplist {clear: left; float: left; width: 200px;}
+#wz-content {float: left;}
+.wz-active {background-color: #055a82; color: #fff;}
+#wz-message {text-align: center; color: red;}
+#wz-nav-prev {width: 10%; float: left; clear: none;}
+#wz-nav-next {width: 10%; float: right; clear: none;}
+#wz-nav-bar {height: 20px; background-image: url(../img/content/t-bg.gif);background-repeat: repeat-x; text-align: center; clear: both; padding: 5px 10px;}
+#wz-nav-step {width: 79%; float: left; clear: none; text-align: center;}
+.wz-check-tb-title {width: 100%; background-color: #ddd; text-align: center; font-weight: bold; clear: both;}
+.wz-check-tb-left {width: 40%; clear: left; float: left;}
+.wz-check-tb-right {width: 50%; float: left; }
+td .wz-check-itemkey {clear: left; float: left; width=50%;}
+td .wz-check-itemvalue {float: left;}
+#r-wizard td {vertical-align: top;}
+.wz-entctx-tb-left {width: 24%; clear: left; float: left;}
+.wz-entctx-tb-right {width: 24%; float: left};

@@ -1,0 +1,71 @@
+; wz-validate-text
+Vérifiez les informations ci-dessous. Cliquez sur « Suiv. » pour valider et terminer l'installation.
+
+; wz-validate-general
+Informations générales
+
+; wz-validate-lang
+Langue d'utilisation
+
+; wz-validate-ipbx-engine
+Moteur IPBX
+
+; wz-validate-db
+Base de données
+
+; wz-validate-db-backend
+Type de base de données
+
+; wz-validate-server
+Informations serveur
+
+; wz-validate-server-name
+Nom du serveur
+
+; wz-validate-server-admin-pwd
+Mot de passe administrateur
+
+; wz-validate-server-ip
+Adresse IP
+
+; wz-validate-server-mask
+Masque réseau
+
+; wz-validate-server-gw
+Passerelle par défaut
+
+; wz-validate-server-dns
+Serveurs DNS
+
+; wz-validate-entity
+Entité par défaut
+
+; wz-validate-entity-name
+Nom
+
+; wz-validate-entity-dispname
+Nom affiché
+
+; wz-validate-context
+Contexte par défaut
+
+; wz-validate-context-none
+Aucun contexte défini
+
+; wz-validate-context-incoming
+Entrant
+
+; wz-validate-context-outgoing
+Sortant
+
+; wz-validate-context-internal
+Interne
+
+; wz-validate-context-name
+Nom
+
+; wz-validate-context-numbers-from
+Numéros
+
+; wz-validate-context-numbers-to
+à

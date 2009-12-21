@@ -1,0 +1,35 @@
+; fm-db-backend
+Type de base de données
+
+; fm-db-file-xivo
+Fichier de données XIVO
+
+; fm-db-file-ipbx
+Fichier de données IPBX
+
+; fm-db-hostname
+Hôte
+
+; fm-db-hostport
+Port
+
+; fm-db-dbname-xivo
+Nom de la base de données XIVO
+
+; fm-db-user-xivo
+Nom d'utilisateur pour la base de données XIVO
+
+; fm-db-pwd-xivo
+Mot de passe utilisateur pour la base de données XIVO
+
+; fm-db-dbname-ipbx
+Nom de la base de données IPBX
+
+; fm-db-user-ipbx
+Nom d'utilisateur pour la base de données IPBX
+
+; fm-db-pwd-ipbx
+Mot de passe utilisateur pour la base de données IPBX
+
+; wz-db-sqlite-file
+Le chemin absolu doit être spécifié
