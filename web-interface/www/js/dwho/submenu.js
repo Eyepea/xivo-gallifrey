@@ -18,7 +18,7 @@
 
 if(typeof(dwho) === 'undefined')
 	var dwho = {'submenu': {}};
-else if(dwho_is_undef(dwho.submenu) === true)
+else if(typeof(dwho.submenu) === 'undefined')
 	dwho.submenu = {};
 
 dwho.submenu = function(options)

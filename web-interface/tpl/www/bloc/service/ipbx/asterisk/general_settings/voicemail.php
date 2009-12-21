@@ -146,6 +146,7 @@ endif;
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
+
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
 ?>
@@ -499,7 +500,9 @@ endif;
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
-			<label id="lb-emailbody" for="it-emailbody"><?=$this->bbf('fm_voicemail-emailbody');?></label>
+			<label id="lb-voicemail-emailbody" for="it-voicemail-emailbody">
+				<?=$this->bbf('fm_voicemail-emailbody');?>
+			</label>
 		</p>
 		<?=$form->textarea(array('paragraph'	=> false,
 					 'name'		=> 'voicemail[emailbody]',
@@ -529,7 +532,9 @@ endif;
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
-			<label id="lb-pagerbody" for="it-pagerbody"><?=$this->bbf('fm_voicemail-pagerbody');?></label>
+			<label id="lb-voicemail-pagerbody" for="it-voicemail-pagerbody">
+				<?=$this->bbf('fm_voicemail-pagerbody');?>
+			</label>
 		</p>
 		<?=$form->textarea(array('paragraph'	=> false,
 					 'name'		=> 'voicemail[pagerbody]',

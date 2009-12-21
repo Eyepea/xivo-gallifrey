@@ -38,6 +38,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_param['name']		= 'undefined';
 		$this->_param['type']		= 'text';
+		$this->_param['help']		= '';		# Help text for this field
+		$this->_param['comment']	= '';		# Comment to be added under the field
+		$this->_param['regexp']		= '';		# Regexp to check entry
 		$this->_param['desc']		= false;
 		$this->_param['default']	= false;
 		$this->_param['value']		= false;
@@ -47,6 +50,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['rows']		= 5;
 		$this->_param['cols']		= 50;
 		$this->_param['multiple']	= false;
+		$this->_param['required']	= false;
 		$this->_param['disabled']	= false;
 		$this->_param['id']		= false;
 		$this->_param['class']		= false;
@@ -69,6 +73,15 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['type']) === true)
 			$this->_param['type'] = (string) $v['type'];
+
+		if(isset($v['comment']) === true)
+			$this->_param['comment'] = (string) $v['comment'];
+
+		if(isset($v['regexp']) === true)
+			$this->_param['regexp'] = (string) $v['regexp'];
+
+		if(isset($v['help']) === true)
+			$this->_param['help'] = (string) $v['help'];
 
 		if(isset($v['desc']) === true)
 			$this->_param['desc'] = $v['desc'];
@@ -99,6 +112,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['disabled']) === true)
 			$this->_param['disabled'] = (bool) $v['disabled'];
+
+		if(isset($v['required']) === true)
+			$this->_param['required'] = (bool) $v['required'];
 
 		if(isset($v['multiple']) === true)
 			$this->_param['multiple'] = (bool) $v['multiple'];
@@ -185,7 +201,8 @@ class dwho_tpl_form extends dwho_tpl_module
 
 			$this->_param['id'] = 'it-'.$v['labelid'];
 		}
-		else $this->_param['id'] = $this->_param['name'];
+		else
+			$this->_param['id'] = $this->_param['name'];
 
 		if(isset($v['class']) === true)
 			$this->_param['class'] = dwho_htmlsc($v['class']);
@@ -314,332 +331,20 @@ class dwho_tpl_form extends dwho_tpl_module
 			$this->_param['checked'] = true;
 	}
 
-	function _mk_input(&$o)
-	{
-		$o = (string) $o;
-
-		$this->_render = '';
-
-		$r = &$this->_render;
-
-		$r .= '<input type="'.$this->_param['type'].'" name="'.$this->_param['name'].'"';
-
-		if($this->_param['id'] !== false)
-			$r .= ' id="'.$this->_param['id'].'"';
-
-		if($this->_param['class'] !== false)
-			$r .= ' class="'.$this->_param['class'].'"';
-
-		if($this->_param['size'] !== false)
-			$r .= ' size="'.$this->_param['size'].'"';
-
-		if($this->_param['disabled'] !== false)
-			$r .= ' disabled="disabled"';
-
-		if($this->_param['checked'] !== false)
-			$r .= ' checked="checked"';
-
-		if($this->_param['value'] !== false)
-		{
-			if($this->_param['invalid'] === true)
-				$value = '';
-			else
-				$value = $this->_param['value'];
-
-			$r .= ' value="'.$value.'"';
-		}
-
-		if(isset($o{0}) === true)
-			$r .= ($o{0} === ' ' ? '' : ' ').$o;
-
-		$r .= ' />';
-	}
-
-	function text($v,$o='')
-	{
-		$v = (array) $v;
-
-		$v['type'] = 'text';
-		$v['checked'] = null;
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = null;
-		else if($v['value'] === false)
-			$v['value'] = '';
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		$this->_mk_desc();
-		$this->_mk_label();
-		$this->_mk_paragraph();
-
-		return($this->_render);
-	}
-
-	function file($v,$o='')
-	{
-		$v = (array) $v;
-
-		$v['checked'] = null;
-		$v['type'] = 'file';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = null;
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		$this->_mk_desc();
-		$this->_mk_label();
-		$this->_mk_paragraph();
-
-		return($this->_render);
-	}
-
-	function hidden($v)
-	{
-		$v = (array) $v;
-
-		if(isset($v['id']) === true)
-			$v['id'] = $v['id'];
-		else
-			$v['id'] = false;
-
-		$v['size'] = false;
-		$v['desc'] = $v['class'] = $v['checked'] = null;
-		$v['type'] = 'hidden';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = false;
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		return($this->_render."\n");
-	}
-
-	function button($v,$o='')
-	{
-		$v = (array) $v;
-		$o = (string) $o;
-
-		$v['size'] = false;
-		$v['checked'] = null;
-		$v['class'] = 'itb-button';
-		$v['type'] = 'button';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = null;
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		if($this->_param['paragraph'] === true)
-			$this->_render = '<p class="fm-paragraph-button">'."\n".$this->_render."\n".'</p>';
-
-		$this->_mk_desc();
-
-		return($this->_render);
-	}
-
-	function submit($v,$o='')
-	{
-		$v = (array) $v;
-		$o = (string) $o;
-
-		$v['size'] = false;
-		$v['checked'] = null;
-		$v['class'] = 'itb-submit';
-		$v['type'] = 'submit';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = null;
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		if($this->_param['paragraph'] === true)
-			$this->_render = '<p class="fm-paragraph-submit">'."\n".$this->_render."\n".'</p>';
-
-		$this->_mk_desc();
-
-		return($this->_render);
-	}
-
-	function image($v,$o='')
-	{
-		$v = (array) $v;
-		$o = (string) $o;
-
-		$v['value'] = $v['checked'] = null;
-		$v['size'] = false;
-		$v['class'] = 'itb-image';
-		$v['type'] = 'image';
-
-		$o .= isset($v['src']) === true ? ' src="'.$v['src'].'"' : '';
-		$o .= isset($v['alt']) === true ? ' alt="'.dwho_alttitle($v['alt']).'"' : ' alt=""';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = null;
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		if($this->_param['paragraph'] === true)
-			$this->_render = '<p class="fm-paragraph-image-submit">'."\n".$this->_render."\n".'</p>';
-
-		$this->_mk_desc();
-
-		return($this->_render);
-	}
-
-	function password($v,$o='')
-	{
-		$v = (array) $v;
-		$o = (string) $o;
-
-		$v['type'] = 'password';
-		$v['checked'] = null;
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$v['value'] = null;
-
-		$this->_set_param_value($v['value'],$v);
-
-		$this->_mk_input($o);
-
-		$this->_mk_desc();
-		$this->_mk_label();
-		$this->_mk_paragraph();
-
-		return($this->_render);
-	}
-
-	function checkbox($v,$o='')
-	{
-		$v = (array) $v;
-		$o = (string) $o;
-
-		$v['size'] = false;
-		$v['type'] = 'checkbox';
-
-		if(isset($v['class']) === false)
-			$v['class'] = 'it-checkbox';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$this->_param['value'] = 1;
-		else
-			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
-
-		if(isset($v['checked']) === true && $v['checked'] !== '')
-			$this->_mk_param_checked($v['checked']);
-		else if(isset($v['default']) === true)
-			$this->_mk_param_checked($v['default']);
-
-		$this->_mk_input($o);
-
-		$this->_mk_desc();
-		$this->_mk_label();
-		$this->_mk_paragraph();
-
-		return($this->_render);
-	}
-
-	function radio($v,$o='')
-	{
-		$v = (array) $v;
-		$o = (string) $o;
-
-		$v['size'] = false;
-		$v['type'] = 'radio';
-
-		if(isset($v['class']) === false)
-			$v['class'] = 'it-radio';
-
-		$this->_set_param($v);
-
-		if(isset($v['value']) === false)
-			$this->_param['value'] = 1;
-		else
-			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
-
-		if(isset($v['checked']) === true && $v['checked'] !== '')
-			$this->_mk_param_checked($v['checked']);
-		else if(isset($v['default']) === true)
-			$this->_mk_param_checked($v['default']);
-
-		$this->_mk_input($o);
-
-		$this->_mk_desc();
-		$this->_mk_label();
-		$this->_mk_paragraph();
-
-		return($this->_render);
-	}
-
-	function textarea($v,$d='',$o='')
-	{
-		$this->_render = '';
-
-		$r = &$this->_render;
-
-		$v = (array) $v;
-		$v['value'] = &$d;
-		$o = (string) $o;
-
-		$this->_set_param($v);
-		$this->_set_param_value($v['value'],$v);
-
-		$r .= '<textarea name="'.$this->_param['name'].'"';
-
-		if($this->_param['disabled'] !== false)
-			$r .= ' disabled="disabled"';
-
-		if($this->_param['id'] !== false)
-			$r .= ' id="'.$this->_param['id'].'"';
-
-		if($this->_param['cols'] !== false)
-			$r .= ' cols="'.$this->_param['cols'].'"';
-
-		if($this->_param['rows'] !== false)
-			$r .= ' rows="'.$this->_param['rows'].'"';
-
-		$r .= (isset($o{0}) === true ? ' '.$o : '').'>'.$this->_param['value'].'</textarea>'."\n";
-
-		$this->_mk_desc();
-		$this->_mk_label();
-		$this->_mk_paragraph();
-
-		return($this->_render);
-	}
-
 	function _mk_label($str=false)
 	{
 		if($this->_param['label'] === false)
-			return((string) $str);
+		{
+			if($this->_param['required'] === false)
+				$str = (string) $str;
+			else
+			{
+				$this->_param['required'] = false;
+				$str = '* '.$str;
+			}
+
+			return($str);
+		}
 
 		$format = '<label id="%s" for="%s">%s</label>';
 
@@ -653,10 +358,23 @@ class dwho_tpl_form extends dwho_tpl_module
 		else
 			$for = $this->_param['name'];
 
-		if($str !== false)
-			return(sprintf($format,$id,$for,$str));
+		if($str === false)
+			$ref = &$this->_render;
+		else
+			$ref = &$str;
 
-		$this->_render = sprintf($format,$id,$for,$this->_render);
+		if($this->_param['required'] !== false)
+		{
+			$ref = '* '.$ref;
+			$this->_param['required'] = false;
+		}
+
+		$r = sprintf($format,$id,$for,$ref);
+
+		if($str !== false)
+			return($r);
+		else
+			$this->_render = $r;
 
 		return(true);
 	}
@@ -712,26 +430,368 @@ class dwho_tpl_form extends dwho_tpl_module
 		}
 	}
 
-	function select($v,$arr=array(),$o='',$more=array())
+	function _mk_help()
 	{
-		$this->_render = '';
-		$this->_selected = false;
-		$this->_optgroup = $this->_uniqoptgroup = array();
+		$r = &$this->_render;
 
-		$v = (array) $v;
+		if($this->_param['help'] !== '')
+		{
+			$dhtml	= &$this->_get_module('dhtml');
+
+			$funcjsin = 'dwho.form.create_help_div('.
+				    'this,'.
+				    '\''.$dhtml->escape($this->_param['help']).'\');';
+
+			$r .= sprintf('<a href="#"
+					  class="fm-help"
+					  onclick="return(false);"
+					  onfocus="%1$s"
+					  onblur="%2$s"
+					  onmouseover="%1$s"
+					  onmouseout="%2$s">&nbsp;</a>',
+				      $funcjsin,
+				      'dwho.form.destroy_help_div();');
+		}
+
+		if($this->_param['comment'] !== '')
+		{
+			$r .= '<span class="fm-desc clearboth">&nbsp;</span>'."\n".
+			      '<span class="fm-comment">'.dwho_htmlsc($this->_param['comment']).'</span>';
+		}
+	}
+
+	function _mk_input(&$o)
+	{
 		$o = (string) $o;
+
+		$this->_render = '';
+
+		$r = &$this->_render;
+
+		$r .= '<input type="'.$this->_param['type'].'" name="'.$this->_param['name'].'"';
+
+		if($this->_param['id'] !== false)
+			$r .= ' id="'.$this->_param['id'].'"';
+
+		if($this->_param['class'] !== false)
+			$class = $this->_param['class'];
+		else
+			$class = '';
+
+		if($this->_param['required'] !== false)
+			$class .= ' _dwho-form-field-required';
+
+		if(($class = trim($class)) !== '')
+			$r .= ' class="'.$class.'"';
+
+		if($this->_param['size'] !== false)
+			$r .= ' size="'.$this->_param['size'].'"';
+
+		if($this->_param['disabled'] !== false)
+			$r .= ' disabled="disabled"';
+
+		if($this->_param['checked'] !== false)
+			$r .= ' checked="checked"';
+
+		if($this->_param['value'] !== false)
+		{
+			if($this->_param['invalid'] === true)
+				$value = '';
+			else
+				$value = $this->_param['value'];
+
+			$r .= ' value="'.$value.'"';
+		}
+
+		if(isset($o{0}) === true)
+			$r .= ($o{0} === ' ' ? '' : ' ').$o;
+
+		if($this->_param['regexp'] !== '')
+		{
+			$dhtml = &$this->_get_module('dhtml');
+
+			$funcjschk = 'dwho.form.check_input_data('.
+				     'this,'.
+				     '\''.$dhtml->escape($this->_param['regexp']).'\');';
+
+			if($this->_param['type'] !== 'checked'
+			&& $this->_param['type'] !== 'radio')
+				$r .= ' onblur="'.$funcjschk.'"';
+			else
+				$r .= ' onselect="'.$funcjschk.'"';
+		}
+
+		$r .= ' />';
+	}
+
+	function text($v,$o='')
+	{
+		$v = (array) $v;
+
+		$v['type'] = 'text';
+		$v['checked'] = null;
 
 		$this->_set_param($v);
 
-		if(isset($v['selected']) === true)
-			$this->_param['selected'] = $this->_mk_param_value($v['selected'],$v);
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+		else if($v['value'] === false)
+			$v['value'] = '';
 
-		if(($this->_param['selected'] === false
-		   || $this->_param['selected'] === '') === true
-		&& $this->_param['default'] !== false)
-			$this->_param['selected'] = $this->_param['default'];
+		$this->_set_param_value($v['value'],$v);
 
-		$r = '<select name="'.$this->_param['name'].'"';
+		$this->_mk_input($o);
+
+		$this->_mk_help();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		return($this->_render);
+	}
+
+	function file($v,$o='')
+	{
+		$v = (array) $v;
+
+		$v['checked'] = null;
+		$v['type'] = 'file';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
+		$this->_mk_input($o);
+
+		$this->_mk_help();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		return($this->_render);
+	}
+
+	function hidden($v)
+	{
+		$v = (array) $v;
+
+		if(isset($v['id']) === true)
+			$v['id'] = $v['id'];
+		else
+			$v['id'] = false;
+
+		$v['size'] = false;
+		$v['regexp'] = $v['desc'] = $v['class'] = $v['checked'] = null;
+		$v['type'] = 'hidden';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = false;
+
+		$this->_set_param_value($v['value'],$v);
+
+		$this->_mk_input($o);
+
+		return($this->_render."\n");
+	}
+
+	function button($v,$o='')
+	{
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$v['size'] = false;
+		$v['regexp'] = $v['checked'] = $v['required'] = null;
+		$v['class'] = 'itb-button';
+		$v['type'] = 'button';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
+		$this->_mk_input($o);
+		$this->_mk_help();
+
+		if($this->_param['paragraph'] === true)
+			$this->_render = '<p class="fm-paragraph-button">'."\n".$this->_render."\n".'</p>';
+
+		$this->_mk_desc();
+
+		return($this->_render);
+	}
+
+	function submit($v,$o='')
+	{
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$v['size'] = false;
+		$v['regexp'] = $v['checked'] = $v['required'] = null;
+		$v['class'] = 'itb-submit';
+		$v['type'] = 'submit';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
+		$this->_mk_input($o);
+		$this->_mk_help();
+
+		if($this->_param['paragraph'] === true)
+			$this->_render = '<p class="fm-paragraph-submit">'."\n".$this->_render."\n".'</p>';
+
+		$this->_mk_desc();
+
+		return($this->_render);
+	}
+
+	function image($v,$o='')
+	{
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$v['regexp'] = $v['value'] = $v['checked'] = $v['required'] = null;
+		$v['size'] = false;
+		$v['class'] = 'itb-image';
+		$v['type'] = 'image';
+
+		$o .= isset($v['src']) === true ? ' src="'.$v['src'].'"' : '';
+		$o .= isset($v['alt']) === true ? ' alt="'.dwho_alttitle($v['alt']).'"' : ' alt=""';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
+		$this->_mk_input($o);
+		$this->_mk_help();
+
+		if($this->_param['paragraph'] === true)
+			$this->_render = '<p class="fm-paragraph-image-submit">'."\n".$this->_render."\n".'</p>';
+
+		$this->_mk_desc();
+
+		return($this->_render);
+	}
+
+	function password($v,$o='')
+	{
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$v['type'] = 'password';
+		$v['checked'] = null;
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$v['value'] = null;
+
+		$this->_set_param_value($v['value'],$v);
+
+		$this->_mk_input($o);
+
+		$this->_mk_help();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		return($this->_render);
+	}
+
+	function checkbox($v,$o='')
+	{
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$v['size'] = false;
+		$v['type'] = 'checkbox';
+
+		if(isset($v['class']) === false)
+			$v['class'] = 'it-checkbox';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$this->_param['value'] = 1;
+		else
+			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
+
+		if(isset($v['checked']) === true && $v['checked'] !== '')
+			$this->_mk_param_checked($v['checked']);
+		else if(isset($v['default']) === true)
+			$this->_mk_param_checked($v['default']);
+
+		$this->_mk_input($o);
+
+		$this->_mk_help();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		return($this->_render);
+	}
+
+	function radio($v,$o='')
+	{
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$v['size'] = false;
+		$v['type'] = 'radio';
+		$v['regexp'] = null;
+
+		if(isset($v['class']) === false)
+			$v['class'] = 'it-radio';
+
+		$this->_set_param($v);
+
+		if(isset($v['value']) === false)
+			$this->_param['value'] = 1;
+		else
+			$this->_param['value'] = $this->_mk_param_value($v['value'],$v);
+
+		if(isset($v['checked']) === true && $v['checked'] !== '')
+			$this->_mk_param_checked($v['checked']);
+		else if(isset($v['default']) === true)
+			$this->_mk_param_checked($v['default']);
+
+		$this->_mk_input($o);
+
+		$this->_mk_help();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		return($this->_render);
+	}
+
+	function textarea($v,$d='',$o='')
+	{
+		$this->_render = '';
+
+		$r = &$this->_render;
+
+		$v = (array) $v;
+		$v['value'] = &$d;
+		$o = (string) $o;
+
+		$this->_set_param($v);
+		$this->_set_param_value($v['value'],$v);
+
+		$r .= '<textarea name="'.$this->_param['name'].'"';
 
 		if($this->_param['disabled'] !== false)
 			$r .= ' disabled="disabled"';
@@ -739,54 +799,26 @@ class dwho_tpl_form extends dwho_tpl_module
 		if($this->_param['id'] !== false)
 			$r .= ' id="'.$this->_param['id'].'"';
 
-		if($this->_param['multiple'] === true)
-		{
-			$r .= ' multiple="multiple"';
+		if($this->_param['cols'] !== false)
+			$r .= ' cols="'.$this->_param['cols'].'"';
 
-			if($this->_param['size'] !== false)
-				$r .= ' size="'.$this->_param['size'].'"';
-		}
+		if($this->_param['rows'] !== false)
+			$r .= ' rows="'.$this->_param['rows'].'"';
 
-		if(isset($o{0}) === true)
-			$r .= ' '.$o;
+		if($this->_param['class'] !== false)
+			$class = $this->_param['class'];
+		else
+			$class = '';
 
-		$r .= '>'."\n";
+		if($this->_param['required'] !== false)
+			$class .= ' _dwho-form-field-required';
 
-		if($more !== '' && $more !== false)
-		{
-			$more = (array) $more;
-			$this->_mk_slt_option($more);
-		}
+		if(($class = trim($class)) !== '')
+			$r .= ' class="'.$class.'"';
 
-		if($arr !== '' && $arr !== false)
-		{
-			$arr = (array) $arr;
+		$r .= (isset($o{0}) === true ? ' '.$o : '').'>'.$this->_param['value'].'</textarea>'."\n";
 
-			if($this->_param['jump'] > 0)
-			{
-				$jumparr = array();
-				$this->_mk_slt_option_jump($this->_param['jump'],$arr,$jumparr);
-				$arr = $jumparr;
-			}
-
-			$this->_mk_slt_option($arr);
-		}
-
-		if($this->_param['empty'] !== false
-		|| ($this->_param['invalid'] === true
-		   && $this->_selected === false) === true)
-			$r .= $this->_mk_slt_option_empty();
-
-		foreach($this->_optgroup as $key => $value)
-		{
-			if(is_int($key) === false && isset($this->_uniqoptgroup[$key]) === true)
-				$r .= '<optgroup label="'.$key.'">'.$this->_uniqoptgroup[$key].'</optgroup>'."\n";
-			else
-				$r .= $value;
-		}
-
-		$this->_render = $r.$this->_render.'</select>';
-
+		$this->_mk_help();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -1236,6 +1268,100 @@ class dwho_tpl_form extends dwho_tpl_module
 			$this->_uniqoptgroup[$label] .= $this->_render;
 			$this->_render = '';
 		}
+	}
+
+	function select($v,$arr=array(),$o='',$more=array())
+	{
+		$this->_render = '';
+		$this->_selected = false;
+		$this->_optgroup = $this->_uniqoptgroup = array();
+
+		$v = (array) $v;
+		$o = (string) $o;
+
+		$this->_set_param($v);
+
+		if(isset($v['selected']) === true)
+			$this->_param['selected'] = $this->_mk_param_value($v['selected'],$v);
+
+		if(($this->_param['selected'] === false
+		   || $this->_param['selected'] === '') === true
+		&& $this->_param['default'] !== false)
+			$this->_param['selected'] = $this->_param['default'];
+
+		$r = '<select name="'.$this->_param['name'].'"';
+
+		if($this->_param['disabled'] !== false)
+			$r .= ' disabled="disabled"';
+
+		if($this->_param['id'] !== false)
+			$r .= ' id="'.$this->_param['id'].'"';
+
+		if($this->_param['multiple'] === true)
+		{
+			$r .= ' multiple="multiple"';
+
+			if($this->_param['size'] !== false)
+				$r .= ' size="'.$this->_param['size'].'"';
+		}
+
+		if($this->_param['class'] !== false)
+			$class = $this->_param['class'];
+		else
+			$class = '';
+
+		if($this->_param['required'] !== false)
+			$class .= ' _dwho-form-field-required';
+
+		if(($class = trim($class)) !== '')
+			$r .= ' class="'.$class.'"';
+
+		if(isset($o{0}) === true)
+			$r .= ' '.$o;
+
+		$r .= '>'."\n";
+
+		if($more !== '' && $more !== false)
+		{
+			$more = (array) $more;
+			$this->_mk_slt_option($more);
+		}
+
+		if($arr !== '' && $arr !== false)
+		{
+			$arr = (array) $arr;
+
+			if($this->_param['jump'] > 0)
+			{
+				$jumparr = array();
+				$this->_mk_slt_option_jump($this->_param['jump'],$arr,$jumparr);
+				$arr = $jumparr;
+			}
+
+			$this->_mk_slt_option($arr);
+		}
+
+		if($this->_param['empty'] !== false
+		|| ($this->_param['invalid'] === true
+		   && $this->_selected === false) === true)
+			$r .= $this->_mk_slt_option_empty();
+
+		foreach($this->_optgroup as $key => $value)
+		{
+			if(is_int($key) === false && isset($this->_uniqoptgroup[$key]) === true)
+				$r .= '<optgroup label="'.$key.'">'.$this->_uniqoptgroup[$key].'</optgroup>'."\n";
+			else
+				$r .= $value;
+		}
+
+		$this->_render = $r.$this->_render.'</select>';
+
+		$this->_mk_help();
+		$this->_mk_desc();
+		$this->_mk_label();
+		$this->_mk_paragraph();
+
+		return($this->_render);
 	}
 }
 

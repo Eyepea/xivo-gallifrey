@@ -16,9 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+
 if(typeof(dwho) === 'undefined')
 	var dwho = {'form': {}};
-else if(dwho_is_undef(dwho.form) === true)
+else if(typeof(dwho.form) === 'undefined')
 	dwho.form = {};
 
 dwho.fm = document.forms;
@@ -88,7 +89,7 @@ dwho.form.show_error = function()
 
 dwho.form.set_onfocus = function(obj)
 {
-	var list = {'input': 1,'select': 1, 'textarea': 1};
+	var list = {'input': 1, 'select': 1, 'textarea': 1};
 
 	if(dwho_is_undef(dwho_form_class_onfocus) === true
 	|| dwho_is_undef(dwho_form_class_error) === true
@@ -106,14 +107,17 @@ dwho.form.set_onfocus = function(obj)
 	|| obj.disabled === true)
 		return(false);
 
-	obj.className = dwho_form_class_onfocus;
+	if(dwho_is_undef(dwho_form_class_onblur) === false)
+		dwho.dom.remove_cssclass(obj,dwho_form_class_onblur);
+
+	dwho.dom.add_cssclass(obj,dwho_form_class_onfocus);
 
 	return(true);
 }
 
 dwho.form.set_onblur = function(obj)
 {
-	var list = {'input': 1,'select': 1, 'textarea': 1};
+	var list = {'input': 1, 'select': 1, 'textarea': 1};
 
 	if(dwho_is_undef(dwho_form_class_onblur) === true
 	|| dwho_is_undef(dwho_form_class_error) === true
@@ -131,7 +135,10 @@ dwho.form.set_onblur = function(obj)
 	|| obj.disabled === true)
 		return(false);
 
-	obj.className = dwho_form_class_onblur;
+	if(dwho_is_undef(dwho_form_class_onfocus) === false)
+		dwho.dom.remove_cssclass(obj,dwho_form_class_onfocus);
+
+	dwho.dom.add_cssclass(obj,dwho_form_class_onblur);
 
 	return(true);
 }
@@ -364,7 +371,7 @@ dwho.form.order_selected = function(from,order,num)
 			else
 				stext = soption.text;
 
-			stext = (selected+2)+'. '+stext;
+			stext = (selected + 2) + '. '+stext;
 		}
 
 		from.options[selected+1] = new Option(stext,soption.value);
@@ -394,22 +401,22 @@ dwho.form.order_selected = function(from,order,num)
 			else
 				ntext = noption.text;
 
-			ntext = (selected+1)+'. '+ntext;
+			ntext = (selected+1) + '. ' + ntext;
 
 			if((rs = soption.text.match(/^(\d+)\. (.*)$/)) !== null)
 				stext = rs[2];
 			else
 				stext = soption.text;
 
-			stext = selected+'. '+stext;
+			stext = selected + '. ' + stext;
 		}
 
-		from.options[selected-1] = new Option(stext,soption.value);
+		from.options[selected - 1] = new Option(stext,soption.value);
 		from.options[selected] = new Option(ntext,noption.value);
 
 		dwho.form.select(from.id,false);
 
-		from.options[selected-1].selected = true;
+		from.options[selected - 1].selected = true;
 	}
 }
 
@@ -428,7 +435,7 @@ dwho.form.select_add_entry = function(id,text,value,num)
 	var len = obj.options.length;
 
 	if(Boolean(num) === true)
-		text = (len + 1)+'. '+text;
+		text = (len + 1) + '. ' + text;
 
 	obj.options[len] = new Option(text,value);
 	obj.scrollTop = obj.scrollHeight;
@@ -469,7 +476,7 @@ dwho.form.select_delete_entry = function(id,num)
 		else
 			text = obj.options[i].text;
 
-		obj.options[i].text = (i+1)+'. '+text;
+		obj.options[i].text = (i + 1) + '. ' + text;
 	}
 
 	return(true);
@@ -530,7 +537,7 @@ dwho.form.field_id_counter = function(obj,cnt)
 		{
 			if(dwho_is_undef(tagobj[j].id) === false
 			&& tagobj[j].id.length > 0)
-				tagobj[j].id += '-'+cnt;
+				tagobj[j].id += '-' + cnt;
 		}
 	}
 
@@ -548,7 +555,7 @@ dwho.form.field_name_counter = function(obj,cnt)
 		for(var i = 0;i < tag_input_nb;i++)
 		{
 			if(dwho_is_undef(tag_input[i].name) === false)
-				tag_input[i].name += '['+cnt+']';
+				tag_input[i].name += '[' + cnt + ']';
 		}
 	}
 
@@ -559,7 +566,7 @@ dwho.form.field_name_counter = function(obj,cnt)
 		for(var i = 0;i < tag_select_nb;i++)
 		{
 			if(dwho_is_undef(tag_select[i].name) === false)
-				tag_select[i].name += '['+cnt+']';
+				tag_select[i].name += '[' + cnt + ']';
 		}
 	}
 
@@ -570,7 +577,7 @@ dwho.form.field_name_counter = function(obj,cnt)
 		for(var i = 0;i < tag_textarea_nb;i++)
 		{
 			if(dwho_is_undef(tag_textarea[i].name) === false)
-				tag_textarea[i].name += '['+cnt+']';
+				tag_textarea[i].name += '[' + cnt + ']';
 		}
 	}
 
@@ -837,5 +844,188 @@ dwho.form.disable_submit_onenter = function(e)
 	return(true);
 }
 
+dwho.form.create_help_div = function(obj,str)
+{
+	if(dwho_is_object(obj) === false
+	|| dwho_is_string(str) === false)
+		return(false);
+
+	var div = dwho.dom.create_element('div',
+					  {'id':	'__dwho_form_help__',
+					   'className':	'dwho-form-help'},
+					   str,
+					   true)
+
+	var pos = dwho.dom.get_offset_position(obj);
+
+	div.style.left	= (pos.x + 20) + 'px';
+	div.style.top	= ((pos.y - 20) + obj.offsetHeight) + 'px';
+
+	dwho.dom.remove_element(dwho_eid('__dwho_form_help__',true));
+
+	if(dwho_is_object(obj.parentNode) === false)
+		document.getElementsByTagName('body')[0].appendChild(div);
+	else
+		obj.parentNode.appendChild(div);
+
+	return(true);
+}
+
+dwho.form.destroy_help_div = function()
+{
+	dwho.dom.remove_element(dwho_eid('__dwho_form_help__',true));
+}
+
+dwho.form.check_input_data = function(obj,reg)
+{
+	if(dwho_is_object(obj) === false
+	|| dwho_is_undef(obj.value) === true
+	|| dwho_has_len(reg) === false)
+		return(false);
+
+	reg = dwho_string(reg);
+
+	var rs = null;
+
+	if(dwho_strcmp('[[:',reg,3) !== 0)
+		var regcheck = new RegExp(reg);
+	else
+	{
+		switch(reg.toLowerCase())
+		{
+			case '[[:tolower:]]':
+				obj.value.toLowerCase();
+				return(true);
+			case '[[:toupper:]]':
+				obj.value.toUpperCase();
+				return(true);
+			case '[[:int:]]':
+				var regcheck = /^\d+$/;
+				break;
+			case '[[:float:]]':
+				var regcheck = /^\d*[0-9](\.\d*[0-9])?$/;
+				break;
+			case '[[:port:]]':
+				if(dwho_is_int(obj.value) === false
+				|| obj.value < 1
+				|| obj.value > 65535)
+					rs = false;
+				else
+					rs = true;
+				break;
+			case '[[:ipv4:]]':
+				rs = dwho_chk_ipv4_strict(obj.value) !== false;
+				break;
+			case '[[:url:]]':
+				var regcheck = /^(http[s]?:\/\/|ftp:\/\/)?(www\.)?[a-zA-Z0-9-\.]+\.[a-zA-Z0-9]+$/;
+				break;
+			default:
+				var regcheck = /^.*$/;
+		}
+	}
+
+	if(rs === null)
+		rs = regcheck.test(obj.value);
+
+	if(dwho_is_undef(dwho_form_class_error) === false)
+	{
+		if(rs === true)
+			dwho.dom.remove_cssclass(obj,dwho_form_class_error);
+		else
+			dwho.dom.add_cssclass(obj,dwho_form_class_error);
+	}
+
+	return(rs);
+}
+
+// Return the object label associated to a given input field id, if exists
+// Return false otherwise
+dwho.form.get_associated_label = function(id)
+{
+	if(dwho_has_len(id) === false
+	|| (labels = dwho.dom.etag('label')) === false
+	|| (nb = labels.length) === 0)
+		return(false);
+
+	for(var i = 0;i < nb;i++)
+	{
+		if(labels[i].htmlFor === id)
+			return(document.getElementById(labels[i].id));
+	}
+
+	return(false);
+}
+
+// Check if field is required by analysing if it has className "_dwho-form-field-required"
+dwho.form.is_required = function(obj)
+{
+	return(dwho.dom.has_cssclass(obj,'_dwho-form-field-required'));
+}
+
+// Scan all input fields to check if required ones are filled in or not
+// Store fields in error and display an alert if needed
+dwho.form.check_required_fields = function(ev,form)
+{
+	if(dwho_is_object(form) === false)
+		return(false);
+
+	var arr		= ['input', 'select', 'textarea'];
+	var errors	= [];
+
+	for(var i = 0;i < 3;i++)
+	{
+		if((tag = dwho.dom.etag(arr[i],form)) === false
+		|| (nb = tag.length) === 0)
+			continue;
+
+		for(var j = 0;j < nb;j++)
+		{
+			if(dwho_has_len(tag[j].value) === true
+			|| dwho.dom.has_cssclass(tag[j],'_dwho-form-field-required') === false)
+				continue;
+			else if((label = dwho.form.get_associated_label(tag[j].id)) !== false)
+				errors.push(dwho_substr(label.innerHTML,
+							0,
+							label.innerHTML.lastIndexOf(':')).replace(/\s*/,''));
+			else if(dwho_is_undef(tag[j].id) === false)
+				errors.push(tag[j].id);
+			else if(dwho_is_undef(tag[j].name) === false)
+				errors.push(ag[j].name);
+		}
+	}
+
+	if(errors.length === 0)
+		return(true);
+	else if(dwho_is_function(ev.preventDefault) === true)
+		ev.preventDefault();
+
+	alert('ERROR - Mandatory fields not filled in:\n- ' + errors.join('\n -'));
+
+	return(false);
+}
+
+// Call checkboxes onclick functions just after loading
+dwho.form.execregexp = function()
+{
+	var id;
+	var inputarr = document.forms[0].getElementsByTagName('input');
+	var obj;
+	var func;
+
+	for (var i=0; i<inputarr.length; i++)
+	{
+		if (inputarr[i].type == 'checkbox')
+		{
+			id = inputarr[i].id;
+			obj = document.getElementById(id);
+			func = obj.onclick;
+			if(func)
+				func();
+		}
+	}
+}
+
+
 dwho.dom.set_onload(dwho.form.onfocus_onblur);
 dwho.dom.set_onload(dwho.form.show_error);
+dwho.dom.set_onload(dwho.form.execregexp);

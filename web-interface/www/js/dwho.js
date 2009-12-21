@@ -263,7 +263,7 @@ function dwho_has_len(val,key)
 function dwho_chk_ipv4_strict(value)
 {
 	if(dwho_is_string(value) === false
-	|| (value === dwho_long2ip(dwho_ip2long(value))) === false)
+	|| value !== dwho_long2ip(dwho_ip2long(value)))
 		return(false);
 
 	return(value);

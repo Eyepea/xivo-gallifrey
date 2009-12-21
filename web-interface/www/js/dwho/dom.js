@@ -18,9 +18,9 @@
 
 if(typeof(dwho) === 'undefined')
 	var dwho = {'dom': {'node': {}}};
-else if(dwho_is_undef(dwho.dom) === true)
+else if(typeof(dwho.dom) === 'undefined')
 	dwho.dom = {'node': {}};
-else if(dwho_is_undef(dwho.dom.node) === true)
+else if(typeof(dwho.dom.node) === 'undefined')
 	dwho.dom.node = {};
 
 dwho.dom.eids = {};
@@ -39,11 +39,46 @@ dwho.dom.eid = function(id,forcereload)
 
 var dwho_eid = dwho.dom.eid;
 
-dwho.dom.add_cssclass = function(obj,classname)
+dwho.dom.has_cssclass = function(obj,classname,strict)
 {
 	if(dwho_is_object(obj) === false
 	|| dwho_is_undef(obj.className) === true)
 		return(false);
+
+	if(dwho_has_len(classname) === true)
+		var list = dwho_object_flip(classname.split(/\s+/));
+	else if(dwho_is_array(classname) === true)
+		var list = dwho_object_flip(classname);
+	else
+		return(false);
+
+	strict = dwho_is_undef(strict) === true ? true : Boolean(strict);
+
+	var rs = obj.className.split(/\s+/);
+
+	objlist = dwho_object_flip(rs);
+
+	var undef = null;
+
+	for(var property in list)
+	{
+		if(dwho_has_len(property) === false
+		|| (undef = dwho_is_undef(objlist[property])) !== strict)
+			continue;
+		else
+			return((undef === false));
+	}
+
+	return(strict);
+}
+
+dwho.dom.add_cssclass = function(obj,classname,mode)
+{
+	if(dwho_is_object(obj) === false
+	|| dwho_is_undef(obj.className) === true)
+		return(false);
+	else if(mode !== 'unshift' && mode !== 'push')
+		mode = 'push';
 
 	if(dwho_has_len(classname) === true)
 		var list = dwho_object_flip(classname.split(/\s+/));
@@ -58,14 +93,27 @@ dwho.dom.add_cssclass = function(obj,classname)
 
 	for(var property in list)
 	{
-		if(dwho_has_len(property) === true
-		&& dwho_is_undef(objlist[property]) === true)
-			rs.push(property);
+		if(dwho_has_len(property) === false)
+			continue;
+		else if(dwho_is_undef(objlist[property]) === false)
+			rs.splice(objlist[property],1);
+
+		rs[mode](property);
 	}
 
 	obj.className = rs.join(' ');
 
 	return(true);
+}
+
+dwho.dom.unshift_cssclass = function(obj,classname)
+{
+	return(dwho.dom.add_cssclass(obj,classname,'unshift'));
+}
+
+dwho.dom.push_cssclass = function(obj,classname)
+{
+	return(dwho.dom.add_cssclass(obj,classname,'push'));
 }
 
 dwho.dom.remove_cssclass = function(obj,classname)
@@ -260,8 +308,8 @@ dwho.dom.get_offset_position = function(obj)
 	if(dwho_is_object(obj) === false)
 		return(false);
 
-	ret = {'x':	0,
-	       'y':	0};
+	var ret = {'x':	0,
+		   'y':	0};
 
 	if(dwho_is_undef(obj.offsetParent) === false)
 	{

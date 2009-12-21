@@ -18,7 +18,7 @@
 
 if(typeof(dwho) === 'undefined')
 	var dwho = {'http': {}};
-else if(dwho_is_undef(dwho.http) === true)
+else if(typeof(dwho.http) === 'undefined')
 	dwho.http = {};
 
 dwho.http = function(url,options,data,send)

@@ -70,8 +70,9 @@ class dwho_tpl_url extends dwho_tpl_module
 
 		if(substr($url,0,1) !== '#')
 			$url .= $this->_build_query($query,$encode,$sep,$sid);
-
-		if((bool) $encode === false)
+		else if($url === '#')
+			return($url);
+		else if((bool) $encode === false)
 			return($url);
 
 		return($this->_uri->build_uri($this->_uri->parse_uri($url,true,$sep),true,null,$sep));

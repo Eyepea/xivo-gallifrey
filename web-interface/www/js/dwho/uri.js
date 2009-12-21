@@ -18,7 +18,7 @@
 
 if(typeof(dwho) === 'undefined')
 	var dwho = {'uri': {}};
-else if(dwho_is_undef(dwho.uri) === true)
+else if(typeof(dwho.uri) === 'undefined')
 	dwho.uri = {};
 
 dwho.uri = function()

@@ -18,7 +18,7 @@
 
 if(typeof(dwho) === 'undefined')
 	var dwho = {'suggest': {}};
-else if(dwho_is_undef(dwho.suggest) === true)
+else if(typeof(dwho.suggest) === 'undefined')
 	dwho.suggest = {};
 
 dwho.suggest = function(options,id)

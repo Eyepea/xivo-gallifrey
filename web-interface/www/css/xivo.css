@@ -93,6 +93,7 @@ pre {text-align: left;}
 .fm-paragraph .it-helper {color: #666;}
 .fm-paragraph .it-checkbox, .fm-paragraph .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
 
+.fm-success, .fm-paragraph .fm-success {background-color: #5dbc00;}
 .fm-error, .fm-paragraph .fm-error {background-color: #ffcbcb;}
 
 .fm-paragraph .fm-desc {display: block;float: left;text-align: right;min-width: 50%;}
@@ -101,9 +102,8 @@ pre {text-align: left;}
 .fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
 .fm-paragraph p {padding-bottom: 2px;}
 .fm-description {text-align: center;width: 100%;}
-
-.tooltips-over:hover {color: #ff9d03;}
-.tooltips-info {position: absolute;margin-top: 13px;display: none;padding: 5px;border: 1px solid #697e92;background-color: #e8eeff;}
+.fm-help {padding: 2px 6px;background-image: url(../img/site/button/mini/blue/bo-help.gif); background-repeat: no-repeat;background-position: center center;}
+.fm-comment {display: block;}
 
 .fm-multilist {text-align: center;width: 100%;}
 .fm-multilist div {float: left;width: 45%;}
@@ -136,6 +136,9 @@ pre {text-align: left;}
 .txt-right {text-align: right;}
 
 .width-auto {width: auto;}
+
+.tooltips-over:hover {color: #ff9d03;}
+.tooltips-info {position: absolute;margin-top: 13px;display: none;padding: 5px;border: 1px solid #697e92;background-color: #e8eeff;}
 
 #bpc-center #bc-content {margin: 0px;vertical-align: middle;text-align: center;height: 432px;}
 #bpc-center #b-content {width: 970px;margin: 0px;text-align: left;}
@@ -366,6 +369,8 @@ pre {text-align: left;}
 .dwho-suggest dl dd {padding-left: 6px;color: #888;}
 .dwho-suggest dl dt.dws-highlight {background-color: #055a82;color: #fff;}
 .dwho-suggest dl dd.dws-highlight {background-color: #055a82;color: #888;}
+
+.dwho-form-help {position: absolute; padding: 5px;border: 1px solid #c0c0c0;background-color: #ffec5a;}
 
 #wz-steplist {clear: left; float: left; width: 200px;}
 #wz-content {float: left;}
