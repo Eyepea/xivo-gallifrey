@@ -10,10 +10,10 @@
 	If both priexclusive and pripreferred are TRUE, the behavior will be the same
 	as if only priexclusive were TRUE.
 
-Index: asterisk-1.4.27/channels/chan_dahdi.c
+Index: asterisk-1.4.28/channels/chan_dahdi.c
 ===================================================================
---- asterisk-1.4.27.orig/channels/chan_dahdi.c	2009-11-24 11:30:27.000000000 +0100
-+++ asterisk-1.4.27/channels/chan_dahdi.c	2009-11-24 13:01:52.000000000 +0100
+--- asterisk-1.4.28.orig/channels/chan_dahdi.c	2009-12-22 15:02:56.000000000 +0100
++++ asterisk-1.4.28/channels/chan_dahdi.c	2009-12-22 15:03:07.000000000 +0100
 @@ -595,6 +595,13 @@
  	 */
  	unsigned int priexclusive:1;
@@ -28,7 +28,7 @@ Index: asterisk-1.4.27/channels/chan_dahdi.c
  	 * \brief TRUE if we will pulse dial.
  	 * \note Set from the "pulsedial" value read in from chan_dahdi.conf
  	 */
-@@ -2470,7 +2477,11 @@
+@@ -2474,7 +2481,11 @@
  		p->digital = IS_DIGITAL(ast->transfercapability);
  
  		/* Should the picked channel be used exclusively? */
@@ -41,7 +41,7 @@ Index: asterisk-1.4.27/channels/chan_dahdi.c
  			exclusive = 1;
  		} else {
  			exclusive = 0;
-@@ -7971,6 +7982,7 @@
+@@ -7975,6 +7986,7 @@
  		tmp->restrictcid = conf->chan.restrictcid;
  		tmp->use_callingpres = conf->chan.use_callingpres;
  		tmp->priexclusive = conf->chan.priexclusive;
@@ -49,7 +49,7 @@ Index: asterisk-1.4.27/channels/chan_dahdi.c
  		if (tmp->usedistinctiveringdetection) {
  			if (!tmp->use_callerid) {
  				ast_log(LOG_NOTICE, "Distinctive Ring detect requires 'usecallerid' be on\n");
-@@ -11841,6 +11853,8 @@
+@@ -11845,6 +11857,8 @@
  						v->value, v->lineno);
  			} else if (!strcasecmp(v->name, "priexclusive")) {
  				confp->chan.priexclusive = ast_true(v->value);
