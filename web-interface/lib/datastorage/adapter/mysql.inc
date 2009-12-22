@@ -326,7 +326,9 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
 			$table = mysql_field_table($this->_result,$i);
 			$column = mysql_field_name($this->_result,$i);
 
-			if(isset($this->_colalias[$table],$this->_colalias[$table][$column]) === true)
+			if($table === ''
+			|| isset($this->_colalias[$table],
+				 $this->_colalias[$table][$column]) === true)
 				$r[$i] = $column;
 			else
 				$r[$i] = sprintf('%s.%s',$table,$column);
