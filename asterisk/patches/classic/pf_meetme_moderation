@@ -1,7 +1,7 @@
-Index: asterisk-1.4.27.1/apps/app_meetme.c
+Index: asterisk-1.4.28/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.27.1.orig/apps/app_meetme.c	2009-12-17 10:45:09.000000000 +0100
-+++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-22 16:37:43.000000000 +0100
+--- asterisk-1.4.28.orig/apps/app_meetme.c	2009-12-22 17:07:24.000000000 +0100
++++ asterisk-1.4.28/apps/app_meetme.c	2009-12-22 17:12:10.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -173,10 +173,10 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
 +			"Usernum: %d\r\n"
 +			"Status: off\r\n",
 +			usr->chan->name, usr->chan->uniqueid, conf->confno, usr->user_no);
++	conf->noauthorized--;
 +	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN && conf->noauthorized == 0)
 +		meetme_pause(conf, 0);
 +	admin->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
-+	conf->noauthorized--;
 +}
 +
 +static void meetme_mod_talk(struct ast_conference *conf, struct ast_conf_user* admin,
