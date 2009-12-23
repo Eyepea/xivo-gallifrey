@@ -1,7 +1,7 @@
 Index: asterisk-1.4.27.1/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.27.1.orig/apps/app_meetme.c	2009-12-17 10:45:09.000000000 +0100
-+++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-18 17:42:50.000000000 +0100
++++ asterisk-1.4.27.1/apps/app_meetme.c	2009-12-22 16:37:43.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -157,10 +157,9 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
 +	usr->adminflags |= ADMINFLAG_SILENCED_KICK;
 +	conf->noauthorized--;
 +	conf->kicked++;
-+	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN)
++	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN && conf->noauthorized == 0)
 +		meetme_pause(conf, 0);
 +	admin->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
-+
 +}
 +
 +static void meetme_mod_authorize(struct ast_conference *conf, struct ast_conf_user* admin,
@@ -174,7 +173,7 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
 +			"Usernum: %d\r\n"
 +			"Status: off\r\n",
 +			usr->chan->name, usr->chan->uniqueid, conf->confno, usr->user_no);
-+	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN)
++	if (admin->adminflags & ADMINFLAG_TALK_TO_ADMIN && conf->noauthorized == 0)
 +		meetme_pause(conf, 0);
 +	admin->adminflags &= ~ADMINFLAG_TALK_TO_ADMIN;
 +	conf->noauthorized--;
@@ -186,7 +185,8 @@ Index: asterisk-1.4.27.1/apps/app_meetme.c
 +	if (!(admin->adminflags & ADMINFLAG_TALK_TO_ADMIN)) {
 +		admin->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
 +		usr->adminflags |= ADMINFLAG_TALK_TO_ADMIN;
-+		meetme_pause(conf, 1);
++		if (!conf->paused)
++			meetme_pause(conf, 1);
 +	}
 +}
 +
