@@ -45,7 +45,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  "      'e' -- select an empty conference\n"
  "      'E' -- select an empty pinless conference\n"
  "      'F' -- Pass DTMF through the conference.\n"
-+"      'h' -- disallow hiden calls.\n"
++"      'h' -- disallow hidden calls.\n"
  "      'i' -- announce user join/leave with review\n"
  "      'I' -- announce user join/leave without review\n"
 +"      'k' -- moderation mode - all invited users wait admin to join\n"
