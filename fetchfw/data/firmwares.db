@@ -625,7 +625,7 @@ model: AFT A200
 version: 12
 files: A200_0040_V12.BIN
 
-[A200_0040_V11.BIN]
+[A200_0040_V12.BIN]
 url: ftp://ftp.sangoma.com/firmware/A200_0040_V12.BIN
 size: 212392
 md5sum: 5ec972bd0bb8ad3fb05e7dcb76115ddc
