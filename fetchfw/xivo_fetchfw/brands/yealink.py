@@ -23,7 +23,7 @@ from xivo_fetchfw import fetchfw
 
 def yealink_install_fw(firmware, xfile):
     zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
-    fw_file = "%s.rom" % xfile.filename.rsplit('.')[0]
+    fw_file = xfile.filename
     fw_src_path = os.path.join(zip_path, fw_file)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Yealink')
     fw_dst_path = os.path.join(fw_dst_dir, fw_file)
