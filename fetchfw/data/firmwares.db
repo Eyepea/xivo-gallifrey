@@ -468,52 +468,52 @@ sha1sum: f43e3d32895c9f5c340d9c6025372c591f31a731
 brand: Yealink
 model: T20
 version: 9.41.0.70
-files: Yealink_Entey_Level_IP_Phone_SIP-T20P_firmware_V1.4.1.zip
+files: 9.41.0.70.rom
 
-[Yealink_Entey_Level_IP_Phone_SIP-T20P_firmware_V1.4.1.zip]
+[9.41.0.70.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20Entey%20Level%20IP%20Phone%20SIP-T20P%20firmware%20V1.4.1.zip
-size: 5485552
-md5sum: e4a028682b2d2d0ba805b90e69e6868f
-sha1sum: b9b38d6b4441f0324cc06ae53257f23704192de9
+size: 5505534
+md5sum: 2e3d21ff846b7ba28c0235d9ed973731
+sha1sum: 59c7d9ed85a2fcbd989813bd580c16c5894b185c
 
 # Yealink T22
 [yealinkt22_741]
 brand: Yealink
 model: T22
 version: 7.41.0.10
-files: Yealink_Professional_IP_Phone_SIP-T22P_firmware_V1.4.1.zip
+files: 7.41.0.10.rom
 
-[Yealink_Professional_IP_Phone_SIP-T22P_firmware_V1.4.1.zip]
+[7.41.0.10.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20Professional%20IP%20Phone%20SIP-T22P%20firmware%20V1.4.1.zip
-size: 5684193
-md5sum: c07ba7df5c678edd2bcc6ef1b7f92664
-sha1sum: 20c1e3bde9a731bb949d4e92e33ddc21a8b5785d
+size: 5706238
+md5sum: e8a8ff27842652f2ca2d40a17ac8f33f
+sha1sum: 86a022ea4ab877de180416eb764f985c27fe6c9c
 
 # Yealink T26
 [yealinkt26_641]
 brand: Yealink
 model: T26
 version: 6.41.0.10
-files: Yealink_Advanced_IP_Phone_SIP-T26P_firmware_V1.4.1.zip
+files: 6.41.0.10.rom
 
-[Yealink_Advanced_IP_Phone_SIP-T26P_firmware_V1.4.1.zip]
+[6.41.0.10.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20Advanced%20IP%20Phone%20SIP-T26P%20firmware%20V1.4.1.zip
-size: 5485552
-md5sum: e3d257e83c538e0c3a3dd762252a3ac8
-sha1sum: 2669a4c4ad3f0730fb7483516a1695fa639b0c92
+size: 5702142
+md5sum: 4559c43ad52756c307b0717e63424478
+sha1sum: 53e4c57b18bc2e065e29199babe7c25244a717d8
 
 # Yealink T28
 [yealinkt28_241]
 brand: Yealink
 model: T28
 version: 2.41.0.60
-files: Yealink_Executive_IP_Phone_SIP-T28P_firmware_V1.4.1.zip
+files: 2.41.0.60.rom
 
-[Yealink_Executive_IP_Phone_SIP-T28P_firmware_V1.4.1.zip]
+[2.41.0.60.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20Executive%20IP%20Phone%20SIP-T28P%20firmware%20V1.4.1.zip
-size: 5485552
-md5sum: de6b7976265cd2eaa9027cf2f976a0a1
-sha1sum: fc7b8a49bd2febd8281079ebdd515a78d98269a2
+size: 6234622
+md5sum: 00316ad7de2d0bc90c5c5eef49871710
+sha1sum: 8569e286276de953d9877c24ac9baddf0a22c772
 
 ###
 ### Cards Firmwares starting from here ###
