@@ -1,6 +1,6 @@
-__version__ = "$Revision: 5445 $ $Date: 2009-02-26 11:42:21 +0100 (jeu 26 fév 2009) $"
+__version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2008-2009  Proformatique <technique@proformatique.com>
+    Copyright (C) 2009  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ def yealink_install_fw(firmware, xfile):
 
 def yealink_install(firmware):
     for xfile in firmware.remote_files:
-            yealink_install_fw(firmware, xfile)
+        yealink_install_fw(firmware, xfile)
 
 
 fetchfw.register_install_fn('Yealink', None, yealink_install)
