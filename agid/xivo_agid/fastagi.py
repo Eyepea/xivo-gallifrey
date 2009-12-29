@@ -121,7 +121,12 @@ class FastAGI:
 
     @staticmethod
     def _quote(string):
-        return '"%s"' % str(string).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
+        if not isinstance(string, unicode):
+            string = str(string)
+        else:
+            string = string.encode('utf8')
+
+        return '"%s"' % string.replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')
 
     @staticmethod
     def dp_break(message):
