@@ -13,7 +13,7 @@ setup(name='xivo_daemon',
       packages=['xivo_ctiservers',
 		'xivo_ctiservers.CommandSets'],
       data_files=[
-		  ('/etc/asterisk', ['xivo_daemon.conf']),
+		  ('/etc/pf-xivo/ctiservers', ['xivo_daemon.conf']),
 		  ('/usr/sbin', ['xivo_daemon']),
 		 ],
      )
