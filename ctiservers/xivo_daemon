@@ -81,7 +81,7 @@ except:
         DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-XIVOCONFFILE            = '/etc/asterisk/%s.conf' % DAEMONNAME
+XIVOCONFFILE            = '/etc/pf-xivo/ctiservers/%s.conf' % DAEMONNAME
 PIDFILE                 = '/var/run/%s.pid' % DAEMONNAME
 GETOPT_SHORTOPTS        = 'dc:p:'
 GETOPT_LONGOPTS         = ["debug", "config=", "pidfile="]
