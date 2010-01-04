@@ -21,52 +21,156 @@ import time
 from xivo_agid import agid
 from xivo_agid import objects
 
+from optparse import OptionParser
+
+def conf_authentication(agi, meetme, adminflag):
+    agi.appexec('Answer')
+    calleridnum = agi.get_variable('CALLERID(num)')
+
+    rs = meetme.authenticate(calleridnum=calleridnum,
+                             adminflag=adminflag)
+    if rs:
+        return rs
+
+    retry = 0
+
+    while retry < 2:
+        agi.appexec('Playback', 'conf-getpin')
+        agi.appexec('Read', "PIN||%s" % meetme.pin_len_max())
+        rs = meetme.authenticate(agi.get_variable('PIN'),
+                                 calleridnum,
+                                 adminflag)
+        if rs:
+            return rs
+
+        retry += 1
+        agi.appexec('Playback', 'conf-invalidpin')
+
+    agi.appexec('Playback', 'vm-goodbye')
+
+    return False
+
+def conf_exceed_max_number(agi, confno, maxuser):
+    if not maxuser or int(maxuser) < 1:
+        return False
+
+    meetmecount = agi.appexec("%s|CNT" % confno)
+
+    if not meetmecount.isdigit():
+        return None
+
+    return (int(meetmecount) >= int(max))
+
+def _incoming_meetme_set_features_argv(agi, args):
+    parser = OptionParser(usage="usage: %prog [options]")
+
+    parser.add_option("-i",
+                      dest      = 'xid',
+                      type      = 'int',
+                      default   = agi.get_variable('XIVO_DSTID'),
+                      help      = "MeetMe id")
+
+    parser.add_option("-n",
+                      dest      = 'name',
+                      default   = None,
+                      help      = "MeetMe name")
+
+    parser.add_option("-u",
+                      dest      = 'number',
+                      default   = None,
+                      help      = "MeetMe number")
+
+    parser.add_option("-c",
+                      dest      = 'context',
+                      default   = None,
+                      help      = "MeetMe context")
+
+    parser.add_option("-a",
+                      action    = 'store_true',
+                      dest      = 'adminflag',
+                      default   = False,
+                      help      = "User has admin access")
+
+    parser.add_option("-t",
+                      action    = 'store_false',
+                      dest      = 'authent',
+                      default   = True,
+                      help      = "Don't need authentication")
+
+    parser.add_option("-m",
+                      action    = 'store_false',
+                      dest      = 'maxuser',
+                      default   = True,
+                      help      = "Don't verify if max number of users exceeded")
+
+    parser.add_option("-d",
+                      action    = 'store_false',
+                      dest      = 'openingdate',
+                      default   = True,
+                      help      = "Don't take into account the opening date")
+
+    parser.parse_args(args=args)
+
+    options, args = parser.parse_args()
+
+    if args:
+        parser.error("no argument is allowed - use option --help to get an help screen")
+
+    return options
+
 def incoming_meetme_set_features(agi, cursor, args):
-    meetmeid = agi.get_variable('XIVO_DSTID')
+    argv = _incoming_meetme_set_features_argv(agi, args)
 
     try:
-        meetme = objects.MeetMe(agi, cursor, xid=int(meetmeid))
+        meetme = objects.MeetMe(agi,
+                                cursor,
+                                int(argv['xid']),
+                                argv['name'],
+                                argv['number'],
+                                argv['context'])
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
-    options = ""
+    if not argv['authent']:
+        flag = meetme.FLAG_USER
+    else:
+        flag = conf_authentication(agi, meetme, argv['adminflag'])
+        if not flag:
+            agi.dp_break("Conference room authentication failed (id: %s, name: %s, confno: %s)"
+                         % (meetme.id, meetme.name, meetme.confno))
 
-    if meetme.mode == "talk":
-        options += "t"
-    elif meetme.mode == "listen":
-        options += "l"
+    if flag & meetme.FLAG_USER:
+        options = ''.join(meetme.get_user_options())
 
-    if meetme.musiconhold:
-        agi.set_variable('CHANNEL(musicclass)', meetme.musiconhold)
-        options += "M"
+        if argv['maxuser'] and conf_exceed_max_number(agi, meetme.confno, meetme.maxuser):
+            # TODO: Change sound by conf-maxuserexceeded
+            agi.appexec('Playback', "conf-locked&vm-goodbye")
+            agi.dp_break("Unable to join the conference room, max number of users exceeded "
+                         "(max number: %s, id: %s, name: %s, confno: %s)"
+                         % (meetme.maxuser, meetme.id, meetme.name, meetme.confno))
+    elif flag & meetme.FLAG_ADMIN:
+        options = ''.join(meetme.get_admin_options())
+    else:
+        agi.dp_break("Unknown MeetMe FLAG (flag: %r, id: %s, name: %s, confno: %s)"
+                     % (flag, meetme.id, meetme.name, meetme.confno))
 
-    if meetme.poundexit:
-        options += "p"
+    if argv['openingdate'] and meetme.starttime and meetme.starttime > time.time():
+        # TODO: Change sound by conf-closed
+        agi.appexec('Playback', "conf-locked&vm-goodbye")
+        agi.dp_break("Unable to join the conference room, it's not open "
+                     "(start date: %s, current date: %s, id: %s, name: %s, confno: %s)"
+                     % (meetme.startdate,
+                        time.strftime('%Y-%m-%d %H:%M:%S'),
+                        meetme.id,
+                        meetme.name,
+                        meetme.confno))
 
-    if meetme.quiet:
-        options += "q"
+    if meetme.OPTIONS_COMMON['musiconhold'] in options:
+        agi.set_variable('CHANNEL(musicclass)',
+                         meetme.get_option_by_flag('musiconhold', flag))
 
-    if meetme.record:
-        options += "r"
-
-    if meetme.adminmode:
-        options += "a"
-
-    if meetme.announceusercount:
-        options += "c"
-
-    if meetme.announcejoinleave:
-        options += "i"
-
-    if meetme.alwayspromptpin:
-        options += "P"
-
-    if meetme.starmenu:
-        options += "s"
-
-    if meetme.enableexitcontext and meetme.exitcontext:
-        options += "X"
-        exitcontext = meetme.exitcontext
+    if meetme.OPTIONS_COMMON['enableexitcontext'] in options:
+        exitcontext = meetme.get_option_by_flag('exitcontext', flag)
     else:
         exitcontext = ""
 
@@ -76,10 +180,12 @@ def incoming_meetme_set_features(agi, cursor, args):
         preprocess_subroutine = ""
 
     agi.set_variable('MEETME_EXIT_CONTEXT', exitcontext)
-    agi.set_variable('MEETME_RECORDINGFILE', "meetme-%s-%s" % (meetme.number, int(time.time())))
+    agi.set_variable('MEETME_RECORDINGFILE', "meetme-%s-%s" % (meetme.confno, int(time.time())))
 
     agi.set_variable('XIVO_REAL_NUMBER', meetme.number)
     agi.set_variable('XIVO_REAL_CONTEXT', meetme.context)
+    agi.set_variable('XIVO_MEETMECONFNO', meetme.confno)
+    agi.set_variable('XIVO_MEETMENAME', meetme.name)
     agi.set_variable('XIVO_MEETMENUMBER', meetme.number)
     agi.set_variable('XIVO_MEETMEOPTIONS', options)
     agi.set_variable('XIVO_MEETMEPREPROCESS_SUBROUTINE', preprocess_subroutine)

@@ -26,6 +26,7 @@ __license__ = """
 """
 
 import re
+import time
 
 
 class DBUpdateException(Exception):
@@ -620,72 +621,226 @@ class Group:
 
 
 class MeetMe:
-    def __init__(self, agi, cursor, xid=None, number=None, context=None):
+    FLAG_ADMIN      = (1 << 0)
+    FLAG_USER       = (1 << 1)
+
+    OPTIONS_GLOBAL  = {'talkeroptimization':    'o',
+                       'record':                'r',
+                       'talkerdetection':       'T',
+                       'noplaymsgfirstenter':   '1'}
+
+    OPTIONS_COMMON  = {'mode':              {'listen':  'l',
+                                             'talk':    't',
+                                             'all':     'lt'},
+                       'announceusercount': 'c',
+                       'announcejoinleave': {'no':          '',
+                                             'yes':         'i',
+                                             'noreview':    'I'},
+                       'initiallymuted':    'm',
+                       'musiconhold':       'M',
+                       'poundexit':         'p',
+                       'quiet':             'q',
+                       'starmenu':          's',
+                       'enableexitcontext': 'X'}
+
+    OPTIONS_ADMIN   = {'moderationmode':            'k',
+                       'closeconflastmarkedexit':   'x'}
+
+    OPTIONS_USER    = {'hiddencalls':   'h'}
+
+    def __init__(self, agi, cursor, xid=None, name=None, number=None, context=None):
         self.agi = agi
         self.cursor = cursor
 
-        columns = ('id', 'number', 'context', 'mode', 'musiconhold',
-                   'poundexit', 'quiet', 'record', 'adminmode',
-                   'announceusercount', 'announcejoinleave',
-                   'alwayspromptpin', 'starmenu', 'enableexitcontext',
-                   'exitcontext', 'preprocess_subroutine')
-        columns = ["meetmefeatures." + c for c in columns]
+        meetmefeatures_columns =    (('id', 'name', 'number', 'context',
+                                      'admin_typefrom', 'admin_internalid', 'admin_externalid',
+                                      'admin_authentication', 'admin_exitcontext') +
+                                      tuple(["admin_%s" % x for x in (self.OPTIONS_COMMON.keys() +
+                                                                      self.OPTIONS_ADMIN.keys())]) +
+                                      ('user_exitcontext',) + \
+                                      tuple(["user_%s" % x for x in (self.OPTIONS_COMMON.keys() +
+                                                                     self.OPTIONS_USER.keys())]) +
+                                      tuple(x for x in self.OPTIONS_GLOBAL.keys()) +
+                                      ('durationm', 'closeconfdurationexceeded',
+                                       'maxuser', 'startdate', 'preprocess_subroutine'))
+
+        columns = ["meetmefeatures." + c for c in meetmefeatures_columns] + \
+                  ["staticmeetme.var_val"] + \
+                  ['userfeatures.number']
 
         if xid:
             cursor.query("SELECT ${columns} FROM meetmefeatures "
                          "INNER JOIN staticmeetme "
                          "ON meetmefeatures.meetmeid = staticmeetme.id "
+                         "LEFT JOIN userfeatures "
+                         "ON meetmefeatures.internalid = userfeatures.id "
                          "WHERE meetmefeatures.id = %s "
                          "AND staticmeetme.commented = 0",
                          columns,
                          (xid,))
+        elif name:
+            cursor.query("SELECT ${columns} FROM meetmefeatures "
+                         "INNER JOIN staticmeetme "
+                         "ON meetmefeatures.meetmeid = staticmeetme.id "
+                         "LEFT JOIN userfeatures "
+                         "ON meetmefeatures.internalid = userfeatures.id "
+                         "WHERE meetmefeatures.name = %s "
+                         "AND staticmeetme.commented = 0",
+                         columns,
+                         (name,))
         elif number and context:
             contextinclude = Context(agi, cursor, context).include
             cursor.query("SELECT ${columns} FROM meetmefeatures "
                          "INNER JOIN staticmeetme "
                          "ON meetmefeatures.meetmeid = staticmeetme.id "
+                         "LEFT JOIN userfeatures "
+                         "ON meetmefeatures.internalid = userfeatures.id "
                          "WHERE meetmefeatures.number = %s "
                          "AND meetmefeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND staticmeetme.commented = 0",
                          columns,
                          [number] + contextinclude)
         else:
-            raise LookupError("id or number@context must be provided to look up a conference room")
+            raise LookupError("id or name or number@context must be provided to look up a conference room")
 
         res = cursor.fetchone()
 
         if not res:
-            raise LookupError("Unable to find conference room (id: %s, number: %s, context: %s)" % (xid, number, context))
+            raise LookupError("Unable to find conference room "
+                              "(id: %s, name: %s, number: %s, context: %s)"
+                              % (xid, name, number, context))
 
-        self.id = res['meetmefeatures.id']
-        self.number = res['meetmefeatures.number']
-        self.context = res['meetmefeatures.context']
-        self.mode = res['meetmefeatures.mode']
+        (self.confno, self.pin, self.pinadmin)  = (res.pop('staticmeetme.var_val') + ",,").split(',', 3)[:3]
+        self.admin_number                       = res.pop('userfeatures.number')
 
-        if self.mode == "talk":
-            self.mode_talk = True
-            self.mode_listen = False
-        elif self.mode == "listen":
-            self.mode_talk = False
-            self.mode_listen = True
-        elif self.mode == "all":
-            self.mode_talk = True
-            self.mode_listen = True
+        if res['meetmefeatures.startdate']:
+            self.starttime = time.mktime(
+                                time.strptime(res['meetmefeatures.startdate'],
+                                              '%Y-%m-%d %H:%M:%S'))
         else:
-            raise ValueError("Invalid mode for conference room (id: %d, number: %s, context: %s)" % (xid, number, context))
+            self.starttime = None
 
-        self.musiconhold = res['meetmefeatures.musiconhold']
-        self.poundexit = res['meetmefeatures.poundexit']
-        self.quiet = res['meetmefeatures.quiet']
-        self.record = res['meetmefeatures.record']
-        self.adminmode = res['meetmefeatures.adminmode']
-        self.announceusercount = res['meetmefeatures.announceusercount']
-        self.announcejoinleave = res['meetmefeatures.announcejoinleave']
-        self.alwayspromptpin = res['meetmefeatures.alwayspromptpin']
-        self.starmenu = res['meetmefeatures.starmenu']
-        self.enableexitcontext = res['meetmefeatures.enableexitcontext']
-        self.exitcontext = res['meetmefeatures.exitcontext']
-        self.preprocess_subroutine = res['meetmefeatures.preprocess_subroutine']
+        for name, value in res.iteritems():
+            setattr(self, name.split('.', 1)[1], value)
+
+        self.options = ()
+
+    def _get_options(self, xdict, prefix=None):
+        options = []
+
+        for name, opt in xdict.iteritems():
+            if prefix:
+                name = prefix + name
+
+            attrvalue = getattr(self, name)
+
+            if not attrvalue:
+                continue
+            elif isinstance(opt, dict):
+                options.append(opt[attrvalue])
+            elif not isinstance(opt, basestring):
+                raise TypeError("Invalid type for option: %r" % opt)
+
+        return set(options)
+
+    def get_global_options(self):
+        return tuple(self._get_options(self.OPTIONS_GLOBAL))
+
+    def get_admin_options(self):    # pylint: disable-msg=E1101
+        admin_options = dict(self.OPTIONS_COMMON).update(self.OPTIONS_ADMIN)
+        options = self._get_options(admin_options, "admin_")
+
+        if self.OPTIONS_COMMON['enableexitcontext'] in options \
+           and not self.admin_exitcontext:
+            options.remove(self.OPTIONS_COMMON['admin_enableexitcontext'])
+
+        options.add('a')    # Admin mode
+        options.add('A')    # Marked mode 
+
+        return set(options)
+
+    def get_user_options(self): # pylint: disable-msg=E1101
+        user_options = dict(self.OPTIONS_COMMON).update(self.OPTIONS_USER)
+        options = self._get_options(user_options, "user_")
+
+        if self.OPTIONS_COMMON['enableexitcontext'] in options \
+           and not self.user_exitcontext:
+            options.remove(self.OPTIONS_COMMON['user_enableexitcontext'])
+
+        return set(options)
+
+    def get_option_by_flag(self, option, flag):
+        if flag & self.FLAG_USER:
+            return getattr(self, "user_%s" % option)
+        elif flag & self.FLAG_ADMIN:
+            return getattr(self, "admin_%s" % option)
+        else:
+            raise ValueError("Unable to find option %r, unknown MeetMe FLAG (flag: %r)"
+                             % (option, flag))
+
+    def get_admin_identifiers(self):    # pylint: disable-msg=E1101
+        if self.admin_typefrom in (None, 'none'):
+            return None
+
+        r = {'calleridnum': None,
+             'pin':         None}
+
+        if self.admin_identification in ('calleridnum', 'all'):
+            if self.admin_typefrom == 'internal':
+                if self.admin_number:
+                    r['calleridnum'] = self.admin_number
+                else:
+                    raise ValueError("Missing internal number to identify the administrator")
+            elif self.admin_typefrom == 'external':
+                if self.admin_externalid:
+                    r['calleridnum'] = self.admin_externalid
+                else:
+                    raise ValueError("Missing external number to identify the administrator")
+
+        if self.admin_identification in ('pin', 'all'):
+            if self.pinadmin:
+                r['pin'] = self.pinadmin
+            else:
+                raise ValueError("Missing administrator PIN to identify the administrator")
+
+        if not r['calleridnum'] and not r['pin']:
+            raise NotImplementedError("Identification method not implemented: %r" % self.admin_identification)
+
+        return r
+
+    def is_admin(self, pinadmin=None, calleridnum=None):
+        admin_identifiers = self.get_admin_identifiers()
+
+        if admin_identifiers['calleridnum']:
+            if admin_identifiers['calleridnum'] != calleridnum:
+                return False
+
+        if admin_identifiers['pin']:
+            if admin_identifiers['pin'] != pinadmin:
+                return False
+
+        return True
+
+    def authenticate(self, pin=None, calleridnum=None, adminflag=False):
+        if not self.pin and not adminflag:
+            return self.FLAG_USER
+        elif self.is_admin(pin, calleridnum):
+            return self.FLAG_ADMIN
+        elif self.pin == pin and not adminflag:
+            return self.FLAG_USER
+
+        return False
+
+    def pin_len_max(self):
+        xlen = 0
+
+        if self.pin:
+            xlen = len(self.pin)
+
+        if self.pinadmin and len(self.pinadmin) > xlen:
+            xlen = len(self.pinadmin)
+
+        return xlen
 
 
 class Queue:
