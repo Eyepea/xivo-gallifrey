@@ -901,10 +901,11 @@ class XivoCTICommand(BaseCommand):
             try:
                 if not mitem.get('commented'):
                     lmlist[mitem.get('id')] = { 'number' :    mitem.get('number'),
+                                                'confno' :    mitem.get('confno'),
                                                 'name' :      mitem.get('name'),
                                                 'context' :   mitem.get('context'),
                                                 'pin' :       mitem.get('pin'),
-                                                'admin-pin' : mitem.get('admin-pin'),
+                                                'pinadmin' :  mitem.get('pinadmin'),
                                                 
                                                 'adminid' : None,
                                                 'uniqueids' : {}
