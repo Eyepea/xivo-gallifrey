@@ -131,10 +131,10 @@ Illimité
 Qualité des données :
 
 ; fm_queuefeatures_hitting-callee
-Autorise l'appelant à sortir avec * :
+Autorise l'appelant à sortir avec "*" :
 
 ; fm_queuefeatures_hitting-caller
-Autorise l'appelé à sortir avec * :
+Autorise l'appelé à sortir avec "*" :
 
 ; fm_queuefeatures_retries
 Aucun rappel pour le temps dépassé :

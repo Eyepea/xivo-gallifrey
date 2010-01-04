@@ -37,36 +37,22 @@ $array['element']['timeend']['default'] = '';
 $array['element']['timeend']['null'] = true;
 
 $array['element']['timehourbeg'] = array();
-$array['element']['timehourbeg']['value'] = array('00','01','02','03','04','05','06','07','08','09',
-						  10,11,12,13,14,15,16,17,18,19,
-						  20,21,22,23);
+$array['element']['timehourbeg']['value'] = range(0,23);
 $array['element']['timehourbeg']['default'] = '';
 $array['element']['timehourbeg']['unset'] = true;
 
 $array['element']['timeminbeg'] = array();
-$array['element']['timeminbeg']['value'] = array('00','01','02','03','04','05','06','07','08','09',
-						 10,11,12,13,14,15,16,17,18,19,
-						 20,21,22,23,24,25,26,27,28,29,
-						 30,31,32,33,34,35,36,37,38,39,
-						 40,41,42,43,44,45,46,47,48,49,
-						 50,51,52,53,54,55,56,57,58,59);
+$array['element']['timeminbeg']['value'] = range(0,59);
 $array['element']['timeminbeg']['default'] = '';
 $array['element']['timeminbeg']['unset'] = true;
 
 $array['element']['timehourend'] = array();
-$array['element']['timehourend']['value'] = array('00','01','02','03','04','05','06','07','08','09',
-						  10,11,12,13,14,15,16,17,18,19,
-						  20,21,22,23);
+$array['element']['timehourend']['value'] = range(0,23);
 $array['element']['timehourend']['default'] = '';
 $array['element']['timehourend']['unset'] = true;
 
 $array['element']['timeminend'] = array();
-$array['element']['timeminend']['value'] = array('00','01','02','03','04','05','06','07','08','09',
-						 10,11,12,13,14,15,16,17,18,19,
-						 20,21,22,23,24,25,26,27,28,29,
-						 30,31,32,33,34,35,36,37,38,39,
-						 40,41,42,43,44,45,46,47,48,49,
-						 50,51,52,53,54,55,56,57,58,59);
+$array['element']['timeminend']['value'] = range(0,59);
 $array['element']['timeminend']['default'] = '';
 $array['element']['timeminend']['unset'] = true;
 

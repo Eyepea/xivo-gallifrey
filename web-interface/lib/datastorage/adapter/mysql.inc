@@ -299,7 +299,7 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
 		return(false);
 	}
 
-	function _fetch_assoc_full_column_names($query,$free=true)
+	function _fetch_assoc_full_column_names($query,$free=true,$assoc_column_value=null)
 	{
 		if($this->query($query,((bool) $free === false)) === false
 		|| ($full_column_names = $this->fetch_full_column_names()) === false)
@@ -307,8 +307,21 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
 
 		$r = array();
 
-		for($i = 0;$m = $this->fetch_row();$i++)
-			$r[$i] = dwho_array_combine($full_column_names,$m);
+		if(dwho_has_len($assoc_column_value) === false)
+		{
+			for($i = 0;$m = $this->fetch_row();$i++)
+				$r[$i] = dwho_array_combine($full_column_names,$m);
+		}
+		else
+		{
+			for($i = 0;$m = $this->fetch_row();$i++)
+			{
+				$c = dwho_array_combine($full_column_names,$m);
+
+				if(isset($c[$assoc_column_value]) === true)
+					$r[$c[$assoc_column_value]] = $c;
+			}
+		}
 
 		return($r);
 	}

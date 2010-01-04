@@ -40,6 +40,9 @@
 #s-asterisk #sr-cdr #cal-dbeg {margin: 2px 0px 0px 220px;position: absolute;}
 #s-asterisk #sr-cdr #cal-dend {margin: 2px 0px 0px 415px;position: absolute;}
 #s-asterisk #sr-queues #create-agent {margin-top: 15px;}
+#s-asterisk #sr-meetme #sb-part-period .sb-list {width: auto;}
+#s-asterisk #sr-meetme #sb-part-period .sb-list table {margin: 5px auto;width: 400px;}
+#s-asterisk #sr-meetme #sb-part-period .sb-list table td {width: 50%;}
 #s-asterisk #sr-schedule .sb-list {width: auto;}
 #s-asterisk #sr-schedule .sb-list table {margin: 5px auto;width: 450px;}
 #s-asterisk #sr-users #phonefunckey .fm-paragraph select {max-width: 200px;}

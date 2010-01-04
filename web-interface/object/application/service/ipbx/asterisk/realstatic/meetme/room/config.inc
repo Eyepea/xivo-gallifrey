@@ -22,18 +22,18 @@ $array = array();
 
 $array['element'] = array();
 
-$array['element']['number'] = array();
-$array['element']['number']['default'] = '';
+$array['element']['confno'] = array();
+$array['element']['confno']['default'] = '';
 
 $array['element']['pin'] = array();
 $array['element']['pin']['default'] = '';
 
-$array['element']['admin-pin'] = array();
-$array['element']['admin-pin']['default'] = '';
+$array['element']['pinadmin'] = array();
+$array['element']['pinadmin']['default'] = '';
 
 $array['filter'] = array();
-$array['filter']['number'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+$array['filter']['confno'] = array('regexp' => '/^[a-zA-Z0-9_\.-]+$/','minlen' => 1,'maxlen' => 80);
 $array['filter']['pin'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
-$array['filter']['admin-pin'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
+$array['filter']['pinadmin'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9\*#]+$/','maxlen' => 40);
 
 ?>

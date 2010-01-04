@@ -7,11 +7,8 @@ Number
 ; col_pin
 PIN code
 
-; col_admin-pin
+; col_pinadmin
 Administrator PIN code
-
-; col_provisioning
-Provisioning
 
 ; no_meetme
 No conference rooms found

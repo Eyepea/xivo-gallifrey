@@ -1972,7 +1972,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		return($r);
 	}
 
-	function select_all($query='',$free=true,$full_column_names=false)
+	function select_all($query='',$free=true,$full_column_names=false,$assoc_column_value=null)
 	{
 		$query = (string) $query;
 		$free = (bool) $free;
@@ -1982,7 +1982,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 			return(false);
 
 		if((bool) $full_column_names === true)
-			$r = $this->_fetch_assoc_full_column_names($query,$free);
+			$r = $this->_fetch_assoc_full_column_names($query,$free,$assoc_column_value);
 		else
 		{
 			$r = array();
@@ -1992,11 +1992,22 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 			|| $this->query($query,($free === false)) === false)
 				return(false);
 
-			for($i = 0;$m = $this->fetch_assoc();$i++)
-				$r[$i] = $m;
+			if(dwho_has_len($assoc_column_value) === false)
+			{
+				for($i = 0;$m = $this->fetch_assoc();$i++)
+					$r[$i] = $m;
+			}
+			else
+			{
+				for($i = 0;$m = $this->fetch_assoc();$i++)
+				{
+					if(isset($m[$assoc_column_value]) === true)
+						$r[$m[$assoc_column_value]] = $m;
+				}
+			}
 		}
 
-		if(is_array($r) === false || array_key_exists(0,$r) === false)
+		if(is_array($r) === false || empty($r) === true)
 			$r = false;
 
 		if($this->_free === true && $free === true)

@@ -65,7 +65,7 @@ Aucune file d'attente
 Désactiver l'annonce de connexion :
 
 ; fm_agentoptions_ackcall
-Appuyer sur # avant de prendre un appel :
+Appuyer sur "#" avant de prendre un appel :
 
 ; fm_agentoptions_ackcall-opt(no)
 Non
@@ -77,7 +77,7 @@ Oui
 Toujours
 
 ; fm_agentoptions_endcall
-Activer la possibilité de raccrocher avec * :
+Activer la possibilité de raccrocher avec "*" :
 
 ; fm_agentoptions_autologoff
 Temps de sonnerie avant déconnexion :

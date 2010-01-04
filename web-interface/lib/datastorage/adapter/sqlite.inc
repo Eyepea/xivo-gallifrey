@@ -305,7 +305,7 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 		return(false);
 	}
 
-	function _fetch_assoc_full_column_names($query,$free=true)
+	function _fetch_assoc_full_column_names($query,$free=true,$assoc_column_value=null)
 	{
 		$pragma_short_column_names = $this->get_pragma('short_column_names');
 		$pragma_full_column_names = $this->get_pragma('full_column_names');
@@ -318,8 +318,19 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 
 		$r = array();
 
-		for($i = 0;$m = $this->fetch_assoc();$i++)
-			$r[$i] = $m;
+		if(dwho_has_len($assoc_column_value) === false)
+		{
+			for($i = 0;$m = $this->fetch_assoc();$i++)
+				$r[$i] = $m;
+		}
+		else
+		{
+			for($i = 0;$m = $this->fetch_assoc();$i++)
+			{
+				if(isset($m[$assoc_column_value]) === true)
+					$r[$m[$assoc_column_value]] = $m;
+			}
+		}
 
 		$this->set_pragma('short_column_names',$pragma_short_column_names);
 		$this->set_pragma('full_column_names',$pragma_full_column_names);

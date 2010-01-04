@@ -24,21 +24,21 @@ class xivo_application_service_asterisk_meetme_sql extends xivo_application_abst
 {
 	var $_table	= array(
 				'meetmefeatures'	=> '',
-				'meetme'		=> '');
+				'staticmeetme'		=> '');
 
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_dso->new_select($this->_table['meetmefeatures']);
 
-		$this->_dso->innerjoin($this->_table['meetme'],
-				       $this->_table['meetmefeatures'].'.meetmeid = '.$this->_table['meetme'].'.id',
+		$this->_dso->innerjoin($this->_table['staticmeetme'],
+				       $this->_table['meetmefeatures'].'.meetmeid = '.$this->_table['staticmeetme'].'.id',
 				       null,
 				       array('commented','var_val'));
 
 		if($disable !== null)
 		{
 			$commented = array('commented' => intval((bool) $disable));
-			$this->_dso->where($commented,$this->_table['meetme']);
+			$this->_dso->where($commented,$this->_table['staticmeetme']);
 		}
 
 		if(dwho_has_len($value) === true)

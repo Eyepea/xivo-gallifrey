@@ -31,29 +31,44 @@ switch($act)
 	case 'add':
 		$appmeetme = &$ipbx->get_application('meetme');
 
-		$result = $fm_save = null;
+		$result = $error = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('meetmeroom',$_QR) === true
 		&& dwho_issa('meetmefeatures',$_QR) === true)
 		{
+			if(dwho_issa('meetmeguest',$_QR) === true
+			&& ($_QR['meetmeguest'] = dwho_group_array('fullname',$_QR['meetmeguest'])) === false)
+				unset($_QR['meetmeguest']);
+
 			if($appmeetme->set_add($_QR) === false
 			|| $appmeetme->add() === false)
 			{
 				$fm_save = false;
 				$result = $appmeetme->get_result();
+				$error = $appmeetme->get_error();
+
+				$startdate = $appmeetme->get_result_var('meetmefeatures','startdate');
+				if(dwho_has_len($startdate) === true)
+					$result['meetmefeatures']['startdate'] = getdate(
+								strtotime($result['meetmefeatures']['startdate']));
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 		}
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appmeetme->get_elements());
 		$_TPL->set_var('moh_list',$appmeetme->get_musiconhold());
 		$_TPL->set_var('context_list',$appmeetme->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/meetme.js');
 		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'edit':
@@ -62,7 +77,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appmeetme->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
 
-		$result = $fm_save = null;
+		$result = $error = $fm_save = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
@@ -71,11 +86,21 @@ switch($act)
 		{
 			$return = &$result;
 
+			if(dwho_issa('meetmeguest',$_QR) === true
+			&& ($_QR['meetmeguest'] = dwho_group_array('fullname',$_QR['meetmeguest'])) === false)
+				unset($_QR['meetmeguest']);
+
 			if($appmeetme->set_edit($_QR) === false
 			|| $appmeetme->edit() === false)
 			{
 				$fm_save = false;
 				$result = $appmeetme->get_result();
+				$error = $appmeetme->get_error();
+
+				$startdate = $appmeetme->get_result_var('meetmefeatures','startdate');
+				if(dwho_has_len($startdate) === true)
+					$result['meetmefeatures']['startdate'] = getdate(
+								strtotime($result['meetmefeatures']['startdate']));
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/meetme'),$param);
@@ -83,12 +108,17 @@ switch($act)
 
 		$_TPL->set_var('id',$info['meetmefeatures']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appmeetme->get_elements());
 		$_TPL->set_var('moh_list',$appmeetme->get_musiconhold());
 		$_TPL->set_var('context_list',$appmeetme->get_context_list());
 
 		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/uri.js');
+		$dhtml->set_js('js/dwho/http.js');
+		$dhtml->set_js('js/dwho/suggest.js');
+		$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/meetme.js');
 		$dhtml->set_js('js/dwho/submenu.js');
 		break;
 	case 'delete':

@@ -62,6 +62,13 @@ $array['exten']['calllistening'] = array();
 $array['exten']['calllistening']['app'] = 'Macro';
 $array['exten']['calllistening']['appdata'] = 'calllistening';
 
+$array['exten']['callmeetme'] = array();
+$array['exten']['callmeetme']['app'] = 'Macro';
+$array['exten']['callmeetme']['appdata'] = array();
+$array['exten']['callmeetme']['appdata'][0] = 'meetme';
+$array['exten']['callmeetme']['appdata'][1] = '${EXTEN:$<EXTNUMLEN>}';
+$array['exten']['callmeetme']['appdata'][2] = '';
+
 $array['exten']['callqueue'] = array();
 $array['exten']['callqueue']['app'] = 'Macro';
 $array['exten']['callqueue']['appdata'] = array();
@@ -269,6 +276,9 @@ $array['element']['callgroup']['default'] = '*664.';
 $array['element']['calllistening'] = array();
 $array['element']['calllistening']['default'] = '*34';
 
+$array['element']['callmeetme'] = array();
+$array['element']['callmeetme']['default'] = '*667.';
+
 $array['element']['callqueue'] = array();
 $array['element']['callqueue']['default'] = '*665.';
 
@@ -373,6 +383,7 @@ $array['filter']['agentstaticlogtoggle'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['bsfilter'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['callgroup'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['calllistening'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
+$array['filter']['callmeetme'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['callqueue'] = array('minlen' => 1,'maxlen' => 40);
 $array['filter']['callrecord'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9\*#]+$/');
 $array['filter']['calluser'] = array('minlen' => 1,'maxlen' => 40);

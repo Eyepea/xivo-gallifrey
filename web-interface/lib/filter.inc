@@ -93,18 +93,29 @@ class dwho_filter
 		$this->_result[$key] = $val;
 	}
 
-	function chk_date($date)
+	function chk_date($date,$fill=false)
 	{
 		$r = array();
 
 		$date = strval($date);
 		$format = $year = $month = $day = '';
 
-		if(preg_match('/^(2[0-9]{3})(?:-(0?[1-9]|1[0-2])(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/',$date,$match) !== 1)
+		if(preg_match('/^(2[0-9]{3})'.
+				'(?:-(0?[1-9]|1[0-2])'.
+				   '(?:-(0?[1-9]|1[0-9]|2[0-9]|3[0-1]))?)?$/',$date,$match) !== 1)
 			return(false);
 
 		$r['format'] = '%Y';
 		$year = $r['date'] = $r['dateint'] = $match[1];
+
+		if((bool) $fill === true)
+		{
+			if(isset($match[2]) === false)
+				$match[2] = '01';
+
+			if(isset($match[3]) === false)
+				$match[3] = '01';
+		}
 
 		if(isset($match[2]) === true)
 		{
@@ -131,38 +142,88 @@ class dwho_filter
 	function chk_between_date($dbeg,$dend)
 	{
 		if(($dbeg = dwho_filter::chk_date($dbeg)) === false
-		|| ($dend = dwho_filter::chk_date($dend)) === false)
-			return(false);
-		else if($dbeg['format'] !== $dend['format'] || $dbeg['dateint'] > $dend['dateint'])
+		|| ($dend = dwho_filter::chk_date($dend)) === false
+		|| $dbeg['format'] !== $dend['format']
+		|| $dbeg['dateint'] > $dend['dateint'])
 			return(false);
 
 		return(array('dbeg' => $dbeg,'dend' => $dend));
 	}
 
-	function chk_email($email,$strict=false)
+	function chk_time($time,$fill=false)
 	{
-		$nb = 0;
-		$email = strtolower(strval($email));
-		$len = strlen($email);
+		$time = strval($time);
 
-		if($len < 6 || $len > 255
-		|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_\-\+]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
+		if(preg_match('/^([01]?[0-9]|2[0-3])'.
+				'(?:\:([0-5]?[0-9])'.
+				   '(?:\:([0-5]?[0-9]))?)?$/',$time,$match) !== 1)
 			return(false);
-		else if((bool) $strict === false || function_exists('getmxrr') === false)
-			return($email);
 
-		$a = explode('@',$email);
-		$m = array();
+		$r['format'] = '%H';
+		$hour = $r['time'] = $r['timeint'] = sprintf('%02u',$match[1]);
 
-		if(getmxrr($a[1],$m) === true && $nb === 0)
-			return($email);
+		if((bool) $fill === true)
+		{
+			if(isset($match[2]) === false)
+				$match[2] = '00';
 
-		return(false);
+			if(isset($match[3]) === false)
+				$match[3] = '00';
+		}
+
+		if(isset($match[2]) === true)
+		{
+			$r['format'] .= '%M';
+			$minute = sprintf('%02u',$match[2]);
+			$r['time'] .= ':'.$minute;
+			$r['timeint'] .= $minute;
+		}
+
+		if(isset($match[3]) === true)
+		{
+			$r['format'] .= '%S';
+			$second = sprintf('%02u',$match[3]);
+			$r['time'] .= ':'.$second;
+			$r['timeint'] .= $second;
+		}
+
+		return($r);
 	}
 
-	function chk_email_strict($email)
+	function chk_between_time($tbeg,$tend)
 	{
-		return(dwho_filter::chk_email($email,true));
+		if(($tbeg = dwho_filter::chk_time($tbeg)) === false
+		|| ($tend = dwho_filter::chk_time($tend)) === false
+		|| $tbeg['format'] !== $tend['format']
+		|| $tbeg['timeint'] > $tend['timeint'])
+			return(false);
+
+		return(array('tbeg' => $tbeg,'tend' => $tend));
+	}
+
+	function chk_datetime($datetime,$fill=false)
+	{
+		$exp = explode(' ',strval($datetime),2);
+
+		if(isset($exp[0],$exp[1]) === false
+		|| ($date = dwho_filter::chk_date($exp[0],$fill)) === false
+		|| ($time = dwho_filter::chk_time($exp[1],$fill)) === false)
+			return(false);
+
+		return(array('format'		=> $date['format'].' '.$time['format'],
+			     'datetime'		=> $date['date'].' '.$time['time'],
+			     'datetimeint'	=> $date['dateint'].$time['timeint']));
+	}
+
+	function chk_between_datetime($dtbeg,$dtend)
+	{
+		if(($dtbeg = dwho_filter::chk_datetime($dtbeg)) === false
+		|| ($dtend = dwho_filter::chk_datetime($dtend)) === false
+		|| $dtbeg['format'] !== $dtend['format']
+		|| $dtbeg['datetimeint'] > $dtend['datetimeint'])
+			return(false);
+
+		return(array('dtbeg' => $dtbeg,'dtend' => $dtend));
 	}
 
 	function chk_bool($value)

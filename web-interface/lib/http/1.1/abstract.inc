@@ -69,17 +69,19 @@ class dwho_http_1_1_abstract extends dwho_http_abstract
 	{
 		$this->dwho_http_abstract();
 
-		$this->_rule['quoted']		= $this->_rule['lws'].'\x21\x23-\x5B\x5D-\x7E\x80-\xFF';
-		$this->_rule['quoted-text']	= '\x01-\x09\x0B\x0C\x0E-\xFF';
+		$this->_rule['qtext']		= $this->_rule['crlf'].
+						  $this->_rule['wsp'].
+						  '\x21\x23-\x5B\x5D-\x7E\x80-\xFF';
+		$this->_rule['quoted-pair']	= '\x01-\x09\x0B\x0C\x0E-\xFF';
 
-		$this->_regexp['quoted-string']	= '(?:['.$this->_rule['token'].']+|'.
-						     '"(?:['.$this->_rule['quoted'].']|'.
-							 '\\\['.$this->_rule['quoted-text'].'])+")';
+		$this->_regexp['word']		= '(?:['.$this->_rule['token'].']+|'.
+						     '"(?:['.$this->_rule['qtext'].']|'.
+							 '\\\['.$this->_rule['quoted-pair'].'])+")';
 
 		$this->_regexp['parameter']	= '(['.$this->_rule['token'].']+)\s*=\s*'.
-						  '(?:(['.$this->_rule['quoted'].']+)|'.
-						      '"((?:['.$this->_rule['quoted'].']|'.
-							   '\\\['.$this->_rule['quoted-text'].'])+)")';
+						  '(?:(['.$this->_rule['token'].']+)|'.
+						      '"((?:['.$this->_rule['qtext'].']|'.
+							   '\\\['.$this->_rule['quoted-pair'].'])+)")';
 	}
 
 	function quote_word($str)
@@ -88,7 +90,7 @@ class dwho_http_1_1_abstract extends dwho_http_abstract
 
 		if(preg_match('/^'.$this->_regexp['token'].'$/',$str) === 1)
 			return('"'.$str.'"');
-		else if(preg_match('/^'.$this->_regexp['quoted-string'].'$/',$str) === 1)
+		else if(preg_match('/^'.$this->_regexp['word'].'$/',$str) === 1)
 			return($str);
 
 		return('"'.preg_replace('/(?<!\\\)"/','\"',$str).'"');

@@ -20,7 +20,7 @@
 
 xivo_service_asterisk::required(array('realstatic','realstatic.inc'),true);
 
-class xivo_service_asterisk_realstatic_meetme extends xivo_service_asterisk_realstatic
+class xivo_service_asterisk_realstatic_staticmeetme extends xivo_service_asterisk_realstatic
 {
 	var $_filename	= 'meetme.conf';
 
@@ -40,9 +40,9 @@ class xivo_service_asterisk_realstatic_meetme extends xivo_service_asterisk_real
 
 		$val = explode(',',$data['var_val'],3);
 
-		$data['number'] = dwho_has_len($val,0) === true ? $val[0] : '';
-		$data['pin'] = dwho_has_len($val,1) === true ? $val[1] : '';
-		$data['admin-pin'] = dwho_has_len($val,2) === true ? $val[2] : '';
+		$data['confno']		= dwho_has_len($val,0) === true ? $val[0] : '';
+		$data['pin']		= dwho_has_len($val,1) === true ? $val[1] : '';
+		$data['pinadmin']	= dwho_has_len($val,2) === true ? $val[2] : '';
 
 		return($data);
 	}

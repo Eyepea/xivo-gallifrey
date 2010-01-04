@@ -160,14 +160,14 @@ $array['realstatic'] = array();
 $array['realstatic']['features'] = array();
 $array['realstatic']['features']['datastorage'] = true;
 
-$array['realstatic']['meetme'] = array();
-$array['realstatic']['meetme']['datastorage'] = true;
-
 $array['realstatic']['staticagent'] = array();
 $array['realstatic']['staticagent']['datastorage'] = true;
 
 $array['realstatic']['staticiax'] = array();
 $array['realstatic']['staticiax']['datastorage'] = true;
+
+$array['realstatic']['staticmeetme'] = array();
+$array['realstatic']['staticmeetme']['datastorage'] = true;
 
 $array['realstatic']['staticqueue'] = array();
 $array['realstatic']['staticqueue']['datastorage'] = true;
@@ -255,6 +255,9 @@ $array['module']['logfiles']['datastorage'] = false;
 
 $array['module']['meetmefeatures'] = array();
 $array['module']['meetmefeatures']['datastorage'] = true;
+
+$array['module']['meetmeguest'] = array();
+$array['module']['meetmeguest']['datastorage'] = true;
 
 $array['module']['musiconhold'] = array();
 $array['module']['musiconhold']['datastorage'] = true;

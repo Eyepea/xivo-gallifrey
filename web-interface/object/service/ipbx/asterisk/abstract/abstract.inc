@@ -106,8 +106,8 @@ class xivo_service_asterisk_abstract extends xivo_libdatastorage_abstract
 				$r['actionarg1'] = $actionarg1;
 				return($r);
 			case 'faxtomail':
-				if(dwho::load_class('dwho_filter') === false
-				|| dwho_filter::chk_email($actionarg1) === false
+				if(dwho::load_class('dwho_network') === false
+				|| dwho_network::valid_email($actionarg1) === false
 				|| strlen($actionarg1) > 80)
 					return(false);
 

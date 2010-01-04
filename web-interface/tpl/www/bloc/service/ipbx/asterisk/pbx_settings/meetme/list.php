@@ -56,7 +56,7 @@ $page = $url->pager($pager['pages'],
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
 		<th class="th-center"><?=$this->bbf('col_number');?></th>
 		<th class="th-center"><?=$this->bbf('col_pin');?></th>
-		<th class="th-center"><?=$this->bbf('col_admin-pin');?></th>
+		<th class="th-center"><?=$this->bbf('col_pinadmin');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
@@ -97,9 +97,9 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$ref['number']?></td>
+		<td><?=(dwho_has_len($ref['number']) === true ? $ref['number'] : '-')?></td>
 		<td><?=(dwho_has_len($ref['pin']) === true ? $ref['pin'] : '-')?></td>
-		<td><?=(dwho_has_len($ref['admin-pin']) === true ? $ref['admin-pin'] : '-')?></td>
+		<td><?=(dwho_has_len($ref['pinadmin']) === true ? $ref['pinadmin'] : '-')?></td>
 		<td class="td-right" colspan="2">
 <?php
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',

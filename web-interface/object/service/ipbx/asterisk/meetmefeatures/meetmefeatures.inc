@@ -47,15 +47,29 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 	{
 		$this->_identity->_prepare_identity($data);
 
-		$data['poundexit'] = (bool) $data['poundexit'];
-		$data['quiet'] = (bool) $data['quiet'];
-		$data['record'] = (bool) $data['record'];
-		$data['adminmode'] = (bool) $data['adminmode'];
-		$data['announceusercount'] = (bool) $data['announceusercount'];
-		$data['announcejoinleave'] = (bool) $data['announcejoinleave'];
-		$data['alwayspromptpin'] = (bool) $data['alwayspromptpin'];
-		$data['starmenu'] = (bool) $data['starmenu'];
-		$data['enableexitcontext'] = (bool) $data['enableexitcontext'];
+		$data['admin_announceusercount']	= (bool) $data['admin_announceusercount'];
+		$data['admin_moderationmode']		= (bool) $data['admin_moderationmode'];
+		$data['admin_initiallymuted']		= (bool) $data['admin_initiallymuted'];
+		$data['admin_poundexit']		= (bool) $data['admin_poundexit'];
+		$data['admin_quiet']			= (bool) $data['admin_quiet'];
+		$data['admin_starmenu']			= (bool) $data['admin_starmenu'];
+		$data['admin_closeconflastmarkedexit']	= (bool) $data['admin_closeconflastmarkedexit'];
+		$data['admin_enableexitcontext']	= (bool) $data['admin_enableexitcontext'];
+		$data['user_announceusercount']		= (bool) $data['user_announceusercount'];
+		$data['user_hiddencalls']		= (bool) $data['user_hiddencalls'];
+		$data['user_initiallymuted']		= (bool) $data['user_initiallymuted'];
+		$data['user_poundexit']			= (bool) $data['user_poundexit'];
+		$data['user_quiet']			= (bool) $data['user_quiet'];
+		$data['user_starmenu']			= (bool) $data['user_starmenu'];
+		$data['user_enableexitcontext']		= (bool) $data['user_enableexitcontext'];
+		$data['talkeroptimization']		= (bool) $data['talkeroptimization'];
+		$data['record']				= (bool) $data['record'];
+		$data['talkerdetection']		= (bool) $data['talkerdetection'];
+		$data['noplaymsgfirstenter']		= (bool) $data['noplaymsgfirstenter'];
+		$data['closeconfdurationexceeded']	= (bool) $data['closeconfdurationexceeded'];
+
+		if(dwho_has_len($data['startdate']) === true)
+			$data['startdate'] = getdate(strtotime($data['startdate']));
 
 		return($data);
 	}
@@ -78,6 +92,67 @@ class xivo_service_asterisk_meetmefeatures extends xivo_service_asterisk_abstrac
 			$arr['name'] = strtolower($arr['name']);
 
 		return(parent::edit($id,$arr));
+	}
+
+	function valid_admin_identification($typefrom,$mode,$calleridnum,$pinadmin)
+	{
+		if($typefrom === 'none')
+			return(true);
+
+		switch($mode)
+		{
+			case 'calleridnum':
+				if($typefrom === 'undefined'
+				|| dwho_has_len($calleridnum) === false)
+					return(false);
+				break;
+			case 'pin':
+				if(dwho_has_len($pinadmin) === false)
+					return(false);
+				break;
+			case 'all':
+				if($typefrom === 'undefined'
+				|| dwho_has_len($calleridnum) === false
+				|| dwho_has_len($pinadmin) === false)
+					return(false);
+				break;
+			default:
+				return(false);
+		}
+
+		return(true);
+	}
+
+	function normalize_admin_typefrom($typefrom,$internalid=null,$externalid=null)
+	{
+		$r = array('admin_typefrom'	=> 'none',
+			   'admin_internalid'	=> null,
+			   'admin_externalid'	=> null);
+
+		switch($typefrom)
+		{
+			case 'internal':
+				if(($internalid = dwho_ulongint($internalid)) === 0)
+					return(false);
+
+				$r['admin_internalid'] = $internalid;
+				break;
+			case 'external':
+				if(dwho_has_len($externalid) === false)
+					return(false);
+
+				$r['admin_externalid'] = $externalid;
+				break;
+			case 'undefined':
+				break;
+			case 'none':
+			default:
+				$typefrom = 'none';
+		}
+
+		$r['admin_typefrom'] = $typefrom;
+
+		return($r);
 	}
 
 	function get_all_except($id=0,$number=false,$order=null,$limit=null)

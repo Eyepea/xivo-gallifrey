@@ -36,8 +36,9 @@ class dwho_mime_cim
 					'rfc2822'	=> 'r');
 
 	var $_regexp		= array();
-	var $_rule		= array('ctls'	=> '\x00-\x1F\x7F',
-					'lws'	=> '\x09\x0A\x0D\x20');
+	var $_rule		= array('ctl'	=> '\x00-\x1F\x7F',
+					'crlf'	=> '\x0D\x0A',
+					'wsp'	=> '\x20\x09');
 
 	function dwho_mime_cim()
 	{
@@ -45,19 +46,19 @@ class dwho_mime_cim
 			$this->_rule['tspecials'] = '\(\)\<\>@,;:\\\"\/\[\]\?=';
 
 		if(isset($this->_rule['token']) === false)
-			$this->_rule['token'] = '!#\$%\&\'\*\+\-\.0-9A-Z\^_`a-z\{\|\}~';
+			$this->_rule['token'] = '\!#\$%\&\'\*\+\-\.0-9A-Z\^_`a-z\{\|\}~';
 
-		if(isset($this->_rule['quoted']) === false)
-			$this->_rule['quoted'] = $this->_rule['token'].'\(\)\<\>@,;:\\/\[\]\?=';
+		if(isset($this->_rule['qtext']) === false)
+			$this->_rule['qtext'] = $this->_rule['token'].'\(\)\<\>@,;:\\/\[\]\?=';
 
 		$this->_regexp['token']		= '['.$this->_rule['token'].']+';
 
-		$this->_regexp['quoted-string']	= '(?:['.$this->_rule['token'].']+|'.
-						     '"['.$this->_rule['quoted'].']+")';
+		$this->_regexp['word']		= '(?:['.$this->_rule['token'].']+|'.
+						     '"['.$this->_rule['qtext'].']+")';
 
 		$this->_regexp['parameter']	= '(['.$this->_rule['token'].']+)\s*=\s*'.
 						  '(?:(['.$this->_rule['token'].']+)|'.
-						     '"(['.$this->_rule['quoted'].']+)")';
+						     '"(['.$this->_rule['qtext'].']+)")';
 
 		$this->_date['date1']		= $this->_date['day'].' '.
 						  $this->_date['month'].' '.
@@ -95,7 +96,7 @@ class dwho_mime_cim
 
 		if(preg_match('/^'.$this->_regexp['token'].'$/',$str) === 1)
 			return('"'.$str.'"');
-		else if(preg_match('/^'.$this->_regexp['quoted-string'].'$/',$str) === 1)
+		else if(preg_match('/^'.$this->_regexp['word'].'$/',$str) === 1)
 			return($str);
 
 		return(false);
@@ -199,12 +200,12 @@ class dwho_mime_cim
 		return((bool) preg_match('/^'.$this->_regexp['token'].'$/',$str));
 	}
 
-	function valid_quotedstring($text)
+	function valid_word($text)
 	{
 		if(is_scalar($text) === false)
 			return(false);
 
-		return((bool) preg_match('/^'.$this->_regexp['quoted-string'].'$/',$text));
+		return((bool) preg_match('/^'.$this->_regexp['word'].'$/',$text));
 	}
 
 	function valid_token_word($text,$word_optional=true)
@@ -219,7 +220,7 @@ class dwho_mime_cim
 		else if(isset($exp[1]) === false)
 			return((bool) $word_optional);
 
-		return($this->valid_quotedstring($exp[1]));
+		return($this->valid_word($exp[1]));
 	}
 
 	function build_parameters($parameters)

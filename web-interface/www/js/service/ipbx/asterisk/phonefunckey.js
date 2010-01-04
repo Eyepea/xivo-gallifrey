@@ -233,6 +233,8 @@ function xivo_build_phonefunckey_array(id)
 
 			keyit = 'it-phonefunckey-' + name + '-suggest-' + id;
 
+			dwho_eid(keyit).setAttribute('autocomplete','off');
+
 			dwho.dom.add_event('focus',
 					   dwho_eid(keyit),
 					   xivo_phonefunckey_suggest_type[name]);

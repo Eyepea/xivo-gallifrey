@@ -30,6 +30,8 @@ var xivo_list_elt_extenfeatures = {
 							 'it-extenfeatures-list-bsfilter'],
 	'it-extenfeatures-enable-callgroup':		['it-extenfeatures-callgroup',
 							 'it-extenfeatures-list-callgroup'],
+	'it-extenfeatures-enable-callmeetme':		['it-extenfeatures-callmeetme',
+							 'it-extenfeatures-list-callmeetme'],
 	'it-extenfeatures-enable-callqueue':		['it-extenfeatures-callqueue',
 							 'it-extenfeatures-list-callqueue'],
 	'it-extenfeatures-enable-calluser':		['it-extenfeatures-calluser',

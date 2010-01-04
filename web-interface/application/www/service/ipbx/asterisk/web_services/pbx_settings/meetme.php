@@ -31,6 +31,7 @@ switch($act)
 		$appmeetme = &$ipbx->get_application('meetme');
 
 		$nocomponents = array('meetmemacro'		=> true,
+				      'meetmeadmininternal'	=> true,
 				      'extenumbers'		=> true,
 				      'contextnummember'	=> true,
 				      'contextmember'		=> true);

@@ -105,8 +105,8 @@ $array['filter']['address'] = array('set'		=> false,
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 $array['filter']['netmask'] = array('set'		=> false,
 				    'chk'		=> 2,
-				    'callback'		=> 'dwho_network::valid_netmask_ipv4',
-				    'callbackarg'	=> array(DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
+				    'callback'		=> 'dwho_network::valid_mask_ipv4',
+				    'callbackarg'	=> array(DWHO_NETWORK_MASK_IPV4_DOTDEC));
 $array['filter']['broadcast'] = array('set'		=> false,
 				      'chk'		=> 2,
 				      'callback'	=> 'dwho_network::valid_host',
@@ -115,7 +115,7 @@ $array['filter']['gateway'] = array('set'		=> false,
 				    'chk'		=> 2,
 				    'callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['mtu'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(60,9000));
+$array['filter']['mtu'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(68,9000));
 $array['filter']['vlanrawdevice'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_]+$/','minlen' => 1,'maxlen' => 64);
 $array['filter']['vlanid'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,4094));
 $array['filter']['advconfig'] = array('set' => false,'chk' => 2,'maxlen' => 2000,'cast' => 'sgraph_crlf_tab','eol' => true);

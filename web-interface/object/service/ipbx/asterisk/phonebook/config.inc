@@ -50,13 +50,16 @@ $array['element']['image']['null'] = true;
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
+
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['title'] = array('key' => array('mr','mrs','ms'));
 $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
 $array['filter']['displayname'] = array('cast' => 'sgraph','minlen' => 3,'maxlen' => 64);
 $array['filter']['society'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);
-$array['filter']['email'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_filter::chk_email');
+$array['filter']['email'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
 $array['filter']['url'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 255);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 256000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

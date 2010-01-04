@@ -23,7 +23,7 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_application_service_asterisk_realstatic_abstract
 {
 	var $_name		= 'meetmeroom';
-	var $_modulename	= 'meetme';
+	var $_modulename	= 'staticmeetme';
 	var $_category		= 'rooms';
 	var $_cat_metric	= 1;
 	var $_var_name		= 'conf';
@@ -71,6 +71,9 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 			return(false);
 		}
 
+		if(isset($rs['confno']) === true)
+			$rs['confno'] = strtolower($rs['confno']);
+
 		$this->_set_result($this->_name,$rs);
 
 		return(true);
@@ -82,17 +85,17 @@ class xivo_application_service_asterisk_realstatic_meetme_room extends xivo_appl
 			return($rs);
 
 		$arr = array();
-		$arr['category'] = $this->_category;
-		$arr['cat_metric'] = $this->_cat_metric;
-		$arr['var_name'] = $this->_var_name;
+		$arr['category']	= $this->_category;
+		$arr['cat_metric']	= $this->_cat_metric;
+		$arr['var_name']	= $this->_var_name;
 
-		$arr['var_val'] = $rs['number'].',';
+		$arr['var_val'] = $rs['confno'].',';
 
 		if(dwho_has_len($rs,'pin') === true)
 			$arr['var_val'] .= $rs['pin'];
 
-		if(dwho_has_len($rs,'admin-pin') === true)
-			$arr['var_val'] .= ','.$rs['admin-pin'];
+		if(dwho_has_len($rs,'pinadmin') === true)
+			$arr['var_val'] .= ','.$rs['pinadmin'];
 
 		$arr['var_val'] = rtrim($arr['var_val'],',');
 

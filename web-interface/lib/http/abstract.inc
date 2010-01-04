@@ -28,8 +28,10 @@ class dwho_http_abstract extends dwho_mime_cim
 	function dwho_http_abstract()
 	{
 		$this->_rule['tspecials']	= '\t \(\)\<\>@,;:\\\"\/\[\]\?=\{\}';
-		$this->_rule['token']		= '!#\$%\&\'\*\+\-\.0-9A-Z\^_`a-z\|~';
-		$this->_rule['quoted']		= $this->_rule['lws'].'\x21\x23-\x7E';
+		$this->_rule['token']		= '\!#\$%\&\'\*\+\-\.0-9A-Z\^_`a-z\|~';
+		$this->_rule['qtext']		= $this->_rule['crlf'].
+						  $this->_rule['wsp'].
+						  '\x21\x23-\x7E';
 
 		$this->dwho_mime_cim();
 	}

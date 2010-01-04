@@ -275,7 +275,7 @@ Ne pas jouer de beep avant l'enregistrement :
 Enregistrer si le canal est décroché :
 
 ; fm_ipbxapplication_record-t
-Utiliser * au lieu de # pour indiquer la fin de l'enregistrement :
+Utiliser "*" au lieu de "#" pour indiquer la fin de l'enregistrement :
 
 ; fm_ipbxapplication_background-filename
 Fichier son joué :

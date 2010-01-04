@@ -7,11 +7,8 @@ Numéro
 ; col_pin
 Code PIN
 
-; col_admin-pin
+; col_pinadmin
 Code PIN Administrateur
-
-; col_provisioning
-Approvisionnement
 
 ; no_meetme
 Aucune chambre de conférence trouvée

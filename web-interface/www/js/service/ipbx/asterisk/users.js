@@ -255,7 +255,7 @@ var xivo_ast_fm_user_voicemail = {
 
 xivo_attrib_register('ast_fm_user_voicemail',xivo_ast_fm_user_voicemail);
 
-xivo_ast_fm_user_enablevoicemail = dwho_clone(xivo_ast_fm_user_voicemail);
+var xivo_ast_fm_user_enablevoicemail = dwho_clone(xivo_ast_fm_user_voicemail);
 xivo_ast_fm_user_enablevoicemail['it-protocol-buggymwi']['link'] = 'it-userfeatures-enablevoicemail';
 xivo_ast_fm_user_enablevoicemail['it-userfeatures-enablevoicemail'] = {property: [{checked: true},{checked: false}]};
 
@@ -821,6 +821,8 @@ function xivo_ast_user_onload()
 
 	if((voicemailoption = dwho_eid('it-voicemail-option')) !== false)
 	{
+		dwho_eid('it-voicemail-suggest').setAttribute('autocomplete','off');
+
 		dwho.dom.add_event('focus',
 				   dwho_eid('it-voicemail-suggest'),
 				   xivo_ast_user_suggest_event_voicemail);

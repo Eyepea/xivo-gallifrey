@@ -21,11 +21,69 @@
 ?>
 <div class="sb-smenu">
 	<ul>
-		<li id="dwsm-tab-1" class="dwsm-blur" onclick="dwho_submenu.select(this,'sb-part-first');" onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
-			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span></div><span class="span-right">&nbsp;</span>
+		<li id="dwsm-tab-1"
+		    class="dwsm-blur"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-first');">
+				<div class="tab">
+					<span class="span-center">
+						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+					</span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</div>
+			<div class="stab">
+				<ul>
+					<li><a href="#"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-period');
+							return(false);"><?=$this->bbf('smenu_period');?></a></li>
+				</ul>
+			</div>
 		</li>
-		<li id="dwsm-tab-2" class="dwsm-blur-last" onclick="dwho_submenu.select(this,'sb-part-last',1);" onmouseout="dwho_submenu.blur(this,1);" onmouseover="dwho_submenu.focus(this,1);">
-			<div class="tab"><span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span></div><span class="span-right">&nbsp;</span>
+		<li id="dwsm-tab-2"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-administrator');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_administrator');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-3"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-user');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_user');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-4"
+		    class="dwsm-blur-last"
+		    onmouseout="dwho_submenu.blur(this,1);"
+		    onmouseover="dwho_submenu.focus(this,1);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-last',1);">
+				<div class="tab">
+					<span class="span-center">
+						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_guest');?></a>
+					</span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</div>
+			<div class="stab">
+				<ul>
+					<li><a href="#"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-4'),'sb-part-email',1);
+							return(false);"><?=$this->bbf('smenu_email');?></a></li>
+				</ul>
+			</div>
 		</li>
 	</ul>
 </div>

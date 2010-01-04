@@ -104,13 +104,13 @@ $array['ldapfilter'] = array();
 $array['ldapfilter']['table'] = 'ldapfilter';
 $array['ldapfilter']['primary'] = array('id' => '');
 
-$array['meetme'] = array();
-$array['meetme']['table'] = 'staticmeetme';
-$array['meetme']['primary'] = array('id' => '');
-
 $array['meetmefeatures'] = array();
 $array['meetmefeatures']['table'] = 'meetmefeatures';
 $array['meetmefeatures']['primary'] = array('id' => '');
+
+$array['meetmeguest'] = array();
+$array['meetmeguest']['table'] = 'meetmeguest';
+$array['meetmeguest']['primary'] = array('id' => '');
 
 $array['musiconhold'] = array();
 $array['musiconhold']['table'] = 'musiconhold';
@@ -179,6 +179,10 @@ $array['staticagent']['primary'] = array('id' => '');
 $array['staticiax'] = array();
 $array['staticiax']['table'] = 'staticiax';
 $array['staticiax']['primary'] = array('id' => '');
+
+$array['staticmeetme'] = array();
+$array['staticmeetme']['table'] = 'staticmeetme';
+$array['staticmeetme']['primary'] = array('id' => '');
 
 $array['staticqueue'] = array();
 $array['staticqueue']['table'] = 'staticqueue';

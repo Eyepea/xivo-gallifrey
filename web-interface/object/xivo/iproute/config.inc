@@ -56,8 +56,8 @@ $array['filter']['destination'] = array('callback'	=> 'dwho_network::valid_host'
 					'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 $array['filter']['netmask'] = array('set'		=> false,
 				    'chk'		=> 2,
-				    'callback'		=> 'dwho_network::valid_netmask_ipv4',
-				    'callbackarg'	=> array(DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
+				    'callback'		=> 'dwho_network::valid_mask_ipv4',
+				    'callbackarg'	=> array(DWHO_NETWORK_MASK_IPV4_DOTDEC));
 $array['filter']['gateway'] = array('callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 $array['filter']['disable'] = array('bool' => true);

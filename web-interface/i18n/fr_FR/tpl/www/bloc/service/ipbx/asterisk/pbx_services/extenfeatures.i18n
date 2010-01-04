@@ -76,6 +76,9 @@ Appeler une file d'attente à l'aide de son identifiant :
 ; fm_extenfeatures_enable-calluser
 Appeler un utilisateur à l'aide de son identifiant :
 
+; fm_extenfeatures_enable-callmeetme
+Appeler une chambre de conférence à l'aide de son identifiant :
+
 ; fm_featuremap_blindxfer
 Transfert direct :
 

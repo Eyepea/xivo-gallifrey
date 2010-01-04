@@ -52,6 +52,8 @@ dwho.suggest = function(options,id)
 		'result_maxentries':		25,
 		'result_field':			'',
 		'result_onsetfield':		null,
+		'result_onclearfield':		null,
+		'result_fielddefaultvalue':	false,
 		'result_fulldisplay':		false,
 		'result_cache':			false,
 		'result_class':			'dwho-suggest',
@@ -113,6 +115,9 @@ dwho.suggest.prototype.set_field = function(id)
 	if((this._field = dwho_eid(id,true)) === false)
 		return(false);
 
+	this._autocomplete = this._field.getAttribute('autocomplete');
+	this._field.setAttribute('autocomplete','off');
+
 	dwho.dom.add_event('keypress',
 			   this._field,
 			   this.fnkeypress);
@@ -143,10 +148,7 @@ dwho.suggest.prototype.set_field = function(id)
 	this._dwsresid		= this._dwsid + '-res';
 	this._dwsrestitleid	= this._dwsresid + '-title-';
 	this._dwsresdescid	= this._dwsresid + '-desc-';
-	this._autocomplete	= this._field.getAttribute('autocomplete');
 	this._resfieldcleared	= false;
-
-	this._field.setAttribute('autocomplete','off');
 }
 
 dwho.suggest.prototype.set_option = function(name,value)
@@ -158,6 +160,7 @@ dwho.suggest.prototype.set_option = function(name,value)
 	{
 		case 'requestor':
 		case 'result_onsetfield':
+		case 'result_onclearfield':
 		case 'result_callback':
 		case 'result_displaycallback':
 		case 'result_emptycallback':
@@ -325,7 +328,23 @@ dwho.suggest.prototype.clear = function()
 {
 	if(dwho_is_object(this._resfield) === true
 	&& this._resfieldcleared === true)
-		this._field.value = '';
+	{
+		if(this._options.result_fielddefaultvalue === true)
+		{
+			this._field.value = this._field.defaultValue;
+
+			if(dwho_is_function(this._options.result_onclearfield) === true)
+				this._options.result_onclearfield(this);
+		}
+		else if(dwho_has_len(this._field.value) === true)
+		{
+			this._field.value = '';
+
+			if(dwho_is_function(this._options.result_onclearfield) === true)
+				this._options.result_onclearfield(this);
+		}
+	}
+
 	this._resfieldcleared = false;
 
 	this.deletetimeout();

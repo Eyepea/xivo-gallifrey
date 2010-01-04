@@ -870,16 +870,25 @@ class dwho_i18n
 
 			if(isset($line{0}) === false)
 			{
-				$txt = false;
-				continue;
+				if($key === ''
+				|| $txt === false
+				|| isset($r[$key]) === false)
+				{
+					$txt = false;
+					continue;
+				}
+				else
+					$line = DWHO_EOL;
 			}
 
 			switch($line{0})
 			{
 				case '#':
-					$txt = false;
-					break;
+					continue;
 				case ';':
+					if($key !== '' && isset($r[$key]) === true)
+						$r[$key] = rtrim($r[$key],DWHO_EOL);
+
 					if(preg_match('/^;[\t ]*copy[\t ]+'.
 							'([a-z]{2,3}_[A-Z]{2})$/',$line,$matchcopy) === 1
 					&& ($locale = $this->chk_locale($matchcopy[1])) !== false)
@@ -992,13 +1001,23 @@ class dwho_i18n
 						$r[$key] = $line;
 						$priority |= 4;
 					}
-					else if(strlen(($line = trim($line))) > 0)
+					else if($line === DWHO_EOL)
+					{
+						$r[$key] .= $line;
+						$priority |= 4;
+					}
+					else if(($line = rtrim($line,DWHO_EOL)) !== '')
 					{
 						$r[$key] .= DWHO_EOL.$line;
 						$priority |= 4;
 					}
+					else
+						$r[$key] = rtrim($r[$key],DWHO_EOL);
 			}
 		}
+
+		if($key !== '' && isset($r[$key]) === true)
+			$r[$key] = rtrim($r[$key],DWHO_EOL);
 
 		return($r);
 	}

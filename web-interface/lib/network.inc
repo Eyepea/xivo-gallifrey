@@ -39,12 +39,17 @@ define('DWHO_NETWORK_HOST_ALL',(DWHO_NETWORK_HOST_IPV4_DOTDEC |
 				DWHO_NETWORK_HOST_IPV6 |
 				DWHO_NETWORK_HOST_IPVFUTURE));
 
-define('DWHO_NETWORK_NETMASK_IPV4',1);
-define('DWHO_NETWORK_NETMASK_IPV4_BIT',2);
-define('DWHO_NETWORK_NETMASK_IPV4_DOTDEC',4);
-define('DWHO_NETWORK_NETMASK_IPV4_ALL',(DWHO_NETWORK_NETMASK_IPV4 |
-					DWHO_NETWORK_NETMASK_IPV4_BIT |
-					DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
+define('DWHO_NETWORK_EMAIL_HOST_ALL',(DWHO_NETWORK_HOST_IPV4_DOTDEC |
+				      DWHO_NETWORK_HOST_IPV6 |
+				      DWHO_NETWORK_HOST_HOSTNAME |
+				      DWHO_NETWORK_HOST_HOSTNAME_TLD));
+
+define('DWHO_NETWORK_MASK_IPV4',1);
+define('DWHO_NETWORK_MASK_IPV4_BIT',2);
+define('DWHO_NETWORK_MASK_IPV4_DOTDEC',4);
+define('DWHO_NETWORK_MASK_IPV4_ALL',(DWHO_NETWORK_MASK_IPV4 |
+				     DWHO_NETWORK_MASK_IPV4_BIT |
+				     DWHO_NETWORK_MASK_IPV4_DOTDEC));
 
 class dwho_network
 {
@@ -83,7 +88,25 @@ class dwho_network
 		return(true);
 	}
 
-	function netmask_ipv4_to_bit($nm)
+	function valid_bitmask_ipv4($bit)
+	{
+		if(dwho_is_uint($bit) === false
+		|| $bit > 32)
+			return(false);
+
+		return(true);
+	}
+
+	function valid_bitmask_ipv6($bit)
+	{
+		if(dwho_is_uint($bit) === false
+		|| $bit > 128)
+			return(false);
+
+		return(true);
+	}
+
+	function netmask_ipv4_to_bitmask($nm)
 	{
 		if(($nm = dwho_network::ipv4_long($nm)) === 0)
 			return(0);
@@ -97,48 +120,38 @@ class dwho_network
 		return(32 - intval(log($inv + 1,2)));
 	}
 
-	function valid_netmask_ipv4_bit($bit)
+	function bitmask_to_netmask_ipv4($bit)
 	{
-		if(dwho_is_uint($bit) === false
-		|| $bit > 32)
+		if($this->valid_bitmask_ipv4($bit) === false)
 			return(false);
 
-		return(true);
+		return(long2ip((0xFFFFFFFF >> (32 - $bit)) << (32 - $bit)));
 	}
 
-	function valid_netmask_ipv6_bit($bit)
-	{
-		if(dwho_is_uint($bit) === false
-		|| $bit > 128)
-			return(false);
-
-		return(true);
-	}
-
-	function valid_netmask_ipv4($nm,$mode=null,$ret=false)
+	function valid_mask_ipv4($nm,$mode=null,$ret=false)
 	{
 		$mode = intval($mode);
 
-		if(($mode & DWHO_NETWORK_NETMASK_IPV4_ALL) === 0)
-			$mode = DWHO_NETWORK_NETMASK_IPV4_ALL;
+		if(($mode & DWHO_NETWORK_MASK_IPV4_ALL) === 0)
+			$mode = DWHO_NETWORK_MASK_IPV4_ALL;
 
-		if(($mode & DWHO_NETWORK_NETMASK_IPV4) !== 0
-		&& ($bit = dwho_network::netmask_ipv4_to_bit($nm)) !== false)
+		if(($mode & DWHO_NETWORK_MASK_IPV4) !== 0
+		&& ($bit = dwho_network::netmask_ipv4_to_bitmask($nm)) !== false)
 			return((bool) $ret === false ? true : $bit);
 
-		if(($mode & DWHO_NETWORK_NETMASK_IPV4_BIT) !== 0
-		&& dwho_network::valid_netmask_ipv4_bit($nm) === true)
+		if(($mode & DWHO_NETWORK_MASK_IPV4_BIT) !== 0
+		&& dwho_network::valid_bitmask_ipv4($nm) === true)
 			return((bool) $ret === false ? true : $nm);
 
-		if(($mode & DWHO_NETWORK_NETMASK_IPV4_DOTDEC) !== 0
+		if(($mode & DWHO_NETWORK_MASK_IPV4_DOTDEC) !== 0
 		&& dwho_network::valid_ipv4_dotdec($nm) !== false
-		&& ($bit = dwho_network::netmask_ipv4_to_bit($nm)) !== false)
+		&& ($bit = dwho_network::netmask_ipv4_to_bitmask($nm)) !== false)
 			return((bool) $ret === false ? true : $bit);
 
 		return(false);
 	}
 
-	function valid_subnet_ipv4($host,$mask=null,$netmask_mode=null,$host_mode=null,$ret=false)
+	function valid_subnet_ipv4($host,$mask=null,$mask_mode=null,$host_mode=null,$ret=false)
 	{
 		if(is_scalar($host) === false)
 			return(false);
@@ -157,32 +170,32 @@ class dwho_network
 		if(($host_mode & DWHO_NETWORK_HOST_ALL) === 0)
 			$host_mode = DWHO_NETWORK_HOST_IPV4;
 
-		if(($mask = dwho_network::valid_netmask_ipv4($mask,$netmask_mode,$ret)) === false
+		if(($bitmask = dwho_network::valid_mask_ipv4($bitmask,$mask_mode,$ret)) === false
 		|| dwho_network::valid_host($host,$host_mode) === false)
 			return(false);
 
-		return($mask);
+		return($bitmask);
 	}
 
 	function ipv4_calc($ip,$mask)
 	{
 		if(dwho_network::valid_ipv4($ip) === false
-		|| ($mask = dwho_network::valid_subnet_ipv4($ip,
-							    $mask,
-							    DWHO_NETWORK_NETMASK_IPV4_ALL,
+		|| ($bit = dwho_network::valid_subnet_ipv4($ip,
+							    $bit,
+							    DWHO_NETWORK_MASK_IPV4_ALL,
 							    DWHO_NETWORK_HOST_IPV4,
 							    true)) === false)
 			return(false);
 
-		$netmask	= (0xFFFFFFFF>>(32-$mask))<<(32-$mask);
-		$wildcard	=~ $netmask;
-		$network	= ip2long($ip) & $netmask;
+		$decmask	= (0xFFFFFFFF >> (32 - $bit)) << (32 - $bit);
+		$wildcard	=~ $decmask;
+		$network	= ip2long($ip) & $decmask;
 		$broadcast	= $network | $wildcard;
 
 		$r = array();
 		$r['ip']	= $ip;
-		$r['mask']	= $mask;
-		$r['netmask']	= long2ip($netmask);
+		$r['mask']	= $bit;
+		$r['netmask']	= long2ip($decmask);
 		$r['wildcard']	= long2ip($wildcard);
 		$r['network']	= long2ip($network);
 		$r['broadcast']	= long2ip($broadcast);
@@ -190,7 +203,7 @@ class dwho_network
 		return($r);
 	}
 
-	function ipv4_in_subnet($ip,$sub,$ret=false)
+	function ipv4_in_subnet($ip,$sub)
 	{
 		if(is_string($sub) === false || ($pos = strrpos($sub,'/')) === false)
 			return(false);
@@ -199,29 +212,20 @@ class dwho_network
 		$mask = substr($sub,$pos + 1);
 
 		if(dwho_network::valid_ipv4($ip) === false
-		|| ($mask = dwho_network::valid_subnet_ipv4($ipsub,
-							    $mask,
-							    DWHO_NETWORK_NETMASK_IPV4_ALL,
-							    DWHO_NETWORK_HOST_IPV4,
-							    true)) === false)
+		|| ($bit = dwho_network::valid_subnet_ipv4($ipsub,
+							   $mask,
+							   DWHO_NETWORK_MASK_IPV4_ALL,
+							   DWHO_NETWORK_HOST_IPV4,
+							   true)) === false)
 			return(false);
 
-		$r = array();
-		$r['ip'] = $ip;
-		$r['ipsubnet'] = $ipsub;
-		$r['mask'] = $mask;
-		$r['subnet'] = $sub;
-		$r['netmask'] = (0xFFFFFFFF>>(32-$mask))<<(32-$mask);
-		$r['wildcard'] =~ $r['netmask'];
-		$r['network'] = ip2long($ipsub) & $r['netmask'];
-		$r['broadcast'] = $r['network'] | $r['wildcard'];
+		$decip		= ip2long($ip);
+		$decmask	= (0xFFFFFFFF >> (32 - $bit)) << (32 - $bit);
+		$wildcard	=~ $decmask;
+		$network	= ip2long($ipsub) & $decmask;
+		$broadcast	= $network | $wildcard;
 
-		$ip = ip2long($ip);
-
-		if($ip > $r['network'] && $ip < $r['broadcast'])
-			return((bool) $ret === false ? true : $r);
-
-		return(false);
+		return(($decip > $network && $decip < $broadcast));
 	}
 
 	function ipv4_in_lhost($ip,$host)
@@ -459,10 +463,10 @@ class dwho_network
 		return(false);
 	}
 
-	function valid_host_subnet_ipv4($host,$host_mode=null,$netmask_mode=null,$subnet_host_mode=null)
+	function valid_host_subnet_ipv4($host,$host_mode=null,$mask_mode=null,$subnet_host_mode=null)
 	{
 		if(dwho_network::valid_host($host,$host_mode) === true
-		|| dwho_network::valid_subnet_ipv4($host,null,$netmask_mode,$subnet_host_mode) === true)
+		|| dwho_network::valid_subnet_ipv4($host,null,$mask_mode,$subnet_host_mode) === true)
 			return(true);
 
 		return(false);
@@ -497,6 +501,94 @@ class dwho_network
 		if(is_string($macaddr) === false
 		|| preg_match('/^([A-F0-9]{2}:){5}([A-F0-9]{2})$/i',$macaddr,$match) !== 1
 		|| $macaddr === '00:00:00:00:00:00')
+			return(false);
+
+		return(true);
+	}
+
+	function valid_email_localpart($localpart)
+	{
+		$atom		= '\!#\$%&\'\*\+\-\/0-9\=\?A-Z\^_`a-z\{\|\}~';
+		$qtext		= '\x20\x21\x23-\x5B\x5D-\x7E';
+		$quotedpair	= '\(\)\<\>\[\]\:;@\\\,\."';
+
+		if(is_scalar($localpart) === false
+		|| strlen($localpart) > 64
+		|| preg_match('/^(?:['.$atom.']+(?:\.['.$atom.']+)*|'.
+				 '"(?:['.$qtext.']|'.
+				     '\\\['.$quotedpair.'])+")$/',
+			      $localpart) !== 1)
+			return(false);
+
+		return(true);
+	}
+
+	function valid_email_address_literal($address,$host_mode=null,$chkmx=false)
+	{
+		if(is_string($address) === false
+		|| isset($address{0}) === false)
+			return(false);
+
+		$host_mode	= intval($host_mode);
+		$chkmx		= (bool) $chkmx;
+		$mxhosts	= array();
+
+		if(($host_mode & DWHO_NETWORK_EMAIL_HOST_ALL) === 0)
+			$host_mode = DWHO_NETWORK_EMAIL_HOST_ALL;
+
+		if($address{0} === '[' && substr($address,-1) === ']')
+		{
+			if(strncmp('[IPv6:',$address,6) === 0)
+			{
+				if(($host_mode & DWHO_NETWORK_HOST_IPV6) === 0)
+					return(false);
+
+				$address = substr($address,6,-1);
+
+				if(dwho_network::valid_ipv6($address) === false)
+					return(false);
+
+				return(($chkmx === false ? true : getmxrr($address,$mxhosts)));
+			}
+
+			if(($host_mode & DWHO_NETWORK_HOST_IPV4_DOTDEC) === 0)
+				return(false);
+
+			$address = substr($address,1,-1);
+
+			if(dwho_network::valid_ipv4_dotdec($address) === false)
+				return(false);
+
+			return(($chkmx === false ? true : getmxrr($address,$mxhosts)));
+		}
+
+		$mode = 0;
+
+		if(($host_mode & DWHO_NETWORK_HOST_HOSTNAME) !== 0)
+			$mode |= DWHO_NETWORK_HOST_HOSTNAME;
+
+		if(($host_mode & DWHO_NETWORK_HOST_HOSTNAME_TLD) !== 0)
+			$mode |= DWHO_NETWORK_HOST_HOSTNAME_TLD;
+
+		if($mode === 0 || dwho_network::valid_host($address,$mode) === false)
+			return(false);
+
+		return(($chkmx === false ? true : getmxrr($address,$mxhosts)));
+	}
+
+	function valid_email($email,$host_mode=null,$chkmx=false)
+	{
+		if(is_string($email) === false
+		|| strlen($email) > 320
+		|| ($pos = strrpos($email,'@')) === false
+		|| $pos === 0)
+			return(false);
+
+		$localpart	= substr($email,0,$pos);
+		$address	= substr($email,$pos + 1);
+
+		if(dwho_network::valid_email_localpart($localpart) === false
+		|| dwho_network::valid_email_address_literal($address,$host_mode,$chkmx) === false)
 			return(false);
 
 		return(true);

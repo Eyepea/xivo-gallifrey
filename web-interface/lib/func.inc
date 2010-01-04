@@ -813,27 +813,6 @@ function dwho_die($msg='')
 	die(dwho_msg($msg));
 }
 
-function dwho_chk_email($email,$strict=false)
-{
-	$nb = 0;
-	$email = strtolower(strval($email));
-	$len = strlen($email);
-
-	if($len < 6 || $len > 255
-	|| preg_match('/^[a-z0-9_-]+(?:\.[a-z0-9_-]+)*@[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,4}$/',$email) !== 1)
-		return(false);
-	else if((bool) $strict === false || function_exists('getmxrr') === false)
-		return($email);
-
-	$a = explode('@',$email);
-	$m = array();
-
-	if(getmxrr($a[1],$m) === true && $nb === 0)
-		return($email);
-
-	return(false);
-}
-
 function dwho_eol($str)
 {
 	return(preg_replace('#\r\n|\n|\r#',DWHO_EOL,strval($str)));
@@ -877,33 +856,6 @@ function dwho_htmlsc($str,$style=ENT_QUOTES)
 function dwho_htmlen($str,$style=ENT_QUOTES)
 {
 	return(htmlentities(strval($str),$style,'UTF-8'));
-}
-
-function dwho_malert($subject='',$msg='',$to='')
-{
-	$subject = (string) $subject;
-	$msg = (string) $msg;
-	$mail = $to !== '' ? dwho_chk_email($to) : '';
-
-	$h  = 'MIME-Version: 1.0'."\n";
-	$h .= 'Content-type: text/html; charset=utf-8'."\n";
-	$h .= 'Content-Transfer-Encoding: 8bit'."\n";
-
-	if($mail === false)
-		return(trigger_error('Invalid e-mail',E_USER_WARNING));
-	else if($mail === '' && defined('DWHO_ROOT_MAIL') === true && dwho_chk_email(DWHO_ROOT_MAIL) !== false)
-	{
-		$mail = 'TECK DWHO <'.DWHO_ROOT_MAIL.'>';
-		$h .= 'To: '.$mail."\n";
-	}
-	else
-		$h .= 'To: '.$mail.' <'.$mail.'>'."\n";
-
-	$h .= 'From: DWHO <dwho@example.com>'."\n";
-	$h .= 'X-Mailer: DWHO'."\n";
-	$h .= 'X-Priority: 1 (Highest)'."\n";
-
-	mb_send_mail($mail,$subject,$msg,$h);
 }
 
 function dwho_last_key(&$a,$sort=SORT_NUMERIC)

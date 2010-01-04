@@ -79,8 +79,6 @@ pre {text-align: left;}
 .fm-paragraph input {padding: 0px 2px;}
 .fm-paragraph select {max-width: 350px;}
 .fm-paragraph textarea, .fm-paragraph select {padding-left: 2px;}
-.fm-paragraph .it-mblur {border: 1px solid #7f99b1;}
-.fm-paragraph .it-mfocus {border: 1px solid #ff9d03;}
 .fm-paragraph-submit {text-align: center;padding: 10px 4px 0px 0px;}
 .fm-paragraph .itb-submit, .fm-paragraph .itb-button, .itb-button, .itb-submit {background-position: left top; background-repeat: repeat-x;background-image: url(../img/site/button/bg-button.gif);color: #000;border: 1px solid #999;cursor: pointer;}
 .fm-paragraph .itb-image {margin: 0px;padding: 0px;border: 0px solid #000;}
@@ -89,6 +87,9 @@ pre {text-align: left;}
 
 .fm-paragraph .it-disabled, .fm-paragraph .it-readonly {border: 1px solid #a5acb2;background-color: #ebebe4;color: #aca899;}
 .fm-paragraph .it-readonly {color: #000;}
+
+.fm-paragraph .it-mblur {border: 1px solid #7f99b1;}
+.fm-paragraph .it-mfocus {border: 1px solid #ff9d03;}
 
 .fm-paragraph .it-helper {color: #666;}
 .fm-paragraph .it-checkbox, .fm-paragraph .it-radio {margin: 0px 2px;padding: 0px;border: 0px solid #fff;background-color: transparent;}
@@ -383,8 +384,8 @@ pre {text-align: left;}
 .wz-check-tb-title {width: 100%; background-color: #ddd; text-align: center; font-weight: bold; clear: both;}
 .wz-check-tb-left {width: 40%; clear: left; float: left;}
 .wz-check-tb-right {width: 50%; float: left; }
-td .wz-check-itemkey {clear: left; float: left; width=50%;}
+td .wz-check-itemkey {clear: left; float: left; width: 50%;}
 td .wz-check-itemvalue {float: left;}
 #r-wizard td {vertical-align: top;}
 .wz-entctx-tb-left {width: 24%; clear: left; float: left;}
-.wz-entctx-tb-right {width: 24%; float: left};
+.wz-entctx-tb-right {width: 24%; float: left;}

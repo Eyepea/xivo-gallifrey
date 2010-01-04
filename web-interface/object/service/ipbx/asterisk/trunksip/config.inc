@@ -393,11 +393,11 @@ $array['filter']['rtpkeepalive'] = array('set' => false,'chk' => 2,'cast' => 'ui
 $array['filter']['deny'] = array('set'			=> false,
 				 'chk'			=> 2,
 				 'callback'		=> 'dwho_network::valid_subnet_ipv4',
-				 'callbackarg'		=> array(null,DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
+				 'callbackarg'		=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
 $array['filter']['permit'] = array('set'		=> false,
 				   'chk'		=> 2,
 				   'callback'		=> 'dwho_network::valid_subnet_ipv4',
-				   'callbackarg'	=> array(null,DWHO_NETWORK_NETMASK_IPV4_DOTDEC));
+				   'callbackarg'	=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
 $array['filter']['defaultip'] = array('set' => false,'chk' => 0);
 $array['filter']['callgroup'] = array('set' => false,'chk' => 0);
 $array['filter']['pickupgroup'] = array('set' => false,'chk' => 0);

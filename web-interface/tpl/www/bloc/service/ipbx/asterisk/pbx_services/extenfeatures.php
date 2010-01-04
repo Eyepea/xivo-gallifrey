@@ -350,6 +350,31 @@ if(isset($error_js[0]) === true)
 ?>
 		</div>
 <?php
+	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-callmeetme'),
+				      'name'	=> 'extenfeatures[callmeetme][enable]',
+				      'labelid'	=> 'extenfeatures-enable-callmeetme',
+				      'checked'	=> ((bool) $this->get_var('extenfeatures','callmeetme','commented') === false)));
+?>
+		<div class="fm-paragraph">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_extenfeatures-extension'),
+				  'name'	=> 'extenfeatures[callmeetme][exten]',
+				  'paragraph'	=> false,
+				  'labelid'	=> 'extenfeatures-callmeetme',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('extenfeatures','callmeetme','exten'),
+				  'default'	=> $element['extenfeatures']['callmeetme']['default'],
+				  'invalid'	=> isset($invalid['extenfeatures']['callmeetme']))),
+
+		$form->select(array('paragraph'	=> false,
+				    'name'	=> 'extenfeatures[list-callmeetme]',
+				    'labelid'	=> 'extenfeatures-list-callmeetme',
+				    'empty'	=> true,
+				    'key'	=> false),
+			      array('*',range(3,11)));
+?>
+		</div>
+<?php
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_extenfeatures_enable-callqueue'),
 				      'name'	=> 'extenfeatures[callqueue][enable]',
 				      'labelid'	=> 'extenfeatures-enable-callqueue',

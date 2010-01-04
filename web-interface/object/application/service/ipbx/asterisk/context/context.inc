@@ -999,13 +999,13 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 		|| ((isset($this->_modules['userfeatures']) === false
 		    || is_object($this->_modules['userfeatures']) === false) === true
 		   && ($this->_modules['userfeatures'] = $this->_service->get_module('userfeatures')) === false) === true
-		|| ($ref['usersip'] = $this->_modules['usersip']->edit_where($where,$value,
+		|| ($ref['user']['usersip'] = $this->_modules['usersip']->edit_where($where,$value,
 									     null,null,false)) === false
-		|| ($ref['useriax'] = $this->_modules['useriax']->edit_where($where,$value,
+		|| ($ref['user']['useriax'] = $this->_modules['useriax']->edit_where($where,$value,
 									     null,null,false)) === false
-		|| ($ref['usercustom'] = $this->_modules['usercustom']->edit_where($where,$value,
+		|| ($ref['user']['usercustom'] = $this->_modules['usercustom']->edit_where($where,$value,
 										   null,null,false)) === false
-		|| ($ref['userfeatures'] = $this->_modules['userfeatures']->edit_where($where,$value,
+		|| ($ref['user']['userfeatures'] = $this->_modules['userfeatures']->edit_where($where,$value,
 										       null,null,false)) === false)
 			return(false);
 
@@ -1184,14 +1184,19 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 
 		$ref = &$this->_return['contextmember'];
 
-		$where = array('exitcontext' => $context);
-		$value = array('exitcontext' => $newcontext);
-
 		if(((isset($this->_modules['meetmefeatures']) === false
 		    || is_object($this->_modules['meetmefeatures']) === false) === true
-		   && ($this->_modules['meetmefeatures'] = $this->_service->get_module('meetmefeatures')) === false) === true
-		|| ($ref['meetmefeatures'] = $this->_modules['meetmefeatures']->edit_where($where,$value,
-											   null,null,false)) === false)
+		   && ($this->_modules['meetmefeatures'] = $this->_service->get_module('meetmefeatures')) === false) === true)
+			return(false);
+		else if(($ref['meetmefeatures']['admin_exitcontext'] = $this->_modules['meetmefeatures']->edit_where(
+								array('admin_exitcontext'	=> $context),
+								array('admin_exitcontext'	=> $newcontext),
+								null,null,false)) === false)
+			return(false);
+		else if(($ref['meetmefeatures']['user_exitcontext'] = $this->_modules['meetmefeatures']->edit_where(
+								array('user_exitcontext'	=> $context),
+								array('user_exitcontext'	=> $newcontext),
+								null,null,false)) === false)
 			return(false);
 
 		return(true);
@@ -1370,13 +1375,13 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					if(isset($val['user']) === true)
 						$this->_update_user_contextnummember($context,$newcontext);
 
-					if(isset($val['group']) === true)
+					if(isset($val['groupfeatures']) === true)
 						$this->_update_group_contextnummember($context,$newcontext);
 
-					if(isset($val['queue']) === true)
+					if(isset($val['queuefeatures']) === true)
 						$this->_update_queue_contextnummember($context,$newcontext);
 
-					if(isset($val['meetme']) === true)
+					if(isset($val['meetmefeatures']) === true)
 						$this->_update_meetme_contextnummember($context,$newcontext);
 
 					if(isset($val['incall']) === true)
@@ -1421,7 +1426,7 @@ class xivo_application_service_asterisk_context extends xivo_application_asteris
 					if(isset($val['generalvoicemail']) === true)
 						$this->_update_generalvoicemail_contextmember($context,$newcontext,$val['generalvoicemail']);
 
-					if(isset($val['meetme']) === true)
+					if(isset($val['meetmefeatures']) === true)
 						$this->_update_meetme_contextmember($context,$newcontext);
 
 					if(isset($val['outcall']) === true)

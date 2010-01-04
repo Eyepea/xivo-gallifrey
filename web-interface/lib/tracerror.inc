@@ -18,6 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+dwho::load_class('dwho_network');
+
 class dwho_tracerror
 {
 	var $_param = array(
@@ -164,12 +166,10 @@ class dwho_tracerror
 
 	function _chk_email($email)
 	{
-		$r = false;
+		if($email !== false && dwho_network::valid_email($email) === true)
+			return($email);
 
-		if($email !== false)
-			$r = dwho_chk_email($email);
-
-		return($r);
+		return(false);
 	}
 
 	function _chk_file($file)
@@ -182,6 +182,24 @@ class dwho_tracerror
 			$r = false;
 
 		return($r);
+	}
+
+	function report_mail($to,$subject,$body)
+	{
+		if(dwho_network::valid_email($to) === false)
+			return(false);
+
+		$subject = mb_encode_mimeheader($subject,'UTF-8');
+
+		$headers = array();
+		$headers[] = 'From: DWHO TraceError <dwho+traceerror@example.com>';
+		$headers[] = 'MIME-Version: 1.0';
+		$headers[] = 'Content-Type: text/html; charset=UTF-8';
+		$headers[] = 'Content-Transfer-Encoding: 8bit';
+		$headers[] = 'X-Mailer: XIVO';
+		$headers[] = 'X-Priority: 1 (Highest)';
+
+		return(mail($to,$subject,$body,implode("\r\n",$headers)));
 	}
 
 	function report_err($msg,$level=0,$context=DWHO_TE_CONTEXT,$report_type=null)
@@ -323,8 +341,8 @@ class dwho_tracerror
 			}
 		}
 
-		if(($report_type & DWHO_TE_RTYPE_MAIL) !== 0 && ($mail = $this->_chk_email($this->_param['email'])) !== false)
-			dwho_malert($tolabel,$tomsg,$mail);
+		if(($report_type & DWHO_TE_RTYPE_MAIL) !== 0)
+			$this->report_mail($this->_param['email'],$tolabel,$tomsg);
 
 		if($delayed === false && ($level & DWHO_TE_ERR_ERROR) !== 0)
 			die();

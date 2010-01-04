@@ -26,36 +26,54 @@ dwho.fm = document.forms;
 dwho.form.error = {};
 dwho.form.text_helper = {};
 
-dwho.form.set_events_text_helper = function(id)
+dwho.form.set_text_helper = function(id,defaultvalue)
 {
-	dwho.dom.add_cssclass(dwho_eid(id),'it-helper');
-	dwho.dom.add_event('focus',dwho_eid(id),dwho.form.focus_text_helper);
-	dwho.dom.add_event('blur',dwho_eid(id),dwho.form.blur_text_helper);
-}
-
-dwho.form.focus_text_helper = function()
-{
-	if(dwho_has_len(this.id) === false)
+	if((obj = dwho_eid(id)) === false)
 		return(false);
-	else if(dwho_has_len(dwho.form.text_helper[this.id]) === false)
+
+	if(dwho_is_undef(dwho.form.text_helper[obj.id]) === false
+	&& dwho_has_len(obj.value) === false)
 	{
-		dwho.form.text_helper[this.id] = this.value;
-		dwho.dom.remove_cssclass(this,'it-helper');
-		this.value = '';
+		obj.value = dwho.form.text_helper[obj.id];
+		dwho.dom.add_cssclass(obj,'it-helper');
+		dwho.form.text_helper[obj.id] = Boolean(defaultvalue) === false ? '' : obj.defaultValue;
 	}
 }
 
-dwho.form.blur_text_helper = function()
+dwho.form.unset_text_helper = function(id,defaultvalue)
 {
-	if(dwho_has_len(this.id) === false)
+	if((obj = dwho_eid(id)) === false)
 		return(false);
-	else if(dwho_is_undef(dwho.form.text_helper[this.id]) === false
-	&& dwho_has_len(this.value) === false)
+
+	defaultvalue = Boolean(defaultvalue);
+
+	if(dwho_has_len(dwho.form.text_helper[obj.id]) === false || defaultvalue === true)
 	{
-		this.value = dwho.form.text_helper[this.id];
-		dwho.dom.add_cssclass(this,'it-helper');
-		dwho.form.text_helper[this.id] = '';
+		dwho.form.text_helper[obj.id] = defaultvalue === false ?
+						obj.value :
+						obj.defaultValue;
+		dwho.dom.remove_cssclass(obj,'it-helper');
+
+		if(defaultvalue === false || obj.defaultValue === obj.value)
+			obj.value = '';
 	}
+}
+
+dwho.form.set_events_text_helper = function(id,usedefaultvalue)
+{
+	if((obj = dwho_eid(id)) === false)
+		return(false);
+
+	usedefaultvalue = Boolean(usedefaultvalue);
+
+	if(usedefaultvalue === false
+	|| (dwho_has_len(dwho.form.text_helper[id]) === false
+	    && obj.defaultValue === obj.value))
+		dwho.dom.add_cssclass(obj,'it-helper');
+
+	dwho.dom.add_event('blur',obj,function() { dwho.form.set_text_helper(this.id,usedefaultvalue); });
+	dwho.dom.add_event('focus',obj,function() { dwho.form.unset_text_helper(this.id,usedefaultvalue); });
+	return(true);
 }
 
 dwho.form.show_error = function()
@@ -248,6 +266,23 @@ dwho.form.copy_select = function(from,to)
 		if(selected === from.options[i].text)
 			to.options[to.options.length-1].selected = true;
 	}
+
+	return(true);
+}
+
+dwho.form.add_event_opt_select = function(ev,id,fn)
+{
+	if(dwho_is_string(ev) === false
+	|| (obj = dwho_eid(id)) === false
+	|| (obj.type !== 'select-one'
+	   && obj.type !== 'select-multiple') === true
+	|| dwho_is_function(fn) === false)
+		return(false);
+
+	var len = obj.options.length;
+
+	for(var i = 0;i < len;i++)
+		dwho.dom.add_event(ev,obj.options[i],fn);
 
 	return(true);
 }

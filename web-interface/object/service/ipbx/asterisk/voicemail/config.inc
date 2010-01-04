@@ -144,13 +144,15 @@ $array['element']['option']['default'] = 'none';
 $array['element']['option']['unset'] = true;
 
 
+dwho::load_class('dwho_network');
+
 $array['filter'] = array();
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['mailbox'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[0-9#\*]+$/');
 $array['filter']['password'] = array('regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['fullname'] = array('cast' => 'sgraph','maxlen' => 80);
-$array['filter']['email'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_email','maxlen' => 80);
+$array['filter']['email'] = array('set' => false,'chk' => 2,'maxlen' => 80,'callback' => 'dwho_network::valid_email');
 $array['filter']['pager'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9#\*]+$/','maxlen' => 80);
 $array['filter']['dialout'] = array('set' => false,
 				    'chk' => 2,

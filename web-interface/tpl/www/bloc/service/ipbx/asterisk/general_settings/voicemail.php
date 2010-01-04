@@ -569,8 +569,6 @@ endif;
 <?php
 
 if($zmsg_nb > 0):
-	reset($zonemessages);
-
 	foreach($zonemessages as $key => $val):
 
 		if(isset($err['zonemessages'][$key]) === true):
@@ -639,7 +637,7 @@ if($zmsg_nb > 0):
 						     'label'		=> false,
 						     'disabled'		=> true,
 						     'default'		=> $element['zonemessages']['name']['default']));?>
-				</td>
+			</td>
 			<td>
 				<?=$form->select(array('paragraph'	=> false,
 						       'name'		=> 'zonemessages[timezone][]',

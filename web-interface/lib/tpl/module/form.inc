@@ -43,6 +43,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['desc']		= false;
 		$this->_param['default']	= false;
 		$this->_param['value']		= false;
+		$this->_param['valuef']		= false;	# Sprintf format for field value
 		$this->_param['selected']	= false;
 		$this->_param['checked']	= false;
 		$this->_param['size']		= 10;
@@ -59,6 +60,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['paragraphid']	= true;
 		$this->_param['key']		= null;
 		$this->_param['altkey']		= false;
+		$this->_param['optionf']	= false;	# Sprintf format for select options
 		$this->_param['empty']		= false;
 		$this->_param['optgroup']	= false;
 		$this->_param['bbf']		= false;
@@ -82,6 +84,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['desc']) === true)
 			$this->_param['desc'] = $v['desc'];
+
+		if(isset($v['valuef']) === true)
+			$this->_param['valuef'] = (string) $v['valuef'];
 
 		if(isset($v['size']) === true)
 		{
@@ -124,6 +129,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['altkey']) === true)
 			$this->_param['altkey'] = $v['altkey'];
+
+		if(isset($v['optionf']) === true)
+			$this->_param['optionf'] = (string) $v['optionf'];
 
 		if(isset($v['empty']) === true && $v['empty'] !== false)
 			$this->_param['empty'] = $v['empty'] === true ? true : $this->_mk_param_value($v['empty'],$v);
@@ -500,6 +508,9 @@ class dwho_tpl_form extends dwho_tpl_module
 			else
 				$value = $this->_param['value'];
 
+			if($this->_param['valuef'] !== false)
+				$value = sprintf(dwho_printf_escape($this->_param['valuef'],1),$value);
+
 			$r .= ' value="'.$value.'"';
 		}
 
@@ -871,6 +882,14 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(is_array($render) === false)
 			return(null);
 
+		if($this->_param['valuef'] !== false)
+			$render['key'] = sprintf(dwho_printf_escape($this->_param['valuef'],1),
+						 $render['key']);
+
+		if($this->_param['optionf'] !== false)
+			$render['value'] = sprintf(dwho_printf_escape($this->_param['optionf'],1),
+						   $render['value']);
+
 		$render['key'] = dwho_htmlsc($render['key']);
 
 		if($this->_param['optgroup'] === true)
@@ -1072,6 +1091,9 @@ class dwho_tpl_form extends dwho_tpl_module
 			return('');
 		else if(is_bool($key) === true)
 			$key = (int) $key;
+
+		if($this->_param['valuef'] !== false)
+			$key = sprintf(dwho_printf_escape($this->_param['valuef'],1),$key);
 
 		if((string) $key !== $val)
 			return('');
