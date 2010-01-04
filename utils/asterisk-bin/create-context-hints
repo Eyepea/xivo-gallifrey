@@ -27,6 +27,7 @@ cursor = xivo_helpers.db_connect().cursor()
 
 xfeatures = {'bsfilter':            {},
              'callgroup':           {},
+             'callmeetme':          {},
              'callqueue':           {},
              'calluser':            {},
              'fwdbusy':             {},
