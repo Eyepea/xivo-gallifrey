@@ -155,6 +155,7 @@ CREATE INDEX cdr__idx__clid ON cdr(clid);
 CREATE INDEX cdr__idx__src ON cdr(src);
 CREATE INDEX cdr__idx__dst ON cdr(dst);
 CREATE INDEX cdr__idx__channel ON cdr(channel);
+CREATE INDEX cdr__idx__dstchannel ON cdr(dstchannel);
 CREATE INDEX cdr__idx__duration ON cdr(duration);
 CREATE INDEX cdr__idx__disposition ON cdr(disposition);
 CREATE INDEX cdr__idx__amaflags ON cdr(amaflags);
@@ -271,6 +272,7 @@ INSERT INTO extensions VALUES (NULL,1,'xivo-features','_*30.',1,'Macro','agentst
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*37.',1,'Macro','bsfilter|${EXTEN:3}','bsfilter');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*664.',1,'Macro','group|${EXTEN:4}|','callgroup');
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','*34',1,'Macro','calllistening','calllistening');
+INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*667.',1,'Macro','meetme|${EXTEN:4}|','callmeetme');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*665.',1,'Macro','queue|${EXTEN:4}|','callqueue');
 INSERT INTO extensions VALUES (NULL,1,'xivo-features','*26',1,'Macro','callrecord','callrecord');
 INSERT INTO extensions VALUES (NULL,0,'xivo-features','_*666.',1,'Macro','user|${EXTEN:4}|','calluser');
@@ -335,6 +337,7 @@ INSERT INTO extenumbers VALUES (NULL,'_*30.','7758898081b262cc0e42aed23cf601fba8
 INSERT INTO extenumbers VALUES (NULL,'_*37.','249b00b17a5983bbb2af8ed0af2ab1a74abab342','','extenfeatures','bsfilter');
 INSERT INTO extenumbers VALUES (NULL,'_*664.','9dfe780f1dc7fccbfc841b41a38933d4dab56369','','extenfeatures','callgroup');
 INSERT INTO extenumbers VALUES (NULL,'*34','668a8d2d8fe980b663e2cdcecb977860e1b272f3','','extenfeatures','calllistening');
+INSERT INTO extenumbers VALUES (NULL,'_*667.','666f6f18439eb7f205b5932d7f9aef6d2e5ba9a3','','extenfeatures','callmeetme');
 INSERT INTO extenumbers VALUES (NULL,'_*665.','7e2df45aedebded219eaa5fb84d6db7e8e24fc66','','extenfeatures','callqueue');
 INSERT INTO extenumbers VALUES (NULL,'*26','f8aeb70618cc87f1143c7dff23cdc0d3d0a48a0c','','extenfeatures','callrecord');
 INSERT INTO extenumbers VALUES (NULL,'_*666.','d7b68f456ddb50215670c5bfca921176a21c4270','','extenfeatures','calluser');
@@ -422,6 +425,8 @@ CREATE TABLE groupfeatures (
 );
 
 CREATE INDEX groupfeatures__idx__name ON groupfeatures(name);
+CREATE INDEX groupfeatures__idx__number ON groupfeatures(number);
+CREATE INDEX groupfeatures__idx__context ON groupfeatures(context);
 CREATE INDEX groupfeatures__idx__deleted ON groupfeatures(deleted);
 
 
@@ -454,6 +459,8 @@ CREATE TABLE incall (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX incall__idx__exten ON incall(exten);
+CREATE INDEX incall__idx__context ON incall(context);
 CREATE INDEX incall__idx__commented ON incall(commented);
 CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
 
@@ -484,29 +491,73 @@ CREATE UNIQUE INDEX ldapfilter__uidx__name ON ldapfilter(name);
 DROP TABLE meetmefeatures;
 CREATE TABLE meetmefeatures (
  id integer unsigned,
- name varchar(128) NOT NULL,
- number varchar(40) NOT NULL,
  meetmeid integer unsigned NOT NULL,
- mode varchar(6) NOT NULL DEFAULT 'all',
- musiconhold varchar(128) NOT NULL DEFAULT '',
+ name varchar(80) NOT NULL,
+ number varchar(40) NOT NULL,
  context varchar(39) NOT NULL,
- poundexit tinyint(1) NOT NULL DEFAULT 0,
- quiet tinyint(1) NOT NULL DEFAULT 0,
+ admin_typefrom varchar(9),
+ admin_internalid integer unsigned,
+ admin_externalid varchar(40),
+ admin_identification varchar(11) NOT NULL,
+ admin_mode varchar(6) NOT NULL,
+ admin_announceusercount tinyint(1) NOT NULL DEFAULT 0,
+ admin_announcejoinleave varchar(8) NOT NULL,
+ admin_moderationmode tinyint(1) NOT NULL DEFAULT 0,
+ admin_initiallymuted tinyint(1) NOT NULL DEFAULT 0,
+ admin_musiconhold varchar(128),
+ admin_poundexit tinyint(1) NOT NULL DEFAULT 0,
+ admin_quiet tinyint(1) NOT NULL DEFAULT 0,
+ admin_starmenu tinyint(1) NOT NULL DEFAULT 0,
+ admin_closeconflastmarkedexit tinyint(1) NOT NULL DEFAULT 0,
+ admin_enableexitcontext tinyint(1) NOT NULL DEFAULT 0,
+ admin_exitcontext varchar(39),
+ user_mode varchar(6) NOT NULL,
+ user_announceusercount tinyint(1) NOT NULL DEFAULT 0,
+ user_hiddencalls tinyint(1) NOT NULL DEFAULT 0,
+ user_announcejoinleave varchar(8) NOT NULL,
+ user_initiallymuted tinyint(1) NOT NULL DEFAULT 0,
+ user_musiconhold varchar(128),
+ user_poundexit tinyint(1) NOT NULL DEFAULT 0,
+ user_quiet tinyint(1) NOT NULL DEFAULT 0,
+ user_starmenu tinyint(1) NOT NULL DEFAULT 0,
+ user_enableexitcontext tinyint(1) NOT NULL DEFAULT 0,
+ user_exitcontext varchar(39),
+ talkeroptimization tinyint(1) NOT NULL DEFAULT 0,
  record tinyint(1) NOT NULL DEFAULT 0,
- adminmode tinyint(1) NOT NULL DEFAULT 0,
- announceusercount tinyint(1) NOT NULL DEFAULT 0,
- announcejoinleave tinyint(1) NOT NULL DEFAULT 0,
- alwayspromptpin tinyint(1) NOT NULL DEFAULT 0,
- starmenu tinyint(1) NOT NULL DEFAULT 0,
- enableexitcontext tinyint(1) NOT NULL DEFAULT 0,
- exitcontext varchar(39) NOT NULL,
+ talkerdetection tinyint(1) NOT NULL DEFAULT 0,
+ noplaymsgfirstenter tinyint(1) NOT NULL DEFAULT 0,
+ durationm smallint unsigned,
+ closeconfdurationexceeded tinyint(1) NOT NULL DEFAULT 0,
+ maxuser tinyint unsigned,
+ startdate char(19),
+ emailfrom varchar(255),
+ emailfromname varchar(255),
+ emailsubject varchar(255),
+ emailbody text NOT NULL,
  preprocess_subroutine varchar(39),
+ description text NOT NULL,
  PRIMARY KEY(id)
 );
 
+CREATE INDEX meetmefeatures__idx__number ON meetmefeatures(number);
+CREATE INDEX meetmefeatures__idx__context ON meetmefeatures(context);
 CREATE UNIQUE INDEX meetmefeatures__uidx__meetmeid ON meetmefeatures(meetmeid);
 CREATE UNIQUE INDEX meetmefeatures__uidx__name ON meetmefeatures(name);
-CREATE UNIQUE INDEX meetmefeatures__uidx__number ON meetmefeatures(number);
+
+
+DROP TABLE meetmeguest;
+CREATE TABLE meetmeguest (
+ id integer unsigned,
+ meetmefeaturesid integer unsigned NOT NULL,
+ fullname varchar(255) NOT NULL,
+ telephonenumber varchar(40),
+ email varchar(320),
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX meetmeguest__idx__meetmefeaturesid ON meetmeguest(meetmefeaturesid);
+CREATE INDEX meetmeguest__idx__fullname ON meetmeguest(fullname);
+CREATE INDEX meetmeguest__idx__email ON meetmeguest(email);
 
 
 DROP TABLE musiconhold;
@@ -549,6 +600,7 @@ CREATE TABLE outcall (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX outcall__idx__exten ON outcall(exten);
 CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
 CREATE UNIQUE INDEX outcall__uidx__exten_context ON outcall(exten,context);
@@ -729,6 +781,8 @@ CREATE TABLE queuefeatures (
  PRIMARY KEY(id)
 );
 
+CREATE INDEX queuefeatures__idx__number ON queuefeatures(number);
+CREATE INDEX queuefeatures__idx__context ON queuefeatures(context);
 CREATE UNIQUE INDEX queuefeatures__uidx__name ON queuefeatures(name);
 
 
