@@ -34,7 +34,7 @@ def conf_authentication(agi, meetme, adminflag):
 
     retry = 0
 
-    while retry < 2:
+    while retry < 3:
         agi.appexec('Playback', 'conf-getpin')
         agi.appexec('Read', "PIN||%s" % meetme.pin_len_max())
         rs = meetme.authenticate(agi.get_variable('PIN'),
@@ -54,12 +54,13 @@ def conf_exceed_max_number(agi, confno, maxuser):
     if not maxuser or int(maxuser) < 1:
         return False
 
-    meetmecount = agi.appexec("%s|CNT" % confno)
+    agi.appexec('MeetMeCount',"%s|MEETMECOUNT" % confno)
+    meetmecount = agi.get_variable('MEETMECOUNT')
 
     if not meetmecount.isdigit():
         return None
 
-    return (int(meetmecount) >= int(max))
+    return (int(meetmecount) >= int(maxuser))
 
 def _incoming_meetme_set_features_argv(agi, args):
     parser = OptionParser(usage="usage: %prog [options]")
@@ -124,37 +125,14 @@ def incoming_meetme_set_features(agi, cursor, args):
     try:
         meetme = objects.MeetMe(agi,
                                 cursor,
-                                int(argv['xid']),
-                                argv['name'],
-                                argv['number'],
-                                argv['context'])
+                                int(argv.xid),
+                                argv.name,
+                                argv.number,
+                                argv.context)
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
-    if not argv['authent']:
-        flag = meetme.FLAG_USER
-    else:
-        flag = conf_authentication(agi, meetme, argv['adminflag'])
-        if not flag:
-            agi.dp_break("Conference room authentication failed (id: %s, name: %s, confno: %s)"
-                         % (meetme.id, meetme.name, meetme.confno))
-
-    if flag & meetme.FLAG_USER:
-        options = ''.join(meetme.get_user_options())
-
-        if argv['maxuser'] and conf_exceed_max_number(agi, meetme.confno, meetme.maxuser):
-            # TODO: Change sound by conf-maxuserexceeded
-            agi.appexec('Playback', "conf-locked&vm-goodbye")
-            agi.dp_break("Unable to join the conference room, max number of users exceeded "
-                         "(max number: %s, id: %s, name: %s, confno: %s)"
-                         % (meetme.maxuser, meetme.id, meetme.name, meetme.confno))
-    elif flag & meetme.FLAG_ADMIN:
-        options = ''.join(meetme.get_admin_options())
-    else:
-        agi.dp_break("Unknown MeetMe FLAG (flag: %r, id: %s, name: %s, confno: %s)"
-                     % (flag, meetme.id, meetme.name, meetme.confno))
-
-    if argv['openingdate'] and meetme.starttime and meetme.starttime > time.time():
+    if argv.openingdate and meetme.starttime and meetme.starttime > time.time():
         # TODO: Change sound by conf-closed
         agi.appexec('Playback', "conf-locked&vm-goodbye")
         agi.dp_break("Unable to join the conference room, it's not open "
@@ -164,6 +142,34 @@ def incoming_meetme_set_features(agi, cursor, args):
                         meetme.id,
                         meetme.name,
                         meetme.confno))
+
+    if not argv.authent:
+        flag = meetme.FLAG_USER
+    else:
+        flag = conf_authentication(agi, meetme, argv.adminflag)
+        if not flag:
+            agi.dp_break("Conference room authentication failed (id: %s, name: %s, confno: %s)"
+                         % (meetme.id, meetme.name, meetme.confno))
+
+    pin     = ''
+    options = ''.join(meetme.get_global_options())
+
+    if flag & meetme.FLAG_USER:
+        pin     = meetme.pin
+        options += ''.join(meetme.get_user_options())
+
+        if argv.maxuser and conf_exceed_max_number(agi, meetme.confno, meetme.maxuser):
+            # TODO: Change sound by conf-maxuserexceeded
+            agi.appexec('Playback', "conf-locked&vm-goodbye")
+            agi.dp_break("Unable to join the conference room, max number of users exceeded "
+                         "(max number: %s, id: %s, name: %s, confno: %s)"
+                         % (meetme.maxuser, meetme.id, meetme.name, meetme.confno))
+    elif flag & meetme.FLAG_ADMIN:
+        pin     = meetme.pinadmin
+        options += ''.join(meetme.get_admin_options())
+    else:
+        agi.dp_break("Unknown MeetMe FLAG (flag: %r, id: %s, name: %s, confno: %s)"
+                     % (flag, meetme.id, meetme.name, meetme.confno))
 
     if meetme.OPTIONS_COMMON['musiconhold'] in options:
         agi.set_variable('CHANNEL(musicclass)',
@@ -187,6 +193,7 @@ def incoming_meetme_set_features(agi, cursor, args):
     agi.set_variable('XIVO_MEETMECONFNO', meetme.confno)
     agi.set_variable('XIVO_MEETMENAME', meetme.name)
     agi.set_variable('XIVO_MEETMENUMBER', meetme.number)
+    agi.set_variable('XIVO_MEETMEPIN', pin)
     agi.set_variable('XIVO_MEETMEOPTIONS', options)
     agi.set_variable('XIVO_MEETMEPREPROCESS_SUBROUTINE', preprocess_subroutine)
 

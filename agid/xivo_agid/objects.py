@@ -631,7 +631,7 @@ class MeetMe:
 
     OPTIONS_COMMON  = {'mode':              {'listen':  'l',
                                              'talk':    't',
-                                             'all':     'lt'},
+                                             'all':     ''},
                        'announceusercount': 'c',
                        'announcejoinleave': {'no':          '',
                                              'yes':         'i',
@@ -654,7 +654,7 @@ class MeetMe:
 
         meetmefeatures_columns =    (('id', 'name', 'number', 'context',
                                       'admin_typefrom', 'admin_internalid', 'admin_externalid',
-                                      'admin_authentication', 'admin_exitcontext') +
+                                      'admin_identification', 'admin_exitcontext') +
                                       tuple(["admin_%s" % x for x in (self.OPTIONS_COMMON.keys() +
                                                                       self.OPTIONS_ADMIN.keys())]) +
                                       ('user_exitcontext',) + \
@@ -665,7 +665,7 @@ class MeetMe:
                                        'maxuser', 'startdate', 'preprocess_subroutine'))
 
         columns = ["meetmefeatures." + c for c in meetmefeatures_columns] + \
-                  ["staticmeetme.var_val"] + \
+                  ['staticmeetme.var_val'] + \
                   ['userfeatures.number']
 
         if xid:
@@ -673,7 +673,7 @@ class MeetMe:
                          "INNER JOIN staticmeetme "
                          "ON meetmefeatures.meetmeid = staticmeetme.id "
                          "LEFT JOIN userfeatures "
-                         "ON meetmefeatures.internalid = userfeatures.id "
+                         "ON meetmefeatures.admin_internalid = userfeatures.id "
                          "WHERE meetmefeatures.id = %s "
                          "AND staticmeetme.commented = 0",
                          columns,
@@ -683,7 +683,7 @@ class MeetMe:
                          "INNER JOIN staticmeetme "
                          "ON meetmefeatures.meetmeid = staticmeetme.id "
                          "LEFT JOIN userfeatures "
-                         "ON meetmefeatures.internalid = userfeatures.id "
+                         "ON meetmefeatures.admin_internalid = userfeatures.id "
                          "WHERE meetmefeatures.name = %s "
                          "AND staticmeetme.commented = 0",
                          columns,
@@ -694,7 +694,7 @@ class MeetMe:
                          "INNER JOIN staticmeetme "
                          "ON meetmefeatures.meetmeid = staticmeetme.id "
                          "LEFT JOIN userfeatures "
-                         "ON meetmefeatures.internalid = userfeatures.id "
+                         "ON meetmefeatures.admin_internalid = userfeatures.id "
                          "WHERE meetmefeatures.number = %s "
                          "AND meetmefeatures.context IN (" + ", ".join(["%s"] * len(contextinclude)) + ") "
                          "AND staticmeetme.commented = 0",
@@ -710,8 +710,8 @@ class MeetMe:
                               "(id: %s, name: %s, number: %s, context: %s)"
                               % (xid, name, number, context))
 
-        (self.confno, self.pin, self.pinadmin)  = (res.pop('staticmeetme.var_val') + ",,").split(',', 3)[:3]
-        self.admin_number                       = res.pop('userfeatures.number')
+        (self.confno, self.pin, self.pinadmin)  = (res['staticmeetme.var_val'] + ",,").split(',', 3)[:3]
+        self.admin_number                       = res['userfeatures.number']
 
         if res['meetmefeatures.startdate']:
             self.starttime = time.mktime(
@@ -721,12 +721,13 @@ class MeetMe:
             self.starttime = None
 
         for name, value in res.iteritems():
-            setattr(self, name.split('.', 1)[1], value)
+            if name not in('staticmeetme.var_val', 'userfeatures.number'):
+                setattr(self, name.split('.', 1)[1], value)
 
         self.options = ()
 
     def _get_options(self, xdict, prefix=None):
-        options = []
+        options = set()
 
         for name, opt in xdict.iteritems():
             if prefix:
@@ -737,35 +738,45 @@ class MeetMe:
             if not attrvalue:
                 continue
             elif isinstance(opt, dict):
-                options.append(opt[attrvalue])
-            elif not isinstance(opt, basestring):
+                options.add(opt[attrvalue])
+            elif isinstance(opt, basestring):
+                options.add(opt)
+            else:
                 raise TypeError("Invalid type for option: %r" % opt)
 
-        return set(options)
+        return options
 
     def get_global_options(self):
-        return tuple(self._get_options(self.OPTIONS_GLOBAL))
+        return self._get_options(self.OPTIONS_GLOBAL)
 
     def get_admin_options(self):    # pylint: disable-msg=E1101
-        admin_options = dict(self.OPTIONS_COMMON).update(self.OPTIONS_ADMIN)
+        admin_options = self.OPTIONS_COMMON.copy()
+        admin_options.update(self.OPTIONS_ADMIN)
         options = self._get_options(admin_options, "admin_")
+
+        if self.OPTIONS_ADMIN['moderationmode'] in options:
+            options.remove(self.OPTIONS_ADMIN['moderationmode'])
 
         if self.OPTIONS_COMMON['enableexitcontext'] in options \
            and not self.admin_exitcontext:
-            options.remove(self.OPTIONS_COMMON['admin_enableexitcontext'])
+            options.remove(self.OPTIONS_COMMON['enableexitcontext'])
 
         options.add('a')    # Admin mode
-        options.add('A')    # Marked mode 
+        options.add('A')    # Marked mode
 
         return set(options)
 
     def get_user_options(self): # pylint: disable-msg=E1101
-        user_options = dict(self.OPTIONS_COMMON).update(self.OPTIONS_USER)
+        user_options = self.OPTIONS_COMMON.copy()
+        user_options.update(self.OPTIONS_USER)
         options = self._get_options(user_options, "user_")
+
+        if self.admin_moderationmode:
+            options.add(self.OPTIONS_ADMIN['moderationmode'])
 
         if self.OPTIONS_COMMON['enableexitcontext'] in options \
            and not self.user_exitcontext:
-            options.remove(self.OPTIONS_COMMON['user_enableexitcontext'])
+            options.remove(self.OPTIONS_COMMON['enableexitcontext'])
 
         return set(options)
 
@@ -811,22 +822,21 @@ class MeetMe:
     def is_admin(self, pinadmin=None, calleridnum=None):
         admin_identifiers = self.get_admin_identifiers()
 
-        if admin_identifiers['calleridnum']:
-            if admin_identifiers['calleridnum'] != calleridnum:
-                return False
-
-        if admin_identifiers['pin']:
-            if admin_identifiers['pin'] != pinadmin:
-                return False
+        if not admin_identifiers:
+            return False
+        elif admin_identifiers['calleridnum'] \
+             and admin_identifiers['calleridnum'] != calleridnum:
+            return False
+        elif admin_identifiers['pin'] \
+             and admin_identifiers['pin'] != pinadmin:
+            return False
 
         return True
 
     def authenticate(self, pin=None, calleridnum=None, adminflag=False):
-        if not self.pin and not adminflag:
-            return self.FLAG_USER
-        elif self.is_admin(pin, calleridnum):
+        if adminflag or self.is_admin(pin, calleridnum):
             return self.FLAG_ADMIN
-        elif self.pin == pin and not adminflag:
+        elif not self.pin or self.pin == pin:
             return self.FLAG_USER
 
         return False
