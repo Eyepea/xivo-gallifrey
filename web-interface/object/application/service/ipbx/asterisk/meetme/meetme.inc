@@ -345,6 +345,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 			$rs = array_merge($rs,$typefrom);
 
 		$admin_calleridnum = $rs['admin_externalid'];
+		$meetmeadminternal = null;
 
 		if($rs['admin_typefrom'] === 'undefined')
 			$rs['admin_identification'] = 'pin';
@@ -356,16 +357,17 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				$this->_set_error('meetmefeatures','userfeatures module not loaded');
 				return(false);
 			}
-			else if(($userinfo = $this->_get_meetmeadmininternal(
+			else if(($meetmeadminternal = $this->_get_meetmeadmininternal(
 						$rs['admin_internalid'],
 						$rs['context'])) === false)
 			{
 				$this->_set_result('meetmefeatures',$rs);
+				$this->_set_result('meetmeadmininternal',$meetmeadminternal);
 				$this->_set_error('meetmefeatures','invalid administrator');
 				return(false);
 			}
 			else
-				$admin_calleridnum = $userinfo['number'];
+				$admin_calleridnum = $meetmeadminternal['number'];
 		}
 
 		if($this->_meetmefeatures->valid_admin_identification(
@@ -375,10 +377,12 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 							$this->get_result_var('meetmeroom','pinadmin')) === false)
 		{
 			$this->_set_result('meetmefeatures',$rs);
+			$this->_set_result('meetmeadmininternal',$meetmeadminternal);
 			$this->_set_error('meetmefeatures','invalid admin_identification');
 			return(false);
 		}
 
+		$this->_set_result('meetmeadmininternal',$meetmeadminternal);
 		$this->_set_result('meetmefeatures',$rs);
 
 		return(true);
