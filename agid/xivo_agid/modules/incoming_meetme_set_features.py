@@ -62,6 +62,16 @@ def conf_exceed_max_number(agi, confno, maxuser):
 
     return (int(meetmecount) >= int(maxuser))
 
+def conf_is_open(starttime, durationm):
+    if not starttime:
+        return None
+    elif starttime > time.time():
+        return False
+    elif durationm:
+        return ((starttime + (int(durationm) * 60)) > time.time())
+    else:
+        return True
+
 def _incoming_meetme_set_features_argv(agi, args):
     parser = OptionParser(usage="usage: %prog [options]")
 
@@ -132,13 +142,14 @@ def incoming_meetme_set_features(agi, cursor, args):
     except (ValueError, LookupError), e:
         agi.dp_break(str(e))
 
-    if argv.openingdate and meetme.starttime and meetme.starttime > time.time():
+    if argv.openingdate and conf_is_open(meetme.starttime, meetme.durationm) is False:
         # TODO: Change sound by conf-closed
         agi.appexec('Playback', "conf-locked&vm-goodbye")
         agi.dp_break("Unable to join the conference room, it's not open "
-                     "(start date: %s, current date: %s, id: %s, name: %s, confno: %s)"
+                     "(start date: %r, current date: %s, duration minutes: %r, id: %s, name: %s, confno: %s)"
                      % (meetme.startdate,
                         time.strftime('%Y-%m-%d %H:%M:%S'),
+                        meetme.durationm,
                         meetme.id,
                         meetme.name,
                         meetme.confno))
