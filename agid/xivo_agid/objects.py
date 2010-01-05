@@ -624,9 +624,9 @@ class MeetMe:
     FLAG_ADMIN      = (1 << 0)
     FLAG_USER       = (1 << 1)
 
-    OPTIONS_GLOBAL  = {'talkeroptimization':    'o',
+    OPTIONS_GLOBAL  = {'talkeroptimization':    '', # Disabled
                        'record':                'r',
-                       'talkerdetection':       'T',
+                       'talkerdetection':       '', # Disabled
                        'noplaymsgfirstenter':   '1'}
 
     OPTIONS_COMMON  = {'mode':              {'listen':  'l',
@@ -753,9 +753,6 @@ class MeetMe:
         admin_options = self.OPTIONS_COMMON.copy()
         admin_options.update(self.OPTIONS_ADMIN)
         options = self._get_options(admin_options, "admin_")
-
-        if self.OPTIONS_ADMIN['moderationmode'] in options:
-            options.remove(self.OPTIONS_ADMIN['moderationmode'])
 
         if self.OPTIONS_COMMON['enableexitcontext'] in options \
            and not self.admin_exitcontext:
