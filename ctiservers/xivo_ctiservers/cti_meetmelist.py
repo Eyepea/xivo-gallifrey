@@ -48,9 +48,9 @@ class MeetmeList(AnyList):
                                 log.warning('2 meetme have the same confno')
                 return ret
         
-        def byroomnum(self, roomnum):
+        def byconfno(self, confno):
                 meetmeref = None
-                meetme_id = self.reverse_index.get(roomnum)
+                meetme_id = self.reverse_index.get(confno)
                 if meetme_id:
                         meetmeref = self.keeplist.get(meetme_id)
                 return (meetmeref, meetme_id)
