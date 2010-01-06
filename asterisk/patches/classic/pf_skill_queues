@@ -1,13 +1,13 @@
 Index: asterisk-1.4.28/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-05 10:32:45.000000000 +0100
-+++ asterisk-1.4.28/apps/app_queue.c	2010-01-05 15:53:08.000000000 +0100
+--- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-06 10:11:39.000000000 +0100
++++ asterisk-1.4.28/apps/app_queue.c	2010-01-06 12:06:02.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
  static char *descrip =
 -"  Queue(queuename[|options[|URL][|announceoverride][|timeout][|AGI]):\n"
-+"  Queue(queuename[|options[|URL][|announceoverride][|timeout][|AGI][|ruleset]):\n"
++"  Queue(queuename[|options[|URL][|announceoverride][|timeout][|AGI][|skill_ruleset]):\n"
  "Queues an incoming call in a particular call queue as defined in queues.conf.\n"
  "This application will return to the dialplan if the queue does not exist, or\n"
  "any of the join options cause the caller to not enter the queue.\n"
@@ -24,76 +24,76 @@ Index: asterisk-1.4.28/apps/app_queue.c
  	int handled;                        /*!< Whether our call was handled */
  	int pending;                        /*!< Non-zero if we are attempting to call a member */
  	int max_penalty;                    /*!< Limit the members that can take this call to this penalty or lower */
-+	char ruleset[80];                   /*!< Name of the ruleset */
++	char skill_ruleset[80];             /*!< Name of the skill ruleset */
  	time_t start;                       /*!< When we started holding */
  	time_t expire;                      /*!< When this entry should expire (time out of queue) */
-+	struct ao2_container *members;      /*!< Members who match rules. */
++	struct ao2_container *mem_selection;/*!< Members who match skill rules. */
  	struct ast_channel *chan;           /*!< Our channel */
  	struct queue_ent *next;             /*!< The next queue entry */
  };
  
-+enum rule_operand_type {
-+	RULE_OPERAND_UNKNOWN,
-+	RULE_OPERAND_VARIABLE,
-+	RULE_OPERAND_VALUE,
-+	RULE_OPERAND_OPERATOR,
++enum skill_rule_operand_type {
++	SKILL_RULE_OPERAND_UNKNOWN,
++	SKILL_RULE_OPERAND_VARIABLE,
++	SKILL_RULE_OPERAND_VALUE,
++	SKILL_RULE_OPERAND_OPERATOR,
 +};
 +
-+struct rule_operand {
++struct skill_rule_operand {
 +	union {
 +		char var[80];
 +		int value;
-+		struct rule_operator* operator;
++		struct skill_rule_operator* operator;
 +	} u;
-+	enum rule_operand_type type;
-+	AST_LIST_ENTRY(rule_operand) entry;
++	enum skill_rule_operand_type type;
++	AST_LIST_ENTRY(skill_rule_operand) entry;
 +};
 +
-+enum rule_operator_type {
-+	RULE_OPERATOR_UNKNOWN,
-+	RULE_OPERATOR_DIVISION,       /*!<  op1 /  op2 */
-+	RULE_OPERATOR_MULTIPLICATION, /*!<  op1 * op2 */
-+	RULE_OPERATOR_SUBTRACTION,    /*!<  op1 - op2 */
-+	RULE_OPERATOR_ADDITION,       /*!<  op1 + op2 */
-+	RULE_OPERATOR_NOTEQUAL,       /*!<  op1 ! op2  */
-+	RULE_OPERATOR_EQUAL,          /*!<  op1 = op2  */
-+	RULE_OPERATOR_UPPER,          /*!<  op1 > op2  */
-+	RULE_OPERATOR_LOWER,          /*!<  op1 < op2  */
-+	RULE_OPERATOR_AND,            /*!<  op1 & op2  */
-+	RULE_OPERATOR_OR              /*!<  op1 | op2  */
++enum skill_rule_operator_type {
++	SKILL_RULE_OPERATOR_UNKNOWN,
++	SKILL_RULE_OPERATOR_DIVISION,       /*!<  op1 / op2  */
++	SKILL_RULE_OPERATOR_MULTIPLICATION, /*!<  op1 * op2  */
++	SKILL_RULE_OPERATOR_SUBTRACTION,    /*!<  op1 - op2  */
++	SKILL_RULE_OPERATOR_ADDITION,       /*!<  op1 + op2  */
++	SKILL_RULE_OPERATOR_NOTEQUAL,       /*!<  op1 ! op2  */
++	SKILL_RULE_OPERATOR_EQUAL,          /*!<  op1 = op2  */
++	SKILL_RULE_OPERATOR_GREATER,        /*!<  op1 > op2  */
++	SKILL_RULE_OPERATOR_LESSER,         /*!<  op1 < op2  */
++	SKILL_RULE_OPERATOR_AND,            /*!<  op1 & op2  */
++	SKILL_RULE_OPERATOR_OR              /*!<  op1 | op2  */
 +};
 +
-+#define RULE_OPERATORS_CHARS "/*-+!=><&|"
-+static enum rule_operator_type rule_operator_type_str[] = {
-+	['/'] = RULE_OPERATOR_DIVISION,
-+	['*'] = RULE_OPERATOR_MULTIPLICATION,
-+	['-'] = RULE_OPERATOR_SUBTRACTION,
-+	['+'] = RULE_OPERATOR_ADDITION,
-+	['!'] = RULE_OPERATOR_NOTEQUAL,
-+	['='] = RULE_OPERATOR_EQUAL,
-+	['>'] = RULE_OPERATOR_UPPER,
-+	['<'] = RULE_OPERATOR_LOWER,
-+	['&'] = RULE_OPERATOR_AND,
-+	['|'] = RULE_OPERATOR_OR,
++#define SKILL_RULE_OPERATORS_CHARS "/*-+!=><&|"
++static enum skill_rule_operator_type skill_rule_operator_type_str[] = {
++	['/'] = SKILL_RULE_OPERATOR_DIVISION,
++	['*'] = SKILL_RULE_OPERATOR_MULTIPLICATION,
++	['-'] = SKILL_RULE_OPERATOR_SUBTRACTION,
++	['+'] = SKILL_RULE_OPERATOR_ADDITION,
++	['!'] = SKILL_RULE_OPERATOR_NOTEQUAL,
++	['='] = SKILL_RULE_OPERATOR_EQUAL,
++	['>'] = SKILL_RULE_OPERATOR_GREATER,
++	['<'] = SKILL_RULE_OPERATOR_LESSER,
++	['&'] = SKILL_RULE_OPERATOR_AND,
++	['|'] = SKILL_RULE_OPERATOR_OR,
 +};
 +
-+struct rule_operator {
-+	struct rule_operator *parent;
-+	AST_LIST_HEAD_NOLOCK(,rule_operand) operands;
-+	enum rule_operator_type type;
++struct skill_rule_operator {
++	struct skill_rule_operator *parent;
++	AST_LIST_HEAD_NOLOCK(,skill_rule_operand) operands;
++	enum skill_rule_operator_type type;
 +};
 +
-+struct rule {
-+	struct rule_operator *headop;
++struct skill_rule {
++	struct skill_rule_operator *headop;
 +};
 +
-+struct ruleset {
++struct skill_ruleset {
 +	char name[80];
 +	struct ao2_container *rules;
-+	AST_LIST_ENTRY(ruleset) entry;
++	AST_LIST_ENTRY(skill_ruleset) entry;
 +};
 +
-+static AST_LIST_HEAD_STATIC(rulesets, ruleset);
++static AST_LIST_HEAD_STATIC(skill_rulesets, skill_ruleset);
 +
 +struct skill {
 +	char name[80];                      /*!< Name of skill */
@@ -145,13 +145,13 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	ao2_ref(skgrp->skills, -1);
 +}
 +
-+static void destroy_operator(struct rule_operator *op)
++static void destroy_operator(struct skill_rule_operator *op)
 +{
-+	struct rule_operand *operand;
++	struct skill_rule_operand *operand;
 +
 +	AST_LIST_TRAVERSE_SAFE_BEGIN(&op->operands, operand, entry) {
 +		AST_LIST_REMOVE_CURRENT(&op->operands, entry);
-+		if (operand->type == RULE_OPERAND_OPERATOR)
++		if (operand->type == SKILL_RULE_OPERAND_OPERATOR)
 +			destroy_operator(operand->u.operator);
 +
 +		ast_free(operand);
@@ -160,16 +160,16 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	ast_free(op);
 +}
 +
-+static void destroy_rule(void* obj)
++static void destroy_skill_rule(void* obj)
 +{
-+	struct rule* r = obj;
++	struct skill_rule* r = obj;
 +	destroy_operator(r->headop);
 +}
 +
-+static void destroy_ruleset(void *obj)
++static void destroy_skill_ruleset(void *obj)
 +{
-+	struct ruleset *ruleset = obj;
-+	struct rule *cur;
++	struct skill_ruleset *ruleset = obj;
++	struct skill_rule *cur;
 +	struct ao2_iterator rule_iter = ao2_iterator_init(ruleset->rules, 0);
 +
 +	while ((cur = ao2_iterator_next(&rule_iter))) {
@@ -180,9 +180,9 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	ao2_ref(ruleset->rules, -1);
 +}
 +
-+static struct rule_operator *create_rule_operator(enum rule_operator_type t, struct rule_operator *parent)
++static struct skill_rule_operator *create_skill_rule_operator(enum skill_rule_operator_type t, struct skill_rule_operator *parent)
 +{
-+	struct rule_operator *op;
++	struct skill_rule_operator *op;
 +	op = ast_calloc(1, sizeof(*op));
 +	if (!op)
 +		return NULL;
@@ -194,9 +194,9 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	return op;
 +}
 +
-+static struct rule_operand *create_rule_operand(enum rule_operand_type t)
++static struct skill_rule_operand *create_skill_rule_operand(enum skill_rule_operand_type t)
 +{
-+	struct rule_operand *operand;
++	struct skill_rule_operand *operand;
 +	operand = ast_calloc(1, sizeof(*operand));
 +	if (!operand)
 +		return NULL;
@@ -206,9 +206,9 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +}
 +
 +#if 0 /* used for debug */
-+static char* display_operator(struct rule_operator *op)
++static char* display_operator(struct skill_rule_operator *op)
 +{
-+	struct rule_operand *operand;
++	struct skill_rule_operand *operand;
 +	size_t len = 512;
 +	char *str = malloc(len);
 +	char *s = str;
@@ -217,12 +217,12 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	AST_LIST_TRAVERSE(&op->operands, operand, entry) {
 +		char t;
 +		switch(op->type) {
-+		case RULE_OPERATOR_NOTEQUAL: t = '!'; break;
-+		case RULE_OPERATOR_EQUAL:    t = '='; break;
-+		case RULE_OPERATOR_UPPER:    t = '>'; break;
-+		case RULE_OPERATOR_LOWER:    t = '<'; break;
-+		case RULE_OPERATOR_AND:      t = '&'; break;
-+		case RULE_OPERATOR_OR:       t = '|'; break;
++		case SKILL_RULE_OPERATOR_NOTEQUAL: t = '!'; break;
++		case SKILL_RULE_OPERATOR_EQUAL:    t = '='; break;
++		case SKILL_RULE_OPERATOR_GREATER:    t = '>'; break;
++		case SKILL_RULE_OPERATOR_LESSER:    t = '<'; break;
++		case SKILL_RULE_OPERATOR_AND:      t = '&'; break;
++		case SKILL_RULE_OPERATOR_OR:       t = '|'; break;
 +		default:                     t = '?'; break;
 +		}
 +
@@ -230,20 +230,20 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +			ast_build_string(&s, &len, "%c", t);
 +
 +		switch(operand->type) {
-+		case RULE_OPERAND_VARIABLE:
++		case SKILL_RULE_OPERAND_VARIABLE:
 +			ast_build_string(&s, &len, "%s", operand->u.var);
 +			break;
-+		case RULE_OPERAND_VALUE:
++		case SKILL_RULE_OPERAND_VALUE:
 +			ast_build_string(&s, &len, "%d", operand->u.value);
 +			break;
-+		case RULE_OPERAND_OPERATOR:
++		case SKILL_RULE_OPERAND_OPERATOR:
 +		{
 +			char *tmp = display_operator(operand->u.operator);
 +			ast_build_string(&s, &len, "(%s)", tmp);
 +			free(tmp);
 +			break;
 +		}
-+		case RULE_OPERAND_UNKNOWN:
++		case SKILL_RULE_OPERAND_UNKNOWN:
 +			ast_build_string(&s, &len, "<unknown>");
 +		}
 +	}
@@ -251,13 +251,13 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +}
 +#endif
 +
-+static struct rule_operator* parse_expr(const char *expr)
++static struct skill_rule_operator* parse_expr(const char *expr)
 +{
-+	struct rule_operator *op, *head;
-+	struct rule_operand *operand = NULL;
++	struct skill_rule_operator *op, *head;
++	struct skill_rule_operand *operand = NULL;
 +	const char *ptr, *start = NULL;
 +
-+	op = create_rule_operator(RULE_OPERATOR_UNKNOWN, NULL);
++	op = create_skill_rule_operator(SKILL_RULE_OPERATOR_UNKNOWN, NULL);
 +	if (!op)
 +		return NULL;
 +
@@ -279,7 +279,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +				goto error;
 +			}
 +
-+			operand = create_rule_operand(RULE_OPERAND_VARIABLE);
++			operand = create_skill_rule_operand(SKILL_RULE_OPERAND_VARIABLE);
 +			if (!operand) {
 +				/* OOM */
 +				ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
@@ -319,7 +319,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +				ast_log(LOG_ERROR, "Unable to parse rule: syntax error, missing operator.\n");
 +				goto error;
 +			}
-+			operand = create_rule_operand(RULE_OPERAND_VALUE);
++			operand = create_skill_rule_operand(SKILL_RULE_OPERAND_VALUE);
 +			if (!operand) {
 +				/* OOM */
 +				ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
@@ -330,7 +330,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +			continue;
 +		}
 +		if (*ptr == '(') {
-+			struct rule_operator *newop;
++			struct skill_rule_operator *newop;
 +			char *tmp;
 +
 +			if (operand) {
@@ -364,7 +364,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +				goto error;
 +			}
 +
-+			operand = create_rule_operand(RULE_OPERAND_OPERATOR);
++			operand = create_skill_rule_operand(SKILL_RULE_OPERAND_OPERATOR);
 +			if (!operand) {
 +				ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory\n");
 +				ast_free(newop);
@@ -375,9 +375,9 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +			++ptr;
 +		}
 +		/* if *ptr == '\0', strchr("...", *ptr) != NULL */
-+		if (strchr(RULE_OPERATORS_CHARS, *ptr)) {
++		if (strchr(SKILL_RULE_OPERATORS_CHARS, *ptr)) {
 +			/* operator */
-+			enum rule_operator_type flag = RULE_OPERATOR_UNKNOWN;
++			enum skill_rule_operator_type flag = SKILL_RULE_OPERATOR_UNKNOWN;
 +
 +			if (!operand) {
 +				/* syntax error */
@@ -386,12 +386,12 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +			}
 +
 +			if (*ptr != '\0')
-+				flag = rule_operator_type_str[(size_t)*ptr];
++				flag = skill_rule_operator_type_str[(size_t)*ptr];
 +			else
 +				flag = op->type;
 +
-+			if (op->type == RULE_OPERATOR_UNKNOWN) {
-+				if (flag == RULE_OPERATOR_UNKNOWN) {
++			if (op->type == SKILL_RULE_OPERATOR_UNKNOWN) {
++				if (flag == SKILL_RULE_OPERATOR_UNKNOWN) {
 +					/* syntax error */
 +					ast_log(LOG_ERROR, "Unable to parse rule: syntax error, no operator.\n");
 +					goto error;
@@ -401,7 +401,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +
 +			if (op->type < flag) {
 +				/* last operator has a greater priority than current operator. */
-+				struct rule_operator *parent;
++				struct skill_rule_operator *parent;
 +
 +				/* Firstly, add the operand in the current operator. */
 +				AST_LIST_INSERT_TAIL(&op->operands, operand, entry);
@@ -415,14 +415,14 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +
 +				if (!parent) {
 +					/* There isn't any other operator with a lower or equal priority */
-+					parent = create_rule_operator(flag, NULL);
++					parent = create_skill_rule_operator(flag, NULL);
 +					if (!parent) {
 +						/* OOM */
 +						ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
 +						goto error;
 +					}
 +
-+					operand = create_rule_operand(RULE_OPERAND_OPERATOR);
++					operand = create_skill_rule_operand(SKILL_RULE_OPERAND_OPERATOR);
 +					if (!operand) {
 +						/* OOM */
 +						ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
@@ -440,8 +440,8 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +				} else if (parent->type > flag) {
 +					/* There is an operator with a greater priority, so we insert this
 +					 * operator between this one and his last child. */
-+					struct rule_operator *newop;
-+					newop = create_rule_operator(flag, parent);
++					struct skill_rule_operator *newop;
++					newop = create_skill_rule_operator(flag, parent);
 +					if (!newop) {
 +						/* OOM */
 +						ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
@@ -449,7 +449,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +					}
 +
 +					AST_LIST_TRAVERSE(&parent->operands, operand, entry) {
-+						if (operand->type == RULE_OPERAND_OPERATOR && operand->u.operator == op)
++						if (operand->type == SKILL_RULE_OPERAND_OPERATOR && operand->u.operator == op)
 +							break;
 +					}
 +
@@ -465,7 +465,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +					AST_LIST_INSERT_TAIL(&newop->operands, operand, entry);
 +					operand = NULL;
 +
-+					operand = create_rule_operand(RULE_OPERAND_OPERATOR);
++					operand = create_skill_rule_operand(SKILL_RULE_OPERAND_OPERATOR);
 +					if (!operand) {
 +						/* OOM */
 +						ast_free(newop);
@@ -483,8 +483,8 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +
 +			} else if (op->type > flag) {
 +				/* last operator has a lower priority than current operator. */
-+				struct rule_operator *newop;
-+				newop = create_rule_operator(flag, op);
++				struct skill_rule_operator *newop;
++				newop = create_skill_rule_operator(flag, op);
 +				if (!newop) {
 +					/* OOM */
 +					ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
@@ -494,7 +494,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +				AST_LIST_INSERT_TAIL(&newop->operands, operand, entry);
 +				operand = NULL;
 +
-+				operand = create_rule_operand(RULE_OPERAND_OPERATOR);
++				operand = create_skill_rule_operand(SKILL_RULE_OPERAND_OPERATOR);
 +				if (!operand) {
 +					/* OOM */
 +					ast_log(LOG_ERROR, "Unable to parse rule: out-of-memory.\n");
@@ -524,22 +524,22 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	return NULL;
 +}
 +
-+static int parse_rule(struct rule *r, const char *line)
++static int parse_skill_rule(struct skill_rule *r, const char *line)
 +{
 +	r->headop = parse_expr(line);
 +	return 0;
 +}
 +
-+static int operator_eval_skills(struct rule_operator *op, struct skills_group *skills)
++static int operator_eval_skills(struct skill_rule_operator *op, struct skills_group *skills)
 +{
-+	struct rule_operand *opnd = NULL;
++	struct skill_rule_operand *opnd = NULL;
 +	int ret = 0;
 +	int first = 1;
 +
 +	AST_LIST_TRAVERSE(&op->operands, opnd, entry) {
 +		int value = 0;
 +		switch(opnd->type) {
-+			case RULE_OPERAND_VARIABLE:
++			case SKILL_RULE_OPERAND_VARIABLE:
 +			{
 +				struct skill* skill;
 +				struct ao2_iterator iter = ao2_iterator_init(skills->skills, 0);
@@ -556,13 +556,13 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +				ao2_iterator_destroy(&iter);
 +				break;
 +			}
-+			case RULE_OPERAND_VALUE:
++			case SKILL_RULE_OPERAND_VALUE:
 +				value = opnd->u.value;
 +				break;
-+			case RULE_OPERAND_OPERATOR:
++			case SKILL_RULE_OPERAND_OPERATOR:
 +				value = operator_eval_skills(opnd->u.operator, skills);
 +				break;
-+			case RULE_OPERAND_UNKNOWN:
++			case SKILL_RULE_OPERAND_UNKNOWN:
 +				/* WTF */
 +				return 0;
 +		}
@@ -571,7 +571,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +			ret = value;
 +		else {
 +			switch(op->type) {
-+				case RULE_OPERATOR_DIVISION:
++				case SKILL_RULE_OPERATOR_DIVISION:
 +					if (value != 0)
 +						ret /= value;
 +					else {
@@ -579,34 +579,34 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +						return 0;
 +					}
 +					break;
-+				case RULE_OPERATOR_MULTIPLICATION:
++				case SKILL_RULE_OPERATOR_MULTIPLICATION:
 +					ret *= value;
 +					break;
-+				case RULE_OPERATOR_SUBTRACTION:
++				case SKILL_RULE_OPERATOR_SUBTRACTION:
 +					ret -= value;
 +					break;
-+				case RULE_OPERATOR_ADDITION:
++				case SKILL_RULE_OPERATOR_ADDITION:
 +					ret += value;
 +					break;
-+				case RULE_OPERATOR_NOTEQUAL:
++				case SKILL_RULE_OPERATOR_NOTEQUAL:
 +					ret = (ret != value);
 +					break;
-+				case RULE_OPERATOR_EQUAL:
++				case SKILL_RULE_OPERATOR_EQUAL:
 +					ret = (ret == value);
 +					break;
-+				case RULE_OPERATOR_UPPER:
++				case SKILL_RULE_OPERATOR_GREATER:
 +					ret = (ret > value);
 +					break;
-+				case RULE_OPERATOR_LOWER:
++				case SKILL_RULE_OPERATOR_LESSER:
 +					ret = (ret < value);
 +					break;
-+				case RULE_OPERATOR_AND:
++				case SKILL_RULE_OPERATOR_AND:
 +					ret = (ret && value);
 +					break;
-+				case RULE_OPERATOR_OR:
++				case SKILL_RULE_OPERATOR_OR:
 +					ret = (ret || value);
 +					break;
-+				case RULE_OPERATOR_UNKNOWN:
++				case SKILL_RULE_OPERATOR_UNKNOWN:
 +					/* WTF */
 +					return 0;
 +			}
@@ -618,18 +618,18 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	return ret;
 +}
 +
-+static int is_member_matches_ruleset(struct member *mem, const char* ruleset_name)
++static int is_member_matches_skill_ruleset(struct member *mem, const char* ruleset_name)
 +{
-+	struct ruleset* rs;
-+	struct rule* rule;
++	struct skill_ruleset* rs;
++	struct skill_rule* rule;
 +	struct skills_group* skills;
 +	struct ao2_iterator iter;
 +	int ret = 0;
 +
-+	AST_LIST_LOCK(&rulesets);
++	AST_LIST_LOCK(&skill_rulesets);
 +	AST_LIST_LOCK(&skills_groups);
 +
-+	AST_LIST_TRAVERSE(&rulesets, rs, entry) {
++	AST_LIST_TRAVERSE(&skill_rulesets, rs, entry) {
 +		if (!strcmp(rs->name, ruleset_name))
 +			break;
 +	}
@@ -657,7 +657,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	ao2_iterator_destroy(&iter);
 +
 +end:
-+	AST_LIST_UNLOCK(&rulesets);
++	AST_LIST_UNLOCK(&skill_rulesets);
 +	AST_LIST_UNLOCK(&skills_groups);
 +
 +	return ret;
@@ -666,10 +666,10 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +{
 +	struct member *m;
 +
-+	if (!qe || !qe->members)
++	if (!qe || !qe->mem_selection)
 +		return 0;
 +
-+	m = ao2_find(qe->members, mem, OBJ_POINTER);
++	m = ao2_find(qe->mem_selection, mem, OBJ_POINTER);
 +
 +	if (m)
 +		ao2_ref(m, -1);
@@ -800,15 +800,15 @@ Index: asterisk-1.4.28/apps/app_queue.c
  	AST_LIST_LOCK(&queues);
  	ao2_lock(q);
  
-+	if (!ast_strlen_zero(qe->ruleset)) {
++	if (!ast_strlen_zero(qe->skill_ruleset)) {
 +		struct member *member;
 +		struct ao2_iterator mem_iter;
 +
 +		mem_iter = ao2_iterator_init(q->members, 0);
 +		while ((member = ao2_iterator_next(&mem_iter))) {
 +			if(!ast_strlen_zero(member->skills) &&
-+			   is_member_matches_ruleset(member, qe->ruleset)) {
-+				ao2_link(qe->members, member);
++			   is_member_matches_skill_ruleset(member, qe->skill_ruleset)) {
++				ao2_link(qe->mem_selection, member);
 +				ast_log(LOG_NOTICE, "User %s is associated.\n", member->interface);
 +			} else
 +				ast_log(LOG_NOTICE, "User %s is NOT associated.\n", member->interface);
@@ -859,7 +859,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
  
 +	if (!member_is_selected(qe, tmp->member)) {
 +		if (option_debug)
-+			ast_log(LOG_DEBUG, "%s doesn't match ruleset '%s'\n", tmp->interface, qe->ruleset);
++			ast_log(LOG_DEBUG, "%s doesn't match ruleset '%s'\n", tmp->interface, qe->skill_ruleset);
 +		if (qe->chan->cdr)
 +			ast_cdr_busy(qe->chan->cdr);
 +		tmp->stillgoing = 0;
@@ -981,7 +981,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
  		AST_APP_ARG(announceoverride);
  		AST_APP_ARG(queuetimeoutstr);
  		AST_APP_ARG(agi);
-+		AST_APP_ARG(ruleset);
++		AST_APP_ARG(skill_ruleset);
  	);
  	/* Our queue entry */
  	struct queue_ent qe = { 0 };
@@ -989,7 +989,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +
  	if (ast_strlen_zero(data)) {
 -		ast_log(LOG_WARNING, "Queue requires an argument: queuename[|options[|URL[|announceoverride[|timeout[|agi]]]]]\n");
-+		ast_log(LOG_WARNING, "Queue requires an argument: queuename[|options[|URL[|announceoverride[|timeout[|agi[|ruleset]]]]]]\n");
++		ast_log(LOG_WARNING, "Queue requires an argument: queuename[|options[|URL[|announceoverride[|timeout[|agi[|skill_ruleset]]]]]]\n");
  		return -1;
  	}
 -	
@@ -1001,10 +1001,10 @@ Index: asterisk-1.4.28/apps/app_queue.c
  	qe.chan = chan;
  	qe.prio = prio;
  	qe.max_penalty = max_penalty;
-+	if (!ast_strlen_zero(args.ruleset)) {
-+		ast_copy_string(qe.ruleset, args.ruleset, sizeof(qe.ruleset));
-+		if (!qe.members)
-+			qe.members = ao2_container_alloc(37, member_hash_fn, member_cmp_fn);
++	if (!ast_strlen_zero(args.skill_ruleset)) {
++		ast_copy_string(qe.skill_ruleset, args.skill_ruleset, sizeof(qe.skill_ruleset));
++		if (!qe.mem_selection)
++			qe.mem_selection = ao2_container_alloc(37, member_hash_fn, member_cmp_fn);
 +	}
  	qe.last_pos_said = 0;
  	qe.last_pos = 0;
@@ -1022,8 +1022,8 @@ Index: asterisk-1.4.28/apps/app_queue.c
  		set_queue_result(chan, reason);
  		res = 0;
  	}
-+	if (qe.members) {
-+		ao2_ref(qe.members, -1);
++	if (qe.mem_selection) {
++		ao2_ref(qe.mem_selection, -1);
 +	}
  	if (qe.parent) {
  		/* every queue_ent is given a reference to it's parent call_queue when it joins the queue.
@@ -1127,28 +1127,28 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +	return 1;
 +}
 +
-+static int reload_rules(void)
++static int reload_skill_rules(void)
 +{
 +	struct ast_config *cfg;
 +	struct ast_variable *var;
-+	struct ruleset *ruleset;
++	struct skill_ruleset *ruleset;
 +	char *cat = NULL;
 +
 +	if (!(cfg = ast_config_load("queueskillrules.conf"))) {
 +		ast_log(LOG_NOTICE, "No rules config file (queueskillrules.conf), so no call queues rules\n");
 +		return 0;
 +	}
-+	AST_LIST_LOCK(&rulesets);
++	AST_LIST_LOCK(&skill_rulesets);
 +
-+	/* Clear current rulesets */
-+	AST_LIST_TRAVERSE_SAFE_BEGIN(&rulesets, ruleset, entry) {
-+		AST_LIST_REMOVE_CURRENT(&rulesets, entry);
++	/* Clear current skill_rulesets */
++	AST_LIST_TRAVERSE_SAFE_BEGIN(&skill_rulesets, ruleset, entry) {
++		AST_LIST_REMOVE_CURRENT(&skill_rulesets, entry);
 +		ao2_ref(ruleset, -1);
 +	}
 +	AST_LIST_TRAVERSE_SAFE_END;
 +
 +	while ((cat = ast_category_browse(cfg, cat))) {
-+		ruleset = ao2_alloc(sizeof(*ruleset), destroy_ruleset);
++		ruleset = ao2_alloc(sizeof(*ruleset), destroy_skill_ruleset);
 +		if (!ruleset) {
 +			ast_log(LOG_WARNING, "Unable to allocate memory for a ruleset.");
 +			break;
@@ -1156,20 +1156,20 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +		ast_copy_string(ruleset->name, cat, sizeof(ruleset->name));
 +		ruleset->rules = ao2_container_alloc(37, NULL, NULL);
 +		for (var = ast_variable_browse(cfg, cat); var; var = var->next) {
-+			struct rule *r = ao2_alloc(sizeof(*r), destroy_rule);
++			struct skill_rule *r = ao2_alloc(sizeof(*r), destroy_skill_rule);
 +			if (!r) {
 +				ast_log(LOG_WARNING, "Unable to allocate memory for a rule.");
 +				break;
 +			}
-+			parse_rule(r, var->value);
++			parse_skill_rule(r, var->value);
 +
 +			ao2_link(ruleset->rules, r);
 +			ao2_ref(r, -1);
 +		}
 +
-+		AST_LIST_INSERT_HEAD(&rulesets, ruleset, entry);
++		AST_LIST_INSERT_HEAD(&skill_rulesets, ruleset, entry);
 +	}
-+	AST_LIST_UNLOCK(&rulesets);
++	AST_LIST_UNLOCK(&skill_rulesets);
 +	ast_config_destroy(cfg);
 +	return 1;
 +}
@@ -1180,7 +1180,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +		return 0;
 +
 +	reload_skills();
-+	reload_rules();
++	reload_skill_rules();
 +
  	return 1;
  }
