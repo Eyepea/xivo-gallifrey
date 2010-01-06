@@ -1,0 +1,562 @@
+Index: asterisk-1.4.28/apps/app_queue.c
+===================================================================
+--- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-06 15:55:26.000000000 +0100
++++ asterisk-1.4.28/apps/app_queue.c	2010-01-06 16:41:49.000000000 +0100
+@@ -349,11 +349,14 @@
+ 	int handled;                        /*!< Whether our call was handled */
+ 	int pending;                        /*!< Non-zero if we are attempting to call a member */
+ 	int max_penalty;                    /*!< Limit the members that can take this call to this penalty or lower */
++	int min_penalty;                    /*!< Limit the members that can take this call to this penalty or higher */
+ 	char skill_ruleset[80];             /*!< Name of the skill ruleset */
+ 	time_t start;                       /*!< When we started holding */
+ 	time_t expire;                      /*!< When this entry should expire (time out of queue) */
+ 	struct ao2_container *mem_selection;/*!< Members who match skill rules. */
+ 	struct ast_channel *chan;           /*!< Our channel */
++	AST_LIST_HEAD_NOLOCK(,penalty_rule) qe_rules; /*!< Local copy of the queue's penalty rules */
++	struct penalty_rule *pr;               /*!< Pointer to the next penalty rule to implement */
+ 	struct queue_ent *next;             /*!< The next queue entry */
+ };
+ 
+@@ -465,11 +468,22 @@
+ #define ANNOUNCEHOLDTIME_ONCE 2
+ #define QUEUE_EVENT_VARIABLES 3
+ 
++struct penalty_rule {
++	int time;                           /*!< Number of seconds that need to pass before applying this rule */
++	int max_value;                      /*!< The amount specified in the penalty rule for max penalty */
++	int min_value;                      /*!< The amount specified in the penalty rule for min penalty */
++	int max_relative;                   /*!< Is the max adjustment relative? 1 for relative, 0 for absolute */
++	int min_relative;                   /*!< Is the min adjustment relative? 1 for relative, 0 for absolute */
++	AST_LIST_ENTRY(penalty_rule) list;  /*!< Next penalty_rule */
++};
++
++
+ struct call_queue {
+ 	char name[80];                      /*!< Name */
+ 	char moh[80];                       /*!< Music On Hold class to be used */
+ 	char announce[80];                  /*!< Announcement to play when call is answered */
+ 	char context[AST_MAX_CONTEXT];      /*!< Exit context */
++	char defaultpenrule[80];            /*!< Default penalty rule. */
+ 	unsigned int monjoin:1;
+ 	unsigned int dead:1;
+ 	unsigned int joinempty:2;
+@@ -529,8 +543,17 @@
+ 	int membercount;
+ 	struct queue_ent *head;             /*!< Head of the list of callers */
+ 	AST_LIST_ENTRY(call_queue) list;    /*!< Next call queue */
++	AST_LIST_HEAD_NOLOCK(, penalty_rule) penrules; /*!< The list of penalty rules to invoke */
++};
++
++struct penalty_rule_list {
++	char name[80];
++	AST_LIST_HEAD_NOLOCK(,penalty_rule) rules;
++	AST_LIST_ENTRY(penalty_rule_list) list;
+ };
+ 
++static AST_LIST_HEAD_STATIC(penrule_lists, penalty_rule_list);
++
+ static AST_LIST_HEAD_STATIC(queues, call_queue);
+ 
+ static int set_member_paused(const char *queuename, const char *interface, int paused);
+@@ -1196,7 +1219,7 @@
+  * is available, the function immediately returns QUEUE_NORMAL. If no members are available,
+  * the appropriate reason why is returned
+  */
+-static enum queue_member_status get_member_status(struct call_queue *q, int max_penalty, struct queue_ent* qe)
++static enum queue_member_status get_member_status(struct call_queue *q, int max_penalty, int min_penalty, struct queue_ent* qe)
+ {
+ 	struct member *member;
+ 	struct ao2_iterator mem_iter;
+@@ -1205,7 +1228,7 @@
+ 	ao2_lock(q);
+ 	mem_iter = ao2_iterator_init(q->members, 0);
+ 	while ((member = ao2_iterator_next(&mem_iter))) {
+-		if (max_penalty && (member->penalty > max_penalty)) {
++		if ((max_penalty && (member->penalty > max_penalty)) || (min_penalty && (member->penalty < min_penalty))) {
+ 			ao2_ref(member, -1);
+ 			continue;
+ 		}
+@@ -1503,6 +1526,7 @@
+ static void init_queue(struct call_queue *q)
+ {
+ 	int i;
++	struct penalty_rule *pr_iter;
+ 
+ 	q->dead = 0;
+ 	q->retry = DEFAULT_RETRY;
+@@ -1548,6 +1572,8 @@
+ 	for (i = 1; i < MAX_PERIODIC_ANNOUNCEMENTS; i++) {
+ 		q->sound_periodicannounce[i][0]='\0';
+ 	}
++	while ((pr_iter = AST_LIST_REMOVE_HEAD(&q->penrules,list)))
++		ast_free(pr_iter);
+ }
+ 
+ static void clear_queue(struct call_queue *q)
+@@ -1559,6 +1585,85 @@
+ 	q->wrapuptime = 0;
+ }
+ 
++/*!
++ * \brief Change queue penalty by adding rule.
++ *
++ * Check rule for errors with time or fomatting, see if rule is relative to rest
++ * of queue, iterate list of rules to find correct insertion point, insert and return.
++ * \retval -1 on failure
++ * \retval 0 on success
++ * \note Call this with the rule_lists locked
++*/
++static int insert_penaltychange (const char *list_name, const char *content, const int linenum)
++{
++	char *timestr, *maxstr, *minstr, *contentdup;
++	struct penalty_rule *rule = NULL, *rule_iter;
++	struct penalty_rule_list *rl_iter;
++	int penaltychangetime, inserted = 0;
++
++	if (!(rule = ast_calloc(1, sizeof(*rule)))) {
++		return -1;
++	}
++
++	contentdup = ast_strdupa(content);
++
++	if (!(maxstr = strchr(contentdup, ','))) {
++		ast_log(LOG_WARNING, "Improperly formatted penaltychange rule at line %d. Ignoring.\n", linenum);
++		ast_free(rule);
++		return -1;
++	}
++
++	*maxstr++ = '\0';
++	timestr = contentdup;
++
++	if ((penaltychangetime = atoi(timestr)) < 0) {
++		ast_log(LOG_WARNING, "Improper time parameter specified for penaltychange rule at line %d. Ignoring.\n", linenum);
++		ast_free(rule);
++		return -1;
++	}
++
++	rule->time = penaltychangetime;
++
++	if ((minstr = strchr(maxstr,',')))
++		*minstr++ = '\0';
++
++	/* The last check will evaluate true if either no penalty change is indicated for a given rule
++	 * OR if a min penalty change is indicated but no max penalty change is */
++	if (*maxstr == '+' || *maxstr == '-' || *maxstr == '\0') {
++		rule->max_relative = 1;
++	}
++
++	rule->max_value = atoi(maxstr);
++
++	if (!ast_strlen_zero(minstr)) {
++		if (*minstr == '+' || *minstr == '-')
++			rule->min_relative = 1;
++		rule->min_value = atoi(minstr);
++	} else /*there was no minimum specified, so assume this means no change*/
++		rule->min_relative = 1;
++
++	/*We have the rule made, now we need to insert it where it belongs*/
++	AST_LIST_TRAVERSE(&penrule_lists, rl_iter, list){
++		if (strcasecmp(rl_iter->name, list_name))
++			continue;
++
++		AST_LIST_TRAVERSE_SAFE_BEGIN(&rl_iter->rules, rule_iter, list) {
++			if (rule->time < rule_iter->time) {
++				AST_LIST_INSERT_BEFORE_CURRENT(&rl_iter->rules, rule, list);
++				inserted = 1;
++				break;
++			}
++		}
++		AST_LIST_TRAVERSE_SAFE_END;
++
++		if (!inserted) {
++			AST_LIST_INSERT_TAIL(&rl_iter->rules, rule, list);
++		}
++	}
++
++	return 0;
++}
++
+ static int add_to_interfaces(const char *interface)
+ {
+ 	struct member_interface *curint;
+@@ -1793,6 +1898,8 @@
+ 		   we will not see any effect on use_weight until next reload. */
+ 	} else if (!strcasecmp(param, "timeoutrestart")) {
+ 		q->timeoutrestart = ast_true(val);
++	} else if (!strcasecmp(param, "defaultpenrule")) {
++		ast_copy_string(q->defaultpenrule, val, sizeof(q->defaultpenrule));
+ 	} else if (failunknown) {
+ 		if (linenum >= 0) {
+ 			ast_log(LOG_WARNING, "Unknown keyword in queue '%s': %s at line %d of queues.conf\n",
+@@ -2131,7 +2238,7 @@
+ 	return q;
+ }
+ 
+-static int join_queue(char *queuename, struct queue_ent *qe, enum queue_result *reason)
++static int join_queue(char *queuename, struct queue_ent *qe, enum queue_result *reason, int position)
+ {
+ 	struct call_queue *q;
+ 	struct queue_ent *cur, *prev = NULL;
+@@ -2163,7 +2270,7 @@
+ 	}
+ 
+ 	/* This is our one */
+-	stat = get_member_status(q, qe->max_penalty, qe);
++	stat = get_member_status(q, qe->max_penalty, qe->min_penalty, qe);
+ 	if (!q->joinempty && (stat == QUEUE_NO_MEMBERS))
+ 		*reason = QUEUE_JOINEMPTY;
+ 	else if ((q->joinempty == QUEUE_EMPTY_STRICT) && (stat == QUEUE_NO_REACHABLE_MEMBERS || stat == QUEUE_NO_MEMBERS))
+@@ -2185,6 +2292,17 @@
+ 				insert_entry(q, prev, qe, &pos);
+ 				inserted = 1;
+ 			}
++			/* <= is necessary for the position comparison because it may not be possible to enter
++			 * at our desired position since higher-priority callers may have taken the position we want
++			 */
++			if (!inserted && (qe->prio <= cur->prio) && position && (position <= pos + 1)) {
++				insert_entry(q, prev, qe, &pos);
++				/*pos is incremented inside insert_entry, so don't need to add 1 here*/
++				if (position < pos) {
++					ast_log(LOG_NOTICE, "Asked to be inserted at position %d but forced into position %d due to higher priority callers\n", position, pos);
++				}
++				inserted = 1;
++			}
+ 			cur->pos = ++pos;
+ 			prev = cur;
+ 			cur = cur->next;
+@@ -2399,6 +2517,7 @@
+ {
+ 	struct call_queue *q;
+ 	struct queue_ent *cur, *prev = NULL;
++	struct penalty_rule *pr_iter;
+ 	int pos = 0;
+ 
+ 	if (!(q = qe->parent))
+@@ -2408,6 +2527,7 @@
+ 	prev = NULL;
+ 	for (cur = q->head; cur; cur = cur->next) {
+ 		if (cur == qe) {
++			char posstr[20];
+ 			q->count--;
+ 
+ 			/* Take us out of the queue */
+@@ -2415,11 +2535,13 @@
+                                       "Channel: %s\r\n"
+                                       "Queue: %s\r\n"
+                                       "Count: %d\r\n"
++                                      "Position: %d\r\n"
+                                       "Reason: %d\r\n"
+                                       "Uniqueid: %s\r\n",
+                                       qe->chan->name,
+                                       q->name,
+                                       q->count,
++                                      qe->pos,
+                                       reason,
+                                       qe->chan->uniqueid);
+ 			if (option_debug)
+@@ -2429,6 +2551,10 @@
+ 				prev->next = cur->next;
+ 			else
+ 				q->head = cur->next;
++			while ((pr_iter = AST_LIST_REMOVE_HEAD(&qe->qe_rules, list)))
++				ast_free(pr_iter);
++			snprintf(posstr, sizeof(posstr), "%d", qe->pos);
++			pbx_builtin_setvar_helper(qe->chan, "QUEUEPOSITION", posstr);
+ 		} else {
+ 			/* Renumber the people after us in the queue based on a new count */
+ 			cur->pos = ++pos;
+@@ -3269,6 +3395,37 @@
+ 
+ 	return res;
+ }
++
++/*!
++ * \brief update rules for queues
++ *
++ * Calculate min/max penalties making sure if relative they stay within bounds.
++ * Update queues penalty and set dialplan vars, goto next list entry.
++*/
++static void update_qe_rule(struct queue_ent *qe)
++{
++	int max_penalty = qe->pr->max_relative ? qe->max_penalty + qe->pr->max_value : qe->pr->max_value;
++	int min_penalty = qe->pr->min_relative ? qe->min_penalty + qe->pr->min_value : qe->pr->min_value;
++	char max_penalty_str[20], min_penalty_str[20];
++	/* a relative change to the penalty could put it below 0 */
++	if (max_penalty < 0)
++		max_penalty = 0;
++	if (min_penalty < 0)
++		min_penalty = 0;
++	if (min_penalty > max_penalty)
++		min_penalty = max_penalty;
++	snprintf(max_penalty_str, sizeof(max_penalty_str), "%d", max_penalty);
++	snprintf(min_penalty_str, sizeof(min_penalty_str), "%d", min_penalty);
++	pbx_builtin_setvar_helper(qe->chan, "QUEUE_MAX_PENALTY", max_penalty_str);
++	pbx_builtin_setvar_helper(qe->chan, "QUEUE_MIN_PENALTY", min_penalty_str);
++	qe->max_penalty = max_penalty;
++	qe->min_penalty = min_penalty;
++	if (option_debug) {
++		ast_log(LOG_DEBUG, "Setting max penalty to %d and min penalty to %d for caller %s since %d seconds have elapsed\n", qe->max_penalty, qe->min_penalty, qe->chan->name, qe->pr->time);
++	}
++	qe->pr = AST_LIST_NEXT(qe->pr, list);
++}
++
+ /*! \brief The waiting areas for callers who are not actively calling members
+  *
+  * This function is one large loop. This function will return if a caller
+@@ -3296,7 +3453,7 @@
+ 			break;
+ 		}
+ 
+-		stat = get_member_status(qe->parent, qe->max_penalty, qe);
++		stat = get_member_status(qe->parent, qe->max_penalty, qe->min_penalty, qe);
+ 
+ 		/* leave the queue if no agents, if enabled */
+ 		if (qe->parent->leavewhenempty && (stat == QUEUE_NO_MEMBERS)) {
+@@ -3330,6 +3487,11 @@
+ 			(res = say_periodic_announcement(qe)))
+ 			break;
+ 
++		/* see if we need to move to the next penalty level for this queue */
++		while (qe->pr && ((time(NULL) - qe->start) >= qe->pr->time)) {
++			update_qe_rule(qe);
++		}
++
+ 		/* If we have timed out, break out */
+ 		if (qe->expire && (time(NULL) >= qe->expire)) {
+ 			*reason = QUEUE_TIMEOUT;
+@@ -3374,7 +3536,7 @@
+  */
+ static int calc_metric(struct call_queue *q, struct member *mem, int pos, struct queue_ent *qe, struct callattempt *tmp)
+ {
+-	if (qe->max_penalty && (mem->penalty > qe->max_penalty))
++	if ((qe->max_penalty && (mem->penalty > qe->max_penalty)) || (qe->min_penalty && (mem->penalty < qe->min_penalty)))
+ 		return -1;
+ 
+ 	switch (q->strategy) {
+@@ -4752,6 +4914,36 @@
+ 	return 0;
+ }
+ 
++/*! \brief Copy rule from global list into specified queue */
++static void copy_rules(struct queue_ent *qe, const char *rulename)
++{
++	struct penalty_rule *pr_iter;
++	struct penalty_rule_list *rl_iter;
++	const char *tmp = ast_strlen_zero(rulename) ? qe->parent->defaultpenrule : rulename;
++	AST_LIST_LOCK(&penrule_lists);
++	AST_LIST_TRAVERSE(&penrule_lists, rl_iter, list) {
++		if (!strcasecmp(rl_iter->name, tmp))
++			break;
++	}
++	if (rl_iter) {
++		AST_LIST_TRAVERSE(&rl_iter->rules, pr_iter, list) {
++			struct penalty_rule *new_pr = ast_calloc(1, sizeof(*new_pr));
++			if (!new_pr) {
++				ast_log(LOG_ERROR, "Memory allocation error when copying penalty rules! Aborting!\n");
++				AST_LIST_UNLOCK(&penrule_lists);
++				break;
++			}
++			new_pr->time = pr_iter->time;
++			new_pr->max_value = pr_iter->max_value;
++			new_pr->min_value = pr_iter->min_value;
++			new_pr->max_relative = pr_iter->max_relative;
++			new_pr->min_relative = pr_iter->min_relative;
++			AST_LIST_INSERT_TAIL(&qe->qe_rules, new_pr, list);
++		}
++	}
++	AST_LIST_UNLOCK(&penrule_lists);
++}
++
+ /*!\brief The starting point for all queue calls
+  *
+  * The process involved here is to 
+@@ -4771,13 +4963,15 @@
+ 	struct ast_module_user *lu;
+ 	const char *user_priority;
+ 	const char *max_penalty_str;
++	const char *min_penalty_str;
+ 	int prio;
+-	int max_penalty;
++	int max_penalty, min_penalty;
+ 	enum queue_result reason = QUEUE_UNKNOWN;
+ 	/* whether to exit Queue application after the timeout hits */
+ 	int tries = 0;
+ 	int noption = 0;
+ 	char *parse;
++	int position = 0;
+ 	AST_DECLARE_APP_ARGS(args,
+ 		AST_APP_ARG(queuename);
+ 		AST_APP_ARG(options);
+@@ -4786,12 +4980,14 @@
+ 		AST_APP_ARG(queuetimeoutstr);
+ 		AST_APP_ARG(agi);
+ 		AST_APP_ARG(skill_ruleset);
++		AST_APP_ARG(penalty_rule);
++		AST_APP_ARG(position);
+ 	);
+ 	/* Our queue entry */
+ 	struct queue_ent qe = { 0 };
+ 
+ 	if (ast_strlen_zero(data)) {
+-		ast_log(LOG_WARNING, "Queue requires an argument: queuename[|options[|URL[|announceoverride[|timeout[|agi[|skill_ruleset]]]]]]\n");
++		ast_log(LOG_WARNING, "Queue requires an argument: queuename[|options[|URL[|announceoverride[|timeout[|agi[|skill_ruleset[|penalty_rule[|position]]]]]]]]\n");
+ 		return -1;
+ 	}
+ 
+@@ -4842,9 +5038,31 @@
+ 		max_penalty = 0;
+ 	}
+ 
++	if ((min_penalty_str = pbx_builtin_getvar_helper(chan, "QUEUE_MIN_PENALTY"))) {
++		if (sscanf(min_penalty_str, "%30d", &min_penalty) == 1) {
++			if (option_debug)
++				ast_log(LOG_DEBUG, "%s: Got max penalty %d from ${QUEUE_MIN_PENALTY}.\n",
++					chan->name, min_penalty);
++		} else {
++			ast_log(LOG_WARNING, "${QUEUE_MIN_PENALTY}: Invalid value (%s), channel %s.\n",
++				min_penalty_str, chan->name);
++			min_penalty = 0;
++		}
++	} else {
++		min_penalty = 0;
++	}
++
+ 	if (args.options && (strchr(args.options, 'r')))
+ 		ringing = 1;
+ 
++	if (args.position) {
++		position = atoi(args.position);
++		if (position < 0) {
++			ast_log(LOG_WARNING, "Invalid position '%s' given for call to queue '%s'. Assuming no preference for position\n", args.position, args.queuename);
++			position = 0;
++		}
++	}
++
+ 	if (option_debug)
+ 		ast_log(LOG_DEBUG, "queue: %s, options: %s, url: %s, announce: %s, expires: %ld, priority: %d\n",
+ 			args.queuename, args.options, args.url, args.announceoverride, (long)qe.expire, prio);
+@@ -4852,6 +5070,7 @@
+ 	qe.chan = chan;
+ 	qe.prio = prio;
+ 	qe.max_penalty = max_penalty;
++	qe.min_penalty = min_penalty;
+ 	if (!ast_strlen_zero(args.skill_ruleset)) {
+ 		ast_copy_string(qe.skill_ruleset, args.skill_ruleset, sizeof(qe.skill_ruleset));
+ 		if (!qe.mem_selection)
+@@ -4862,11 +5081,13 @@
+ 	qe.last_periodic_announce_time = time(NULL);
+ 	qe.last_periodic_announce_sound = 0;
+ 	qe.valid_digits = 0;
+-	if (!join_queue(args.queuename, &qe, &reason)) {
++	if (!join_queue(args.queuename, &qe, &reason, position)) {
+ 		int makeannouncement = 0;
+ 
+ 		ast_queue_log(args.queuename, chan->uniqueid, "NONE", "ENTERQUEUE", "%s|%s", S_OR(args.url, ""),
+ 			S_OR(chan->cid.cid_num, ""));
++		copy_rules(&qe, args.penalty_rule);
++		qe.pr = AST_LIST_FIRST(&qe.qe_rules);
+ check_turns:
+ 		if (ringing) {
+ 			ast_indicate(chan, AST_CONTROL_RINGING);
+@@ -4929,12 +5150,18 @@
+ 				ast_queue_log(args.queuename, chan->uniqueid, "NONE", "EXITWITHTIMEOUT", "%d", qe.pos);
+ 				break;
+ 			}
++
++			/* see if we need to move to the next penalty level for this queue */
++			while (qe.pr && ((time(NULL) - qe.start) > qe.pr->time)) {
++				update_qe_rule(&qe);
++			}
++
+ 			/* Try calling all queue members for 'timeout' seconds */
+ 			res = try_calling(&qe, args.options, args.announceoverride, args.url, &tries, &noption, args.agi);
+ 			if (res)
+ 				goto stop;
+ 
+-			stat = get_member_status(qe.parent, qe.max_penalty, &qe);
++			stat = get_member_status(qe.parent, qe.max_penalty, qe.min_penalty, &qe);
+ 
+ 			/* exit after 'timeout' cycle if 'n' option enabled */
+ 			if (noption && tries >= qe.parent->membercount) {
+@@ -5537,11 +5764,56 @@
+ 	return 1;
+ }
+ 
++/*! \brief Reload the rules defined in queuerules.conf
++ *
++ * \return Always returns AST_MODULE_LOAD_SUCCESS
++ */
++static int reload_penalty_rules(void)
++{
++	struct ast_config *cfg;
++	struct penalty_rule_list *rl_iter, *new_rl;
++	struct penalty_rule *pr_iter;
++	char *rulecat = NULL;
++	struct ast_variable *rulevar = NULL;
++
++	if (!(cfg = ast_config_load("queuerules.conf"))) {
++		ast_log(LOG_NOTICE, "No queuerules.conf file found, queues will not follow penalty rules\n");
++		return 0;
++	}
++
++	AST_LIST_LOCK(&penrule_lists);
++	while ((rl_iter = AST_LIST_REMOVE_HEAD(&penrule_lists, list))) {
++		while ((pr_iter = AST_LIST_REMOVE_HEAD(&rl_iter->rules, list)))
++			ast_free(pr_iter);
++		ast_free(rl_iter);
++	}
++	while ((rulecat = ast_category_browse(cfg, rulecat))) {
++		if (!(new_rl = ast_calloc(1, sizeof(*new_rl)))) {
++			AST_LIST_UNLOCK(&penrule_lists);
++			return AST_MODULE_LOAD_FAILURE;
++		} else {
++			ast_copy_string(new_rl->name, rulecat, sizeof(new_rl->name));
++			AST_LIST_INSERT_TAIL(&penrule_lists, new_rl, list);
++			for (rulevar = ast_variable_browse(cfg, rulecat); rulevar; rulevar = rulevar->next)
++				if(!strcasecmp(rulevar->name, "penaltychange"))
++					insert_penaltychange(new_rl->name, rulevar->value, rulevar->lineno);
++				else
++					ast_log(LOG_WARNING, "Don't know how to handle rule type '%s' on line %d\n", rulevar->name, rulevar->lineno);
++		}
++	}
++	AST_LIST_UNLOCK(&penrule_lists);
++
++	ast_config_destroy(cfg);
++
++	return AST_MODULE_LOAD_SUCCESS;
++}
++
+ static int reload_all(void)
+ {
+ 	if(!reload_queues())
+ 		return 0;
+ 
++	reload_penalty_rules();
+ 	reload_skills();
+ 	reload_skill_rules();
+ 
+Index: asterisk-1.4.28/configs/queuerules.conf.sample
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ asterisk-1.4.28/configs/queuerules.conf.sample	2010-01-06 16:59:14.000000000 +0100
+@@ -0,0 +1,20 @@
++; It is possible to change the value of the QUEUE_MAX_PENALTY and QUEUE_MIN_PENALTY
++; channel variables in mid-call by defining rules in the queue for when to do so. This can allow for
++; a call to be opened to more members or potentially a different set of members.
++; The advantage to changing members this way as opposed to inserting the caller into a
++; different queue with more members or reinserting the caller into the same queue with a different
++; QUEUE_MAX_PENALTY or QUEUE_MIN_PENALTY set is that the caller does not lose his place in the queue.
++;
++; Note: There is a limitation to these rules; a caller will follow the penaltychange rules for
++; the queue that were defined at the time the caller entered the queue. If an update to the rules is
++; made during the the caller's stay in the queue, these will not be reflected for that caller.
++;
++; The syntax for these rules is
++; penaltychange => <number of seconds into the call>,<absolute or relative change to QUEUE_MAX_PENALTY>[,absolute or relative change to QUEUE_MIN_PENALTY]
++;
++; Example:
++; [myrule]
++; penaltychange => 30,+3   ; 30 seconds into the call increase the QUEUE_MAX_PENALTY by 3, no change to QUEUE_MIN_PENALTY
++; penaltychange => 60,10,5 ; 60 seconds into the call increase the QUEUE_MAX_PENALTY to 10 and increase the QUEUE_MIN_PENALTY to 5
++; penaltychange => 75,,7   ; 75 seconds into the call keep the QUEUE_MAX_PENALTY the same and increase the QUEUE_MIN_PENALTY to 7
++
