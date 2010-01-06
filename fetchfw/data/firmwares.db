@@ -477,7 +477,7 @@ md5sum: 2dac879ce955e65c3e252a9dcc1a5c46
 sha1sum: 34fcc209cfdc88a5ee51dfff26ae9be40919af69
 
 # Snom MP 8.2.1
-[snmp_8.2.1]
+[snmp_821]
 brand: Snom
 model: mp
 version: 8.2.1
