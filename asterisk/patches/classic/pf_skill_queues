@@ -1,7 +1,7 @@
 Index: asterisk-1.4.28/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-06 10:11:39.000000000 +0100
-+++ asterisk-1.4.28/apps/app_queue.c	2010-01-06 12:06:02.000000000 +0100
+--- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-06 15:50:51.000000000 +0100
++++ asterisk-1.4.28/apps/app_queue.c	2010-01-06 17:07:44.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -1319,3 +1319,100 @@ Index: asterisk-1.4.28/apps/app_queue.c
  	return 0;
  }
  
+Index: asterisk-1.4.28/configs/queueskillrules.conf.sample
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ asterisk-1.4.28/configs/queueskillrules.conf.sample	2010-01-06 18:12:19.000000000 +0100
+@@ -0,0 +1,40 @@
++; This file describes skill routing rules. The Queue() application can get the
++; 'skill_ruleset' argument which is the name of one skill routing ruleset. If
++; set, a selection of queue members is defined by running these rules on each
++; member, based on skills set (see the queueskills.conf file).
++;
++; You can define these rules with some arithmetic and logical operators:
++;      operand1 / operand2  (division)
++;      operand1 * operand2  (multiplication)
++;      operand1 - operand2  (subtraction)
++;      operand1 + operand2  (addition)
++;      operand1 ! operand2  (is not equal)
++;      operand1 = operand2  (is equal)
++;      operand1 > operand2  (is greater than)
++;      operand1 < operand2  (is lesser than)
++;      operand1 & operand2  (both are true)
++;      operand1 | operand2  (at least one of them are true)
++;
++; '/' is the operator with the higher priority, and '|' the one with the lower
++; priority. You can use brackets '()' to overload operator priorities.
++;
++; Examples:
++;
++; [linux-en]
++; rule => technic & (linux > 29 & english > 39 | linux > 39 & english > 19)
++;
++; [linux-fr]
++; rule => technic & (linux > 29 & french > 39 | linux > 39 & english > 19)
++;
++; [windows-en]
++; rule => technic & (windows > 29 & english > 39 | windows > 39 & english > 19)
++;
++; [windows-fr]
++; rule => technic & (windows > 29 & french > 39 | windows > 39 & french > 19)
++;
++; [client-crappy]
++; rule => technic = 0 & (sympathy > 20 | linux > 10 & windows > 10)
++;
++; [client-cool]
++; rule => technic = 0
++
+Index: asterisk-1.4.28/configs/queueskills.conf.sample
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ asterisk-1.4.28/configs/queueskills.conf.sample	2010-01-06 17:33:07.000000000 +0100
+@@ -0,0 +1,47 @@
++; Describe skills groups here to assign them to queue members. You can set
++; weight to each skills. It'll be used by skill rules to know if a queue member
++; can answer to a call.
++; See the queueskillrules.conf to get more information about these rules.
++;
++; Examples:
++;
++; [linux1]
++; technic = 1
++; linux = 50
++; windows = 10
++; french = 50
++; english = 10
++;
++; [linux2]
++; technic = 1
++; linux = 30
++; windows = 20
++; french = 50
++; english = 50
++;
++; [windows1]
++; technic = 1
++; linux = 10
++; windows = 50
++; french = 30
++; english = 30
++;
++; [windows2]
++; technic = 1
++; linux = 20
++; windows = 30
++; french = 40
++; english = 10
++;
++; [commercial1]
++; technic = 0
++; linux = 10
++; windows = 20
++; sympathy = 100
++;
++; [commercial2]
++; technic = 0
++; linux = 0
++; windows = 20
++; sympathy = 50
++
