@@ -155,7 +155,7 @@ Aucune notification d'entrée :
 Activer l'accès au menu avec "*" :
 
 ; fm_meetmefeatures_admin-closeconflastmarkedexit
-Fermer lorsque l'administrateur est sortie :
+Fermer lorsque l'administrateur est sorti :
 
 ; fm_meetmefeatures_admin-enableexitcontext
 Activer le contexte de sortie :

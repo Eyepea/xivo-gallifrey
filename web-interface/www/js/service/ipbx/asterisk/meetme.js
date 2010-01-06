@@ -178,6 +178,24 @@ function xivo_ast_meetme_chg_admin_typefrom()
 	}
 }
 
+function xivo_ast_meetme_chg_admin_moderationmode()
+{
+	if((moderationmode = dwho_eid('it-meetmefeatures-admin-moderationmode')) === false)
+		return(false);
+	else if(moderationmode.checked === true)
+	{
+		dwho_eid('it-meetmefeatures-admin-announcejoinleave').selectedIndex = 2;
+		dwho_eid('it-meetmefeatures-user-announcejoinleave').selectedIndex = 2;
+	}
+	else
+	{
+		dwho.form.reset_field(dwho_eid('it-meetmefeatures-admin-announcejoinleave'));
+		dwho.form.reset_field(dwho_eid('it-meetmefeatures-user-announcejoinleave'));
+	}
+
+	return(true);
+}
+
 function xivo_ast_meetme_chg_admin_enableexitcontext()
 {
 	if((enableexitcontext = dwho_eid('it-meetmefeatures-admin-enableexitcontext')) !== false)
@@ -222,6 +240,10 @@ function xivo_ast_meetme_onload()
 			   xivo_ast_meetme_suggest_event_admin);
 
 	dwho.form.set_events_text_helper('it-meetme-admin-suggest',true);
+
+	dwho.dom.add_event('change',
+			   dwho_eid('it-meetmefeatures-admin-moderationmode'),
+			   xivo_ast_meetme_chg_admin_moderationmode);
 
 	dwho.dom.add_event('change',
 			   dwho_eid('it-meetmefeatures-admin-enableexitcontext'),
