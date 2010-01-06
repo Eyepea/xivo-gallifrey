@@ -366,76 +366,128 @@ size: 1835008
 md5sum: bd8c0cfc0d2007353c8f52d3cd20fc7c
 sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
 
-# Snom 300 7.3.7
-[sn300_737]
+# Snom 300 7.3.30
+[sn300_7330]
 brand: Snom
 model: 300
-version: 7.3.7
-files: snom300-7.3.7-SIP-f.bin
+version: 7.3.30
+files: snom300-7.3.30-SIP-bf.bin
 
-[snom300-7.3.7-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom300-7.3.7-SIP-f.bin
-size: 2915632
-md5sum: d8b106d5b09f8f0b3633cb6ec536126f
-sha1sum: aca233eb226e284557258601a8f085dbc1812bd5
+[snom300-7.3.30-SIP-bf.bin]
+url: http://provisioning.snom.com/download/fw/snom300-7.3.30-SIP-bf.bin
+size: 3080484
+md5sum: 6d4e2276febaff9474c22bc2f9b5f8dc
+sha1sum: 2b29056258ef76b7e063077115031808fa17e572
 
-# Snom 320 7.3.7
-[sn320_737]
+# Snom 320 7.3.30
+[sn320_7330]
 brand: Snom
 model: 320
-version: 7.3.7
-files: snom320-7.3.7-SIP-f.bin
+version: 7.3.30
+files: snom320-7.3.30-SIP-bf.bin
 
-[snom320-7.3.7-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom320-7.3.7-SIP-f.bin
-size: 2928428
-md5sum: b16a23408a2b0358e0d8719fd9032723
-sha1sum: 58cf14b679326364417ed253e4702877089ac16b
+[snom320-7.3.30-SIP-bf.bin]
+url: http://provisioning.snom.com/download/fw/snom320-7.3.30-SIP-bf.bin
+size: 3096144
+md5sum: 89c946d99750680765c1cc9403d50f0e
+sha1sum: 269a9a596ebc267094255787550e176ed423e64c
 
-# Snom 360 7.3.7
-[sn360_737]
+# Snom 360 7.3.30
+[sn360_7330]
 brand: Snom
 model: 360
-version: 7.3.7
-files: snom360-7.3.7-SIP-f.bin
+version: 7.3.30
+files: snom360-7.3.30-SIP-bf.bin
 
-[snom360-7.3.7-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom360-7.3.7-SIP-f.bin
-size: 2971044
-md5sum: 200f1089d2c65044ecd7ab8ce8f4b49c
-sha1sum: 88b78553b31b17f967619d187b42758889a90ba8
+[snom360-7.3.30-SIP-bf.bin]
+url: http://provisioning.snom.com/download/fw/snom360-7.3.30-SIP-bf.bin
+size: 3139012
+md5sum: 58c5c199f8a039e2bffad725b9d617da
+sha1sum: 90f42372dd4c4287b8a7a994b87717fdf477d066
 
-# Snom 370 7.3.7
-[sn370_737]
+# Snom 370 7.3.30
+[sn370_7330]
 brand: Snom
 model: 370
-version: 7.3.7
-files: snom370-7.3.7-SIP-f.bin
+version: 7.3.30
+files: snom370-7.3.30-SIP-bf.bin
 
-[snom370-7.3.7-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom370-7.3.7-SIP-f.bin
-size: 3777536
-md5sum: 5eb9854c4ca0489900472ff4b5a01ae9
-sha1sum: f565cc725a28c9b8a1faba45c438c538d7c16dfc
+[snom370-7.3.30-SIP-bf.bin]
+url: http://provisioning.snom.com/download/fw/snom370-7.3.30-SIP-bf.bin
+size: 4157820
+md5sum: b90a0eca0241d6f9b6e89bd6ae7dbc64
+sha1sum: e5de486dc6d55a8cbefdf96057b040d6be70d7d4
 
-# Snom m3 1.1.6
-[snm3_116]
+# Snom 820 8.2.11
+[sn820_8211]
+brand: Snom
+model: 820
+version: 8.2.11
+files: snom820-8.2.11-SIP-r.bin
+
+[snom820-8.2.11-SIP-r.bin]
+url: http://provisioning.snom.com/download/fw/snom820-8.2.11-SIP-r.bin
+size: 22156992
+md5sum: c23b31e81ef4bb69027e3b8993ebf6e0
+sha1sum: b86abba960b9697a972c0241a7c0ada7d3d63ed6
+
+# Snom 870 8.3.2
+[sn870_832]
+brand: Snom
+model: 870
+version: 8.3.2
+files: snom870-8.3.2-SIP-r.bin
+
+[snom870-8.3.2-SIP-r.bin]
+url: http://provisioning.snom.com/download/fw/snom870-8.3.2-SIP-r.bin
+size: 22363984
+md5sum: 4f148d7913ebad60a0d7bc099c66682a
+sha1sum: f82f2fdd6f6b3e0998cbbf8938d560a5f0673cf5
+
+# Snom m3 2.0.2
+[snm3_202]
 brand: Snom
 model: m3
-version: 1.1.6
-files: SnakeGw_fr01_v0116.fwu SnakePp_fr01_v0116.fwu
+version: 2.0.2
+files: SnakeGw_fr01_v0202.fwu SnakePp_fr01_v0202.fwu
 
-[SnakeGw_fr01_v0116.fwu]
-url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakeGw_fr01_v0116.fwu
-size: 983616
-md5sum: 40c65670f13f31edf46d3c65999affd5
-sha1sum: 0c49ea248d503273dbfd8bdc889ea1e112f4b8fa
+[SnakeGw_fr01_v0202.fwu]
+url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakeGw_fr01_v0202.fwu
+size: 1022280
+md5sum: 302bef870c1a070c29be3e3710b0a1b4
+sha1sum: 8cebcd1e3eb45c5eb30a5fbb8be8940139ed7dfe
 
-[SnakePp_fr01_v0116.fwu]
-url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakePp_fr01_v0116.fwu
-size: 979068
-md5sum: 1a4966ec9c0c48c8bbc7ca440ba4ae7e
-sha1sum: f3bd2fd9872096a07c5ae17eacede68072681e64
+[SnakePp_fr01_v0202.fwu]
+url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakePp_fr01_v0202.fwu
+size: 990184
+md5sum: d115d0c148d2ebb3e7b220a0962597e4
+sha1sum: b5d3b660feb6fbf0f49493bb96799716ef0368c3
+
+# Snom m9 9.0.163
+[snm3_90163]
+brand: Snom
+model: m9
+version: 9.0.163
+files: m9-9.0.163.bin
+
+[m9-9.0.163.bin]
+url: http://provisioning.snom.com/download/fw/m9-9.0.163.bin
+size: 3503696
+md5sum: 2dac879ce955e65c3e252a9dcc1a5c46
+sha1sum: 34fcc209cfdc88a5ee51dfff26ae9be40919af69
+
+# Snom MP 8.2.1
+[snmp_8.2.1]
+brand: Snom
+model: mp
+version: 8.2.1
+files: snomMP-8.2.1-SIP-a.bin
+
+[snomMP-8.2.1-SIP-a.bin]
+url: http://provisioning.snom.com/download/fw/snomMP-8.2.1-SIP-a.bin
+size: 2024576
+md5sum: e12160260e35a7ffc532c8bd7eabf1ae
+sha1sum: 2e789423490b2e4e20e1b4dd35917a776a6f2ea3
 
 # Thomson ST2022 4.68
 [thst2022_468]
