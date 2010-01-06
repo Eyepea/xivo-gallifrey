@@ -209,7 +209,7 @@ class Yealink(PhoneVendorMixin):
         fw = 'unknown'
         if len(ua_splitted) == 2:
             fw = ua_splitted[1]
-            model = modelfw[0].lower()
+            model = ua_splitted[0].lower()
         return ("yealink", model, fw)
 
     @classmethod
