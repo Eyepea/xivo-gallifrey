@@ -1,6 +1,6 @@
 """Read / Write variables defined in bash format
 
-Copyright (C) 2008-2009  Proformatique
+Copyright (C) 2008-2010  Proformatique
 
 See limitations in documentation of load().
 
@@ -11,7 +11,7 @@ files that are under /etc/default/
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2008-2009  Proformatique
+    Copyright (C) 2008-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

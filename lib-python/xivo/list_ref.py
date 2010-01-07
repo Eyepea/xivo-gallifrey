@@ -1,6 +1,6 @@
 """A list on which we can take references on elements in a position independant way
 
-Copyright (C) 2008-2009  Proformatique
+Copyright (C) 2008-2010  Proformatique
 
 WARNING: The algorithmic complexity caracteristics of this module are not very
 good.  Anyway we rely as most as possible on native Python objects and try to
@@ -10,7 +10,7 @@ Only for use with reasonably sized datasets.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2008-2009  Proformatique
+    Copyright (C) 2008-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

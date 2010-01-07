@@ -1,7 +1,7 @@
 """Ordered Configuration Parser useful when the order of options counts.
 
 Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;
-Copyright (C) 2007-2009  Proformatique
+Copyright (C) 2007-2010  Proformatique
 
 This module derives from the ConfigParser module distributed in Python 2.4.4
 
@@ -114,7 +114,7 @@ See the the classes PyDoc for full description.
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (c) 2001, 2002, 2003, 2004 Python Software Foundation;
-    Copyright (C) 2007-2009  Proformatique
+    Copyright (C) 2007-2010  Proformatique
                                         All Rights Reserved
 
     Under PSF LICENSE AGREEMENT FOR PYTHON

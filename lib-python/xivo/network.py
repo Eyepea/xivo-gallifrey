@@ -1,13 +1,13 @@
 """Network related routines for XIVO
 
-Copyright (C) 2007-2009  Proformatique
+Copyright (C) 2007-2010  Proformatique
 
 WARNING: Linux specific module, needs /sys/ - also Debian Etch specific module
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007-2009  Proformatique
+    Copyright (C) 2007-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

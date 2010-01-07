@@ -4,7 +4,7 @@
  * Fax detection application for all channel types.
  *
  * Copyright (C) 2004-2005, Newman Telecom, Inc. and Newman Ventures, Inc.
- * Copyright (c) 2008-2009 Proformatique
+ * Copyright (c) 2008-2010 Proformatique
  *
  * Justin Newman <jnewman@newmantelecom.com>
  *

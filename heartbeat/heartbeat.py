@@ -2,7 +2,7 @@
 # $Id$
 """
 Server program that replies Asterisk channels status on an UDP socket.
-Copyright (C) 2007-2009 Proformatique
+Copyright (C) 2007-2010 Proformatique
 """
 
 __version__ = "$Revision$ $Date$"

@@ -2,7 +2,7 @@
 # $Date$
 """
 Functions in order to build SIP packets.
-Copyright (C) 2007-2009 Proformatique <technique@proformatique.com>
+Copyright (C) 2007-2010 Proformatique <technique@proformatique.com>
 """
 
 # XIVO Daemon

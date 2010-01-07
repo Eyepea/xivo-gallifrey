@@ -1,6 +1,6 @@
 """DBAPI Helper using URI to create talk to various DB
 
-Copyright (C) 2007-2009  Proformatique
+Copyright (C) 2007-2010  Proformatique
 
 WARNING: this module is not DBAPI 2.0 compliant by itself
 
@@ -8,7 +8,7 @@ WARNING: this module is not DBAPI 2.0 compliant by itself
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007-2009  Proformatique
+    Copyright (C) 2007-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

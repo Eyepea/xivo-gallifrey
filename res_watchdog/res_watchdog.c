@@ -6,7 +6,7 @@
  * Copyright (C) 2005, Junghanns.NET GmbH
  * Klaus-Peter Junghanns <kpj@junghanns.net>
  *
- * Copyright (C) 2007-2009 Proformatique
+ * Copyright (C) 2007-2010 Proformatique
  * Guillaume Knispel <gknispel@proformatique.com>
  * 	(mask signals causing the watchdog thread to abort,
  * 	 configurate the serial interface)

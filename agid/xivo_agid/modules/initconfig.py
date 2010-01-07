@@ -1,13 +1,13 @@
 """Provisioning AGI for XIVO
 
-Copyright (C) 2007-2009  Proformatique <technique@proformatique.com>
+Copyright (C) 2007-2010  Proformatique <technique@proformatique.com>
 
 """
 # TODO WARNING: can be used only if the caller is of a SIP tech
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007-2009  Proformatique <technique@proformatique.com>
+    Copyright (C) 2007-2010  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 """Supplementary synchronization primitives not provided by 'threading'
 
-Copyright (C) 2007-2009  Proformatique
+Copyright (C) 2007-2010  Proformatique
 
 - RWLock                simple implementation with timeouts, without promotion
 
@@ -23,7 +23,7 @@ Copyright (C) 2007-2009  Proformatique
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007-2009  Proformatique
+    Copyright (C) 2007-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

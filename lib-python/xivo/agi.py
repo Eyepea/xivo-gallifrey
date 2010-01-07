@@ -50,7 +50,7 @@ __license__ = """
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
-    Copyright (C) 2007, 2008, 2009  Proformatique
+    Copyright (C) 2007-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

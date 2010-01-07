@@ -1,6 +1,6 @@
 """XIVO YAML Schema - v0.01
 
-Copyright (C) 2008-2009  Proformatique
+Copyright (C) 2008-2010  Proformatique
 
 The basic idea behind XYS is to write a schema as much as possible as
 you would write documents that are valid by this schema.
@@ -138,7 +138,7 @@ to the call to the validation function.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2008-2009  Proformatique
+    Copyright (C) 2008-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

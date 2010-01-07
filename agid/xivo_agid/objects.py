@@ -1,6 +1,6 @@
 """Object classes for XIVO AGI
 
-Copyright (C) 2007-2009  Proformatique <technique@proformatique.com>
+Copyright (C) 2007-2010  Proformatique <technique@proformatique.com>
 
 This module provides a set of objects that are used by several AGI scripts
 in XIVO.
@@ -9,7 +9,7 @@ in XIVO.
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2007-2009  Proformatique <technique@proformatique.com>
+    Copyright (C) 2007-2010  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

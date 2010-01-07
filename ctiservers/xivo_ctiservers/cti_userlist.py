@@ -2,7 +2,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2009 Proformatique'
+__copyright__ = 'Copyright (C) 2007-2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify

@@ -2,13 +2,13 @@
 
 Aastra 6730i, 6731i, 6751i, 6753i, 6755i and 6757i are supported.
 
-Copyright (C) 2008-2009  Proformatique
+Copyright (C) 2008-2010  Proformatique
 
 """
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2008-2009  Proformatique
+    Copyright (C) 2008-2010  Proformatique
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

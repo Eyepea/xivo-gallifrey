@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006-2009 Proformatique <technique@proformatique.com>
+ * Copyright (C) 2006-2010 Proformatique <technique@proformatique.com>
  * Written by Richard Braun <rbraun@proformatique.com>
  * Resource module for SQLite 2
  *

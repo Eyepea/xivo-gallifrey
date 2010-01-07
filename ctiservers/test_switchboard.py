@@ -1,7 +1,7 @@
 #! /usr/bin/python
 
 # XIVO Daemon
-# Copyright (C) 2007-2009  Proformatique <technique@proformatique.com>
+# Copyright (C) 2007-2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

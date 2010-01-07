@@ -7,7 +7,7 @@
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (c) 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008 Python Software Foundation;
-    Copyright (C) 2007-2009  Proformatique
+    Copyright (C) 2007-2010  Proformatique
                                         All Rights Reserved
 
     Under PSF LICENSE AGREEMENT FOR PYTHON
