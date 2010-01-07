@@ -65,7 +65,7 @@ Jouer le message d'occupation :
 Ne pas jouer le message d'introduction :
 
 ; fm_dialaction_voicemail-actionarg2-u
-Jouer le message de non disponibilité :
+Ne pas jouer le message d'indisponibilité :
 
 ; fm_dialaction_voicemail-actionarg2-j
 Utiliser la méthode n+101 :
