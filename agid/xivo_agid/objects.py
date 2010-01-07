@@ -624,10 +624,11 @@ class MeetMe:
     FLAG_ADMIN      = (1 << 0)
     FLAG_USER       = (1 << 1)
 
-    OPTIONS_GLOBAL  = {'talkeroptimization':    '', # Disabled
-                       'record':                'r',
-                       'talkerdetection':       '', # Disabled
-                       'noplaymsgfirstenter':   '1'}
+    OPTIONS_GLOBAL  = {'talkeroptimization':        '', # Disabled
+                       'record':                    'r',
+                       'talkerdetection':           '', # Disabled
+                       'noplaymsgfirstenter':       '1',
+                       'closeconfdurationexceeded': 'L'}
 
     OPTIONS_COMMON  = {'mode':              {'listen':  'l',
                                              'talk':    't',
@@ -661,8 +662,8 @@ class MeetMe:
                                       tuple(["user_%s" % x for x in (self.OPTIONS_COMMON.keys() +
                                                                      self.OPTIONS_USER.keys())]) +
                                       tuple(x for x in self.OPTIONS_GLOBAL.keys()) +
-                                      ('durationm', 'closeconfdurationexceeded',
-                                       'maxuser', 'startdate', 'preprocess_subroutine'))
+                                      ('durationm', 'maxuser',
+                                       'startdate', 'preprocess_subroutine'))
 
         columns = ["meetmefeatures." + c for c in meetmefeatures_columns] + \
                   ['staticmeetme.var_val'] + \
@@ -746,8 +747,16 @@ class MeetMe:
 
         return options
 
-    def get_global_options(self):
-        return self._get_options(self.OPTIONS_GLOBAL)
+    def get_global_options(self):   # pylint: disable-msg=E1101
+        options = self._get_options(self.OPTIONS_GLOBAL.copy())
+
+        if self.OPTIONS_GLOBAL['closeconfdurationexceeded'] in options:
+            options.remove(self.OPTIONS_GLOBAL['closeconfdurationexceeded'])
+            if self.durationm:
+                options.add("%s(%d)" % (self.OPTIONS_GLOBAL['closeconfdurationexceeded'],
+                                        (int(self.durationm) * 60)))
+
+        return set(options)
 
     def get_admin_options(self):    # pylint: disable-msg=E1101
         admin_options = self.OPTIONS_COMMON.copy()

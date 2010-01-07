@@ -35,8 +35,7 @@ def conf_authentication(agi, meetme, adminflag):
     retry = 0
 
     while retry < 3:
-        agi.appexec('Playback', 'conf-getpin')
-        agi.appexec('Read', "PIN||%s" % meetme.pin_len_max())
+        agi.appexec('Read', "PIN|conf-getpin|%s" % meetme.pin_len_max())
         rs = meetme.authenticate(agi.get_variable('PIN'),
                                  calleridnum,
                                  adminflag)
