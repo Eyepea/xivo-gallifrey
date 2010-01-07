@@ -1,7 +1,7 @@
 Index: asterisk-1.4.28/apps/app_meetme.c
 ===================================================================
 --- asterisk-1.4.28.orig/apps/app_meetme.c	2009-12-22 17:07:24.000000000 +0100
-+++ asterisk-1.4.28/apps/app_meetme.c	2010-01-07 14:57:19.000000000 +0100
++++ asterisk-1.4.28/apps/app_meetme.c	2010-01-07 15:36:00.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -383,7 +383,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  
 +	if ((confflags & CONFFLAG_TIMEOUT) &&
 +		!ast_strlen_zero(optargs[OPT_ARG_TIMEOUT])) {
-+		sscanf(optargs[OPT_ARG_WAITMARKED], "%30d", &opt_timeout);
++		sscanf(optargs[OPT_ARG_TIMEOUT], "%30d", &opt_timeout);
 +	}
 +
  	if (confflags & CONFFLAG_RECORDCONF) {

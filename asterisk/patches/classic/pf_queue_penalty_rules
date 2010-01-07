@@ -1,7 +1,16 @@
 Index: asterisk-1.4.28/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-06 15:55:26.000000000 +0100
-+++ asterisk-1.4.28/apps/app_queue.c	2010-01-06 16:41:49.000000000 +0100
+--- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-07 15:05:28.000000000 +0100
++++ asterisk-1.4.28/apps/app_queue.c	2010-01-07 15:05:29.000000000 +0100
+@@ -150,7 +150,7 @@
+ static char *synopsis = "Queue a call for a call queue";
+ 
+ static char *descrip =
+-"  Queue(queuename[|options[|URL][|announceoverride][|timeout][|AGI][|skill_ruleset]):\n"
++"  Queue(queuename[|options[|URL[|announceoverride[|timeout[|AGI[|skill_ruleset[|penalty_rule[|position]]]]]]]]):\n"
+ "Queues an incoming call in a particular call queue as defined in queues.conf.\n"
+ "This application will return to the dialplan if the queue does not exist, or\n"
+ "any of the join options cause the caller to not enter the queue.\n"
 @@ -349,11 +349,14 @@
  	int handled;                        /*!< Whether our call was handled */
  	int pending;                        /*!< Non-zero if we are attempting to call a member */
@@ -538,7 +547,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 Index: asterisk-1.4.28/configs/queuerules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.28/configs/queuerules.conf.sample	2010-01-06 16:59:14.000000000 +0100
++++ asterisk-1.4.28/configs/queuerules.conf.sample	2010-01-07 15:05:29.000000000 +0100
 @@ -0,0 +1,20 @@
 +; It is possible to change the value of the QUEUE_MAX_PENALTY and QUEUE_MIN_PENALTY
 +; channel variables in mid-call by defining rules in the queue for when to do so. This can allow for
