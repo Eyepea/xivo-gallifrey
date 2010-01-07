@@ -1,0 +1,64 @@
+#!/bin/sh
+
+. /usr/share/pf-common/read_base_config
+
+
+# TODO: use the _XIVO_* namespace for generated variables
+
+
+echo "Generating configuration"
+
+#### Set and check general variables ####
+
+if [ -z "${XIVO_NET4_CIDR}" ]; then
+  echo "ERROR: Network badly configured" >&2
+  exit 1
+fi
+
+XIVO_NET4_IP=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Address:" | awk '{print $2}')
+XIVO_NET4_NETMASK=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Netmask:" | awk '{print $2}')
+XIVO_NET4_BROADCAST=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Broadcast:" | awk '{print $2}')
+XIVO_NET4_SUBNET=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
+
+if [ -z "${XIVO_VOIP_VLAN_ID}" -o "${XIVO_VOIP_VLAN_ID}" = "0" ]; then
+  XIVO_HAS_VOIP_VLAN_10=0
+  XIVO_HAS_VOIP_VLAN_yn="no"
+else
+  XIVO_HAS_VOIP_VLAN_10=1
+  XIVO_HAS_VOIP_VLAN_yn="yes"
+fi
+
+if [ -z "${XIVO_SMTP_ORIGIN}" ]; then
+  XIVO_SMTP_ORIGIN="${XIVO_HOSTNAME}.${XIVO_DOMAIN}"
+fi
+
+XIVO_NAMESERVER_LIST=
+if [ -n "${XIVO_NAMESERVERS}" ]; then
+  for NS in ${XIVO_NAMESERVERS}; do
+    XIVO_NAMESERVER_LIST="${XIVO_NAMESERVER_LIST}nameserver ${NS}\n"
+  done
+else
+  echo "ERROR: no nameservers defined" >&2
+  exit 1
+fi
+
+if [ -n "${XIVO_DHCP_POOL}" ]; then
+  _XIVO_DHCP_SUBNET="\# Include of the subnet declaration (XIVO_DHCP_POOL is not void in common.conf)\ninclude \"/etc/dhcp3/dhcpd_subnet.conf\";"
+else
+  _XIVO_DHCP_SUBNET="\# Subnet declaration not specified because XIVO_DHCP_POOL is void in common.conf\n\# Use dhcpd_extra.conf for custom configuration"
+fi
+
+if [ "${XIVO_MAINTENANCE}" = "1" ]; then
+  _PF_EMAIL_ALERTS_LIST="pv-tech-xivo-alerts"
+  _PF_EMAIL_ALERTS=$(create_pf_email_alerts ${_PF_EMAIL_ALERTS_LIST} "root")
+  _PF_EMAIL_REPORTS=$(create_pf_email_alerts "pv-tech-xivo-reports" "root")
+
+  XIVO_SMTP_CANONICAL="root\t${_PF_EMAIL_REPORTS}\nasterisk\t${_PF_EMAIL_REPORTS}"
+fi
+
+if [ -n "${XIVO_SMTP_MYDOMAIN}" ]; then
+  _XIVO_SMTP_MYDOMAIN=${XIVO_SMTP_DOMAIN}
+else
+  _XIVO_SMTP_MYDOMAIN=${XIVO_DOMAIN}
+fi
+
