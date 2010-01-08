@@ -44,7 +44,7 @@ class Yealink(PhoneVendorMixin):
                       ('t28', 'T28'))
 
     YEALINK_COMMON_HTTP_USER = "admin"
-    YEALINK_COMMON_HTTP_PASS = "admin"
+    YEALINK_COMMON_HTTP_PASS = ""
 
     YEALINK_COMMON_DIR = None
 
@@ -59,7 +59,6 @@ class Yealink(PhoneVendorMixin):
         if self.phone['model'] not in [x[0] for x in self.YEALINK_MODELS]:
             raise ValueError, "Unknown Yealink model %r" % self.phone['model']
 
-    @staticmethod
     def __action(self, command, user, passwd):
         cnx_to = max_to = max(1, self.CURL_TO_S / 2)
         try: # XXX: also check return values?
@@ -76,9 +75,10 @@ class Yealink(PhoneVendorMixin):
                              "--max-time", str(max_to),
                              "-s",
                              "-o", "/dev/null",
-                             "--digest",
                              "-u", "%s:%s" % (user, passwd),
-                             "http://%s/admin/%s" % (self.phone['ipv4'], command)],
+			     "-d", "PAGEID=7",
+			     "-d", "CONFIG_DATA=%s" % command,
+                             "http://%s/cgi-bin/ConfigManApp.com" % self.phone['ipv4']],
                             close_fds = True)
         except OSError:
             log.exception("error when trying to call curl")
@@ -88,11 +88,11 @@ class Yealink(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action("reboot", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
+        self.__action("REBOOT", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action("reboot", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
+        self.__action("REBOOT", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
 
     def __generate(self, provinfo):
         """
@@ -122,7 +122,7 @@ class Yealink(PhoneVendorMixin):
         template_lines = template_file.readlines()
         template_file.close()
         tmp_filename = os.path.join(self.YEALINK_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")
-        cfg_filename = macaddr + ".cfg"
+        cfg_filename = os.path.join(self.YEALINK_COMMON_DIR, macaddr + ".cfg")
 
         if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
