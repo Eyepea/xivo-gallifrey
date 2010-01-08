@@ -1,7 +1,7 @@
 Index: asterisk-1.4.28/apps/app_queue.c
 ===================================================================
 --- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-07 15:31:37.000000000 +0100
-+++ asterisk-1.4.28/apps/app_queue.c	2010-01-07 18:10:43.000000000 +0100
++++ asterisk-1.4.28/apps/app_queue.c	2010-01-08 10:30:05.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -665,7 +665,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 +		return variables;
 +
 +	*ptr++ = '\0';
-+	while ((var = strsep(&ptr, "^"))) {
++	while ((var = strsep(&ptr, "^)"))) {
 +		struct rule_var *v;
 +		char *value = strchr(var, '=');
 +
