@@ -49,7 +49,7 @@ log = logging.getLogger("xivo.Phones.Snom") # pylint: disable-msg=C0103
 
 class Snom(PhoneVendorMixin):
 
-    SNOM_MODELS = ('300', '320', '360')
+    SNOM_MODELS = ('300', '320', '360', '370', '820', '870')
 
     SNOM_COMMON_HTTP_USER = "guest"
     SNOM_COMMON_HTTP_PASS = "guest"
