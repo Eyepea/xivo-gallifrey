@@ -166,7 +166,13 @@ class Yealink(PhoneVendorMixin):
             key     = int(key)
             label   = value.get('label', exten)
 
-            fk_config_lines.append('blftype = %s' % key)
+            fk_config_lines.append('[ memory%s ]' % key)
+            fk_config_lines.append('path = /config/vpPhone/vpPhone.ini')
+            fk_config_lines.append('type = blf')
+            fk_config_lines.append('Line = 0')
+            fk_config_lines.append('Value = %s' % exten)
+            fk_config_lines.append('DKtype = 16')
+            fk_config_lines.append('PickupValue = %s%s' %(exten_pickup_prefix, exten))
 
         return "\n".join(fk_config_lines)
 
