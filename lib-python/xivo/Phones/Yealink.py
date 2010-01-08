@@ -133,7 +133,7 @@ class Yealink(PhoneVendorMixin):
                 clean_extension(provinfo['extensions']['pickupexten']) + "#"
 
         function_keys_config_lines = \
-                self.__format_function_keys(provinfo['funckey'], model)
+                self.__format_function_keys(provinfo['funckey'], model, provinfo)
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -153,13 +153,17 @@ class Yealink(PhoneVendorMixin):
         os.rename(tmp_filename, cfg_filename)
 
     @classmethod
-    def __format_function_keys(cls, funckey, model):
+    def __format_function_keys(cls, funckey, model, provinfo):
         if model not in ('t26', 't28'):
             return ""
 
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
+
+        exten_pickup_prefix = \
+                clean_extension(provinfo['extensions']['pickupexten'])
+
         for key in sorted_keys:
             value   = funckey[key]
             exten   = value['exten']
@@ -172,7 +176,7 @@ class Yealink(PhoneVendorMixin):
             fk_config_lines.append('Line = 0')
             fk_config_lines.append('Value = %s' % exten)
             fk_config_lines.append('DKtype = 16')
-            fk_config_lines.append('PickupValue = %s%s' %(exten_pickup_prefix, exten))
+            fk_config_lines.append('PickupValue = %s%s\n' %(exten_pickup_prefix, exten))
 
         return "\n".join(fk_config_lines)
 
