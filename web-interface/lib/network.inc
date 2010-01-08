@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('DWHO_NETWORK_RE_HOSTNAME','[a-zA-Z0-9][a-zA-Z0-9-]{0,62}(?<!-)');
+define('DWHO_NETWORK_RE_HOSTNAME','[a-zA-Z](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?');
 define('DWHO_NETWORK_RE_IPVFUTURE','v[\da-fA-F]+\.[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:]+');
 
 define('DWHO_NETWORK_HOST_IPV4_DOTDEC',1);
@@ -170,7 +170,7 @@ class dwho_network
 		if(($host_mode & DWHO_NETWORK_HOST_ALL) === 0)
 			$host_mode = DWHO_NETWORK_HOST_IPV4;
 
-		if(($bitmask = dwho_network::valid_mask_ipv4($bitmask,$mask_mode,$ret)) === false
+		if(($bitmask = dwho_network::valid_mask_ipv4($mask,$mask_mode,$ret)) === false
 		|| dwho_network::valid_host($host,$host_mode) === false)
 			return(false);
 
@@ -366,9 +366,8 @@ class dwho_network
 
 	function valid_hostname_part($hostpart)
 	{
-		if(is_scalar($hostpart) === true
-		&& preg_match('/^('.DWHO_NETWORK_RE_HOSTNAME.')$/',$hostpart,$match) === 1
-		&& ctype_digit($match[1]) === false)
+		if(is_string($hostpart) === true
+		&& preg_match('/^('.DWHO_NETWORK_RE_HOSTNAME.')$/',$hostpart,$match) === 1)
 			return(true);
 
 		return(false);
@@ -376,12 +375,10 @@ class dwho_network
 
 	function valid_hostname($host)
 	{
-		if(is_scalar($host) === true
+		if(is_string($host) === true
 		&& strlen($host) < 256
 		&& preg_match('/^(?:'.DWHO_NETWORK_RE_HOSTNAME.'\.)*'.
-				'('.DWHO_NETWORK_RE_HOSTNAME.')$/',$host,$match) === 1
-		&& ctype_digit($match[1]) === false
-		&& dwho_network::valid_ipv4($host) === false)
+				'('.DWHO_NETWORK_RE_HOSTNAME.')$/',$host,$match) === 1)
 			return(true);
 
 		return(false);
@@ -389,12 +386,10 @@ class dwho_network
 
 	function valid_hostname_tld($host)
 	{
-		if(is_scalar($host) === true
+		if(is_string($host) === true
 		&& strlen($host) < 256
 		&& preg_match('/^(?:'.DWHO_NETWORK_RE_HOSTNAME.'\.)+'.
-				'('.DWHO_NETWORK_RE_HOSTNAME.')$/',$host,$match) === 1
-		&& ctype_digit($match[1]) === false
-		&& dwho_network::valid_ipv4($host) === false)
+				'('.DWHO_NETWORK_RE_HOSTNAME.')$/',$host,$match) === 1)
 			return(true);
 
 		return(false);
