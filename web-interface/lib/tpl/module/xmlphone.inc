@@ -62,6 +62,7 @@ class dwho_tpl_xmlphone extends dwho_tpl_module
 			case 'aastra':
 			case 'snom':
 			case 'thomson':
+			case 'yealink':
 				return($vendor);
 		}
 

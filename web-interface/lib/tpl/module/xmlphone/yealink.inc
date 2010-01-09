@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
-$array['xivoserver'] = array();
-$array['xivoserver']['option'] = array();
-$array['xivoserver']['option']['ssl_verifypeer'] = false;
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','snom.inc'));
 
-$array['ldapfilter'] = array();
+class dwho_tpl_xmlphone_yealink extends dwho_tpl_xmlphone_snom
+{
+	var $_vendor	= 'yealink';
 
-$array['vendor'] = array();
-$array['vendor']['aastra'] = 'aastra';
-$array['vendor']['polycom'] = 'polycom';
-$array['vendor']['snom'] = 'snom';
-$array['vendor']['thomson'] = 'thomson';
-$array['vendor']['yealink'] = 'yealink';
+	function dwho_tpl_xmlphone_yealink()
+	{
+		$this->_model = $this->get_model();
+	}
+
+	function get_model()
+	{
+		return(null);
+	}
+}
 
 ?>

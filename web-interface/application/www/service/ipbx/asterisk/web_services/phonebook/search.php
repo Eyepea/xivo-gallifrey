@@ -44,7 +44,7 @@ $_TPL->set_var('vendor',$vendor);
 
 if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
 {
-	if($vendor === 'aastra' || $vendor === 'polycom' || $vendor === 'snom')
+	if(in_array($vendor,array('aastra','polycom','snom')) === true)
 		$_TPL->set_var('act','input');
 	else
 		$_TPL->set_var('act','directory');

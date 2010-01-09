@@ -28,8 +28,9 @@ header($xmlvendor->get_header_contenttype());
 
 switch($vendor)
 {
-	case 'thomson':
 	case 'snom':
+	case 'thomson':
+	case 'yealink':
 		$directory = 'genericxml';
 		break;
 }

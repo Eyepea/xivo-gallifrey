@@ -45,12 +45,14 @@ NameVirtualHost *:80
 	RewriteRule ^/provisioning/Aastra/ %{REQUEST_URI} [PT,L]
 
 	RewriteCond %{HTTPS} off
-	# XXX Snom phones don't work with SSL
+	# XXX Snom phones don't support SSL
 	RewriteCond %{HTTP_USER_AGENT} !snom3[026]0-
 	# XXX Thomson phones ST2030 fw2.xx without SSL certificate
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2030\ hw[0-9]\ fw2\.
 	# XXX Thomson phones ST2022 fw4.xx without SSL certificate
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2022\ hw[0-9]\ fw4\.
+	# XXX Yealink phones don't support SSL
+	RewriteCond %{HTTP_USER_AGENT} !^yealink
 	# Used for stats/monitoring
 	RewriteCond %{REQUEST_URI} !^/server-status$
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]

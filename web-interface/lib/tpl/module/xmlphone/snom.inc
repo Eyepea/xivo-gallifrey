@@ -29,7 +29,7 @@ class dwho_tpl_xmlphone_snom extends dwho_tpl_xmlphone_abstract
 	var $_escape		= false;
 	var $_utf8		= true;
 
-	function dwho_tpl_xmlphone_aastra()
+	function dwho_tpl_xmlphone_snom()
 	{
 		$this->_model = $this->get_model();
 	}
