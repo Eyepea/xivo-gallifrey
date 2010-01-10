@@ -143,8 +143,8 @@ class Yealink(PhoneVendorMixin):
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
-                    { 'function_keys':  function_keys_config_lines,
-                      'user_dtmfmode':  self.YEALINK_DTMF.get(provinfo['dtmfmode'], '2')
+                    { 'user_dtmfmode':  self.YEALINK_DTMF.get(provinfo['dtmfmode'], '2'),
+                      'function_keys':  function_keys_config_lines
                     },
                     clean_extension),
                 cfg_filename,
