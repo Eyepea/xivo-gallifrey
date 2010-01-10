@@ -55,5 +55,5 @@ $dhtml->load_js();
 ?>
 	</head>
 	<body>
-	<a style="display: none;" name="xivo-free-focus"></a>
+	<a style="display: none;" name="dwho-free-focus"></a>
 	<a name="xivo-top"></a>

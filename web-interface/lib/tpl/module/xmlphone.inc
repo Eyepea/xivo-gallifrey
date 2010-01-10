@@ -29,11 +29,20 @@ class dwho_tpl_xmlphone extends dwho_tpl_module
 		$this->_tpl = &$tpl;
 	}
 
+	function normalize_vendor_name($vendor)
+	{
+		if(is_scalar($vendor) === false
+		|| preg_match('/^[a-zA-Z0-9_-]+$/',$vendor) === 0)
+			return(false);
+
+		return(strtolower($vendor));
+	}
+
 	function factory($vendor)
 	{
 		$this->_vendor = null;
 
-		if(($vendor = $this->chk_vendor($vendor)) === false)
+		if(($vendor = $this->normalize_vendor_name($vendor)) === false)
 			return(false);
 
 		$dir = array('tpl',
@@ -48,25 +57,6 @@ class dwho_tpl_xmlphone extends dwho_tpl_module
 		$this->_vendor = $vendor;
 
 		return(new $classname());
-	}
-
-	function chk_vendor($vendor)
-	{
-		if(is_scalar($vendor) === false)
-			return(false);
-
-		$vendor = strtolower($vendor);
-
-		switch($vendor)
-		{
-			case 'aastra':
-			case 'snom':
-			case 'thomson':
-			case 'yealink':
-				return($vendor);
-		}
-
-		return(false);
 	}
 
 	function get_vendor()

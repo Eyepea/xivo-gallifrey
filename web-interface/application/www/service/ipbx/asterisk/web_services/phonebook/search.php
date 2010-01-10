@@ -18,12 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$phonebook = &$ipbx->get_appcustom('webservices','phonebook');
-$xmlphone = &$_TPL->get_module('xmlphone');
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
-if(isset($_SERVER['REMOTE_ADDR']) === false
-|| $phonebook->chk_host_access($_SERVER['REMOTE_ADDR']) === false)
-	dwho_die('Error/403');
+$xmlphone = &$_TPL->get_module('xmlphone');
 
 $pos = isset($_QR['pos']) === true ? dwho_uint($_QR['pos']) : 0;
 $node = isset($_QR['node']) === true ? dwho_uint($_QR['node']) : 0;
@@ -31,7 +28,11 @@ $directory = isset($_QR['directory']) === true && $node === 1 ? true : false;
 $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']) : false;
 
 if($vendor === false && ($vendor = $phonebook->get_vendor_from_useragent()) === false)
+{
+	$http_response->set_status_line(400);
+	$http_response->send(false);
 	dwho_die('Error/Invalid Vendor and User-Agent');
+}
 
 $xmlvendor = $xmlphone->factory($vendor);
 $is_xmlphonebook = is_object($xmlvendor);
@@ -56,7 +57,6 @@ if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
 		$_TPL->set_var('act','directory');
 
 	$_TPL->display($displaypath);
-
 	die();
 }
 
@@ -68,10 +68,12 @@ if(($rsp = $phonebook->get_phonebook_search($_QR['name'])) !== false)
 if(($rsu = $phonebook->get_user_search($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsu);
 
-$url = $_TPL->url('service/ipbx/web_services/phonebook/local').
-       '?'.'name='.$_QR['name'].'&vendor='.$vendor;
+$uri = array();
+$uri['path'] = $_TPL->url('service/ipbx/json/phonebook/local');
+$uri['query'] = array(array('name', $_QR['name']),
+		      array('vendor', $vendor));
 
-if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($url,false)) !== false)
+if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($uri,false)) !== false)
 	$rs = array_merge($rs,$rsx);
 
 if(($rsl = $phonebook->get_phonebook_search_from_ldapfilter($_QR['name'],false)) !== false)

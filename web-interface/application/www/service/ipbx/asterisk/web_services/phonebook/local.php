@@ -18,21 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$phonebook = &$ipbx->get_appcustom('webservices','phonebook');
-
-if(isset($_SERVER['REMOTE_ADDR']) === false
-|| $phonebook->chk_host_access($_SERVER['REMOTE_ADDR']) === false)
-	dwho_die('Error/403');
+include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
 define('XIVO_PHONEBOOK_URL',$_TPL->url('service/ipbx/web_services/phonebook/search',true));
 
 $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']) : false;
 
 if($vendor === false)
+{
+	$http_response->set_status_line(400);
+	$http_response->send(false);
 	dwho_die('Error/Invalid Vendor');
+}
 
 if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
+{
+	$http_response->set_status_line(400);
+	$http_response->send(false);
 	dwho_die('Error/Invalid name');
+}
 
 $rs = array();
 
@@ -43,19 +47,13 @@ if(($rsu = $phonebook->get_user_search($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsu);
 
 if(($nb = count($rs)) === 0)
-	dwho_die('no-data');
-
-echo dwho_msg('beg-data')."\n";
-
-for($i = 0;$i < $nb;$i++)
 {
-	$ref = &$rs[$i];
-
-	echo	'"'.str_replace('"','""',$ref['name']).'"|'.
-		'"'.str_replace('"','""',$ref['phone']).'"|'.
-		'"'.str_replace('"','""',$ref['type']).'"'."\n";
+	$http_response->set_status_line(204);
+	$http_response->send(true);
 }
 
-dwho_die('end-data')."\n";
+$_TPL->set_var('act','list');
+$_TPL->set_var('list',$rs);
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

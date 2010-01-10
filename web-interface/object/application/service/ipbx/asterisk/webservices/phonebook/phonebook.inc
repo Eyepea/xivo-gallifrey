@@ -19,6 +19,7 @@
 #
 
 dwho::load_class('dwho_network');
+dwho::load_class('dwho_json');
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','asterisk','webservices','abstract.inc'),true);
 
@@ -29,6 +30,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 	var $_appxivoserver	= null;
 	var $_appldapfilter	= null;
 	var $_curl		= null;
+	var $_uri		= null;
 
 	function xivo_application_service_asterisk_webservices_phonebook(&$service,&$dso)
 	{
@@ -60,6 +62,14 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 				return(false);
 
 			$this->_curl = new dwho_curl();
+		}
+
+		if(is_object($this->_uri) === false)
+		{
+			if(dwho::load_class('dwho_uri') === false)
+				return(false);
+
+			$this->_uri = new dwho_uri();
 		}
 
 		if(is_object($this->_appxivoserver) === false
@@ -165,7 +175,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 		return($r);
 	}
 
-	function get_phonebook_search_from_xivoserver($query,$disable=null)
+	function get_phonebook_search_from_xivoserver($uri,$disable=null)
 	{
 		if($this->_load_xivoserver() === false
 		|| ($rs = $this->_appxivoserver->get_servers_list($disable)) === false
@@ -178,7 +188,7 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			$url = rtrim($rs[$i]['server']['url'],'/').'/'.ltrim($query,'/');
+			$url = $this->_uri->build_uri(array_merge($uri,$rs[$i]['server']['url']));
 
 			if(($recv = $this->_parse_xivoserver_recv($this->_curl->load($url,$option))) !== false)
 				$r = array_merge($r,$recv);
@@ -194,44 +204,34 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 	function _parse_xivoserver_recv($recv)
 	{
-		if(dwho::load_class('dwho::file::csv') === false
-		|| dwho_has_len($recv) === false)
-			return(false);
+		$http_code = $this->_curl->get_info('http_code');
 
-		$recv = explode("\n",str_replace("\r",'',$recv));
-
-		$beg = explode(': ',array_shift($recv));
-		$end = explode(': ',array_pop($recv));
-
-		if(isset($beg[0],$beg[1],$end[0],$end[1]) === false
-		|| $beg[1] !== 'beg-data'
-		|| $end[1] !== 'end-data'
-		|| ($nb = count($recv)) === 0)
-			return(false);
-
-		$filecsv = new dwho_file_csv();
-
-		if(($data = $filecsv->parse($recv,0,'|',null,false)) === false
+		if(is_scalar($http_code) === false
+		|| substr($http_code,0,1) !== '2'
+		|| ($data = dwho_json::decode($recv,true)) === false
+		|| is_array($data) === false
 		|| ($nb = count($data)) === 0)
 			return(false);
+
+		$tmpinfo = array('name'		=> '',
+				 'phone'	=> '',
+				 'type'		=> '');
 
 		$r = $info = array();
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(is_array($data[$i]) === false
-			|| isset($data[$i][0],$data[$i][1],$data[$i][2]) === false)
+			if(isset($data[$i]) === false
+			|| is_array($data[$i]) === false)
 				continue;
 
-			$ref = &$data[$i];
+			$info = array_merge($tmpinfo,
+					    array_filter($data[$i],'is_scalar'));
 
-			$info['name'] = $ref[0];
-			$info['phone'] = $ref[1];
-			$info['type'] = $ref[2];
-			$info['identity'] = $ref[0];
+			$info['identity'] = $info['name'];
 
 			if($info['type'] !== 'local')
-				$info['identity'] .= ' ('.$ref[2].')';
+				$info['identity'] .= ' ('.$ref['type'].')';
 
 			$r[] = $info;
 		}

@@ -47,7 +47,7 @@ class dwho_tpl_url extends dwho_tpl_module
 
 	function _build_query($query=null,$encode=true,$sep=null,$sid=true)
 	{
-		$sid = (bool) $sid;
+		$sid = (bool) $sid === true && defined(DWHO_SESS_STR) === true;
 		$sep = $this->get_separator($sep);
 
 		if(is_array($query) === true)
@@ -122,12 +122,10 @@ class dwho_tpl_url extends dwho_tpl_module
 			return('');
 		else if($url{0} === '/' || (bool) $internal === false)
 			return($url);
-		else if((bool) $i18n === false)
+		else if((bool) $i18n === false || defined('DWHO_I18N_BABELFISH_LANGUAGE') === false)
 			return(DWHO_LOCATION_ROOT_URL.'/'.$url);
 
-		$user = &$this->_get_module('user');
-
-		return(DWHO_LOCATION_ROOT_URL.'/img/i18n/'.$user->get_info('language').'/'.$url);
+		return(DWHO_LOCATION_ROOT_URL.'/img/i18n/'.DWHO_I18N_BABELFISH_LANGUAGE.'/'.$url);
 	}
 
 	function img_html($url,$alt=null,$opt=null,$query=null,$i18n=false,$internal=true)
