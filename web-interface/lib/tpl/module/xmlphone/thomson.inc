@@ -28,6 +28,10 @@ class dwho_tpl_xmlphone_thomson extends dwho_tpl_xmlphone_abstract
 	var $_cdata		= true;
 	var $_escape		= false;
 	var $_utf8		= false;
+	var $_nbbypage		= 8;
+	var $_tags		= array('directory'	=> 'ThomsonPhoneBook',
+					'menu'		=> 'ThomsonPhoneMenu',
+					'input'		=> null);
 
 	function dwho_tpl_xmlphone_thomson()
 	{
@@ -43,21 +47,6 @@ class dwho_tpl_xmlphone_thomson extends dwho_tpl_xmlphone_abstract
 			return(null);
 
 		return($match[1]);
-	}
-
-	function tag_directory()
-	{
-		return('ThomsonPhoneBook');
-	}
-
-	function tag_menu()
-	{
-		return('ThomsonPhoneMenu');
-	}
-
-	function tag_input()
-	{
-		return('');
 	}
 }
 

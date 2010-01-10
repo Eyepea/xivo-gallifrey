@@ -28,6 +28,9 @@ class dwho_tpl_xmlphone_aastra extends dwho_tpl_xmlphone_abstract
 	var $_cdata		= true;
 	var $_escape		= false;
 	var $_utf8		= false;
+	var $_tags		= array('directory'	=> 'AastraIPPhoneDirectory',
+					'menu'		=> 'AastraIPPhoneTextMenu',
+					'input'		=> 'AastraIPPhoneInputScreen');
 	var $_model_standardize	= array('51i'		=> '6751i',
 					'53i'		=> '6753i',
 					'55i'		=> '6755i',
@@ -63,21 +66,6 @@ class dwho_tpl_xmlphone_aastra extends dwho_tpl_xmlphone_abstract
 		}
 
 		return(false);
-	}
-
-	function tag_directory()
-	{
-		return('AastraIPPhoneDirectory');
-	}
-
-	function tag_menu()
-	{
-		return('AastraIPPhoneTextMenu');
-	}
-
-	function tag_input()
-	{
-		return('AastraIPPhoneInputScreen');
 	}
 }
 

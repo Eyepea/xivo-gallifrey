@@ -19,6 +19,7 @@
 #
 
 $phonebook = &$ipbx->get_appcustom('webservices','phonebook');
+$xmlphone = &$_TPL->get_module('xmlphone');
 
 if(isset($_SERVER['REMOTE_ADDR']) === false
 || $phonebook->chk_host_access($_SERVER['REMOTE_ADDR']) === false)
@@ -32,19 +33,24 @@ $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']
 if($vendor === false && ($vendor = $phonebook->get_vendor_from_useragent()) === false)
 	dwho_die('Error/Invalid Vendor and User-Agent');
 
+$xmlvendor = $xmlphone->factory($vendor);
+$is_xmlphonebook = is_object($xmlvendor);
+
 $path = '/bloc/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook';
 
-if($vendor !== 'polycom')
+if($is_xmlphonebook === true)
 	$displaypath = $path.'/phone';
 else
-	$displaypath = '/struct/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook/polycom';
+	$displaypath = '/struct/service/ipbx/'.$ipbx->get_name().'/web_services/phonebook/'.$vendor;
 
 $_TPL->set_var('path',$path);
 $_TPL->set_var('vendor',$vendor);
 
 if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
 {
-	if(in_array($vendor,array('aastra','polycom','snom')) === true)
+	if($is_xmlphonebook === true && $xmlvendor->has_tag_input() === true)
+		$_TPL->set_var('act','input');
+	else if($vendor === 'polycom')
 		$_TPL->set_var('act','input');
 	else
 		$_TPL->set_var('act','directory');
@@ -71,12 +77,18 @@ if(($rsx = $phonebook->get_phonebook_search_from_xivoserver($url,false)) !== fal
 if(($rsl = $phonebook->get_phonebook_search_from_ldapfilter($_QR['name'],false)) !== false)
 	$rs = array_merge($rs,$rsl);
 
-if($vendor === 'thomson')
-	$nbbypage = 8;
+if($is_xmlphonebook === true)
+{
+	$has_tag_menu = $xmlvendor->has_tag_menu();
+	$nbbypage = $xmlvendor->nb_by_page();
+}
 else
+{
+	$has_tag_menu = true;
 	$nbbypage = 16;
+}
 
-if(($nb = count($rs)) === 0 || $nb <= $nbbypage)
+if(($nb = count($rs)) === 0 || $nb <= $nbbypage || $has_tag_menu === false)
 {
 	$_TPL->set_var('list',$rs);
 	$_TPL->set_var('prevpos',0);
@@ -127,7 +139,9 @@ else
 {
 	$res = array();
 
-	for($i = $beg,$j = $beg + $cnt - 1;$i < $end && $i < $nb;$i += $cnt,$j = $i + $cnt - 1)
+	for($i = $beg,$j = $beg + $cnt - 1;
+	    $i < $end && $i < $nb;
+	    $i += $cnt,$j = $i + $cnt - 1)
 	{
 		if(isset($rs[$j]) === true)
 			$res[] = array($rs[$i],$rs[$j],$i);

@@ -24,6 +24,10 @@ class dwho_tpl_xmlphone_abstract
 	var $_cdata		= false;
 	var $_escape		= true;
 	var $_utf8		= true;
+	var $_nbbypage		= 16;
+	var $_tags		= array('directory'	=> null,
+					'menu'		=> null,
+					'input'		=> null);
 
 	function has_cdata()
 	{
@@ -57,6 +61,11 @@ class dwho_tpl_xmlphone_abstract
 		return('Content-Type: text/xml; charset='.$charset);
 	}
 
+	function nb_by_page()
+	{
+		return($this->_nbbypage);
+	}
+
 	function escape($str,$force=true)
 	{
 		if(is_scalar($str) === false)
@@ -70,6 +79,36 @@ class dwho_tpl_xmlphone_abstract
 			$str = utf8_decode($str);
 
 		return($str);
+	}
+
+	function has_tag_directory()
+	{
+		return(dwho_has_len($this->_tags['directory']));
+	}
+
+	function has_tag_menu()
+	{
+		return(dwho_has_len($this->_tags['menu']));
+	}
+
+	function has_tag_input()
+	{
+		return(dwho_has_len($this->_tags['input']));
+	}
+
+	function tag_directory()
+	{
+		return($this->_tags['directory']);
+	}
+
+	function tag_menu()
+	{
+		return($this->_tags['menu']);
+	}
+
+	function tag_input()
+	{
+		return($this->_tags['input']);
 	}
 }
 

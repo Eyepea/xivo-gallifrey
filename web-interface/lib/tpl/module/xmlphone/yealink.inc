@@ -18,11 +18,20 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','snom.inc'));
+require_once(dwho_file::joinpath(DWHO_PATH_ROOT,'tpl','module','xmlphone','abstract','abstract.inc'));
 
-class dwho_tpl_xmlphone_yealink extends dwho_tpl_xmlphone_snom
+class dwho_tpl_xmlphone_yealink extends dwho_tpl_xmlphone_abstract
 {
-	var $_vendor	= 'yealink';
+	var $_vendor		= 'yealink';
+	var $_model		= null;
+	var $_argseparator	= '&';
+	var $_cdata		= false;
+	var $_escape		= false;
+	var $_utf8		= true;
+	var $_nbbypage		= 32;
+	var $_tags		= array('directory'	=> 'YealinkIPPhoneDirectory',
+					'menu'		=> null,
+					'input'		=> null);
 
 	function dwho_tpl_xmlphone_yealink()
 	{

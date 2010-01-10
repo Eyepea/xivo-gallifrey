@@ -28,6 +28,9 @@ class dwho_tpl_xmlphone_snom extends dwho_tpl_xmlphone_abstract
 	var $_cdata		= false;
 	var $_escape		= false;
 	var $_utf8		= true;
+	var $_tags		= array('directory'	=> 'SnomIPPhoneDirectory',
+					'menu'		=> 'SnomIPPhoneMenu',
+					'input'		=> 'SnomIPPhoneInput');
 
 	function dwho_tpl_xmlphone_snom()
 	{
@@ -43,21 +46,6 @@ class dwho_tpl_xmlphone_snom extends dwho_tpl_xmlphone_abstract
 			return(null);
 
 		return($match[1]);
-	}
-
-	function tag_directory()
-	{
-		return('SnomIPPhoneDirectory');
-	}
-
-	function tag_menu()
-	{
-		return('SnomIPPhoneMenu');
-	}
-
-	function tag_input()
-	{
-		return('SnomIPPhoneInput');
 	}
 }
 
