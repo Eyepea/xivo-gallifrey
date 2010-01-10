@@ -1,4 +1,4 @@
-"""Support for Linksys phones for XIVO Configuration
+"""Support for Yealink phones for XIVO Configuration
 
 Yealink T20, T22, T26 and T28 are supported.
 
@@ -6,7 +6,7 @@ Copyright (C) 2010  Proformatique
 
 """
 
-__version__ = "$Revision: $Date:"
+__version__ = "$Revision $Date"
 __license__ = """
     Copyright (C) 2010  Proformatique
 
@@ -27,7 +27,6 @@ __license__ = """
 import os
 import logging
 import subprocess
-import math
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
@@ -38,10 +37,12 @@ log = logging.getLogger("xivo.Phones.Yealink") # pylint: disable-msg=C0103
 
 class Yealink(PhoneVendorMixin):
 
-    YEALINK_MODELS = (('t20', 'T20'),
-                      ('t22', 'T22'),
-                      ('t26', 'T26'),
-                      ('t28', 'T28'))
+    YEALINK_MODELS = ('T20',
+                      'T22',
+                      'T26',
+                      'T28')
+
+    YEALINK_MACADDR_PREFIX = ('1:00:15:65',)
 
     YEALINK_COMMON_HTTP_USER = "admin"
     YEALINK_COMMON_HTTP_PASS = ""
@@ -56,7 +57,7 @@ class Yealink(PhoneVendorMixin):
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] not in [x[0] for x in self.YEALINK_MODELS]:
+        if self.phone['model'].upper() not in self.YEALINK_MODELS:
             raise ValueError, "Unknown Yealink model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
@@ -76,8 +77,8 @@ class Yealink(PhoneVendorMixin):
                              "-s",
                              "-o", "/dev/null",
                              "-u", "%s:%s" % (user, passwd),
-			     "-d", "PAGEID=7",
-			     "-d", "CONFIG_DATA=%s" % command,
+                             "-d", "PAGEID=7",
+                             "-d", "CONFIG_DATA=%s" % command,
                              "http://%s/cgi-bin/ConfigManApp.com" % self.phone['ipv4']],
                             close_fds = True)
         except OSError:
@@ -88,7 +89,7 @@ class Yealink(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action("REBOOT", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
+        self.__action("RESETFACTORY", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
@@ -124,24 +125,19 @@ class Yealink(PhoneVendorMixin):
         tmp_filename = os.path.join(self.YEALINK_COMMON_DIR, model + "-" + macaddr + ".cfg.tmp")
         cfg_filename = os.path.join(self.YEALINK_COMMON_DIR, macaddr + ".cfg")
 
-        if bool(int(provinfo.get('subscribemwi', 0))):
-            provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
-        else:
-            provinfo['vmailaddr'] = ""
+        provinfo['subscribemwi'] = str(int(bool(int(provinfo.get('subscribemwi', 0)))))
 
         exten_pickup_prefix = \
-                clean_extension(provinfo['extensions']['pickupexten']) + "#"
+                clean_extension(provinfo['extensions']['pickupexten'])
 
         function_keys_config_lines = \
-                self.__format_function_keys(provinfo['funckey'], model, provinfo)
+                self.__format_function_keys(provinfo['funckey'], model, exten_pickup_prefix)
 
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
-                    { 'user_vmail_addr':        provinfo['vmailaddr'],
-                      'exten_pickup_prefix':    exten_pickup_prefix,
-                      'function_keys':          function_keys_config_lines
+                    { 'function_keys':  function_keys_config_lines
                     },
                     clean_extension),
                 cfg_filename,
@@ -153,7 +149,7 @@ class Yealink(PhoneVendorMixin):
         os.rename(tmp_filename, cfg_filename)
 
     @classmethod
-    def __format_function_keys(cls, funckey, model, provinfo):
+    def __format_function_keys(cls, funckey, model, exten_pickup_prefix):
         if model not in ('t26', 't28'):
             return ""
 
@@ -161,22 +157,17 @@ class Yealink(PhoneVendorMixin):
         sorted_keys.sort()
         fk_config_lines = []
 
-        exten_pickup_prefix = \
-                clean_extension(provinfo['extensions']['pickupexten'])
-
         for key in sorted_keys:
             value   = funckey[key]
             exten   = value['exten']
-            key     = int(key)
-            label   = value.get('label', exten)
 
-            fk_config_lines.append('[ memory%s ]' % key)
-            fk_config_lines.append('path = /config/vpPhone/vpPhone.ini')
-            fk_config_lines.append('type = blf')
-            fk_config_lines.append('Line = 0')
-            fk_config_lines.append('Value = %s' % exten)
-            fk_config_lines.append('DKtype = 16')
-            fk_config_lines.append('PickupValue = %s%s\n' %(exten_pickup_prefix, exten))
+            fk_config_lines.append("[ memory%s ]" % key)
+            fk_config_lines.append("path = /config/vpPhone/vpPhone.ini")
+            fk_config_lines.append("type = blf")
+            fk_config_lines.append("Line = 0")
+            fk_config_lines.append("Value = %s" % exten)
+            fk_config_lines.append("DKtype = 16")
+            fk_config_lines.append("PickupValue = %s%s\n" % (exten_pickup_prefix, exten))
 
         return "\n".join(fk_config_lines)
 
@@ -199,7 +190,7 @@ class Yealink(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return tuple([(x[0], x[0].upper()) for x in cls.YEALINK_MODELS])
+        return tuple([(x.lower(), x) for x in cls.YEALINK_MODELS])
 
     # Entry points for the AGI
 
@@ -209,23 +200,28 @@ class Yealink(PhoneVendorMixin):
         Extract Vendor / Model / FirmwareRevision from SIP User-Agent
         or return None if we don't deal with this kind of Agent.
         """
-
-	# T28 2.41.0.60
+        # T28 2.41.0.60
 
         ua_splitted = ua.split(" ", 1)
-        if ua_splitted[0] not in ('T20', 'T22', 'T26', 'T28'):
+        if ua_splitted[0] not in cls.YEALINK_MODELS:
             return None
-        model = 'unknown'
-        fw = 'unknown'
+
+        model = ua_splitted[0].lower()
         if len(ua_splitted) == 2:
             fw = ua_splitted[1]
-            model = ua_splitted[0].lower()
         return ("yealink", model, fw)
 
     @classmethod
     def get_dhcp_classes_and_sub(cls, addresses):
-        return
+        for macaddr_prefix in cls.YEALINK_MACADDR_PREFIX:
+            for line in (
+                'subclass "phone-mac-address-prefix" %s {\n' % macaddr_prefix,
+                '    log("class Yealink prefix %s");\n' % macaddr_prefix,
+                '    option tftp-server-name "tftp://%s/Yealink";\n' % addresses['bootServer'],
+                '}\n',
+                '\n'):
+                yield line
 
     @classmethod
     def get_dhcp_pool_lines(cls):
-        return
+        return ()
