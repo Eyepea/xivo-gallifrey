@@ -49,6 +49,12 @@ class Yealink(PhoneVendorMixin):
 
     YEALINK_COMMON_DIR = None
 
+    YEALINK_DTMF = {
+        'inband':   '0',
+        'rfc2833':  '1',
+        'info':     '2'
+    }
+
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
@@ -137,7 +143,8 @@ class Yealink(PhoneVendorMixin):
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
-                    { 'function_keys':  function_keys_config_lines
+                    { 'function_keys':  function_keys_config_lines,
+                      'user_dtmfmode':  self.YEALINK_DTMF.get(provinfo['dtmfmode'], '2')
                     },
                     clean_extension),
                 cfg_filename,
