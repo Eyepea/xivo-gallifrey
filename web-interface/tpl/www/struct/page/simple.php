@@ -18,8 +18,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-	$menu = &$this->get_module('menu');
-	$this->file_include('bloc/head');
+$menu = &$this->get_module('menu');
+$this->file_include('bloc/head');
+
 ?>
 <div id="bc-body">
 <div id="bpc-simple">
