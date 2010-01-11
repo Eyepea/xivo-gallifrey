@@ -38,8 +38,8 @@ log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
 
 class Cisco(PhoneVendorMixin):
 
-    CISCO_MODELS = (('7941ge', '7941GE'),
-                      ('7961ge', '7961GE'))
+    CISCO_MODELS = (('cp7941g', '7941GE'),
+                      ('cp7961g', '7961GE'))
 
     CISCO_COMMON_HTTP_USER = "admin"
     CISCO_COMMON_HTTP_PASS = ""
@@ -201,16 +201,17 @@ class Cisco(PhoneVendorMixin):
         or return None if we don't deal with this kind of Agent.
         """
 
-	# No finished
+	# Cisco-CP7941G-GE/8.0
 
-        ua_splitted = ua.split(" ", 1)
-        if ua_splitted[0] not in ('cisco'):
+        ua_splitted = ua.split("-", 2)
+        if ua_splitted[0] != 'Cisco':
             return None
         model = 'unknown'
         fw = 'unknown'
-        if len(ua_splitted) == 2:
-            fw = ua_splitted[1]
-            model = ua_splitted[0].lower()
+        if len(ua_splitted) == 3:
+            fws = ua_splitted[2].split("/", 1)
+	    fw = fws[1]
+            model = ua_splitted[1].lower()
         return ("cisco", model, fw)
 
     @classmethod
