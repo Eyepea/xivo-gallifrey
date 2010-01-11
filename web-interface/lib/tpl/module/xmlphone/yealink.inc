@@ -28,7 +28,7 @@ class dwho_tpl_xmlphone_yealink extends dwho_tpl_xmlphone_abstract
 	var $_cdata		= false;
 	var $_escape		= false;
 	var $_utf8		= true;
-	var $_nbbypage		= 32;
+	var $_nbbypage		= 64;
 	var $_tags		= array('directory'	=> 'YealinkIPPhoneDirectory',
 					'menu'		=> null,
 					'input'		=> null);
