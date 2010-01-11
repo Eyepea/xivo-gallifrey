@@ -27,6 +27,8 @@ __license__ = """
 import os
 import logging
 import subprocess
+import md5
+from time import time
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
@@ -65,6 +67,13 @@ class Yealink(PhoneVendorMixin):
         PhoneVendorMixin.__init__(self, phone)
         if self.phone['model'].upper() not in self.YEALINK_MODELS:
             raise ValueError, "Unknown Yealink model %r" % self.phone['model']
+
+    @staticmethod
+    def __generate_fake_md5(model, macaddr):
+        """
+        Generate a md5 to force update.
+        """
+        return md5.new("%s-%s-%s" % (time(), model, macaddr)).hexdigest()
 
     def __action(self, command, user, passwd):
         cnx_to = max_to = max(1, self.CURL_TO_S / 2)
@@ -144,6 +153,7 @@ class Yealink(PhoneVendorMixin):
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
                     { 'user_dtmfmode':  self.YEALINK_DTMF.get(provinfo['dtmfmode'], '2'),
+                      'mac_fake_md5':   self.__generate_fake_md5(model, macaddr),
                       'function_keys':  function_keys_config_lines
                     },
                     clean_extension),

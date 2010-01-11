@@ -218,6 +218,13 @@ if do_apply ${BASE_RESULT_DIR} phones-config-thomson; then
   fi
 fi
 
+if [ -d /tftpboot/Yealink ]; then
+  YEALINK_FAKE_MD5=$(echo -n `date +%s.%N`|md5sum|cut -f1 -d" ")
+  find /tftpboot/Yealink/ -mindepth 1 -type f -name "*.cfg" -exec echo "'{}'" \; |\
+    xargs sed -i 's/^\s*com_fake_md5\s*=.*$/com_fake_md5 = '"${YEALINK_FAKE_MD5}"'/' 1>/dev/null 2>/dev/null
+  echo "'phones-config-yealink' option com_fake_md5 UPDATED."
+fi
+
 if [ -x /usr/sbin/pf-check-dahdi-ports ]; then
   if [ -n "${DEBUG}" ]; then
     echo "DEBUG: create monit DAHDI ports configuration"
