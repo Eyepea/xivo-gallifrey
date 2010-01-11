@@ -75,8 +75,16 @@ class Yealink(PhoneVendorMixin):
         """
         return md5.new("%s-%s-%s" % (time(), model, macaddr)).hexdigest()
 
+    @staticmethod
+    def escape_quote(xstr):
+        """
+        Escape simple quote
+        """
+        return str(xstr).replace("'", "'\\''")
+
     def __action(self, command, user, passwd):
         cnx_to = max_to = max(1, self.CURL_TO_S / 2)
+
         try: # XXX: also check return values?
 
             ## curl options
@@ -92,9 +100,9 @@ class Yealink(PhoneVendorMixin):
                                        "--max-time %s" % max_to,
                                        "-s",
                                        "-o /dev/null",
-                                       "-u '%s:%s'" % (user, passwd),
+                                       "-u '%s:%s'" % (self.escape_quote(user), self.escape_quote(passwd)),
                                        "-d 'PAGEID=7'",
-                                       "-d 'CONFIG_DATA=%s'" % command,
+                                       "-d 'CONFIG_DATA=%s'" % self.escape_quote(command),
                                        "'http://%s/cgi-bin/ConfigManApp.com'" % self.phone['ipv4']]),
                              shell=True,
                              close_fds=True)
