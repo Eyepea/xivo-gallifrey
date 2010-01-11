@@ -94,7 +94,12 @@ class Yealink(PhoneVendorMixin):
             # --max-time 15         -- timeout after 15s when connected
             # -retry 0              -- don't retry
 
-            # TODO: Rewrite this
+            # XXX: If Yealink phone has a call in progress, it couldn't reboot.
+            #      So we fork the CURL command.
+            # TODO: Rewrite this:
+            #       - Modify shell sleep to python sleep
+            #       - Remove " ".join()
+            #       - Remove shell=True
             subprocess.Popen(" ".join(["sleep %s;" % cnx_to,
                                        self.CURL_CMD,
                                        "--retry 0",
