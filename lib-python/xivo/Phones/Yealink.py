@@ -85,17 +85,19 @@ class Yealink(PhoneVendorMixin):
             # --connect-timeout 30  -- timeout after 30s
             # --max-time 15         -- timeout after 15s when connected
             # -retry 0              -- don't retry
-            subprocess.call([self.CURL_CMD,
-                             "--retry", "0",
-                             "--connect-timeout", str(cnx_to),
-                             "--max-time", str(max_to),
-                             "-s",
-                             "-o", "/dev/null",
-                             "-u", "%s:%s" % (user, passwd),
-                             "-d", "PAGEID=7",
-                             "-d", "CONFIG_DATA=%s" % command,
-                             "http://%s/cgi-bin/ConfigManApp.com" % self.phone['ipv4']],
-                            close_fds = True)
+            subprocess.Popen(" ".join(["sleep %s;" % cnx_to,
+                                       self.CURL_CMD,
+                                       "--retry 0",
+                                       "--connect-timeout %s" % cnx_to,
+                                       "--max-time %s" % max_to,
+                                       "-s",
+                                       "-o /dev/null",
+                                       "-u '%s:%s'" % (user, passwd),
+                                       "-d 'PAGEID=7'",
+                                       "-d 'CONFIG_DATA=%s'" % command,
+                                       "'http://%s/cgi-bin/ConfigManApp.com'" % self.phone['ipv4']]),
+                             shell=True,
+                             close_fds=True)
         except OSError:
             log.exception("error when trying to call curl")
 
@@ -104,7 +106,7 @@ class Yealink(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action("RESETFACTORY", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
+        self.__action("REBOOT", self.YEALINK_COMMON_HTTP_USER, self.YEALINK_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
