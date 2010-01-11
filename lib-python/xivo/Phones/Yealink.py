@@ -93,6 +93,8 @@ class Yealink(PhoneVendorMixin):
             # --connect-timeout 30  -- timeout after 30s
             # --max-time 15         -- timeout after 15s when connected
             # -retry 0              -- don't retry
+
+            # TODO: Rewrite this
             subprocess.Popen(" ".join(["sleep %s;" % cnx_to,
                                        self.CURL_CMD,
                                        "--retry 0",
