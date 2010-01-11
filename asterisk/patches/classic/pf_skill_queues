@@ -1,7 +1,7 @@
 Index: asterisk-1.4.28/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-07 15:31:37.000000000 +0100
-+++ asterisk-1.4.28/apps/app_queue.c	2010-01-08 10:30:05.000000000 +0100
+--- asterisk-1.4.28.orig/apps/app_queue.c	2010-01-11 11:38:59.000000000 +0100
++++ asterisk-1.4.28/apps/app_queue.c	2010-01-11 11:43:57.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -1392,7 +1392,7 @@ Index: asterisk-1.4.28/apps/app_queue.c
 Index: asterisk-1.4.28/configs/queueskillrules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.28/configs/queueskillrules.conf.sample	2010-01-07 18:28:12.000000000 +0100
++++ asterisk-1.4.28/configs/queueskillrules.conf.sample	2010-01-11 11:43:57.000000000 +0100
 @@ -0,0 +1,38 @@
 +; This file describes skill routing rules. The Queue() application can get the
 +; 'skill_ruleset' argument which is the name of one skill routing ruleset. If
@@ -1435,7 +1435,7 @@ Index: asterisk-1.4.28/configs/queueskillrules.conf.sample
 Index: asterisk-1.4.28/configs/queueskills.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.28/configs/queueskills.conf.sample	2010-01-07 15:49:01.000000000 +0100
++++ asterisk-1.4.28/configs/queueskills.conf.sample	2010-01-11 11:43:57.000000000 +0100
 @@ -0,0 +1,47 @@
 +; Describe skills groups here to assign them to queue members. You can set
 +; weight to each skills. It'll be used by skill rules to know if a queue member
