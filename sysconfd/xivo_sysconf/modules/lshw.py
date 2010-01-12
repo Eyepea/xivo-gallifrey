@@ -29,7 +29,7 @@ from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_R
 from xivo.moresynchro import RWLock
-from xivo.xml2dict import XML2Dict
+from xivo import xml2dict
 
 from xivo_sysconf import helpers
 
@@ -161,7 +161,7 @@ def Lshw(args, options):    # pylint: disable-msg=W0613
         else:
             xml = "<lshw>%s</lshw>" % data
 
-        return XML2Dict().Parse(xml)
+        return xml2dict.Parse(xml)
     finally:
         LSHWLOCK.release()
 
