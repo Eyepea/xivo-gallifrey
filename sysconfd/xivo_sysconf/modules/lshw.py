@@ -161,8 +161,7 @@ def Lshw(args, options):    # pylint: disable-msg=W0613
         else:
             xml = "<lshw>%s</lshw>" % data
 
-        xmltodict = XML2Dict()
-        return xmltodict.Parse(xml)
+        return XML2Dict().Parse(xml)
     finally:
         LSHWLOCK.release()
 
