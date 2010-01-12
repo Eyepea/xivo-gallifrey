@@ -456,7 +456,7 @@ def register_phone_vendor_class(cls):
     if key not in PhoneClasses:
         PhoneClasses[key] = cls
     else:
-        raise ValueError, "A registration as already occured for %r" % key
+        raise ValueError, "A registration as already occurred for %r" % key
 
 
 def phone_vendor_iter_key_class():
@@ -565,9 +565,19 @@ def macaddr(nstr, schema):
 def ipv4_address(nstr, schema):
     """
     !~ipv4_address
-        Check that the document strings is an IPv4 addresses
+        Check that the document string is an IPv4 addresses
     """
     return network.is_ipv4_address_valid(nstr)
+
+
+def ipv4_address_or_domain(nstr, schema):
+    """
+    !~ipv4_address_or_domain
+        Return True if the document string is an IPv4 address
+        or a domain, else False
+    """
+    return network.is_ipv4_address_valid(nstr) \
+           or network.plausible_search_domain(nstr)
 
 
 def netmask(nstr, schema):
@@ -797,6 +807,7 @@ def plausible_configuration(conf, schema):
 
 xys.add_validator(search_domain, u'!!str')
 xys.add_validator(ipv4_address, u'!!str')
+xys.add_validator(ipv4_address_or_domain, u'!!str')
 xys.add_validator(netmask, u'!!str')
 xys.add_validator(macaddr, u'!!str')
 xys.add_validator(plausible_static, u'!!map')
@@ -1085,6 +1096,9 @@ def generate_interfaces(old_lines, conf):
             ifname = natural_vlan_name(phy, vlanId)
             log.info("generating configuration for %r", ifname)
             static = conf['ipConfs'][ipConfs_tag]
+            for allow in interfaces.EniBlockAllow.ALLOWUP_CLASSES:
+                if static.get(allow):
+                    yield "%s %s\n" % (allow, ifname)
             yield "iface %s inet static\n" % ifname
             yield "\taddress %s\n" % static['address']
             yield "\tnetmask %s\n" % static['netmask']

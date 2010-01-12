@@ -97,6 +97,12 @@ class EniBlockAllow(EniBlock):
       is function of B.allow_kw
     * B.allow_list contains the list of allowed interfaces
     """
+
+    ALLOWUP_CLASSES = ('allow-hotplug',
+                       'allow-ifplugd',
+                       'allow-auto',
+                       'auto')
+
     def __init__(self, allow_kw, allow_list):
         EniBlock.__init__(self)
         if allow_kw.startswith("allow-"):
