@@ -79,7 +79,7 @@ if(isset($error_js[0]) === true)
 		<tr class="sb-top">
 <?php
 	echo	
-		"<th width=\"50%\">", $this->bbf('fm_cti_list_ip'), "</th>",
+		"<th width=\"70%\">", $this->bbf('fm_cti_list_ip'), "</th>",
 		"<th class=\"th-right\">".$this->bbf('fm_cti_list_port')."</th>",
 		"</tr>",
 
@@ -192,20 +192,20 @@ if(isset($error_js[0]) === true)
 ?>
 </fieldset>
 <?php
-			
+	$parting = array();
+	if(isset($info['ctimain']['parting_astid_context']) && dwho_has_len($info['ctimain']['parting_astid_context']))
+	{
+		$parting = explode(',', $info['ctimain']['parting_astid_context']);
+	}
 	echo	$form->checkbox(array('desc' => $this->bbf('fm_cti_parting_astid_context'),
 							'name' => 'cti[parting_astid_context]',
 							'labelid' => 'cti_parting_astid_context',
-							'checked' => 
-								(strpos('context', $info['ctimain']['parting_astid_context']) === false)
-								? false : true)),
+							'checked' => in_array('context', $parting))),
 			
 			$form->checkbox(array('desc' => $this->bbf('fm_cti_parting_astid_ipbx'),
 							'name' => 'cti[parting_astid_ipbx]',
 							'labelid' => 'cti_parting_astid_ipbx',
-							'checked' =>  
-								(strpos('astid', $info['ctimain']['parting_astid_context']) === false)
-								? false : true));
+							'checked' => in_array('astid', $parting)));
 
 
 ?>

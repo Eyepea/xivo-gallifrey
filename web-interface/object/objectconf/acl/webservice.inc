@@ -32,6 +32,9 @@ $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();
+$array['tree']['service']['ipbx']['ctiserver'] = array();
+$array['tree']['service']['ipbx']['ctiserver']['configuration'] = true;
+
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
