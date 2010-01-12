@@ -29,6 +29,7 @@ import subprocess
 import logging
 import socket
 import struct
+import math
 
 from xivo.UpAllAny import all
 
@@ -323,6 +324,42 @@ def format_ipv4(tupaddr):
     '1.0.0.13'
     """
     return '.'.join(map(str, tupaddr))
+
+
+def bitmask_to_mask_ipv4(bits):
+    """
+    Return an IPv4 netmask address as a 4uple of ints
+    @bits: Bitmask stored as a int
+    """
+    return struct.unpack("BBBB", socket.inet_aton(str((0xFFFFFFFF >> (32 - bits)) << (32 - bits))))
+
+
+def bitmask_to_mask_ipv6(bits):
+    """
+    Return an IPv6 netmask address as a 8uple of binary strings
+    @bits: Bitmask stored as a int
+    """
+    bits = int(bits)
+
+    if not 0 <= bits <= 128:
+        raise ValueError("Invalid bitmask: %r" % bits)
+
+    ret = []
+
+    nb = int(math.floor((math.modf(bits)[1] / 16)))
+
+    if nb > 0:
+        ret.extend(["\xff\xff"] * nb)
+        bits -= (16 * nb)
+
+    if bits > 0:
+        ret.append(struct.pack("!H", (0xFFFF >> (16 - bits)) << (16 - bits)))
+
+    xlen = len(ret)
+    if xlen < 8:
+        ret.extend(["\x00\x00"] * (8 - xlen))
+
+    return tuple(ret)
 
 
 def mask_ipv4(mask, addr):
