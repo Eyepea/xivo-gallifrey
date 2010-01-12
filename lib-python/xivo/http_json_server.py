@@ -170,6 +170,66 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         x = ''.join(traceback.format_exception(*exc_info))
         self.send_error_msgtxt(code, x)
 
+    @staticmethod
+    def querylist_to_dict(query):
+        if not isinstance(query, (list, tuple)):
+            return
+
+        ret = {}
+
+        for x in query:
+            xlen = len(x)
+            if xlen < 1:
+                continue
+            elif xlen > 1:
+                value = x[1]
+            else:
+                value = None
+       
+            if not x[0] or x[0].find(']') == -1: 
+                ret[x[0]] = value
+                continue
+        
+            lbracket = x[0].find('[')
+
+            if lbracket == -1: 
+                ret[x[0]] = value
+                continue
+
+            key = x[0][:lbracket]
+
+            if not ret.has_key(key):
+                ret[key] = {}
+
+            matched = re.findall('\[([^\]]*)\]', x[0][lbracket:])
+            nb = len(matched)
+
+            if nb == 0:
+                ret[key] = value
+                continue
+
+            if not isinstance(ret[key], dict):
+                ret[key] = {}
+
+            ref = ret[key]
+
+            j = 0
+
+            for i, k in enumerate(matched):
+                if k == '':
+                    while ref.has_key(j):
+                        j += 1
+                    k = j
+
+                if i == (nb - 1):
+                    ref[k] = value
+                elif not ref.has_key(k) \
+                or (nb > i and not isinstance(ref[k], dict)):
+                    ref[k] = {}
+
+                ref = ref[k]
+        return ret
+
     def pathify(self):
         """
         rfc2616 says in 5.1.2: "all HTTP/1.1 servers MUST accept the
@@ -188,7 +248,10 @@ class HttpReqHandler(BaseHTTPRequestHandler):
                 raise urisup.InvalidURIError, 'path %r does not start with "/"' % path
             
             path = re.sub("^/+", "/", path, 1)
-            
+
+            if query:
+                query = self.querylist_to_dict(query)
+
             return path, query, fragment
 
         except urisup.InvalidURIError, e:
@@ -196,17 +259,20 @@ class HttpReqHandler(BaseHTTPRequestHandler):
             raise HttpReqError(400, str(e))
     
     @staticmethod
-    def json_from_get(cmd):
+    def json_from_get(cmd, options=None):
         """
         Callback for .execute_command() for GET requests
         """
         if cmd not in _cmd_r:
             raise HttpReqError(404)
 
-        res = _cmd_r[cmd].handler({})
+        if not isinstance(options, dict):
+            options = {}
+
+        res = _cmd_r[cmd].handler({}, options)
         return cjson.encode(res)
     
-    def json_from_post(self, cmd):
+    def json_from_post(self, cmd, options=None):
         """
         Callback for .execute_command() for POST requests
         """
@@ -233,8 +299,11 @@ class HttpReqHandler(BaseHTTPRequestHandler):
             params = cjson.decode(json_params)
         except cjson.DecodeError, e:
             raise HttpReqError(415, text=str(e))
-        
-        res = _cmd_rw[cmd].handler(params)
+
+        if not isinstance(options, dict):
+            options = {}
+
+        res = _cmd_rw[cmd].handler(params, options)
         return cjson.encode(res)
     
     def common_req(self, execute, send_body=True):
@@ -244,7 +313,7 @@ class HttpReqHandler(BaseHTTPRequestHandler):
             try:
                 path, query, fragment = self.pathify() # pylint: disable-msg=W0612
                 cmd = path[1:]
-                res_json = execute(cmd)
+                res_json = execute(cmd, query)
 
             except HttpReqError, e:
                 e.report(self)
