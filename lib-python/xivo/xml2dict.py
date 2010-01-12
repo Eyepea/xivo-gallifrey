@@ -92,9 +92,9 @@ class XML2Dict:
             data = self.data
 
         self._parser = expat.ParserCreate()
-        self._parser.StartElementHandler  = self.startElement
-        self._parser.EndElementHandler    = self.endElement
-        self._parser.CharacterDataHandler = self.characters
+        self._parser.StartElementHandler    = self.startElement
+        self._parser.EndElementHandler      = self.endElement
+        self._parser.CharacterDataHandler   = self.characters
 
         self._parser.Parse(data)
         return self.root
