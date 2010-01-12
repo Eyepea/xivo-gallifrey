@@ -35,7 +35,6 @@ class xivo extends dwho
 			die('ERR: Failed to load user Array');
 
 		$this->dwho();
-		$this->_conf['xivo'] = $this->_conf['dwho'];
 
 		$this->_init_cfg();
 		$this->_set_error();
@@ -50,6 +49,7 @@ class xivo extends dwho
 			$this->_set_user();
 		}
 
+		$this->_conf['xivo'] = $this->_conf['dwho'];
 		dwho_gat::set('_CF',$this->_conf);
 	}
 

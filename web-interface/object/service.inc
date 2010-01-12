@@ -39,7 +39,7 @@ class xivo_service
 
 	function _load_service($service)
 	{
-		if($this->is_valid($service) === true)
+		if($this->is_loaded($service) === true)
 			return(null);
 		else if((bool) dwho_ak($service,$this->_ini,true) === false)
 			return(false);
@@ -157,7 +157,7 @@ class xivo_service
 		return(($ref = &$r));
 	}
 
-	function is_valid($name)
+	function is_loaded($name)
 	{
 		return(dwho_gct::is_valid(XIVO_SRE_CLASS_PRE.$name));
 	}

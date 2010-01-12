@@ -42,6 +42,14 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$this->_load_service_information();
 	}
 
+	function datastorage_general_config()
+	{
+		if(dwho_issa('datastorage',$this->_ini['general']) === false)
+			return(false);
+
+		return($this->_ini['general']['datastorage']);
+	}
+
 	function required($arr,$once=false,$includable=false)
 	{
 		$arr = (array) $arr;
