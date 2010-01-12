@@ -28,8 +28,20 @@ $array['element']['name']['default'] = '';
 $array['element']['host'] = array();
 $array['element']['host']['default'] = '';
 
+$array['element']['webi'] = array();
+$array['element']['webi']['default'] = '127.0.0.1';
+
 $array['element']['port'] = array();
 $array['element']['port']['default'] = 443;
+
+$array['element']['ami_port'] = array();
+$array['element']['ami_port']['default'] = 5038;
+
+$array['element']['ami_login'] = array();
+$array['element']['ami_login']['default'] = 'xivouser';
+
+$array['element']['ami_pass'] = array();
+$array['element']['ami_pass']['default'] = 'xivouser';
 
 $array['element']['ssl'] = array();
 $array['element']['ssl']['value'] = array(0,1);
@@ -49,8 +61,12 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['ami_login'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['ami_pass'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
 $array['filter']['host'] = array('callback' => 'dwho_network::valid_host');
+$array['filter']['webi'] = array('callback' => 'dwho_network::valid_host');
 $array['filter']['port'] = array('cast' => 'uint','between' => array(1,65535));
+$array['filter']['ami_port'] = array('cast' => 'uint','between' => array(1,65535));
 $array['filter']['ssl'] = array('bool' => true);
 $array['filter']['disable'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

@@ -47,7 +47,36 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 			      'name'	=> 'ssl',
 			      'labelid'	=> 'ssl',
 			      'default'	=> $element['ssl']['default'],
-			      'checked'	=> $info['ssl']));
+			      'checked'	=> $info['ssl'])),
+
+	$form->text(array('desc'	=> $this->bbf('fm_webi_addr'),
+			  'name'	=> 'webi',
+			  'labelid'	=> 'webi',
+			  'size'	=> 15,
+			  'default'	=> $element['webi']['default'],
+			  'value'	=> $info['webi'])),
+
+	$form->text(array('desc'	=> $this->bbf('fm_ami_port'),
+			  'name'	=> 'ami_port',
+			  'labelid'	=> 'ami_port',
+			  'size'	=> 15,
+			  'default'	=> $element['ami_port']['default'],
+			  'value'	=> $info['ami_port'])),
+
+	$form->text(array('desc'	=> $this->bbf('fm_ami_login'),
+			  'name'	=> 'ami_login',
+			  'labelid'	=> 'ami_login',
+			  'size'	=> 15,
+			  'default'	=> $element['ami_login']['default'],
+			  'value'	=> $info['ami_login'])),
+
+	$form->text(array('desc'	=> $this->bbf('fm_ami_pass'),
+			  'name'	=> 'ami_pass',
+			  'labelid'	=> 'ami_pass',
+			  'size'	=> 15,
+			  'default'	=> $element['ami_pass']['default'],
+			  'value'	=> $info['ami_pass']));
+
 ?>
 <div class="fm-paragraph fm-description">
 	<p>

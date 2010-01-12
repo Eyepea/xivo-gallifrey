@@ -16,6 +16,7 @@ echo
 	$form->select(array('desc' => $this->bbf('fm-ipbx-engine'),
 						'name' => 'ipbx-engine',
 						'id' => 'ipbx-engine',
+						'help' => $this->bbf('hlp_fm-ipbx-engine'),
 						'selected' => $ipbx_engine),
 						$ipbx_engines);
 

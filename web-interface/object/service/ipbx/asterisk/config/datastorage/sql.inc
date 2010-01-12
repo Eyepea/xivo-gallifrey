@@ -72,6 +72,10 @@ $array['contextnummember'] = array();
 $array['contextnummember']['table'] = 'contextnummember';
 $array['contextnummember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
+$array['ctimain'] = array();
+$array['ctimain']['table'] = 'ctimain';
+$array['ctimain']['primary'] = array('id' => '');
+
 $array['dialaction'] = array();
 $array['dialaction']['table'] = 'dialaction';
 $array['dialaction']['primary'] = array('event' => '','category' => '','categoryval' => '');

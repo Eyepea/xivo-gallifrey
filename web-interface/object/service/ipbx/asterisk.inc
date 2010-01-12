@@ -205,7 +205,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$application = (string) $application;
 
 		$file = $application.'.inc';
-
 		$dir = dwho_file::joinpath(XIVO_PATH_OBJECT,
 					   'application',
 					   'service',

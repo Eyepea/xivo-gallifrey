@@ -84,6 +84,11 @@ $array['xivo/configuration/web_services/private/network/resolvconf'] = array(
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
+$array['service/ipbx/asterisk/web_services/private/ctiserver'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/index',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/agents',
 	'define'	=> array(
@@ -163,6 +168,11 @@ $array['xivo/configuration/web_services/restricted/network/iproute'] = array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['xivo/configuration/web_services/restricted/network/resolvconf'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/resolvconf',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+
+$array['service/ipbx/asterisk/web_services/restricted/ctiserver'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/index',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 

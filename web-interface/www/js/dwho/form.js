@@ -911,6 +911,66 @@ dwho.form.destroy_help_div = function()
 	dwho.dom.remove_element(dwho_eid('__dwho_form_help__',true));
 }
 
+dwho.form.modify_input_data = function(obj,reg)
+{
+	if(dwho_is_object(obj) === false
+	|| dwho_is_undef(obj.value) === true
+	|| dwho_has_len(reg) === false)
+		return(false);
+
+	reg = dwho_string(reg);
+
+	var rs = null;
+
+	if(dwho_strcmp('[[:',reg,3) !== 0)
+		var regcheck = new RegExp(reg);
+	else
+	{
+		reto = /^\[\[\:(\w+)\((.*?)\)\:\]\]$/;
+		params = reg.match(reto);
+		// If not, just extract name
+		if(params == null)
+		{
+			reto = /^\[\[\:(\w+)\:\]\]$/;
+			params = reg.match(reto);
+		}
+		else
+			// Push all parameters in an array
+		{
+			args = params[2].split(/\s*,\s*/);
+		}
+		reg = params[1];
+
+		switch(reg.toLowerCase())
+		{
+			case 'tolower':
+				obj.value.toLowerCase();
+				return(true);
+			case 'toupper':
+				obj.value.toUpperCase();
+				return(true);
+			case 'disableifchecked':
+				var o;
+				for(var i=0; i<args.length; i++)
+				{
+					o = document.getElementById(args[i]);
+					if(obj.checked)
+					{
+						o.disabled = true;
+					}
+					else
+					{
+						o.disabled = false;
+					}
+				}
+				break;
+
+			default:
+				return(false);
+		}
+	}
+}
+
 dwho.form.check_input_data = function(obj,reg)
 {
 	if(dwho_is_object(obj) === false
@@ -928,12 +988,6 @@ dwho.form.check_input_data = function(obj,reg)
 	{
 		switch(reg.toLowerCase())
 		{
-			case '[[:tolower:]]':
-				obj.value.toLowerCase();
-				return(true);
-			case '[[:toupper:]]':
-				obj.value.toUpperCase();
-				return(true);
 			case '[[:int:]]':
 				var regcheck = /^\d+$/;
 				break;
@@ -1003,7 +1057,6 @@ dwho.form.check_required_fields = function(ev,form)
 {
 	if(dwho_is_object(form) === false)
 		return(false);
-
 	var arr		= ['input', 'select', 'textarea'];
 	var errors	= [];
 

@@ -1,15 +1,25 @@
 <?php
-$all_steps = array('welcome', 
-					'lang', 
-					'license', 
-					'ipbxengine', 
-					'dbconfig', 
-					'check', 
-					'adminsetup', 
-					'entctx',
-					'ipbximportuser', 
-					'validate',
-					'send');
+#
+# XiVO Wizard
+# Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+
+$all_steps = array(
+	'welcome', 'lang', 'license', 'ipbxengine', 'dbconfig', 'check', 
+	'adminsetup', 'entctx',	'ipbximportuser', 'validate', 'send');
 
 function prev_step($s)
 {
@@ -33,17 +43,6 @@ function next_step($s)
 	return $all_steps[$p];
 }
 
-/*
-function request_check($host)
-{
-	$ck = "https://" . $host . "/hw.php";
-	$chdl = curl_init($ck);
-	curl_setopt($chdl, CURLOPT_SSL_VERIFYPEER, false);
-	curl_exec($chdl);
-	curl_close($chdl);
-}
-*/
-
 $step = isset($_QR['step']) === true ? $_QR['step']  : 'welcome';	# current step, as-is
 $submitted = isset($_QR['next']) === true ? $step : '';				# if submitted through 'next', set to just-submitted (current) step
 if(isset($_QR['prev']))												# if submitted through 'prev', re-set step to previous
@@ -54,143 +53,6 @@ if(isset($_QR['prev']))												# if submitted through 'prev', re-set step to
 if(!isset($_SESSION['_wizard']))
 	$_SESSION['_wizard'] = array();
 
-/*
-class XMLParser
-{
-    var $rawXML;
-    var $valueArray = array();
-    var $keyArray = array();
-    var $parsed = array();
-    var $index = 0;
-    var $attribKey = 'attributes';
-    var $valueKey = 'value';
-    var $cdataKey = 'cdata';
-    var $isError = false;
-    var $error = '';
-
-    function XMLParser($xml = NULL)
-    {
-        $this->rawXML = $xml;
-    }
-
-    function parse($xml = NULL)
-    {
-        if (!is_null($xml))
-        {
-            $this->rawXML = $xml;
-        }
-
-        $this->isError = false;
-           
-        if (!$this->parse_init())
-        {
-            return false;
-        }
-
-        $this->index = 0;
-        $this->parsed = $this->parse_recurse();
-        $this->status = 'parsing complete';
-        return $this->parsed;
-    }
-
-    function parse_recurse()
-    {       
-        $found = array();
-        $tagCount = array();
-
-        while (isset($this->valueArray[$this->index]))
-        {
-            $tag = $this->valueArray[$this->index];
-            $this->index++;
-
-            if ($tag['type'] == 'close')
-            {
-                return $found;
-            }
-
-            if ($tag['type'] == 'cdata')
-            {
-                $tag['tag'] = $this->cdataKey;
-                $tag['type'] = 'complete';
-            }
-
-            $tagName = isset($tag['attributes']['id']) ? $tag['attributes']['id'] : $tag['tag'];
-
-            if (isset($tagCount[$tagName]))
-            {       
-                if ($tagCount[$tagName] == 1)
-                {
-                    $found[$tagName] = array($found[$tagName]);
-                }
-                   
-                $tagRef =& $found[$tagName][$tagCount[$tagName]];
-                $tagCount[$tagName]++;
-            }
-            else   
-            {
-                $tagCount[$tagName] = 1;
-                $tagRef =& $found[$tagName];
-            }
-
-            switch ($tag['type'])
-            {
-                case 'open':
-                    $tagRef = $this->parse_recurse();
-
-                    if (isset($tag['attributes']))
-                    {
-                        $tagRef[$this->attribKey] = $tag['attributes'];
-                    }
-                       
-                    if (isset($tag['value']))
-                    {
-                        if (isset($tagRef[$this->cdataKey]))   
-                        {
-                            $tagRef[$this->cdataKey] = (array)$tagRef[$this->cdataKey];   
-                            array_unshift($tagRef[$this->cdataKey], $tag['value']);
-                        }
-                        else
-                        {
-                            $tagRef[$this->cdataKey] = $tag['value'];
-                        }
-                    }
-                    break;
-
-                case 'complete':
-                    if (isset($tag['attributes']))
-                    {
-                        $tagRef[$this->attribKey] = $tag['attributes'];
-                        $tagRef =& $tagRef[$this->valueKey];
-                    }
-
-                    if (isset($tag['value']))
-                    {
-                        $tagRef = $tag['value'];
-                    }
-                    break;
-            }
-        }
-        return $found;
-    }
-
-    function parse_init()
-    {
-        $this->parser = xml_parser_create();
-
-        $parser = $this->parser;
-        xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, 0);    
-        xml_parser_set_option($parser, XML_OPTION_SKIP_WHITE, 1);       
-        if (!$res = (bool)xml_parse_into_struct($parser, $this->rawXML, $this->valueArray, $this->keyArray))
-        {
-            $this->isError = true;
-            $this->error = 'error: '.xml_error_string(xml_get_error_code($parser)).' at line '.xml_get_current_line_number($parser);
-        }
-        xml_parser_free($parser);
-
-        return $res;
-    }
-}
-*/
 function parse_obj($o)
 {
 	if(is_array($o) === true)
@@ -374,16 +236,22 @@ if(!isset($_QR['prev']))
 				$next_disp = next_step($step);
 				break;
 			case 'dbconfig':
-				#
-				# TODO: Add check if option alternate from the one currently selected is defined 
-				#		purge it then
-				#
 				$db_msg = '';
 				$db_targets = array('xivo', 'ipbx');
 				$db_uris 	= array('xivo' => '', 
 									'ipbx' => '');
 				if(isset($_QR['db-backend']))
 				{
+					# check whether the /other/ backend+cnx data had been previously set
+					# then purge 
+					if(isset($_SESSION['_wizard']['db']['backend'])
+					&& ($_SESSION['_wizard']['db']['backend'] !== $_QR['db-backend']))
+					{
+						$prev_back = $_SESSION['_wizard']['db']['backend'];
+						unset($_SESSION['_wizard']['db']['backend']);
+						unset($_SESSION['_wizard']['db'][$prev_back]);
+					}
+
 					$_SESSION['_wizard']['db']['backend'] = $_QR['db-backend'];
 					switch($_QR['db-backend'])
 					{
@@ -489,15 +357,55 @@ if(!isset($_QR['prev']))
 				{
 					$entity = $_QR['ent'];
 					if((!dwho_has_len($entity, 'name')) || (!dwho_has_len($entity, 'dispname')))
+					{
 						$_TPL->set_var('wz-message', $_TPL->bbf('wz-entctx-entity-missing'));
+						break;
+					}
 					else
 					{
 						$_SESSION['_wizard']['entity'] = $entity;
-						$next_disp = next_step($step);
 					}
 				}
 				if(isset($_QR['ctx']))
+				{
+					$ctx = $_QR['ctx'];
+					if(!in_array($ctx['incoming']['dispdigits'], range(1,20)))
+					{
+						$_TPL->set_var('wz-message', $_TPL->bbf('wz-entctx-context-dispdigits'));
+						break;
+					}
+					else if((!dwho_has_len($ctx['incoming'], 'name'))
+					|| (!dwho_has_len($ctx['outgoing'], 'name'))
+					|| (!dwho_has_len($ctx['internal'], 'name')))
+					{
+						$_TPL->set_var('wz-message', $_TPL->bbf('wz-entctx-context-names'));
+						break;
+					}
+					else if((!dwho_has_len($ctx['incoming'], 'dispname'))
+					|| (!dwho_has_len($ctx['outgoing'], 'dispname'))
+					|| (!dwho_has_len($ctx['internal'], 'dispname')))
+					{
+						$_TPL->set_var('wz-message', $_TPL->bbf('wz-entctx-context-dispnames'));
+						break;
+					}
+					else
+					{
+						foreach(array('incoming', 'internal') as $ctx_type)
+						{
+							if(dwho_has_len($ctx[$ctx_type], 'numbeg') 
+							&& dwho_has_len($ctx[$ctx_type], 'numend'))
+							{
+								if($ctx[$ctx_type]['numend'] < $ctx[$ctx_type]['numbeg'])
+								{
+									$_TPL->set_var('wz-message', $_TPL->bbf('wz-entctx-context-' . $ctx_type . '-seq'));
+									break;
+								}
+							}
+						}
+					}
 					$_SESSION['_wizard']['context'] = $_QR['ctx'];
+				}
+				$next_disp = next_step($step);
 				break;
 			case 'ipbximportuser':
 				$next_disp = next_step($step); 

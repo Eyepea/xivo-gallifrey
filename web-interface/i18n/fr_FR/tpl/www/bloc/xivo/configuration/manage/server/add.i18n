@@ -13,5 +13,17 @@ Port :
 ; fm_ssl
 SSL :
 
+; fm_webi_addr
+Adresse interface Web : 
+
+; fm_ami_port
+Port AMI :
+
+; fm_ami_login
+Compte AMI :
+
+; fm_ami_pass
+Mot de passe AMI :
+
 ; fm_description
 Description :

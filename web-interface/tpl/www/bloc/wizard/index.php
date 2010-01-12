@@ -35,7 +35,7 @@ $msg = dwho_has_len($this->get_var('wz-message')) ? $this->get_var('wz-message')
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content">
-		<form action="#" method="post" enctype="multipart/form-data" accept-charset="utf-8">
+		<form action="#" method="post" enctype="multipart/form-data" accept-charset="utf-8" onsubmit="dwho.form.check_required_fields(event, this);">
 			<div class="b-field">
 				<div id="wz-message"><?=$msg?></div>
 <?php

@@ -10,6 +10,9 @@ Protocole SIP
 ; mn_left_generalsettings-iax
 Protocole IAX
 
+; mn_left_generalsettings-cti
+Serveurs CTI
+
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 

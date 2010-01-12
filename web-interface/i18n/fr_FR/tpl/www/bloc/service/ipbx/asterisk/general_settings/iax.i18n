@@ -19,179 +19,623 @@ Avancé
 ; fm_bindport
 Port :
 
+; cmt_fm_bindport
+A traduire
+
+; hlp_fm_bindport
+A traduire
+
+; cmt_fm_bindport
+Port de connexion IAX
+
+; cmt_cmt_fm_bindport
+A traduire
+
+; cmt_hlp_fm_bindport
+A traduire
+
+; hlp_fm_bindport
+Port sur lequel les serveurs IAX discutent
+
+; hlp_cmt_fm_bindport
+A traduire
+
+; hlp_hlp_fm_bindport
+A traduire
+
 ; fm_bindaddr
 Adresse IP :
+
+; cmt_fm_bindaddr
+A traduire
+
+; hlp_fm_bindaddr
+A traduire
+
+; cmt_fm_bindaddr
+Adresse de connexion IAX
+
+; cmt_cmt_fm_bindaddr
+A traduire
+
+; cmt_hlp_fm_bindaddr
+A traduire
+
+; hlp_fm_bindaddr
+Adresse sur lequel les serveurs IAX discutent
+
+; hlp_cmt_fm_bindaddr
+A traduire
+
+; hlp_hlp_fm_bindaddr
+A traduire
 
 ; fm_iaxthreadcount
 Nombre de thread :
 
+; cmt_fm_iaxthreadcount
+A traduire
+
+; hlp_fm_iaxthreadcount
+A traduire
+
+; cmt_fm_iaxthreadcount
+Nombre de threads par défaut
+
+; cmt_cmt_fm_iaxthreadcount
+A traduire
+
+; cmt_hlp_fm_iaxthreadcount
+A traduire
+
+; hlp_fm_iaxthreadcount
+Nombre de threads par défaut
+
+; hlp_cmt_fm_iaxthreadcount
+A traduire
+
+; hlp_hlp_fm_iaxthreadcount
+A traduire
+
 ; fm_iaxmaxthreadcount
 Nombre de thread maximum :
+
+; cmt_fm_iaxmaxthreadcount
+A traduire
+
+; hlp_fm_iaxmaxthreadcount
+A traduire
+
+; cmt_fm_iaxmaxthreadcount
+Nombre de thread maximum
+
+; cmt_cmt_fm_iaxmaxthreadcount
+A traduire
+
+; cmt_hlp_fm_iaxmaxthreadcount
+A traduire
+
+; hlp_fm_iaxmaxthreadcount
+Nombre de thread maximum
+
+; hlp_cmt_fm_iaxmaxthreadcount
+A traduire
+
+; hlp_hlp_fm_iaxmaxthreadcount
+A traduire
 
 ; fm_iaxmaxthreadcount-opt(0)
 Désactivé
 
+; cmt_fm_iaxmaxthreadcount-opt(0)
+A traduire
+
+; hlp_fm_iaxmaxthreadcount-opt(0)
+A traduire
+
+; fm_iaxmaxthreadcount-opt(0)
+Désactivé
+
+; cmt_fm_iaxmaxthreadcount-opt(0)
+A traduire
+
+; hlp_fm_iaxmaxthreadcount-opt(0)
+A traduire
+
+; fm_iaxmaxthreadcount-opt(0)
+Désactivé
+
+; cmt_fm_iaxmaxthreadcount-opt(0)
+A traduire
+
+; hlp_fm_iaxmaxthreadcount-opt(0)
+A traduire
+
 ; fm_iaxmaxthreadcount-opt
 %s
+
+; cmt_fm_iaxmaxthreadcount-opt
+A traduire
+
+; hlp_fm_iaxmaxthreadcount-opt
+A traduire
 
 ; fm_iaxcompat
 Compatibilité IAX :
 
+; cmt_fm_iaxcompat
+A traduire
+
+; hlp_fm_iaxcompat
+A traduire
+
 ; fm_authdebug
 Débogage de l'authentification :
+
+; cmt_fm_authdebug
+A traduire
+
+; hlp_fm_authdebug
+A traduire
 
 ; fm_delayreject
 Délai de rejet :
 
+; cmt_fm_delayreject
+A traduire
+
+; hlp_fm_delayreject
+A traduire
+
 ; fm_trunkfreq
 Fréquence des interconnexions :
+
+; cmt_fm_trunkfreq
+A traduire
+
+; hlp_fm_trunkfreq
+A traduire
 
 ; fm_trunkfreq-opt
 %s millisecondes
 
+; cmt_fm_trunkfreq-opt
+A traduire
+
+; hlp_fm_trunkfreq-opt
+A traduire
+
 ; fm_trunktimestamps
 Ajoute un timestamp individuel :
+
+; cmt_fm_trunktimestamps
+A traduire
+
+; hlp_fm_trunktimestamps
+A traduire
 
 ; fm_regcontext
 Contexte d'enregistrement :
 
+; cmt_fm_regcontext
+A traduire
+
+; hlp_fm_regcontext
+A traduire
+
 ; fm_minregexpire
 Délai minimum d'expiration d'un enregistrement :
+
+; cmt_fm_minregexpire
+A traduire
+
+; hlp_fm_minregexpire
+A traduire
 
 ; fm_maxregexpire
 Délai maximum d'expiration d'un enregistrement :
 
+; cmt_fm_maxregexpire
+A traduire
+
+; hlp_fm_maxregexpire
+A traduire
+
 ; fm_regexpire-opt(0)
 Désactivé
+
+; cmt_fm_regexpire-opt(0)
+A traduire
+
+; hlp_fm_regexpire-opt(0)
+A traduire
 
 ; fm_regexpire-opt-second
 1 seconde
 
+; cmt_fm_regexpire-opt-second
+A traduire
+
+; hlp_fm_regexpire-opt-second
+A traduire
+
 ; fm_regexpire-opt-seconds
 %s secondes
+
+; cmt_fm_regexpire-opt-seconds
+A traduire
+
+; hlp_fm_regexpire-opt-seconds
+A traduire
 
 ; fm_regexpire-opt-minute
 1 minute
 
+; cmt_fm_regexpire-opt-minute
+A traduire
+
+; hlp_fm_regexpire-opt-minute
+A traduire
+
 ; fm_regexpire-opt-minute-seconds
 %s min. %s sec.
+
+; cmt_fm_regexpire-opt-minute-seconds
+A traduire
+
+; hlp_fm_regexpire-opt-minute-seconds
+A traduire
 
 ; fm_regexpire-opt-minutes
 %s minutes
 
+; cmt_fm_regexpire-opt-minutes
+A traduire
+
+; hlp_fm_regexpire-opt-minutes
+A traduire
+
 ; fm_bandwidth
 Bande passante :
+
+; cmt_fm_bandwidth
+A traduire
+
+; hlp_fm_bandwidth
+A traduire
 
 ; fm_bandwidth-opt(low)
 Faible
 
+; cmt_fm_bandwidth-opt(low)
+A traduire
+
+; hlp_fm_bandwidth-opt(low)
+A traduire
+
 ; fm_bandwidth-opt(medium)
 Moyenne
+
+; cmt_fm_bandwidth-opt(medium)
+A traduire
+
+; hlp_fm_bandwidth-opt(medium)
+A traduire
 
 ; fm_bandwidth-opt(high)
 Elevée
 
+; cmt_fm_bandwidth-opt(high)
+A traduire
+
+; hlp_fm_bandwidth-opt(high)
+A traduire
+
 ; fm_tos
 TOS :
+
+; cmt_fm_tos
+A traduire
+
+; hlp_fm_tos
+A traduire
 
 ; fm_jitterbuffer
 Activer le Jitter Buffer :
 
+; cmt_fm_jitterbuffer
+A traduire
+
+; hlp_fm_jitterbuffer
+A traduire
+
 ; fm_forcejitterbuffer
 Forcer le Jitter Buffer :
+
+; cmt_fm_forcejitterbuffer
+A traduire
+
+; hlp_fm_forcejitterbuffer
+A traduire
 
 ; fm_maxjitterbuffer
 Taille maximale du Jitter Buffer :
 
+; cmt_fm_maxjitterbuffer
+A traduire
+
+; hlp_fm_maxjitterbuffer
+A traduire
+
 ; fm_maxjitterbuffer-opt(0)
 Désactivée
+
+; cmt_fm_maxjitterbuffer-opt(0)
+A traduire
+
+; hlp_fm_maxjitterbuffer-opt(0)
+A traduire
 
 ; fm_maxjitterbuffer-opt
 %s millisecondes
 
+; cmt_fm_maxjitterbuffer-opt
+A traduire
+
+; hlp_fm_maxjitterbuffer-opt
+A traduire
+
 ; fm_maxjitterinterps
 Nombre maximum d'interpolation de frames :
+
+; cmt_fm_maxjitterinterps
+A traduire
+
+; hlp_fm_maxjitterinterps
+A traduire
 
 ; fm_maxjitterinterps-opt(0)
 Désactivé
 
+; cmt_fm_maxjitterinterps-opt(0)
+A traduire
+
+; hlp_fm_maxjitterinterps-opt(0)
+A traduire
+
 ; fm_maxjitterinterps-opt
 %s
+
+; cmt_fm_maxjitterinterps-opt
+A traduire
+
+; hlp_fm_maxjitterinterps-opt
+A traduire
 
 ; fm_resyncthreshold
 Resynchronisation en cas de délai trop important :
 
+; cmt_fm_resyncthreshold
+A traduire
+
+; hlp_fm_resyncthreshold
+A traduire
+
 ; fm_resyncthreshold-opt(-1)
 Désactivée
+
+; cmt_fm_resyncthreshold-opt(-1)
+A traduire
+
+; hlp_fm_resyncthreshold-opt(-1)
+A traduire
 
 ; fm_resyncthreshold-opt(0)
 0 milliseconde
 
+; cmt_fm_resyncthreshold-opt(0)
+A traduire
+
+; hlp_fm_resyncthreshold-opt(0)
+A traduire
+
 ; fm_resyncthreshold-opt
 %s millisecondes
+
+; cmt_fm_resyncthreshold-opt
+A traduire
+
+; hlp_fm_resyncthreshold-opt
+A traduire
 
 ; fm_accountcode
 Numéro d'acompte :
 
+; cmt_fm_accountcode
+A traduire
+
+; hlp_fm_accountcode
+A traduire
+
 ; fm_amaflags
 Drapeau de facturation :
+
+; cmt_fm_amaflags
+A traduire
+
+; hlp_fm_amaflags
+A traduire
 
 ; fm_adsi
 Activer le support de l'ADSI :
 
+; cmt_fm_adsi
+A traduire
+
+; hlp_fm_adsi
+A traduire
+
 ; fm_language
 Langue :
+
+; cmt_fm_language
+A traduire
+
+; hlp_fm_language
+A traduire
 
 ; fm_mohinterpret
 Musique d'attente :
 
+; cmt_fm_mohinterpret
+A traduire
+
+; hlp_fm_mohinterpret
+A traduire
+
 ; fm_mohsuggest
 Musique d'attente sur un appel sortant :
+
+; cmt_fm_mohsuggest
+A traduire
+
+; hlp_fm_mohsuggest
+A traduire
 
 ; fm_encryption
 Chiffrement :
 
+; cmt_fm_encryption
+A traduire
+
+; hlp_fm_encryption
+A traduire
+
 ; fm_encryption-opt(no)
 Non
+
+; cmt_fm_encryption-opt(no)
+A traduire
+
+; hlp_fm_encryption-opt(no)
+A traduire
 
 ; fm_encryption-opt(yes)
 Oui
 
+; cmt_fm_encryption-opt(yes)
+A traduire
+
+; hlp_fm_encryption-opt(yes)
+A traduire
+
 ; fm_encryption-opt(aes128)
 AES 128
+
+; cmt_fm_encryption-opt(aes128)
+A traduire
+
+; hlp_fm_encryption-opt(aes128)
+A traduire
 
 ; fm_maxauthreq
 Maximum AUTHREQs autorisées :
 
+; cmt_fm_maxauthreq
+A traduire
+
+; hlp_fm_maxauthreq
+A traduire
+
 ; fm_maxauthreq-opt(0)
 Désactivé
+
+; cmt_fm_maxauthreq-opt(0)
+A traduire
+
+; hlp_fm_maxauthreq-opt(0)
+A traduire
 
 ; fm_maxauthreq-opt
 %s
 
+; cmt_fm_maxauthreq-opt
+A traduire
+
+; hlp_fm_maxauthreq-opt
+A traduire
+
 ; fm_codecpriority
 Priorité des codecs :
+
+; cmt_fm_codecpriority
+A traduire
+
+; hlp_fm_codecpriority
+A traduire
 
 ; fm_codecpriority-opt(caller)
 Appelant
 
+; cmt_fm_codecpriority-opt(caller)
+A traduire
+
+; hlp_fm_codecpriority-opt(caller)
+A traduire
+
 ; fm_codecpriority-opt(disabled)
 Désactivée
+
+; cmt_fm_codecpriority-opt(disabled)
+A traduire
+
+; hlp_fm_codecpriority-opt(disabled)
+A traduire
 
 ; fm_codecpriority-opt(reqonly)
 Seulement par requête
 
+; cmt_fm_codecpriority-opt(reqonly)
+A traduire
+
+; hlp_fm_codecpriority-opt(reqonly)
+A traduire
+
 ; fm_codecpriority-opt(host)
 Hôte
+
+; cmt_fm_codecpriority-opt(host)
+A traduire
+
+; hlp_fm_codecpriority-opt(host)
+A traduire
 
 ; fm_codec-disallow
 Codecs désactivés :
 
+; cmt_fm_codec-disallow
+A traduire
+
+; hlp_fm_codec-disallow
+A traduire
+
 ; fm_codec-disallow-opt(all)
 Tous
 
+; cmt_fm_codec-disallow-opt(all)
+A traduire
+
+; hlp_fm_codec-disallow-opt(all)
+A traduire
+
 ; fm_codec-allow
 Codecs activés :
+
+; cmt_fm_codec-allow
+A traduire
+
+; hlp_fm_codec-allow
+A traduire
 
 ; bt_upcodec
 Monter un ou plusieurs codecs
@@ -208,83 +652,251 @@ Ajouter un ou plusieurs codecs ->
 ; fm_rtcachefriends
 Mise en cache des comptes :
 
+; cmt_fm_rtcachefriends
+A traduire
+
+; hlp_fm_rtcachefriends
+A traduire
+
 ; fm_rtupdate
 Mise à jour du cache :
+
+; cmt_fm_rtupdate
+A traduire
+
+; hlp_fm_rtupdate
+A traduire
 
 ; fm_rtignoreregexpire
 Ignorer l'expiration :
 
+; cmt_fm_rtignoreregexpire
+A traduire
+
+; hlp_fm_rtignoreregexpire
+A traduire
+
 ; fm_rtautoclear
 Suppression automatique du cache :
+
+; cmt_fm_rtautoclear
+A traduire
+
+; hlp_fm_rtautoclear
+A traduire
 
 ; fm_rtautoclear-opt(no)
 Non
 
+; cmt_fm_rtautoclear-opt(no)
+A traduire
+
+; hlp_fm_rtautoclear-opt(no)
+A traduire
+
 ; fm_rtautoclear-opt(yes)
 Oui
+
+; cmt_fm_rtautoclear-opt(yes)
+A traduire
+
+; hlp_fm_rtautoclear-opt(yes)
+A traduire
 
 ; fm_rtautoclear-opt-second
 1 seconde
 
+; cmt_fm_rtautoclear-opt-second
+A traduire
+
+; hlp_fm_rtautoclear-opt-second
+A traduire
+
 ; fm_rtautoclear-opt-seconds
 %s secondes
+
+; cmt_fm_rtautoclear-opt-seconds
+A traduire
+
+; hlp_fm_rtautoclear-opt-seconds
+A traduire
 
 ; fm_rtautoclear-opt-minute
 1 minute
 
+; cmt_fm_rtautoclear-opt-minute
+A traduire
+
+; hlp_fm_rtautoclear-opt-minute
+A traduire
+
 ; fm_rtautoclear-opt-minute-seconds
 %s min. %s sec.
+
+; cmt_fm_rtautoclear-opt-minute-seconds
+A traduire
+
+; hlp_fm_rtautoclear-opt-minute-seconds
+A traduire
 
 ; fm_rtautoclear-opt-minutes
 %s minutes
 
+; cmt_fm_rtautoclear-opt-minutes
+A traduire
+
+; hlp_fm_rtautoclear-opt-minutes
+A traduire
+
 ; fm_rtautoclear-opt-minutes-seconds
 %s min. %s sec.
+
+; cmt_fm_rtautoclear-opt-minutes-seconds
+A traduire
+
+; hlp_fm_rtautoclear-opt-minutes-seconds
+A traduire
 
 ; fm_pingtime
 Ping time :
 
+; cmt_fm_pingtime
+A traduire
+
+; hlp_fm_pingtime
+A traduire
+
 ; fm_pingtime-opt(0)
 0 seconde
+
+; cmt_fm_pingtime-opt(0)
+A traduire
+
+; hlp_fm_pingtime-opt(0)
+A traduire
 
 ; fm_pingtime-opt
 %s secondes
 
+; cmt_fm_pingtime-opt
+A traduire
+
+; hlp_fm_pingtime-opt
+A traduire
+
 ; fm_lagrqtime
 Temps de latence RQ :
+
+; cmt_fm_lagrqtime
+A traduire
+
+; hlp_fm_lagrqtime
+A traduire
 
 ; fm_lagrqtime-opt(0)
 0 seconde
 
+; cmt_fm_lagrqtime-opt(0)
+A traduire
+
+; hlp_fm_lagrqtime-opt(0)
+A traduire
+
 ; fm_lagrqtime-opt
 %s secondes
+
+; cmt_fm_lagrqtime-opt
+A traduire
+
+; hlp_fm_lagrqtime-opt
+A traduire
 
 ; fm_nochecksums
 Désactiver UDP checksums :
 
+; cmt_fm_nochecksums
+A traduire
+
+; hlp_fm_nochecksums
+A traduire
+
 ; fm_transfer
 Activer les transferts :
+
+; cmt_fm_transfer
+A traduire
+
+; hlp_fm_transfer
+A traduire
 
 ; fm_transfer-opt(yes)
 Oui
 
+; cmt_fm_transfer-opt(yes)
+A traduire
+
+; hlp_fm_transfer-opt(yes)
+A traduire
+
 ; fm_transfer-opt(no)
 Non
+
+; cmt_fm_transfer-opt(no)
+A traduire
+
+; hlp_fm_transfer-opt(no)
+A traduire
 
 ; fm_transfer-opt(mediaonly)
 Uniquement la voix
 
+; cmt_fm_transfer-opt(mediaonly)
+A traduire
+
+; hlp_fm_transfer-opt(mediaonly)
+A traduire
+
 ; fm_autokill
 Auto destruction :
+
+; cmt_fm_autokill
+A traduire
+
+; hlp_fm_autokill
+A traduire
 
 ; fm_autokill-opt(no)
 Non
 
+; cmt_fm_autokill-opt(no)
+A traduire
+
+; hlp_fm_autokill-opt(no)
+A traduire
+
 ; fm_autokill-opt(yes)
 Oui
+
+; cmt_fm_autokill-opt(yes)
+A traduire
+
+; hlp_fm_autokill-opt(yes)
+A traduire
 
 ; fm_autokill-opt
 %s millisecondes
 
+; cmt_fm_autokill-opt
+A traduire
+
+; hlp_fm_autokill-opt
+A traduire
+
 ; fm_success-save
 Propriétés du protocole IAX sauvegardées avec succès
+
+; cmt_fm_success-save
+A traduire
+
+; hlp_fm_success-save
+A traduire

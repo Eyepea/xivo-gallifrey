@@ -61,8 +61,17 @@ Les mots de passe ne correspondent pas
 ; wz-steps-entctx
 Entité & contexte par défaut
 
-; wz-entity-missing-name
-Le nom doit être spécifié
+; wz-entctx-entity-missing
+Le nom et le nom affiché de l'entité doivent être spécifiés
+
+; wz-entctx-context-dispdigits
+Vous devez choisir le nombre de chiffres présentés
+
+; wz-entctx-context-names
+Les noms des contextes doivent être spécifiés
+
+; wz-entctx-context-dispnames
+Les noms affichés des contextes doivent être spécifiés
 
 ; wz-entity-missing-displayname
 Le nom affiché doit être spécifié

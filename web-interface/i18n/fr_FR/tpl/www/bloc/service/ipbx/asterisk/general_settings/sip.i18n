@@ -25,131 +25,389 @@ Temps réel
 ; fm_bindport
 Port :
 
+; cmt_fm_bindport
+A traduire
+
+; hlp_fm_bindport
+A traduire
+
 ; fm_bindaddr
 Adresse IP :
+
+; cmt_fm_bindaddr
+A traduire
+
+; hlp_fm_bindaddr
+A traduire
 
 ; fm_videosupport
 Support vidéo :
 
+; cmt_fm_videosupport
+A traduire
+
+; hlp_fm_videosupport
+A traduire
+
 ; fm_autocreatepeer
 Création automatique d'un utilisateur :
+
+; cmt_fm_autocreatepeer
+A traduire
+
+; hlp_fm_autocreatepeer
+A traduire
 
 ; fm_allowguest
 Accepter un appel non authentifié :
 
+; cmt_fm_allowguest
+A traduire
+
+; hlp_fm_allowguest
+A traduire
+
 ; fm_allowsubscribe
 Activer le support des souscriptions :
+
+; cmt_fm_allowsubscribe
+A traduire
+
+; hlp_fm_allowsubscribe
+A traduire
 
 ; fm_allowoverlap
 Activer le chevauchement :
 
+; cmt_fm_allowoverlap
+A traduire
+
+; hlp_fm_allowoverlap
+A traduire
+
 ; fm_promiscredir
 Support des redirections 302 :
+
+; cmt_fm_promiscredir
+A traduire
+
+; hlp_fm_promiscredir
+A traduire
 
 ; fm_autodomain
 Domaine automatique :
 
+; cmt_fm_autodomain
+A traduire
+
+; hlp_fm_autodomain
+A traduire
+
 ; fm_domain
 Domaine :
+
+; cmt_fm_domain
+A traduire
+
+; hlp_fm_domain
+A traduire
 
 ; fm_allowexternaldomains
 Accepter les domaines externes :
 
+; cmt_fm_allowexternaldomains
+A traduire
+
+; hlp_fm_allowexternaldomains
+A traduire
+
 ; fm_usereqphone
 Ajouter ";user=phone" dans l'URI :
+
+; cmt_fm_usereqphone
+A traduire
+
+; hlp_fm_usereqphone
+A traduire
 
 ; fm_realm
 Realm :
 
+; cmt_fm_realm
+A traduire
+
+; hlp_fm_realm
+A traduire
+
 ; fm_alwaysauthreject
 Rejeter les invitations et enregistrements :
+
+; cmt_fm_alwaysauthreject
+A traduire
+
+; hlp_fm_alwaysauthreject
+A traduire
 
 ; fm_limitonpeer
 Activer les limitations sur les appels sortants :
 
+; cmt_fm_limitonpeer
+A traduire
+
+; hlp_fm_limitonpeer
+A traduire
+
 ; fm_useragent
 User-Agent :
+
+; cmt_fm_useragent
+A traduire
+
+; hlp_fm_useragent
+A traduire
 
 ; fm_checkmwi
 Vérifier la présence de nouveaux messages :
 
+; cmt_fm_checkmwi
+A traduire
+
+; hlp_fm_checkmwi
+A traduire
+
 ; fm_checkmwi-opt(0)
 Désactivée
+
+; cmt_fm_checkmwi-opt(0)
+A traduire
+
+; hlp_fm_checkmwi-opt(0)
+A traduire
 
 ; fm_checkmwi-opt
 %s secondes
 
+; cmt_fm_checkmwi-opt
+A traduire
+
+; hlp_fm_checkmwi-opt
+A traduire
+
 ; fm_buggymwi
 Vérification, non conforme à la RFC, de nouveaux messages :
+
+; cmt_fm_buggymwi
+A traduire
+
+; hlp_fm_buggymwi
+A traduire
 
 ; fm_regcontext
 Contexte d'enregistrement :
 
+; cmt_fm_regcontext
+A traduire
+
+; hlp_fm_regcontext
+A traduire
+
 ; fm_callerid
 Nom d'appel :
+
+; cmt_fm_callerid
+A traduire
+
+; hlp_fm_callerid
+A traduire
 
 ; fm_fromdomain
 Réécriture du champ From-Domain :
 
+; cmt_fm_fromdomain
+A traduire
+
+; hlp_fm_fromdomain
+A traduire
+
 ; fm_sipdebug
 Débogage :
+
+; cmt_fm_sipdebug
+A traduire
+
+; hlp_fm_sipdebug
+A traduire
 
 ; fm_dumphistory
 Sauvegarde de l'historique :
 
+; cmt_fm_dumphistory
+A traduire
+
+; hlp_fm_dumphistory
+A traduire
+
 ; fm_recordhistory
 Enregistrement de l'historique :
+
+; cmt_fm_recordhistory
+A traduire
+
+; hlp_fm_recordhistory
+A traduire
 
 ; fm_callevents
 Evénements des appels (AMI) :
 
+; cmt_fm_callevents
+A traduire
+
+; hlp_fm_callevents
+A traduire
+
 ; fm_tos-sip
 TOS SIP :
+
+; cmt_fm_tos-sip
+A traduire
+
+; hlp_fm_tos-sip
+A traduire
 
 ; fm_tos-audio
 TOS audio :
 
+; cmt_fm_tos-audio
+A traduire
+
+; hlp_fm_tos-audio
+A traduire
+
 ; fm_tos-video
 TOS vidéo :
+
+; cmt_fm_tos-video
+A traduire
+
+; hlp_fm_tos-video
+A traduire
 
 ; fm_externip
 Adresse IP externe :
 
+; cmt_fm_externip
+A traduire
+
+; hlp_fm_externip
+A traduire
+
 ; fm_externhost
 Hôte externe :
+
+; cmt_fm_externhost
+A traduire
+
+; hlp_fm_externhost
+A traduire
 
 ; fm_externrefresh
 Temps de rafraîchissement du domaine externe :
 
+; cmt_fm_externrefresh
+A traduire
+
+; hlp_fm_externrefresh
+A traduire
+
 ; fm_externrefresh-opt-second
 1 seconde
+
+; cmt_fm_externrefresh-opt-second
+A traduire
+
+; hlp_fm_externrefresh-opt-second
+A traduire
 
 ; fm_externrefresh-opt-seconds
 %s secondes
 
+; cmt_fm_externrefresh-opt-seconds
+A traduire
+
+; hlp_fm_externrefresh-opt-seconds
+A traduire
+
 ; fm_externrefresh-opt-minute
 1 minute
+
+; cmt_fm_externrefresh-opt-minute
+A traduire
+
+; hlp_fm_externrefresh-opt-minute
+A traduire
 
 ; fm_externrefresh-opt-minute-seconds
 %s min. %s sec.
 
+; cmt_fm_externrefresh-opt-minute-seconds
+A traduire
+
+; hlp_fm_externrefresh-opt-minute-seconds
+A traduire
+
 ; fm_externrefresh-opt-minutes
 %s minutes
+
+; cmt_fm_externrefresh-opt-minutes
+A traduire
+
+; hlp_fm_externrefresh-opt-minutes
+A traduire
 
 ; fm_externrefresh-opt-minutes-seconds
 %s min. %s sec.
 
+; cmt_fm_externrefresh-opt-minutes-seconds
+A traduire
+
+; hlp_fm_externrefresh-opt-minutes-seconds
+A traduire
+
 ; fm_matchexterniplocally
 Remplacer l'IP ou l'hôte externe s'il correspond au réseau local :
+
+; cmt_fm_matchexterniplocally
+A traduire
+
+; hlp_fm_matchexterniplocally
+A traduire
 
 ; fm_outboundproxy
 Proxy Outbound :
 
+; cmt_fm_outboundproxy
+A traduire
+
+; hlp_fm_outboundproxy
+A traduire
+
 ; fm_outboundproxyport
 Port du proxy Outbound :
 
+; cmt_fm_outboundproxyport
+A traduire
+
+; hlp_fm_outboundproxyport
+A traduire
+
 ; fm_localnet
 Réseau local :
+
+; cmt_fm_localnet
+A traduire
+
+; hlp_fm_localnet
+A traduire
 
 ; localnet_add
 Ajouter un hôte :
@@ -163,149 +421,443 @@ Supprimer un ou plusieurs hôtes
 ; fm_t1min
 Délai minimum de l'aller-retour (RTT) des messages :
 
+; cmt_fm_t1min
+A traduire
+
+; hlp_fm_t1min
+A traduire
+
 ; fm_t1min-opt(0)
 0 milliseconde
+
+; cmt_fm_t1min-opt(0)
+A traduire
+
+; hlp_fm_t1min-opt(0)
+A traduire
 
 ; fm_t1min-opt
 %s millisecondes
 
+; cmt_fm_t1min-opt
+A traduire
+
+; hlp_fm_t1min-opt
+A traduire
+
 ; fm_relaxdtmf
 Relax DTMF :
+
+; cmt_fm_relaxdtmf
+A traduire
+
+; hlp_fm_relaxdtmf
+A traduire
 
 ; fm_rfc2833compensate
 Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
 
+; cmt_fm_rfc2833compensate
+A traduire
+
+; hlp_fm_rfc2833compensate
+A traduire
+
 ; fm_compactheaders
 Compacter les en-têtes :
+
+; cmt_fm_compactheaders
+A traduire
+
+; hlp_fm_compactheaders
+A traduire
 
 ; fm_rtptimeout
 Délai d'attente pour le RTP :
 
+; cmt_fm_rtptimeout
+A traduire
+
+; hlp_fm_rtptimeout
+A traduire
+
 ; fm_rtptimeout-opt(0)
 Désactivé
+
+; cmt_fm_rtptimeout-opt(0)
+A traduire
+
+; hlp_fm_rtptimeout-opt(0)
+A traduire
 
 ; fm_rtptimeout-opt
 %s secondes
 
+; cmt_fm_rtptimeout-opt
+A traduire
+
+; hlp_fm_rtptimeout-opt
+A traduire
+
 ; fm_rtpholdtimeout
 Délai du RTP sur attente :
+
+; cmt_fm_rtpholdtimeout
+A traduire
+
+; hlp_fm_rtpholdtimeout
+A traduire
 
 ; fm_rtpholdtimeout-opt(0)
 Désactivé
 
+; cmt_fm_rtpholdtimeout-opt(0)
+A traduire
+
+; hlp_fm_rtpholdtimeout-opt(0)
+A traduire
+
 ; fm_rtpholdtimeout-opt
 %s secondes
+
+; cmt_fm_rtpholdtimeout-opt
+A traduire
+
+; hlp_fm_rtpholdtimeout-opt
+A traduire
 
 ; fm_rtpkeepalive
 Présence du RTP :
 
+; cmt_fm_rtpkeepalive
+A traduire
+
+; hlp_fm_rtpkeepalive
+A traduire
+
 ; fm_rtpkeepalive-opt(0)
 Désactivée
+
+; cmt_fm_rtpkeepalive-opt(0)
+A traduire
+
+; hlp_fm_rtpkeepalive-opt(0)
+A traduire
 
 ; fm_rtpkeepalive-opt
 %s secondes
 
+; cmt_fm_rtpkeepalive-opt
+A traduire
+
+; hlp_fm_rtpkeepalive-opt
+A traduire
+
 ; fm_directrtpsetup
 Activer le RTP direct :
+
+; cmt_fm_directrtpsetup
+A traduire
+
+; hlp_fm_directrtpsetup
+A traduire
 
 ; fm_notifymimetype
 Notification du type de MIME :
 
+; cmt_fm_notifymimetype
+A traduire
+
+; hlp_fm_notifymimetype
+A traduire
+
 ; fm_srvlookup
 Requête DNS :
+
+; cmt_fm_srvlookup
+A traduire
+
+; hlp_fm_srvlookup
+A traduire
 
 ; fm_pedantic
 Conforme aux standards :
 
+; cmt_fm_pedantic
+A traduire
+
+; hlp_fm_pedantic
+A traduire
+
 ; fm_minexpiry
 Durée minimum pour l'enregistrement :
+
+; cmt_fm_minexpiry
+A traduire
+
+; hlp_fm_minexpiry
+A traduire
 
 ; fm_maxexpiry
 Durée maximum pour l'enregistrement :
 
+; cmt_fm_maxexpiry
+A traduire
+
+; hlp_fm_maxexpiry
+A traduire
+
 ; fm_defaultexpiry
 Durée par défaut pour l'enregistrement :
+
+; cmt_fm_defaultexpiry
+A traduire
+
+; hlp_fm_defaultexpiry
+A traduire
 
 ; fm_expiry-opt-second
 1 seconde
 
+; cmt_fm_expiry-opt-second
+A traduire
+
+; hlp_fm_expiry-opt-second
+A traduire
+
 ; fm_expiry-opt-seconds
 %s secondes
+
+; cmt_fm_expiry-opt-seconds
+A traduire
+
+; hlp_fm_expiry-opt-seconds
+A traduire
 
 ; fm_expiry-opt-minute
 1 minute
 
+; cmt_fm_expiry-opt-minute
+A traduire
+
+; hlp_fm_expiry-opt-minute
+A traduire
+
 ; fm_expiry-opt-minute-seconds
 %s min. %s sec.
+
+; cmt_fm_expiry-opt-minute-seconds
+A traduire
+
+; hlp_fm_expiry-opt-minute-seconds
+A traduire
 
 ; fm_expiry-opt-minutes
 %s minutes
 
+; cmt_fm_expiry-opt-minutes
+A traduire
+
+; hlp_fm_expiry-opt-minutes
+A traduire
+
 ; fm_expiry-opt-minutes-seconds
 %s min. %s sec.
+
+; cmt_fm_expiry-opt-minutes-seconds
+A traduire
+
+; hlp_fm_expiry-opt-minutes-seconds
+A traduire
 
 ; fm_expiry-opt-hour
 1 heure
 
+; cmt_fm_expiry-opt-hour
+A traduire
+
+; hlp_fm_expiry-opt-hour
+A traduire
+
 ; fm_expiry-opt-hour-minutes
 %s heure %s min.
+
+; cmt_fm_expiry-opt-hour-minutes
+A traduire
+
+; hlp_fm_expiry-opt-hour-minutes
+A traduire
 
 ; fm_expiry-opt-hours
 %s heures
 
+; cmt_fm_expiry-opt-hours
+A traduire
+
+; hlp_fm_expiry-opt-hours
+A traduire
+
 ; fm_registertimeout
 Délai d'enregistrement :
+
+; cmt_fm_registertimeout
+A traduire
+
+; hlp_fm_registertimeout
+A traduire
 
 ; fm_registertimeout-opt-second
 1 seconde
 
+; cmt_fm_registertimeout-opt-second
+A traduire
+
+; hlp_fm_registertimeout-opt-second
+A traduire
+
 ; fm_registertimeout-opt-seconds
 %s secondes
+
+; cmt_fm_registertimeout-opt-seconds
+A traduire
+
+; hlp_fm_registertimeout-opt-seconds
+A traduire
 
 ; fm_registertimeout-opt-minute
 1 minute
 
+; cmt_fm_registertimeout-opt-minute
+A traduire
+
+; hlp_fm_registertimeout-opt-minute
+A traduire
+
 ; fm_registertimeout-opt-minute-seconds
 %s min. %s sec.
+
+; cmt_fm_registertimeout-opt-minute-seconds
+A traduire
+
+; hlp_fm_registertimeout-opt-minute-seconds
+A traduire
 
 ; fm_registertimeout-opt-minutes
 %s minutes
 
+; cmt_fm_registertimeout-opt-minutes
+A traduire
+
+; hlp_fm_registertimeout-opt-minutes
+A traduire
+
 ; fm_registerattempts
 Nombre de tentative d'enregistrement :
+
+; cmt_fm_registerattempts
+A traduire
+
+; hlp_fm_registerattempts
+A traduire
 
 ; fm_registerattempts-opt(0)
 Illimité
 
+; cmt_fm_registerattempts-opt(0)
+A traduire
+
+; hlp_fm_registerattempts-opt(0)
+A traduire
+
 ; fm_registerattempts-opt
 %s
+
+; cmt_fm_registerattempts-opt
+A traduire
+
+; hlp_fm_registerattempts-opt
+A traduire
 
 ; fm_notifyringing
 Notification de sonnerie :
 
+; cmt_fm_notifyringing
+A traduire
+
+; hlp_fm_notifyringing
+A traduire
+
 ; fm_notifyhold
 Notification de la mise en attente :
+
+; cmt_fm_notifyhold
+A traduire
+
+; hlp_fm_notifyhold
+A traduire
 
 ; fm_allowtransfer
 Autoriser les transferts :
 
+; cmt_fm_allowtransfer
+A traduire
+
+; hlp_fm_allowtransfer
+A traduire
+
 ; fm_maxcallbitrate
 Bit rate maximal pour les appels vidéo :
+
+; cmt_fm_maxcallbitrate
+A traduire
+
+; hlp_fm_maxcallbitrate
+A traduire
 
 ; fm_autoframing
 Frame automatique :
 
+; cmt_fm_autoframing
+A traduire
+
+; hlp_fm_autoframing
+A traduire
+
 ; fm_g726nonstandard
 Activer le support du G.726 non standard :
+
+; cmt_fm_g726nonstandard
+A traduire
+
+; hlp_fm_g726nonstandard
+A traduire
 
 ; fm_codec-disallow
 Codecs désactivés :
 
+; cmt_fm_codec-disallow
+A traduire
+
+; hlp_fm_codec-disallow
+A traduire
+
 ; fm_codec-disallow-opt(all)
 Tous
 
+; cmt_fm_codec-disallow-opt(all)
+A traduire
+
+; hlp_fm_codec-disallow-opt(all)
+A traduire
+
 ; fm_codec-allow
 Codecs activés :
+
+; cmt_fm_codec-allow
+A traduire
+
+; hlp_fm_codec-allow
+A traduire
 
 ; bt_upcodec
 Monter un ou plusieurs codecs
@@ -322,206 +874,621 @@ Ajouter un ou plusieurs codecs ->
 ; fm_t38pt-udptl
 Activer le T38 (UDPTL) :
 
+; cmt_fm_t38pt-udptl
+A traduire
+
+; hlp_fm_t38pt-udptl
+A traduire
+
 ; fm_t38pt-rtp
 Activer le T38 (RTP) :
+
+; cmt_fm_t38pt-rtp
+A traduire
+
+; hlp_fm_t38pt-rtp
+A traduire
 
 ; fm_t38pt-tcp
 Activer le T38 (TCP) :
 
+; cmt_fm_t38pt-tcp
+A traduire
+
+; hlp_fm_t38pt-tcp
+A traduire
+
 ; fm_t38pt-usertpsource
 Utiliser l'adresse IP source comme destination pour le T38 :
+
+; cmt_fm_t38pt-usertpsource
+A traduire
+
+; hlp_fm_t38pt-usertpsource
+A traduire
 
 ; fm_jbenable
 Activer le Jitter Buffer :
 
+; cmt_fm_jbenable
+A traduire
+
+; hlp_fm_jbenable
+A traduire
+
 ; fm_jbforce
 Forcer le Jitter Buffer :
+
+; cmt_fm_jbforce
+A traduire
+
+; hlp_fm_jbforce
+A traduire
 
 ; fm_jbmaxsize
 Taille maximale du Jitter Buffer :
 
+; cmt_fm_jbmaxsize
+A traduire
+
+; hlp_fm_jbmaxsize
+A traduire
+
 ; fm_jbmaxsize-opt(0)
 Désactivée
+
+; cmt_fm_jbmaxsize-opt(0)
+A traduire
+
+; hlp_fm_jbmaxsize-opt(0)
+A traduire
 
 ; fm_jbmaxsize-opt
 %s millisecondes
 
+; cmt_fm_jbmaxsize-opt
+A traduire
+
+; hlp_fm_jbmaxsize-opt
+A traduire
+
 ; fm_jbresyncthreshold
 Resynchronisation en cas de délai trop important :
+
+; cmt_fm_jbresyncthreshold
+A traduire
+
+; hlp_fm_jbresyncthreshold
+A traduire
 
 ; fm_jbresyncthreshold-opt(-1)
 Désactivée
 
+; cmt_fm_jbresyncthreshold-opt(-1)
+A traduire
+
+; hlp_fm_jbresyncthreshold-opt(-1)
+A traduire
+
 ; fm_jbresyncthreshold-opt(0)
 0 milliseconde
+
+; cmt_fm_jbresyncthreshold-opt(0)
+A traduire
+
+; hlp_fm_jbresyncthreshold-opt(0)
+A traduire
 
 ; fm_jbresyncthreshold-opt
 %s millisecondes
 
+; cmt_fm_jbresyncthreshold-opt
+A traduire
+
+; hlp_fm_jbresyncthreshold-opt
+A traduire
+
 ; fm_jbimpl
 Implémentation :
+
+; cmt_fm_jbimpl
+A traduire
+
+; hlp_fm_jbimpl
+A traduire
 
 ; fm_jbimpl-opt(fixed)
 Fixe
 
+; cmt_fm_jbimpl-opt(fixed)
+A traduire
+
+; hlp_fm_jbimpl-opt(fixed)
+A traduire
+
 ; fm_jbimpl-opt(adaptative)
 Adaptative
+
+; cmt_fm_jbimpl-opt(adaptative)
+A traduire
+
+; hlp_fm_jbimpl-opt(adaptative)
+A traduire
 
 ; fm_jblog
 Activer la journalisation des frames :
 
+; cmt_fm_jblog
+A traduire
+
+; hlp_fm_jblog
+A traduire
+
 ; fm_context
 Contexte :
+
+; cmt_fm_context
+A traduire
+
+; hlp_fm_context
+A traduire
 
 ; fm_nat
 NAT :
 
+; cmt_fm_nat
+A traduire
+
+; hlp_fm_nat
+A traduire
+
 ; fm_nat-opt(no)
 Non
+
+; cmt_fm_nat-opt(no)
+A traduire
+
+; hlp_fm_nat-opt(no)
+A traduire
 
 ; fm_nat-opt(yes)
 Oui
 
+; cmt_fm_nat-opt(yes)
+A traduire
+
+; hlp_fm_nat-opt(yes)
+A traduire
+
 ; fm_nat-opt(never)
 Jamais
+
+; cmt_fm_nat-opt(never)
+A traduire
+
+; hlp_fm_nat-opt(never)
+A traduire
 
 ; fm_nat-opt(route)
 Route
 
+; cmt_fm_nat-opt(route)
+A traduire
+
+; hlp_fm_nat-opt(route)
+A traduire
+
 ; fm_dtmfmode
 DTMF :
+
+; cmt_fm_dtmfmode
+A traduire
+
+; hlp_fm_dtmfmode
+A traduire
 
 ; fm_dtmfmode-opt(rfc2833)
 RFC 2833
 
+; cmt_fm_dtmfmode-opt(rfc2833)
+A traduire
+
+; hlp_fm_dtmfmode-opt(rfc2833)
+A traduire
+
 ; fm_dtmfmode-opt(inband)
 InBand
+
+; cmt_fm_dtmfmode-opt(inband)
+A traduire
+
+; hlp_fm_dtmfmode-opt(inband)
+A traduire
 
 ; fm_dtmfmode-opt(info)
 INFO
 
+; cmt_fm_dtmfmode-opt(info)
+A traduire
+
+; hlp_fm_dtmfmode-opt(info)
+A traduire
+
 ; fm_dtmfmode-opt(auto)
 Auto
+
+; cmt_fm_dtmfmode-opt(auto)
+A traduire
+
+; hlp_fm_dtmfmode-opt(auto)
+A traduire
 
 ; fm_qualify
 Supervision de la latence :
 
+; cmt_fm_qualify
+A traduire
+
+; hlp_fm_qualify
+A traduire
+
 ; fm_qualify-opt(no)
 Non
+
+; cmt_fm_qualify-opt(no)
+A traduire
+
+; hlp_fm_qualify-opt(no)
+A traduire
 
 ; fm_qualify-opt(yes)
 Oui
 
+; cmt_fm_qualify-opt(yes)
+A traduire
+
+; hlp_fm_qualify-opt(yes)
+A traduire
+
 ; fm_qualify-opt
 %s millisecondes
+
+; cmt_fm_qualify-opt
+A traduire
+
+; hlp_fm_qualify-opt
+A traduire
 
 ; fm_useclientcode
 Code client :
 
+; cmt_fm_useclientcode
+A traduire
+
+; hlp_fm_useclientcode
+A traduire
+
 ; fm_progressinband
 Evénement RING dans la bande :
+
+; cmt_fm_progressinband
+A traduire
+
+; hlp_fm_progressinband
+A traduire
 
 ; fm_progressinband-opt(no)
 Non
 
+; cmt_fm_progressinband-opt(no)
+A traduire
+
+; hlp_fm_progressinband-opt(no)
+A traduire
+
 ; fm_progressinband-opt(yes)
 Oui
+
+; cmt_fm_progressinband-opt(yes)
+A traduire
+
+; hlp_fm_progressinband-opt(yes)
+A traduire
 
 ; fm_progressinband-opt(never)
 Jamais
 
+; cmt_fm_progressinband-opt(never)
+A traduire
+
+; hlp_fm_progressinband-opt(never)
+A traduire
+
 ; fm_language
 Langue :
+
+; cmt_fm_language
+A traduire
+
+; hlp_fm_language
+A traduire
 
 ; fm_mohinterpret
 Musique d'attente :
 
+; cmt_fm_mohinterpret
+A traduire
+
+; hlp_fm_mohinterpret
+A traduire
+
 ; fm_mohsuggest
 Musique d'attente sur un appel sortant :
+
+; cmt_fm_mohsuggest
+A traduire
+
+; hlp_fm_mohsuggest
+A traduire
 
 ; fm_vmexten
 Numéro de la messagerie vocale :
 
+; cmt_fm_vmexten
+A traduire
+
+; hlp_fm_vmexten
+A traduire
+
 ; fm_trustrpid
 Faire confiance au Remote-Party-ID :
+
+; cmt_fm_trustrpid
+A traduire
+
+; hlp_fm_trustrpid
+A traduire
 
 ; fm_sendrpid
 Envoyer le Remote-Party-ID :
 
+; cmt_fm_sendrpid
+A traduire
+
+; hlp_fm_sendrpid
+A traduire
+
 ; fm_assertedidentity
 Envoyer le P-Asserted-Identity :
+
+; cmt_fm_assertedidentity
+A traduire
+
+; hlp_fm_assertedidentity
+A traduire
 
 ; fm_canreinvite
 Invite :
 
+; cmt_fm_canreinvite
+A traduire
+
+; hlp_fm_canreinvite
+A traduire
+
 ; fm_canreinvite-opt(no)
 Non
+
+; cmt_fm_canreinvite-opt(no)
+A traduire
+
+; hlp_fm_canreinvite-opt(no)
+A traduire
 
 ; fm_canreinvite-opt(yes)
 Oui
 
+; cmt_fm_canreinvite-opt(yes)
+A traduire
+
+; hlp_fm_canreinvite-opt(yes)
+A traduire
+
 ; fm_canreinvite-opt(update)
 Mise à jour
+
+; cmt_fm_canreinvite-opt(update)
+A traduire
+
+; hlp_fm_canreinvite-opt(update)
+A traduire
 
 ; fm_canreinvite-opt(nonat)
 Sans NAT
 
+; cmt_fm_canreinvite-opt(nonat)
+A traduire
+
+; hlp_fm_canreinvite-opt(nonat)
+A traduire
+
 ; fm_canreinvite-opt(update-nonat)
 Mise à jour sans NAT
+
+; cmt_fm_canreinvite-opt(update-nonat)
+A traduire
+
+; hlp_fm_canreinvite-opt(update-nonat)
+A traduire
 
 ; fm_insecure
 Insécurité :
 
+; cmt_fm_insecure
+A traduire
+
+; hlp_fm_insecure
+A traduire
+
 ; fm_insecure-opt(no)
 Non
+
+; cmt_fm_insecure-opt(no)
+A traduire
+
+; hlp_fm_insecure-opt(no)
+A traduire
 
 ; fm_insecure-opt(port)
 Port
 
+; cmt_fm_insecure-opt(port)
+A traduire
+
+; hlp_fm_insecure-opt(port)
+A traduire
+
 ; fm_insecure-opt(invite)
 Invite
+
+; cmt_fm_insecure-opt(invite)
+A traduire
+
+; hlp_fm_insecure-opt(invite)
+A traduire
 
 ; fm_insecure-opt(all)
 Tout
 
+; cmt_fm_insecure-opt(all)
+A traduire
+
+; hlp_fm_insecure-opt(all)
+A traduire
+
 ; fm_rtcachefriends
 Mise en cache des comptes :
+
+; cmt_fm_rtcachefriends
+A traduire
+
+; hlp_fm_rtcachefriends
+A traduire
 
 ; fm_rtupdate
 Mise à jour du cache :
 
+; cmt_fm_rtupdate
+A traduire
+
+; hlp_fm_rtupdate
+A traduire
+
 ; fm_ignoreregexpire
 Ignorer l'expiration :
+
+; cmt_fm_ignoreregexpire
+A traduire
+
+; hlp_fm_ignoreregexpire
+A traduire
 
 ; fm_rtsavesysname
 Sauvegarder le nom du système lors d'un enregistrement :
 
+; cmt_fm_rtsavesysname
+A traduire
+
+; hlp_fm_rtsavesysname
+A traduire
+
 ; fm_rtautoclear
 Suppression automatique du cache :
+
+; cmt_fm_rtautoclear
+A traduire
+
+; hlp_fm_rtautoclear
+A traduire
 
 ; fm_rtautoclear-opt(no)
 Non
 
+; cmt_fm_rtautoclear-opt(no)
+A traduire
+
+; hlp_fm_rtautoclear-opt(no)
+A traduire
+
 ; fm_rtautoclear-opt(yes)
 Oui
+
+; cmt_fm_rtautoclear-opt(yes)
+A traduire
+
+; hlp_fm_rtautoclear-opt(yes)
+A traduire
 
 ; fm_rtautoclear-opt-second
 1 seconde
 
+; cmt_fm_rtautoclear-opt-second
+A traduire
+
+; hlp_fm_rtautoclear-opt-second
+A traduire
+
 ; fm_rtautoclear-opt-seconds
 %s secondes
+
+; cmt_fm_rtautoclear-opt-seconds
+A traduire
+
+; hlp_fm_rtautoclear-opt-seconds
+A traduire
 
 ; fm_rtautoclear-opt-minute
 1 minute
 
+; cmt_fm_rtautoclear-opt-minute
+A traduire
+
+; hlp_fm_rtautoclear-opt-minute
+A traduire
+
 ; fm_rtautoclear-opt-minute-seconds
 %s min. %s sec.
+
+; cmt_fm_rtautoclear-opt-minute-seconds
+A traduire
+
+; hlp_fm_rtautoclear-opt-minute-seconds
+A traduire
 
 ; fm_rtautoclear-opt-minutes
 %s minutes
 
+; cmt_fm_rtautoclear-opt-minutes
+A traduire
+
+; hlp_fm_rtautoclear-opt-minutes
+A traduire
+
 ; fm_rtautoclear-opt-minutes-seconds
 %s min. %s sec.
 
+; cmt_fm_rtautoclear-opt-minutes-seconds
+A traduire
+
+; hlp_fm_rtautoclear-opt-minutes-seconds
+A traduire
+
 ; fm_success-save
 Propriétés du protocole SIP sauvegardées avec succès
+
+; cmt_fm_success-save
+A traduire
+
+; hlp_fm_success-save
+A traduire
+

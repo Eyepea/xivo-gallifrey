@@ -39,6 +39,7 @@ $array['xivo/logoff'] = 'xivo/logoff.php';
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
 $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_settings/iax/';
+$array['service/ipbx/general_settings/cti'] = 'service/ipbx/index.php/general_settings/cti/';
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
 $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
@@ -74,6 +75,8 @@ $array['service/ipbx/web_services/phonebook/search'] = 'service/ipbx/web_service
 
 $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/local/';
 
+$array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';
+
 $array['service/ipbx/json/restricted/pbx_settings/agents'] = 'service/ipbx/json.php/restricted/pbx_settings/agents/';
 $array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
 $array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.php/restricted/pbx_settings/groups/';
@@ -81,6 +84,8 @@ $array['service/ipbx/json/restricted/pbx_settings/queues'] = 'service/ipbx/json.
 $array['service/ipbx/json/restricted/pbx_settings/meetme'] = 'service/ipbx/json.php/restricted/pbx_settings/meetme/';
 $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/json.php/restricted/pbx_settings/voicemail/';
 $array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
+
+$array['service/ipbx/json/private/ctiserver/configuration'] = 'service/ipbx/json.php/private/ctiserver/configuration/';
 
 $array['service/ipbx/json/private/pbx_settings/agents'] = 'service/ipbx/json.php/private/pbx_settings/agents/';
 $array['service/ipbx/json/private/pbx_settings/users'] = 'service/ipbx/json.php/private/pbx_settings/users/';

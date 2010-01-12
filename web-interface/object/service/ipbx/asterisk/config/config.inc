@@ -229,6 +229,9 @@ $array['module']['contextnumbers']['datastorage'] = true;
 $array['module']['contextnummember'] = array();
 $array['module']['contextnummember']['datastorage'] = true;
 
+$array['module']['ctimain'] = array();
+$array['module']['ctimain']['datastorage'] = true;
+
 $array['module']['dialaction'] = array();
 $array['module']['dialaction']['datastorage'] = true;
 

@@ -159,6 +159,7 @@ endif;
 				    'name'	=> 'voicemail[maxmsg]',
 				    'labelid'	=> 'voicemail-maxmsg',
 				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_voicemail-maxmsg'),
 				    'selected'	=> $this->get_var('voicemail','maxmsg','var_val'),
 				    'default'	=> $element['voicemail']['maxmsg']['default']),
 			      $element['voicemail']['maxmsg']['value']),
@@ -167,6 +168,7 @@ endif;
 				    'name'	=> 'voicemail[silencethreshold]',
 				    'labelid'	=> 'voicemail-silencethreshold',
 				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_voicemail-silencethreshold'),
 				    'selected'	=> $this->get_var('voicemail','silencethreshold','var_val'),
 				    'default'	=> $element['voicemail']['silencethreshold']['default']),
 			      $element['voicemail']['silencethreshold']['value']),
@@ -180,6 +182,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
+				    'help'	=> $this->bbf('hlp_fm_voicemail-minmessage'),
 				    'selected'	=> $this->get_var('voicemail','minmessage','var_val'),
 				    'default'	=> $element['voicemail']['minmessage']['default']),
 			      $element['voicemail']['minmessage']['value']),
@@ -193,6 +196,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
+				    'help'	=> $this->bbf('hlp_fm_voicemail-maxmessage'),
 				    'selected'	=> $this->get_var('voicemail','maxmessage','var_val'),
 				    'default'	=> $element['voicemail']['maxmessage']['default']),
 			      $element['voicemail']['maxmessage']['value']),
@@ -203,6 +207,7 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-maxsilence-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'help'	=> $this->bbf('hlp_fm_voicemail-maxsilence'),
 				    'selected'	=> $this->get_var('voicemail','maxsilence','var_val'),
 				    'default'	=> $element['voicemail']['maxsilence']['default']),
 			      $element['voicemail']['maxsilence']['value']),
@@ -210,12 +215,14 @@ endif;
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-review'),
 				      'name'	=> 'voicemail[review]',
 				      'labelid'	=> 'voicemail-review',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-review'),
 				      'checked'	=> $this->get_var('voicemail','review','var_val'),
 				      'default'	=> $element['voicemail']['review']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-operator'),
 				      'name'	=> 'voicemail[operator]',
 				      'labelid'	=> 'voicemail-operator',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-operator'),
 				      'checked'	=> $this->get_var('voicemail','operator','var_val'),
 				      'default'	=> $element['voicemail']['operator']['default']));
 
@@ -231,6 +238,7 @@ endif;
 		<?=$form->select(array('name'		=> 'voicemail[formatlist]',
 				       'label'		=> false,
 				       'id'		=> 'it-voicemail-formatlist',
+				       'help'	=> $this->bbf('hlp_voicemail-formatlist'),
 				       'multiple'	=> true,
 				       'size'		=> 5,
 				       'paragraph'	=> false,
@@ -257,6 +265,7 @@ endif;
 		<?=$form->select(array('name'		=> 'voicemail[format][]',
 				       'label'		=> false,
 				       'id'		=> 'it-voicemail-format',
+				       'help'	=> $this->bbf('hlp_voicemail-format'),
 				       'multiple'	=> true,
 				       'size'		=> 5,
 				       'paragraph'	=> false,
@@ -275,6 +284,7 @@ endif;
 				    'name'	=> 'voicemail[maxlogins]',
 				    'labelid'	=> 'voicemail-maxlogins',
 				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_voicemail-maxlogins'),
 				    'selected'	=> $this->get_var('voicemail','maxlogins','var_val'),
 				    'default'	=> $element['voicemail']['maxlogins']['default']),
 			      $element['voicemail']['maxlogins']['value']),
@@ -282,12 +292,14 @@ endif;
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-envelope'),
 				      'name'	=> 'voicemail[envelope]',
 				      'labelid'	=> 'voicemail-envelope',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-envelope'),
 				      'checked'	=> $this->get_var('voicemail','envelope','var_val'),
 				      'default'	=> $element['voicemail']['envelope']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-saycid'),
 				      'name'	=> 'voicemail[saycid]',
 				      'labelid'	=> 'voicemail-saycid',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-saycid'),
 				      'checked'	=> $this->get_var('voicemail','saycid','var_val'),
 				      'default'	=> $element['voicemail']['saycid']['default']));
 
@@ -299,6 +311,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['voicemail']['cidinternalcontexts']['default'],
+				    'help'	=> $this->bbf('hlp_fm_voicemail-cidinternalcontexts'),
 				    'selected'	=> $this->get_var('voicemail','cidinternalcontexts','var_val')),
 			      $context_list);
 endif;
@@ -306,6 +319,7 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-sayduration'),
 				      'name'	=> 'voicemail[sayduration]',
 				      'labelid'	=> 'voicemail-sayduration',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-sayduration'),
 				      'checked'	=> $this->get_var('voicemail','sayduration','var_val'),
 				      'default'	=> $element['voicemail']['sayduration']['default'])),
 
@@ -315,6 +329,7 @@ endif;
 				    'key'	=> false,
 				    'bbf'	=> 'fm_voicemail-saydurationm-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'help'	=> $this->bbf('hlp_fm_voicemail-saydurationm'),
 				    'selected'	=> $this->get_var('voicemail','saydurationm','var_val'),
 				    'default'	=> $element['voicemail']['saydurationm']['default']),
 			      $element['voicemail']['saydurationm']['value']),
@@ -322,18 +337,21 @@ endif;
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-forcename'),
 				      'name'	=> 'voicemail[forcename]',
 				      'labelid'	=> 'voicemail-forcename',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-forcename'),
 				      'checked'	=> $this->get_var('voicemail','forcename','var_val'),
 				      'default'	=> $element['voicemail']['forcename']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-forcegreetings'),
 				      'name'	=> 'voicemail[forcegreetings]',
 				      'labelid'	=> 'voicemail-forcegreetings',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-forcegreetings'),
 				      'checked'	=> $this->get_var('voicemail','forcegreetings','var_val'),
 				      'default'	=> $element['voicemail']['forcegreetings']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-tempgreetwarn'),
 				      'name'	=> 'voicemail[tempgreetwarn]',
 				      'labelid'	=> 'voicemail-tempgreetwarn',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-tempgreetwarn'),
 				      'checked'	=> $this->get_var('voicemail','tempgreetwarn','var_val'),
 				      'default'	=> $element['voicemail']['tempgreetwarn']['default'])),
 
@@ -346,6 +364,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
+				    'help'	=> $this->bbf('hlp_fm_voicemail-maxgreet'),
 				    'selected'	=> $this->get_var('voicemail','maxgreet','var_val'),
 				    'default'	=> $element['voicemail']['maxgreet']['default']),
 			      $element['voicemail']['maxgreet']['value']),
@@ -359,6 +378,7 @@ endif;
 							 'time'		=> array(
 									'from'		=> 'millisecond',
 									'format'	=> '%M%s')),
+				    'help'	=> $this->bbf('hlp_fm_voicemail-skipms'),
 				    'selected'	=> $this->get_var('voicemail','skipms','var_val'),
 				    'default'	=> $element['voicemail']['skipms']['default']),
 			      $element['voicemail']['skipms']['value']),
@@ -366,18 +386,21 @@ endif;
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-sendvoicemail'),
 				      'name'	=> 'voicemail[sendvoicemail]',
 				      'labelid'	=> 'voicemail-sendvoicemail',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-sendvoicemail'),
 				      'checked'	=> $this->get_var('voicemail','sendvoicemail','var_val'),
 				      'default'	=> $element['voicemail']['sendvoicemail']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-usedirectory'),
 				      'name'	=> 'voicemail[usedirectory]',
 				      'labelid'	=> 'voicemail-usedirectory',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-usedirectory'),
 				      'checked'	=> $this->get_var('voicemail','usedirectory','var_val'),
 				      'default'	=> $element['voicemail']['usedirectory']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-nextaftercmd'),
 				      'name'	=> 'voicemail[nextaftercmd]',
 				      'labelid'	=> 'voicemail-nextaftercmd',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-nextaftercmd'),
 				      'checked'	=> $this->get_var('voicemail','nextaftercmd','var_val'),
 				      'default'	=> $element['voicemail']['nextaftercmd']['default']));
 
@@ -389,6 +412,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['voicemail']['dialout']['default'],
+				    'help'	=> $this->bbf('hlp_fm_voicemail-dialout'),
 				    'selected'	=> $this->get_var('voicemail','dialout','var_val')),
 			      $context_list),
 
@@ -399,6 +423,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['voicemail']['callback']['default'],
+				    'help'	=> $this->bbf('hlp_fm_voicemail-callback'),
 				    'selected'	=> $this->get_var('voicemail','callback','var_val')),
 			      $context_list),
 
@@ -409,6 +434,7 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['voicemail']['exitcontext']['default'],
+				    'help'	=> $this->bbf('hlp_fm_voicemail-exitcontext'),
 				    'selected'	=> $this->get_var('voicemail','exitcontext','var_val')),
 			      $context_list);
 endif;
@@ -421,6 +447,7 @@ endif;
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-attach'),
 				      'name'	=> 'voicemail[attach]',
 				      'labelid'	=> 'voicemail-attach',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-attach'),
 				      'checked'	=> $this->get_var('voicemail','attach','var_val'),
 				      'default'	=> $element['voicemail']['attach']['default'])),
 
@@ -437,6 +464,7 @@ endif;
 				    'name'	=> 'voicemail[volgain]',
 				    'labelid'	=> 'voicemail-volgain',
 				    'key'	=> false,
+				    'help'	=> $this->bbf('hlp_fm_voicemail-attachformat'),
 				    'selected'	=> $this->get_var('voicemail','volgain','var_val'),
 				    'default'	=> $element['voicemail']['volgain']['default']),
 			      $element['voicemail']['volgain']['value']),
@@ -445,6 +473,8 @@ endif;
 				  'name'	=> 'voicemail[mailcmd]',
 				  'labelid'	=> 'voicemail-mailcmd',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-mailcmd'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-mailcmd'),
 				  'value'	=> $this->get_var('voicemail','mailcmd','var_val'),
 				  'default'	=> $element['voicemail']['mailcmd']['default']),
 			    'class="it-readonly" readonly="readonly"'),
@@ -453,6 +483,8 @@ endif;
 				  'name'	=> 'voicemail[charset]',
 				  'labelid'	=> 'voicemail-charset',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-charset'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-charset'),
 				  'value'	=> $this->get_var('voicemail','charset','var_val'),
 				  'default'	=> $element['voicemail']['charset']['default']),
 			    'class="it-readonly" readonly="readonly"'),
@@ -461,6 +493,8 @@ endif;
 				  'name'	=> 'voicemail[serveremail]',
 				  'labelid'	=> 'voicemail-serveremail',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-serveremail'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-serveremail'),
 				  'value'	=> $this->get_var('voicemail','serveremail','var_val'),
 				  'default'	=> $element['voicemail']['serveremail']['default'])),
 
@@ -468,6 +502,8 @@ endif;
 				  'name'	=> 'voicemail[fromstring]',
 				  'labelid'	=> 'voicemail-fromstring',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-fromstring'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-fromstring'),
 				  'value'	=> $this->get_var('voicemail','fromstring','var_val'),
 				  'default'	=> $element['voicemail']['fromstring']['default'])),
 
@@ -475,6 +511,8 @@ endif;
 				  'name'	=> 'voicemail[emaildateformat]',
 				  'labelid'	=> 'voicemail-emaildateformat',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-emaildateformat'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-emaildateformat'),
 				  'value'	=> $this->get_var('voicemail','emaildateformat','var_val'),
 				  'default'	=> $element['voicemail']['emaildateformat']['default'])),
 
@@ -482,12 +520,15 @@ endif;
 				  'name'	=> 'voicemail[emaildatelocale]',
 				  'labelid'	=> 'voicemail-emaildatelocale',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-emaildatelocale'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-emaildatelocale'),
 				  'value'	=> $this->get_var('voicemail','emaildatelocale','var_val'),
 				  'default'	=> $element['voicemail']['emaildatelocale']['default'])),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-pbxskip'),
 				      'name'	=> 'voicemail[pbxskip]',
 				      'labelid'	=> 'voicemail-pbxskip',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-pbxskip'),
 				      'checked'	=> $this->get_var('voicemail','pbxskip','var_val'),
 				      'default'	=> $element['voicemail']['pbxskip']['default'])),
 
@@ -495,6 +536,8 @@ endif;
 				  'name'	=> 'voicemail[emailsubject]',
 				  'labelid'	=> 'voicemail-emailsubject',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-emailsubject'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-emailsubject'),
 				  'value'	=> $this->get_var('voicemail','emailsubject','var_val'),
 				  'default'	=> $element['voicemail']['emailsubject']['default']));
 ?>
@@ -520,6 +563,8 @@ endif;
 				  'name'	=> 'voicemail[pagerfromstring]',
 				  'labelid'	=> 'voicemail-pagerfromstring',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_'),
+				  'help'	=> $this->bbf('hlp_'),
 				  'value'	=> $this->get_var('voicemail','pagerfromstring','var_val'),
 				  'default'	=> $element['voicemail']['pagerfromstring']['default'])),
 
@@ -527,6 +572,8 @@ endif;
 				  'name'	=> 'voicemail[pagersubject]',
 				  'labelid'	=> 'voicemail-pagersubject',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-pagersubject'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-pagersubject'),
 				  'value'	=> $this->get_var('voicemail','pagersubject','var_val'),
 				  'default'	=> $element['voicemail']['pagersubject']['default']));
 ?>
@@ -584,15 +631,18 @@ if($zmsg_nb > 0):
 						     'name'		=> 'zonemessages[name][]',
 						     'id'		=> false,
 						     'label'		=> false,
+						     'comment'	=> $this->bbf('cmt_'),
+						     'help'	=> $this->bbf('hlp_'),
 						     'value'		=> $val['name'],
 						     'default'		=> $element['zonemessages']['name']['default']));?>
 			</td>
 			<td>
-				<?=$form->select(array('paragraph'	=> false,
-						       'name'		=> 'zonemessages[timezone][]',
+				<?=$form->select(array('name'		=> 'zonemessages[timezone][]',
+							   'paragraph'	=> false,
 						       'key'		=> true,
 						       'id'		=> false,
 						       'label'		=> false,
+						       'help'	=> $this->bbf('hlp_zonemessages-timezone'),
 						       'selected'	=> $val['timezone'],
 						       'default'	=> $element['zonemessages']['timezone']['default']),
 						 $this->get_var('timezone_list'));?>
@@ -603,6 +653,8 @@ if($zmsg_nb > 0):
 						     'id'		=> false,
 						     'label'		=> false,
 						     'size'		=> 25,
+						     'comment'	=> $this->bbf('cmt_'),
+						     'help'	=> $this->bbf('hlp_'),
 						     'value'		=> $val['msg_format'],
 						     'default'		=> $element['zonemessages']['msg_format']['default']));?>
 			</td>
@@ -677,12 +729,16 @@ if($zmsg_nb > 0):
 	echo	$form->text(array('desc'	=> $this->bbf('fm_voicemail-adsifdn'),
 				  'name'	=> 'voicemail[adsifdn]',
 				  'labelid'	=> 'voicemail-adsifdn',
+				  'comment'	=> $this->bbf('cmt_'),
+				  'help'	=> $this->bbf('hlp_'),
 				  'value'	=> $this->get_var('voicemail','adsifdn','var_val'),
 				  'default'	=> $element['voicemail']['adsifdn']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail-adsisec'),
 				  'name'	=> 'voicemail[adsisec]',
 				  'labelid'	=> 'voicemail-adsisec',
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-adsisec'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-adsisec'),
 				  'value'	=> $this->get_var('voicemail','adsisec','var_val'),
 				  'default'	=> $element['voicemail']['adsisec']['default'])),
 
@@ -690,6 +746,8 @@ if($zmsg_nb > 0):
 				  'name'	=> 'voicemail[adsiver]',
 				  'labelid'	=> 'voicemail-adsiver',
 				  'size'	=> 5,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-adsiver'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-adsiver'),
 				  'value'	=> $this->get_var('voicemail','adsiver','var_val'),
 				  'default'	=> $element['voicemail']['adsiver']['default']));
 ?>
@@ -700,6 +758,7 @@ if($zmsg_nb > 0):
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_voicemail-searchcontexts'),
 				      'name'	=> 'voicemail[searchcontexts]',
 				      'labelid'	=> 'voicemail-searchcontexts',
+				      'help'	=> $this->bbf('hlp_fm_voicemail-searchcontexts'),
 				      'checked'	=> $this->get_var('voicemail','searchcontexts','var_val'),
 				      'default'	=> $element['voicemail']['searchcontexts']['default'])),
 
@@ -707,6 +766,8 @@ if($zmsg_nb > 0):
 				  'name'	=> 'voicemail[externpass]',
 				  'labelid'	=> 'voicemail-externpass',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-externpass'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-externpass'),
 				  'value'	=> $this->get_var('voicemail','externpass','var_val'),
 				  'default'	=> $element['voicemail']['externpass']['default']),
 				  'class="it-readonly" readonly="readonly"'),
@@ -715,12 +776,16 @@ if($zmsg_nb > 0):
 				  'name'	=> 'voicemail[externnotify]',
 				  'labelid'	=> 'voicemail-externnotify',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-externnotify'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-externnotify'),
 				  'value'	=> $this->get_var('voicemail','externnotify','var_val'),
 				  'default'	=> $element['voicemail']['externnotify']['default'])),
 
 		$form->text(array('desc'	=> $this->bbf('fm_smdiport'),
 				  'name'	=> 'smdiport',
 				  'labelid'	=> 'smdiport',
+				  'comment'	=> $this->bbf('cmt_fm_smdiport'),
+				  'help'	=> $this->bbf('hlp_fm_smdiport'),
 				  'value'	=> $this->get_var('info','smdiport','var_val'),
 				  'default'	=> $element['voicemail']['smdiport']['default'])),
 
@@ -728,6 +793,8 @@ if($zmsg_nb > 0):
 				  'name'	=> 'voicemail[odbcstorage]',
 				  'labelid'	=> 'voicemail-odbcstorage',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-odbcstorage'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-odbcstorage'),
 				  'value'	=> $this->get_var('voicemail','odbcstorage','var_val'),
 				  'default'	=> $element['voicemail']['odbcstorage']['default'])),
 
@@ -735,6 +802,8 @@ if($zmsg_nb > 0):
 				  'name'	=> 'voicemail[odbctable]',
 				  'labelid'	=> 'voicemail-odbctable',
 				  'size'	=> 15,
+				  'comment'	=> $this->bbf('cmt_fm_voicemail-odbctable'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-odbctable'),
 				  'value'	=> $this->get_var('voicemail','odbctable','var_val'),
 				  'default'	=> $element['voicemail']['odbctable']['default']));
 ?>

@@ -16,6 +16,12 @@ Entrant
 ; wz-entctx-outgoing
 Sortant
 
+; wz-entctx-digits-pick
+Choisir...
+
+; cmt_wz-ctx-dispdigits
+Nb de chiffres présentés
+
 ; wz-entctx-internal
 Interne
 

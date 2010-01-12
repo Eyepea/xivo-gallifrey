@@ -53,6 +53,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['disabled']	= false;
 		$this->_param['required']	= false;
 		$this->_param['regexp']		= '';		# Regexp to check entry
+		$this->_param['modifier']	= '';		# Function to modifiy entry
 		$this->_param['id']		= false;
 		$this->_param['class']		= false;
 		$this->_param['label']		= true;
@@ -120,6 +121,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['regexp']) === true)
 			$this->_param['regexp'] = (string) $v['regexp'];
+
+		if(isset($v['modifier']) === true)
+			$this->_param['modifier'] = (string) $v['modifier'];
 
 		if(isset($v['multiple']) === true)
 			$this->_param['multiple'] = (bool) $v['multiple'];
@@ -517,19 +521,32 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(isset($o{0}) === true)
 			$r .= ($o{0} === ' ' ? '' : ' ').$o;
 
-		if($this->_param['regexp'] !== '')
+		if(($this->_param['regexp'] !== '') || ($this->_param['modifier'] !== ''))
 		{
 			$dhtml = &$this->_get_module('dhtml');
 
-			$funcjschk = 'dwho.form.check_input_data('.
-				     'this,'.
-				     '\''.$dhtml->escape($this->_param['regexp']).'\');';
+			$funcjschk = '';
+			$funcjsmod = '';
 
-			if($this->_param['type'] !== 'checked'
+			if($this->_param['regexp'] !== '')
+			{
+				$funcjschk = 'dwho.form.check_input_data('.
+						 'this,'.
+						 '\''.$dhtml->escape($this->_param['regexp']).'\');';
+			}
+
+			if($this->_param['modifier'] !== '')
+			{
+				$funcjsmod = 'dwho.form.check_input_data('.
+						 'this,'.
+						 '\''.$dhtml->escape($this->_param['modifier']).'\');';
+			}
+
+			if($this->_param['type'] !== 'checkbox'
 			&& $this->_param['type'] !== 'radio')
-				$r .= ' onblur="'.$funcjschk.'"';
+				$r .= ' onblur="'.$funcjsmod.$funcjschk.'"';
 			else
-				$r .= ' onselect="'.$funcjschk.'"';
+				$r .= ' onselect="'.$funcjsmod.$funcjschk.'"';
 		}
 
 		$r .= ' />';
@@ -729,6 +746,7 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$v['size'] = false;
 		$v['type'] = 'checkbox';
+		$v['regexp'] = null;
 
 		if(isset($v['class']) === false)
 			$v['class'] = 'it-checkbox';
