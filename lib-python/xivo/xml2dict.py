@@ -28,25 +28,12 @@ class XML2Dict:
     """
     A simple class to convert XML data into Python dictionary.
     """
-    def __init__(self, data=None, fp=None, filename=None):
+    def __init__(self):
         self._cdata_parts   = None
         self._current       = None
         self._stack         = None
         self._parser        = None
         self.root           = None
-        self.data           = None
-
-        auto_open = False
-        if data is None and not fp and filename:
-            auto_open = True
-            fp = file(filename)
-
-        if data is None and fp:
-            self.data = fp.read()
-            if auto_open:
-                fp.close()
-        else:
-            self.data = data
 
     def _set_item(self, k, v):
         if k != '__cdata__' and k in self._current:
@@ -82,14 +69,11 @@ class XML2Dict:
     def characters(self, content):
         self._cdata_parts.append(content)
 
-    def Parse(self, data=None):
+    def Parse(self, data):
         self.root           = {}
         self._stack         = []
         self._current       = self.root
         self._cdata_parts   = []
-
-        if data is None:
-            data = self.data
 
         self._parser = expat.ParserCreate()
         self._parser.StartElementHandler    = self.startElement
@@ -99,8 +83,6 @@ class XML2Dict:
         self._parser.Parse(data)
         return self.root
 
-    def ParseFile(self, filename):
-        fp = file(filename)
-        self.Parse(fp.read())
-        fp.close()
-        return self.root
+
+def Parse(data):
+    return XML2Dict().Parse(data)
