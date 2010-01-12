@@ -1,0 +1,171 @@
+#!/usr/bin/python
+"""
+Configuration daemon for XIVO
+"""
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2009-2010  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+# TODO: load Python logging configuration (using standard logging.config)
+
+from optparse import OptionParser
+import logging
+from logging.handlers import SysLogHandler
+import os
+from StringIO import StringIO
+from ConfigParser import ConfigParser
+
+from xivo import daemonize
+from xivo import http_json_server
+
+
+from xivo_sysconf.modules import * # XXX
+
+
+SYSLOG_NAME = "sysconfd"
+
+log = logging.getLogger('sysconfd') # pylint: disable-msg=C0103
+
+SysconfDefaultsConf = StringIO("""
+[general]
+xivo_config_path        = /etc/pf-xivo
+templates_path          = /usr/share/pf-xivo-sysconfd/templates
+custom_templates_path   = /etc/pf-xivo/sysconfd/custom-templates
+backup_path             = /var/backups/pf-xivo-sysconfd
+""")
+
+
+def get_log_level_by_name(loglevel_name):
+    "Returns the corresponding logging numerical value or raises ValueError"
+    levels = {
+        'CRITICAL': logging.CRITICAL,
+        'ERROR':    logging.ERROR,
+        'WARNING':  logging.WARNING,
+        'WARN':     logging.WARN,
+        'INFO':     logging.INFO,
+        'DEBUG':    logging.DEBUG,
+    }
+    loglevel_name = loglevel_name.upper()
+    if loglevel_name in levels:
+        return levels[loglevel_name]
+    else:
+        raise ValueError, "Unknown log level %r" % loglevel_name
+
+
+def argv_parse_check():
+    """
+    Parse (and check a little) command line parameters
+    """
+    parser = OptionParser(usage="usage: %prog [options]")
+
+    # XXX will be needed if we merge the provi in this daemon
+    #parser.add_option("-b",
+    #                  dest     = 'dburi',
+    #                  help     = "Override Database URI with DBURI")
+    parser.add_option("-l",
+                      dest      = 'loglevel',
+                      default   = 'info',   # warning: see affectation under
+                      help      = "Emit traces with LOGLEVEL details, must be one of:\n" \
+                                  "critical, error, warning, info, debug")
+    parser.add_option("-d",
+                      action    = 'store_true',
+                      dest      = 'dontlauchmain',
+                      default   = False,
+                      help      = "Don't call the main function, for installation test purposes")
+    parser.add_option("-f",
+                      action    = 'store_true',
+                      dest      = 'foreground',
+                      default   = False,
+                      help      = "Foreground, don't daemonize")
+    parser.add_option("-c",
+                      dest      = 'conffile',
+                      default   = "/etc/pf-xivo/sysconfd.conf",
+                      help      = "Use configuration file <conffile> instead of %default")
+    parser.add_option("-p",
+                      dest      = 'pidfile',
+                      default   = "/var/run/xivo-sysconfd.pid",
+                      help      = "Use PID file <pidfile> instead of %default")
+    parser.add_option("--listen-addr",
+                      dest      = 'listen_addr',
+                      default   = '192.168.0.18',
+                      help      = "Listen on address <listen_addr> instead of %default")
+    parser.add_option("--listen-port",
+                      dest      = 'listen_port',
+                      type      = 'int',
+                      default   = 8668,
+                      help      = "Listen on port <listen_port> instead of %default")
+
+    options, args = parser.parse_args()
+
+    if args:
+        parser.error("no argument is allowed - use option --help to get an help screen")
+
+    try:
+        num_loglevel = get_log_level_by_name(options.loglevel)
+    except ValueError:
+        parser.error("incorrect log level %r" % options.loglevel)
+    options.loglevel = num_loglevel
+
+    return options
+
+
+def main(options):
+    """
+    Main function; start the server
+    """
+    logging.basicConfig(level=logging.DEBUG)
+    sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+    sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
+    root_logger = logging.getLogger('')
+    root_logger.addHandler(sysloghandler)
+
+    cp = ConfigParser()
+    cp.readfp(SysconfDefaultsConf)
+    cp.readfp(open(options.conffile))
+
+    options.configuration   = cp
+    options.testmethods     = True # XXX
+    http_json_server.init(options)
+
+    if not options.foreground:
+        log.info("Transforming into a daemon from hell")
+        daemonize.daemonize()
+
+    log.info("locking PID")
+    daemonize.lock_pidfile_or_die(options.pidfile)
+    try:
+        try:
+            log.info("pidfile ok")
+            root_logger.setLevel(options.loglevel)
+            # XXX: will be needed if i merge the provi in this daemon
+            #os.umask(022)
+            http_json_server.run(options)
+        except SystemExit:
+            raise
+        except Exception:
+            log.exception("bad things happen")
+    finally:
+        daemonize.unlock_pidfile(options.pidfile)
+
+if __name__ == '__main__':
+    def _start():
+        "entry point"
+        options = argv_parse_check()
+        if not options.dontlauchmain:
+            main(options)
+    _start()

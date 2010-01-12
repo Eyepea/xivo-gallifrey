@@ -1,0 +1,403 @@
+"""lshw module
+
+Copyright (C) 2010  Proformatique
+
+"""
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2010  Proformatique
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
+"""
+
+import os
+import logging
+
+from xivo import http_json_server
+from xivo.http_json_server import HttpReqError
+from xivo.http_json_server import CMD_RW
+from xivo import OrderedConf
+from xivo import xivo_helpers
+from xivo import urisup
+from xivo.moresynchro import RWLock
+
+from ConfigParser import RawConfigParser
+
+log = logging.getLogger('xivo_sysconf.modules.wizard')  # pylint: disable-msg=C0103
+
+
+WIZARDLOCK                  = RWLock()
+
+Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr', 'share', 'pf-xivo-base-config', 'templates'),
+       'custom_templates_path':                 os.path.join(os.path.sep, 'etc', 'pf-xivo', 'custom-templates'),
+       'lock_timeout':                          60,
+       'agid_config_filename':                  "agid.conf",
+       'agid_tpl_directory':                    "agid",
+       'agid_config_path':                      None,
+       'asterisk_res_mysql_config_filename':    "res_mysql.conf",
+       'asterisk_cdr_mysql_config_filename':    "cdr_mysql.conf",
+       'asterisk_res_sqlite_config_filename':   "res_sqlite.conf",
+       'asterisk_config_path':                  os.path.join(os.path.sep, 'etc', 'asterisk'),
+       'asterisk_tpl_directory':                os.path.join('ipbx', 'asterisk'),
+       'provisioning_config_filename':          "provisioning.conf",
+       'provisioning_tpl_directory':            "provisioning",
+       'provisioning_config_path':              None,
+       'webinterface_xivo_config_filename':     "xivo.ini",
+       'webinterface_ipbx_config_filename':     "ipbx.ini",
+       'webinterface_tpl_directory':            "web-interface",
+       'webinterface_config_path':              None}
+
+
+WIZARD_IPBX_ENGINES         = {'asterisk':
+                                {'database':
+                                    {'mysql':
+                                        {'params':  {'charset':    'utf8'},
+
+                                         'res':     {'dbname':  'dbname',
+                                                     'dbuser':  'dbuser',
+                                                     'dbpass':  'dbpass',
+                                                     'dbhost':  'dbhost',
+                                                     'dbport':  'dbport',
+                                                     'charset': 'dbcharset'},
+
+                                         'cdr':     {'dbname':  'dbname',
+                                                     'dbuser':  'user',
+                                                     'dbpass':  'password',
+                                                     'dbhost':  'hostname',
+                                                     'dbport':  'port',
+                                                     'charset': 'charset'}},
+                                     'sqlite':
+                                        {'params':  {'timeout_ms':  150}}}}}
+
+WIZARD_XIVO_DB_ENGINES      = {'mysql':
+                                    {'params':  {'charset':     'utf8'}},
+                               'sqlite':
+                                    {'params':  {'timeout_ms':  150}}}
+
+
+def merge_config_file(tplfilename, customtplfilename, newfilename, cfgdict):
+    """
+    Generate a configuration file from a template
+    """
+
+    if os.access(customtplfilename, (os.F_OK | os.R_OK)):
+        filename = customtplfilename
+    elif os.access(newfilename, (os.F_OK | os.R_OK)):
+        filename = newfilename
+    else:
+        filename = tplfilename
+
+    cfg     = OrderedConf.OrderedRawConf(filename=filename)
+    newcfg  = RawConfigParser()
+
+    for sec in cfg:
+        secname = sec.get_name()
+        for opt in sec:
+            optname = opt.get_name()
+            if cfgdict.has_key(secname) \
+               and cfgdict[secname].has_key(optname):
+                value = cfgdict[secname][optname]
+            else:
+                value = opt.get_value()
+
+            newcfg.set(secname, optname, value)
+
+    tmpfilename = "%s.tmp" % newfilename
+    tmp = file(tmpfilename, 'w')
+    tmp.write("# XIVO: FILE AUTOMATICALLY GENERATED BY THE XIVO CONFIGURATION SUBSYSTEM\n")
+    newcfg.write(tmp)
+    tmp.close()
+    os.rename(tmpfilename, newfilename)
+
+def asterisk_mysql_config(authority, database, params, options):
+    """
+    Returns MySQL options for Asterisk
+    """
+    rs = {}
+
+    if isinstance(authority, (tuple, list)):
+        if authority[0]:
+            rs[options['dbuser']] = authority[0]
+
+        if authority[1]:
+            rs[options['dbpass']] = authority[1]
+
+        if authority[2]:
+            rs[options['dbhost']] = authority[2]
+
+        if authority[3]:
+            rs[options['dbport']] = authority[3]
+
+    if database:
+        if database[0] == '/':
+            rs[options['dbname']] = database[1:]
+        else:
+            rs[options['dbname']] = database
+
+    del(options['dbuser'],
+        options['dbpass'],
+        options['dbhost'],
+        options['dbport'],
+        options['dbname'])
+
+    if params:
+        for k, v in params.iteritems():
+            if options.has_key(k):
+                rs[options[k]] = v
+            else:
+                rs[k] = v
+
+    return rs
+
+def set_db_backends(args, options): # pylint: disable-msg=W0613
+    """
+    POST /db_backend
+    """
+    if 'xivo' not in args:
+        raise HttpReqError(415, "missing option 'xivo'")
+    else:
+        xivodburi = urisup.uri_help_split(args['xivo'])
+
+        if xivodburi[0] is None or xivodburi[0].lower() not in WIZARD_XIVO_DB_ENGINES:
+            raise HttpReqError(415, "invalid option 'xivo'")
+        else:
+            xivodburi[0] = xivodburi[0].lower()
+
+        if WIZARD_XIVO_DB_ENGINES[xivodburi[0]]:
+            xivodbparams = WIZARD_XIVO_DB_ENGINES[xivodburi[0]]['params']
+        else:
+            xivodbparams = {}
+
+        if xivodburi[3]:
+            xivodbparams.update(dict(xivodburi[3]))
+
+        if xivodbparams:
+            xivodburi[3] = zip(xivodbparams.keys(), xivodbparams.values())
+        else:
+            xivodburi[3] = None
+
+        args['xivo'] = urisup.uri_help_unsplit(xivodburi)
+
+    if 'ipbxengine' not in args:
+        raise HttpReqError(415, "missing option 'ipbxengine'")
+    elif args['ipbxengine'] not in WIZARD_IPBX_ENGINES:
+        raise HttpReqError(415, "invalid ipbxengine: %r" % args['ipbxengine'])
+
+    ipbxdatabase = WIZARD_IPBX_ENGINES[args['ipbxengine']]
+
+    if 'ipbx' not in args:
+        raise HttpReqError(415, "missing option 'ipbx'")
+    else:
+        ipbxdburi = urisup.uri_help_split(args['ipbx'])
+
+        if ipbxdburi[0] is None or ipbxdburi[0].lower() not in ipbxdatabase:
+            raise HttpReqError(415, "invalid option 'ipbx'")
+        else:
+            ipbxdburi[0] = ipbxdburi[0].lower()
+
+        if ipbxdatabase[ipbxdburi[0]]['params']:
+            ipbxdbparams = ipbxdatabase[ipbxdburi[0]]['params']
+        else:
+            ipbxdbparams = {}
+
+        if ipbxdburi[3]:
+            ipbxdbparams.update(dict(ipbxdburi[3]))
+
+        if ipbxdbparams:
+            ipbxdburi[3] = zip(ipbxdbparams.keys(), ipbxdbparams.values())
+        else:
+            ipbxdburi[3] = None
+
+        args['ipbx'] = urisup.uri_help_unsplit(ipbxdburi)
+
+    if not WIZARDLOCK.acquire_read(Wdc['lock_timeout']):
+        raise HttpReqError(503, "unable to take WIZARDLOCK for reading after %s seconds" % Wdc['lock_timeout'])
+
+    try:
+        connect = xivo_helpers.db_connect(args['xivo'])
+
+        if not connect:
+            raise HttpReqError(415, "unable to connect to 'xivo' database")
+        else:
+            connect.close()
+
+        connect = xivo_helpers.db_connect(args['ipbx'])
+
+        if not connect:
+            raise HttpReqError(415, "unable to connect to 'ipbx' database")
+        else:
+            connect.close()
+
+        merge_config_file(Wdc['agid_config_tpl_file'],
+                          Wdc['agid_config_custom_tpl_file'],
+                          Wdc['agid_config_file'],
+                          {'db':
+                                {'db_uri':  args['ipbx']}})
+
+        merge_config_file(Wdc['provisioning_config_tpl_file'],
+                          Wdc['provisioning_config_custom_tpl_file'],
+                          Wdc['provisioning_config_file'],
+                          {'general':
+                                {'database_uri':    args['ipbx']}})
+
+        merge_config_file(Wdc['webinterface_xivo_tpl_file'],
+                          Wdc['webinterface_xivo_custom_tpl_file'],
+                          Wdc['webinterface_xivo_file'],
+                          {'general':
+                                {'datastorage':     '"%s"' % args['xivo']}})
+
+        merge_config_file("%s.%s" % (Wdc['webinterface_ipbx_tpl_file'], args['ipbxengine']),
+                          "%s.%s" % (Wdc['webinterface_ipbx_custom_tpl_file'], args['ipbxengine']),
+                          Wdc['webinterface_ipbx_file'],
+                          {'general':
+                                {'datastorage':     '"%s"' % args['ipbx']}})
+
+        if ipbxdburi[0] == 'mysql':
+            merge_config_file(Wdc['asterisk_res_mysql_tpl_file'],
+                              Wdc['asterisk_res_mysql_custom_tpl_file'],
+                              Wdc['asterisk_res_mysql_file'],
+                              {'general':
+                                    asterisk_mysql_config(ipbxdburi[1],
+                                                          ipbxdburi[2],
+                                                          ipbxdbparams,
+                                                          ipbxdatabase[ipbxdburi[0]]['res'])})
+
+            merge_config_file(Wdc['asterisk_cdr_mysql_tpl_file'],
+                              Wdc['asterisk_cdr_mysql_custom_tpl_file'],
+                              Wdc['asterisk_cdr_mysql_file'],
+                              {'global':
+                                    asterisk_mysql_config(ipbxdburi[1],
+                                                          ipbxdburi[2],
+                                                          ipbxdbparams,
+                                                          ipbxdatabase[ipbxdburi[0]]['cdr'])})
+        elif ipbxdburi[0] == 'sqlite':
+            if ipbxdburi[0] != '/':
+                ipbxdbpath = ipbxdburi
+            else:
+                ipbxdbpath = ipbxdburi[1:]
+
+            merge_config_file(Wdc['asterisk_res_sqlite_tpl_file'],
+                              Wdc['asterisk_res_sqlite_custom_tpl_file'],
+                              Wdc['asterisk_res_sqlite_file'],
+                              {'general':
+                                    {'dbfile':   ipbxdbpath}})
+
+    finally:
+        WIZARDLOCK.release()
+
+def safe_init(options):
+    """Load parameters, etc"""
+    global Wdc
+
+    cfg = options.configuration
+
+    Wdc['xivo_config_path'] = cfg.get('general', 'xivo_config_path')
+
+    if cfg.has_section('wizard'):
+        for x in Wdc.iterkeys():
+            if cfg.has_option('wizard', x):
+                Wdc[x] = cfg.get('wizard', x)
+
+    Wdc['lock_timeout'] = float(Wdc['lock_timeout'])
+
+    if Wdc['agid_config_path'] is None:
+        Wdc['agid_config_path'] = Wdc['xivo_config_path']
+
+    if Wdc['provisioning_config_path'] is None:
+        Wdc['provisioning_config_path'] = Wdc['xivo_config_path']
+
+    if Wdc['webinterface_config_path'] is None:
+        Wdc['webinterface_config_path'] = os.path.join(Wdc['xivo_config_path'], "web-interface")
+
+    Wdc['agid_config_file'] = os.path.join(Wdc['agid_config_path'],
+                                           Wdc['agid_config_filename'])
+
+    Wdc['agid_config_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                               Wdc['agid_tpl_directory'],
+                                               Wdc['agid_config_filename'])
+
+    Wdc['agid_config_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                      Wdc['agid_tpl_directory'],
+                                                      Wdc['agid_config_filename'])
+
+    Wdc['asterisk_res_mysql_file'] = os.path.join(Wdc['asterisk_config_path'],
+                                                  Wdc['asterisk_res_mysql_config_filename'])
+
+    Wdc['asterisk_res_mysql_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                                      Wdc['asterisk_tpl_directory'],
+                                                      Wdc['asterisk_res_mysql_config_filename'])
+
+    Wdc['asterisk_res_mysql_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                             Wdc['asterisk_tpl_directory'],
+                                                             Wdc['asterisk_res_mysql_config_filename'])
+
+    Wdc['asterisk_cdr_mysql_file'] = os.path.join(Wdc['asterisk_config_path'],
+                                                  Wdc['asterisk_cdr_mysql_config_filename'])
+
+    Wdc['asterisk_cdr_mysql_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                                      Wdc['asterisk_tpl_directory'],
+                                                      Wdc['asterisk_cdr_mysql_config_filename'])
+
+    Wdc['asterisk_cdr_mysql_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                             Wdc['asterisk_tpl_directory'],
+                                                             Wdc['asterisk_cdr_mysql_config_filename'])
+
+    Wdc['asterisk_res_sqlite_file'] = os.path.join(Wdc['asterisk_config_path'],
+                                                   Wdc['asterisk_res_sqlite_config_filename'])
+
+    Wdc['asterisk_res_sqlite_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                                       Wdc['asterisk_tpl_directory'],
+                                                       Wdc['asterisk_res_sqlite_config_filename'])
+
+    Wdc['asterisk_res_sqlite_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                              Wdc['asterisk_tpl_directory'],
+                                                              Wdc['asterisk_res_sqlite_config_filename'])
+
+    Wdc['provisioning_config_file'] = os.path.join(Wdc['provisioning_config_path'],
+                                                   Wdc['provisioning_config_filename'])
+
+    Wdc['provisioning_config_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                                       Wdc['provisioning_tpl_directory'],
+                                                       Wdc['provisioning_config_filename'])
+
+    Wdc['provisioning_config_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                              Wdc['provisioning_tpl_directory'],
+                                                              Wdc['provisioning_config_filename'])
+
+    Wdc['webinterface_xivo_file'] = os.path.join(Wdc['webinterface_config_path'],
+                                                 Wdc['webinterface_xivo_config_filename'])
+
+    Wdc['webinterface_xivo_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                                     Wdc['webinterface_tpl_directory'],
+                                                     Wdc['webinterface_xivo_config_filename'])
+
+    Wdc['webinterface_xivo_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                            Wdc['webinterface_tpl_directory'],
+                                                            Wdc['webinterface_xivo_config_filename'])
+
+    Wdc['webinterface_ipbx_file'] = os.path.join(Wdc['webinterface_config_path'],
+                                                 Wdc['webinterface_ipbx_config_filename'])
+
+    Wdc['webinterface_ipbx_tpl_file'] = os.path.join(Wdc['templates_path'],
+                                                     Wdc['webinterface_tpl_directory'],
+                                                     Wdc['webinterface_ipbx_config_filename'])
+
+    Wdc['webinterface_ipbx_custom_tpl_file'] = os.path.join(Wdc['custom_templates_path'],
+                                                            Wdc['webinterface_tpl_directory'],
+                                                            Wdc['webinterface_ipbx_config_filename'])
+
+
+http_json_server.register(set_db_backends, CMD_RW, safe_init=safe_init)
