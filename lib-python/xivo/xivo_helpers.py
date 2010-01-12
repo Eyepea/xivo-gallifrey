@@ -263,7 +263,7 @@ def abort(message, show_tb=False):
     log.critical(message, exc_info=show_tb)
     sys.exit(1)
 
-def db_connect():
+def db_connect(db_uri=None):
     """DataBase CONNECT
 
     This function is a simple wrapper to connect to the database with error
@@ -281,7 +281,9 @@ def db_connect():
     """
     global db_conn
     db_close()
-    db_uri = ConfigDict.ReadSingleKey(AGI_CONFFILE, 'db', 'db_uri')
+
+    if not db_uri:
+        db_uri = ConfigDict.ReadSingleKey(AGI_CONFFILE, 'db', 'db_uri')
 
     try:
         db_conn = anysql.connect_by_uri(db_uri)
