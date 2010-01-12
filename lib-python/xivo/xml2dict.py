@@ -28,63 +28,79 @@ class XML2Dict:
     """
     A simple class to convert XML data into Python dictionary.
     """
-    def __init__(self):
-        self.stack          = None
+    def __init__(self, data=None, fp=None, filename=None):
+        self._cdata_parts   = None
+        self._current       = None
+        self._stack         = None
+        self._parser        = None
         self.root           = None
-        self.current        = None
-        self.cdata_parts    = None
+        self.data           = None
+
+        auto_open = False
+        if data is None and not fp and filename:
+            auto_open = True
+            fp = file(filename)
+
+        if data is None and fp:
+            self.data = fp.read()
+            if auto_open:
+                fp.close()
+        else:
+            self.data = data
 
     def _set_item(self, k, v):
-        if k != '__cdata__' and k in self.current:
-            value = self.current[k]
+        if k != '__cdata__' and k in self._current:
+            value = self._current[k]
             if not isinstance(value, list):
                 value = [value]
             value.append(v)
         else:
             value = v
-        self.current[k] = value
+        self._current[k] = value
 
     def startElement(self, name, attrs):
-        self.stack.append((self.current, self.cdata_parts))
-        self.current        = {}
-        self.cdata_parts    = []
+        self._stack.append((self._current, self._cdata_parts))
+        self._current       = {}
+        self._cdata_parts   = []
         for k, v in attrs.items():
             self._set_item(k, v)
 
     def endElement(self, name):
-        cdata = ''.join(self.cdata_parts).strip()
+        cdata = ''.join(self._cdata_parts).strip()
 
-        if self.current:
+        if self._current:
             if cdata:
                 self._set_item('__cdata__', cdata)
 
-            obj = self.current
+            obj = self._current
         else:
             obj = cdata
 
-        self.current, self.cdata_parts = self.stack.pop()
+        self._current, self._cdata_parts = self._stack.pop()
         self._set_item(name, obj)
 
     def characters(self, content):
-        self.cdata_parts.append(content)
+        self._cdata_parts.append(content)
 
-    def Parse(self, xml):
-        self.stack          = []
+    def Parse(self, data=None):
         self.root           = {}
-        self.current        = self.root
-        self.cdata_parts    = []
+        self._stack         = []
+        self._current       = self.root
+        self._cdata_parts   = []
 
-        self.parser = expat.ParserCreate()
-        self.parser.StartElementHandler  = self.startElement
-        self.parser.EndElementHandler    = self.endElement
-        self.parser.CharacterDataHandler = self.characters
+        if data is None:
+            data = self.data
 
-        self.parser.Parse(xml)
+        self._parser = expat.ParserCreate()
+        self._parser.StartElementHandler  = self.startElement
+        self._parser.EndElementHandler    = self.endElement
+        self._parser.CharacterDataHandler = self.characters
 
+        self._parser.Parse(data)
         return self.root
 
     def ParseFile(self, filename):
-        f = open(filename)
-        self.Parse(f.read())
-        f.close()
+        fp = file(filename)
+        self.Parse(fp.read())
+        fp.close()
         return self.root

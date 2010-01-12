@@ -178,10 +178,9 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         ret = {}
 
         for x in query:
-            xlen = len(x)
-            if xlen < 1:
+            if len(x) < 1:
                 continue
-            elif xlen > 1:
+            elif len(x) > 1:
                 value = x[1]
             else:
                 value = None

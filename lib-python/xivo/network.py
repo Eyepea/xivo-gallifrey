@@ -329,7 +329,7 @@ def format_ipv4(tupaddr):
 def bitmask_to_mask_ipv4(bits):
     """
     Return an IPv4 netmask address as a 4uple of ints
-    @bits: Bitmask stored as a int
+    @bits: Bit integer
     """
     return struct.unpack("BBBB", socket.inet_aton(str((0xFFFFFFFF >> (32 - bits)) << (32 - bits))))
 
@@ -337,7 +337,7 @@ def bitmask_to_mask_ipv4(bits):
 def bitmask_to_mask_ipv6(bits):
     """
     Return an IPv6 netmask address as a 8uple of binary strings
-    @bits: Bitmask stored as a int
+    @bits: Bit integer
     """
     bits = int(bits)
 
