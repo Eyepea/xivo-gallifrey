@@ -102,7 +102,7 @@ def argv_parse_check():
                       help      = "Use PID file <pidfile> instead of %default")
     parser.add_option("--listen-addr",
                       dest      = 'listen_addr',
-                      default   = '192.168.0.18',
+                      default   = '127.0.0.1',
                       help      = "Listen on address <listen_addr> instead of %default")
     parser.add_option("--listen-port",
                       dest      = 'listen_port',
