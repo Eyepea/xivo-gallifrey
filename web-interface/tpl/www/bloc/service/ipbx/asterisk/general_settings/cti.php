@@ -50,19 +50,74 @@ if(isset($error_js[0]) === true)
 	<span class="span-right">&nbsp;</span>
 </h3>
 
-<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-xivoserver');">
+<div class="sb-smenu">
+	<ul>
+		<li id="dwsm-tab-1"
+			class="dwsm-blur"
+			onclick="dwho_submenu.select(this,'sb-part-first');"
+			onmouseout="dwho_submenu.blur(this);"
+			onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_general')?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-2"
+			class="dwsm-blur"
+			onclick="dwho_submenu.select(this,'sb-part-presence');"
+			onmouseout="dwho_submenu.blur(this);"
+			onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_presence')?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-3"
+			class="dwsm-blur"
+			onclick="dwho_submenu.select(this,'sb-part-phonehints');"
+			onmouseout="dwho_submenu.blur(this);"
+			onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_phonehints')?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-4"
+			class="dwsm-blur-last"
+			onclick="dwho_submenu.select(this,'sb-part-profiles');"
+			onmouseout="dwho_submenu.blur(this,1);"
+			onmouseover="dwho_submenu.focus(this,1);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_cti_profiles')?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+	</ul>
+</div>
 
+<div class="sb-content">
+<!--
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-xivoserver');">
+-->
+<form action="#" method="post" accept-charset="utf-8">
 <?php
-	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
+	echo	
+		$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1));
 ?>
 
 <div id="sb-part-first">
-<?php
-	echo	$form->select(array('desc'	=> $this->bbf('fm_cti_commandset'),
+	<?=$form->select(array('desc'	=> $this->bbf('fm_cti_commandset'),
 				    'name'	=> 'cti[commandset]',
 				    'labelid'	=> 'cti_commandset',
 				    'key'	=> false,
@@ -70,109 +125,150 @@ if(isset($error_js[0]) === true)
 				    'help'	=> $this->bbf('hlp_fm_cti_commandset'),
 				    'selected'	=> $this->get_var('ctimain','commandset','var_val')),
 			      $element['ctimain']['commandset']['value']);
-				  
-?>
-<fieldset id="cti-servers">
-	<legend><?=$this->bbf('cti-servers');?></legend>
-	<div class="sb-list">
-	<table cellspacing="0" cellpadding="0" border="0">
-		<tr class="sb-top">
-<?php
-	echo	
-		"<th width=\"70%\">", $this->bbf('fm_cti_list_ip'), "</th>",
-		"<th class=\"th-right\">".$this->bbf('fm_cti_list_port')."</th>",
-		"</tr>",
-
-		'<tr><td>',
-			$form->text(array('desc'	=> $this->bbf('fm_cti_fagi_ip'),
+	?>			  
+	<fieldset id="cti-servers">
+		<legend><?=$this->bbf('cti-servers');?></legend>
+		<div class="sb-list">
+			<table cellspacing="0" cellpadding="0" border="0">
+			<tr class="sb-top">
+				<th width="70%"><?=$this->bbf('fm_cti_list_ip')?></th>
+				<th class="th-right"><?=$this->bbf('fm_cti_list_port')?></th>
+			</tr>
+			<tr>
+				<td>
+				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_fagi_ip'),
 					'name'	=> 'cti[fagi_ip]',
 					'labelid'	=> 'cti_fagi_ip',
+					'required'	=> 1,
+					'regexp'	=> '[[:ipv4:]]',
 					'value'		=> $info['ctimain']['fagi_ip'],
 					'default'	=> $element['ctimain']['fagi_ip']['default'] //,
-					/* 'help'		=> $this->bbf('hlp_fm_cti_fagi_ip') */ )),
-		'</td><td class="td-right">',
-			$form->text(array(#'desc'	=> $this->bbf('fm_cti_fagi_port'),
+					/* 'help'		=> $this->bbf('hlp_fm_cti_fagi_ip') */ ))
+				?>
+				</td>
+				<td class="td-right">
+				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_fagi_port'),
 					'name'		=> 'cti[fagi_port]',
 					'labelid'	=> 'cti_fagi_port',
 					'value'		=> $info['ctimain']['fagi_port'],
+					'required'	=> 1,
+					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['fagi_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_fagi_port'))),
-		'</td></tr>',
-
-		'<tr class="sb-content"><td>',
-			$form->text(array('desc'	=> $this->bbf('fm_cti_cti_ip'),
+					'help'		=> $this->bbf('hlp_fm_cti_fagi_port')))
+				?>
+				</td>
+			</tr>
+			<tr>
+				<td>
+				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_cti_ip'),
 					'name'		=> 'cti[cti_ip]',
 					'labelid'	=> 'cti_cti_ip',
 					'value'		=> $info['ctimain']['cti_ip'],
+					'required'	=> 1,
+					'regexp'	=> '[[:ipv4:]]',
 					'default'	=> $element['ctimain']['cti_ip']['default'] //,
-					/* 'help'		=> $this->bbf('hlp_fm_cti_cti_ip') */ )),
-		'</td><td class="td-right">',
-			$form->text(array(#'desc'	=> $this->bbf('fm_cti_cti_port'),
+					/* 'help'		=> $this->bbf('hlp_fm_cti_cti_ip') */ ))
+				?>	
+				</td>
+				<td class="td-right">
+				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_cti_port'),
 					'name'		=> 'cti[cti_port]',
 					'labelid'	=> 'cti_cti_port',
 					'value'		=> $info['ctimain']['cti_port'],
+					'required'	=> 1,
+					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['cti_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_cti_port'))),
-		'</td></tr class="sb-content">',
+					'help'		=> $this->bbf('hlp_fm_cti_cti_port')))
+				?>
+				</td>
+			</tr>
 
-		'<tr class="sb-content"><td>',
-			$form->text(array('desc'	=> $this->bbf('fm_cti_webi_ip'),
+			<tr class="sb-content">
+				<td>
+				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_webi_ip'),
 					'name'		=> 'cti[webi_ip]',
 					'labelid'	=> 'cti_webi_ip',
 					'value'		=> $info['ctimain']['webi_ip'],
+					'required'	=> 1,
+					'regexp'	=> '[[:ipv4:]]',
 					'default'	=> $element['ctimain']['webi_ip']['default'] //,
-					/* 'help'		=> $this->bbf('hlp_fm_cti_webi_ip') */ )),
-		'</td><td class="td-right">',
-			$form->text(array(#'desc'	=> $this->bbf('fm_cti_webi_port'),
+					/* 'help'		=> $this->bbf('hlp_fm_cti_webi_ip') */ ))
+				?>
+				</td>
+				<td class="td-right">
+				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_webi_port'),
 					'name'		=> 'cti[webi_port]',
 					'labelid'	=> 'cti_webi_port',
 					'value'		=> $info['ctimain']['webi_port'],
+					'required'	=> 1,
+					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['webi_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_webi_port'))),
-		'</td></tr class="sb-content">',
+					'help'		=> $this->bbf('hlp_fm_cti_webi_port')))
+				?>
+				</td>
+			</tr>
 
-		'<tr class="sb-content"><td>',
-			$form->text(array('desc'	=> $this->bbf('fm_cti_info_ip'),
+			<tr class="sb-content">
+				<td>
+				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_info_ip'),
 					'name'		=> 'cti[info_ip]',
 					'labelid'	=> 'cti_info_ip',
 					'value'		=> $info['ctimain']['info_ip'],
+					'required'	=> 1,
+					'regexp'	=> '[[:ipv4:]]',
 					'default'	=> $element['ctimain']['info_ip']['default'] //,
-					/* 'help'		=> $this->bbf('hlp_fm_cti_info_ip') */ )),
-
-		'</td><td class="td-right">',
-			$form->text(array(#'desc'	=> $this->bbf('fm_cti_info_port'),
+					/* 'help'		=> $this->bbf('hlp_fm_cti_info_ip') */ ))
+				?>
+				</td>
+				<td class="td-right">
+				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_info_port'),
 					'name'		=> 'cti[info_port]',
 					'labelid'	=> 'cti_info_port',
 					'value'		=> $info['ctimain']['info_port'],
+					'required'	=> 1,
+					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['info_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_info_port'))),
-		'</td></tr class="sb-content">',
+					'help'		=> $this->bbf('hlp_fm_cti_info_port')))
+				?>
+				</td>
+			</tr>'
 
-		'<tr class="sb-content"><td>',
-			$form->text(array('desc'	=> $this->bbf('fm_cti_announce_ip'),
+			<tr class="sb-content">
+				<td>
+				<?=$form->text(array('desc'	=> $this->bbf('fm_cti_announce_ip'),
 					'name'		=> 'cti[announce_ip]',
 					'labelid'	=> 'cti_announce_ip',
 					'value'		=> $info['ctimain']['announce_ip'],
+					'required'	=> 1,
+					'regexp'	=> '[[:ipv4:]]',
 					'default'	=> $element['ctimain']['announce_ip']['default'] //,
-					/* 'help'		=> $this->bbf('hlp_fm_cti_announce_ip') */ )),
-		'</td><td class="td-right">',
-			$form->text(array(#'desc'	=> $this->bbf('fm_cti_annouce_port'),
+					/* 'help'		=> $this->bbf('hlp_fm_cti_announce_ip') */ ))
+				?>
+				</td>
+				<td class="td-right">
+				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_annouce_port'),
 					'name'		=> 'cti[announce_port]',
 					'labelid'	=> 'cti_announce_port',
 					'value'		=> $info['ctimain']['announce_port'],
+					'required'	=> 1,
+					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['announce_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_announce_port'))),
-		'</td></tr>';
-?>
-</div></table></fieldset>
-<fieldset id="cti-intervals">
-	<legend><?=$this->bbf('cti-intervals');?></legend>
+					'help'		=> $this->bbf('hlp_fm_cti_announce_port')))
+				?>
+				</td>
+			</tr>
+			</table>
+		</div>
+	</fieldset>
+	<fieldset id="cti-intervals">
+		<legend><?=$this->bbf('cti-intervals');?></legend>
 <?php
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_cti_updates_period'),
 					'name'		=> 'cti[updates_period]',
 					'labelid'	=> 'cti_updates_period',
 					'value'		=> $info['ctimain']['updates_period'],
+					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['updates_period']['default'],
 					'help'		=> $this->bbf('hlp_fm_cti_updates_period'))),
 
@@ -180,6 +276,7 @@ if(isset($error_js[0]) === true)
 					'name'		=> 'cti[socket_timeout]',
 					'labelid'	=> 'cti_socket_timeout',
 					'value'		=> $info['ctimain']['socket_timeout'],
+					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['socket_timeout']['default'],
 					'help'		=> $this->bbf('hlp_fm_cti_socket_timeout'))),
 
@@ -187,10 +284,11 @@ if(isset($error_js[0]) === true)
 					'name'		=> 'cti[login_timeout]',
 					'labelid'	=> 'cti_login_timeout',
 					'value'		=> $info['ctimain']['login_timeout'],
+					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['login_timeout']['default'],
 					'help'		=> $this->bbf('hlp_fm_cti_login_timeout')));
 ?>
-</fieldset>
+	</fieldset>
 <?php
 	$parting = array();
 	if(isset($info['ctimain']['parting_astid_context']) && dwho_has_len($info['ctimain']['parting_astid_context']))
@@ -206,13 +304,11 @@ if(isset($error_js[0]) === true)
 							'name' => 'cti[parting_astid_ipbx]',
 							'labelid' => 'cti_parting_astid_ipbx',
 							'checked' => in_array('astid', $parting)));
-
-
 ?>
-<br />
-</div>
-<fieldset id="cti-xivo_servers">
-	<legend><?=$this->bbf('cti-xivo_servers');?></legend>
+	<br />
+
+	<fieldset id="cti-xivo_servers">
+		<legend><?=$this->bbf('cti-xivo_servers');?></legend>
 		<div id="xivoserverlist" class="fm-paragraph fm-multilist">
 			<div class="slt-outlist">
 <?php
@@ -260,8 +356,21 @@ if(isset($error_js[0]) === true)
 ?>
 			</div>
 		</div>
-</fieldset>
-		<div class="clearboth"></div>
+	</fieldset>
+	<div class="clearboth"></div>
+</div>
+
+<div id="sb-part-presence" class="b-nodisplay">
+	presence
+</div>
+
+<div id="sb-part-phonehints" class="b-nodisplay">
+	phonehints
+</div>
+
+<div id="sb-part-profiles" class="b-nodisplay">
+	profiles
+</div>
 
 <?php
 	echo	$form->submit(array('name'	=> 'submit',

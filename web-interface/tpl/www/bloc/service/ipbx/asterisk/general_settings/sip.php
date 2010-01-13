@@ -158,7 +158,7 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_bindaddr'),
 				  'help'		=> $this->bbf('hlp_fm_bindaddr'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
+				  'regexp'		=> '[[:ipv4:]]',
 				  'value'		=> $this->get_var('info','bindaddr','var_val'),
 				  'default'		=> $element['bindaddr']['default'])),
 
@@ -168,7 +168,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_videosupport'),
 					  'help'		=> $this->bbf('hlp_fm_videosupport'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','videosupport','var_val'),
 				      'default'		=> $element['videosupport']['default'])),
 
@@ -178,7 +177,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_autocreatepeer'),
 					  'help'		=> $this->bbf('hlp_fm_autocreatepeer'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','autocreatepeer','var_val'),
 				      'default'		=> $element['autocreatepeer']['default'])),
 
@@ -188,7 +186,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_allowguest'),
 					  'help'		=> $this->bbf('hlp_fm_allowguest'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','allowguest','var_val'),
 				      'default'		=> $element['allowguest']['default'])),
 
@@ -198,7 +195,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_allowsubscribe'),
 					  'help'		=> $this->bbf('hlp_fm_allowsubscribe'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','allowsubscribe','var_val'),
 				      'default'		=> $element['allowsubscribe']['default'])),
 
@@ -208,7 +204,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_allowoverlap'),
 					  'help'		=> $this->bbf('hlp_fm_allowoverlap'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','allowoverlap','var_val'),
 				      'default'		=> $element['allowoverlap']['default'])),
 
@@ -218,7 +213,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_promiscredir'),
 					  'help'		=> $this->bbf('hlp_fm_promiscredir'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','promiscredir','var_val'),
 				      'default'		=> $element['promiscredir']['default'])),
 
@@ -228,7 +222,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_autodomain'),
 					  'help'		=> $this->bbf('hlp_fm_autodomain'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','autodomain','var_val'),
 				      'default'		=> $element['autodomain']['default'])),
 
@@ -239,7 +232,6 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_domain'),
 				  'help'		=> $this->bbf('hlp_fm_domain'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
 				  'value'		=> $this->get_var('info','domain','var_val'),
 				  'default'		=> $element['domain']['default'])),
 
@@ -249,7 +241,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_allowexternaldomains'),
 					  'help'		=> $this->bbf('hlp_fm_allowexternaldomains'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','allowexternaldomains','var_val'),
 				      'default'		=> $element['allowexternaldomains']['default'])),
 
@@ -259,7 +250,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_usereqphone'),
 					  'help'		=> $this->bbf('hlp_fm_usereqphone'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','usereqphone','var_val'),
 				      'default'		=> $element['usereqphone']['default'])),
 
@@ -270,7 +260,6 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_realm'),
 				  'help'		=> $this->bbf('hlp_fm_realm'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
 				  'value'		=> $this->get_var('info','realm','var_val'),
 				  'default'		=> $element['realm']['default'])),
 
@@ -280,7 +269,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_alwaysauthreject'),
 					  'help'		=> $this->bbf('hlp_fm_alwaysauthreject'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','alwaysauthreject','var_val'),
 				      'default'		=> $element['alwaysauthreject']['default'])),
 
@@ -290,7 +278,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_limitonpeer'),
 					  'help'		=> $this->bbf('hlp_fm_limitonpeer'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','limitonpeer','var_val'),
 				      'default'		=> $element['limitonpeer']['default'])),
 
@@ -301,7 +288,6 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_useragent'),
 				  'help'		=> $this->bbf('hlp_fm_useragent'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
 				  'value'		=> $this->get_var('info','useragent','var_val'),
 				  'default'		=> $element['useragent']['default'])),
 
@@ -314,7 +300,6 @@ endif;
 					'comment'	=> $this->bbf('cmt_fm_checkmwi'),
 					'help'		=> $this->bbf('hlp_fm_checkmwi'),
 					'required'	=> false,
-					'regexp'	=> '[[:port:]]',
 				    'selected'	=> $this->get_var('info','checkmwi','var_val'),
 				    'default'	=> $element['checkmwi']['default']),
 			      $element['checkmwi']['value']),
@@ -325,7 +310,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_buggymwi'),
 					  'help'		=> $this->bbf('hlp_fm_buggymwi'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','buggymwi','var_val'),
 				      'default'		=> $element['buggymwi']['default']));
 
@@ -339,7 +323,6 @@ if($context_list !== false):
 					'comment'	=> $this->bbf('cmt_fm_regcontext'),
 					'help'		=> $this->bbf('hlp_fm_regcontext'),
 					'required'	=> false,
-					'regexp'	=> '[[:port:]]',
 				    'default'	=> $element['regcontext']['default'],
 				    'selected'	=> $this->get_var('info','regcontext','var_val')),
 			      $context_list);
@@ -353,7 +336,6 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_callerid'),
 				  'help'		=> $this->bbf('hlp_fm_callerid'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
 				  'value'		=> $this->get_var('info','callerid','var_val'),
 				  'default'		=> $element['callerid']['default'])),
 
@@ -364,7 +346,6 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_fromdomain'),
 				  'help'		=> $this->bbf('hlp_fm_fromdomain'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
 				  'value'		=> $this->get_var('info','fromdomain','var_val'),
 				  'default'		=> $element['fromdomain']['default'])),
 
@@ -374,7 +355,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_sipdebug'),
 					  'help'		=> $this->bbf('hlp_fm_sipdebug'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','sipdebug','var_val'),
 				      'default'		=> $element['sipdebug']['default'])),
 
@@ -384,7 +364,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_dumphistory'),
 					  'help'		=> $this->bbf('hlp_fm_dumphistory'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','dumphistory','var_val'),
 				      'default'		=> $element['dumphistory']['default'])),
 
@@ -394,7 +373,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_recordhistory'),
 					  'help'		=> $this->bbf('hlp_fm_recordhistory'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','recordhistory','var_val'),
 				      'default'		=> $element['recordhistory']['default'])),
 
@@ -404,7 +382,6 @@ endif;
 					  'comment'		=> $this->bbf('cmt_fm_callevents'),
 					  'help'		=> $this->bbf('hlp_fm_callevents'),
 					  'required'	=> false,
-					  'regexp'		=> '[[:port:]]',
 				      'checked'		=> $this->get_var('info','callevents','var_val'),
 				      'default'		=> $element['callevents']['default']),
 				'disabled="disabled"'),
@@ -417,7 +394,6 @@ endif;
 					'comment'	=> $this->bbf('cmt_fm_tos-sip'),
 					'help'		=> $this->bbf('hlp_fm_tos-sip'),
 					'required'	=> false,
-					'regexp'	=> '[[:port:]]',
 				    'selected'	=> $this->get_var('info','tos_sip','var_val'),
 				    'default'	=> $element['tos_sip']['default']),
 			      $element['tos_sip']['value']),
@@ -430,7 +406,6 @@ endif;
 					'comment'	=> $this->bbf('cmt_fm_tos-audio'),
 					'help'		=> $this->bbf('hlp_fm_tos-audio'),
 					'required'	=> false,
-					'regexp'	=> '[[:port:]]',
 				    'selected'	=> $this->get_var('info','tos_audio','var_val'),
 				    'default'	=> $element['tos_audio']['default']),
 			      $element['tos_audio']['value']),
@@ -443,7 +418,6 @@ endif;
 					'comment'	=> $this->bbf('cmt_fm_tos-video'),
 					'help'		=> $this->bbf('hlp_fm_tos-video'),
 					'required'	=> false,
-					'regexp'	=> '[[:port:]]',
 				    'selected'	=> $this->get_var('info','tos_video','var_val'),
 				    'default'	=> $element['tos_video']['default']),
 			      $element['tos_video']['value']);
@@ -459,7 +433,7 @@ endif;
 				  'comment'		=> $this->bbf('cmt_fm_externip'),
 				  'help'		=> $this->bbf('hlp_fm_externip'),
 				  'required'	=> false,
-				  'regexp'		=> '[[:port:]]',
+				  'regexp'		=> '[[:ipv4:]]',
 				  'value'		=> $this->get_var('info','externip','var_val'),
 				  'default'		=> $element['externip']['default'])),
 

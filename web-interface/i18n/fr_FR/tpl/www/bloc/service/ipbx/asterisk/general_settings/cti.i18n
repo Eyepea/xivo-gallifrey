@@ -1,6 +1,18 @@
 ; title_content_name
 Configuration CTI
 
+; smenu_cti_general
+Options générales
+
+; smenu_cti_presence
+Présences
+
+; smenu_cti_phonehints
+(phone hints)
+
+; smenu_cti_profiles
+Profils
+
 ; fm_bt-save
 Enregistrer
 

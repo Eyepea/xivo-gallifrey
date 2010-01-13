@@ -41,7 +41,7 @@ switch($act)
 		$list = $app->get_server_list();
 //		dwho_print_r($load_inf, 'load_inf');
 //		dwho_print_r($list, 'list');
-//		$cc = $contexts->get_contexts_list();  PAS CA
+//		$cc = $contexts->get_contexts_list(); 
 //		dwho_print_r($cc, 'context');
 
 		$out = array(
