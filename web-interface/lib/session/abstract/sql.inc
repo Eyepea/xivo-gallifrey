@@ -20,8 +20,8 @@
 
 class dwho_session_abstract_sql
 {
-	var $_param		= array('table'	=> 'session');
-	var $_attrib		= array('userid' => 0);
+	var $_param		= array('table'		=> 'session');
+	var $_attrib		= array('userid'	=> 0);
 	var $_dso		= null;
 	var $_time		= DWHO_SESS_TIME;
 	var $_insert		= false;
@@ -66,14 +66,14 @@ class dwho_session_abstract_sql
 		return(true);
 	}
 
-	function read($key)
+	function read($sessid)
 	{
 		$r = '';
 
 		$this->_insert = true;
 
 		$this->_dso->new_select($this->_param['table'],array('userid','data','expire'));
-		$this->_dso->where(array('key' => $key));
+		$this->_dso->where(array('sessid' => $sessid));
 		$this->_dso->andwhere('expire >= %s',gmmktime());
 		$this->_dso->limit(2);
 
@@ -83,11 +83,11 @@ class dwho_session_abstract_sql
 			{
 				$this->_insert = false;
 
-				$r = rawurldecode($rs[0]['data']);
+				$r = $rs[0]['data'];
 				$this->_attrib['userid'] = $rs[0]['userid'];
 
 				if(empty($r) === true)
-					$this->_dso->delete($this->_param['table'],array('key' => $key));
+					$this->_dso->delete($this->_param['table'],array('sessid' => $sessid));
 			}
 
 			$this->_dso->free();
@@ -98,7 +98,7 @@ class dwho_session_abstract_sql
 		return($r);
 	}
 
-	function write($key,$val)
+	function write($sessid,$data)
 	{
 		/*
 		$_USR = &dwho_gct::get('_USR');
@@ -109,28 +109,27 @@ class dwho_session_abstract_sql
 
 		$now = gmmktime();
 		$expire = $now + $this->_time;
-		$crc = sha1($val.$this->_attrib['userid']);
+		$crc = sha1($data.$this->_attrib['userid']);
 
 		if($this->_insert === false && $this->_crc !== '' && $this->_crc === $crc)
 			return(true);
 
-		$val = rawurlencode($val);
-
 		if($this->_insert === false)
 		{
 			$this->_dso->new_select($this->_param['table']);
-			$this->_dso->where(array('key' => $key));
+			$this->_dso->where(array('sessid' => $sessid));
 
 			if(($r = $this->_dso->select_count()) !== false)
 			{
 				if($r > 0)
 				{
-					$arr = array();
-					$arr['userid'] = $this->_attrib['userid'];
-					$arr['expire'] = $expire;
-					$arr['data'] = $val;
-
-					$rs = $this->_dso->update($this->_param['table'],$arr,null,null,true);
+					$rs = $this->_dso->update($this->_param['table'],
+								  array('userid'	=> $this->_attrib['userid'],
+									'expire'	=> $expire,
+									'data'		=> $data),
+								  null,
+								  null,
+								  true);
 
 					if($rs !== false && $this->_dso->affected_rows() === 0)
 						$this->_insert = true;
@@ -143,21 +142,19 @@ class dwho_session_abstract_sql
 		if($this->_insert !== true)
 			return(true);
 
-		$arr = array();
-		$arr['userid'] = $this->_attrib['userid'];
-		$arr['key'] = $key;
-		$arr['start'] = $now;
-		$arr['expire'] = $expire;
-		$arr['data'] = $val;
-
-		$this->_dso->replace($this->_param['table'],$arr);
+		$this->_dso->replace($this->_param['table'],
+				     array('userid'	=> $this->_attrib['userid'],
+					   'sessid'	=> $sessid,
+					   'start'	=> $now,
+					   'expire'	=> $expire,
+					   'data'	=> $data));
 
 		return(true);
 	}
 
-	function destroy($key)
+	function destroy($sessid)
 	{
-		$this->_dso->delete($this->_param['table'],array('key' => $key));
+		$this->_dso->delete($this->_param['table'],array('sessid' => $sessid));
 		return(true);
 	}
 

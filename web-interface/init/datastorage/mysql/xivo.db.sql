@@ -200,12 +200,12 @@ CREATE UNIQUE INDEX `server__uidx__host_port` ON `server`(`host`,`port`);
 
 DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (
- `key` char(32) NOT NULL DEFAULT '',
- `start` int(10) unsigned NOT NULL DEFAULT 0,
- `expire` int(10) unsigned NOT NULL DEFAULT 0,
- `userid` int(10) unsigned NOT NULL DEFAULT 0,
+ `sessid` char(32) binary NOT NULL,
+ `start` int(10) unsigned NOT NULL,
+ `expire` int(10) unsigned NOT NULL,
+ `userid` int(10) unsigned NOT NULL,
  `data` longblob NOT NULL,
- PRIMARY KEY(`key`)
+ PRIMARY KEY(`sessid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `session__idx__expire` ON `session`(`expire`);
