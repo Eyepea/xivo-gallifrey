@@ -346,7 +346,7 @@ def bitmask_to_mask_ipv6(bits):
 
     ret = []
 
-    nb = int(math.floor((math.modf(bits)[1] / 16)))
+    nb = int(math.floor(float(bits) / 16))
 
     if nb > 0:
         ret.extend(["\xff\xff"] * nb)

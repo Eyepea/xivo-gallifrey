@@ -142,7 +142,7 @@ class Aastra(PhoneVendorMixin):
                     keytype = "prg"
             elif key > 12:
                 key -= 12
-                unit = int(math.ceil(math.modf(key)[1] / 60))
+                unit = int(math.ceil(float(key) / 60))
                 key %= 60
 
                 if key == 0:

@@ -226,7 +226,7 @@ class Linksys(PhoneVendorMixin):
 
     @classmethod
     def __format_function_keys_unit(cls, key, func):
-        unit = int(math.ceil(math.modf(key)[1] / 32))
+        unit = int(math.ceil(float(key) / 32))
         key %= 32
 
         if key == 0:
