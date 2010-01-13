@@ -74,7 +74,7 @@ class xivo_object_netiface extends xivo_object_abstract
 		if(is_array($arr) === false)
 			return(false);
 		else if(empty($id) === true || isset($arr['dcreate']) === false)
-			$arr['dcreate'] = gmmktime();
+			$arr['dcreate'] = gmstrftime('%s');
 
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);

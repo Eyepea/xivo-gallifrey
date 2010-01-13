@@ -74,7 +74,7 @@ class dwho_session_abstract_sql
 
 		$this->_dso->new_select($this->_param['table'],array('userid','data','expire'));
 		$this->_dso->where(array('sessid' => $sessid));
-		$this->_dso->andwhere('expire >= %s',gmmktime());
+		$this->_dso->andwhere('expire >= %s',gmstrftime('%s'));
 		$this->_dso->limit(2);
 
 		if(($rs = $this->_dso->select_all(null,false)) !== false)
@@ -107,7 +107,7 @@ class dwho_session_abstract_sql
 			$this->u = $_USR->id;
 		*/
 
-		$now = gmmktime();
+		$now = gmstrftime('%s');
 		$expire = $now + $this->_time;
 		$crc = sha1($data.$this->_attrib['userid']);
 
@@ -160,7 +160,7 @@ class dwho_session_abstract_sql
 
 	function gc($t=0)
 	{
-		$this->_dso->delete($this->_param['table'],'expire < %s',gmmktime());
+		$this->_dso->delete($this->_param['table'],'expire < %s',gmstrftime('%s'));
 		return(true);
 	}
 

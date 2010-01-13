@@ -66,8 +66,8 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if(isset($arr['meta']) === true)
 			$arr['meta'] = strtolower($arr['meta']);
 
-		$arr['dcreate'] = gmmktime();
-		$arr['dupdate'] = gmmktime();
+		$arr['dcreate'] = gmstrftime('%s');
+		$arr['dupdate'] = gmstrftime('%s');
 
 		return(parent::add($arr));
 	}
@@ -82,7 +82,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		if(isset($arr['meta']) === true)
 			$arr['meta'] = strtolower($arr['meta']);
 
-		$arr['dupdate'] = gmmktime();
+		$arr['dupdate'] = gmstrftime('%s');
 
 		return(parent::edit($id,$arr,$disable));
 	}
@@ -100,7 +100,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 						     $_SESSION['_USR']->_pass)) === false)
 			return(false);
 
-		$_SESSION['_USR']->_time = gmmktime();
+		$_SESSION['_USR']->_time = gmstrftime('%s');
 
 		return(true);
 	}
@@ -193,7 +193,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 				$this->_info['_login'] = (string) $arr['login'];
 				$this->_info['_pass'] = (string) $arr['passwd'];
 				$this->_info['_type'] = (int) $arr['type'];
-				$this->_info['_time'] = gmmktime();
+				$this->_info['_time'] = gmstrftime('%s');
 			}
 			else
 				$this->_info['_valid'] = $valid = false;
@@ -243,7 +243,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		$arr['login'] = $login;
 		$arr['passwd'] = $pass;
 		$arr['meta'] = $meta;
-		$arr['time'] = gmmktime();
+		$arr['time'] = gmstrftime('%s');
 		$arr['valid'] = (bool) $valid;
 
 		return($this->add($arr));

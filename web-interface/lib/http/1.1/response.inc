@@ -196,7 +196,7 @@ class dwho_http_1_1_response extends dwho_http_1_1_abstract
 		$content_type = explode('/',$info['mime'],2);
 
 		$this->set_pragma('no-cache');
-		$this->set_expires($this->build_rfc1123_date(gmmktime()));
+		$this->set_expires($this->build_rfc1123_date(gmstrftime('%s')));
 		$this->set_last_modified($this->build_rfc1123_date($info['mtime']));
 		$this->set_cache_control(array('no-cache'		=> null,
 					       'must-revalidate'	=> null));
