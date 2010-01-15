@@ -1,0 +1,16 @@
+Alias /user /usr/share/pf-xivo-cti-webclient
+
+RewriteEngine on
+RewriteRule ^/static/(.*)\.(.*)$ /orbited/static/$1.$2 [R=301]
+RewriteRule ^/orbited/static/xsdBridge.html$ /orbited/static/xsdrBridge.html
+
+<Location /orbited >
+	Allow from all
+</Location>
+
+<Location /tcp >
+	Allow from all
+</Location>
+
+ProxyPass /tcp http://127.0.0.1:8000/tcp retry=1
+ProxyPass /orbited/ http://127.0.0.1:8000/ retry=1

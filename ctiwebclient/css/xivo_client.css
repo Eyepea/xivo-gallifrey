@@ -1,0 +1,118 @@
+#version-copyright { position:absolute; width:100%; bottom:10%; font-size:7pt; padding:40px 0 5px;}
+
+.widget-field { position:relative;border:1px solid #7F99B1;background-color:#BEDDFB;padding:1px 2px 1px 2px;color:#000000;margin:0 2px;}
+select.widget-field { padding: 0px 0px 0px 2px; }
+.widget-checkbox { position:relative;top:2px; }
+.widget-button { background-image: url(../img/xivo-2009/widget/shared/input/button-bg.png);background-repeat: repeat-x;background-color: #bdbdcd;border:1px solid #999;cursor:pointer; }
+.widget-field:focus ,.widget-field:hover { border:1px solid #FF9D03; }
+.widget-field-blured { color: #666; }
+.widget-table thead tr td  { height:15px;font-size:11px;font-weight:bold;border:1px solid #999;border-width:0px 0px 1px 1px;background-image:url(../img/xivo-2009/widget/shared/table/bg.png);background-repeat: repeat-x;background-color: #fff;color:#000;text-align: center; }
+.widget-table tbody tr td  { font-size:9px;border-width:0px 0px 1px 1px;border-style:solid;border-color:#999;text-align: center; }
+.widget-table { border-width:1px 1px 0px 0px;border-style:solid;border-color:#999;background-color:#eee;  margin: 5px auto; text-align: left; padding-bottom:10;}
+.widget-odd-row { background-color:#e3e5fc; }
+
+.click-to-phone-name { margin-left:4px;display:block;width:10px;height:12px;background-image:url(../img/xivo-2009/widget/shared/a/telsimple-icon.png);float:left; }
+.phone-name { display:block;width:80%;float:right;text-align:right; }
+
+
+
+
+.history-widget { padding:5px 0px 6px 0px; }
+.history-widget-command-container ul li { display:inline; }
+.history-widget-renderon {text-align:center; min-width:280px; margin: 0px auto; }
+.history-widget-radiobutton { position:relative;top:2px; }
+
+.history-widget-table { width:100%; border-width:0;border-top:1px;border-right:1px;border-style:solid;border-color:#999;background-color:#eee }
+.history-widget-call-odd-row { background-color:#e3e5fc; }
+
+.history-widget-ts , .history-widget-fullname , .history-widget-duration { font-size:10px;border-width:0;border-left-width:1px;border-bottom-width:1px;border-style:solid;border-color:#999; color:#000; }
+.history-widget-radiobutton-made-label, .history-widget-radiobutton-received-label, .history-widget-radiobutton-missed-label { height:13px;display:inline-block;width:70px;background-repeat:no-repeat; text-indent:17px;text-align:left;font-size:7pt}
+.history-widget-radiobutton-made-label { background-image:url(../img/xivo-2009/widget/history/outgoingcall-icon.png); }
+.history-widget-radiobutton-received-label { background-image:url(../img/xivo-2009/widget/history/incomingcall-icon.png); }
+.history-widget-radiobutton-missed-label { background-image:url(../img/xivo-2009/widget/history/missingcall-icon.png); }
+
+
+
+.respawner-widget { position:absolute;z-index:2000;right:10%;height:20px;}
+.respawner-widget-root-menu-left { display:block;float:left; background-image:url(../img/xivo-2009/widget/respawner/left.png); width:10px;height:20px; }
+.respawner-widget-root-menu-right { display:block;float:left; background-image:url(../img/xivo-2009/widget/respawner/right.png); width:10px;height:20px; }
+.respawner-widget-root-menu { display:block;float:left;height:19px;background-image:url(../img/xivo-2009/widget/respawner/button.png);border: 0px solid #055a82;border-bottom-width: 1px;}
+.respawner-widget-menu-separator { float:left;display:block;background-image:url(../img/xivo-2009/widget/respawner/sep.png);width:2px;height:20px;}
+.respawner-widget-menu-label,.respawner-widget-menu { float:left;display:block;height:20px;margin:2px 10px 2px 10px;min-width:180px;}
+.respawner-widget-menu-label {
+color:#eee;font-weight:bold;
+}
+.respawner-widget-menu-spawn { float:left;font-weight:bold; display:block;min-width:180px;}
+.respawner-widget-menu-spawn a { position:relative;top:2px;padding:4px;font-weight:bold;color:#eee;background-color:transparent;}
+
+.respawner-widget ul li ul li:first-child {margin-top:6px;}
+.respawner-widget ul li ul li:last-child {border-bottom:1px; border-style:solid;border-color:#055a82;}
+.respawner-widget ul li ul li { padding: 0px 2px 3px;display:none;background-image:url(../img/xivo-2009/widget/respawner/menu-button-bg.png);background-color:#bcdcfa;background-repeat:repeat-x;text-align:left;color:#fff;border: 1px solid #055a82;border-bottom-width: 0px;}
+.respawner-widget ul li ul li a { padding: 0px; margin: 0px;color:#055a82; display:block;}
+.respawner-widget ul li ul li a:hover { color:#fff; }
+.respawner-widget ul li:hover ul li { display:block; }
+
+.respawner-widget-redispose { float:left;display:block;width:24px;height:20px;background-image:url(../img/xivo-2009/widget/respawner/button-redispose.png);cursor:pointer; }
+
+.respawner-widget-logout { float:left;display:block;width:22px;height:20px;background-image:url(../img/xivo-2009/widget/respawner/button-logoff.png);cursor:pointer; }
+
+.respawner-widget-menu-label a { color:#fff;font-weight:bold; }
+
+
+
+.user-around-widget table { width:100%;padding:5px 5px 0px 0px; }
+.user-around-widget td:first-child { width:200px; }
+.user-around-widget { font-size:11px; }
+.user-around-widget-user-unmatched { display:none; }
+.user-around-widget-userlist { overflow:auto;position:absolute;width:100%;top:25px;bottom:10px; }
+.user-around-widget-display-pattern { width:100%; }
+.user-around-widget-display-pattern-label { }
+.user-around-widget-user { position:relative;display:inline;width:200px;height:50px;float:left;border-width:0px 0px 0px 1px;border-style:solid;border-color:black;margin:0;margin-top:10px; }
+.user-around-widget-status-list { position:absolute;top:28px;left:2px; }
+.user-around-widget-icons { display:inline;float:left;width:18px;height:22px; background-repeat: no-repeat;}
+.user-around-widget-state { background-image:url(../img/xivo-2009/widget/user_around/personal.png); }
+.user-around-widget-phone-status { background-image:url(../img/xivo-2009/widget/user_around/phone.png);cursor:pointer; }
+.user-around-widget-mobilephone { background-image:url(../img/xivo-2009/widget/user_around/mobile.png);cursor:pointer; }
+.user-around-widget-fullname { position:absolute;top:0px;left:2px; }
+
+
+
+.common-info-widget { position:relative;height:80px;margin-top:-15px; }
+.common-info-widget ul li { display:inline;float:left; }
+.common-info-widget-phone { background-image:url(../img/xivo-2009/widget/common_info/big-phone.png);width:70px;height:70px; }
+.common-info-widget-phonestatus { width:80px;margin:30px 10px 0px 10px;}
+.common-info-widget-voicemail-icon { background-image:url(../img/xivo-2009/widget/common_info/voicemail-icon.png);width:70px;height:70px; }
+.common-info-widget-voicemail-icon-new { background-image:url(../img/xivo-2009/widget/common_info/voicemail-icon-new.png);width:70px;height:70px; }
+.common-info-widget-name, .common-info-widget-voicemailnum { padding-top: 9px; }
+.common-info-widget-voicemailnum, .common-info-widget-newmessage, .common-info-widget-oldmessage  { text-align:left;margin:1px 0px 0px 10px; }
+
+
+
+.login-widget { position:relative;width:400px;height:200px;background-image: url(../img/xivo-2009/widget/login/logo.png); background-position: 249px 22px;background-repeat:no-repeat; }
+.login-widget-fields { position:relative;top:53px; }
+.login-widget-login, .login-widget-password, .login-widget-language-label, .login-widget-language { display:block;margin: 7px 0px 0px 5px; }
+.login-widget-connect { position:absolute;top:125px;left:160px; }
+.login-widget-language-label { float:left;top:5px; }
+.login-widget-language { display:inline;float:left; height:16px; }
+.login-widget-connect-on-progress {}
+.login-widget-loading {position:absolute;top:155px;left:180px;content;width:32px;height:32px;background-image: url(../img/xivo-2009/widget/shared/inane/loading.gif);background-color:black;visibility:hidden;}
+.visible { visibility:visible; }
+
+
+
+.directory-search-widget table { width:100%;padding-top:5px;}
+.directory-search-widget-pattern { width:100%; }
+.directory-search-widget-button { width:100%; }
+.directory-search-widget-renderon { position:absolute;top:30px;width:100%;bottom:10px;overflow:auto;margin:0 }
+.directory-search-widget-renderon table { padding-top:0px; }
+
+
+
+.service-widget { text-align:left; list-style-type: none; padding:3px 0px 6px 0px; }
+.service-widget span { margin-left:2em; }
+.service-widget li label { padding-left:5px; }
+.service-widget .widget-field {width:120px;}
+
+
+
+.dial-widget { padding:5px 0px 6px 0px; }

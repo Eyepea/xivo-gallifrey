@@ -1,0 +1,56 @@
+.buddy {
+	float: left;
+	text-align: left;
+}
+
+#dock {
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:26px;
+  background:transparent url(../img/dock-bg.gif) repeat-x 0 0;
+  z-index: 100000;	
+}       
+
+.dock_icon {
+  float:left;
+  width:102px;
+  height:21px;
+  margin-top:3px;
+  background: url(button-bg.gif);
+  text-align:center;
+  font-size: 14px;
+  color: #000;
+  line-height: 22px;    
+  margin-right:10px;
+  margin-left:10px;
+}       
+
+#status {       
+  float:right; 
+  margin-top:3px;
+  margin-right:25px;
+}
+
+/* Tooltips and Balloon Callouts */
+.autoTooltip {cursor:pointer;}
+.tt {z-index:16; width:250px; margin:0; padding:0; line-height:15px;}
+.tt .header {position:absolute; top:-999px; left:-999px;}
+.tt .body, .tt .bd {padding:5px;}
+.balloonCallout .body {padding:10px 15px;}
+.ttPosUnder {padding:13px 0 0 0; background:url(../img/tooltip_top_left.gif) left top no-repeat;}
+.ttPosUnder .body, .ttPosUnder .bd {border:1px solid #666; border-top-width:0; padding:12px 17px 10px 8px; background:#ffffe5;}
+.ttPosOver {padding:0 0 13px 0; background:url(../img/tooltip_bottom_left.gif) left bottom no-repeat;}
+.ttPosOver .body, .ttPosOver .bd {border:1px solid #666; border-bottom-width:0; padding:8px 17px 12px 8px; background:#ffffe5;}
+.balloonControl {border-bottom:1px dashed #084482; text-decoration:none;}
+.balloon {z-index:1016; width:250px; margin:0; padding:0; line-height:15px;}
+.balloon .panel {border:none;}
+.balloon .header {position:absolute; top:-999px; left:-999px;}
+.balloon .body {padding:5px;}
+.balloon .body {padding:10px 15px;}
+.balloon .posUnder {padding:13px 0 0 0; background:url(../img/tooltip_top_left.gif) left top no-repeat;}
+.balloon .posUnder .body {border:1px solid #666; border-top-width:0; padding:12px 17px 10px 8px; background:#ffffe5;}
+.balloon .posOver {padding:0 0 13px 0; background:url(../img/tooltip_bottom_left.gif) left bottom no-repeat;}
+.balloon .posOver .body {border:1px solid #666; border-bottom-width:0; padding:8px 17px 12px 8px; background:#ffffe5;}
+

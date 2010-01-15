@@ -1,0 +1,46 @@
+.boxy-wrapper { position: absolute; }
+.boxy-wrapper.fixed { position: fixed; }
+
+  /* Modal */
+  
+  .boxy-modal-blackout { position: absolute; background-color: black; left: 0; top: 0; }
+  
+  /* Border */
+
+  .boxy-wrapper { empty-cells: show; }
+	.boxy-wrapper .top-left,
+	.boxy-wrapper .top-right,
+	.boxy-wrapper .bottom-right,
+	.boxy-wrapper .bottom-left { width: 10px; height: 10px; padding: 0 }
+	
+	.boxy-wrapper .top-left { background-image: url(../img/xivo-2009/window/t-left.png); opacity: 1;}
+	.boxy-wrapper .top-right { background-image: url(../img/xivo-2009/window/t-right.png); opacity: 1;}
+	.boxy-wrapper .bottom-right { background-repeat:repeat-x;background-image: url(../img/xivo-2009/window/f-right.png); opacity: 1;border-width: 1px 0px 0px 0px;border-style:solid;border-color:#888;}
+	.boxy-wrapper .bottom-left { background-repeat:repeat-x;background-image: url(../img/xivo-2009/window/f-left.png); opacity: 1;border-width: 1px 0px 0px 0px;border-style:solid;border-color:#888;}
+	
+	.boxy-wrapper .top { height: 21px; background-repeat:repeat-x;background-image: url(../img/xivo-2009/window/t-bg.png); opacity: 1; padding: 0 }
+	.boxy-wrapper .bottom { height: 12px; background-repeat:repeat-x;background-image: url(../img/xivo-2009/window/f-bg.png); opacity: 1; padding: 0;border-width: 1px 0px 0px 0px;border-style:solid;border-color:#888;}
+	
+	.boxy-wrapper .left {background-color:#ffffff;border:0;border-left:1px;border-style:solid;border-color: #9E9E9E;}
+	.boxy-wrapper .right {background-color:#ffffff;border:0;border-right:1px;border-style:solid;border-color: #9E9E9E;}
+	
+	/* Title bar */
+	
+	.boxy-wrapper .title-bar { position:relative;background-color: transparent; height:21px; position: relative; top:-21px;width:100%}
+	  .boxy-wrapper .title-bar.dragging { cursor: move; }
+	    .boxy-wrapper .title-bar h2 { position:relative;font-size:9pt; color: black;font-weight:bold;text-align:center;cursor:move;margin-top:2px;}
+	    .boxy-wrapper .title-bar .close { position:absolute;top:-2px;width:25px;height:21px;right:-10px;border:0;background: url(../img/xivo-2009/window/t-right-close.png); opacity: 1}
+		
+	/* Content Region */
+	
+	.boxy-inner { position:relative; background-color: #ffffff; padding: 0;margin: 0;vertical-align: top;height:100%; }
+	.boxy-content { position:relative;margin-top:-21px;height:100%;width:100%;vertical-align: top; }
+	
+
+	/* Question Boxes */
+
+  .boxy-wrapper .question { width: 350px; min-height: 80px; }
+  .boxy-wrapper .answers { text-align: right; }
+
+  .boxy-wrapper .resizable { cursor: se-resize;background-image: url(../img/xivo-2009/window/f-right-resize.png);opacity: 1}
+  .boxy-wrapper .unresizable {  }
