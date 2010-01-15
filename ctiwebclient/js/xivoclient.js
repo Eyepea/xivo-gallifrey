@@ -151,7 +151,7 @@ function XiVOClient()
   this.user_id = undefined;
   this.capaxlets = undefined;
   this.capafuncs = undefined;
-  this.feature_list = { callfilter: { enabled: false }, callrecord: { enabled: false },
+  this.feature_list = { incallfilter: { enabled: false }, callrecord: { enabled: false },
                         enablednd: { enabled: false }, enablevoicemail: { enabled: false },
                         enablerna: { enabled: false }, enablebusy: { enabled: false },
                         enableunc: { enable: false }};
@@ -165,7 +165,7 @@ function XiVOClient()
 XiVOClient.prototype._features_mapname = function (feature_name) {
   var feature_map = {
     enablevoicemail: 'enablevoicemail',
-    callfilter: 'callfilter',
+    callfilter: 'incallfilter',
     callrecord: 'callrecord',
     enablednd: 'enablednd',
     enablerna: 'enablerna',
@@ -246,7 +246,7 @@ XiVOClient.prototype._send_login = function (us) {
   login_command["company"] = 'default';
   login_command["userid"] = us.user;
   login_command["ident"] = 'undef@X11-LE';
-  login_command["xivoversion"] = '1.0';
+  login_command["xivoversion"] = '1.1';
   login_command["version"] = '9999';
   
   us.conn.send(this._render_command(login_command));
@@ -576,6 +576,7 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
       // alert(s);
       return;
     }
+
 
     us.last_packet = a;
 

@@ -751,7 +751,7 @@ XiVOCWidget.prototype.widget.service.update = function (us) {
   var client = us.to_watch;
   document.getElementById("service-widget-call-voicemail-" + us.uid).checked = client.get_feature('enablevoicemail').enabled;
   document.getElementById("service-widget-call-recording-" + us.uid).checked = client.get_feature('callrecord').enabled;
-  document.getElementById("service-widget-call-filtering-" + us.uid).checked = client.get_feature('callfilter').enabled;
+  document.getElementById("service-widget-call-filtering-" + us.uid).checked = client.get_feature('incallfilter').enabled;
   document.getElementById("service-widget-do-not-disturb-" + us.uid).checked = client.get_feature('enablednd').enabled;
 
   document.getElementById("service-widget-transfert-when-no-reply-" + us.uid).checked = client.get_feature('enablerna').enabled;
@@ -808,7 +808,7 @@ XiVOCWidget.prototype.widget.service.build = function (us) {
                       { input: { attr: { type: "checkbox", id: "service-widget-call-filtering-" + us.uid,
                                         'class': "service-widget-call-filtering" + " widget-checkbox" },
                                  ev: { change: function () {
-                                        client.request_featuresput({ 'function': "callfilter",
+                                        client.request_featuresput({ 'function': "incallfilter",
                                                                       value: this.checked ? '1' : '0',
                                                                       userid: 'xivo/' + client.get_user_id()});
                                     }}
