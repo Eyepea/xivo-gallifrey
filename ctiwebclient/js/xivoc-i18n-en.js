@@ -1,5 +1,5 @@
 xivoc_i18n = {
-  'FOR_VERSION_1': "XIVO - Version: 1.1 \"Dalek\" | Visit ",
+  'FOR_VERSION_1': "XIVO - Version: 1.1 \"Gallifrey\" | Visit ",
   'XIVO_URI': "http://xivo.fr/",
   'XIVO_URI_TEXT': "xivo.fr ",
   'FOR_VERSION_2': "for more information | © 2010 ",
