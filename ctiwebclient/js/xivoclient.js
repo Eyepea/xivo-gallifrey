@@ -154,7 +154,7 @@ function XiVOClient()
   this.feature_list = { incallfilter: { enabled: false }, callrecord: { enabled: false },
                         enablednd: { enabled: false }, enablevoicemail: { enabled: false },
                         enablerna: { enabled: false }, enablebusy: { enabled: false },
-                        enableunc: { enable: false }};
+                        enableunc: { enabled: false }};
   this.directory_search = {};
   this.c = undefined;
   this.next_received_line = '';
@@ -258,7 +258,7 @@ XiVOClient.prototype._send_login = function (us) {
 // once we sent our login to the server, he must provide us a session id that we use 
 // in password hash
 XiVOClient.prototype._send_password = function (us,sid) {
-  us.hpass = SHA1(sid + ':' + us.pass);
+  us.hpass = new SHA1(sid + ':' + us.pass).hexdigest();
 
   var pass_command = this._base_command();
 
