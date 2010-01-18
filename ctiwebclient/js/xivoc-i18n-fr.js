@@ -1,8 +1,8 @@
 xivoc_i18n = {
-  'FOR_VERSION_1': "XIVO - Version: 1.0 \"Dalek\" | Visitez ",
+  'FOR_VERSION_1': "XIVO - Version: 1.1 \"Dalek\" | Visitez ",
   'XIVO_URI': "http://xivo.fr/",
   'XIVO_URI_TEXT': "xivo.fr ",
-  'FOR_VERSION_2': "pour plus d'information | © 2009 ",
+  'FOR_VERSION_2': "pour plus d'information | © 2010 ",
   'COMPANY_URI': "http://proformatique.fr/",
   'COMPANY_URI_TEXT': "Proformatique",
   'timestamp': "Heure de l'appel",

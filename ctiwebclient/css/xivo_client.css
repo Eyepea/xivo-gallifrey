@@ -8,7 +8,7 @@ select.widget-field { padding: 0px 0px 0px 2px; }
 .widget-field-blured { color: #666; }
 .widget-table thead tr td  { height:15px;font-size:11px;font-weight:bold;border:1px solid #999;border-width:0px 0px 1px 1px;background-image:url(../img/xivo-2009/widget/shared/table/bg.png);background-repeat: repeat-x;background-color: #fff;color:#000;text-align: center; }
 .widget-table tbody tr td  { font-size:9px;border-width:0px 0px 1px 1px;border-style:solid;border-color:#999;text-align: center; }
-.widget-table { border-width:1px 1px 0px 0px;border-style:solid;border-color:#999;background-color:#eee;  margin: 5px auto; text-align: left; padding-bottom:10;}
+.widget-table { border-width:1px 1px 0px 0px;border-style:solid;border-color:#999;background-color:#eee;  margin: 5px auto; text-align: left;}
 .widget-odd-row { background-color:#e3e5fc; }
 
 .click-to-phone-name { margin-left:4px;display:block;width:10px;height:12px;background-image:url(../img/xivo-2009/widget/shared/a/telsimple-icon.png);float:left; }
@@ -95,7 +95,7 @@ color:#eee;font-weight:bold;
 .login-widget-language-label { float:left;top:5px; }
 .login-widget-language { display:inline;float:left; height:16px; }
 .login-widget-connect-on-progress {}
-.login-widget-loading {position:absolute;top:155px;left:180px;content;width:32px;height:32px;background-image: url(../img/xivo-2009/widget/shared/inane/loading.gif);background-color:black;visibility:hidden;}
+.login-widget-loading {position:absolute;top:155px;left:180px;width:32px;height:32px;background-image: url(../img/xivo-2009/widget/shared/inane/loading.gif);background-color:black;visibility:hidden;}
 .visible { visibility:visible; }
 
 
