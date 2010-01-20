@@ -53,6 +53,16 @@ class xivo_ldap:
             if uri_scheme not in ('ldap', 'ldaps'):
                 raise NotImplementedError, 'Unknown URI scheme: %r' % uri_scheme
 
+            if ldapuri[1][0] is None:
+                ldapuser = ''
+            else:
+                ldapuser = ldapuri[1][0]
+
+            if ldapuri[1][1] is None:
+                ldappass = ''
+            else:
+                ldappass = ldapuri[1][1]
+
             if ldapuri[1][2] is None:
                 ldaphost = 'localhost'
             else:
@@ -91,7 +101,7 @@ class xivo_ldap:
             if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
                 self.l.start_tls_s()
 
-            self.l.simple_bind_s(ldapuri[1][0], ldapuri[1][1])
+            self.l.simple_bind_s(ldapuser, ldappass)
         except ldap.LDAPError, exc:
             log.exception('__init__: ldap.LDAPError (%r, %r, %r)', self.l, iuri, exc)
             self.l = None
