@@ -1,7 +1,7 @@
-Index: asterisk-1.4.28/apps/app_meetme.c
+Index: asterisk-1.4.29/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.28.orig/apps/app_meetme.c	2009-12-22 17:07:24.000000000 +0100
-+++ asterisk-1.4.28/apps/app_meetme.c	2010-01-15 14:43:09.000000000 +0100
+--- asterisk-1.4.29.orig/apps/app_meetme.c	2010-01-20 17:33:32.000000000 +0100
++++ asterisk-1.4.29/apps/app_meetme.c	2010-01-20 17:47:28.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -67,7 +67,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  "      'm' -- set initially muted\n"
  "      'M' -- enable music on hold when the conference has a single caller\n"
  "      'o' -- set talker optimization - treats talkers who aren't speaking as\n"
-@@ -344,11 +364,15 @@
+@@ -347,11 +367,15 @@
  	int zapconf;                            /*!< Zaptel Conf # */
  	int users;                              /*!< Number of active users */
  	int markedusers;                        /*!< Number of marked users */
@@ -83,7 +83,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	pthread_t recordthread;                 /*!< thread for recording */
  	ast_mutex_t recordthreadlock;           /*!< control threads trying to start recordthread */
  	pthread_attr_t attr;                    /*!< thread attribute */
-@@ -597,6 +621,11 @@
+@@ -600,6 +624,11 @@
  		return "(not talking)";
  }
  
@@ -95,7 +95,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  static int careful_write(int fd, unsigned char *data, int len, int block)
  {
  	int res;
-@@ -885,9 +914,9 @@
+@@ -888,9 +917,9 @@
  			min = ((now - cnf->start) % 3600) / 60;
  			sec = (now - cnf->start) % 60;
  
@@ -107,7 +107,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  		}
  		AST_LIST_UNLOCK(&confs);
  		ast_cli(fd, "* Total number of MeetMe users: %d\n", total);
-@@ -962,7 +991,7 @@
+@@ -965,7 +994,7 @@
  			min = ((now - user->jointime) % 3600) / 60;
  			sec = (now - user->jointime) % 60;
  			if ( !concise )
@@ -116,7 +116,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					user->user_no,
  					S_OR(user->chan->cid.cid_num, "<unknown>"),
  					S_OR(user->chan->cid.cid_name, "<no name>"),
-@@ -970,9 +999,10 @@
+@@ -973,9 +1002,10 @@
  					user->userflags & CONFFLAG_ADMIN ? "(Admin)" : "",
  					user->userflags & CONFFLAG_MONITOR ? "(Listen only)" : "",
  					user->adminflags & ADMINFLAG_MUTED ? "(Admin Muted)" : user->adminflags & ADMINFLAG_SELFMUTED ? "(Muted)" : "",
@@ -128,7 +128,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					user->user_no,
  					S_OR(user->chan->cid.cid_num, ""),
  					S_OR(user->chan->cid.cid_name, ""),
-@@ -980,6 +1010,7 @@
+@@ -983,6 +1013,7 @@
  					user->userflags  & CONFFLAG_ADMIN   ? "1" : "",
  					user->userflags  & CONFFLAG_MONITOR ? "1" : "",
  					user->adminflags & (ADMINFLAG_MUTED | ADMINFLAG_SELFMUTED)  ? "1" : "",
@@ -136,8 +136,8 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					user->talking, hr, min, sec);
  			
  		}
-@@ -1489,6 +1520,203 @@
- 	return (chan->_state == AST_STATE_UP);
+@@ -1521,6 +1552,203 @@
+ 	}
  }
  
 +static void meetme_pause(struct ast_conference *conf, int b)
@@ -340,7 +340,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  static int conf_run(struct ast_channel *chan, struct ast_conference *conf, int confflags, char *optargs[])
  {
  	struct ast_conf_user *user = NULL;
-@@ -1508,9 +1736,14 @@
+@@ -1540,9 +1768,14 @@
  	int firstpass = 0;
  	int lastmarked = 0;
  	int currentmarked = 0;
@@ -355,7 +355,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	int using_pseudo = 0;
  	int duration=20;
  	int hr, min, sec;
-@@ -1525,6 +1758,7 @@
+@@ -1557,6 +1790,7 @@
  	char recordingtmp[AST_MAX_EXTENSION] = "";
  	char members[10] = "";
  	int dtmf, opt_waitmarked_timeout = 0;
@@ -363,7 +363,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	time_t timeout = 0;
  	struct dahdi_bufferinfo bi;
  	char __buf[CONF_SIZE + AST_FRIENDLY_OFFSET];
-@@ -1535,6 +1769,13 @@
+@@ -1567,6 +1801,13 @@
  	if (!(user = ast_calloc(1, sizeof(*user))))
  		return ret;
  
@@ -377,7 +377,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	/* Possible timeout waiting for marked user */
  	if ((confflags & CONFFLAG_WAITMARKED) &&
  		!ast_strlen_zero(optargs[OPT_ARG_WAITMARKED]) &&
-@@ -1543,6 +1784,22 @@
+@@ -1575,6 +1816,22 @@
  		timeout = time(NULL) + opt_waitmarked_timeout;
  	}
  
@@ -400,7 +400,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	if (confflags & CONFFLAG_RECORDCONF) {
  		if (!conf->recordingfilename) {
  			conf->recordingfilename = pbx_builtin_getvar_helper(chan, "MEETME_RECORDINGFILE");
-@@ -1634,10 +1891,37 @@
+@@ -1666,10 +1923,37 @@
  			goto outrun;
  	}
  
@@ -439,7 +439,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	conf->users++;
  	/* Update table */
  	snprintf(members, sizeof(members), "%d", conf->users);
-@@ -1659,53 +1943,18 @@
+@@ -1691,53 +1975,18 @@
  			ast_copy_string(exitcontext, chan->context, sizeof(exitcontext));
  	}
  
@@ -499,7 +499,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  
  	if (!(confflags & CONFFLAG_NO_AUDIO_UNTIL_UP)) {
  		/* We're leaving this alone until the state gets changed to up */
-@@ -1780,28 +2029,10 @@
+@@ -1812,28 +2061,10 @@
  	ztc.chan = 0;	
  	ztc.confno = conf->zapconf;
  
@@ -531,7 +531,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  		ztc.confmode = DAHDI_CONF_CONF;
  	else if (confflags & CONFFLAG_MONITOR)
  		ztc.confmode = DAHDI_CONF_CONFMON | DAHDI_CONF_LISTENER;
-@@ -1819,29 +2050,32 @@
+@@ -1851,29 +2082,32 @@
  
  	if (!sent_event) {
  		manager_event(EVENT_FLAG_CALL, "MeetmeJoin", 
@@ -581,7 +581,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  				conf_play(chan, conf, ENTER);
  	}
  
-@@ -1887,6 +2121,7 @@
+@@ -1919,6 +2153,7 @@
  		}	
  		for(;;) {
  			int menu_was_active = 0;
@@ -589,7 +589,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  
  			outfd = -1;
  			ms = -1;
-@@ -1894,6 +2129,32 @@
+@@ -1926,6 +2161,32 @@
  			if (timeout && time(NULL) >= timeout)
  				break;
  
@@ -622,7 +622,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  			/* if we have just exited from the menu, and the user had a channel-driver
  			   volume adjustment, restore it
  			*/
-@@ -1901,15 +2162,19 @@
+@@ -1933,15 +2194,19 @@
  				set_talk_volume(user, user->listen.desired);
  
  			menu_was_active = menu_active;
@@ -645,7 +645,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  						if (!ast_streamfile(chan, "conf-userwilljoin", chan->language))
  							ast_waitstream(chan, "");
  					} else {
-@@ -1917,7 +2182,8 @@
+@@ -1949,7 +2214,8 @@
  							ast_waitstream(chan, "");
  					}
  				}
@@ -655,7 +655,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					if (!ast_streamfile(chan, "conf-onlyperson", chan->language))
  						ast_waitstream(chan, "");
  			}
-@@ -1925,13 +2191,43 @@
+@@ -1957,13 +2223,43 @@
  			/* Update the struct with the actual confflags */
  			user->userflags = confflags;
  
@@ -704,7 +704,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  							break;
  						else {
  							ztc.confmode = DAHDI_CONF_CONF;
-@@ -1942,11 +2238,17 @@
+@@ -1974,11 +2270,17 @@
  							}
  						}
  					}
@@ -724,7 +724,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					/* Marked user entered, so cancel timeout */
  					timeout = 0;
  					if (confflags & CONFFLAG_MONITOR)
-@@ -1968,13 +2270,75 @@
+@@ -2000,13 +2302,75 @@
  						if (!ast_streamfile(chan, "conf-placeintoconf", chan->language))
  							ast_waitstream(chan, "");
  						conf_play(chan, conf, ENTER);
@@ -802,7 +802,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					if (musiconhold == 0) {
  						ast_moh_start(chan, NULL, NULL);
  						musiconhold = 1;
-@@ -1988,7 +2352,7 @@
+@@ -2020,7 +2384,7 @@
  			}
  			
  			/* Leave if the last marked user left */
@@ -811,7 +811,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  				ret = -1;
  				break;
  			}
-@@ -2014,7 +2378,11 @@
+@@ -2051,7 +2415,11 @@
  			}
  
  			/* If I should be un-muted but am not talker, un-mute me */
@@ -824,7 +824,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  				ztc.confmode |= DAHDI_CONF_TALKER;
  				if (ioctl(fd, DAHDI_SETCONF, &ztc)) {
  					ast_log(LOG_WARNING, "Error setting conference - Un/Mute \n");
-@@ -2035,7 +2403,7 @@
+@@ -2072,7 +2440,7 @@
  			if (user->adminflags & ADMINFLAG_KICKME) {
  				//You have been kicked.
  				if (!(confflags & CONFFLAG_QUIET) && 
@@ -833,7 +833,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  					ast_waitstream(chan, "");
  				}
  				ret = 0;
-@@ -2146,7 +2514,13 @@
+@@ -2167,7 +2535,13 @@
  					if (musiconhold) {
  			   			ast_moh_stop(chan);
  					}
@@ -848,7 +848,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  						/* Admin menu */
  						if (!menu_active) {
  							menu_active = 1;
-@@ -2159,6 +2533,14 @@
+@@ -2180,6 +2554,14 @@
  						} else 
  							dtmf = f->subclass;
  						if (dtmf) {
@@ -863,7 +863,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  							switch(dtmf) {
  							case '1': /* Un/Mute */
  								menu_active = 0;
-@@ -2214,6 +2596,16 @@
+@@ -2235,6 +2617,16 @@
  							case '9':
  								tweak_talk_volume(user, VOL_UP);
  								break;
@@ -880,7 +880,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  							default:
  								menu_active = 0;
  								/* Play an error message! */
-@@ -2397,6 +2789,8 @@
+@@ -2418,6 +2810,8 @@
  					ast_log(LOG_WARNING, "Failed to read frame: %s\n", strerror(errno));
  			}
  			lastmarked = currentmarked;
@@ -889,7 +889,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  		}
  	}
  
-@@ -2418,23 +2812,28 @@
+@@ -2439,23 +2833,28 @@
  
  	reset_volumes(user);
  
@@ -922,7 +922,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  		/* Last person is leaving, so no reason to try and announce, but should delete the name recording */
  		ast_filedelete(user->namerecloc, NULL);
  	}
-@@ -2474,8 +2873,23 @@
+@@ -2495,8 +2894,23 @@
  			/* Update table */
  			snprintf(members, sizeof(members), "%d", conf->users);
  			ast_update_realtime("meetme", "confno", conf->confno, "members", members, NULL);
@@ -947,7 +947,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  		}
  		/* Remove ourselves from the list */
  		AST_LIST_REMOVE(&conf->userlist, user, list);
-@@ -2676,7 +3090,7 @@
+@@ -2698,7 +3112,7 @@
  	conf = find_conf(chan, args.confno, 0, 0, NULL, 0, 1, NULL);
  
  	if (conf) {
@@ -956,7 +956,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  		dispose_conf(conf);
  		conf = NULL;
  	} else
-@@ -2887,7 +3301,7 @@
+@@ -2908,7 +3322,7 @@
  								/* Pin correct */
  								allowretry = 0;
  								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
@@ -965,7 +965,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  								/* Run the conference */
  								res = conf_run(chan, cnf, confflags.flags, optargs);
  								break;
-@@ -3113,6 +3527,172 @@
+@@ -3134,6 +3548,172 @@
  	return 0;
  }
  
@@ -1138,7 +1138,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  static int meetmemute(struct mansession *s, const struct message *m, int mute)
  {
  	struct ast_conference *conf;
-@@ -3232,6 +3812,7 @@
+@@ -3253,6 +3833,7 @@
                                        "Channel: %s\r\n"
                                        "Uniqueid: %s\r\n"
                                        "Admin: %s\r\n"
@@ -1146,7 +1146,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
                                        "Role: %s\r\n"
                                        "MarkedUser: %s\r\n"
                                        "Muted: %s\r\n"
-@@ -3246,6 +3827,7 @@
+@@ -3267,6 +3848,7 @@
                                        user->chan->name,
                                        user->chan->uniqueid,
                                        user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
@@ -1154,7 +1154,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
                                        user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
                                        user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
                                        user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
-@@ -5091,6 +5673,9 @@
+@@ -5112,6 +5694,9 @@
  	res = ast_manager_unregister("MeetmeMute");
  	res |= ast_manager_unregister("MeetmeUnmute");
  	res |= ast_manager_unregister("MeetmeList");
@@ -1164,7 +1164,7 @@ Index: asterisk-1.4.28/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -5120,6 +5705,14 @@
+@@ -5141,6 +5726,14 @@
  				    action_meetmeunmute, "Unmute a Meetme user");
  	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
                                       action_meetmelist, "List participants in a conference", mandescr_meetmelist);

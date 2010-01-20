@@ -34,7 +34,6 @@ pf_sip_mwi_for_thomson_st20XXs
 
 dig_passerted_issue8824
 dig_deadlock_chan_local_issue14112
-pf_manager_parking
 
 pf_chan_dahdi_pripreferred
 pf_atxfer_cid_display

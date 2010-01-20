@@ -3,11 +3,11 @@ one of them.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.27/Makefile
+Index: asterisk-1.4.29/Makefile
 ===================================================================
---- asterisk-1.4.27.orig/Makefile	2009-11-24 13:17:29.000000000 +0100
-+++ asterisk-1.4.27/Makefile	2009-11-24 13:17:36.000000000 +0100
-@@ -399,7 +399,6 @@
+--- asterisk-1.4.29.orig/Makefile	2010-01-20 17:32:39.000000000 +0100
++++ asterisk-1.4.29/Makefile	2010-01-20 17:32:42.000000000 +0100
+@@ -400,7 +400,6 @@
  
  distclean: $(SUBDIRS_DIST_CLEAN) _clean
  	@$(MAKE) -C menuselect dist-clean
@@ -15,7 +15,7 @@ Index: asterisk-1.4.27/Makefile
  	rm -f menuselect.makeopts makeopts menuselect-tree menuselect.makedeps
  	rm -f makeopts.embed_rules
  	rm -f config.log config.status config.cache
-@@ -409,6 +408,10 @@
+@@ -410,6 +409,10 @@
  	rm -rf doc/api
  	rm -f build_tools/menuselect-deps
  

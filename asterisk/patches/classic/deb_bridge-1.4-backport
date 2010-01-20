@@ -2,10 +2,10 @@ Backport of asterisk 1.6 feature that Bridges together two channels already in t
 
  -- Jon Webster <jon@elephantoutlook.com>
 
-Index: asterisk-1.4.28/res/res_features.c
+Index: asterisk-1.4.29/res/res_features.c
 ===================================================================
---- asterisk-1.4.28.orig/res/res_features.c	2009-12-22 15:03:19.000000000 +0100
-+++ asterisk-1.4.28/res/res_features.c	2009-12-22 15:03:29.000000000 +0100
+--- asterisk-1.4.29.orig/res/res_features.c	2010-01-20 17:47:13.000000000 +0100
++++ asterisk-1.4.29/res/res_features.c	2010-01-20 17:47:22.000000000 +0100
 @@ -219,6 +219,7 @@
  	struct ast_bridge_config bconfig;
  	struct ast_channel *chan;
@@ -59,7 +59,7 @@ Index: asterisk-1.4.28/res/res_features.c
  	return NULL;
  }
  
-@@ -2777,6 +2798,125 @@
+@@ -2778,6 +2799,125 @@
  	return RESULT_SUCCESS;
  }
  
@@ -185,7 +185,7 @@ Index: asterisk-1.4.28/res/res_features.c
  static char showfeatures_help[] =
  "Usage: feature list\n"
  "       Lists currently configured features.\n";
-@@ -3229,6 +3369,154 @@
+@@ -3230,6 +3370,154 @@
  
  }
  
@@ -340,7 +340,7 @@ Index: asterisk-1.4.28/res/res_features.c
  static int reload(void)
  {
  	return load_config();
-@@ -3238,6 +3526,8 @@
+@@ -3239,6 +3527,8 @@
  {
  	int res;
  	
@@ -349,7 +349,7 @@ Index: asterisk-1.4.28/res/res_features.c
  	memset(parking_ext, 0, sizeof(parking_ext));
  	memset(parking_con, 0, sizeof(parking_con));
  
-@@ -3252,6 +3542,7 @@
+@@ -3253,6 +3543,7 @@
  		ast_manager_register("ParkedCalls", 0, manager_parking_status, "List parked calls" );
  		ast_manager_register2("Park", EVENT_FLAG_CALL, manager_park,
  			"Park a channel", mandescr_park); 
@@ -357,7 +357,7 @@ Index: asterisk-1.4.28/res/res_features.c
  	}
  
  	res |= ast_devstate_prov_add("Park", metermaidstate);
-@@ -3265,9 +3556,11 @@
+@@ -3266,9 +3557,11 @@
  	ast_module_user_hangup_all();
  
  	ast_manager_unregister("ParkedCalls");
