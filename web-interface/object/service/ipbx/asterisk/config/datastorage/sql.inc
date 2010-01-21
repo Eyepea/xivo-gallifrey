@@ -76,6 +76,18 @@ $array['ctimain'] = array();
 $array['ctimain']['table'] = 'ctimain';
 $array['ctimain']['primary'] = array('id' => '');
 
+$array['ctiphonehints'] = array();
+$array['ctiphonehints']['table'] = 'ctiphonehints';
+$array['ctiphonehints']['primary'] = array('id' => '');
+
+$array['ctipresences'] = array();
+$array['ctipresences']['table'] = 'ctipresences';
+$array['ctipresences']['primary'] = array('id' => '');
+
+$array['ctistatus'] = array();
+$array['ctistatus']['table'] = 'ctistatus';
+$array['ctistatus']['primary'] = array('id' => '');
+
 $array['dialaction'] = array();
 $array['dialaction']['table'] = 'dialaction';
 $array['dialaction']['primary'] = array('event' => '','category' => '','categoryval' => '');

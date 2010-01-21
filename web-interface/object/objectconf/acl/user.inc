@@ -27,10 +27,17 @@ $array['tree']['service']['ipbx'] = array();
 $array['tree']['service']['ipbx']['general_settings'] = array();
 $array['tree']['service']['ipbx']['general_settings']['sip'] = true;
 $array['tree']['service']['ipbx']['general_settings']['iax'] = true;
-$array['tree']['service']['ipbx']['general_settings']['cti'] = true;
+$array['tree']['service']['ipbx']['general_settings']['cti'] = false; //	 TO BE REMOVED
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;
 $array['tree']['service']['ipbx']['general_settings']['advanced'] = true;
+
+$array['tree']['service']['ipbx']['cti_settings'] = array();
+$array['tree']['service']['ipbx']['cti_settings']['general'] = true;
+$array['tree']['service']['ipbx']['cti_settings']['presences'] = true;
+$array['tree']['service']['ipbx']['cti_settings']['phonehints'] = true;
+$array['tree']['service']['ipbx']['cti_settings']['profiles'] = true;
+
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
 $array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;

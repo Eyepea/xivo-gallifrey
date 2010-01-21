@@ -10,9 +10,6 @@ Protocole SIP
 ; mn_left_generalsettings-iax
 Protocole IAX
 
-; mn_left_generalsettings-cti
-Serveurs CTI
-
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 
@@ -21,6 +18,21 @@ Carnet d'adresses
 
 ; mn_left_generalsettings-advanced
 Avancés
+
+; mn_left_ti_ctisettings
+Serveurs CTI
+
+; mn_left_ctisettings-general
+Options générales
+
+; mn_left_ctisettings-presences
+Présences
+
+; mn_left_ctisettings-phonehints
+Présences téléphonique
+
+; mn_left_ctisettings-profiles
+Profils
 
 ; mn_left_ti_pbxsettings
 Paramètres IPBX

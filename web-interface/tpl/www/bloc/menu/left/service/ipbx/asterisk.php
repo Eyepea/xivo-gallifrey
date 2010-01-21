@@ -47,12 +47,12 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
-		if(xivo_user::chk_acl('general_settings','cti') === true):
-			echo	'<dd id="mn-general-settings--cti">',
-				$url->href_html($this->bbf('mn_left_generalsettings-cti'),
-						'service/ipbx/general_settings/cti'),
-				'</dd>';
-		endif;
+#		if(xivo_user::chk_acl('general_settings','cti') === true):
+#			echo	'<dd id="mn-general-settings--cti">',
+#				$url->href_html($this->bbf('mn_left_generalsettings-cti'),
+#						'service/ipbx/general_settings/cti'),
+#				'</dd>';
+#		endif;
 
 		if(xivo_user::chk_acl('general_settings','voicemail') === true):
 			echo	'<dd id="mn-general-settings--voicemail">',
@@ -78,16 +78,38 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
-	if(xivo_user::chk_acl('pbx_settings') === true):
-		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxsettings'),'</dt>';
+	if(xivo_user::chk_acl('cti_settings') === true):
+		echo 	'<dl><dt>',$this->bbf('mn_left_ti_ctisettings'),'</td>';
 
-		if(xivo_user::chk_acl('pbx_settings','agents') === true):
-			echo	'<dd id="mn-pbx-settings--agents">',
-				$url->href_html($this->bbf('mn_left_pbxsettings-agents'),
-						'service/ipbx/pbx_settings/agents',
-						'act=list'),
+		if(xivo_user::chk_acl('cti_settings','general') === true):
+			echo	'<dd id="mn-cti-settings--general">',
+				$url->href_html($this->bbf('mn_left_ctisettings-general'),
+					'service/ipbx/cti_settings/general'),
 				'</dd>';
 		endif;
+		if(xivo_user::chk_acl('cti_settings','presences') === true):
+			echo	'<dd id="mn-cti-settings--presences">',
+				$url->href_html($this->bbf('mn_left_ctisettings-presences'),
+					'service/ipbx/cti_settings/presences'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','phonehints') === true):
+			echo	'<dd id="mn-cti-settings--phonehints">',
+				$url->href_html($this->bbf('mn_left_ctisettings-phonehints'),
+					'service/ipbx/cti_settings/phonehints'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','profiles') === true):
+			echo	'<dd id="mn-cti-settings--profiles">',
+				$url->href_html($this->bbf('mn_left_ctisettings-profiles'),
+					'service/ipbx/cti_settings/profiles'),
+				'</dd>';
+		endif;
+	endif;
+
+
+	if(xivo_user::chk_acl('pbx_settings') === true):
+		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxsettings'),'</dt>';
 
 		if(xivo_user::chk_acl('pbx_settings','users') === true):
 			echo	'<dd id="mn-pbx-settings--users">',
@@ -105,6 +127,22 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('pbx_settings','voicemail') === true):
+			echo	'<dd id="mn-pbx-settings--voicemail">',
+				$url->href_html($this->bbf('mn_left_pbxsettings-voicemail'),
+						'service/ipbx/pbx_settings/voicemail',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('pbx_settings','agents') === true):
+			echo	'<dd id="mn-pbx-settings--agents">',
+				$url->href_html($this->bbf('mn_left_pbxsettings-agents'),
+						'service/ipbx/pbx_settings/agents',
+						'act=list'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('pbx_settings','queues') === true):
 			echo	'<dd id="mn-pbx-settings--queues">',
 				$url->href_html($this->bbf('mn_left_pbxsettings-queues'),
@@ -117,14 +155,6 @@ $dhtml = &$this->get_module('dhtml');
 			echo	'<dd id="mn-pbx-settings--meetme">',
 				$url->href_html($this->bbf('mn_left_pbxsettings-meetme'),
 						'service/ipbx/pbx_settings/meetme',
-						'act=list'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('pbx_settings','voicemail') === true):
-			echo	'<dd id="mn-pbx-settings--voicemail">',
-				$url->href_html($this->bbf('mn_left_pbxsettings-voicemail'),
-						'service/ipbx/pbx_settings/voicemail',
 						'act=list'),
 				'</dd>';
 		endif;

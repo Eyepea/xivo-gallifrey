@@ -19,6 +19,9 @@
 #
 
 $ctimain = &$ipbx->get_module('ctimain');
+$ctipresences = &$ipbx->get_module('ctipresences');
+
+dwho_var_dump($ctipresences->get_all());
 $appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 
 $info = array();
@@ -31,6 +34,25 @@ $info['xivoserver']['slt'] = array();
 $element = array();
 $element['ctimain'] = $ctimain->get_element();
 
+# *** WIP ***
+# use database here
+#
+$presence = array(
+	'xivo' => array(
+		'available' => array(
+			'display' => 'Disponible',
+			'status' => array('available', 'away', 'outtolunch', 'donotdisturb', 'berightback'),
+			'actions' => array(
+				'enablednd' => 'true',
+				'queueunpause' => 'normal'),
+			'color' => '#5efd20'),
+		'away' => array(
+			'display' => 'Absent',
+			'status' => array('available'),
+			'actions' => array(
+				'enablednd' => 'true',
+				'queueunpause' => 'normal'),
+			'color' => '#ff0000')));
 $error = array();
 $error['ctimain'] = array();
 $fm_save = null;
@@ -92,6 +114,7 @@ $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('info', $info);
+$_TPL->set_var('presence', $presence);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');

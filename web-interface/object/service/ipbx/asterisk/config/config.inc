@@ -232,6 +232,12 @@ $array['module']['contextnummember']['datastorage'] = true;
 $array['module']['ctimain'] = array();
 $array['module']['ctimain']['datastorage'] = true;
 
+$array['module']['ctipresences'] = array();
+$array['module']['ctipresences']['datastorage'] = true;
+
+$array['module']['ctistatus'] = array();
+$array['module']['ctistatus']['datastorage'] = true;
+
 $array['module']['dialaction'] = array();
 $array['module']['dialaction']['datastorage'] = true;
 
@@ -282,6 +288,9 @@ $array['module']['phonebooknumber']['datastorage'] = true;
 
 $array['module']['phonefunckey'] = array();
 $array['module']['phonefunckey']['datastorage'] = true;
+
+$array['module']['ctiphonehints'] = array();
+$array['module']['ctiphonehints']['datastorage'] = true;
 
 $array['module']['queue'] = array();
 $array['module']['queue']['datastorage'] = true;

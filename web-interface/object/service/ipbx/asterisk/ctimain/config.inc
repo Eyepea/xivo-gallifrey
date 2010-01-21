@@ -80,7 +80,6 @@ $array['filter']['info_ip'] 		= array('callback' => 'dwho_network::valid_host_su
 $array['filter']['info_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['announce_ip'] 	= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['announce_port'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
-#$array['filter']['asterisklist'] 	= array('set' => false, 'chk' => 2, 'key' => array('xivo'));
 $array['filter']['asterisklist'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['updates_period'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,120));
 $array['filter']['socket_timeout'] 	= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,20));

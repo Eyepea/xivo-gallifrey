@@ -39,10 +39,16 @@ $array['xivo/logoff'] = 'xivo/logoff.php';
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
 $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_settings/iax/';
-$array['service/ipbx/general_settings/cti'] = 'service/ipbx/index.php/general_settings/cti/';
+#$array['service/ipbx/general_settings/cti'] = 'service/ipbx/index.php/general_settings/cti/'; // TO BE REMOVED
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
 $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
+
+$array['service/ipbx/cti_settings/general'] = 'service/ipbx/index.php/cti_settings/general/';
+$array['service/ipbx/cti_settings/presences'] = 'service/ipbx/index.php/cti_settings/presences/';
+$array['service/ipbx/cti_settings/phonehints'] = 'service/ipbx/index.php/cti_settings/phonehints/';
+#$array['service/ipbx/cti_settings/status'] = 'service/ipbx/index.php/cti_settings/status/';
+
 $array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';
