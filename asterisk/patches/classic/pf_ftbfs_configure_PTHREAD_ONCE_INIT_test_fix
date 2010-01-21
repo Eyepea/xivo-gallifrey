@@ -1,0 +1,32 @@
+2010-01-21  Marc Dequènes (Duck) <mdequenes@proformatique.com>
+
+	pf_ftbfs_configure_PTHREAD_ONCE_INIT_test_fix
+	PTHREAD_ONCE_INIT is failing because of an unused variables
+	with gcc available on Etch, and then cause an FTBFS.
+
+Index: asterisk-1.4.29/configure
+===================================================================
+--- asterisk-1.4.29.orig/configure	2010-01-21 12:40:23.000000000 +0100
++++ asterisk-1.4.29/configure	2010-01-21 12:40:30.000000000 +0100
+@@ -11487,7 +11487,7 @@
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking if PTHREAD_ONCE_INIT needs braces" >&5
+ $as_echo_n "checking if PTHREAD_ONCE_INIT needs braces... " >&6; }
+ saved_CFLAGS="${CFLAGS}"
+-CFLAGS="${CFLAGS} -Werror -Wmissing-braces"
++CFLAGS="${CFLAGS} -Werror -Wmissing-braces -Wno-unused-variable"
+ cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
+ #include <pthread.h>
+Index: asterisk-1.4.29/configure.ac
+===================================================================
+--- asterisk-1.4.29.orig/configure.ac	2010-01-21 12:40:24.000000000 +0100
++++ asterisk-1.4.29/configure.ac	2010-01-21 12:40:38.000000000 +0100
+@@ -354,7 +354,7 @@
+ 
+ AC_MSG_CHECKING(if PTHREAD_ONCE_INIT needs braces)
+ saved_CFLAGS="${CFLAGS}"
+-CFLAGS="${CFLAGS} -Werror -Wmissing-braces"
++CFLAGS="${CFLAGS} -Werror -Wmissing-braces -Wno-unused-variable"
+ AC_COMPILE_IFELSE(
+   [AC_LANG_PROGRAM(
+     [#include <pthread.h>],
