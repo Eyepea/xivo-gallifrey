@@ -1,7 +1,7 @@
 Index: asterisk-1.4.29/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.29.orig/apps/app_queue.c	2010-01-20 17:47:35.000000000 +0100
-+++ asterisk-1.4.29/apps/app_queue.c	2010-01-20 17:47:37.000000000 +0100
+--- asterisk-1.4.29.orig/apps/app_queue.c	2010-01-21 11:04:19.000000000 +0100
++++ asterisk-1.4.29/apps/app_queue.c	2010-01-22 12:04:05.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -537,17 +537,17 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +
  static int reload_all(void)
  {
- 	if(!reload_queues())
- 		return 0;
- 
-+	reload_penalty_rules();
- 	reload_skills();
- 	reload_skill_rules();
+ 	int ret = 0;
+
+ 	ret |= reload_queues();
++	ret |= reload_penalty_rules();
+ 	ret |= reload_skills();
+ 	ret |= reload_skill_rules();
  
 Index: asterisk-1.4.29/configs/queuerules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.29/configs/queuerules.conf.sample	2010-01-20 17:47:37.000000000 +0100
++++ asterisk-1.4.29/configs/queuerules.conf.sample	2010-01-21 11:04:19.000000000 +0100
 @@ -0,0 +1,20 @@
 +; It is possible to change the value of the QUEUE_MAX_PENALTY and QUEUE_MIN_PENALTY
 +; channel variables in mid-call by defining rules in the queue for when to do so. This can allow for
