@@ -1,7 +1,7 @@
 Index: asterisk-1.4.29/apps/app_queue.c
 ===================================================================
 --- asterisk-1.4.29.orig/apps/app_queue.c	2010-01-21 11:04:19.000000000 +0100
-+++ asterisk-1.4.29/apps/app_queue.c	2010-01-22 12:08:38.000000000 +0100
++++ asterisk-1.4.29/apps/app_queue.c	2010-01-22 12:13:40.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -1352,7 +1352,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  						if (!cur || (cur && strcasecmp(cur->state_interface, state_interface))) {
  							add_to_interfaces(state_interface);
  						}
-@@ -4745,6 +5649,119 @@
+@@ -4745,9 +5649,122 @@
  	}
  	AST_LIST_TRAVERSE_SAFE_END;
  	AST_LIST_UNLOCK(&queues);
@@ -1458,20 +1458,23 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +	}
 +	AST_LIST_UNLOCK(&skill_rulesets);
 +	ast_config_destroy(cfg);
-+	return 1;
-+}
-+
-+static int reload_all(void)
-+{
-+	if(!reload_queues())
-+		return 0;
-+
-+	reload_skills();
-+	reload_skill_rules();
-+
  	return 1;
  }
  
++static int reload_all(void)
++{
++	int ret = 0;
++
++	ret |= reload_queues();
++	ret |= reload_skills();
++	ret |= reload_skill_rules();
++
++	return ret;
++}
++
+ static int __queues_show(struct mansession *s, int manager, int fd, int argc, char **argv)
+ {
+ 	struct call_queue *q;
 @@ -4858,6 +5875,8 @@
  					ast_build_string(&max, &max_left, " (paused)");
  				if (mem->incominglimit && mem->current_calls >= mem->incominglimit)
