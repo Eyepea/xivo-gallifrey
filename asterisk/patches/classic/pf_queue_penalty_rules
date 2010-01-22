@@ -1,7 +1,7 @@
 Index: asterisk-1.4.29/apps/app_queue.c
 ===================================================================
 --- asterisk-1.4.29.orig/apps/app_queue.c	2010-01-22 16:36:30.000000000 +0100
-+++ asterisk-1.4.29/apps/app_queue.c	2010-01-22 17:45:29.000000000 +0100
++++ asterisk-1.4.29/apps/app_queue.c	2010-01-22 17:51:46.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -303,9 +303,9 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +	pbx_builtin_setvar_helper(qe->chan, "QUEUE_MIN_PENALTY", min_penalty_str);
 +	qe->max_penalty = max_penalty;
 +	qe->min_penalty = min_penalty;
-+	if (option_debug) {
-+		ast_log(LOG_DEBUG, "Setting max penalty to %d and min penalty to %d for caller %s since %d seconds have elapsed\n", qe->max_penalty, qe->min_penalty, qe->chan->name, qe->pr->time);
-+	}
++	/*if (option_debug) {*/
++		ast_log(LOG_WARNING, "Setting max penalty to %d and min penalty to %d for caller %s since %d seconds have elapsed\n", qe->max_penalty, qe->min_penalty, qe->chan->name, qe->pr->time);
++	/*}*/
 +	qe->pr = AST_LIST_NEXT(qe->pr, list);
 +}
 +
@@ -342,7 +342,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  		return -1;
  
  	switch (q->strategy) {
-@@ -4959,6 +5121,36 @@
+@@ -4959,6 +5121,37 @@
  	return 0;
  }
  
@@ -357,6 +357,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +		if (!strcasecmp(rl_iter->name, tmp))
 +			break;
 +	}
++	ast_log(LOG_WARNING, "penalty rules %s\n", rulename);
 +	if (rl_iter) {
 +		AST_LIST_TRAVERSE(&rl_iter->rules, pr_iter, list) {
 +			struct penalty_rule *new_pr = ast_calloc(1, sizeof(*new_pr));
@@ -379,7 +380,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  /*!\brief The starting point for all queue calls
   *
   * The process involved here is to 
-@@ -4978,13 +5170,15 @@
+@@ -4978,13 +5171,15 @@
  	struct ast_module_user *lu;
  	const char *user_priority;
  	const char *max_penalty_str;
@@ -396,7 +397,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	AST_DECLARE_APP_ARGS(args,
  		AST_APP_ARG(queuename);
  		AST_APP_ARG(options);
-@@ -4993,12 +5187,14 @@
+@@ -4993,12 +5188,14 @@
  		AST_APP_ARG(queuetimeoutstr);
  		AST_APP_ARG(agi);
  		AST_APP_ARG(skill_ruleset);
@@ -412,7 +413,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  		return -1;
  	}
  
-@@ -5049,9 +5245,31 @@
+@@ -5049,9 +5246,31 @@
  		max_penalty = 0;
  	}
  
@@ -444,7 +445,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	if (option_debug)
  		ast_log(LOG_DEBUG, "queue: %s, options: %s, url: %s, announce: %s, expires: %ld, priority: %d\n",
  			args.queuename, args.options, args.url, args.announceoverride, (long)qe.expire, prio);
-@@ -5059,6 +5277,7 @@
+@@ -5059,6 +5278,7 @@
  	qe.chan = chan;
  	qe.prio = prio;
  	qe.max_penalty = max_penalty;
@@ -452,7 +453,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	if (!ast_strlen_zero(args.skill_ruleset)) {
  		ast_copy_string(qe.skill_ruleset, args.skill_ruleset, sizeof(qe.skill_ruleset));
  		if (!qe.mem_selection)
-@@ -5069,11 +5288,13 @@
+@@ -5069,11 +5289,13 @@
  	qe.last_periodic_announce_time = time(NULL);
  	qe.last_periodic_announce_sound = 0;
  	qe.valid_digits = 0;
@@ -467,7 +468,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  check_turns:
  		if (ringing) {
  			ast_indicate(chan, AST_CONTROL_RINGING);
-@@ -5136,12 +5357,18 @@
+@@ -5136,12 +5358,18 @@
  				ast_queue_log(args.queuename, chan->uniqueid, "NONE", "EXITWITHTIMEOUT", "%d", qe.pos);
  				break;
  			}
@@ -487,7 +488,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  			/* exit after 'timeout' cycle if 'n' option enabled */
  			if (noption && tries >= qe.parent->membercount) {
-@@ -5807,11 +6034,56 @@
+@@ -5807,11 +6035,56 @@
  	return 1;
  }
  
@@ -544,7 +545,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	ret |= reload_skills();
  	ret |= reload_skill_rules();
  
-@@ -5955,13 +6227,13 @@
+@@ -5955,13 +6228,13 @@
  				ast_cli(fd, "   Callers: %s", term);
  			for (qe = q->head; qe; qe = qe->next) {
  				if (s)
@@ -554,7 +555,8 @@ Index: asterisk-1.4.29/apps/app_queue.c
 -						(long) (now - qe->start) % 60, qe->prio, term);
 +						(long) (now - qe->start) % 60, qe->prio, qe->min_penalty, qe->max_penalty, term);
  				else
- 					ast_cli(fd, "      %d. %s (wait: %ld:%2.2ld, prio: %d)%s", pos++,
+-					ast_cli(fd, "      %d. %s (wait: %ld:%2.2ld, prio: %d)%s", pos++,
++					ast_cli(fd, "      %d. %s (wait: %ld:%2.2ld, prio: %d, minpenalty: %d, maxpenalty: %d)%s", pos++,
  						qe->chan->name, (long) (now - qe->start) / 60,
 -						(long) (now - qe->start) % 60, qe->prio, term);
 +						(long) (now - qe->start) % 60, qe->prio, qe->min_penalty, qe->max_penalty, term);
