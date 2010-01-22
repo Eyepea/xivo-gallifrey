@@ -62,6 +62,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/jscolor/jscolor.js');
 		break;
 
 	case 'edit':
@@ -96,6 +97,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/jscolor/jscolor.js');
 		break;
 
 	case 'delete':
@@ -144,8 +146,7 @@ switch($act)
 		$info = array();
 
 		$app = &$ipbx->get_application('ctistatus');
-		$raw_status_list = $app->get_status_list();
-		#$info['access_status']['info'] = $app->get();
+		$raw_status_list = $app->get_status_list($idpresences);
 
 		$status_list = array();
 		foreach($raw_status_list as $k => $sl)
@@ -209,7 +210,7 @@ switch($act)
 ////////////////////////////////////////////////////////////////
 
 		$info['access_status']['slt'] = array();
-		if(($info['access_status']['list'] = $app->get_status_list(null, null, null, true)) !== false)
+		if(($info['access_status']['list'] = $app->get_status_list($idpresences, null, null, true)) !== false)
 		{
 			if(isset($info['status']['access_status']) && dwho_has_len($info['status']['access_status']))
 			{
@@ -242,13 +243,14 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/jscolor/jscolor.js');
 		break;
 
 	case 'addstatus':
 		$param['act'] = 'liststatus';
 
 		$app = &$ipbx->get_application('ctistatus');
-		$raw_status_list = $app->get_status_list();
+		$raw_status_list = $app->get_status_list($idpresences);
 		#$info['access_status']['info'] = $app->get();
 
 		$result = $fm_save = null;
@@ -298,7 +300,7 @@ switch($act)
 ////////////////////////////////////////////////////////////////
 
 		$info['access_status']['slt'] = array();
-		if(($info['access_status']['list'] = $app->get_status_list(null, null, null, true)) !== false)
+		if(($info['access_status']['list'] = $app->get_status_list($idpresences, null, null, true)) !== false)
 		{
 			if(isset($info['status']['access_status']) && dwho_has_len($info['status']['access_status']))
 			{
@@ -321,6 +323,7 @@ switch($act)
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/jscolor/jscolor.js');
 		break;
 
 	case 'deletestatus':
