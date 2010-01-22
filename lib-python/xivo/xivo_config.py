@@ -545,6 +545,14 @@ def ip_in_network(ipv4, net, netmask):
     return (net == other_net), other_net
 
 
+def domain_label(nstr, schema):
+    """
+    !~domain_label
+        Return True if the document string is a domain label, else False
+    """
+    return network.DomainLabelOk(nstr) and len(nstr) <= 63
+
+
 def search_domain(nstr, schema):
     """
     !~search_domain
@@ -805,6 +813,7 @@ def plausible_configuration(conf, schema):
     return True
 
 
+xys.add_validator(domain_label, u'!!str')
 xys.add_validator(search_domain, u'!!str')
 xys.add_validator(ipv4_address, u'!!str')
 xys.add_validator(ipv4_address_or_domain, u'!!str')
