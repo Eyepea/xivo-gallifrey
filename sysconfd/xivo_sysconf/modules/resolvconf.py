@@ -28,7 +28,6 @@ import logging
 
 from time import time
 from shutil import copy2
-from ConfigParser import ConfigParser
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
@@ -44,9 +43,73 @@ log = logging.getLogger('xivo_sysconf.modules.resolvconf') # pylint: disable-msg
 
 RESOLVCONFLOCK          = RWLock()
 
-Rcc =   {'resolvconf_file':     os.path.join(os.path.sep, 'etc', 'resolv.conf'),
+Rcc =   {'hostname_file':       os.path.join(os.path.sep, 'etc', 'hostname'),
+         'hostname_tpl_file':   os.path.join('resolvconf', 'hostname'),
+         'resolvconf_file':     os.path.join(os.path.sep, 'etc', 'resolv.conf'),
          'resolvconf_tpl_file': os.path.join('resolvconf', 'resolv.conf'),
          'lock_timeout':        60}
+
+
+def _write_config_file(optname, xvars):
+    backupfilename = None
+
+    if not os.path.isdir(Rcc["%s_backup_path" % optname]):
+        os.makedirs(Rcc["%s_backup_path" % optname])
+
+    if os.access(Rcc["%s_file" % optname], os.R_OK):
+        backupfilename = "%s.%d" % (Rcc["%s_backup_file" % optname], time())
+        copy2(Rcc["%s_file" % optname], backupfilename)
+
+    if os.access(Rcc["%s_custom_tpl_file" % optname], (os.F_OK | os.R_OK)):
+        filename = Rcc["%s_custom_tpl_file" % optname]
+    else:
+        filename = Rcc["%s_tpl_file" % optname]
+
+    template_file = open(filename)
+    template_lines = template_file.readlines()
+    template_file.close()
+
+    txt = txtsubst(template_lines,
+                   xvars,
+                   Rcc["%s_file" % optname],
+                   'utf8')
+
+    system.file_writelines_flush_sync(Rcc["%s_file"] % optname, txt)
+
+    return backupfilename
+
+
+HOSTNAME_SCHEMA = xys.load("""
+hostname:   !~domain_label
+""")
+
+def HostName(args, options):    # pylint: disable-msg=W0613
+    """
+    POST /hostname
+
+    >>> hostname({'hostname': 'xivo'})
+    """
+
+    if not xys.validate(args, HOSTNAME_SCHEMA):
+        raise HttpReqError(415, "invalid arguments for command")
+
+    if not os.access(Rcc['hostname_path'], (os.X_OK | os.W_OK)):
+        raise HttpReqError(415, "path not found or not writable or not executable: %r" % Rcc['hostname_path'])
+
+    if not RESOLVCONFLOCK.acquire_read(Rcc['lock_timeout']):
+        raise HttpReqError(503, "unable to take RESOLVCONFLOCK for reading after %s seconds" % Rcc['lock_timeout'])
+
+    try:
+        try:
+            hostnamebakfile = _write_config_file('hostname',
+                                                 {'_XIVO_HOSTNAME': args['hostname']})
+            return True
+        except Exception, e:
+            if hostnamebakfile:
+                copy2(hostnamebakfile, Rcc['hostname_file'])
+            raise e.__class__(str(e))
+    finally:
+        RESOLVCONFLOCK.release()
 
 
 RESOLVCONF_SCHEMA = xys.load("""
@@ -106,33 +169,10 @@ def ResolvConf(args, options):    # pylint: disable-msg=W0613
     if not RESOLVCONFLOCK.acquire_read(Rcc['lock_timeout']):
         raise HttpReqError(503, "unable to take RESOLVCONFLOCK for reading after %s seconds" % Rcc['lock_timeout'])
 
-    resolvconfbakfile = None
-
     try:
         try:
-            if not os.path.isdir(Rcc['resolvconf_backup_path']):
-                os.makedirs(Rcc['resolvconf_backup_path'])
-
-            if os.access(Rcc['resolvconf_file'], os.R_OK):
-                resolvconfbakfile = "%s.%d" % (Rcc['resolvconf_backup_file'], time())
-                copy2(Rcc['resolvconf_file'], resolvconfbakfile)
-
-            if os.access(Rcc['resolvconf_custom_tpl_file'], (os.F_OK | os.R_OK)):
-                filename = Rcc['resolvconf_custom_tpl_file']
-            else:
-                filename = Rcc['resolvconf_tpl_file']
-
-            template_file = open(filename)
-            template_lines = template_file.readlines()
-            template_file.close()
-
-            txt = txtsubst(template_lines,
-                           _resolv_conf_variables(args),
-                           Rcc['resolvconf_file'],
-                           'utf8')
-
-            system.file_writelines_flush_sync(Rcc['resolvconf_file'], txt)
-
+            resolvconfbakfile = _write_config_file('resolvconf',
+                                                   _resolv_conf_variables(args))
             return True
         except Exception, e:
             if resolvconfbakfile:
@@ -155,19 +195,24 @@ def safe_init(options):
         if cfg.has_option('resolvconf', 'lock_timeout'):
             Rcc['lock_timeout'] = cfg.getfloat('resolvconf', 'lock_timeout')
 
+        if cfg.has_option('resolvconf', 'hostname_file'):
+            Rcc['hostname_file'] = cfg.get('resolvconf', 'hostname_file')
+
         if cfg.has_option('resolvconf', 'resolvconf_file'):
             Rcc['resolvconf_file'] = cfg.get('resolvconf', 'resolvconf_file')
 
-    Rcc['resolvconf_tpl_file'] = os.path.join(tpl_path,
-                                              Rcc['resolvconf_tpl_file'])
+    for optname in ('hostname', 'resolvconf'):
+        Rcc["%s_tpl_file" % optname] = os.path.join(tpl_path,
+                                                    Rcc["%s_tpl_file" % optname])
 
-    Rcc['resolvconf_custom_tpl_file'] = os.path.join(custom_tpl_path,
-                                                     Rcc['resolvconf_tpl_file'])
+        Rcc["%s_custom_tpl_file" % optname] = os.path.join(custom_tpl_path,
+                                                           Rcc["%s_tpl_file" % optname])
 
-    Rcc['resolvconf_path'] = os.path.dirname(Rcc['resolvconf_file'])
-    Rcc['resolvconf_backup_file'] = os.path.join(backup_path,
-                                                 Rcc['resolvconf_file'].lstrip(os.path.sep))
-    Rcc['resolvconf_backup_path'] = os.path.join(backup_path,
-                                                 Rcc['resolvconf_path'].lstrip(os.path.sep))
+        Rcc["%s_path" % optname] = os.path.dirname(Rcc["%s_file" % optname])
+        Rcc["%s_backup_file" % optname] = os.path.join(backup_path,
+                                                       Rcc["%s_file" % optname].lstrip(os.path.sep))
+        Rcc["%s_backup_path" % optname] = os.path.join(backup_path,
+                                                       Rcc["%s_path" % optname].lstrip(os.path.sep))
 
-http_json_server.register(ResolvConf, CMD_RW, safe_init=safe_init, name='resolv_conf')
+http_json_server.register(HostName, CMD_RW, safe_init=safe_init, name='hostname')
+http_json_server.register(ResolvConf, CMD_RW, name='resolv_conf')

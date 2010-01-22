@@ -142,12 +142,12 @@ class Packages:
         if not PACKAGESLOCK.acquire_read(PACKAGES_LOCK_TIMEOUT):
             raise HttpReqError(503, "unable to take PACKAGESLOCK for reading after %s seconds" % PACKAGES_LOCK_TIMEOUT)
 
-        ret = {'base': {}}
+        ret = {}
 
         try:
             for level in self.opts['level']:
-                ret['base'][level] = {}
-                ref = ret['base'][level]
+                ret[level] = {}
+                ref = ret[level]
 
                 for pkgname in PACKAGES_LIST[self.reqpkg][level]:
                     ref[pkgname] = self._get_package_info(pkgname)

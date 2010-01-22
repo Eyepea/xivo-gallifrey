@@ -177,7 +177,6 @@ class NetworkConfig(dumbnet.intf):
 
             gwstr = network.format_ipv4(network.parse_ipv4("%s" % d['gateway']))
 
-            log.info("######## toto: %r:%r ########", iface.get('gateway'), gwstr)
             if iface.get('gateway', None) != gwstr:
                 newgateway = dumbnet.addr("%s" % d['gateway'])
         # If d hasn't gateway but iface has a gateway, remove previous gateway.
@@ -279,7 +278,7 @@ class DNETIntf:
             raise HttpReqError(503, "unable to take self.LOCK for reading after %s seconds" % self.CONFIG['lock_timeout'])
 
         try:
-            return dict((address, function(address)) for address in addresses)
+            return dict((str(address), function(address)) for address in addresses)
         finally:
             self.LOCK.release()
 

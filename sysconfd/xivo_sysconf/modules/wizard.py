@@ -164,7 +164,7 @@ def asterisk_mysql_config(authority, database, params, options):
 
 def set_db_backends(args, options): # pylint: disable-msg=W0613
     """
-    POST /db_backend
+    POST /set_db_backends
     """
     if 'xivo' not in args:
         raise HttpReqError(415, "missing option 'xivo'")
