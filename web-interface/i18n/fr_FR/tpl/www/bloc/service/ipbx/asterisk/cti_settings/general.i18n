@@ -1,0 +1,119 @@
+; title_content_name
+Configuration CTI
+
+; smenu_cti_general
+Options générales
+
+; smenu_cti_presence
+Présences
+
+; smenu_cti_phonehints
+(phone hints)
+
+; smenu_cti_profiles
+Profils
+
+; fm_bt-save
+Enregistrer
+
+; fm_cti_list_ip
+Adresses IP
+
+; fm_cti_list_port
+Ports réseau
+
+; fm_cti_commandset
+Jeu de commandes :
+
+; hlp_fm_cti_commandset
+aide jeu de commandes
+
+; fm_cti_fagi_ip
+Fast AGI :
+
+; hlp_fm_cti_fagi_ip
+aide fast agi
+
+; fm_cti_fagi_port
+- 
+
+; hlp_fm_cti_fagi_port
+aide port fast agi
+
+; fm_cti_cti_ip
+CTI :
+
+; hlp_fm_cti_cti_ip
+aide IP cti
+
+; fm_cti_cti_port
+-
+
+; hlp_fm_cti_cti_port
+aide port cti
+
+; fm_cti_webi_ip
+Interface Web :
+
+; hlp_fm_cti_webi_ip
+aide adresse webint
+
+; fm_cti_webi_port
+-
+
+; hlp_fm_cti_webi_port
+aide port webint
+
+; fm_cti_info_ip
+Serveur d'information :
+
+; hlp_fm_cti_info_ip
+aide adresse info
+
+; fm_cti_info_port
+-
+
+; hlp_fm_cti_info_port
+aide port info
+
+; fm_cti_announce_ip
+Serveur d'annonces :
+
+; hlp_fm_cti_announce_ip
+aide adresse annonce
+
+; fm_cti_annouce_port
+-
+
+; hlp_fm_cti_announce_port
+aide port annonce
+
+; fm_cti_asterisklist
+Choix du serveur Asterisk :
+
+; hlp_fm_cti_asterisklist
+aide choix serveur asterisk
+
+; fm_cti_updates_period
+Intervalle de mise à jour :
+
+; hlp_fm_cti_updates_period
+aide intervalle màj
+
+; fm_cti_socket_timeout
+Délai d'expiration du socket :
+
+; hlp_fm_cti_socket_timeout
+aide délai exp socket
+
+; fm_cti_login_timeout
+Délai d'expiration à la connexion :
+
+; hlp_fm_cti_login_timeout
+aide délai exp login
+
+; fm_cti_parting_astid_context
+Séparation par contexte
+
+; fm_cti_parting_astid_ipbx
+Séparation par IPBX
