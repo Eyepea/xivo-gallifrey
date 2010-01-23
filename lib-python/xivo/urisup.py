@@ -80,6 +80,10 @@ AUTHORITY_HOST = 2
 AUTHORITY_PORT = 3
 
 def __all_in(s, charset):
+    if not isinstance(s, unicode):
+        s = str(s)
+    else:
+        s = s.encode('utf8')
     return not s.translate(BYTES_VAL, charset)
 
 def __split_sz(s, n):
@@ -221,6 +225,11 @@ def pct_decode(s):
     """
     if s is None:
         return None
+    elif not isinstance(s, unicode):
+        s = str(s)
+    else:
+        s = s.encode('utf8')
+
     return PERCENT_CODE_SUB(lambda mo: chr(int(mo.group(0)[1:], 16)), s)
 
 def pct_encode(s, encdct):
@@ -236,6 +245,11 @@ def pct_encode(s, encdct):
     """
     if s is None:
         return None
+    elif not isinstance(s, unicode):
+        s = str(s)
+    else:
+        s = s.encode('utf8')
+
     return ''.join(map(encdct.__getitem__, s))
 
 def query_elt_decode(s):
@@ -584,6 +598,8 @@ def uri_tree_encode(uri_tree, type_host = HOST_REG_NAME):
             passwd = pct_encode(passwd, PASSWD_ENCDCT)
         if host and type_host == HOST_REG_NAME:
             host = pct_encode(host, REG_NAME_ENCDCT)
+        if isinstance(port, (int, long)):
+            port = str(port)
         authority = (user, passwd, host, port)
     if path:
         path = pct_encode(path, P_ENCDCT)
