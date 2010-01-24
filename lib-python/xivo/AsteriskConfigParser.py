@@ -18,7 +18,7 @@ __license__ = """
 
 import re
 from xivo import OrderedConf
-from xivo.OrderedConf import SECTCRE, ParsingError, MissingSectionHeaderError
+from xivo.OrderedConf import SECTCRE, Error, NoSectionError, ParsingError, MissingSectionHeaderError
 
 DIRECRE = re.compile(
     r'(?P<directive>#(?:(?i)exec|include))'
@@ -32,6 +32,15 @@ OPTCRE = re.compile(
                                         # by any # space/tab
     r'(?P<value>.*)$'                   # everything up to eol
     )
+
+
+class InvalidDirectiveError(Error):
+    """Raised when a directive is invalid."""
+
+    def __init__(self, directive):
+        Error.__init__(self, "Directive %r is invalid" % directive)
+        self.directive = directive
+
 
 class AsteriskConfigParser(OrderedConf.OrderedRawConf):
     """
@@ -109,9 +118,37 @@ class AsteriskConfigParser(OrderedConf.OrderedRawConf):
         if e:
             raise e
 
+    def directives(self):
+        """
+        Return the list of directives in top-level
+        """
+        return self._directives
+
+    def add_directive(self, name, path):
+        """
+        Append the given directive in top-level
+        """
+        if name not in ('exec', 'include'):
+            raise InvalidDirectiveError(name)
+
+        self._directives.append("#%s" % name, path)
+
+    def append(self, section, option, value):
+        """
+        Append the given option
+        """
+        tsec = self.sect_trans(section)
+        try:
+            s = self._sections[1][tsec]
+        except KeyError:
+            raise NoSectionError(section)
+        topt = self.opt_trans(option)
+        s[0].append((option, value))
+        s[1][topt] = value
+
     def write(self, fp):
         """
-        write the configuration state
+        Write the configuration state
         """
         for directive in self._directives:
             fp.write("%s %s" % directive)
