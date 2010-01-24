@@ -529,43 +529,43 @@ md5sum: e4a028682b2d2d0ba805b90e69e6868f
 sha1sum: b9b38d6b4441f0324cc06ae53257f23704192de9
 
 # Yealink T22
-[yealinkt22_741]
+[yealinkt22_742]
 brand: Yealink
 model: T22
-version: 7.41.0.10
-files: 7.41.0.10.rom
+version: 7.42.0.30
+files: 7.42.0.30.rom
 
-[7.41.0.10.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20Professional%20IP%20Phone%20SIP-T22P%20firmware%20V1.4.1.zip
-size: 5684193
-md5sum: c07ba7df5c678edd2bcc6ef1b7f92664
-sha1sum: 20c1e3bde9a731bb949d4e92e33ddc21a8b5785d
+[7.42.0.30.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V42%20Firmware-7.42.0.30.zip
+size: 5808638
+md5sum: 215393806c50cb31ea1061ff40313ffe
+sha1sum: 7239e19856f431be08d21fd9d5eaca6e93e63227
 
 # Yealink T26
-[yealinkt26_641]
+[yealinkt26_642]
 brand: Yealink
 model: T26
-version: 6.41.0.10
-files: 6.41.0.10.rom
+version: 6.42.0.30
+files: 6.42.0.30.rom
 
-[6.41.0.10.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20Advanced%20IP%20Phone%20SIP-T26P%20firmware%20V1.4.1.zip
-size: 5680792
-md5sum: e3d257e83c538e0c3a3dd762252a3ac8
-sha1sum: 2669a4c4ad3f0730fb7483516a1695fa639b0c92
+[6.42.0.30.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V42%20Firmware-6.42.0.30.zip
+size: 5739006
+md5sum: e0f2a87fc86cb5adad8fdd9c24c7af73
+sha1sum: ba2bd1737206580c9dc69c37fb05521cee50a24b
 
 # Yealink T28
-[yealinkt28_241]
+[yealinkt28_242]
 brand: Yealink
 model: T28
-version: 2.41.0.60
-files: 2.41.0.60.rom
+version: 2.42.0.50
+files: 2.42.0.50.rom
 
-[2.41.0.60.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20Executive%20IP%20Phone%20SIP-T28P%20firmware%20V1.4.1.zip
-size: 6206900
-md5sum: de6b7976265cd2eaa9027cf2f976a0a1
-sha1sum: fc7b8a49bd2febd8281079ebdd515a78d98269a2
+[2.42.0.50.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V42%20Firmware-2.42.0.50.zip
+size: 6181374
+md5sum: a59a098efa1dba9a31970ae61c5c9b70
+sha1sum: 77e3e8d3f61c7c5f95ceb5951331053b6a5a0789
 
 ###
 ### Cards Firmwares starting from here ###
