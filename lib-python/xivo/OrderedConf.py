@@ -9,6 +9,7 @@ A setup file consists of sections, lead by a "[section]" header,
 and followed by "name: value" entries, with continuations and such in
 the style of RFC 822.
 
+BUGBUG XXX TODO: update doc
 Unlike the ConfigParser module, this one can't contain format strings refering
 to other values.  Also you can't load multiple files, modify the parsed parsed
 configuration, or write it back in a config file.  Multiple sections with the
@@ -34,7 +35,8 @@ iterators described in the classes PyDoc):
   elements of the returned list are in the output set of 'sect_trans'.  The
   same element can't be seen two times in the returned list.
 
-* add_section(section) is not available.
+* add_section(section): Create a new section at the end of the configuration.
+  'sect_trans' is applied to test if section already exists.
 
 * has_section(section): the 'sect_trans' function used at instantiation is used
   on the section parameter before any lookup.
@@ -69,9 +71,10 @@ iterators described in the classes PyDoc):
   the result of 'opt_trans' is the same, only the first one seen in the file
   order is returned.
 
-* set(section, option, value) is not available.
+* set(section, option, value): set the given option, only usable if allow_multiple == False.
+  'sect_trans' is applied on 'section' and 'opt_trans' on 'option' before set the option.
 
-* write(fileobject) is not available.
+* write(fp): write the configuration state in .ini format.
 
 * remove_option(section, option) is not available.
 
@@ -150,6 +153,22 @@ def _id1(x):
     Identity
     """
     return x
+
+
+class DuplicateOptionError(Error):
+    """Raised when an option is multiply-created while this is not allowed."""
+
+    def __init__(self, option):
+        Error.__init__(self, "Option %r already exists" % option)
+        self.option = option
+
+
+class IncompatibleError(Error):
+    """Raised when invoking forbidden methods on instances with incompatible options."""
+
+    def __init__(self, what):
+        Error.__init__(self, "Incompatible: %r" % what)
+        self.what = what
 
 
 class AlreadyLoadedError(Error):
@@ -399,7 +418,7 @@ class OrderedRawConf:
     provides a new API specialy designed to retrieve ordered entities in
     various pythonic ways :)
     """
-    def __init__(self, fp = None, filename = None, sect_trans=_id1, opt_trans=_id1):
+    def __init__(self, fp = None, filename = None, sect_trans=_id1, opt_trans=_id1, allow_multiple=True):
         """
         The constructor can optionally parse an open file or open and
         parse a file using its filename.  You can also provide it
@@ -432,14 +451,19 @@ class OrderedRawConf:
           special character, performing multiple charset detection and
           translation or performing other forms of canonicalization.
 
-        - 'opt_trans' does the same thing as 'sect_trans' is for similar
-          use, but is the function to be applied to option names instead
-          of section names.
+        - 'opt_trans' does for option names what 'sect_trans' does for
+          section names.
+
+        - You can set 'allow_multiple' to False if you don't want to
+          allow multiple occurrences of the same sections, or options
+          within a given section.  'sect_trans' and 'opt_trans' are
+          applied when testing for this condition.
         """
         self._sections = ([], {})
         self.loaded_filename = None
         self.sect_trans = sect_trans
         self.opt_trans = opt_trans
+        self.allow_multiple = allow_multiple
         auto_open = False
         if (not fp) and filename:
             auto_open = True
@@ -459,6 +483,23 @@ class OrderedRawConf:
         name exists.
         """
         return self._sections[1].keys()
+
+    def add_section(self, section):
+        """
+        OLD API FOR RawConfigParser COMPATIBILITY -  but rather quite
+        safe.
+
+        Create a new section at the end of the configuration.
+
+        Raise DuplicateSectionError if a section by the specified name
+        already exists.
+        """
+        tsec = self.sect_trans(section)
+        if tsec in self._sections[1]:
+            raise DuplicateSectionError(section)
+        newopt = ([], {})
+        self._sections[0].append((section, newopt))
+        self._sections[1][tsec] = newopt
 
     def ordered_sections(self):
         """
@@ -612,6 +653,43 @@ class OrderedRawConf:
         if sec not in self._sections[1]:
             return False
         return self.opt_trans(option) in self._sections[1][sec][1]
+
+    def set(self, section, option, value):
+        """
+        set the given option, only usable if allow_multiple == False
+        Slow
+        """
+        if self.allow_multiple:
+            raise IncompatibleError('allow_multiple')
+        tsec = self.sect_trans(section)
+        try:
+            s = self._sections[1][tsec]
+        except KeyError:
+            raise NoSectionError(section)
+        topt = self.opt_trans(option)
+        if topt not in s[1]:
+            s[1][topt] = value
+            s[0].append((option, value))
+        else:
+            for p, (k, v) in enumerate(s[0]):
+                if k == option:
+                    break
+            else:
+                raise NoOptionError(option)
+            s[0][p] = (option, value)
+            s[1][topt] = value
+
+    def write(self, fp):
+        """
+        OLD API
+
+        Write an .ini-format representation of the configuration state.
+        """
+        for s in self._sections[0]:
+            fp.write("[%s]\n" % s[0])
+            for k, v in s[1][0]:
+                fp.write("%s = %s\n" % (k, str(v).replace('\n', '\n\t')))
+            fp.write("\n")
 
     def has_conflicting_section_names(self):
         """
@@ -887,6 +965,8 @@ class OrderedRawConf:
                 cur_sect = newopt
                 if tsec not in self._sections[1]:
                     self._sections[1][tsec] = newopt
+                elif not self.allow_multiple:
+                    raise DuplicateSectionError(sectname)
                 cur_opt = None
                 cur_dict_opt = None
                 continue
@@ -911,6 +991,8 @@ class OrderedRawConf:
                     cur_dict_opt = topt
                     cur_sect[1][topt] = optval
                 else:
+                    if not self.allow_multiple:
+                        raise DuplicateOptionError(optname)
                     cur_dict_opt = None
                 continue
             if not e:
