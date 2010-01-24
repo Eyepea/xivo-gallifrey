@@ -1,87 +1,87 @@
-# Aastra 6730i 2.5.2
-[aa6730i_252]
+# Aastra 6730i 2.5.3
+[aa6730i_253]
 brand: Aastra
 model: 6730i
-version: 2.5.2
-files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6730i_FC-001240-02-REV05_sr_2.5.2.1010_0909.zip
+version: 2.5.3.18
+files: LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip
 
-[6730i_FC-001240-02-REV05_sr_2.5.2.1010_0909.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6730i_FC-001240-02-REV05_sr_2.5.2.1010_0909.zip
-size: 1987542
-md5sum: 050d49028fb6ec51ba5c079c2d794926
-sha1sum: f22444cab69050f8b49d75078ef382a66dc5288e
+[6730i_FC-001240-02-REV07_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/6730i_FC-001240-02-REV07_2.5.3.18_1001.zip
+size: 1988576
+md5sum: 44148264b699f090afc25e681504614f
+sha1sum: 0a3e8928741a97e2d0bfe9e063fa5b7ecd850626
 
-# Aastra 6731i 2.5.2
-[aa6731i_252]
+# Aastra 6731i 2.5.3
+[aa6731i_253]
 brand: Aastra
 model: 6731i
-version: 2.5.2
-files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6731i_FC-001224-03-REV05_sr_2.5.2.1010_0909.zip
+version: 2.5.3.18
+files: LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip 6731i_FC-001224-03-REV07_2.5.3.18_1001.zip
 
-[6731i_FC-001224-03-REV05_sr_2.5.2.1010_0909.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6731i_FC-001224-03-REV05_sr_2.5.2.1010_0909.zip
-size: 1982872
-md5sum: dff45a9a8567dc297add992230c66a9f
-sha1sum: 2e6a27014ce428d69ceadf6d39315fafc9dc5173
+[6731i_FC-001224-03-REV07_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/6731i_FC-001224-03-REV07_2.5.3.18_1001.zip
+size: 1991182
+md5sum: a1ab29d6f554307509b9e73fb1371dff
+sha1sum: 0a4ca2922e1d8c27c8e28c65eae87dcf5fa555c4
 
-# Aastra 6751i 2.5.2
-[aa6751i_252]
+# Aastra 6751i 2.5.3
+[aa6751i_253]
 brand: Aastra
 model: 6751i
-version: 2.5.2
-files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6751i_FC-001126-05-REV05_sr_2.5.2.1010_0909.zip
+version: 2.5.3.18
+files: LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip 6751i_FC-001126-05-REV07_2.5.3.18_1001.zip
 
-[6751i_FC-001126-05-REV05_sr_2.5.2.1010_0909.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6751i_FC-001126-05-REV05_sr_2.5.2.1010_0909.zip
-size: 1927399
-md5sum: 095a0f74d620f088feb52c625a6fc65f
-sha1sum: 8a3472573704c5e94ee64e590d38441f0d294bc9
+[6751i_FC-001126-05-REV07_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/6751i_FC-001126-05-REV07_2.5.3.18_1001.zip
+size: 1934193
+md5sum: 3dfc7876089eafe3176675b3ea7d97c6
+sha1sum: 324d70b20454b473629944f33c37e0c82c498848
 
-# Aastra 6753i 2.5.2
+# Aastra 6753i 2.5.3
 [aa6753i_252]
 brand: Aastra
 model: 6753i
-version: 2.5.2
-files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6753i_FC-001086-09-REV05_sr_2.5.2.1010_0909.zip
+version: 2.5.3.18
+files: LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip 6753i_FC-001086-09-REV07_2.5.3.18_1001.zip
 
-[6753i_FC-001086-09-REV05_sr_2.5.2.1010_0909.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6753i_FC-001086-09-REV05_sr_2.5.2.1010_0909.zip
-size: 2874925
-md5sum: 91fe7b374685138291b168536052697b
-sha1sum: 3fa7ecde7c6d89b8f9e5c5994299d0b49194e6e2
+[6753i_FC-001086-09-REV07_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/6753i_FC-001086-09-REV07_2.5.3.18_1001.zip
+size: 2883363
+md5sum: 3dff8c1e9e52ffa2f019f7552ee28197
+sha1sum: ec67a329c03e55166dd78eaefb3df0d26dd7a320
 
-# Aastra 6755i 2.5.2
+# Aastra 6755i 2.5.3
 [aa6755i_252]
 brand: Aastra
 model: 6755i
-version: 2.5.2
-files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6755i_FC-001087-10-REV05_sr_2.5.2.1010_0909.zip
+version: 2.5.3.18
+files: LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip 6755i_FC-001087-10-REV07_2.5.3.18_1001.zip
 
-[6755i_FC-001087-10-REV05_sr_2.5.2.1010_0909.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6755i_FC-001087-10-REV05_sr_2.5.2.1010_0909.zip
-size: 2908422
-md5sum: 47321c7e01554937fd32ae76d82c0cc1
-sha1sum: 1e031b391aa81716340564ec37be51417c68394e
+[6755i_FC-001087-10-REV07_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/6755i_FC-001087-10-REV07_2.5.3.18_1001.zip
+size: 2917238
+md5sum: 6ab1408aa4c30fe22a0af5b4f08e583b
+sha1sum: 0d8fcf8b17fd995559898a2c2875eea7ecdd931f
 
-# Aastra 6757i 2.5.2
+# Aastra 6757i 2.5.3
 [aa6757i_252]
 brand: Aastra
 model: 6757i
-version: 2.5.2
-files: LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip 6757i_FC-001088-09-REV05_sr_2.5.2.1010_0909.zip
+version: 2.5.3.18
+files: LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip 6757i_FC-001088-09-REV07_2.5.3.18_1001.zip
 
-[6757i_FC-001088-09-REV05_sr_2.5.2.1010_0909.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/6757i_FC-001088-09-REV05_sr_2.5.2.1010_0909.zip
-size: 2908198
-md5sum: b954bb42ea9d761d752a78d184e943a8
-sha1sum: fa2f8093c6dbbfe413932ad8d20c82facd3d366c
+[6757i_FC-001088-09-REV07_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/6757i_FC-001088-09-REV07_2.5.3.18_1001.zip
+size: 2917850
+md5sum: 019ba92d4c1f19cdb55ebcc6cb221b35
+sha1sum: 5d8f067c204c397fd7f17b78c9062b449fa0396a
 
 # Common files for Aastra phones
-[LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-86A42371/04/LangPacks_PA-001006-03-REV02_lp_2.5.2.30_0908.zip
-size: 128954
-md5sum: ec1b6f9cf8de3614ac87e84597c3f6d1
-sha1sum: 936dddcab38162ebb1aa942040d15c37f7641f77
+[LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/LangPacksPA-001006-03-REV05_lp_2.5.3.18_1001.zip
+size: 124633
+md5sum: c3074d42e419d7bdc817daf4865ff0e9
+sha1sum: c13accdcf4b414140252d3b6c3a691e637bf0692
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]
