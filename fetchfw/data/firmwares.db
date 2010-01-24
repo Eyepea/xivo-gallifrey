@@ -537,9 +537,9 @@ files: 7.42.0.30.rom
 
 [7.42.0.30.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V42%20Firmware-7.42.0.30.zip
-size: 5808638
-md5sum: 215393806c50cb31ea1061ff40313ffe
-sha1sum: 7239e19856f431be08d21fd9d5eaca6e93e63227
+size: 5786394
+md5sum: 957dad39e97d98b3fdcff0d1301cdfed
+sha1sum: 62b2718ab7ac7bd78ad47f4c86e84a1633bf35f5
 
 # Yealink T26
 [yealinkt26_642]
@@ -550,9 +550,9 @@ files: 6.42.0.30.rom
 
 [6.42.0.30.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V42%20Firmware-6.42.0.30.zip
-size: 5739006
-md5sum: e0f2a87fc86cb5adad8fdd9c24c7af73
-sha1sum: ba2bd1737206580c9dc69c37fb05521cee50a24b
+size: 5719455
+md5sum: 59393bbf057e1c6e6d9dcacba9269fa4
+sha1sum: 21a315795d5869830d99d3720af422987de9c0b4
 
 # Yealink T28
 [yealinkt28_242]
@@ -563,9 +563,9 @@ files: 2.42.0.50.rom
 
 [2.42.0.50.rom]
 url: http://www.yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V42%20Firmware-2.42.0.50.zip
-size: 6181374
-md5sum: a59a098efa1dba9a31970ae61c5c9b70
-sha1sum: 77e3e8d3f61c7c5f95ceb5951331053b6a5a0789
+size: 6156248
+md5sum: 61d4e1114b7e52a0831dc263691bde3e
+sha1sum: 32ae3af6360963649d1889e519f2e0a371a4fd57
 
 ###
 ### Cards Firmwares starting from here ###

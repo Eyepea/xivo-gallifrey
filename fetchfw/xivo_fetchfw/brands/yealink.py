@@ -22,15 +22,15 @@ from xivo_fetchfw import fetchfw
 
 FW_PATHS = {
     'T28': {
-        '2.42.0.50': '2.42.0.50.rom'
+        '2.42.0.50': 'Yealink SIP-T28(P) V42 Firmware-2.42.0.50.rom'
     },
 
     'T26': {
-        '6.42.0.30': '6.42.0.30.rom'
+        '6.42.0.30': 'Yealink SIP-T26(P) V42 Firmware-6.42.0.30.rom'
     },
 
     'T22': {
-        '7.42.0.30': '7.42.0.30.rom'
+        '7.42.0.30': 'Yealink SIP-T22(P) V42 Firmware-7.42.0.30.rom'
     },
 
     'T20': {
@@ -41,8 +41,8 @@ FW_PATHS = {
 
 def yealink_install_fw(firmware, xfile):
     zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
-    fw_file_tmp = xfile.filename
     fw_file = FW_PATHS[firmware.model][firmware.version]
+    fw_file_tmp = xfile.filename
     fw_src_path = os.path.join(zip_path, fw_file_tmp)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Yealink')
     fw_dst_path = os.path.join(fw_dst_dir, fw_file)
