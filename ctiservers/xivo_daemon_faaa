@@ -121,21 +121,20 @@ BUFSIZE_ANY = 512
 XIVO_CLI_WEBI_HEADER = 'XIVO-CLI-WEBI'
 XIVOVERSION = '1.1'
 
-
-
 class manage_connection:
     ## \brief Deals with requests from the UI clients.
     # \param connid connection identifier
     # \param msg message to process
     # \param sep separator to split the message
     # \return none
-    def manage_cti_connections(connid, msg, sep):
+    @staticmethod
+    def manage_cti_connections(daemon, connid, msg, sep):
             """
             Handles CTI connections.
             """
             requester = '%s:%d' % connid.getpeername()
-            if requester in commandclass.transfers_ref:
-                    commandclass.transfer_addbuf(requester, msg)
+            if requester in daemon.commandclass.transfers_ref:
+                    daemon.commandclass.transfer_addbuf(requester, msg)
                     return
             
             multimsg = msg.split(sep)
@@ -144,20 +143,20 @@ class manage_connection:
                     usefulmsg = usefulmsgpart.split('\r')[0]
                     if len(usefulmsg) == 0:
                             break
-                    command = commandclass.parsecommand(usefulmsg)
-                    if command.name in commandclass.get_list_commands():
+                    command = daemon.commandclass.parsecommand(usefulmsg)
+                    if command.name in daemon.commandclass.get_list_commands():
                             try:
                                     if command.type in [xivo_commandsets.CMD_LOGIN_ID,
                                                         xivo_commandsets.CMD_LOGIN_PASS,
                                                         xivo_commandsets.CMD_LOGIN_CAPAS]:
                                             # log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
-                                            loginparams = commandclass.get_login_params(command, self.asterisklist[0], connid)
+                                            loginparams = daemon.commandclass.get_login_params(command, daemon.asterisklist[0], connid)
                                             # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
-                                            uinfo = commandclass.manage_login(loginparams, command.type, userinfo_current.get(connid))
+                                            uinfo = daemon.commandclass.manage_login(loginparams, command.type, daemon.userinfo_current.get(connid))
                                             # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
                                             
                                             if isinstance(uinfo, str):
-                                                    commandclass.loginko(loginparams, uinfo, connid)
+                                                    daemon.commandclass.loginko(loginparams, uinfo, connid)
                                                     log.info('TCP socket %s closed(loginko) on %s' % (self.fdlist_established[connid],
                                                                                                       '%s:%d' % connid.getpeername()))
                                                     del self.fdlist_established[connid]
@@ -165,18 +164,18 @@ class manage_connection:
                                             else:
                                                     if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
                                                             uinfo['login']['connection'] = connid
-                                                            userinfo_by_requester[connid] = uinfo
-                                                            if connid in userinfo_current:
-                                                                    del userinfo_current[connid]
+                                                            daemon.userinfo_by_requester[connid] = uinfo
+                                                            if connid in daemon.userinfo_current:
+                                                                    del daemon.userinfo_current[connid]
                                                     else:
-                                                            userinfo_current[connid] = uinfo
-                                                    commandclass.loginok(loginparams, uinfo, connid, command.type)
+                                                            daemon.userinfo_current[connid] = uinfo
+                                                    daemon.commandclass.loginok(loginparams, uinfo, connid, command.type)
                                     elif command.type == xivo_commandsets.CMD_TRANSFER:
                                             log.info('TRANSFER on %s : %s' % (requester, command.struct))
-                                            commandclass.transfer_addref(connid, command.struct)
+                                            daemon.commandclass.transfer_addref(connid, command.struct)
                                     else:
-                                            if connid in userinfo_by_requester:
-                                                    commandclass.manage_cticommand(userinfo_by_requester[connid],
+                                            if connid in daemon.userinfo_by_requester:
+                                                    daemon.commandclass.manage_cticommand(daemon.userinfo_by_requester[connid],
                                                                                    command)
                                             else:
                                                     log.warning('unlogged %s is attempting a %s (TCP) : %s'
@@ -191,7 +190,7 @@ class manage_connection:
     ## \brief Deals with requests from the UI clients.
     # \param connid connection identifier
     # \return none
-    def manage_webi_connections(connid, msg, sep):
+    def manage_webi_connections(daemon, connid, msg, sep):
             """
             Handles WEBI connections.
             """
@@ -214,7 +213,7 @@ class manage_connection:
                                              'xivo[agentlist,update]',
                                              'xivo[queuelist,update]',
                                              'xivo[grouplist,update]']:
-                                    update_userlist[astid] = True
+                                    self.update_userlist[astid] = True
                                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                             elif usefulmsg == 'xivo[daemon,reload]':
                                     self.askedtoquit = True
@@ -222,21 +221,21 @@ class manage_connection:
                             elif usefulmsg == 'xivo[ctiprofilelist,get]':
                                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                                     connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                    connid.sendall('%s\n' % commandclass.getprofilelist())
+                                    connid.sendall('%s\n' % daemon.commandclass.getprofilelist())
                                     connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                            elif astid in amilist.ami and amilist.ami[astid]:
+                            elif astid in self.amilist.ami and self.amilist.ami[astid]:
                                     stripped_usefulmsg = usefulmsg.strip()
                                     try:
                                             if stripped_usefulmsg == 'moh reload':
-                                                    commandclass.pre_moh_reload()
+                                                    daemon.commandclass.pre_moh_reload()
                                             elif stripped_usefulmsg == 'reload':
-                                                    commandclass.pre_reload()
+                                                    daemon.commandclass.pre_reload()
                                     except Exception:
                                             log.exception('(pre reloads (%s))' % stripped_usefulmsg)
                                             
                                     closemenow = False
                                     try:
-                                            actionid = amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
+                                            actionid = self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
                                             log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
                                                                                                            actionid, connid))
                                             waiting_actionid[actionid] = connid
@@ -255,7 +254,7 @@ class manage_connection:
     ## \brief Deals with requests from the UI clients.
     # \param connid connection identifier
     # \return none
-    def manage_info_connections(connid, msg, sep):
+    def manage_info_connections(daemon, connid, msg, sep):
             """
             Handles INFO connections (basic administration console,
             primarily aimed at displaying informations first).
@@ -301,7 +300,7 @@ class manage_connection:
                                     for helpline in helptxt:
                                             connid.sendall('%s\n' % helpline)
                             elif usefulmsg == 'show_infos':
-                                    time_uptime = int(time.time() - time.mktime(time_start))
+                                    time_uptime = int(time.time() - time.mktime(daemon.time_start))
                                     reply = 'infos=' \
                                             'xivo_version=%s;' \
                                             'server_version=%s;' \
@@ -309,8 +308,8 @@ class manage_connection:
                                             'commandset_version=%s;' \
                                             'uptime=%d s' \
                                             % (XIVOVERSION, __revision__,
-                                               commandclass.xdname,
-                                               commandclass.version(),
+                                               daemon.xdname,
+                                               daemon.commandclass.version(),
                                                time_uptime)
                                     connid.sendall(reply + '\n')
                                     # connid.sendall('server capabilities = %s\n' % (','.join()))
@@ -344,7 +343,7 @@ class manage_connection:
                                             else:
                                                     connid.sendall('unknown action <%s> for loglevel : try set or get\n' % action)
                             elif usefulmsg == 'show_users':
-                                    for user, info in commandclass.users().iteritems():
+                                    for user, info in daemon.commandclass.users().iteritems():
                                             try:
                                                     connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                                             except Exception:
@@ -354,7 +353,7 @@ class manage_connection:
                                                'show_incomingcalls', 'show_phonebook',
                                                'show_meetme', 'show_voicemail']:
                                     itemname = usefulmsg[5:]
-                                    for astid, itm in commandclass.getdetails(itemname).iteritems():
+                                    for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
                                             try:
                                                     connid.sendall('%s for %s\n' % (itemname, astid))
                                                     for id, idv in itm.keeplist.iteritems():
@@ -366,8 +365,8 @@ class manage_connection:
                                     if len(command_args) > 2:
                                             astid = command_args[1]
                                             varname = command_args[2]
-                                            if hasattr(commandclass, varname):
-                                                    tvar = getattr(commandclass, varname)
+                                            if hasattr(daemon.commandclass, varname):
+                                                    tvar = getattr(daemon.commandclass, varname)
                                                     if astid in tvar:
                                                             connid.sendall('%s on %s\n' % (varname, astid))
                                                             for ag, agp in tvar[astid].iteritems():
@@ -378,14 +377,14 @@ class manage_connection:
                                                     connid.sendall('no such variable %s\n' % varname)
                                     else:
                                             connid.sendall('first argument : astid value\n')
-                                            connid.sendall('second argument : one of %s\n' % commandclass.astid_vars)
+                                            connid.sendall('second argument : one of %s\n' % daemon.commandclass.astid_vars)
                             elif usefulmsg.startswith('show_varsizes '):
                                     command_args = usefulmsg.split()
                                     if len(command_args) > 1:
                                             astid = command_args[1]
-                                            for varname in commandclass.astid_vars:
-                                                    if hasattr(commandclass, varname):
-                                                            tvar = getattr(commandclass, varname)
+                                            for varname in daemon.commandclass.astid_vars:
+                                                    if hasattr(daemon.commandclass, varname):
+                                                            tvar = getattr(daemon.commandclass, varname)
                                                             if astid in tvar:
                                                                     connid.sendall('%s on %s: %d\n' % (varname, astid, len(tvar[astid])))
                                                             else:
@@ -395,7 +394,7 @@ class manage_connection:
                                     else:
                                             connid.sendall('argument : astid value\n')
                             elif usefulmsg == 'show_logged_ip':
-                                    for user, info in commandclass.connected_users().iteritems():
+                                    for user, info in daemon.commandclass.connected_users().iteritems():
                                             if 'connection' in info['login']:
                                                     try:
                                                             [ipaddr, ipport] = info['login']['connection'].getpeername()
@@ -404,7 +403,7 @@ class manage_connection:
                                                             [ipaddr, ipport] = ['err_addr', 'err_port']
                                                     connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'), ipaddr, ipport))
                             elif usefulmsg == 'show_logged':
-                                    for user, info in commandclass.connected_users().iteritems():
+                                    for user, info in daemon.commandclass.connected_users().iteritems():
                                             try:
                                                     connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                                             except Exception:
@@ -415,7 +414,7 @@ class manage_connection:
                                             dirnames = command_args[1]
                                             numbers = command_args[2:]
                                             for number in numbers:
-                                                    reverses = commandclass.findreverse(dirnames, number)
+                                                    reverses = daemon.commandclass.findreverse(dirnames, number)
                                                     for number, rep in reverses.iteritems():
                                                             connid.sendall('%s %s\n' % (number, rep))
                             elif usefulmsg.startswith('disc '):
@@ -434,7 +433,7 @@ class manage_connection:
                                             else:
                                                     connid.sendall('nobody disconnected\n')
                             elif usefulmsg == 'show_ami':
-                                    for astid, ami in amilist.ami.iteritems():
+                                    for astid, ami in self.amilist.ami.iteritems():
                                             connid.sendall('commands : %s : %s\n' % (astid, ami))
                             elif usefulmsg.startswith('ami '):
                                     amicmd = usefulmsg.split()[1:]
@@ -444,21 +443,21 @@ class manage_connection:
                                                     astid = amicmd[0]
                                                     cmd = amicmd[1]
                                                     cmdargs = amicmd[2:]
-                                                    amilist.execute(astid, cmd, *cmdargs)
+                                                    self.amilist.execute(astid, cmd, *cmdargs)
                             elif usefulmsg.startswith('kick '):
                                     command_args = usefulmsg.split()
                                     try:
                                             if len(command_args) > 1:
                                                     kickuser = command_args[1]
-                                                    if kickuser in commandclass.connected_users():
-                                                            uinfo = commandclass.connected_users()[kickuser]
+                                                    if kickuser in daemon.commandclass.connected_users():
+                                                            uinfo = daemon.commandclass.connected_users()[kickuser]
                                                             if 'login' in uinfo and 'connection' in uinfo.get('login'):
                                                                     cid = uinfo.get('login')['connection']
                                                                     if cid in self.fdlist_established:
                                                                             del self.fdlist_established[cid]
                                                                             cid.close()
-                                                                            commandclass.manage_logout(uinfo, 'admin')
-                                                                            del userinfo_by_requester[cid]
+                                                                            daemon.commandclass.manage_logout(uinfo, 'admin')
+                                                                            del deamon.userinfo_by_requester[cid]
                                                                             connid.sendall('kicked %s\n' % kickuser)
                                                                     else:
                                                                             connid.sendall('did not kick %s (socket id not in daemon refs)\n' % kickuser)
@@ -472,7 +471,7 @@ class manage_connection:
                                             log.exception('INFO %s' % usefulmsg)
                                             connid.sendall('(exception when trying to kick - see server log)\n')
                             elif usefulmsg.startswith('%s:' % commandset):
-                                    commandclass.cliaction(connid, usefulmsg)
+                                    daemon.commandclass.cliaction(connid, usefulmsg)
                             else:
                                     retstr = 'KO'
                             connid.sendall('XIVO-INFO:%s\n' % retstr)
@@ -480,19 +479,20 @@ class manage_connection:
                             log.exception('INFO connection [%s] : KO when sending to %s'
                                           % (usefulmsg, requester))
     
-    def manage_tcp_connections(sel_i, msg, kind):
+    @staticmethod
+    def manage_tcp_connections(daemon, sel_i, msg, kind):
             """
             Dispatches the message's handling according to the connection's kind.
             """
             closemenow = True
             if kind == 'CTI':
-                    manage_cti_connections(sel_i, msg, commandclass.ctiseparator)
+                    manage_connection.manage_cti_connections(daemon, sel_i, msg, daemon.commandclass.ctiseparator)
             elif kind == 'WEBI':
-                    closemenow = manage_webi_connections(sel_i, msg, '\n')
+                    closemenow = manage_webi_connections(daemon, sel_i, msg, '\n')
             elif kind == 'INFO':
-                    manage_info_connections(sel_i, msg, '\n')
+                    manage_info_connections(daemon, sel_i, msg, '\n')
             elif kind == 'AGI':
-                    agireply = commandclass.handle_agi(self.asterisklist[0], msg)
+                    agireply = daemon.commandclass.handle_agi(self.asterisklist[0], msg)
                     if agireply is not None:
                             sel_i.sendall(agireply)
             else:
@@ -507,13 +507,14 @@ class manage_connection:
     # \param astid the asterisk Id
     # \param idata the data read from the AMI we want to parse
     # \return none
-    def handle_ami_event(astid, idata):
+    @staticmethod
+    def handle_ami_event(daemon, astid, idata):
             """
             Handles the AMI events occuring on Asterisk.
             If the Event field is there, calls the handle_ami_function() function.
             """
             global save_for_next_packet_events
-            if astid not in configs:
+            if astid not in daemon.configs:
                     log.info('%s : no such asterisk Id' % astid)
                     return
             
@@ -542,7 +543,7 @@ class manage_connection:
                     evfunction = this_event.get('Event')
                     # log.info('%s AMI(all)  %s  : %s' % (astid, evfunction, this_event))
                     if evfunction is not None:
-                            handle_ami_function(astid, evfunction, this_event)
+                            manage_connection.handle_ami_function(daemon, astid, evfunction, this_event)
                             if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
                                     pass
                                     # verboselog('%s %s' % (astid, this_event), True, False)
@@ -578,12 +579,12 @@ class manage_connection:
                                                     except Exception:
                                                         log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
                                             try:
-                                                commandclass.amiresponse_follows(astid, this_event, nocolon)
+                                                daemon.commandclass.amiresponse_follows(astid, this_event, nocolon)
                                             except Exception:
                                                 log.exception('%s amiresponse_follows (%s) (%s)' % (astid, this_event, nocolon))
                                     elif response == 'Success':
                                             try:
-                                                commandclass.amiresponse_success(astid, this_event, nocolon)
+                                                daemon.commandclass.amiresponse_success(astid, this_event, nocolon)
                                             except Exception:
                                                 log.exception('%s amiresponse_success (%s) (%s)' % (astid, this_event, nocolon))
                                     elif response == 'Error':
@@ -604,7 +605,7 @@ class manage_connection:
                                                     except Exception:
                                                         log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
                                             try:
-                                                commandclass.amiresponse_error(astid, this_event, nocolon)
+                                                daemon.commandclass.amiresponse_error(astid, this_event, nocolon)
                                             except Exception:
                                                 log.exception('%s amiresponse_error (%s) (%s)' % (astid, this_event, nocolon))
                                     else:
@@ -688,7 +689,8 @@ class manage_connection:
     }
     
     
-    def handle_ami_function(astid, evfunction, this_event):
+    @staticmethod
+    def handle_ami_function(daemon, astid, evfunction, this_event):
         """
         Handles the AMI events related to a given function (i.e. containing the Event field).
         It roughly only dispatches them to the relevant commandset's methods.
@@ -705,16 +707,16 @@ class manage_connection:
                             ik.sendall('%s %s %s\n' % (astid, efn, todisp))
             if evfunction == 'Reload':
                 log.warning('%s AMI:Reload %s' % (astid, this_event))
-                commandclass.ami_reload(astid, this_event)
+                daemon.commandclass.ami_reload(astid, this_event)
             elif evfunction == 'Shutdown':
                 shutdown = this_event.get('Shutdown')
                 restart  = this_event.get('Restart')
                 log.warning('%s AMI:Shutdown (how=%s restart=%s)' % (astid, shutdown, restart))
-                commandclass.ami_shutdown(astid, this_event)
+                daemon.commandclass.ami_shutdown(astid, this_event)
             elif evfunction.startswith('UserEvent'):
-                commandclass.ami_userevent(astid, this_event)
-            elif (evfunction in evfunction_to_method_name):
-                getattr(commandclass, evfunction_to_method_name[evfunction])(astid, this_event)
+                daemon.commandclass.ami_userevent(astid, this_event)
+            elif (evfunction in manage_connection.evfunction_to_method_name):
+                getattr(daemon.commandclass, manage_connection.evfunction_to_method_name[evfunction])(astid, this_event)
             else:
                 log.warning('%s AMI ... this event (%s) is not tracked : %s' % (astid, evfunction, this_event))
     
@@ -724,22 +726,23 @@ class manage_connection:
     
     
     
-    def update_amisocks(astid):
+    @staticmethod
+    def update_amisocks(astid, daemon):
         """
         Connects to the Asterisk's AMI (defined by astid) if not yet done.
         Requests a Status when it (re)connects.
         """
         try:
-            amilist.setconfig(astid,
-                              (configs[astid].remoteaddr,
-                               configs[astid].ami_port),
-                              configs[astid].ami_login,
-                              configs[astid].ami_pass)
-            amilist.connect(astid)
-            amilist.set_aoriginate(astid, configs[astid].aoriginate)
+            daemon.amilist.setconfig(astid,
+                              (daemon.configs[astid].remoteaddr,
+                               daemon.configs[astid].ami_port),
+                               daemon.configs[astid].ami_login,
+                               daemon.configs[astid].ami_pass)
+            daemon.amilist.connect(astid)
+            daemon.amilist.set_aoriginate(astid, daemon.configs[astid].aoriginate)
     
         except Exception:
-            log.exception('%s (update_amisocks) %s:%d' % (astid, configs[astid].remoteaddr, configs[astid].ami_port))
+            log.exception('%s (update_amisocks) %s:%d' % (astid, daemon.configs[astid].remoteaddr, daemon.configs[astid].ami_port))
         return
     
     tqueue = Queue.Queue()
@@ -754,7 +757,8 @@ class manage_connection:
         os.write(pipe_queued_threads_main[1], thisthread.getName())
         return
     
-    def checkqueue_main():
+    @staticmethod
+    def checkqueue_main(daemon):
         buf = os.read(pipe_queued_threads_main[0], 1024)
         log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, self.tqueue.qsize()))
         while self.tqueue.qsize() > 0:
@@ -764,7 +768,7 @@ class manage_connection:
                 # check whether the AMI is already connected,
                 # and connects if needed
                 astid = thisthread.args[1]
-                update_amisocks(astid)
+                manage_connection.update_amisocks(astid, daemon)
             elif action == 'webirequest':
                 # checks whether the given actionid is still ongoing and closes
                 # the related WEBI request then
@@ -779,6 +783,7 @@ class manage_connection:
                 else:
                     log.warning('the actionid %s has gone' % actionid)
         return
+
 
 
 
@@ -815,9 +820,10 @@ class xivo_deamon:
     
         self.nreload = 0
         self.directorylist = xivo_contexts.Contexts()
-        global configs
-        configs = {}
-        xdname = None
+        self.configs = {}
+        self.xdname = None
+
+
         while True:
             self.main_loop()
 
@@ -825,7 +831,7 @@ class xivo_deamon:
     # \param signum signal number
     # \param frame frame
     # \return none
-    def sighandler(signum, frame):
+    def sighandler(self, signum, frame):
         log.warning('(sighandler) signal %s (atq = %s) received : quits' % (signum, self.askedtoquit))
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
             print '--- living thread <%s>' % (t.getName())
@@ -837,7 +843,7 @@ class xivo_deamon:
     # \param signum signal number
     # \param frame frame
     # \return none
-    def sighandler_reload(signum, frame):
+    def sighandler_reload(self, signum, frame):
         log.warning('(sighandler_reload) signal %s (atq = %s) received : reloads' % (signum, self.askedtoquit))
         self.askedtoquit = False
 
@@ -845,8 +851,8 @@ class xivo_deamon:
     def update_readconf(self):
         log.info('reparsing config file(s)')
         lconf = cti_config.Config(XIVO_CONF_FILE)
-        commandclass.set_cticonfig(lconf)
-        commandclass.set_options(self.cconf.read_section('commandset', self.commandset), self.cconf)
+        self.commandclass.set_cticonfig(lconf)
+        self.commandclass.set_options(self.cconf.read_section('commandset', self.commandset), self.cconf)
 
     # loads the configuration for each asterisk
     def load_asterisk_conf(self):   # {
@@ -870,7 +876,7 @@ class xivo_deamon:
                 
                 if 'localaddr' in xivoconf_asterisk:
                     localaddr = xivoconf_asterisk['localaddr']
-                for listname in commandclass.weblist.keys():
+                for listname in self.commandclass.weblist.keys():
                     fieldname = 'urllist_%s' % listname
                     if fieldname in xivoconf_asterisk:
                         urllist[listname] = xivoconf_asterisk[fieldname].split(',')
@@ -905,27 +911,27 @@ class xivo_deamon:
                         
                 capafeatures = []
                 
-                configs[astid] = xivo_astcfg.AsteriskConfig(astid,
-                                                            localaddr,
-                                                            ipaddress,
-                                                            ipaddress_webi,
-                                                            ami_port,
-                                                            ami_login,
-                                                            ami_pass,
-                                                            userfeatures_db_uri,
-                                                            capafeatures,
-                                                            cdr_db_uri,
-                                                            realm,
-                                                            parkingnumber,
-                                                            faxcallerid,
-                                                            linkestablished,
-                                                            aoriginate)
+                self.configs[astid] = xivo_astcfg.AsteriskConfig(astid,
+                                                                 localaddr,
+                                                                 ipaddress,
+                                                                 ipaddress_webi,
+                                                                 ami_port,
+                                                                 ami_login,
+                                                                 ami_pass,
+                                                                 userfeatures_db_uri,
+                                                                 capafeatures,
+                                                                 cdr_db_uri,
+                                                                 realm,
+                                                                 parkingnumber,
+                                                                 faxcallerid,
+                                                                 linkestablished,
+                                                                 aoriginate)
                 
-                for ilist in commandclass.weblist.keys():
-                    commandclass.set_urllist(astid, ilist, urllist[ilist])
+                for ilist in self.commandclass.weblist.keys():
+                    self.commandclass.set_urllist(astid, ilist, urllist[ilist])
     
                 t1 = time.time()
-                commandclass.read_queuelog(astid, url_queuelog)
+                self.commandclass.read_queuelog(astid, url_queuelog)
                 t2 = time.time()
     
                 log.info('%s spent %f seconds to read queuelog file' % (astid, t2 - t1))
@@ -946,12 +952,10 @@ class xivo_deamon:
     # }
     
     def main_loop(self):    # {
-        global amilist
-        global commandclass
-
         self.askedtoquit = False
+
         
-        time_start = time.localtime()
+        self.time_start = time.localtime()
         if self.nreload == 0:
             log.info('# STARTING XiVO Daemon %s (pid %d) / svn:%s # (0/3) Starting' %
                      (XIVOVERSION, os.getpid(), __revision__))
@@ -968,8 +972,8 @@ class xivo_deamon:
         userlists = []
         ctilog = None
         
-        userinfo_by_requester = {}
-        userinfo_current = {}
+        self.userinfo_by_requester = {}
+        self.userinfo_current = {}
         
         self.cconf = cti_config.Config(XIVO_CONF_FILE)
         xivoconf_general = self.cconf.read_section('general', 'general')
@@ -1001,11 +1005,11 @@ class xivo_deamon:
                         log.exception('%s definition' % fieldname)
     
         extraconn = xivoconf_general.get('extraconn', '')
-        updates_period = int(xivoconf_general.get('updates_period', '60'))
+        self.updates_period = int(xivoconf_general.get('updates_period', '60'))
         ctilog = xivoconf_general.get('ctilog')
         socktimeout = xivoconf_general.get('sockettimeout', '2')
         logintimeout = int(xivoconf_general.get('logintimeout', '5'))
-        apnoeafile = xivoconf_general.get('apnoeafile')
+        self.apnoeafile = xivoconf_general.get('apnoeafile')
         prefixfile = xivoconf_general.get('prefixfile')
         parting_astid_context = xivoconf_general.get('parting_astid_context')
         if 'asterisklist' in xivoconf_general:
@@ -1017,43 +1021,42 @@ class xivo_deamon:
                 
         socket.setdefaulttimeout(float(socktimeout))
         
-        pipe_queued_threads_commandclass = os.pipe()
-        pipe_queued_threads_main = os.pipe()
+        self.pipe_queued_threads_commandclass = os.pipe()
+        self.pipe_queued_threads_main = os.pipe()
 
-        amilist = xivo_ami.AMIList()
+        self.amilist = xivo_ami.AMIList()
         if commandset in xivo_commandsets.CommandClasses:
-            commandclass = xivo_commandsets.CommandClasses[commandset](amilist,
+            self.commandclass = xivo_commandsets.CommandClasses[commandset](self.amilist,
                                                                        incoming_tcp_ports,
-                                                                       pipe_queued_threads_commandclass)
-            xdname = commandclass.xdname
+                                                                       self.pipe_queued_threads_commandclass)
         else:
-            commandclass = xivo_commandsets.BaseCommand()
-            xdname = commandclass.xdname
+            self.commandclass = xivo_commandsets.BaseCommand()
             log.warning('# STARTING %s : no such commandset <%s>' % (xdname, commandset))
 
-        self.commandclass = commandclass
+        self.xdname = self.commandclass.xdname
+
     
-        log.info('# STARTING %s / svn:%s / %d' % (xdname, commandclass.version(), self.nreload))
+        log.info('# STARTING %s / svn:%s / %d' % (self.xdname, self.commandclass.version(), self.nreload))
     
         self.update_readconf()
-        commandclass.set_userlist_urls(userlists)
-        commandclass.set_contextlist(self.directorylist)
-        commandclass.set_configs(configs)
-        commandclass.set_ctilog(ctilog)
-        commandclass.set_logintimeout(logintimeout)
+        self.commandclass.set_userlist_urls(userlists)
+        self.commandclass.set_contextlist(self.directorylist)
+        self.commandclass.set_configs(self.configs)
+        self.commandclass.set_ctilog(ctilog)
+        self.commandclass.set_logintimeout(logintimeout)
         
-        if apnoeafile:
+        if self.apnoeafile:
             try:
-                e = open(apnoeafile, 'r')
+                e = open(self.apnoeafile, 'r')
                 torescue = pickle.loads(e.read())
                 e.close()
-                commandclass.apnoea_rescue(torescue)
+                self.commandclass.apnoea_rescue(torescue)
             except:
                 log.exception('read apnoea file %s' % apnoeafile)
         if prefixfile:
-            commandclass.read_internatprefixes(prefixfile)
+            self.commandclass.read_internatprefixes(prefixfile)
         if parting_astid_context:
-            commandclass.set_partings(parting_astid_context)
+            self.commandclass.set_partings(parting_astid_context)
                 
         for ctx in contextlist:
             xivoconf_context = self.cconf.read_section('context', ctx)
@@ -1078,33 +1081,33 @@ class xivo_deamon:
         self.load_asterisk_conf()
                         
     
-        self.outsock = commandclass.extrasock(extraconn)
+        self.outsock = self.commandclass.extrasock(extraconn)
     
         self.fdlist_established = {}
         self.fdlist_listen_cti = {}
         self.fdlist_udp_cti = {}
-        update_userlist = {}
-        lastrequest_time = {}
+        self.update_userlist = {}
+        self.lastrequest_time = {}
         xivodaemonreload = False
         
         log.info("the monitored asterisk's is/are : %s" % self.asterisklist)
-        log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % xdname)
+        log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % self.xdname)
         
-        for astid in configs: # {
+        for astid in self.configs: # {
             try:
-                update_userlist[astid] = False
-                lastrequest_time[astid] = time.time()
-                update_amisocks(astid)
+                self.update_userlist[astid] = False
+                self.lastrequest_time[astid] = time.time()
+                manage_connection.update_amisocks(astid, self)
             except Exception:
                 log.exception('%s : failed while setting lists and sockets' % astid)
         # }
     
         try:
-            commandclass.updates() # users' update, ...
+            self.commandclass.updates() # users' update, ...
         except Exception:
             log.exception('commandclass.updates()')
                 
-        log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % xdname)
+        log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
         for portkind in incoming_tcp_ports:
             pk = portkind.split(':')
@@ -1142,13 +1145,11 @@ class xivo_deamon:
             self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, nmax)
                 
         # Main select() loop - Receive messages
-
         while not self.askedtoquit:
-            self.poll_step()
+            self.select_step()
     # }
 
-    def poll_step(self):    # {
-        global commandclass
+    def select_step(self):    # {
 
         try:    # {
             fdtodel = []
@@ -1163,61 +1164,61 @@ class xivo_deamon:
                 log.warning('there are fd to delete : %s' % fdtodel)
                 for cn in fdtodel:
                     del self.fdlist_established[cn]
-                    if cn in userinfo_by_requester:
-                        del userinfo_by_requester[cn]
+                    if cn in self.userinfo_by_requester:
+                        del self.userinfo_by_requester[cn]
             
             self.fdlist_full = self.fdlist_listen_cti.keys() + self.fdlist_udp_cti.keys() + self.fdlist_established.keys()
-            self.fdlist_full.extend(amilist.fdlist())
-            self.fdlist_full.append(pipe_queued_threads_commandclass[0])
-            self.fdlist_full.append(pipe_queued_threads_main[0])
+            self.fdlist_full.extend(self.amilist.fdlist())
+            self.fdlist_full.append(self.pipe_queued_threads_commandclass[0])
+            self.fdlist_full.append(self.pipe_queued_threads_main[0])
             if self.outsock is not None:
                 self.fdlist_full.append(self.outsock)
             writefds = []
             for iconn, kind in self.fdlist_established.iteritems():
                 if kind == 'CTI' and iconn.need_sending():
                     writefds.append(iconn)
-            [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [], updates_period)
+            [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [], self.updates_period)
         # }
         except Exception, exc:  # {
                 log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
                 log.warning('(select) self.askedtoquit=%s fdlist_full=%s' % (self.askedtoquit, self.fdlist_full))
                 log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % self.fdlist_established)
-                log.warning('(select) current open TCP connections : (AMI) %s' % amilist.fdlist())
+                log.warning('(select) current open TCP connections : (AMI) %s' % self.amilist.fdlist())
                 log.warning('(select) current open TCP connections : (OUT) %s' % self.outsock)
                 
-                if self.askedtoquit and apnoeafile:
+                if self.askedtoquit and self.apnoeafile:
                         try:
-                                tosave = commandclass.apnoea_tosave()
-                                e = open(apnoeafile, 'w')
+                                tosave = self.commandclass.apnoea_tosave()
+                                e = open(self.apnoeafile, 'w')
                                 e.write(pickle.dumps(tosave))
                                 e.close()
                         except:
-                                log.exception('write apnoea file %s' % apnoeafile)
+                                log.exception('write apnoea file %s' % self.apnoeafile)
                                 
                 for s in self.fdlist_full:
                         if s in self.fdlist_established and self.fdlist_established[s] == 'CTI':
                                 if self.askedtoquit:
-                                        commandclass.reset('stop', s)
+                                        self.commandclass.reset('stop', s)
                                 else:
-                                        commandclass.reset('reload', s)
+                                        self.commandclass.reset('reload', s)
                         if isinstance(s, int):
                                 os.close(s)
                         else:
                                 s.close()
                                 
                 if self.askedtoquit:
-                        commandclass.reset('stop')
-                        time_uptime = int(time.time() - time.mktime(time_start))
+                        self.commandclass.reset('stop')
+                        time_uptime = int(time.time() - time.mktime(self.time_start))
                         log.info('# STOPPING XiVO Daemon %s (pid %d) / svn:%s # uptime %d s (since %s)'
                                  % (XIVOVERSION, os.getpid(), __revision__,
-                                    time_uptime, time.asctime(time_start)))
+                                    time_uptime, time.asctime(self.time_start)))
                         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                 print '--- (stop) killing thread <%s>' % t.getName()
                                 t._Thread__stop()
                         daemonize.unlock_pidfile(PIDFILE)
                         sys.exit(5)
                 else:
-                        commandclass.reset('reload')
+                        self.commandclass.reset('reload')
                         self.askedtoquit = True
                         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
                                 print '--- (reload) the thread <%s> remains' % t.getName()
@@ -1230,262 +1231,285 @@ class xivo_deamon:
                 try:
                     sel_o.process_sending()
                 except ClientConnection.CloseException, cexc:
-                    if sel_o in userinfo_by_requester:
-                        userinfo = userinfo_by_requester.get(sel_o)
-                        commandclass.manage_logout(userinfo, 'end_sending')
-                        del userinfo_by_requester[sel_o]
+                    if sel_o in self.userinfo_by_requester:
+                        userinfo = self.userinfo_by_requester.get(sel_o)
+                        self.commandclass.manage_logout(userinfo, 'end_sending')
+                        del self.userinfo_by_requester[sel_o]
+
                     log.info('TCP socket %s closed(sending %s) on %s' % (self.fdlist_established[sel_o], cexc, sel_o.getpeername()))
-        
+
                     if sel_o in self.fdlist_established:
                         del self.fdlist_established[sel_o]
-                    commandclass.disconnected(sel_o)
-            if sels_i:
-                for sel_i in sels_i:
-                        # these AMI connections are used in order to manage AMI commands and events
-                        if sel_i in amilist.fdlist():
+
+                    self.commandclass.disconnected(sel_o)
+
+            if sels_i:  # {
+                for sel_i in sels_i: # {
+                    # these AMI connections are used in order to manage AMI commands and events
+                    if sel_i in self.amilist.fdlist():
+                        try:
+                            buf = sel_i.readline()
+                            astid = self.amilist.astid(sel_i)
+                            if len(buf) == 0:
+                                log.warning('%s AMI : CLOSING' % astid)
+                                self.amilist.remove(astid)
+                                sel_i.close()
+                            else:
+                                if astid is not None:
+                                    try:
+                                        manage_connection.handle_ami_event(self, astid, buf)
+                                    except Exception:
+                                        log.exception('(handle_ami_event) %s' % astid)
+                        except Exception:
+                            log.exception('(amilist)')
+
+                    # other 'outgoing' connections
+                    elif sel_i == self.outsock: # {
+                        try:
+                            msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
+                        except Exception:
+                            log.exception('outsock')
+                            msg = ''
+
+                        if len(msg) == 0:
+                            sel_i.close()
+                            self.outsock = None
+                            log.warning('WARNING - outsock has closed the connection')
+                        else:
+                            self.commandclass.handle_outsock(self.asterisklist[0], msg)
+
+                    # } the UDP messages (ANNOUNCE) are catched here
+                    elif sel_i in self.fdlist_udp_cti: # {
+                        [kind, nmax] = self.fdlist_udp_cti[sel_i].split(':')
+                        if kind == 'ANNOUNCE':
+                            [data, sockparams] = sel_i.recvfrom(32768)
+                            if sockparams[0] in self.ip_reverse_sht:
+                                astid = self.ip_reverse_sht.get(sockparams[0])
+                            else:
+                                astid = 'xivo'
+                            log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
+                            if astid in self.configs:
+                                # scheduling astid's AMI reconnection
+                                k = threading.Timer(2, callback_timer_main, ('ipbxup', astid))
+                                k.start()
+                        else:
+                            log.warning('unknown kind %s received' % kind)
+
+                    # } the new TCP connections (CTI, WEBI, (F)AGI, INFO) are catched here
+                    elif sel_i in self.fdlist_listen_cti: # {
+                        [kind, nmax] = self.fdlist_listen_cti[sel_i].split(':')
+                        [connc, sockparams] = sel_i.accept()
+                        if kind == 'FAGI':
+                            if sockparams[0] in self.ip_reverse_sht:
+                                astid = self.ip_reverse_sht.get(sockparams[0])
+                            else:
+                                astid = 'xivo'
+                            log.info('TCP socket FAGI opened on %s:%d => %s' % (sockparams[0], sockparams[1], astid))
+                            mfr = connc.makefile('rb', -1)
+                            mfw = connc.makefile('wb', 0)
+                            try:
+                                fagi = fastagi.FastAGI(mfr, mfw)
+                                self.commandclass.handle_fagi(astid, fagi)
+                            except Exception:
+                                log.exception('(fastagi) %s' % astid)
+                            mfr.close()
+                            mfw.close()
+                            connc.close()
+                            log.info('TCP socket FAGI closed on %s:%d' % (sockparams[0], sockparams[1]))
+                        else:
+                            log.info('TCP socket %s opened on %s:%d' % (kind,
+                                                                        sockparams[0], sockparams[1]))
+                            if kind == 'CTI':
+                                connc = ClientConnection(connc, sockparams, self.commandclass.ctiseparator)
+                                self.commandclass.connected(connc)
+                            # appending the opened socket to the ones watched
+                            # connc.setblocking(0)
+                            # connc.settimeout(2)
+                            self.fdlist_established[connc] = kind
+
+                    # } incoming TCP connections (CTI, WEBI, AGI, INFO)
+                    elif sel_i in self.fdlist_established: # {
+                        try: # {
+                            kind = self.fdlist_established[sel_i]
+                            requester = '%s:%d' % sel_i.getpeername()
+                            if isinstance(sel_i, ClientConnection):
                                 try:
-                                        buf = sel_i.readline()
-                                        astid = amilist.astid(sel_i)
-                                        if len(buf) == 0:
-                                                log.warning('%s AMI : CLOSING' % astid)
-                                                amilist.remove(astid)
-                                                sel_i.close()
-                                        else:
-                                                if astid is not None:
-                                                        try:
-                                                                handle_ami_event(astid, buf)
-                                                        except Exception:
-                                                                log.exception('(handle_ami_event) %s' % astid)
+                                    while True:
+                                        line = sel_i.readline()
+                                        if line is None:
+                                            break
+                                        manage_connection.manage_tcp_connections(self, sel_i, line, kind)
+                                except ClientConnection.CloseException, cexc:
+                                    if kind == 'CTI':
+                                        if sel_i in self.userinfo_by_requester:
+                                            userinfo = self.userinfo_by_requester.get(sel_i)
+                                            self.commandclass.manage_logout(userinfo, 'end_receiving')
+                                            del self.userinfo_by_requester[sel_i]
+                                    if sel_i in self.fdlist_established:
+                                        del self.fdlist_established[sel_i]
+                                    if requester in self.commandclass.transfers_ref:
+                                        self.commandclass.transfer_endbuf(requester)
+                                    log.info('TCP socket %s closed(A %s) on %s' % (kind, cexc, requester))
+                                    if kind == 'CTI':
+                                        self.commandclass.disconnected(sel_i)
+                            else: # {
+                                closemenow = False
+
+                                try:
+                                    msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
+                                    lmsg = len(msg)
                                 except Exception:
-                                        log.exception('(amilist)')
-                                        
-                        # other 'outgoing' connections
-                        elif sel_i == self.outsock:
-                                try:
-                                        msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
-                                except Exception:
-                                        log.exception('outsock')
-                                        msg = ''
-                                if len(msg) == 0:
-                                        sel_i.close()
-                                        self.outsock = None
-                                        log.warning('WARNING - outsock has closed the connection')
+                                    log.exception('connection to %s (%s)' % (requester, kind))
+                                    lmsg = 0
+
+                                if lmsg > 0:
+                                    try:
+                                        closemenow = manage_connection.manage_tcp_connections(self, sel_i, msg, kind)
+                                    except Exception:
+                                        log.exception('handling %s (%s)' % (requester, kind))
+
                                 else:
-                                        commandclass.handle_outsock(self.asterisklist[0], msg)
-                                        
-                        # the UDP messages (ANNOUNCE) are catched here
-                        elif sel_i in self.fdlist_udp_cti:
-                                [kind, nmax] = self.fdlist_udp_cti[sel_i].split(':')
-                                if kind == 'ANNOUNCE':
-                                        [data, sockparams] = sel_i.recvfrom(32768)
-                                        if sockparams[0] in self.ip_reverse_sht:
-                                                astid = self.ip_reverse_sht.get(sockparams[0])
-                                        else:
-                                                astid = 'xivo'
-                                        log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
-                                        if astid in configs:
-                                                # scheduling astid's AMI reconnection
-                                                k = threading.Timer(2, callback_timer_main, ('ipbxup', astid))
-                                                k.start()
+                                    if kind == 'CTI':
+                                        if sel_i in self.userinfo_by_requester:
+                                            userinfo = self.userinfo_by_requester.get(sel_i)
+                                            self.commandclass.manage_logout(userinfo, 'end_receiving')
+                                            del self.userinfo_by_requester[sel_i]
+                                doclose = False
+                                if kind == 'WEBI':
+                                    doclose = closemenow
+                                elif kind not in ['CTI', 'INFO'] or lmsg == 0:
+                                    doclose = True
+                                if doclose:
+                                    sel_i.close()
+                                    if sel_i in self.fdlist_established:
+                                        del self.fdlist_established[sel_i]
+                                    if requester in self.commandclass.transfers_ref:
+                                        self.commandclass.transfer_endbuf(requester)
+                                    log.info('TCP socket %s closed(B) on %s' % (kind, requester))
+                                    if kind == 'CTI':
+                                        self.commandclass.disconnected(sel_i)
+                            # }
+                        # }
+                        except Exception:
+                            # socket.error : exc.args[0]
+                            log.exception('[%s] %s' % (kind, sel_i))
+                            try:
+                                del self.fdlist_established[sel_i]
+                                sel_i.close()
+                                if sel_i in self.userinfo_by_requester:
+                                    userinfo = self.userinfo_by_requester.get(sel_i)
+                                    log.warning('logging off %s following unexpected socket breakup' % userinfo)
+                                    self.commandclass.manage_logout(userinfo, 'exc')
+                                    del self.userinfo_by_requester[sel_i]
                                 else:
-                                        log.warning('unknown kind %s received' % kind)
-                                        
-                        # the new TCP connections (CTI, WEBI, (F)AGI, INFO) are catched here
-                        elif sel_i in self.fdlist_listen_cti:
-                                [kind, nmax] = self.fdlist_listen_cti[sel_i].split(':')
-                                [connc, sockparams] = sel_i.accept()
-                                if kind == 'FAGI':
-                                        if sockparams[0] in self.ip_reverse_sht:
-                                                astid = self.ip_reverse_sht.get(sockparams[0])
-                                        else:
-                                                astid = 'xivo'
-                                        log.info('TCP socket FAGI opened on %s:%d => %s' % (sockparams[0], sockparams[1], astid))
-                                        mfr = connc.makefile('rb', -1)
-                                        mfw = connc.makefile('wb', 0)
-                                        try:
-                                                fagi = fastagi.FastAGI(mfr, mfw)
-                                                commandclass.handle_fagi(astid, fagi)
-                                        except Exception:
-                                                log.exception('(fastagi) %s' % astid)
-                                        mfr.close()
-                                        mfw.close()
-                                        connc.close()
-                                        log.info('TCP socket FAGI closed on %s:%d' % (sockparams[0], sockparams[1]))
-                                else:
-                                        log.info('TCP socket %s opened on %s:%d' % (kind,
-                                                                                    sockparams[0], sockparams[1]))
-                                        if kind == 'CTI':
-                                                connc = ClientConnection(connc, sockparams, commandclass.ctiseparator)
-                                                commandclass.connected(connc)
-                                        # appending the opened socket to the ones watched
-                                        # connc.setblocking(0)
-                                        # connc.settimeout(2)
-                                        self.fdlist_established[connc] = kind
-                                        
-                        # incoming TCP connections (CTI, WEBI, AGI, INFO)
-                        elif sel_i in self.fdlist_established:
-                                try:
-                                        kind = self.fdlist_established[sel_i]
-                                        requester = '%s:%d' % sel_i.getpeername()
-                                        if isinstance(sel_i, ClientConnection):
+                                    log.warning('could not find a match for socket %s' % sel_i)
+                            except Exception:
+                                log.exception('[%s] (2nd exception)' % kind)
+
+                    # }
+                    # local pipe fd
+                    elif self.pipe_queued_threads_commandclass[0] == sel_i: # {
+                        try:
+                            actionqueue = self.commandclass.checkqueue()
+                            for actionname, actionarg in actionqueue.iteritems():
+                                if actionname == 'disconnlist-tcp':
+                                    # disconnect when timeout after first connection
+                                    disconnlist = actionarg
+                                    if disconnlist:
+                                        log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
+                                        for connid in disconnlist:
                                             try:
-                                                while True:
-                                                    line = sel_i.readline()
-                                                    if line is None:
-                                                        break
-                                                    manage_tcp_connections(sel_i, line, kind)
-                                            except ClientConnection.CloseException, cexc:
-                                                if kind == 'CTI':
-                                                    if sel_i in userinfo_by_requester:
-                                                        userinfo = userinfo_by_requester.get(sel_i)
-                                                        commandclass.manage_logout(userinfo, 'end_receiving')
-                                                        del userinfo_by_requester[sel_i]
-                                                if sel_i in self.fdlist_established:
-                                                        del self.fdlist_established[sel_i]
-                                                if requester in commandclass.transfers_ref:
-                                                        commandclass.transfer_endbuf(requester)
-                                                log.info('TCP socket %s closed(A %s) on %s' % (kind, cexc, requester))
-                                                if kind == 'CTI':
-                                                        commandclass.disconnected(sel_i)
-                                        else:
-                                            closemenow = False
-                                            try:
-                                                msg = sel_i.recv(BUFSIZE_LARGE, socket.MSG_DONTWAIT)
-                                                lmsg = len(msg)
+                                                self.commandclass.telldisconn(connid)
                                             except Exception:
-                                                log.exception('connection to %s (%s)' % (requester, kind))
-                                                lmsg = 0
-                                            if lmsg > 0:
-                                                try:
-                                                        closemenow = manage_tcp_connections(sel_i, msg, kind)
-                                                except Exception:
-                                                        log.exception('handling %s (%s)' % (requester, kind))
-                                            else:
-                                                if kind == 'CTI':
-                                                        if sel_i in userinfo_by_requester:
-                                                                userinfo = userinfo_by_requester.get(sel_i)
-                                                                commandclass.manage_logout(userinfo, 'end_receiving')
-                                                                del userinfo_by_requester[sel_i]
-                                            doclose = False
-                                            if kind == 'WEBI':
-                                                doclose = closemenow
-                                            elif kind not in ['CTI', 'INFO'] or lmsg == 0:
-                                                doclose = True
-                                            if doclose:
-                                                sel_i.close()
-                                                if sel_i in self.fdlist_established:
-                                                        del self.fdlist_established[sel_i]
-                                                if requester in commandclass.transfers_ref:
-                                                        commandclass.transfer_endbuf(requester)
-                                                log.info('TCP socket %s closed(B) on %s' % (kind, requester))
-                                                if kind == 'CTI':
-                                                         commandclass.disconnected(sel_i)
-                                except Exception:
-                                        # socket.error : exc.args[0]
-                                        log.exception('[%s] %s' % (kind, sel_i))
-                                        try:
-                                                del self.fdlist_established[sel_i]
-                                                sel_i.close()
-                                                if sel_i in userinfo_by_requester:
-                                                        userinfo = userinfo_by_requester.get(sel_i)
-                                                        log.warning('logging off %s following unexpected socket breakup' % userinfo)
-                                                        commandclass.manage_logout(userinfo, 'exc')
-                                                        del userinfo_by_requester[sel_i]
-                                                else:
-                                                        log.warning('could not find a match for socket %s' % sel_i)
-                                        except Exception:
-                                                log.exception('[%s] (2nd exception)' % kind)
-                                                
-                        # local pipe fd
-                        elif pipe_queued_threads_commandclass[0] == sel_i:
-                                try:
-                                        actionqueue = commandclass.checkqueue()
-                                        for actionname, actionarg in actionqueue.iteritems():
-                                                if actionname == 'disconnlist-tcp':
-                                                        # disconnect when timeout after first connection
-                                                        disconnlist = actionarg
-                                                        if disconnlist:
-                                                                log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
-                                                                for connid in disconnlist:
-                                                                        try:
-                                                                                commandclass.telldisconn(connid)
-                                                                        except Exception:
-                                                                                log.exception('disconnlist-tcp')
-                                                                        log.info('TCP socket %s closed(disconnlist) on %s'
-                                                                                 % (self.fdlist_established[connid],
-                                                                                    '%s:%d' % connid.getpeername()))
-                                                                        del self.fdlist_established[connid]
-                                                                        connid.close()
-                                except Exception:
-                                        log.exception('[pipe_queued_threads_commandclass]')
-                                        
-                        elif pipe_queued_threads_main[0] == sel_i:
-                                try:
-                                        checkqueue_main()
-                                except Exception:
-                                        log.exception('[pipe_queued_threads_main]')
-                                        
-                        try:
-                                userdiscolist = commandclass.disconnlist
-                                if userdiscolist:
-                                        log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
-                                        for userinfo in userdiscolist:
-                                                log.warning('checkqueue return : will disconnect %s' % userinfo)
-                                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
-                                                        connid = userinfo.get('login')['connection']
-                                                        if connid in self.fdlist_established:
-                                                                del self.fdlist_established[connid]
-                                                        else:
-                                                                log.warning('connid %s no more in fdlists' % connid)
-                                                        commandclass.manage_logout(userinfo, 'pipe')
-                                                        del userinfo_by_requester[connid]
-                                                        if not connid.isClosed:
-                                                                connid.close()
-                                                else:
-                                                        log.warning('WARNING - no login/connection field present in userinfo')
-                                commandclass.clear_disconnlist()
+                                                log.exception('disconnlist-tcp')
+
+                                            log.info('TCP socket %s closed(disconnlist) on %s'
+                                                     % (self.fdlist_established[connid],
+                                                        '%s:%d' % connid.getpeername()))
+                                            del self.fdlist_established[connid]
+                                            connid.close()
                         except Exception:
-                                log.exception('userdiscolist')
-                                
-                        for astid in configs:
-                                if (time.time() - lastrequest_time[astid]) > updates_period or update_userlist[astid]:
-                                        lastrequest_time[astid] = time.time()
-                                        log.info('[%s] %s : updates (computed timeout) %s'
-                                                  % (xdname, astid, time.asctime()))
-                                        try:
-                                                if self.outsock is None:
-                                                        self.outsock = commandclass.extrasock(extraconn)
-                                                update_amisocks(astid)
-                                                self.update_readconf()
-                                                commandclass.regular_update()
-                                                update_userlist[astid] = False
-                                        except Exception:
-                                                log.exception('%s : failed while updating lists and sockets (computed timeout)' % astid)
-                                        try:
-                                                commandclass.updates() # users' update, ...
-                                        except Exception:
-                                                log.exception('commandclass.updates() (computed timeout)')
-            else: # when nothing happens on the sockets, we fall here sooner or later
-                log.info('[%s] updates (select timeout) %s'
-                          % (xdname, time.asctime()))
-                try:
-                        commandclass.updates() # users' update, ...
-                except Exception:
-                        log.exception('commandclass.updates() (select timeout)')
-                for astid in configs:
-                        lastrequest_time[astid] = time.time()
+                            log.exception('[pipe_queued_threads_commandclass]')
+
+                    # }
+                    elif pipe_queued_threads_main[0] == sel_i: # {
                         try:
+                            checkqueue_main(self)
+                        except Exception:
+                            log.exception('[pipe_queued_threads_main]')
+
+                    # }
+                    try:
+                        userdiscolist = self.commandclass.disconnlist
+                        if userdiscolist:
+                            log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
+                            for userinfo in userdiscolist:
+                                log.warning('checkqueue return : will disconnect %s' % userinfo)
+                                if 'login' in userinfo and 'connection' in userinfo.get('login'): 
+                                    connid = userinfo.get('login')['connection']
+                                    if connid in self.fdlist_established:
+                                        del self.fdlist_established[connid]
+                                    else:
+                                        log.warning('connid %s no more in fdlists' % connid)
+
+                                    self.commandclass.manage_logout(userinfo, 'pipe')
+                                    del self.userinfo_by_requester[connid]
+
+                                    if not connid.isClosed:
+                                        connid.close()
+                                else:
+                                    log.warning('WARNING - no login/connection field present in userinfo')
+                        self.commandclass.clear_disconnlist()
+                    except Exception:
+                        log.exception('userdiscolist')
+
+                    for astid in self.configs: # {
+                        if (time.time() - self.lastrequest_time[astid]) > self.updates_period or self.update_userlist[astid]:
+                            self.lastrequest_time[astid] = time.time()
+                            log.info('[%s] %s : updates (computed timeout) %s'
+                                      % (self.xdname, astid, time.asctime()))
+                            try:
                                 if self.outsock is None:
-                                        self.outsock = commandclass.extrasock(extraconn)
-                                update_amisocks(astid)
+                                    self.outsock = self.commandclass.extrasock(extraconn)
+                                manage_connection.update_amisocks(astid, self)
                                 self.update_readconf()
-                                commandclass.regular_update()
-                        except Exception:
-                                log.exception('%s : failed while updating lists and sockets (select timeout)' % astid)
+                                self.commandclass.regular_update()
+                                self.update_userlist[astid] = False
+                            except Exception:
+                                log.exception('%s : failed while updating lists and sockets (computed timeout)' % astid)
+                            try:
+                                self.commandclass.updates() # users' update, ...
+                            except Exception:
+                                log.exception('commandclass.updates() (computed timeout)')
+
+                    # }
+                # }
+            else: # { when nothing happens on the sockets, we fall here sooner or later
+                log.info('[%s] updates (select timeout) %s'
+                          % (self.xdname, time.asctime()))
+                try:
+                    self.commandclass.updates() # users' update, ...
+                except Exception:
+                    log.exception('commandclass.updates() (select timeout)')
+                for astid in self.configs: # {
+                    self.lastrequest_time[astid] = time.time()
+                    try:
+                        if self.outsock is None:
+                            self.outsock = self.commandclass.extrasock(extraconn)
+                        manage_connection.update_amisocks(astid, self)
+                        self.update_readconf()
+                        self.commandclass.regular_update()
+                    except Exception:
+                        log.exception('%s : failed while updating lists and sockets (select timeout)' % astid)
+
+                # }
+            # }
+        # }
         # }
         except Exception:
-            log.exception('poll step')
-    # }
+            log.exception('select step')
 
 
-xivo_deamon()
+main = xivo_deamon()
+
+
