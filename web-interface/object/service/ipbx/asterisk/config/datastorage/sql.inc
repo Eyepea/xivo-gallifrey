@@ -84,6 +84,10 @@ $array['ctipresences'] = array();
 $array['ctipresences']['table'] = 'ctipresences';
 $array['ctipresences']['primary'] = array('id' => '');
 
+$array['ctiprofiles'] = array();
+$array['ctiprofiles']['table'] = 'ctiprofiles';
+$array['ctiprofiles']['primary'] = array('id' => '');
+
 $array['ctistatus'] = array();
 $array['ctistatus']['table'] = 'ctistatus';
 $array['ctistatus']['primary'] = array('id' => '');

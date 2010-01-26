@@ -47,7 +47,7 @@ $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/gener
 $array['service/ipbx/cti_settings/general'] = 'service/ipbx/index.php/cti_settings/general/';
 $array['service/ipbx/cti_settings/presences'] = 'service/ipbx/index.php/cti_settings/presences/';
 $array['service/ipbx/cti_settings/phonehints'] = 'service/ipbx/index.php/cti_settings/phonehints/';
-#$array['service/ipbx/cti_settings/status'] = 'service/ipbx/index.php/cti_settings/status/';
+$array['service/ipbx/cti_settings/profiles'] = 'service/ipbx/index.php/cti_settings/profiles/';
 
 $array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';

@@ -235,6 +235,9 @@ $array['module']['ctimain']['datastorage'] = true;
 $array['module']['ctipresences'] = array();
 $array['module']['ctipresences']['datastorage'] = true;
 
+$array['module']['ctiprofiles'] = array();
+$array['module']['ctiprofiles']['datastorage'] = true;
+
 $array['module']['ctistatus'] = array();
 $array['module']['ctistatus']['datastorage'] = true;
 

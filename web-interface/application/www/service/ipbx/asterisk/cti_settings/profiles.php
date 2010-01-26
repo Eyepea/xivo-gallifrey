@@ -1,0 +1,221 @@
+<?php
+
+#
+# XiVO Web-Interface
+# Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+dwho::load_class('dwho_json');
+
+$ctiprofiles = &$ipbx->get_module('ctiprofiles');
+$act = isset($_QR['act']) === true ? $_QR['act'] : '';
+$idprofiles = isset($_QR['idprofiles']) === true ? dwho_uint($_QR['idprofiles'],1) : 1;
+$page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
+
+$servicesavail = array('enablevm', 'incallrec');
+$preferencesavail = array('logagent', 'pauseagent', 'blinktime', 'fontsize', 'fontname', 'iconsize', 'supervisor', 'queues-showqueuenames', 'queues-showqueues');
+$funcsavail = array('agents', 'presence', 'nojointleave');
+
+$xletsavail = array();
+$xletsavail = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
+$xletslocavail = array('dock', 'grid', 'tab');
+
+$param = array();
+$param['act'] = 'list';
+$param['idprofiles'] = $idprofiles;
+
+$info = $result = array();
+
+$element = array();
+$element['ctiprofiles'] = $ctiprofiles->get_element();
+
+switch($act)
+{
+	case 'add':
+		$app = &$ipbx->get_application('ctiprofiles');
+		$apppres = &$ipbx->get_application('ctipresences');
+
+		$pl = $apppres->get_presences_list();
+		$preslist = array();
+		foreach($pl as $v)
+		{
+			$p = $v['ctipresences'];
+			$preslist[$p['id']] = $p['name'];
+		}
+
+		$result = $fm_save = null;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('profiles',$_QR) === true)
+		{
+			$_QR['profiles']['xlets'] = 'xlets';
+			$_QR['profiles']['deletable'] = 1;
+			$_QR['profiles']['presence'] = "presence.".$_QR['presence'];
+
+			if(array_key_exists('services', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['services'] as $v)
+				{
+					$arr[] = $servicesavail[$v];
+				}
+				$_QR['profiles']['services'] = implode(',', $arr);
+			}
+			else
+				$_QR['profiles']['services'] = '';
+
+
+			if(array_key_exists('funcs', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['funcs'] as $v)
+				{
+					$arr[] = $funcsavail[$v];
+				}
+				$_QR['profiles']['funcs'] = implode(',', $arr);
+			}
+			else
+				$_QR['profiles']['funcs'] = '';
+
+			if(array_key_exists('preferencesargs', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['preferencesargs'] as $k => $v)
+				{
+					$pref = $_QR['preferenceslist'][$k];
+					$arr[] = $pref.'('.$v.')';
+				}
+				$_QR['profiles']['preferences'] = implode(',', $arr);
+			}
+			else
+				$_QR['profiles']['preferences'] = '';
+
+			if($app->set_add($_QR) === false
+			|| $app->add() === false)
+			{
+				$fm_save = false;
+				$result = $app->get_result();
+			}
+			else
+				$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
+		}
+
+		dwho::load_class('dwho_sort');
+
+		$_TPL->set_var('info',$result);
+		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('preslist',$preslist);
+		$_TPL->set_var('servicesavail',$servicesavail);
+		$_TPL->set_var('funcsavail',$funcsavail);
+		$_TPL->set_var('preferencesavail',$preferencesavail);
+		$_TPL->set_var('xletsavail',$xletsavail);
+		$_TPL->set_var('xletslocavail',$xletslocavail);
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/jscolor/jscolor.js');
+		break;
+
+	case 'edit':
+		$app = &$ipbx->get_application('ctiprofiles');
+		$apppres = &$ipbx->get_application('ctipresences');
+
+		if(isset($_QR['idprofiles']) === false
+		|| ($info = $app->get($_QR['idprofiles'])) === false)
+			$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
+
+		$result = $fm_save = null;
+		$return = &$info;
+
+		if(isset($_QR['fm_send']) === true
+		&& dwho_issa('profiles',$_QR) === true)
+		{
+			$return = &$result;
+			if($app->set_edit($_QR) === false
+			|| $app->edit() === false)
+			{
+				$fm_save = false;
+				$result = $app->get_result();
+			}
+			else
+				$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
+		}
+
+		dwho::load_class('dwho_sort');
+
+		$_TPL->set_var('idprofiles',$info['profiles']['id']);
+		$_TPL->set_var('info',$return);
+		$_TPL->set_var('fm_save',$fm_save);
+
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
+		$dhtml->set_js('js/jscolor/jscolor.js');
+		break;
+
+	case 'delete':
+		$param['page'] = $page;
+
+		$app = &$ipbx->get_application('ctiprofiles');
+
+		if(isset($_QR['idprofiles']) === false
+		|| ($info = $app->get($_QR['idprofiles'])) === false)
+			$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
+
+		$app->delete();
+
+		$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
+		break;
+
+	default:
+		$act = 'list';
+		$prevpage = $page - 1;
+		$nbbypage = XIVO_SRE_IPBX_AST_NBBYPAGE;
+
+		$app = &$ipbx->get_application('ctiprofiles',null,false);
+
+		$order = array();
+		$order['name'] = SORT_ASC;
+
+		$limit = array();
+		$limit[0] = $prevpage * $nbbypage;
+		$limit[1] = $nbbypage;
+
+		$list = $app->get_profiles_list();
+		$total = $app->get_cnt();
+
+		if($list === false && $total > 0 && $prevpage > 0)
+		{
+			$param['page'] = $prevpage;
+			$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
+		}
+
+		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
+		$_TPL->set_var('list',$list);
+}
+
+$_TPL->set_var('act',$act);
+$_TPL->set_var('idprofiles',$idprofiles);
+#$_TPL->set_var('group',$group);
+
+$menu = &$_TPL->get_module('menu');
+$menu->set_top('top/user/'.$_USR->get_info('meta'));
+$menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/cti_settings/profiles');
+
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/cti_settings/profiles/'.$act);
+$_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
+$_TPL->display('index');
+
+?>

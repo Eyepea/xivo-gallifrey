@@ -1,0 +1,49 @@
+; fm_profiles_name
+Nom :
+
+; fm_profiles_appliname
+Nom applicatif :
+
+; fm_profiles_maxgui
+Max. GUI :
+
+; fm_profiles_presence
+Présence :
+
+; cti-profiles-services
+Services
+
+; cti-profiles_funcs
+Fonctions
+
+; col_preferences-name
+Préférence
+
+; col_preferences-args
+Paramètre préférence
+
+; no_preferences
+Aucune préférence configurée
+
+; col_xlets-name
+Xlet
+
+; col_xlets-args
+Position
+
+; col_xlets-f
+&nbsp;Flottant&nbsp;
+
+; col_xlets-c
+&nbsp;Fermable&nbsp;
+
+; col_xlets-m
+&nbsp;Déplaçable&nbsp;
+
+; col_xlets-s
+&nbsp;Défil&nbsp;
+
+; no_xlets
+Aucun Xlet configuré
+
+
