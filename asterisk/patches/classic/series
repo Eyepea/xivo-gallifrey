@@ -51,6 +51,7 @@ deb_bridge-1.4-backport
 pf_queue_incoming_limit
 pf_atxfer_moh
 pf_meetme_moderation
+pf_queue_has_member_function
 pf_skill_queues
 pf_queue_penalty_rules
 pf_ftbfs_configure_PTHREAD_ONCE_INIT_test_fix

@@ -1,0 +1,90 @@
+Index: asterisk-1.4.29/apps/app_queue.c
+===================================================================
+--- asterisk-1.4.29.orig/apps/app_queue.c	2010-01-25 10:50:14.000000000 +0100
++++ asterisk-1.4.29/apps/app_queue.c	2010-01-25 14:39:26.000000000 +0100
+@@ -4502,6 +5402,52 @@
+ 	return 0;
+ }
+ 
++static int queue_function_queuehasmember(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len)
++{
++	struct ast_module_user *lu;
++	int ret = 0;
++	struct call_queue *q;
++	AST_DECLARE_APP_ARGS(args,
++		AST_APP_ARG(queuename);
++		AST_APP_ARG(interface);
++	);
++	/* Make sure the returned value on error is NULL. */
++	buf[0] = '\0';
++
++	if (ast_strlen_zero(data)) {
++		ast_log(LOG_ERROR, "Missing argument. QUEUE_HAS_MEMBER(<queuename>,<interface>)\n");
++		return -1;
++	}
++
++	AST_STANDARD_APP_ARGS(args, data);
++
++	lu = ast_module_user_add(chan);
++
++	AST_LIST_LOCK(&queues);
++	AST_LIST_TRAVERSE(&queues, q, list) {
++		if (!strcasecmp(q->name, args.queuename)) {
++			ao2_lock(q);
++			break;
++		}
++	}
++	AST_LIST_UNLOCK(&queues);
++
++	if (q) {
++		struct member *mem = interface_exists(q, args.interface);
++		if (mem) {
++			ret = 1;
++			ao2_ref(mem, -1);
++		}
++		ao2_unlock(q);
++	}
++	else
++		ret = -1;
++
++	snprintf(buf, len, "%d", ret);
++	ast_module_user_remove(lu);
++	return 0;
++}
++
+ static struct ast_custom_function queueagentcount_function = {
+ 	.name = "QUEUEAGENTCOUNT",
+ 	.synopsis = "Count number of agents answering a queue",
+@@ -4539,6 +5485,15 @@
+ 	.read = queue_function_queuememberlist,
+ };
+ 
++static struct ast_custom_function queuehasmember_function = {
++	.name = "QUEUE_HAS_MEMBER",
++	.synopsis = "Returns 1 if member is in queue",
++	.syntax = "QUEUE_HAS_MEMBER(<queuename>,<interface>)",
++	.desc =
++"Returns 1 if member is in queue, otherwise 0. It returns -1 if the queue doesn't exist.\n",
++	.read = queue_function_queuehasmember,
++};
++
+ static int reload_queues(void)
+ {
+ 	struct call_queue *q;
+@@ -5434,6 +6687,7 @@
+ 	res |= ast_custom_function_unregister(&queuemembercount_function);
+ 	res |= ast_custom_function_unregister(&queuememberlist_function);
+ 	res |= ast_custom_function_unregister(&queuewaitingcount_function);
++	res |= ast_custom_function_unregister(&queuehasmember_function);
+ 	ast_devstate_del(statechange_queue, NULL);
+ 
+ 	ast_module_user_hangup_all();
+@@ -5473,6 +6727,7 @@
+ 	res |= ast_custom_function_register(&queuemembercount_function);
+ 	res |= ast_custom_function_register(&queuememberlist_function);
+ 	res |= ast_custom_function_register(&queuewaitingcount_function);
++	res |= ast_custom_function_register(&queuehasmember_function);
+ 	res |= ast_devstate_add(statechange_queue, NULL);
+ 
+ 	return res;
+
