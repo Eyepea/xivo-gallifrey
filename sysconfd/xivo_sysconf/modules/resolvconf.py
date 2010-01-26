@@ -74,7 +74,7 @@ def _write_config_file(optname, xvars):
                    Rcc["%s_file" % optname],
                    'utf8')
 
-    system.file_writelines_flush_sync(Rcc["%s_file"] % optname, txt)
+    system.file_writelines_flush_sync(Rcc["%s_file" % optname], txt)
 
     return backupfilename
 
@@ -98,6 +98,8 @@ def HostName(args, options):    # pylint: disable-msg=W0613
 
     if not RESOLVCONFLOCK.acquire_read(Rcc['lock_timeout']):
         raise HttpReqError(503, "unable to take RESOLVCONFLOCK for reading after %s seconds" % Rcc['lock_timeout'])
+
+    hostnamebakfile = None
 
     try:
         try:
@@ -168,6 +170,8 @@ def ResolvConf(args, options):    # pylint: disable-msg=W0613
 
     if not RESOLVCONFLOCK.acquire_read(Rcc['lock_timeout']):
         raise HttpReqError(503, "unable to take RESOLVCONFLOCK for reading after %s seconds" % Rcc['lock_timeout'])
+
+    resolvconfbakfile = None
 
     try:
         try:

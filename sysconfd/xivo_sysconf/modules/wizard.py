@@ -284,32 +284,34 @@ def asterisk_mysql_config(authority, database, params, options):
     """
     rs = {}
 
+    xdict = dict(options)
+
     if isinstance(authority, (tuple, list)):
         if authority[0]:
-            rs[options['dbuser']] = authority[0]
+            rs[xdict['dbuser']] = authority[0]
 
         if authority[1]:
-            rs[options['dbpass']] = authority[1]
+            rs[xdict['dbpass']] = authority[1]
 
         if authority[2]:
-            rs[options['dbhost']] = authority[2]
+            rs[xdict['dbhost']] = authority[2]
 
         if authority[3]:
-            rs[options['dbport']] = authority[3]
+            rs[xdict['dbport']] = authority[3]
 
     if database:
-        rs[options['dbname']] = database
+        rs[xdict['dbname']] = database
 
-    del(options['dbuser'],
-        options['dbpass'],
-        options['dbhost'],
-        options['dbport'],
-        options['dbname'])
+    del(xdict['dbuser'],
+        xdict['dbpass'],
+        xdict['dbhost'],
+        xdict['dbport'],
+        xdict['dbname'])
 
     if params:
         for k, v in params.iteritems():
-            if options.has_key(k):
-                rs[options[k]] = v
+            if xdict.has_key(k):
+                rs[xdict[k]] = v
             else:
                 rs[k] = v
 
@@ -523,7 +525,7 @@ def safe_init(options):
 
     for x in ('xivo', 'ipbx'):
         Wdc["webinterface_%s_file" % x] = os.path.join(Wdc['webinterface_config_path'],
-                                                   Wdc["webinterface_%s_config_filename" % x])
+                                                       Wdc["webinterface_%s_config_filename" % x])
 
         Wdc["webinterface_%s_tpl_file" % x] = os.path.join(Wdc['templates_path'],
                                                            Wdc['webinterface_tpl_directory'],
