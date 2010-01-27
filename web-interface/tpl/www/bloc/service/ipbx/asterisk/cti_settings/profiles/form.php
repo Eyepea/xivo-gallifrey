@@ -25,19 +25,17 @@ $element = $this->get_var('element');
 $info = $this->get_var('info');
 $preslist = $this->get_var('preslist');
 
-$servicesavail = $this->get_var('servicesavail');
 $preferencesavail = $this->get_var('preferencesavail');
-$funcsavail = $this->get_var('funcsavail');
 $xletsavail = $this->get_var('xletsavail');
 $xletslocavail = $this->get_var('xletslocavail');
 
-#$profiles = $this->get_var('profiles');
+$yesno = array($this->bbf('no'), $this->bbf('yes'));
 
+#$profiles = $this->get_var('profiles');
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
-
 ?>
 
 <div id="sb-part-first">
@@ -47,7 +45,7 @@ endif;
 				  'labelid'	=> 'profiles-name',
 				  'size'	=> 15,
 				  'default'	=> $element['ctiprofiles']['name']['default'],
-				  'value'	=> $info['profiles']['name']));
+				  'value'	=> $info['ctiprofiles']['name']));
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_profiles_appliname'),
 				  'name'	=> 'profiles[appliname]',
@@ -55,7 +53,7 @@ endif;
 				  'size'	=> 15,
 				  'comment' => $this->bbf('cmt_profiles_appliname'),
 				  'default'	=> $element['ctiprofiles']['appliname']['default'],
-				  'value'	=> $info['profiles']['appliname']));
+				  'value'	=> $info['ctiprofiles']['appliname']));
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_profiles_maxgui'),
 				  'name'	=> 'profiles[maxgui]',
@@ -63,14 +61,14 @@ endif;
 				  'size'	=> 5,
 				  'comment' => $this->bbf('cmt_profiles_maxgui'),
 				  'default'	=> $element['ctiprofiles']['maxgui']['default'],
-				  'value'	=> $info['profiles']['maxgui']));
+				  'value'	=> $info['ctiprofiles']['maxgui']));
 
 	echo $form->select(array('desc'		=> $this->bbf('fm_profiles_presence'),
 				   'name'		=> 'presence',
 				   'id'		=> false,
 				   'label'		=> false,
 				   'key'		=> false,
-				   'selected'	=> $info['profiles']['presence']
+				   'selected'	=> $info['ctiprofiles']['presence']
 			 ),
 			 $preslist);
 ?>
@@ -88,7 +86,7 @@ endif;
 							'multiple'  => true,
 							'size'  => 5,
 							'paragraph' => false),
-							$servicesavail);
+							$info['services']['list']);
 ?>
 				</div>
 				<div class="inout-list">
@@ -139,7 +137,7 @@ endif;
 							'multiple'  => true,
 							'size'  => 5,
 							'paragraph' => false),
-							$funcsavail);
+							$info['funcs']['list']);
 ?>
 				</div>
 				<div class="inout-list">
@@ -178,7 +176,7 @@ endif;
 	</div>
 <?php
 	$type = 'preferences';
-	$count = count($info['preferences']);
+	$count = count($info['preferences']['slt']);
 ?>
 	<div class="sb-list">
 		<table cellspacing="0" cellpadding="0" border="0">
@@ -211,7 +209,7 @@ endif;
 					$errdisplay = '';
 					$pattern = '/^(.*)\((.*)\)/';
 					$match = array();
-					preg_match($pattern, $preferenceslist[$i], $match);
+					preg_match($pattern, $info['preferences']['slt'][$i], $match);
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left txt-center">
@@ -224,7 +222,7 @@ endif;
 								   'selected'	=> $match[1],
 								   'invalid'	=> true,
 							 ),
-							 $preferencesavail);?>
+							 $info['preferences']['avail']);?>
 				</td>
 				<td>
 					<?=$form->text(array('paragraph'	=> false,
@@ -269,7 +267,7 @@ endif;
 								   'key'		=> false,
 								   'invalid'	=> true
 							 ),
-							 $preferencesavail);?>
+							 $info['preferences']['avail']);?>
 				</td>
 				<td>
 					<?=$form->text(array('paragraph'	=> false,
@@ -295,7 +293,7 @@ endif;
 	</div>
 <?php
 	$type = 'xlets';
-	$count = count($info['xlets']);
+	$count = count($info['xlets']['slt']);
 ?>
 	<p>&nbsp;</p>
 	<div class="sb-list">
@@ -324,16 +322,6 @@ endif;
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
 
-	/*				if(isset($error[$type][$i]) === true):
-					$errdisplay = ' l-infos-error';
-				else:
-					$errdisplay = '';
-				endif;
-	*/
-					$errdisplay = '';
-					$pattern = '/^(.*)\((.*)\)/';
-					$match = array();
-					preg_match($pattern, $xletsavail[$i], $match);
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left txt-center">
@@ -343,9 +331,9 @@ endif;
 								   'id'		=> false,
 								   'label'		=> false,
 								   'key'		=> false,
-								   'selected'	=> $match[1]
+								   'selected'	=> $info['xlets']['slt'][$i][0]
 							 ),
-							 $xletsavail);?>
+							 $info['xlets']['list']['xlets']);?>
 				</td>
 				<td>
 					<?=$form->select(array('paragraph'	=> false,
@@ -353,41 +341,46 @@ endif;
 								 'id'		=> false,
 								 'label'		=> false,
 								 'size'		=> 15,
-								 'value'		=> $match[2]
+								 'key'		=> false,
+								 'selected'		=> $info['xlets']['slt'][$i][1]
 							),
 							$xletslocavail);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletsf[]',
-								 'value'	=> $match[3],
-								 'label'	=> false,
-								 'id'		=> 'it-xletsf',
-								 'checked'	=> false,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletsf[]',
+								   'id'		=> false,
+								   'label'		=> false,
+								   'selected'	=> strpos($info['xlets']['slt'][$i][2], 'f') === false ? 0 : 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletsc[]',
-								 'value'	=> $match[3],
-								 'label'	=> false,
-								 'id'		=> 'it-xletsc',
-								 'checked'	=> false,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletsc[]',
+								   'id'		=> false,
+								   'label'		=> false,
+								   'selected'	=> strpos($info['xlets']['slt'][$i][2], 'c') === false ? 0 : 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletsm[]',
-								 'value'	=> $match[3],
-								 'label'	=> false,
-								 'id'		=> 'it-xletsm',
-								 'checked'	=> false,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletsm[]',
+								   'id'		=> false,
+								   'label'		=> false,
+								   'selected'	=> strpos($info['xlets']['slt'][$i][2], 'm') === false ? 0 : 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletss[]',
-								 'value'	=> $match[3],
-								 'label'	=> false,
-								 'id'		=> 'it-xletss',
-								 'checked'	=> false,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletss[]',
+								   'id'		=> false,
+								   'label'		=> false,
+								   'selected'	=> strpos($info['xlets']['slt'][$i][2], 's') === false ? 0 : 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
@@ -418,54 +411,59 @@ endif;
 	<?php
 					echo $form->select(array('paragraph'	=> false,
 								   'name'		=> 'xletslist[]',
-								   'id'		=> false,
+								   'id'			=> false,
 								   'label'		=> false,
-								   'key'		=> false,
-								   'invalid'	=> true
+								   'invalid'	=> true,
+								   'key'		=> false
 							 ),
-							 $xletsavail);?>
+							 $info['xlets']['list']['xlets']);?>
 				</td>
 				<td>
 					<?=$form->select(array('paragraph'	=> false,
 								 'name'		=> 'xletsloc[]',
 								 'id'		=> false,
-								 'label'		=> false,
-								 'size'		=> 15,
-							     'invalid'	=> true
+								 'label'	=> false,
+								 'invalid'	=> true,
+								 'key'		=> false,
+								 'size'		=> 15
 							),
 							$xletslocavail);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletsf[]',
-								 'label'	=> false,
-								 'id'		=> 'it-xletsf',
-								 'checked'	=> false,
-								 'disabled'	=> true,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletsf[]',
+								   'id'			=> true,
+								   'label'		=> false,
+								   'default'	=> 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletsc[]',
-								 'label'	=> false,
-								 'id'		=> 'it-xletsc',
-								 'checked'	=> false,
-								 'disabled'	=> true,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletsc[]',
+								   'id'			=> false,
+								   'label'		=> false,
+								   'default'	=> 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletsm[]',
-								 'label'	=> false,
-								 'id'		=> 'it-xletsm',
-								 'checked'	=> false,
-								 'disabled'	=> true,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletsm[]',
+								   'id'			=> false,
+								   'label'		=> false,
+								   'default'	=> 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td>
-					<?=$form->checkbox(array('name'		=> 'xletss[]',
-								 'label'	=> false,
-								 'id'		=> 'it-xletss',
-								 'checked'	=> false,
-								 'disabled'	=> true,
-								 'paragraph'	=> false));?>
+					<?=$form->select(array('paragraph'	=> false,
+								   'name'		=> 'xletss[]',
+								   'id'			=> false,
+								   'label'		=> false,
+								   'default'	=> 1
+							 ),
+							 $yesno);?>
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

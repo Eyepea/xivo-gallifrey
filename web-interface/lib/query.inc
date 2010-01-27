@@ -125,7 +125,6 @@ class dwho_query
 		if(dwho_has_len($q) === true)
 			$location .= '?'.$q;
 
-#dwho_print_r($location, 'location');
 		die(header('Location: '.$location));
 	}
 

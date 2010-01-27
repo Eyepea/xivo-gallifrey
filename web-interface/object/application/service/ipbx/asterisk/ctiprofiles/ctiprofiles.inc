@@ -315,15 +315,15 @@ class xivo_application_service_asterisk_ctiprofiles extends xivo_application_ast
 
     function edit_profiles()
     {
-		$t = dwho_issa('profiles',$this->_info);
+		$t = dwho_issa('ctiprofiles',$this->_info);
 		$h = $this->get_result('profiles');
 
-        if(dwho_issa('profiles',$this->_info) === false
+        if(dwho_issa('ctiprofiles',$this->_info) === false
         || ($rs = $this->get_result('profiles')) === null
         || $rs === false)
             return(false);
 
-		$this->_return['profiles'] = $this->_ctiprofiles->edit($this->_info['profiles']['id'],$rs);
+		$this->_return['profiles'] = $this->_ctiprofiles->edit($this->_info['ctiprofiles']['id'],$rs);
         return($this->_return['profiles']);
     }
 

@@ -60,9 +60,33 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('profiles',$_QR) === true)
 		{
-			$_QR['profiles']['xlets'] = 'xlets';
 			$_QR['profiles']['deletable'] = 1;
 			$_QR['profiles']['presence'] = "presence.".$_QR['presence'];
+
+			if(array_key_exists('xletslist', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['xletslist'] as $k => $v)
+				{
+					if($v != '')
+					{
+						$str .= "[ \"".$v."\", \"" . $_QR['xletsloc'][$k] . "\", \"";
+						if($_QR['xletsf'][$k] == 1)
+							$str .= 'f';
+						if($_QR['xletsc'][$k] == 1)
+							$str .= 'c';
+						if($_QR['xletsm'][$k] == 1)
+							$str .= 'm';
+						if($_QR['xletss'][$k] == 1)
+							$str .= 's';
+						$str .= "\" ]";
+						$arr[] = $str;
+					}
+				}
+				$_QR['profiles']['xlets'] = '[' . implode(',', $arr) . ']';
+			}
+			else
+				$_QR['profiles']['xlets'] = '';
 
 			if(array_key_exists('services', $_QR))
 			{
@@ -114,13 +138,19 @@ switch($act)
 
 		dwho::load_class('dwho_sort');
 
-		$_TPL->set_var('info',$result);
+		$info['services']['list'] = $servicesavail;
+		$info['services']['slt'] = null;
+		$info['funcs']['list'] = $funcsavail;
+		$info['funcs']['slt'] = null;
+		$info['preferences']['avail'] = $preferencesavail;
+		$info['preferences']['slt'] = null;
+		$info['xlets']['list']['xlets'] = $xletsavail;
+		$info['xlets']['slt'] = null;
+		$info['ctiprofiles'] = null;
+
+		$_TPL->set_var('info',$info);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('preslist',$preslist);
-		$_TPL->set_var('servicesavail',$servicesavail);
-		$_TPL->set_var('funcsavail',$funcsavail);
-		$_TPL->set_var('preferencesavail',$preferencesavail);
-		$_TPL->set_var('xletsavail',$xletsavail);
 		$_TPL->set_var('xletslocavail',$xletslocavail);
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -132,6 +162,14 @@ switch($act)
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
+		$pl = $apppres->get_presences_list();
+		$preslist = array();
+		foreach($pl as $v)
+		{
+			$p = $v['ctipresences'];
+			$preslist[$p['id']] = $p['name'];
+		}
+
 		if(isset($_QR['idprofiles']) === false
 		|| ($info = $app->get($_QR['idprofiles'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
@@ -142,6 +180,72 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('profiles',$_QR) === true)
 		{
+			$_QR['profiles']['deletable'] = 1;
+			$_QR['profiles']['presence'] = "presence.".$_QR['presence'];
+
+			if(array_key_exists('xletslist', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['xletslist'] as $k => $v)
+				{
+					if($v != '')
+					{
+						$str = "[ \"".$v."\", \"" . $_QR['xletsloc'][$k] . "\", \"";
+						if($_QR['xletsf'][$k] == 1)
+							$str .= 'f';
+						if($_QR['xletsc'][$k] == 1)
+							$str .= 'c';
+						if($_QR['xletsm'][$k] == 1)
+							$str .= 'm';
+						if($_QR['xletss'][$k] == 1)
+							$str .= 's';
+						$str .= "\" ]";
+						$arr[] = $str;
+					}
+				}
+				$_QR['profiles']['xlets'] = '[' . implode(',', $arr) . ']';
+			}
+			else
+				$_QR['profiles']['xlets'] = '';
+
+			if(array_key_exists('services', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['services'] as $v)
+				{
+					$arr[] = $servicesavail[$v];
+				}
+				$_QR['profiles']['services'] = implode(',', $arr);
+			}
+			else
+				$_QR['profiles']['services'] = '';
+
+
+			if(array_key_exists('funcs', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['funcs'] as $v)
+				{
+					$arr[] = $funcsavail[$v];
+				}
+				$_QR['profiles']['funcs'] = implode(',', $arr);
+			}
+			else
+				$_QR['profiles']['funcs'] = '';
+
+			if(array_key_exists('preferencesargs', $_QR))
+			{
+				$arr = array();
+				foreach($_QR['preferencesargs'] as $k => $v)
+				{
+					$pref = $_QR['preferenceslist'][$k];
+					$arr[] = $pref.'('.$v.')';
+				}
+				$_QR['profiles']['preferences'] = implode(',', $arr);
+			}
+			else
+				$_QR['profiles']['preferences'] = '';
+
 			$return = &$result;
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)
@@ -153,11 +257,62 @@ switch($act)
 				$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
 		}
 
+		$info['services']['slt'] = array();
+        $info['services']['list'] = $servicesavail;
+
+		if(isset($info['ctiprofiles']['services']) && dwho_has_len($info['ctiprofiles']['services']))
+		{
+			$sel = explode(',', $info['ctiprofiles']['services']);
+			$info['services']['slt'] =
+				array_intersect(
+					$sel,
+					$info['services']['list']);
+			$info['services']['list'] =
+				dwho_array_diff_key(
+					$info['services']['list'],
+					$info['services']['slt']);
+		}
+
+		$info['preferences']['slt'] = array();
+		$info['preferences']['avail'] = $preferencesavail;
+		
+		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
+		{
+			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);
+		}
+
+		$info['funcs']['list'] = $funcsavail;
+		$info['funcs']['slt'] = array();
+		if(isset($info['ctiprofiles']['funcs']) && dwho_has_len($info['ctiprofiles']['funcs']))
+		{
+			$sel = explode(',', $info['ctiprofiles']['funcs']);
+			$info['funcs']['slt'] =
+				array_intersect(
+					$sel,
+					$info['funcs']['list']);
+			$info['funcs']['list'] =
+				dwho_array_diff_key(
+					$info['funcs']['list'],
+					$info['funcs']['slt']);
+		}
+
+		$info['xlets']['list']['xlets'] = $xletsavail;
+		$info['xlets']['list']['loc'] = $xletslocavail;
+		if(isset($info['ctiprofiles']['xlets']) && dwho_has_len($info['ctiprofiles']['xlets']))
+		{
+			$info['xlets']['slt'] = dwho_json::decode($info['ctiprofiles']['xlets'], true);
+		}
 		dwho::load_class('dwho_sort');
 
-		$_TPL->set_var('idprofiles',$info['profiles']['id']);
-		$_TPL->set_var('info',$return);
+		$_TPL->set_var('idprofiles',$info['ctiprofiles']['id']);
+		$_TPL->set_var('info',$info);
 		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('preslist',$preslist);
+		$_TPL->set_var('servicesavail',$servicesavail);
+		$_TPL->set_var('funcsavail',$funcsavail);
+		$_TPL->set_var('preferencesavail',$preferencesavail);
+		$_TPL->set_var('xletsavail',$xletsavail);
+		$_TPL->set_var('xletslocavail',$xletslocavail);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');

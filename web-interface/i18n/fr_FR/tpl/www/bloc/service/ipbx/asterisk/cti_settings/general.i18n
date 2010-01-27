@@ -4,15 +4,6 @@ Configuration CTI
 ; smenu_cti_general
 Options générales
 
-; smenu_cti_presence
-Présences
-
-; smenu_cti_phonehints
-(phone hints)
-
-; smenu_cti_profiles
-Profils
-
 ; fm_bt-save
 Enregistrer
 
@@ -27,6 +18,9 @@ Jeu de commandes :
 
 ; hlp_fm_cti_commandset
 aide jeu de commandes
+
+; cti-servers
+Serveurs CTI
 
 ; fm_cti_fagi_ip
 Fast AGI :
@@ -93,6 +87,12 @@ Choix du serveur Asterisk :
 
 ; hlp_fm_cti_asterisklist
 aide choix serveur asterisk
+
+; cti-intervals
+Intervalles
+
+; cti-xivo_servers
+Serveurs XIVO
 
 ; fm_cti_updates_period
 Intervalle de mise à jour :

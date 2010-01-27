@@ -34,15 +34,18 @@ switch($act)
 		$app = &$ipbx->get_application('serverfeatures', array('feature' => 'phonebook', 'type' => 'xivo'));
 //		$contexts = &$ipbx->get_application('context');
 		$ctimain = &$ipbx->get_module('ctimain');
+		$ctiprofiles = &$ipbx->get_module('ctiprofiles');
+		$ctipresences = &$ipbx->get_module('ctipresences');
+		$ctistatus = &$ipbx->get_module('ctistatus');
+		$ctiphonehints = &$ipbx->get_module('ctiphonehints');
 		$db_type = $app->_serverfeatures->_dso->_dso->_type;
 		$db_path =    $app->_serverfeatures->_dso->_dso->_param['db'];
 		$db_timeout = $app->_serverfeatures->_dso->_dso->_param['timeout'];
 		$load_inf = $ctimain->get_all();
+		$load_profiles = $ctiprofiles->get_all();
+		$load_presences = $ctipresences->get_all();
+		$load_phonehints = $ctiphonehints->get_all();
 		$list = $app->get_server_list();
-//		dwho_print_r($load_inf, 'load_inf');
-//		dwho_print_r($list, 'list');
-//		$cc = $contexts->get_contexts_list(); 
-//		dwho_print_r($cc, 'context');
 
 		$out = array(
 			'main' 			=> array(),
@@ -55,6 +58,54 @@ switch($act)
 			'presences' 	=> array(),
 			'phonehints' 	=> array()
 		);
+
+		# PRESENCES
+		if(isset($load_presences))
+		{
+			$presout = array();
+			foreach($load_presences as $pres)
+			{
+				$presid = $pres['name'];
+				$id = $pres['id'];
+				$where = array();
+				$where['presence_id'] = $id;
+				$load_status = $ctistatus->get_all_where($where);
+
+				$statref = array();
+				foreach($load_status as $stat)
+				{
+					$statref[$stat['id']] = $stat['name'];
+				}
+
+				foreach($load_status as $stat)
+				{
+					$name = $stat['name'];
+					$presout[$presid][$name]['display'] = $stat['display_name'];
+					$presout[$presid][$name]['color'] = $stat['color'];
+					$accessids = $stat['access_status'];
+				
+					$accessstatus = array();
+					foreach(explode(',', $accessids) as $i)
+					{
+						$accessstatus[] = $statref[$i];
+					}
+					$presout[$presid][$name]['status'] = $accessstatus;
+
+					$actions = explode(',', $stat['actions']);
+					$pattern = '/^(.*)\((.*)\)/';
+					foreach($actions as $a)
+					{
+						$match = array();
+						preg_match($pattern, $a, $match);
+						$actionsout[$match[1]] = $match[2];
+					}
+					$presout[$presid][$name]['actions'] = $actionsout;
+				}
+			}
+			$out['presences'] = $presout;
+		}
+
+		# MAIN
 		$out['main']['commandset'] = $load_inf[0]['commandset'];
 		$out['main']['incoming_tcp_fagi'] = array($load_inf[0]['fagi_ip'], $load_inf[0]['fagi_port']);
 		$out['main']['incoming_tcp_cti'] = array($load_inf[0]['cti_ip'], $load_inf[0]['cti_port']);
@@ -71,9 +122,47 @@ switch($act)
 		if($load_inf[0]['parting_astid_context'] != "")
 			$out['main']['parting_astid_context'] = explode(",", $load_inf[0]['parting_astid_context']);
 
-		# REMOVED $out['main']['ctilog'] = '';
-		# REMOVED $out['main']['prefixfile'] = '';
+		# PHONEHINTS
+		if(isset($load_phonehints))
+		{
+			$hintsout = array();
+			foreach($load_phonehints as $ph)
+			{
+				$phid = $ph['number'];
+				$hintsout[$phid] = array($ph['name'], $ph['color']);
+			}
+			$out['phonehints'] = $hintsout;
+		}
 
+		# PROFILES
+		if(isset($load_profiles))
+		{
+			foreach($load_profiles as $pf)
+			{
+				$pfid = $pf['name'];
+				$prefs = array();
+				$prefout = array();
+				$prefs = explode(',', $pf['preferences']);
+				$pattern = '/^(.*)\((.*)\)/';
+				foreach($prefs as $p)
+				{
+					$match = array();
+					preg_match($pattern, $p, $match);
+					$prefout[$match[1]] = $match[2];
+				}
+				$out['xivocti']['profils'][$pfid] = array(
+					'xlets' => dwho_json::decode($pf['xlets'], true),
+					'funcs' => explode(',', $pf['funcs']),
+					'maxgui' => $pf['maxgui'],
+					'appliname' => $pf['appliname'],
+					'presence' => $pf['presence'],
+					'services' => explode(',', $pf['services']),
+					'preferences' => $prefout
+				);
+			}
+		}
+
+		# XiVO SERVERS
 		if(isset($load_inf[0]['asterisklist']) && dwho_has_len($load_inf[0]['asterisklist']))
 		{
 			$astlist = explode(',', $load_inf[0]['asterisklist']);
@@ -82,7 +171,15 @@ switch($act)
 				$hostname = $list[$v]['name'];
 				$url_scheme = $list[$v]['url']['scheme'];
 				$url_auth_host = $list[$v]['url']['authority']['host'];
-				$json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/private/';
+				if($url_auth_host == "127.0.0.1")
+				{
+					$json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/private/';
+				}
+				else
+				{
+					$json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/restricted/';
+				}
+
 				$out['main']['asterisklist'][] = $hostname;
 				$out['main']['userlists'][] = $json . 'pbx_settings/users';
 				$out[$hostname] = array(

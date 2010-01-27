@@ -48,7 +48,7 @@ $array['element']['deletable']['default'] = 1;
 $array['filter'] = array();
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['appliname'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\s\-\,]+$/i');
-$array['filter']['xlets'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
+$array['filter']['xlets'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['maxgui'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['presence'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\.\,]+$/i');
 $array['filter']['services'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');

@@ -1,5 +1,8 @@
 ; col_presence
 Nom du gestionnaire de présence
 
+; col_description
+Description
+
 ; col_action
 Action
