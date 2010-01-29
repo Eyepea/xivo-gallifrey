@@ -332,9 +332,9 @@ $array['filter']['type'] = array('set' => false,'chk' => 0);
 $array['filter']['username'] = array('set' => false,'chk' => 0);
 $array['filter']['secret'] = array('set'	=> false,
 				   'chk'	=> 2,
+				   'cast'	=> 'sgraph',
 				   'minlen'	=> 1,
-				   'maxlen'	=> 80,
-				   'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
+				   'maxlen'	=> 80);
 $array['filter']['md5secret'] = array('set'	=> false,
 				      'chk'	=> 2,
 				      'minlen'	=> 1,

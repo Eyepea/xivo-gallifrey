@@ -82,7 +82,7 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 		}
 
 		if(($r['str'] = $this->_uri->build_uri($uri)) === false
-		|| ($r['arr'] = $this->parse_register_uri($r['str'],false)) === false)
+		|| ($r['arr'] = $this->parse_register_uri($r['str'])) === false)
 			return(false);
 
 		if(substr($r['str'],0,2) === '//')

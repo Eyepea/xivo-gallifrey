@@ -255,9 +255,9 @@ $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('user'
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['secret'] = array('set'	=> false,
 				   'chk'	=> 2,
+				   'cast'	=> 'sgraph',
 				   'minlen'	=> 1,
-				   'maxlen'	=> 80,
-				   'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
+				   'maxlen'	=> 80);
 $array['filter']['dbsecret'] = array('set'	=> false,
 				     'chk'	=> 2,
 				     'minlen'	=> 3,
