@@ -1,6 +1,6 @@
 """Support for Linksys phones for XIVO Configuration
 
-Cisco 79X1 are supported.
+Nortel 1220 are supported.
 
 Copyright (C) 2010  Proformatique
 
@@ -33,29 +33,28 @@ from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
 
-log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
+log = logging.getLogger("xivo.Phones.Nortel") # pylint: disable-msg=C0103
 
 
-class Cisco(PhoneVendorMixin):
+class Nortel(PhoneVendorMixin):
 
-    CISCO_MODELS = (('cp7941g', '7941GE'),
-                      ('cp7961g', '7961GE'))
+    NORTEL_MODELS = ('1220')
 
-    CISCO_COMMON_HTTP_USER = "admin"
-    CISCO_COMMON_HTTP_PASS = ""
+    NORTEL_COMMON_HTTP_USER = "admin"
+    NORTEL_COMMON_HTTP_PASS = "1234"
 
-    CISCO_COMMON_DIR = None
+    NORTEL_COMMON_DIR = None
 
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
-        cls.CISCO_COMMON_DIR = os.path.join(cls.TFTPROOT, "Cisco/")
+        cls.NORTEL_COMMON_DIR = os.path.join(cls.TFTPROOT, "Nortel/")
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
-        if self.phone['model'] not in [x[0] for x in self.CISCO_MODELS]:
-            raise ValueError, "Unknown Cisco model %r" % self.phone['model']
+        if self.phone['model'] not in [x[0] for x in self.NORTEL_MODELS]:
+            raise ValueError, "Unknown Nortel model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
         cnx_to = max_to = max(1, self.CURL_TO_S / 2)
@@ -85,11 +84,11 @@ class Cisco(PhoneVendorMixin):
         Entry point to send the (possibly post) reinit command to
         the phone.
         """
-        self.__action("REBOOT", self.CISCO_COMMON_HTTP_USER, self.CISCO_COMMON_HTTP_PASS)
+        self.__action("REBOOT", self.NORTEL_COMMON_HTTP_USER, self.NORTEL_COMMON_HTTP_PASS)
 
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
-        self.__action("REBOOT", self.CISCO_COMMON_HTTP_USER, self.CISCO_COMMON_HTTP_PASS)
+        self.__action("REBOOT", self.NORTEL_COMMON_HTTP_USER, self.NORTEL_COMMON_HTTP_PASS)
 
     def __generate(self, provinfo):
         """
@@ -104,11 +103,11 @@ class Cisco(PhoneVendorMixin):
             fromdhcp = 1
 
         try:
-            template_specific_path = os.path.join(self.CISCO_COMMON_DIR, macaddr + "-template.cfg")
+            template_specific_path = os.path.join(self.NORTEL_COMMON_DIR, macaddr + "-template.cfg")
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            template_common_path = os.path.join(self.CISCO_COMMON_DIR, "templates", "cisco-" + model + ".cfg")
+            template_common_path = os.path.join(self.NORTEL_COMMON_DIR, "templates", "cisco-" + model + ".cfg")
 
             if not os.access(template_common_path, os.R_OK):
                 template_common_path = os.path.join(self.TEMPLATES_DIR, "cisco-" + model + ".cfg")
@@ -122,8 +121,8 @@ class Cisco(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml.tmp")
-        cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml")
+        tmp_filename = os.path.join(self.NORTEL_COMMON_DIR, "SIP" + macaddr + ".xml.tmp")
+        cfg_filename = os.path.join(self.NORTEL_COMMON_DIR, "SIP" + macaddr + ".xml")
 
         if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
@@ -159,7 +158,7 @@ class Cisco(PhoneVendorMixin):
 
     @classmethod
     def __format_function_keys(cls, funckey, model, provinfo):
-        if model not in ('cisco'):
+        if model not in ('nortel'):
             return ""
 
         sorted_keys = funckey.keys()
@@ -198,7 +197,7 @@ class Cisco(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return tuple([(x[0], x[0].upper()) for x in cls.CISCO_MODELS])
+        return tuple([(x[0], x[0].upper()) for x in cls.NORTEL_MODELS])
 
     # Entry points for the AGI
 
@@ -209,10 +208,10 @@ class Cisco(PhoneVendorMixin):
         or return None if we don't deal with this kind of Agent.
         """
 
-	# Cisco-CP7941G-GE/8.0
+	# Nortel-CP7941G-GE/8.0
 
         ua_splitted = ua.split("-", 2)
-        if ua_splitted[0] != 'Cisco':
+        if ua_splitted[0] != 'Nortel':
             return None
         model = 'unknown'
         fw = 'unknown'
