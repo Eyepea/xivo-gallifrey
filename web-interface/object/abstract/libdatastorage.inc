@@ -485,7 +485,8 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 			$arr = array_merge($arr,$id);
 		}
 
-		return($this->_dso->add($arr));
+		$ret = $this->_dso->add($arr);
+		return($ret);
 	}
 
 	function edit($id,$arr,$disable=null,$chkunique=true)

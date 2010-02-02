@@ -50,6 +50,11 @@ $url = &$this->get_module('url');
 							      'xivo/configuration/manage/ldapserver',
 							      'act=list');?>
 			</dd>
+			<dd id="mn-manage--directories">
+				<?=$url->href_html($this->bbf('mn_left_manage-directories'),
+							      'xivo/configuration/manage/directories',
+							      'act=list');?>
+			</dd>
 			<dd id="mn-manage--accesswebservice">
 				<?=$url->href_html($this->bbf('mn_left_manage-accesswebservice'),
 						   'xivo/configuration/manage/accesswebservice',

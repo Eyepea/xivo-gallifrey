@@ -47,13 +47,6 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
-#		if(xivo_user::chk_acl('general_settings','cti') === true):
-#			echo	'<dd id="mn-general-settings--cti">',
-#				$url->href_html($this->bbf('mn_left_generalsettings-cti'),
-#						'service/ipbx/general_settings/cti'),
-#				'</dd>';
-#		endif;
-
 		if(xivo_user::chk_acl('general_settings','voicemail') === true):
 			echo	'<dd id="mn-general-settings--voicemail">',
 				$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),
@@ -79,7 +72,7 @@ $dhtml = &$this->get_module('dhtml');
 	endif;
 
 	if(xivo_user::chk_acl('cti_settings') === true):
-		echo 	'<dl><dt>',$this->bbf('mn_left_ti_ctisettings'),'</td>';
+		echo 	'<dl><dt>',$this->bbf('mn_left_ti_ctisettings'),'</dt>';
 
 		if(xivo_user::chk_acl('cti_settings','general') === true):
 			echo	'<dd id="mn-cti-settings--general">',
@@ -105,7 +98,32 @@ $dhtml = &$this->get_module('dhtml');
 					'service/ipbx/cti_settings/profiles'),
 				'</dd>';
 		endif;
+		if(xivo_user::chk_acl('cti_settings','directories') === true):
+			echo	'<dd id="mn-cti-settings--directories">',
+				$url->href_html($this->bbf('mn_left_ctisettings-directories'),
+					'service/ipbx/cti_settings/directories'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','displays') === true):
+			echo	'<dd id="mn-cti-settings--displays">',
+				$url->href_html($this->bbf('mn_left_ctisettings-displays'),
+					'service/ipbx/cti_settings/displays'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','sheets') === true):
+			echo	'<dd id="mn-cti-settings--sheets">',
+				$url->href_html($this->bbf('mn_left_ctisettings-sheets'),
+					'service/ipbx/cti_settings/sheets'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','contexts') === true):
+			echo	'<dd id="mn-cti-settings--contexts">',
+				$url->href_html($this->bbf('mn_left_ctisettings-contexts'),
+					'service/ipbx/cti_settings/contexts'),
+				'</dd>';
+		endif;
 	endif;
+	echo	'</dl>';
 
 
 	if(xivo_user::chk_acl('pbx_settings') === true):

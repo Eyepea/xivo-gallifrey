@@ -40,6 +40,8 @@ switch($act)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('element',$_LDAPSVR->get_element());
 		break;
@@ -63,6 +65,8 @@ switch($act)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
 
+		$dhtml = &$_TPL->get_module('dhtml');
+		$dhtml->set_js('js/dwho/submenu.js');
 		$_TPL->set_var('id',$info['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('element',$_LDAPSVR->get_element());

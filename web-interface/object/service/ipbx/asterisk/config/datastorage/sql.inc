@@ -72,6 +72,18 @@ $array['contextnummember'] = array();
 $array['contextnummember']['table'] = 'contextnummember';
 $array['contextnummember']['primary'] = array('context' => '','type' => '','typeval' => '');
 
+$array['cticontexts'] = array();
+$array['cticontexts']['table'] = 'cticontexts';
+$array['cticontexts']['primary'] = array('id' => '');
+
+$array['ctidirectories'] = array();
+$array['ctidirectories']['table'] = 'ctidirectories';
+$array['ctidirectories']['primary'] = array('id' => '');
+
+$array['ctidisplays'] = array();
+$array['ctidisplays']['table'] = 'ctidisplays';
+$array['ctidisplays']['primary'] = array('id' => '');
+
 $array['ctimain'] = array();
 $array['ctimain']['table'] = 'ctimain';
 $array['ctimain']['primary'] = array('id' => '');
@@ -87,6 +99,10 @@ $array['ctipresences']['primary'] = array('id' => '');
 $array['ctiprofiles'] = array();
 $array['ctiprofiles']['table'] = 'ctiprofiles';
 $array['ctiprofiles']['primary'] = array('id' => '');
+
+$array['ctisheets'] = array();
+$array['ctisheets']['table'] = 'ctisheets';
+$array['ctisheets']['primary'] = array('id' => '');
 
 $array['ctistatus'] = array();
 $array['ctistatus']['table'] = 'ctistatus';

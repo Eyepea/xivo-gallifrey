@@ -1,0 +1,32 @@
+; fm_directories_name
+Nom du répertoire :
+
+; fm_directories_uri
+URI :
+
+; fm_directories_delimiter
+Séparateur :
+
+; fm_directories_match_direct
+(match direct)
+
+; fm_directories_match_reverse
+(match reverse)
+
+; fm_directories_field_phone
+(field phone)
+
+; fm_directories_field_fullname
+(field fullname)
+
+; fm_directories_field_company
+(field company)
+
+; fm_directories_field_mail
+(field mail)
+
+; fm_directories_display_reverse
+(display reverse)
+
+; fm_description
+Description

@@ -229,8 +229,23 @@ $array['module']['contextnumbers']['datastorage'] = true;
 $array['module']['contextnummember'] = array();
 $array['module']['contextnummember']['datastorage'] = true;
 
+$array['module']['ctidirectories'] = array();
+$array['module']['ctidirectories']['datastorage'] = true;
+
 $array['module']['ctimain'] = array();
 $array['module']['ctimain']['datastorage'] = true;
+
+$array['module']['ctidisplays'] = array();
+$array['module']['ctidisplays']['datastorage'] = true;
+
+$array['module']['ctisheets'] = array();
+$array['module']['ctisheets']['datastorage'] = true;
+
+$array['module']['cticontexts'] = array();
+$array['module']['cticontexts']['datastorage'] = true;
+
+$array['module']['ctiphonehints'] = array();
+$array['module']['ctiphonehints']['datastorage'] = true;
 
 $array['module']['ctipresences'] = array();
 $array['module']['ctipresences']['datastorage'] = true;
@@ -291,9 +306,6 @@ $array['module']['phonebooknumber']['datastorage'] = true;
 
 $array['module']['phonefunckey'] = array();
 $array['module']['phonefunckey']['datastorage'] = true;
-
-$array['module']['ctiphonehints'] = array();
-$array['module']['ctiphonehints']['datastorage'] = true;
 
 $array['module']['queue'] = array();
 $array['module']['queue']['datastorage'] = true;
