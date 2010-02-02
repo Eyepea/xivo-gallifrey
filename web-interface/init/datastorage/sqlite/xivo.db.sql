@@ -37,6 +37,16 @@ CREATE INDEX accesswebservice__idx__host ON accesswebservice(host);
 CREATE INDEX accesswebservice__idx__disable ON accesswebservice(disable);
 CREATE UNIQUE INDEX accesswebservice__uidx__name ON accesswebservice(name);
 
+DROP TABLE directories;
+CREATE TABLE directories (
+  id integer unsigned,
+  uri varchar(255),
+  dirtype varchar(20),
+  name varchar(255),
+  tablename varchar(255),
+  description varchar(255),
+  primary key(id)
+);
 
 DROP TABLE entity;
 CREATE TABLE entity (
