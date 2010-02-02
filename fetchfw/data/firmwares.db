@@ -662,14 +662,14 @@ sha1sum: a28f09a3741cbbee536d586cae9239d5cd0c4f04
 [aft_a108d]
 brand: Sangoma
 model: AFT A108D
-version: 40
-files: A108dm_0100_V40.BIN
+version: 41
+files: A108dm_0100_V41.BIN
 
-[A108dm_0100_V40.BIN]
-url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V40.BIN
+[A108dm_0100_V41.BIN]
+url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V41.BIN
 size: 402936
-md5sum: 617be89ed2feb4caf5ea80bbca95d3d4
-sha1sum: 56cba1bca1908f1eae1a3bb3eaf08032573cfcda
+md5sum: 787482d3b18c08d68a9d0dffc29968ed
+sha1sum: aa95101469fb32fd52abaaf7dcc1d3ead1a1c653
 
 [aft_a200]
 brand: Sangoma
