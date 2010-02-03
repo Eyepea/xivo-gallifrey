@@ -1,0 +1,20 @@
+Index: asterisk-1.4.29/main/file.c
+===================================================================
+--- asterisk-1.4.29.orig/main/file.c	2010-02-03 16:13:05.000000000 +0100
++++ asterisk-1.4.29/main/file.c	2010-02-03 16:13:09.000000000 +0100
+@@ -226,12 +226,14 @@
+ {
+ 	int ifd, ofd, len;
+ 	char buf[4096];	/* XXX make it lerger. */
++	struct stat st;
+ 
+ 	if ((ifd = open(infile, O_RDONLY)) < 0) {
+ 		ast_log(LOG_WARNING, "Unable to open %s in read-only mode\n", infile);
+ 		return -1;
+ 	}
+-	if ((ofd = open(outfile, O_WRONLY | O_TRUNC | O_CREAT, 0600)) < 0) {
++	fstat(ifd, &st);
++	if ((ofd = open(outfile, O_WRONLY | O_TRUNC | O_CREAT, st.st_mode & 0777)) < 0) {
+ 		ast_log(LOG_WARNING, "Unable to open %s in write-only mode\n", outfile);
+ 		close(ifd);
+ 		return -1;
