@@ -54,7 +54,6 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
 	{
-	#	dwho_print_r($ctimain->get_filter_error());
 		die('error');
 	}
 

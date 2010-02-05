@@ -204,7 +204,6 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		{
 			$arr['presence_id'] = $presid;
 			$rs = $this->_ctistatus->get_all_where($arr);
-#			dwho_print_r($rs, 'RS');
 		}
 		if($rs === false || ($nb = count($rs)) === 0)
 		{
@@ -274,7 +273,6 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		}
 		else if(($rs = $this->_ctistatus->chk_values($arr)) === false)
 		{
-#			dwho_print_r($this->_ctistatus->get_filter_error(), 'RS');
 			$this->_set_result('status',$this->_ctistatus->get_filter_result());
 			$this->_set_error('status',$this->_ctistatus->get_filter_error());
 			return(false);

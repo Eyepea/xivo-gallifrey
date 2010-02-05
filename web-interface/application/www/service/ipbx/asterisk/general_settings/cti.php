@@ -21,7 +21,6 @@
 $ctimain = &$ipbx->get_module('ctimain');
 $ctipresences = &$ipbx->get_module('ctipresences');
 
-dwho_var_dump($ctipresences->get_all());
 $appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 
 $info = array();
@@ -74,7 +73,6 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
 	{
-	#	dwho_print_r($ctimain->get_filter_error());
 		die('error');
 	}
 

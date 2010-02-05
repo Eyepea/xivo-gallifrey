@@ -306,7 +306,6 @@ switch($act)
 			$return['capaids']['list'] = dwho_array_diff_key($return['capaids']['list'], $return['capaids']['slt']);
 		}
 
-	#	dwho_print_r($info, 'info');
 		$screens = null;
         if(isset($info['sheetactions']['sheet_info']) && dwho_has_len($info['sheetactions']['sheet_info']))
         {
