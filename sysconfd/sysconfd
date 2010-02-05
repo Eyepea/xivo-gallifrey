@@ -153,7 +153,7 @@ def main(options):
             log.info("pidfile ok")
             root_logger.setLevel(options.loglevel)
             # XXX: will be needed if i merge the provi in this daemon
-            #os.umask(022)
+            os.umask(022)
             http_json_server.run(options)
         except SystemExit:
             raise
