@@ -48,11 +48,11 @@ PACKAGES_LIST   = {'asterisk':
                                 {'depends':     ['asterisk'],
                                  'recommends':  ['asterisk-moh-nonfree']},
                    'mysql':
-                                {'depends':     ['php4-mysql'],
+                                {'depends':     ['php5-mysql'],
                                  'ipbxengine':  {'asterisk':
                                                                 {'depends': ['asterisk-mysql']}}},
                    'sqlite':
-                                {'depends':     ['sqlite', 'php4-sqlite'],
+                                {'depends':     ['sqlite', 'php5-sqlite'],
                                  'ipbxengine':
                                                 {'asterisk':
                                                                 {'depends':  ['pf-asterisk-res-sqlite2']}}},
