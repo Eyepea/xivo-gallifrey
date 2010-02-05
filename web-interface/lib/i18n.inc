@@ -219,6 +219,7 @@ class dwho_i18n
 			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
 
 		$loc = setlocale(LC_TIME,null);
+		setlocale(LC_TIME,$locale);
 		if($timestamp === null)
 			$r = strftime($format);
 		else
