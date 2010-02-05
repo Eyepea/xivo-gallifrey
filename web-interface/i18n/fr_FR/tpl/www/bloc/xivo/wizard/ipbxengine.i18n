@@ -1,0 +1,8 @@
+; fm_ipbxengine
+Moteur IPBX :
+
+; error_fm_ipbxengine(missing)
+Aucun moteur IPBX trouvé
+
+; error_fm_ipbxengine(invalid)
+Moteur IPBX invalide

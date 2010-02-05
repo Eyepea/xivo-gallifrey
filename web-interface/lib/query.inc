@@ -42,6 +42,7 @@ class dwho_query
 	var $uqo	= array();
 	var $qraw	= array();
 	var $input	= null;
+	var $input_raw	= null;
 
 	function dwho_query()
 	{
@@ -253,7 +254,15 @@ class dwho_query
 		if($this->input === null)
 			$this->input = file_get_contents('php://input');
 
-		return($this->input);
+		return(urldecode($this->input));
+	}
+
+	function get_input_raw()
+	{
+		if($this->input_raw === null)
+			$this->input_raw = file_get_contents('php://input');
+
+		return($this->input_raw);
 	}
 
 	function &request_meth_raw()

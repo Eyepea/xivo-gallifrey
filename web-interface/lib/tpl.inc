@@ -85,12 +85,20 @@ class dwho_tpl
 		return($this->_i18n->load_file($file,$namespace));
 	}
 
-	function bbf($name,$arr=array(),$namespace='')
+	function bbf_args($name,$args,$namespace='')
+	{
+		if(empty($args) === true)
+			return(null);
+
+		return($this->bbf($name,$args,$namespace));
+	}
+
+	function bbf($name,$args=array(),$namespace='')
 	{
 		if(dwho_has_len($namespace) === false)
 			$namespace = $this->get_option('i18n_namespace');
 
-		return(dwho_i18n::babelfish($name,$arr,$namespace));
+		return(dwho_i18n::babelfish($name,$args,$namespace));
 	}
 
 	function get_path()

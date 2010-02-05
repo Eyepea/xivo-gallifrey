@@ -21,7 +21,7 @@
 class dwho_session_abstract_sql
 {
 	var $_param		= array('table'		=> 'session');
-	var $_attrib		= array('userid'	=> 0);
+	var $_attrib		= array('identifier'	=> '');
 	var $_dso		= null;
 	var $_time		= DWHO_SESS_TIME;
 	var $_insert		= false;
@@ -72,7 +72,7 @@ class dwho_session_abstract_sql
 
 		$this->_insert = true;
 
-		$this->_dso->new_select($this->_param['table'],array('userid','data','expire'));
+		$this->_dso->new_select($this->_param['table'],array('identifier','data','expire'));
 		$this->_dso->where(array('sessid' => $sessid));
 		$this->_dso->andwhere('expire >= %s',gmstrftime('%s'));
 		$this->_dso->limit(2);
@@ -84,7 +84,7 @@ class dwho_session_abstract_sql
 				$this->_insert = false;
 
 				$r = $rs[0]['data'];
-				$this->_attrib['userid'] = $rs[0]['userid'];
+				$this->_attrib['identifier'] = $rs[0]['identifier'];
 
 				if(empty($r) === true)
 					$this->_dso->delete($this->_param['table'],array('sessid' => $sessid));
@@ -93,23 +93,16 @@ class dwho_session_abstract_sql
 			$this->_dso->free();
 		}
 
-		$this->_crc = sha1($r.$this->_attrib['userid']);
+		$this->_crc = sha1($r.$this->_attrib['identifier']);
 
 		return($r);
 	}
 
 	function write($sessid,$data)
 	{
-		/*
-		$_USR = &dwho_gct::get('_USR');
-
-		if(isset($_USR->id) === true && $_USR->id > 0)
-			$this->u = $_USR->id;
-		*/
-
 		$now = gmstrftime('%s');
 		$expire = $now + $this->_time;
-		$crc = sha1($data.$this->_attrib['userid']);
+		$crc = sha1($data.$this->_attrib['identifier']);
 
 		if($this->_insert === false && $this->_crc !== '' && $this->_crc === $crc)
 			return(true);
@@ -124,7 +117,7 @@ class dwho_session_abstract_sql
 				if($r > 0)
 				{
 					$rs = $this->_dso->update($this->_param['table'],
-								  array('userid'	=> $this->_attrib['userid'],
+								  array('identifier'	=> $this->_attrib['identifier'],
 									'expire'	=> $expire,
 									'data'		=> $data),
 								  null,
@@ -143,7 +136,7 @@ class dwho_session_abstract_sql
 			return(true);
 
 		$this->_dso->replace($this->_param['table'],
-				     array('userid'	=> $this->_attrib['userid'],
+				     array('identifier'	=> $this->_attrib['identifier'],
 					   'sessid'	=> $sessid,
 					   'start'	=> $now,
 					   'expire'	=> $expire,

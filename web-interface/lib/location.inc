@@ -72,7 +72,7 @@ class dwho_location
 		return((strcmp($url,$_SERVER['SCRIPT_NAME']) === 0));
 	}
 
-	function get_app_path($section,$nb=0,$path='',$ext='')
+	function get_app_path($section=null,$nb=0,$path='',$ext='')
 	{
 		$nb = dwho_uint($nb,20);
 		$path = (string) $path;
@@ -82,9 +82,7 @@ class dwho_location
 
 		$section = preg_replace($search,$replace,$section);
 
-		if($section === '')
-			return(false);
-		else if($path === '' && isset($_SERVER['PATH_INFO']) === true)
+		if($path === '' && isset($_SERVER['PATH_INFO']) === true)
 			$path = $_SERVER['PATH_INFO'];
 
 		if($path !== '')

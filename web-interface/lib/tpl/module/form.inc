@@ -51,6 +51,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['cols']		= 50;
 		$this->_param['multiple']	= false;
 		$this->_param['disabled']	= false;
+		$this->_param['readonly']	= false;
 		$this->_param['required']	= false;
 		$this->_param['regexp']		= '';		# Regexp to check entry
 		$this->_param['modifier']	= '';		# Function to modifiy entry
@@ -70,6 +71,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_param['jump']		= 0;
 		$this->_param['jump_strict']	= true;
 		$this->_param['invalid']	= false;
+		$this->_param['error']		= '';
 
 		if(isset($v['name']) === true)
 			$this->_param['name'] = dwho_htmlsc($v['name']);
@@ -115,6 +117,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['disabled']) === true)
 			$this->_param['disabled'] = (bool) $v['disabled'];
+
+		if(isset($v['readonly']) === true)
+			$this->_param['readonly'] = (bool) $v['readonly'];
 
 		if(isset($v['required']) === true)
 			$this->_param['required'] = (bool) $v['required'];
@@ -243,6 +248,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if(isset($v['invalid']) === true)
 			$this->_param['invalid'] = (bool) $v['invalid'];
+
+		if(isset($v['error']) === true && dwho_has_len($v['error']) === true)
+			$this->_param['error'] = $v['error'];
 	}
 
 	function _mk_param_value($value,&$v)
@@ -444,32 +452,49 @@ class dwho_tpl_form extends dwho_tpl_module
 
 	function _mk_help()
 	{
+		if($this->_param['help'] === '')
+			return(null);
+
 		$r = &$this->_render;
 
-		if($this->_param['help'] !== '')
+		if(is_string($this->_param['help']) === true)
 		{
-			$dhtml	= &$this->_get_module('dhtml');
+			$dhtml = &$this->_get_module('dhtml');
 
-			$funcjsin = 'dwho.form.create_help_div('.
-				    'this,'.
-				    '\''.$dhtml->escape($this->_param['help']).'\');';
-
-			$r .= sprintf('<a href="#"
-					  class="fm-help"
-					  onclick="return(false);"
-					  onfocus="%1$s"
-					  onblur="%2$s"
-					  onmouseover="%1$s"
-					  onmouseout="%2$s">&nbsp;</a>',
-				      $funcjsin,
-				      'dwho.form.destroy_help_div();');
+			$r .= $dhtml->message_help($this->_param['help'],
+						   'fm-help-icon',
+						   null);
 		}
 
-		if($this->_param['comment'] !== '')
+		$r = '<span class="fm-help">'.$r.'</span>';
+	}
+
+	function _mk_error()
+	{
+		if($this->_param['error'] === '')
+			return(null);
+
+		$r = &$this->_render;
+
+		if(is_string($this->_param['error']) === true)
 		{
-			$r .= '<span class="fm-desc clearboth">&nbsp;</span>'."\n".
-			      '<span class="fm-comment">'.dwho_htmlsc($this->_param['comment']).'</span>';
+			$dhtml = &$this->_get_module('dhtml');
+
+			$r .= $dhtml->message_error($this->_param['error'],
+						    'fm-error-icon',
+						    null);
 		}
+
+		$r = '<span class="fm-error">'.$r.'</span>';
+	}
+
+	function _mk_comment()
+	{
+		if($this->_param['comment'] === '')
+			return(null);
+
+		$this->_render .= '<span class="fm-desc clearboth">&nbsp;</span>'."\n".
+				  '<span class="fm-comment">'.dwho_htmlsc($this->_param['comment']).'</span>';
 	}
 
 	function _mk_input(&$o)
@@ -501,6 +526,9 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		if($this->_param['disabled'] !== false)
 			$r .= ' disabled="disabled"';
+
+		if($this->_param['readonly'] !== false)
+			$r .= ' readonly="readonly"';
 
 		if($this->_param['checked'] !== false)
 			$r .= ' checked="checked"';
@@ -571,6 +599,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_mk_input($o);
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -595,6 +625,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_mk_input($o);
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -646,6 +678,8 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_mk_input($o);
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 
 		if($this->_param['paragraph'] === true)
 			$this->_render = '<p class="fm-paragraph-button">'."\n".$this->_render."\n".'</p>';
@@ -674,6 +708,8 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_mk_input($o);
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 
 		if($this->_param['paragraph'] === true)
 			$this->_render = '<p class="fm-paragraph-submit">'."\n".$this->_render."\n".'</p>';
@@ -705,6 +741,8 @@ class dwho_tpl_form extends dwho_tpl_module
 
 		$this->_mk_input($o);
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 
 		if($this->_param['paragraph'] === true)
 			$this->_render = '<p class="fm-paragraph-image-submit">'."\n".$this->_render."\n".'</p>';
@@ -732,6 +770,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_mk_input($o);
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -766,6 +806,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_mk_input($o);
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -800,6 +842,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_mk_input($o);
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -825,6 +869,9 @@ class dwho_tpl_form extends dwho_tpl_module
 		if($this->_param['disabled'] !== false)
 			$r .= ' disabled="disabled"';
 
+		if($this->_param['readonly'] !== false)
+			$r .= ' readonly="readonly"';
+
 		if($this->_param['id'] !== false)
 			$r .= ' id="'.$this->_param['id'].'"';
 
@@ -848,6 +895,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$r .= (isset($o{0}) === true ? ' '.$o : '').'>'.$this->_param['value'].'</textarea>'."\n";
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();
@@ -1397,6 +1446,8 @@ class dwho_tpl_form extends dwho_tpl_module
 		$this->_render = $r.$this->_render.'</select>';
 
 		$this->_mk_help();
+		$this->_mk_error();
+		$this->_mk_comment();
 		$this->_mk_desc();
 		$this->_mk_label();
 		$this->_mk_paragraph();

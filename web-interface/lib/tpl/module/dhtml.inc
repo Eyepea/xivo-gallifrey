@@ -347,6 +347,58 @@ class dwho_tpl_dhtml extends dwho_tpl_module
 		include($this->get_file('dhtml'));
 		return(ob_get_clean());
 	}
+
+	function message_error($msg,$iconclass='dwho-msg-error-icon',$class='dwho-msg-error')
+	{
+		if(dwho_has_len($msg) === false)
+			return(null);
+
+		$funcjsin = 'dwho.form.create_error_div('.
+			    'this,'.
+			    '\''.$this->escape($msg).'\');';
+
+		$format = '<a href="#"
+			      class="%1$s"
+			      onclick="return(false);"
+			      onfocus="%2$s"
+			      onblur="%3$s"
+			      onmouseover="%2$s"
+			      onmouseout="%3$s">&nbsp;</a>';
+
+		if(dwho_has_len($class) === true)
+			$format = '<span class="'.$class.'">'.$format.'</span>';
+
+		return(sprintf($format,
+			       $iconclass,
+			       $funcjsin,
+			       'dwho.form.destroy_error_div();'));
+	}
+
+	function message_help($msg,$iconclass='dwho-msg-help-icon',$class='dwho-msg-help')
+	{
+		if(dwho_has_len($msg) === false)
+			return(null);
+
+		$funcjsin = 'dwho.form.create_help_div('.
+			    'this,'.
+			    '\''.$this->escape($msg).'\');';
+
+		$format = '<a href="#"
+			      class="%1$s"
+			      onclick="return(false);"
+			      onfocus="%2$s"
+			      onblur="%3$s"
+			      onmouseover="%2$s"
+			      onmouseout="%3$s">&nbsp;</a>';
+
+		if(dwho_has_len($class) === true)
+			$format = '<span class="'.$class.'">'.$format.'</span>';
+
+		return(sprintf($format,
+			       $iconclass,
+			       $funcjsin,
+			       'dwho.form.destroy_help_div();'));
+	}
 }
 
 ?>

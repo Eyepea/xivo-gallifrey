@@ -1,0 +1,38 @@
+; sysinfos_memory
+Mémoire
+
+; sysinfos_col_type
+Type
+
+; sysinfos_col_percent
+Pourcentage
+
+; sysinfos_col_free
+Libre
+
+; sysinfos_col_used
+Utilisée
+
+; sysinfos_col_buffers
+Tampon
+
+; sysinfos_col_cached
+Cache
+
+; sysinfos_col_total
+Total
+
+; sysinfos_physical-memory
+Mémoire physique
+
+; sysinfos_swap-partition
+Partition swap
+
+; sysinfos_used-memory
+Mémoire utilisée (%.2f %%)
+
+; sysinfos_buffers-memory
+Mémoire tampon (%.2f %%)
+
+; sysinfos_cached-memory
+Mémoire cache (%.2f %%)

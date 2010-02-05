@@ -184,6 +184,12 @@ class dwho
 			$session['path'] = $this->_conf['dwho']['ini']['session']['path'];
 
 		define('DWHO_SESS_PATH',(string) $session['path']);
+
+		if(isset($session['save_path']) === false
+		|| dwho_file::is_d_rwx($session['save_path']) === false)
+			$session['save_path'] = $this->_conf['dwho']['ini']['session']['save_path'];
+
+		define('DWHO_SESS_SAVE_PATH',(string) $session['save_path']);
 	}
 
 	function _cfg_ini_error($error=null)
@@ -241,13 +247,16 @@ class dwho
 
 	function _cfg_ini_datastorage($dso)
 	{
+		if(defined('DWHO_DSO_TYPE') === true)
+			return(true);
+
 		if(dwho_issa('datastorage',$this->_conf['dwho']['ini']) === false)
 			$this->_conf['dwho']['ini']['datastorage'] = array();
 
 		dwho::load_class('dwho_datastorage');
 
 		if(is_string($dso) === true)
-			$dso = dwho_datastorage::set_param_from_uri($dso);
+			$dso = dwho_datastorage::get_param_from_uri($dso);
 
 		if(is_array($dso) === false)
 			die('ERR: Invalid datastorage configuration');

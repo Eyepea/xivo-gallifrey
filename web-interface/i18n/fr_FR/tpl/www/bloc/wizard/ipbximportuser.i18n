@@ -1,8 +1,0 @@
-; wz-import-format-hint
-Le fichier à importer doit être composé de lignes au format suivant:<br>
-nom|prénom|utilisateur|numéro|mot_de_passe<br><br>
-Tous les champs sont obligatoires.<br><br>
-<b>N.B.</b> L'importation échouera si vous n'avez pas défini de contexte interne à l'étape précédente.<br><br>
-
-; fm_upload
-Charger

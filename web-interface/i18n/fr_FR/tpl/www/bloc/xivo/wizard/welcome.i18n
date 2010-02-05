@@ -1,0 +1,13 @@
+; welcome_description
+Bienvenue sur l'installateur de XIVO.
+
+Ca marche super bien et surtout c'est très facile ! :D
+
+; fm_language
+Langue :
+
+; error_fm_language(missing)
+Aucune langue trouvée
+
+; error_fm_language(invalid)
+Langue invalide

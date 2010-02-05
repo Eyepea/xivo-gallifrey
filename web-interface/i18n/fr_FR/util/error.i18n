@@ -1,0 +1,38 @@
+; error_generic(invalid value)
+Valeur invalide
+
+; error_generic(no empty)
+Valeur non vide
+
+; error_generic(empty)
+Valeur vide
+
+; error_generic(cast)
+Type invalide
+
+; error_generic(minimum length)
+Taille minimale non atteinte
+
+; error_generic(maximum length)
+Taille maximale atteinte
+
+; error_generic(between false)
+Intervalle invalide
+
+; error_generic(callback false)
+Valeur invalide
+
+; error_generic(regexp false)
+Valeur invalide
+
+; error_generic(undefined)
+Valeur non défini
+
+; error_generic(no egal)
+Valeurs différentes
+
+; error_generic(invalid)
+Valeur invalide
+
+; error_generic(missing)
+Valeur manquante

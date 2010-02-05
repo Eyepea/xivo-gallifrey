@@ -55,6 +55,9 @@ class dwho_session
 		session_set_cookie_params(DWHO_SESS_TIME,DWHO_SESS_PATH);
 		session_name(DWHO_SESS_NAME);
 
+		if(dwho_has_len(DWHO_SESS_SAVE_PATH) === true)
+			session_save_path(DWHO_SESS_SAVE_PATH);
+
 		$this->_mk_cookie();
 	}
 

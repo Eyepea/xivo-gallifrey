@@ -47,7 +47,7 @@ class dwho_tpl_url extends dwho_tpl_module
 
 	function _build_query($query=null,$encode=true,$sep=null,$sid=true)
 	{
-		$sid = (bool) $sid === true && defined(DWHO_SESS_STR) === true;
+		$sid = (bool) $sid === true && defined('DWHO_SESS_STR') === true;
 		$sep = $this->get_separator($sep);
 
 		if(is_array($query) === true)

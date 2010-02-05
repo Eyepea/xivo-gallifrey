@@ -122,13 +122,6 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 
 		$number = strval($number);
 
-		if($type === 'incall')
-		{
-			$exten_pattern = $this->_sre->_regexten_pattern($number);
-			$pattern = '/^'.$exten_pattern.'$/';
-			$isdigit = dwho_digit($number);
-		}
-
 		for($i = 0;$i < $nb;$i++)
 		{
 			$numberbeg = strval($list[$i]['numberbeg']);
@@ -140,106 +133,22 @@ class xivo_service_asterisk_contextnumbers extends xivo_service_asterisk_abstrac
 				$numberbeg = substr($numberbeg,$didlength);
 				$numberend = substr($numberend,$didlength);
 
-				if(preg_match($pattern,$numberbeg) === 1)
-					$number = $numberbeg;
-				else if(preg_match($pattern,$numberend) === 1)
-					$number = $numberend;
-				else if($isdigit === false)
-				{
-					if($this->chk_pattern_in_interval($numberbeg,
-									   $exten_pattern,
-									   $numberend) === true)
-						return(true);
-					continue;
-				}
+				if(xivo_service_asterisk::valid_exten_in_interval(
+						$numberbeg,
+						$number,
+						$numberend) === true)
+					return(true);
+				continue;
 			}
 
-			if((isset($numberend{0}) === false && $numberbeg === $number) === true
-			|| $this->chk_number_in_interval($numberbeg,$number,$numberend) === true)
+			if(xivo_service_asterisk::valid_exten_number_in_interval(
+						$numberbeg,
+						$number,
+						$numberend) === true)
 				return(true);
 		}
 
 		return(false);
-	}
-
-	function chk_number_in_interval($min,$number,$max)
-	{
-		if(dwho_is_max_digit($min,$number,true) !== true
-		|| dwho_is_max_digit($number,$max,true) !== true)
-			return(false);
-
-		return(true);
-	}
-
-	function chk_pattern_in_interval($min,$pattern,$max)
-	{
-		if(dwho_digit($min) === false
-		|| dwho_digit($max) === false)
-			return(false);
-
-		$split = preg_split('/((?:\[[0-9#\*\-\\\]+\][\+\*]?)+|[0-9])/',
-				    $pattern,
-				    -1,
-				    (PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE));
-
-		if(($nb = count($split)) === 0)
-			return(false);
-
-		$curnum = &$min;
-		$usemax = false;
-
-		for($i = 0;$i < $nb;$i++)
-		{
-			switch($split[$i]{0})
-			{
-				case '[':
-					if(preg_match('/^'.$split[$i].'/',$curnum,$match) !== 1)
-					{
-						if($usemax === true)
-							return(false);
-
-						$usemax = true;
-						$curnum = &$max;
-
-						if(preg_match('/^'.$split[$i].'/',$curnum,$match) !== 1)
-							return(false);
-					}
-
-					$len = strlen($match[0]);
-					$min = substr($min,$len);
-					$max = substr($max,$len);
-					continue;
-				case '\\':
-					if(substr($curnum,0,2) !== '\*')
-					{
-						if($usemax === true)
-							return(false);
-
-						$usemax = true;
-						$curnum = &$max;
-
-						if(substr($curnum,0,2) !== '\*')
-							return(false);
-					}
-
-					$min = substr($min,2);
-					$max = substr($max,2);
-					continue;
-				default:
-					if(ctype_digit($split[$i]) === false)
-						return(false);
-					else if($min{0} < $split[$i] && $split[$i] < $max{0})
-						return(true);
-					else if($min{0} > $split[$i]
-					|| $max{0} < $split[$i])
-						return(false);
-
-					$min = substr($min,1);
-					$max = substr($max,1);
-			}
-		}
-
-		return(($min === false && $max === false));
 	}
 }
 

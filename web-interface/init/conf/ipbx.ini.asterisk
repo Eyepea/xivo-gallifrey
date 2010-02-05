@@ -1,0 +1,27 @@
+[general]
+name = asterisk
+label = Asterisk
+datastorage = "sqlite:/var/lib/asterisk/astsqlite"
+
+[ami]
+bindaddr = 127.0.0.1
+port = 5004
+
+[autoprov]
+host = 127.0.0.1
+port = 8666
+
+[backupfiles]
+path = /var/backups/pf-xivo
+
+[configfiles]
+path = /etc/asterisk
+
+[musiconhold]
+path = /var/lib/pf-xivo/moh
+
+[logfiles]
+path = /var/log/asterisk
+
+[sounds]
+path = /var/lib/pf-xivo/sounds

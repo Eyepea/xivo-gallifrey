@@ -1,8 +1,0 @@
-; wz-send-success
-La configuration a été transmise au serveur avec succès.
-
-; wz-send-xivo-wi-url
-Vous pouvez accéder au serveur à l'URL suivante:<br>
-
-; wz-send-failed
-La transmission de la configuration a échoué.

@@ -52,6 +52,9 @@ class dwho_i18n
 		}
 		else
 			$this->_dso = false;
+
+		if(isset($_SESSION['_i18n']) === false)
+			$_SESSION['_i18n'] = array();
 	}
 
 	function get_language($locale='')
@@ -216,7 +219,6 @@ class dwho_i18n
 			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
 
 		$loc = setlocale(LC_TIME,null);
-		setlocale(LC_TIME,$locale);
 		if($timestamp === null)
 			$r = strftime($format);
 		else
@@ -226,14 +228,14 @@ class dwho_i18n
 		return($r);
 	}
 
-	function gmlcstrftime_l($format,$time,$locale)
+	function gm2localtime_l($format,$time,$locale)
 	{
 		if($locale === null && defined('DWHO_I18N_BABELFISH_REAL_LOCALE') === true)
 			$locale = DWHO_I18N_BABELFISH_REAL_LOCALE;
 
 		$loc = setlocale(LC_TIME,null);
 		setlocale(LC_TIME,$locale);
-		$r = dwho_gmlcstrftime($format,$time);
+		$r = dwho_gm2localtime($format,$time);
 		setlocale(LC_TIME,$loc);
 
 		return($r);

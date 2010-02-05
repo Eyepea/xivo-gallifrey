@@ -454,7 +454,7 @@ class xivo_service_abstract
 		if($ini !== false && isset($ini['datastorage']) === true)
 		{
 			if(is_string($ini['datastorage']) === true)
-				$datastoragemod = dwho_datastorage::set_param_from_uri($ini['datastorage']);
+				$datastoragemod = dwho_datastorage::get_param_from_uri($ini['datastorage']);
 			else
 				$datastoragemod = $ini['datastorage'];
 

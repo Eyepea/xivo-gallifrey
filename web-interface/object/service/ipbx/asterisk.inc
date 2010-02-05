@@ -280,6 +280,17 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$define_label	= 'XIVO_SRE_'.$uppertype.'_LABEL';
 		$define_version	= 'XIVO_SRE_'.$uppertype.'_VERSION';
 
+		if(defined($define_label) === true || defined($define_version) === true)
+		{
+			if(defined($define_label) === false)
+				define($define_label,'unknown');
+
+			if(defined($define_version) === false)
+				define($define_version,'unknown');
+
+			return(false);
+		}
+
 		if(isset($_SESSION['_SRE'][$this->_type][$this->_name]) === false)
 		{
 			define($define_label,'unknown');
@@ -589,12 +600,12 @@ class xivo_service_asterisk extends xivo_service_abstract
 		if(isset($str{0}) === false)
 			return(false);
 		else if(preg_match('/[\[\-\]]/',$str) === 0)
-			return($this->_realexten_pattern($str));
+			return($this->realexten_pattern($str));
 
 		$split = preg_split('/\[(\d+(?:\-\d+)?)\]/',$str,-1,PREG_SPLIT_DELIM_CAPTURE);
 
 		if(($nb = count($split)) === 0)
-			return($this->_realexten_pattern($str));
+			return($this->realexten_pattern($str));
 
 		$r = '';
 
@@ -603,7 +614,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 			if(preg_match('/[\[\-\]]/',$split[$i]) === 1)
 				return(false);
 			else
-				$r .= $this->_realexten_pattern($split[$i]);
+				$r .= $this->realexten_pattern($split[$i]);
 
 			if(isset($split[$i + 1]) === false)
 				return($r);
@@ -674,7 +685,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
-	function _realexten_pattern($str)
+	function realexten_pattern($str)
 	{
 		$str = preg_replace('/\[(\d)\]/','\\1',$str);
 		$pat = array('_','X','Z','N');
@@ -683,12 +694,116 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(str_replace($pat,$rep,$str));
 	}
 
-	function _regexten_pattern($str)
+	function exten2regexp($str)
 	{
-		$pat = array('_','*','X','Z','N','.','!');
-		$rep = array('','\*','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
+		$pat = array('_','X','Z','N','\.','\!');
+		$rep = array('','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
 
-		return(str_replace($pat,$rep,$str));
+		return(str_replace($pat,$rep,preg_quote($str)));
+	}
+
+	function valid_exten_pattern_in_interval($min,$pattern,$max)
+	{
+		if(dwho_digit($min) === false
+		|| dwho_digit($max) === false)
+			return(false);
+
+		$split = preg_split('/((?:\[[0-9#\*\-\\\]+\][\+\*]?)+|[0-9])/',
+				    $pattern,
+				    -1,
+				    (PREG_SPLIT_NO_EMPTY|PREG_SPLIT_DELIM_CAPTURE));
+
+		if(($nb = count($split)) === 0)
+			return(false);
+
+		$curnum = &$min;
+		$usemax = false;
+
+		for($i = 0;$i < $nb;$i++)
+		{
+			switch($split[$i]{0})
+			{
+				case '[':
+					if(preg_match('/^'.$split[$i].'/',$curnum,$match) !== 1)
+					{
+						if($usemax === true)
+							return(false);
+
+						$usemax = true;
+						$curnum = &$max;
+
+						if(preg_match('/^'.$split[$i].'/',$curnum,$match) !== 1)
+							return(false);
+					}
+
+					$len = strlen($match[0]);
+					$min = substr($min,$len);
+					$max = substr($max,$len);
+					continue;
+				case '\\':
+					if(substr($curnum,0,2) !== '\*')
+					{
+						if($usemax === true)
+							return(false);
+
+						$usemax = true;
+						$curnum = &$max;
+
+						if(substr($curnum,0,2) !== '\*')
+							return(false);
+					}
+
+					$min = substr($min,2);
+					$max = substr($max,2);
+					continue;
+				default:
+					if(ctype_digit($split[$i]) === false)
+						return(false);
+					else if($min{0} < $split[$i]
+					&& $split[$i] < $max{0})
+						return(true);
+					else if($min{0} > $split[$i]
+					|| $max{0} < $split[$i])
+						return(false);
+
+					$min = substr($min,1);
+					$max = substr($max,1);
+			}
+		}
+
+		return(($min === false && $max === false));
+	}
+
+	function valid_exten_number_in_interval($min,$number,$max)
+	{
+		if(dwho_has_len($max) === false)
+			$max = $min;
+
+		if(dwho_is_max_digit($min,$number,true) !== true
+		|| dwho_is_max_digit($number,$max,true) !== true)
+			return(false);
+
+		return(true);
+	}
+
+	function valid_exten_in_interval($min,$number,$max)
+	{
+		$min		= strval($min);
+		$number		= strval($number);
+		$max		= strval($max);
+		$pattern	= xivo_service_asterisk::exten2regexp($number);
+
+		if(preg_match('/^'.$pattern.'$/',$min) === 1)
+			$number = $min;
+		else if(preg_match('/^'.$pattern.'$/',$max) === 1)
+			$number = $max;
+		else if(dwho_digit($number) === false)
+			return(xivo_service_asterisk::valid_exten_pattern_in_interval(
+						$min,
+						$pattern,
+						$max));
+
+		return(xivo_service_asterisk::valid_exten_number_in_interval($min,$number,$max));
 	}
 
 	function mk_callerid($calleridname,$calleridnum='')

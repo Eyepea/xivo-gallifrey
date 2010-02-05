@@ -20,50 +20,65 @@
 
 class dwho_filter
 {
-	var $_content		= array();
+	var $_validator		= null;
 	var $_error		= array();
 	var $_errnb		= 0;
 	var $_result		= array();
 
-	function dwho_filter($content=array())
+	function dwho_filter($validator=array())
 	{
-		if(is_array($content) === true
-		&& empty($content) === false)
-			$this->_content = &$content;
+		if(is_array($validator) === true
+		&& empty($validator) === false)
+			$this->_validator = &$validator;
 	}
 
-	function chk($v,$set=true,$content=null)
+	function set_validator($validator)
 	{
-		if(is_array($content) === true)
-			$a = $this->_content = $content;
-		else if(is_array($this->_content) === true)
-			$a = $this->_content;
-		else
-			trigger_error('Invalid content array in '.__CLASS__,E_USER_ERROR);
+		if(is_array($validator) === false)
+			return(false);
+
+		$this->_validator = $validator;
+
+		return(true);
+	}
+
+	function chk($v,$set=true,$validator=null)
+	{
+		if(is_array($validator) === true)
+			$this->_validator = $validator;
+		else if(is_array($this->_validator) === false)
+			trigger_error('Invalid validator array in '.__CLASS__,E_USER_ERROR);
 
 		$set = (bool) $set;
 
-		$this->_reset_result();
-		$this->_reset_error();
+		$this->reset_result();
+		$this->reset_error();
 
-		if(empty($a) === true)
+		if(empty($this->_validator) === true)
 			return(false);
 
-		foreach($a as $key => $arr)
+		foreach($this->_validator as $key => $arr)
 			$this->_chk_key_value($key,$arr,$v,$set);
 
-		return(($this->_errnb > 0 ? false : true));
+		return(($this->_errnb < 1));
 	}
 
-	function _reset_result()
+	function reset_result()
 	{
 		$this->_result = array();
 	}
 
-	function _reset_error()
+	function reset_error()
 	{
 		$this->_error = array();
 		$this->_errnb = 0;
+	}
+
+	function reset_all()
+	{
+		$this->_validator = null;
+		$this->reset_result();
+		$this->reset_error();
 	}
 
 	function get_result()
@@ -515,10 +530,10 @@ class dwho_filter
 	{
 		if(is_array($arr) === false)
 		{
-			if(isset($this->_content[$key]) === false)
+			if(isset($this->_validator[$key]) === false)
 				return(false);
 
-			$arr = &$this->_content[$key];
+			$arr = &$this->_validator[$key];
 
 			$set = isset($arr['set']) === false ? true : (bool) $arr['set'];
 
@@ -820,7 +835,9 @@ class dwho_filter
 
 		$val = &$v[$key];
 
-		if(isset($arr['egal'],$v[$arr['egal']]) === true)
+		if(($val = $this->chk_value($key,$val)) === false)
+			return(false);
+		else if(isset($arr['egal'],$v[$arr['egal']]) === true)
 		{
 			if($v[$arr['egal']] !== $val)
 			{
@@ -828,8 +845,6 @@ class dwho_filter
 				return(false);
 			}
 		}
-		else if(($val = $this->chk_value($key,$val)) === false)
-				return(false);
 
 		$this->_set_result($key,$val);
 

@@ -25,9 +25,14 @@ class dwho_tpl_module
 		return(null);
 	}
 
-	function bbf($name,$arr=array(),$namespace='')
+	function bbf_args($name,$args,$namespace='')
 	{
-		return($this->_tpl->bbf($name,$arr,$namespace));
+		return($this->_tpl->bbf_args($name,$args,$namespace));
+	}
+
+	function bbf($name,$args=array(),$namespace='')
+	{
+		return($this->_tpl->bbf($name,$args,$namespace));
 	}
 
 	function load_i18n_file($file,$namespace='')

@@ -287,10 +287,7 @@ class xivo_object
 		else if($this->_load_dso() === true && is_object($this->_dso) === true)
 			$dso = &$this->_dso;
 		else
-		{
-			trigger_error('Missing Datastorage in XIVO Object for '.$name,E_USER_ERROR);
 			return(false);
-		}
 
 		$dsotype = $dso->get_type();
 
@@ -339,6 +336,9 @@ class xivo_object
 
 		if(is_object($this->_dso) === false)
 			$this->_dso = &dwho_gct::get('DWHO_DSO');
+
+		if(is_object($this->_dso) === false)
+			return(false);
 
 		$type = $this->_dso->get_type();
 

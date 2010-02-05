@@ -572,17 +572,23 @@ function dwho_group_array($ref,&$arr)
 	return($r);
 }
 
-function dwho_array_combine($keys,$values)
+function dwho_array_combine($keys,$values,$notexists=false,$defvalue=null)
 {
 	if(is_array($keys) === false || is_array($values) === false)
 		return(false);
+
+	$notexists = (bool) $notexists;
 
 	$r = array();
 
 	foreach($keys as $k => $v)
 	{
-		if(array_key_exists($k,$values) === true && is_scalar($v) === true)
+		if(is_scalar($v) === false)
+			continue;
+		else if(array_key_exists($k,$values) === true)
 			$r[$v] = $values[$k];
+		else if($notexists === true)
+			$r[$v] = $defvalue;
 	}
 
 	return($r);
@@ -1032,32 +1038,11 @@ function dwho_calc_page($page,$nb,$total)
 	return($r);
 }
 
-function dwho_gmlcstrftime($format,$time)
+function dwho_gm2localtime($format,$time)
 {
-	$time = (int) $time;
+	$time = intval($time);
 
-	$arr = explode('-',gmstrftime('%H-%M-%S-%m-%d-%Y',$time));
-
-	if(isset($arr[5]) === false)
-		return(false);
-
-	$o = strftime('%z',$time);
-
-	$h = (int) substr($o,0,-3);
-	$m = (int) substr($o,-2);
-
-	if($o{0} === '-')
-	{
-		$h = $arr[0] - $h;
-		$m = $arr[1] - $m;
-	}
-	else
-	{
-		$h += $arr[0];
-		$m += $arr[1];
-	}
-
-	return(strftime($format,gmmktime($h,$m,$arr[2],$arr[3],$arr[4],$arr[5])));
+	return(strftime($format,$time + date('Z',$time)));
 }
 
 function dwho_printf_escape($format,$argc=0)

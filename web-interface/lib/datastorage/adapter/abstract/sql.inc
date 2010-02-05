@@ -1942,7 +1942,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		return($r);
 	}
 
-	function select_single($query='',$free=true)
+	function select_single($query='',$free=true,$full_column_names=false)
 	{
 		$query = (string) $query;
 		$free = (bool) $free;
@@ -1961,10 +1961,15 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 			$this->_limit = $limit;
 		}
 
-		if($this->query($query,($free === false)) === false)
-			return(false);
+		if((bool) $full_column_names === true)
+			$r = $this->_fetch_single_assoc_full_column_names($query,$free);
+		else
+		{
+			if($this->query($query,($free === false)) === false)
+				return(false);
 
-		$r = $this->fetch_assoc();
+			$r = $this->fetch_assoc();
+		}
 
 		if($this->_free === true && $free === true)
 			$this->free();

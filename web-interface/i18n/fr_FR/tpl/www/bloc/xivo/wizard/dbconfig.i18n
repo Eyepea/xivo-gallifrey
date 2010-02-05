@@ -1,0 +1,44 @@
+; fm_dbconfig_backend
+Type de base de données :
+
+; error_dbconfig_xivo(invalid)
+Paramètres de connexion invalides pour la base de données XIVO
+
+; error_dbconfig_xivo(connection)
+Connexion impossible à la base de données XIVO
+
+; error_dbconfig_ipbx(invalid)
+Paramètres de connexion invalides pour la base de données IPBX
+
+; error_dbconfig_ipbx(connection)
+Connexion impossible à la base de données IPBX
+
+; fm_dbconfig_sqlite-xivodb
+Fichier de données XIVO :
+
+; fm_dbconfig_sqlite-ipbxdb
+Fichier de données IPBX :
+
+; fm_dbconfig_mysql-host
+Hôte :
+
+; fm_dbconfig_mysql-port
+Port :
+
+; fm_dbconfig_mysql-xivodbname
+Nom de la base de données XIVO :
+
+; fm_dbconfig_mysql-xivouser
+Nom d'utilisateur pour la base de données XIVO :
+
+; fm_dbconfig_mysql-xivopass
+Mot de passe pour la base de données XIVO :
+
+; fm_dbconfig_mysql-ipbxdbname
+Nom de la base de données IPBX :
+
+; fm_dbconfig_mysql-ipbxuser
+Nom d'utilisateur pour la base de données IPBX :
+
+; fm_dbconfig_mysql-ipbxpass
+Mot de passe pour la base de données IPBX :

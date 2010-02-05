@@ -757,8 +757,11 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		|| dwho_has_len($data['incall'],'exten') === false)
 			return(false);
 
-		$data['dialaction'] = array();
-		$data['dialaction']['answer'] = array();
+		if(dwho_issa('dialaction',$data) === false)
+			$data['dialaction'] = array();
+
+		if(dwho_issa('answer',$data['dialaction']) === false)
+			$data['dialaction']['answer'] = array();
 
 		if(isset($data['incall']['destination']) === true)
 			$data['dialaction']['answer']['actiontype'] = $data['incall']['destination'];

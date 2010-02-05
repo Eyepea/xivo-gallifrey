@@ -5,7 +5,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $grpname = $this->get_var('group_name');
 $grpdata = $this->get_var($grpname);
-$memtotal = $this->get_var('memtotal');
+$memtotal = $this->get_var('memstats','memtotal');
 
 if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 

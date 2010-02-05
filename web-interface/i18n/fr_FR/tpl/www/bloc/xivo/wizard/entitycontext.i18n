@@ -1,0 +1,65 @@
+; fld-entity
+Entité
+
+; fm_entity_name
+Nom :
+
+; fm_entity_displayname
+Nom affiché :
+
+; error_fm_context_internal_numberend
+Intervalle invalide
+
+; error_fm_context_incall_numberend
+Intervalle invalide
+
+; fld-context-internal
+Contexte des appels internes
+
+; fm_context_internal-name
+Nom :
+
+; fm_context_internal-displayname
+Nom affiché :
+
+; fm_context_internal-displayname-default(default)
+Défaut
+
+; fm_context_internal-numberbeg
+Début de l'intervalle de numéro :
+
+; fm_context_internal-numberend
+Fin de l'intervalle de numéro :
+
+; fld-context-incall
+Contexte des appels entrants
+
+; fm_context_incall-name
+Nom :
+
+; fm_context_incall-displayname
+Nom affiché :
+
+; fm_context_incall-displayname-default(from-extern)
+Appels entrants
+
+; fm_context_incall-numberbeg
+Début de l'intervalle de numéro :
+
+; fm_context_incall-numberend
+Fin de l'intervalle de numéro :
+
+; fm_context_incall-didlength
+Nombre de chiffres reçus :
+
+; fld-context-outcall
+Contexte des appels sortants
+
+; fm_context_outcall-name
+Nom :
+
+; fm_context_outcall-displayname
+Nom affiché :
+
+; fm_context_outcall-displayname-default(to-extern)
+Appels sortants

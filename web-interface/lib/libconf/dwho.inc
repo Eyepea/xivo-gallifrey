@@ -26,6 +26,7 @@ $array['ini']['session'] = array(
 				'name'		=> '_eid',
 				'time'		=> 7200,
 				'path'		=> '/',
+				'save_path'	=> '',
 				'max_per_user'	=> 1);
 
 $array['ini']['locale'] = array(

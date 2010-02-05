@@ -36,20 +36,21 @@ class xivo extends dwho
 
 		$this->dwho();
 
+		$this->_conf['xivo'] = &$this->_conf['dwho'];
+
 		$this->_init_cfg();
+
 		$this->_set_error();
 		$this->_set_query();
+		$this->_set_language();
 		$this->_set_session();
 		$this->_set_i18n();
+		$this->_set_xivo_object();
+		$this->_set_service();
 
 		if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === true)
-		{
-			$this->_set_xivo_object();
-			$this->_set_service();
 			$this->_set_user();
-		}
 
-		$this->_conf['xivo'] = $this->_conf['dwho'];
 		dwho_gat::set('_CF',$this->_conf);
 	}
 
@@ -57,8 +58,6 @@ class xivo extends dwho
 	{
 		if(($xivo_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini')) === false)
 			define('XIVO_WEBI_CONFIGURED',false);
-		else
-			define('XIVO_WEBI_CONFIGURED',true);
 
 		if(dwho_issa('locale',$xivo_ini) === true)
 			$this->_cfg_ini_locale($xivo_ini['locale']);
@@ -87,13 +86,15 @@ class xivo extends dwho
 		else
 			die('ERR: Missing template init file');
 
-		if(XIVO_WEBI_CONFIGURED === false)
+		if(dwho_constant('XIVO_WEBI_CONFIGURED',true) === false)
 			return(null);
 
 		if(dwho_issa('general',$xivo_ini) === true && isset($xivo_ini['general']['datastorage']) === true)
 			$this->_cfg_ini_datastorage($xivo_ini['general']['datastorage']);
 		else if(dwho_issa('datastorage',$xivo_ini) === true)
 			$this->_cfg_ini_datastorage($xivo_ini['datastorage']);
+		else if(defined('XIVO_WEBI_CONFIGURED') === false)
+			define('XIVO_WEBI_CONFIGURED',false);
 		else
 			die('ERR: Missing datastorage configuration in XIVO init file');
 
@@ -101,6 +102,32 @@ class xivo extends dwho
 			$this->_cfg_ini_service($xivo_ini['service']);
 		else
 			die('ERR: Missing service configuration in XIVO init file');
+
+		if(dwho_issa('sysconfd',$xivo_ini) === true)
+			$this->_cfg_ini_sysconfd($xivo_ini['sysconfd']);
+		else
+			die('ERR: Missing sysconfd configuration in XIVO init file');
+
+		if(defined('XIVO_WEBI_CONFIGURED') === false)
+			define('XIVO_WEBI_CONFIGURED',true);
+
+		return(true);
+	}
+
+	function _set_language()
+	{
+		$_QRY = &dwho_gct::get('dwho_query');
+		$hl = $_QRY->get('hl');
+
+		if(dwho_has_len($hl) === false || defined('DWHO_USER_I18N_LANGUAGE') === true)
+			return(null);
+
+		$_LANG = &dwho_gat::load_get('language',XIVO_PATH_OBJECTCONF);
+
+		if(isset($_LANG[$hl]) === false || (bool) $_LANG[$hl] === false)
+			return(false);
+
+		define('DWHO_USER_I18N_LANGUAGE',$hl);
 
 		return(true);
 	}
@@ -117,6 +144,14 @@ class xivo extends dwho
 		dwho_gct::set(new xivo_service($this->_conf['xivo']['ini']['service']));
 	}
 
+	function _cfg_ini_sysconfd($sysconfd)
+	{
+		if(is_array($sysconfd) === false)
+			die('ERR: Invalid sysconfd configuration in XIVO init file');
+
+		$this->_conf['xivo']['ini']['sysconfd'] = $sysconfd;
+	}
+
 	function _set_user()
 	{
 		xivo::load_class('xivo_user',XIVO_PATH_OBJECT,null,false);
@@ -129,6 +164,11 @@ class xivo extends dwho
 			die('ERR: Invalid service configuration in XIVO init file');
 
 		$this->_conf['xivo']['ini']['service'] = $service;
+	}
+
+	function load_datastorage($dso)
+	{
+		return($this->_cfg_ini_datastorage($dso));
 	}
 
 	function load_class($class,$dir='',$file='',$lib=true)

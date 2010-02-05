@@ -179,7 +179,6 @@ class dwho_file_csv
 			{
 				$rrow = $row - 2;
 				$r[$rrow] = array();
-				$ref_rs = &$r[$rrow];
 			}
 
 			for($i = 0;$i < $nb;$i++)
@@ -193,10 +192,10 @@ class dwho_file_csv
 					else if(is_array($array_ref[$field[$i]]) === true)
 					{
 						$array_ref[$field[$i]]['ref'] = $ref;
-						$ref_rs = array_merge_recursive(dwho_clone($array_ref[$field[$i]]['array']),$ref_rs);
+						$r[$rrow] = array_merge_recursive(dwho_clone($array_ref[$field[$i]]['array']),$r[$rrow]);
 					}
 					else
-						$ref_rs[$field[$i]] = $ref;
+						$r[$rrow][$field[$i]] = $ref;
 				}
 				else
 				{

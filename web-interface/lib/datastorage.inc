@@ -72,7 +72,7 @@ class dwho_datastorage
 		return(false);
 	}
 
-	function set_param_from_uri($str)
+	function get_param_from_uri($str)
 	{
 		dwho::load_class('dwho_uri');
 		$uri = new dwho_uri();

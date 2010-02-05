@@ -1,0 +1,26 @@
+; title_content_name(welcome)
+Présentation
+
+; title_content_name(license)
+Licence
+
+; title_content_name(ipbxengine)
+Moteur IPBX
+
+; title_content_name(dbconfig)
+Base de données
+
+; title_content_name(checkcomponents)
+Vérification des composants
+
+; title_content_name(mainconfig)
+Configuration
+
+; title_content_name(entitycontext)
+Entité et contextes
+
+; title_content_name(ipbximportuser)
+Import des utilisateurs
+
+; title_content_name(validate)
+Validation

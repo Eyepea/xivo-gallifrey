@@ -250,11 +250,65 @@ class xivo_application_abstract extends xivo_libconfig_abstract
 		return($this->_return[$name][$var]);
 	}
 
-	function _set_error($name,$value=false)
+	function _set_error()
 	{
-		$name = (string) $name;
-		$this->_error[$name] = $value;
+		if(($argc = func_num_args()) === 0)
+			return(null);
+
 		$this->_errnb++;
+
+		$name = (string) func_get_arg(0);
+
+		if($argc === 1)
+			$this->_error[$name] = false;
+		else if($argc === 2)
+			$this->_error[$name] = func_get_arg(1);
+		else
+		{
+			if(dwho_issa($name,$this->_error) === false)
+				$this->_error[$name] = array();
+
+			$ref = &$this->_error[$name];
+
+			for($i = 1,$nb = ($argc - 1);$i < $nb;$i++)
+			{
+				$key = func_get_arg($i);
+
+				if(is_scalar($key) === false || is_bool($key) === true)
+					return(false);
+				else if(dwho_issa($key,$ref) === false)
+					$ref[$key] = array();
+
+				$ref = &$ref[$key];
+			}
+
+			$ref = func_get_arg($i);
+		}
+
+		return(true);
+	}
+
+	function _set_errors()
+	{
+		if(($argc = func_num_args()) === 0)
+			return(null);
+
+		$args = func_get_args();
+		$arr = $args[$argc - 1];
+		unset($args[$argc - 1]);
+
+		if(is_array($arr) === false)
+			return(false);
+
+		foreach($arr as $key => $value)
+		{
+			$tmp = $args;
+			$tmp[] = $key;
+			$tmp[] = $value;
+			call_user_func_array(array(&$this,'_set_error'),$tmp);
+		}
+
+		return(true);
 	}
 
 	function get_error($name='')

@@ -446,60 +446,7 @@ class dwho_i18n_mediator
 		return($this->_mediator['timezone']->get_list());
 	}
 
-	function set_babelfish_path()
-	{
-		if(defined('DWHO_I18N_BABELFISH_PATH') === true)
-			return(true);
-		else if(dwho_file::is_d_r(DWHO_PATH_I18N) === false)
-		{
-			trigger_error('Invalid I18N path',E_USER_ERROR);
-			return(false);
-		}
-		else if(defined('DWHO_USER_I18N_LOCALE') === true
-		&& $this->_chk_babelfish_path(DWHO_USER_I18N_LOCALE,true) !== false)
-			return(true);
-		else if(defined('DWHO_USER_I18N_LANGUAGE') === true)
-		{
-			if(($locale = $this->_mediator['language']->exists_default(DWHO_USER_I18N_LANGUAGE)) !== false
-			&& $this->_chk_babelfish_path($locale,true) !== false)
-				return(true);
-			else if(($locales = $this->_mediator['language']->get_locale_list(DWHO_USER_I18N_LANGUAGE)) !== false
-			&& $this->_chk_babelfish_path($locales,true) !== false)
-				return(true);
-		}
-
-		$this->set_locale();
-
-		if(empty($this->_attrib['locale']) === false
-		&& $this->_chk_babelfish_path($this->_attrib['locale'],true) !== false)
-			return(true);
-		else if(empty($this->_attrib['language']) === false)
-		{
-			if(($locale = $this->_mediator['language']->exists_default($this->_attrib['language'])) !== false
-			&& $this->_chk_babelfish_path($locale,true) !== false)
-				return(true);
-			else if(($locales = $this->_mediator['language']->get_locale_list($this->_attrib['language'])) !== false
-			&& $this->_chk_babelfish_path($locales,true) !== false)
-				return(true);
-		}
-
-		if(defined('DWHO_LC_LANGUAGE') === true)
-		{
-			if(($locale = $this->_mediator['language']->exists_default(DWHO_LC_LANGUAGE)) !== false
-			&& $this->_chk_babelfish_path($locale,true) !== false)
-				return(true);
-			else if(($locales = $this->_mediator['language']->get_locale_list(DWHO_LC_LANGUAGE)) !== false
-			&& $this->_chk_babelfish_path($locales,true) !== false)
-				return(true);
-		}
-
-		if($this->_chk_babelfish_path('fr_FR',true) !== false)
-			return(true);
-
-		return(false);
-	}
-
-	function _chk_babelfish_path($locale,$define=false)
+	function _get_babelfish_path($locale,$define=false)
 	{
 		$define = (bool) $define;
 
@@ -521,9 +468,9 @@ class dwho_i18n_mediator
 						$real_locale = $nlocale;
 
 					define('DWHO_I18N_BABELFISH_LANGUAGE',
-						$this->_mediator['locale']->get_language($nlocale));
+					       $this->_mediator['locale']->get_language($nlocale));
 					define('DWHO_I18N_BABELFISH_TERRITORY',
-						$this->_mediator['locale']->get_territory($nlocale));
+					       $this->_mediator['locale']->get_territory($nlocale));
 					define('DWHO_I18N_BABELFISH_LOCALE',$nlocale);
 					define('DWHO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
 					define('DWHO_I18N_BABELFISH_PATH',$dir);
@@ -541,14 +488,88 @@ class dwho_i18n_mediator
 				if(($real_locale = $this->get_real_locale($locale)) === false)
 					$real_locale = $locale;
 
-				define('DWHO_I18N_BABELFISH_LANGUAGE',$this->_mediator['locale']->get_language($locale));
-				define('DWHO_I18N_BABELFISH_TERRITORY',$this->_mediator['locale']->get_territory($locale));
+				define('DWHO_I18N_BABELFISH_LANGUAGE',
+				       $this->_mediator['locale']->get_language($locale));
+				define('DWHO_I18N_BABELFISH_TERRITORY',
+				       $this->_mediator['locale']->get_territory($locale));
 				define('DWHO_I18N_BABELFISH_LOCALE',$locale);
 				define('DWHO_I18N_BABELFISH_REAL_LOCALE',$real_locale);
 				define('DWHO_I18N_BABELFISH_PATH',$dir);
 			}
 			return($dir);
 		}
+
+		return(false);
+	}
+
+	function set_babelfish_path()
+	{
+		if(defined('DWHO_I18N_BABELFISH_PATH') === true)
+			return(true);
+		else if(dwho_file::is_d_r(DWHO_PATH_I18N) === false)
+		{
+			trigger_error('Invalid I18N path',E_USER_ERROR);
+			return(false);
+		}
+		else if(defined('DWHO_USER_I18N_LOCALE') === true
+		&& $this->_get_babelfish_path(DWHO_USER_I18N_LOCALE,true) !== false)
+			return(true);
+		else if(defined('DWHO_USER_I18N_LANGUAGE') === true)
+		{
+			if(($locale = $this->_mediator['language']->exists_default(DWHO_USER_I18N_LANGUAGE)) !== false
+			&& $this->_get_babelfish_path($locale,true) !== false)
+				return(true);
+			else if(($locales = $this->_mediator['language']->get_locale_list(DWHO_USER_I18N_LANGUAGE)) !== false
+			&& $this->_get_babelfish_path($locales,true) !== false)
+				return(true);
+		}
+
+		if(dwho_issa('_i18n',$_SESSION) === true
+		&& dwho_issa('user',$_SESSION['_i18n']) === true)
+		{
+			$ref = &$_SESSION['_i18n']['user'];
+
+			if(isset($ref['locale']) === true
+			&& $this->_get_babelfish_path($ref['locale'],true) !== false)
+				return(true);
+			else if(isset($ref['language']) === true)
+			{
+				if(($locale = $this->_mediator['language']->exists_default($ref['language'])) !== false
+				&& $this->_get_babelfish_path($locale,true) !== false)
+					return(true);
+				else if(($locales = $this->_mediator['language']->get_locale_list($ref['language'])) !== false
+				&& $this->_get_babelfish_path($locales,true) !== false)
+					return(true);
+			}
+		}
+
+		$this->set_locale();
+
+		if(empty($this->_attrib['locale']) === false
+		&& $this->_get_babelfish_path($this->_attrib['locale'],true) !== false)
+			return(true);
+		else if(empty($this->_attrib['language']) === false)
+		{
+			if(($locale = $this->_mediator['language']->exists_default($this->_attrib['language'])) !== false
+			&& $this->_get_babelfish_path($locale,true) !== false)
+				return(true);
+			else if(($locales = $this->_mediator['language']->get_locale_list($this->_attrib['language'])) !== false
+			&& $this->_get_babelfish_path($locales,true) !== false)
+				return(true);
+		}
+
+		if(defined('DWHO_LC_LANGUAGE') === true)
+		{
+			if(($locale = $this->_mediator['language']->exists_default(DWHO_LC_LANGUAGE)) !== false
+			&& $this->_get_babelfish_path($locale,true) !== false)
+				return(true);
+			else if(($locales = $this->_mediator['language']->get_locale_list(DWHO_LC_LANGUAGE)) !== false
+			&& $this->_get_babelfish_path($locales,true) !== false)
+				return(true);
+		}
+
+		if($this->_get_babelfish_path('fr_FR',true) !== false)
+			return(true);
 
 		return(false);
 	}

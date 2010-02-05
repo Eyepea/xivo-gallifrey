@@ -6,4 +6,6 @@
 
 ; load util/size
 
+; load util/error
+
 ; load tpl/tpl

@@ -299,6 +299,40 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
 		return(false);
 	}
 
+	function fetch_full_column_names()
+	{
+		if(is_resource($this->_result) === false
+		|| ($num = mysql_num_fields($this->_result)) === 0)
+			return(false);
+
+		$r = array();
+
+		for($i = 0;$i < $num; ++$i)
+		{
+			$table = mysql_field_table($this->_result,$i);
+			$column = mysql_field_name($this->_result,$i);
+
+			if($table === ''
+			|| isset($this->_colalias[$table],
+				 $this->_colalias[$table][$column]) === true)
+				$r[$i] = $column;
+			else
+				$r[$i] = sprintf('%s.%s',$table,$column);
+		}
+
+		return($r);
+	}
+
+	function _fetch_single_assoc_full_column_names($query,$free=true)
+	{
+		if($this->query($query,((bool) $free === false)) === false
+		|| ($full_column_names = $this->fetch_full_column_names()) === false
+		|| ($m = $this->fetch_row()) === false)
+			return(false);
+
+		return(dwho_array_combine($full_column_names,$m));
+	}
+
 	function _fetch_assoc_full_column_names($query,$free=true,$assoc_column_value=null)
 	{
 		if($this->query($query,((bool) $free === false)) === false
@@ -321,30 +355,6 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
 				if(isset($c[$assoc_column_value]) === true)
 					$r[$c[$assoc_column_value]] = $c;
 			}
-		}
-
-		return($r);
-	}
-
-	function fetch_full_column_names()
-	{
-		if(is_resource($this->_result) === false
-		|| ($num = mysql_num_fields($this->_result)) === 0)
-			return(false);
-
-		$r = array();
-
-		for($i = 0;$i < $num; ++$i)
-		{
-			$table = mysql_field_table($this->_result,$i);
-			$column = mysql_field_name($this->_result,$i);
-
-			if($table === ''
-			|| isset($this->_colalias[$table],
-				 $this->_colalias[$table][$column]) === true)
-				$r[$i] = $column;
-			else
-				$r[$i] = sprintf('%s.%s',$table,$column);
 		}
 
 		return($r);

@@ -1,0 +1,126 @@
+; load [global] util/language
+
+; ipbximportuser_view_error(1)
+Voir l'erreur qui s'est produite lors de l'importation des utilisateurs.
+
+; ipbximportuser_view_error
+Voir les erreurs qui se sont produites lors de l'importation des utilisateurs.
+
+; ipbximportuser_lines_status
+Statut de chaque ligne
+
+; ipbximportuser_lines_status($line|error)
+- Ligne %{line}$s : Erreur
+
+; ipbximportuser_lines_status($line|success)
+- Ligne %{line}$s : Succès
+
+; validate_instruction
+Vérifiez les informations ci-dessous puis
+cliquez sur valider pour terminer l'installation.
+
+; fld-general-information
+Informations générales
+
+; info_language
+Langue sélectionnée :
+
+; info_ipbxengine
+Moteur IPBX :
+
+; info_dbbackend
+Type de base de données :
+
+; error_dbconfig_backends(save)
+Erreurs possibles :
+1. Bases de données inaccessibles depuis le serveur
+2. Serveur de configuration indisponible
+3. Un problème est survenu lors de la génération des fichiers de configuration
+
+; fld-server-information
+Informations serveur
+
+; info_servername
+Nom du serveur :
+
+; error_mainconfig_hostname(save)
+Erreurs possibles :
+1. Nom de la machine invalide
+2. Serveur de configuration indisponible
+3. Un problème est survenu lors de la configuration sur le serveur
+
+; info_adminpasswd
+Mot de passe de l'administrateur :
+
+; error_mainconfig_adminpasswd(save)
+Erreurs possibles :
+1. Mot de passe invalide
+2. Bases de données inaccessibles depuis le serveur
+
+; info_netiface_address
+Adresse IP :
+
+; info_netiface_netmask
+Masque de sous-réseau :
+
+; info_netiface_gateway
+Passerelle par défaut :
+
+; error_netiface(save)
+Erreurs possibles :
+1. Configuration réseau invalide
+2. Serveur de configuration indisponible
+3. Un problème est survenu lors de la configuration sur le serveur
+
+; info_resolvconf_nameserver1
+Serveur DNS primaire :
+
+; info_resolvconf_nameserver2
+Serveur DNS secondaire :
+
+; error_resolvconf_nameservers(save)
+Erreurs possibles :
+1. Configuration DNS invalide
+2. Serveur de configuration indisponible
+3. Un problème est survenu lors de la génération du fichier de configuration
+
+; fld-entity
+Entité
+
+; info_entity_name
+Nom :
+
+; info_entity_displayname
+Nom affiché :
+
+; error_entity(save)
+Erreurs possibles :
+1. Configuration de l'entité invalide
+2. Bases de données inaccessibles depuis le serveur
+
+; fld-context
+Contextes
+
+; info_context_internal
+Appels internes :
+
+; error_context_internal(save)
+Erreurs possibles :
+1. Configuration du contexte des appels internes invalide
+2. Bases de données inaccessibles depuis le serveur
+
+; info_context_incall
+Appels entrants :
+
+; error_context_incall(save)
+Erreurs possibles :
+1. Configuration du contexte des appels entrants invalide
+2. Bases de données inaccessibles depuis le serveur
+
+; info_context_outcall
+Appels sortants :
+
+; error_context_outcall(save)
+Erreurs possibles :
+1. Configuration du contexte des appels sortants invalide
+2. Bases de données inaccessibles depuis le serveur

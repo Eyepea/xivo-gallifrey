@@ -911,6 +911,38 @@ dwho.form.destroy_help_div = function()
 	dwho.dom.remove_element(dwho_eid('__dwho_form_help__',true));
 }
 
+dwho.form.create_error_div = function(obj,str)
+{
+	if(dwho_is_object(obj) === false
+	|| dwho_is_string(str) === false)
+		return(false);
+
+	var div = dwho.dom.create_element('div',
+					  {'id':	'__dwho_form_error__',
+					   'className':	'dwho-form-error'},
+					   str,
+					   true)
+
+	var pos = dwho.dom.get_offset_position(obj);
+
+	div.style.left	= (pos.x + 20) + 'px';
+	div.style.top	= ((pos.y - 20) + obj.offsetHeight) + 'px';
+
+	dwho.dom.remove_element(dwho_eid('__dwho_form_error__',true));
+
+	if(dwho_is_object(obj.parentNode) === false)
+		document.getElementsByTagName('body')[0].appendChild(div);
+	else
+		obj.parentNode.appendChild(div);
+
+	return(true);
+}
+
+dwho.form.destroy_error_div = function()
+{
+	dwho.dom.remove_element(dwho_eid('__dwho_form_error__',true));
+}
+
 dwho.form.modify_input_data = function(obj,reg)
 {
 	if(dwho_is_object(obj) === false

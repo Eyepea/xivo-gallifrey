@@ -20,7 +20,7 @@
 
 class dwho_curl
 {
-	var $_url	= '';
+	var $_url	= null;
 	var $_option	= array(
 				'connecttimeout'	=> 5,
 				'timeout'		=> 30,
@@ -36,7 +36,7 @@ class dwho_curl
 			trigger_error('Unable to load CURL',E_USER_ERROR);
 	}
 
-	function load($url='',$option=array(),$open=true)
+	function load($url=null,$option=array(),$open=true)
 	{
 		$option = (array) $option;
 		$open = (bool) $open;
@@ -44,7 +44,7 @@ class dwho_curl
 		if(dwho_has_len($url) === false)
 			$url = $this->_url;
 
-		if($this->_chk_url($url) === false)
+		if($url !== null && $this->_chk_url($url) === false)
 			return(false);
 
 		$this->_url = $url;
@@ -175,7 +175,7 @@ class dwho_curl
 		return(false);
 	}
 
-	function _chk_option($option)
+	function _chk_option($option,$value=null)
 	{
 		$option = strtolower($option);
 
@@ -219,6 +219,9 @@ class dwho_curl
 				return(CURLOPT_INFILESIZE);
 			case 'url':
 			case CURLOPT_URL:
+				if($value !== null
+				&& $this->_chk_url($value) === false)
+					return(false);
 				return(CURLOPT_URL);
 			case 'proxy':
 			case CURLOPT_PROXY:
@@ -528,7 +531,6 @@ class dwho_curl
 	function create()
 	{
 		if(is_resource($this->_link) === true
-		|| dwho_has_len($this->_url) === false
 		|| ($this->_link = curl_init($this->_url)) === false)
 		{
 			$this->halt();
@@ -583,7 +585,8 @@ class dwho_curl
 
 	function get_info($info=null)
 	{
-		if(is_resource($this->_link) === false || ($info = $this->_chk_info($info)) === false)
+		if(is_resource($this->_link) === false 
+		|| ($info = $this->_chk_info($info)) === false)
 			return(false);
 		else if($info === null)
 			return(curl_getinfo($this->_link));
@@ -595,7 +598,8 @@ class dwho_curl
 	{
 		$r = false;
 
-		if(is_resource($this->_link) === true && ($option = $this->_chk_option($option)) !== false)
+		if(is_resource($this->_link) === true
+		&& ($option = $this->_chk_option($option,$value)) !== false)
 			$r = curl_setopt($this->_link,$option,$value);
 
 		return($r);

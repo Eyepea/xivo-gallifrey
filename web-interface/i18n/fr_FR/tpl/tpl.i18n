@@ -79,5 +79,17 @@ Sauvegarder
 ; fm_bt-select
 Sélectionner
 
+; fm_bt-previous
+< Précédent
+
+; fm_bt-next
+Suivant >
+
+; fm_bt-validate
+Valider
+
+; fm_bt-verify
+Vérifier
+
 ; number_percent
 %.2f %%

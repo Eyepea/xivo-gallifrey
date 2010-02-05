@@ -1,0 +1,82 @@
+; load bloc/xivo/memstats
+
+; sysinfos_network
+Réseau
+
+; network_iface
+Interface
+
+; network_vendor
+Fabricant
+
+; network_driver
+Pilote
+
+; network_driver_info($driver)
+%{driver}$s
+
+; network_driver_info($driver|$driverversion)
+%{driver}$s version %{driverversion}$s
+
+; network_macaddress
+Adresse matérielle
+
+; network_ipaddress
+Adresse IP
+
+; network_speed
+Vitesse
+
+; network_autonegotiation
+Auto-négociation
+
+; network_autonegotiation_info(on)
+Activée
+
+; network_autonegotiation_info(off)
+Désactivée
+
+; network_autonegotiation_info
+%s
+
+; package_level(depends)
+Paquets requis
+
+; package_level(recommends)
+Paquets recommandés
+
+; package_col_name
+Nom
+
+; package_col_installedversion
+Version
+
+; package_col_status
+Statut
+
+; package_category(ipbx)
+IPBX
+
+; package_category(db)
+Base de données
+
+; package_category(xivo)
+XIVO
+
+; package_status(installed)
+Installé
+
+; package_status(notinstalled)
+Non installé
+
+; package_status(notexists)
+Inéxistant
+
+; package_status
+Inconnu
+
+; no_package(depends)
+Aucun paquet requis
+
+; no_package(recommends)
+Aucun paquet recommandé

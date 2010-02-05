@@ -135,12 +135,15 @@ class dwho_http_abstract extends dwho_mime_cim
 		return($this->_code);
 	}
 
-	function get_status_type()
+	function get_status_type($code=null)
 	{
-		if(isset($this->_status_code[$this->_code]) === false)
+		if(is_scalar($code) === false)
+			$code = $this->_code;
+
+		if(isset($this->_status_code[$code]) === false)
 			return('unknown');
 
-		switch(substr($this->_code,0,1))
+		switch(substr($code,0,1))
 		{
 			case '1':
 				return('informational');

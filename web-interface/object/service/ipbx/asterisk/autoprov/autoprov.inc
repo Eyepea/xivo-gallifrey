@@ -61,7 +61,8 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 
 	function _load_sockprov($type)
 	{
-		if(($type !== 'list' && $type !== 'prov') === true || dwho_ak($type,$this->_autoprov) === false)
+		if(($type !== 'list' && $type !== 'prov') === true
+		|| dwho_ak($type,$this->_autoprov) === false)
 			return(false);
 		else if(dwho_ak($type,$this->_sockprov) === true)
 			return($this->_sockprov[$type]->open());

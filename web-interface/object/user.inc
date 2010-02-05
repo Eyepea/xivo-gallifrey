@@ -221,14 +221,12 @@ class xivo_user
 
 			if(dwho_issa($key,$tree) === false)
 				return(($r = false));
-			else if($r === false && is_bool(($user = dwho_ak($key,$user,true))) === true)
-			{
-				if(isset($tree[$key]['value']) === true
-				&& (bool) $tree[$key]['value'] === false)
-					return(($r = false));
-
+			else if(isset($tree[$key]['value']) === true
+			&& (bool) $tree[$key]['value'] === false)
+				return(($r = false));
+			else if(is_array($user) === true
+			&& is_bool(($user = dwho_ak($key,$user,true))) === true)
 				return(($r = $user));
-			}
 			else if(isset($tree[$key]['child']) === true)
 				$tree = &$tree[$key]['child'];
 		}

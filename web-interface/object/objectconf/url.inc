@@ -37,6 +37,16 @@ $array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';
 $array['xivo/logoff'] = 'xivo/logoff.php';
 
+$array['xivo/configuration/json/restricted/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
+$array['xivo/configuration/json/restricted/network/interface'] = 'xivo/configuration/json.php/restricted/network/interface/';
+$array['xivo/configuration/json/restricted/network/iproute'] = 'xivo/configuration/json.php/restricted/network/iproute/';
+$array['xivo/configuration/json/restricted/network/resolvconf'] = 'xivo/configuration/json.php/restricted/network/resolvconf/';
+
+$array['xivo/configuration/json/private/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
+$array['xivo/configuration/json/private/network/interface'] = 'xivo/configuration/json.php/private/network/interface/';
+$array['xivo/configuration/json/private/network/iproute'] = 'xivo/configuration/json.php/private/network/iproute/';
+$array['xivo/configuration/json/private/network/resolvconf'] = 'xivo/configuration/json.php/private/network/resolvconf/';
+
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
 $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_settings/iax/';

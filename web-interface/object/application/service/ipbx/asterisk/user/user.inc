@@ -699,20 +699,20 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($arr);
 	}
 
-	function set_add($arr,$protocolname)
+	function set_add($arr,$protocolname,$chkcontext=true)
 	{
-		return($this->_set('add',$arr,$protocolname));
+		return($this->_set('add',$arr,$protocolname,$chkcontext));
 	}
 
-	function set_edit($arr,$protocolname)
+	function set_edit($arr,$protocolname,$chkcontext=true)
 	{
 		if(empty($this->_info) === true)
 			return(false);
 
-		return($this->_set('edit',$arr,$protocolname));
+		return($this->_set('edit',$arr,$protocolname,$chkcontext));
 	}
 
-	function _set($action,$arr,$protocolname)
+	function _set($action,$arr,$protocolname,$chkcontext=true)
 	{
 		$this->_reset();
 
@@ -806,7 +806,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(dwho_issa('dialaction',$arr) === true)
 			$this->set_dialaction($arr['dialaction']);
 
-		$this->set_contextnummember($context,$number);
+		if((bool) $chkcontext === true)
+			$this->set_contextnummember($context,$number);
 
 		$numhaslen = dwho_has_len($number);
 
@@ -2410,28 +2411,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($arr);
 	}
 
-	function import_csv($save=true)
+	function import_from_array($data,$save=true,$chkcontext=true)
 	{
 		$save = (bool) $save;
 
-		if(dwho::load_class('dwho::file::csv') === false
-		|| ($http_response = dwho_http::factory('response')) === false
-		|| ($fileinfo = $http_response->upload_file('import',$this->_conf['import']['file'])) === false)
-			return(false);
-
-		$filecsv = new dwho_file_csv();
-
-		if(($data = $filecsv->parse($fileinfo['tmp_name'],
-					    0,
-					    '|',
-					    null,
-					    true,
-					    $this->_conf['import']['field'])) === false
+		if(is_array($data) === false
 		|| ($nb = count($data)) === 0)
-		{
-			dwho_file::rm($fileinfo['tmp_name']);
 			return(false);
-		}
 
 		$appincall = &$this->_service->get_application('incall');
 
@@ -2448,7 +2434,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0,$row = 1;$i < $nb;$i++,$row++)
 		{
 			if(($arr = $this->_prepare_import($data[$i])) === false
-			|| $this->set_add($arr,$arr['protocol']['protocol']) === false)
+			|| $this->set_add($arr,$arr['protocol']['protocol'],$chkcontext) === false)
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
@@ -2504,9 +2490,48 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 			$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');	
 
-			if($appincall->set_add($incall) === true)
-				$appincall->add();
+			if($appincall->set_add($incall) === false
+			|| $appincall->add() === false)
+			{
+				$r['lines'][$row] = 'error';
+				$r['total']['error']++;
+			}
+			else
+			{
+				$r['lines'][$row] = 'success';
+				$r['total']['success']++;
+			}
 		}
+
+
+		return($r);
+	}
+
+	function import_csv($save=true)
+	{
+		$save = (bool) $save;
+
+		if(dwho::load_class('dwho::file::csv') === false
+		|| ($http_response = dwho_http::factory('response')) === false
+		|| ($fileinfo = $http_response->upload_file('import',
+							    $this->_conf['import']['file'])) === false)
+			return(false);
+
+		$filecsv = new dwho_file_csv();
+
+		if(($data = $filecsv->parse($fileinfo['tmp_name'],
+					    0,
+					    '|',
+					    null,
+					    true,
+					    $this->_conf['import']['field'])) === false
+		|| empty($data) === true)
+		{
+			dwho_file::rm($fileinfo['tmp_name']);
+			return(false);
+		}
+
+		$r = $this->import_from_array($data,$save);
 
 		if($save === true)
 			dwho_file::rm($fileinfo['tmp_name']);

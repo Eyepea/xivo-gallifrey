@@ -272,15 +272,12 @@ class xivo_acl_abstract
 
 			if(dwho_issa($key,$tree) === false)
 				return(false);
-			else if($r === false
+			else if(isset($tree[$key]['value']) === true
+			&& (bool) $tree[$key]['value'] === false)
+				return(false);
+			else if(is_array($info) === true
 			&& is_bool(($info = dwho_ak($key,$info,true))) === true)
-			{
-				if(isset($tree[$key]['value']) === true
-				&& (bool) $tree[$key]['value'] === false)
-					return(false);
-
 				return($info);
-			}
 			else if(isset($tree[$key]['child']) === true)
 				$tree = &$tree[$key]['child'];
 		}

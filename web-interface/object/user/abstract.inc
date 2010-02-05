@@ -138,18 +138,18 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		return(true);
 	}
 
-	function load_by_authent($login,$pass,$lang='')
+	function load_by_authent($login,$passwd,$lang='')
 	{
 		$r = false;
 
 		$infos = array();
 
-		if(($type = $this->call_auth('chk',array($login,$pass))) !== false
+		if(($type = $this->call_auth('chk',array($login,$passwd))) !== false
 		&& xivo_user::chk_type($type,true) === true)
 		{
-			if(($data = $this->get_by_login_pass($login,$pass)) === false)
+			if(($data = $this->get_by_login_pass($login,$passwd)) === false)
 			{
-				if(($r = $this->_add_by_login_pass($login,$pass,$type)) !== false)
+				if(($r = $this->_add_by_login_pass($login,$passwd,$type)) !== false)
 				{
 					$this->_info = array();
 					$this->_info['id'] = $r;
@@ -165,7 +165,7 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 			if($r === true)
 			{
 				$this->_info['login'] = $login;
-				$this->_info['passwd'] = $pass;
+				$this->_info['passwd'] = $passwd;
 				$this->_info['type'] = $type;
 				$infos = $this->_info;
 			}
@@ -234,14 +234,14 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		}
 	}
 
-	function _add_by_login_pass($login,$pass,$type,$valid=true)
+	function _add_by_login_pass($login,$passwd,$type,$valid=true)
 	{
 		if(($meta = xivo_user::type_to_meta($type)) === false)
 			return(false);
 
 		$arr = array();
 		$arr['login'] = $login;
-		$arr['passwd'] = $pass;
+		$arr['passwd'] = $passwd;
 		$arr['meta'] = $meta;
 		$arr['time'] = gmstrftime('%s');
 		$arr['valid'] = (bool) $valid;
@@ -249,11 +249,11 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		return($this->add($arr));
 	}
 
-	function get_by_login_pass($login,$pass)
+	function get_by_login_pass($login,$passwd)
 	{
 		$arr = array();
 		$arr['login'] = strval($login);
-		$arr['passwd'] = strval($pass);
+		$arr['passwd'] = strval($passwd);
 
 		return($this->get_where($arr));
 	}
@@ -293,8 +293,13 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 
 	function _load_filter($name,$user)
 	{
+		if(isset($this->_info['_type']) === false)
+			$type = xivo_user::meta_to_type($user);
+		else
+			$type = $this->_info['_type'];
+
 		if(xivo_user::chk_meta($user) === false
-		|| ($meta = xivo_user::type_to_meta($this->_info['_type'])) === false
+		|| ($meta = xivo_user::type_to_meta($type)) === false
 		|| ($filter = dwho_gat::get_file(dwho_file::joinpath(XIVO_PATH_OBJECT,
 								     'user',
 								     'filter',
@@ -401,9 +406,9 @@ class xivo_user_abstract extends xivo_libdatastorage_abstract
 		return(call_user_func_array(array($auth,$func),(array) $args));
 	}
 
-	function auth_chk($login,$pass)
+	function auth_chk($login,$passwd)
 	{
-		if(($type = xivo_user::meta_to_type($this->_authent->chk($login,$pass,true))) > 0)
+		if(($type = xivo_user::meta_to_type($this->_authent->chk($login,$passwd,true))) > 0)
 			return($type);
 
 		return(false);

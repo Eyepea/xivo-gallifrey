@@ -439,10 +439,69 @@ dwho.dom.make_table_list = function(name,obj,del,idcnt)
 
 		if(Boolean(idcnt) === true)
 			dwho.form.field_id_counter(clonenode,
-						 ++dwho.dom.table_list[name]['idcnt']);
+						   ++dwho.dom.table_list[name]['idcnt']);
 
 		dwho_eid(name).appendChild(clonenode);
 	}
+
+	return(true);
+}
+
+dwho.dom.append_relative_element = function(dest,obj,align)
+{
+	var pos = dwho.dom.get_offset_position(dest);
+
+	obj.style.left	= pos.x + 'px';
+	obj.style.top	= (pos.y + dest.offsetHeight) + 'px';
+
+	dwho.dom.remove_element(dwho_eid(obj.id,true));
+
+	if(dwho_is_object(dest.parentNode) === false)
+		document.getElementsByTagName('body')[0].appendChild(obj);
+	else
+		dest.parentNode.appendChild(obj);
+
+	if(align === 'center')
+		obj.style.left = pos.x + ((dest.offsetWidth - obj.offsetWidth) / 2) + 'px';
+	else if(align === 'right')
+		obj.style.left = pos.x + dest.offsetWidth + 'px';
+
+	return(true);
+}
+
+dwho.dom.create_focus_caption = function(dest,obj,sum,align)
+{
+	if(dwho_is_object(dest) === false
+	|| dwho_is_object(obj) === false)
+		return(false);
+
+	var a = dwho.dom.create_element('a',
+					{'href':	'#'},
+					sum,
+					true);
+
+	if(dwho_is_function(dest.appendChild) === true)
+		dest.appendChild(a);
+	else if(dwho_is_object(dest.parentNode) === true)
+		dest.parentNode.appendChild(a);
+	else
+		document.getElementsByTagName('body')[0].appendChild(a);
+
+	var fnappend = function()
+		       {
+			dwho.dom.append_relative_element(a,obj,align);
+		       }
+
+	var fnremove = function()
+		       {
+			dwho.dom.remove_element(dwho_eid(obj.id,true));
+		       }
+
+	dwho.dom.add_event('focus',a,fnappend);
+	dwho.dom.add_event('click',a,fnappend);
+	dwho.dom.add_event('mouseover',a,fnappend);
+	dwho.dom.add_event('blur',a,fnremove);
+	dwho.dom.add_event('mouseout',a,fnremove);
 
 	return(true);
 }
