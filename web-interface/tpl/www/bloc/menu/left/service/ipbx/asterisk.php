@@ -104,22 +104,34 @@ $dhtml = &$this->get_module('dhtml');
 					'service/ipbx/cti_settings/directories'),
 				'</dd>';
 		endif;
+		if(xivo_user::chk_acl('cti_settings','reversedirectories') === true):
+			echo	'<dd id="mn-cti-settings--reversedirectories">',
+				$url->href_html($this->bbf('mn_left_ctisettings-reversedirectories'),
+					'service/ipbx/cti_settings/reversedirectories'),
+				'</dd>';
+		endif;
 		if(xivo_user::chk_acl('cti_settings','displays') === true):
 			echo	'<dd id="mn-cti-settings--displays">',
 				$url->href_html($this->bbf('mn_left_ctisettings-displays'),
 					'service/ipbx/cti_settings/displays'),
 				'</dd>';
 		endif;
-		if(xivo_user::chk_acl('cti_settings','sheets') === true):
-			echo	'<dd id="mn-cti-settings--sheets">',
-				$url->href_html($this->bbf('mn_left_ctisettings-sheets'),
-					'service/ipbx/cti_settings/sheets'),
-				'</dd>';
-		endif;
 		if(xivo_user::chk_acl('cti_settings','contexts') === true):
 			echo	'<dd id="mn-cti-settings--contexts">',
 				$url->href_html($this->bbf('mn_left_ctisettings-contexts'),
 					'service/ipbx/cti_settings/contexts'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','sheetactions') === true):
+			echo	'<dd id="mn-cti-settings--sheetactions">',
+				$url->href_html($this->bbf('mn_left_ctisettings-sheetactions'),
+					'service/ipbx/cti_settings/sheetactions'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti_settings','sheetevents') === true):
+			echo	'<dd id="mn-cti-settings--sheetevents">',
+				$url->href_html($this->bbf('mn_left_ctisettings-sheetevents'),
+					'service/ipbx/cti_settings/sheetevents'),
 				'</dd>';
 		endif;
 	endif;

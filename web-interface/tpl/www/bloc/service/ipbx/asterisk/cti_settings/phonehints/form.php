@@ -26,9 +26,6 @@ $info = $this->get_var('info');
 
 $presence = $this->get_var('phonehints');
 
-#$queues = $this->get_var('queues');
-#$qmember = $this->get_var('qmember');
-
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
@@ -56,6 +53,7 @@ endif;
 				  'name'	=> 'phonehints[color]',
 				  'labelid'	=> 'phonehints-color',
 				  'size'	=> 15,
+				  'class'	=> 'color {hash:true}',
 				  'default'	=> $element['phonehints']['color']['default'],
 				  'value'	=> $info['phonehints']['color']));
 

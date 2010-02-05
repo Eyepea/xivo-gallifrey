@@ -21,7 +21,8 @@
 $form = &$this->get_module('form');
 
 ?>
-<div id="sr-agentgroup" class="b-infos b-form">
+<!-- div id="sr-agentgroup" class="b-infos b-form" -->
+<div class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 
 	<div class="sb-content">

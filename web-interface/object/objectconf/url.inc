@@ -50,9 +50,11 @@ $array['service/ipbx/cti_settings/presences'] = 'service/ipbx/index.php/cti_sett
 $array['service/ipbx/cti_settings/phonehints'] = 'service/ipbx/index.php/cti_settings/phonehints/';
 $array['service/ipbx/cti_settings/profiles'] = 'service/ipbx/index.php/cti_settings/profiles/';
 $array['service/ipbx/cti_settings/directories'] = 'service/ipbx/index.php/cti_settings/directories/';
+$array['service/ipbx/cti_settings/reversedirectories'] = 'service/ipbx/index.php/cti_settings/reversedirectories/';
 $array['service/ipbx/cti_settings/displays'] = 'service/ipbx/index.php/cti_settings/displays/';
-$array['service/ipbx/cti_settings/sheets'] = 'service/ipbx/index.php/cti_settings/sheets/';
 $array['service/ipbx/cti_settings/contexts'] = 'service/ipbx/index.php/cti_settings/contexts/';
+$array['service/ipbx/cti_settings/sheetactions'] = 'service/ipbx/index.php/cti_settings/sheetactions/';
+$array['service/ipbx/cti_settings/sheetevents'] = 'service/ipbx/index.php/cti_settings/sheetevents/';
 
 $array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';

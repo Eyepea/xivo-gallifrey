@@ -28,9 +28,6 @@ $urilist = $this->get_var('urilist');
 
 $presence = $this->get_var('displays');
 
-#$queues = $this->get_var('queues');
-#$qmember = $this->get_var('qmember');
-
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
@@ -56,7 +53,7 @@ endif;
 	<p>&nbsp;</p>
 	<p>
 	<?=$this->bbf('list-avail-formats');?>
-	{db-phone} {db-fullname} {db-company} {db-mail}
+	{db-phone} {db-firstname} {db-lastname} {db-fullname} {db-company} {db-mail}
 	</p>
 	<div class="sb-list">
 		<table cellspacing="0" cellpadding="0" border="0">
@@ -85,7 +82,7 @@ endif;
 
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
-				<td class="td-left txt-center">
+				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
 								   'name'		=> 'dispcol1[]',
@@ -151,14 +148,14 @@ endif;
 			</tbody>
 			<tfoot>
 			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
-				<td colspan="7" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+				<td colspan="5" class="td-single"><?=$this->bbf('no_'.$type);?></td>
 			</tr>
 			</tfoot>
 		</table>
 		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
-				<td class="td-left txt-center">
+				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
 								   'name'		=> 'dispcol1[]',

@@ -21,6 +21,21 @@
 $form = &$this->get_module('form');
 
 ?>
+<script language=javascript type='text/javascript'>
+function hidediv() {
+		val = document.getElementById('it-type').value;
+		if(val != 1) {
+			document.getElementById('sgbdr').setAttribute("class", "b-nodisplay");
+		}
+		else {
+			document.getElementById('sgbdr').setAttribute("class", "");
+		}
+
+	} 
+
+dwho.dom.set_onload(hidediv);
+</script>
+
 <div class="b-infos b-form">
 	<h3 class="sb-top xspan">
 		<span class="span-left">&nbsp;</span>

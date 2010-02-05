@@ -1,0 +1,35 @@
+; title_content_name
+Fiches : Événements
+
+; fm_sheetevents_agentlinked
+(agent linked)
+
+; fm_sheetevents_agentunlinked
+(agent unlinked)
+
+; fm_sheetevents_faxreceived
+Réception fax :
+
+; fm_sheetevents_incomingqueue
+File d'attente entrante :
+
+; fm_sheetevents_incominggroup
+Groupe entrant :
+
+; fm_sheetevents_incomingdid
+(incoming did)
+
+; fm_sheetevents_dial
+Numérotation :
+
+; fm_sheetevents_link
+(link)
+
+; fm_sheetevents_unlink
+(unlink)
+
+; col_1
+Événement personnalisé
+
+; col_2
+Action

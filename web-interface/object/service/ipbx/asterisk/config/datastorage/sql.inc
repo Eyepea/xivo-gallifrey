@@ -100,9 +100,17 @@ $array['ctiprofiles'] = array();
 $array['ctiprofiles']['table'] = 'ctiprofiles';
 $array['ctiprofiles']['primary'] = array('id' => '');
 
-$array['ctisheets'] = array();
-$array['ctisheets']['table'] = 'ctisheets';
-$array['ctisheets']['primary'] = array('id' => '');
+$array['ctireversedirectories'] = array();
+$array['ctireversedirectories']['table'] = 'ctireversedirectories';
+$array['ctireversedirectories']['primary'] = array('id' => '');
+
+$array['ctisheetevents'] = array();
+$array['ctisheetevents']['table'] = 'ctisheetevents';
+$array['ctisheetevents']['primary'] = array('id' => '');
+
+$array['ctisheetactions'] = array();
+$array['ctisheetactions']['table'] = 'ctisheetactions';
+$array['ctisheetactions']['primary'] = array('id' => '');
 
 $array['ctistatus'] = array();
 $array['ctistatus']['table'] = 'ctistatus';

@@ -43,7 +43,8 @@ endif;
 					'labelid'	=> 'type',
 					'default'	=> $element['type']['default'],
 					'selected'	=> $info['type']),
-				  array('Sqlite','MySQL','File','Webservices')),
+				  array('Sqlite','MySQL','File','Webservices'),
+				  'onchange="javascript:hidediv();"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_uri'),
 				  'name'	=> 'uri',
@@ -51,7 +52,7 @@ endif;
 				  'default'	=> $element['uri']['default'],
 				  'value'	=> $info['uri']));
 ?>
-<div id="sgbdr">
+<div id="sgbdr" class="b-nodisplay">
 <?php
 		echo $form->text(array('desc'	=> $this->bbf('fm_host'),
 				  'name'	=> 'host',

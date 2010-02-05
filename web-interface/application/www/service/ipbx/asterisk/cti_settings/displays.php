@@ -185,7 +185,6 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
-#$_TPL->set_var('group',$group);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

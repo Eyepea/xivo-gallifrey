@@ -253,6 +253,15 @@ $array['module']['ctipresences']['datastorage'] = true;
 $array['module']['ctiprofiles'] = array();
 $array['module']['ctiprofiles']['datastorage'] = true;
 
+$array['module']['ctireversedirectories'] = array();
+$array['module']['ctireversedirectories']['datastorage'] = true;
+
+$array['module']['ctisheetactions'] = array();
+$array['module']['ctisheetactions']['datastorage'] = true;
+
+$array['module']['ctisheetevents'] = array();
+$array['module']['ctisheetevents']['datastorage'] = true;
+
 $array['module']['ctistatus'] = array();
 $array['module']['ctistatus']['datastorage'] = true;
 

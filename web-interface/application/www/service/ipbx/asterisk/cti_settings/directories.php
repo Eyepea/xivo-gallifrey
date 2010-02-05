@@ -18,6 +18,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+/********************************************************** WARNING ********************************************************/
+/*
+	In this code, we assume that only
+	'field_phone', 'field_fullname', 'field_firstname', 'field_lastname', 'field_company' and 'field_mail'
+	are used. These correspond to 
+	'{db-phone}', '{db-fullname}', '{db-firstname}', '{db-lastname}', '{db-company}' and '{db-mail}'
+	in "displays" form.
+	If you want to add fields you need to
+	1/ Add fields in asterisk database (table ctidirectories)
+	2/ Add support for these fields below in add and edit sections
+	3/ Add corresponding entries and filters in the config file :
+		/usr/share/pf-xivo-web-interface/object/service/ipbx/asterisk/ctidirectories/config.inc
+	4/ Add corresponding widgets in template file :
+		/usr/share/pf-xivo-web-interface/tpl/www/bloc/service/ipbx/asterisk/cti_settings/directories/form.php
+	5/ Add JSON generation for these fields in 
+		/usr/share/pf-xivo-web-interface/application/www/service/ipbx/asterisk/web_services/ctiserver/configuration.php
+*/
+/***************************************************************************************************************************/
+
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $iddirectories = isset($_QR['iddirectories']) === true ? dwho_uint($_QR['iddirectories'],1) : 1;
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
@@ -27,9 +46,23 @@ xivo::load_class('xivo_directories',XIVO_PATH_OBJECT,null,false);
 $dir = new xivo_directories();
 $dirlist = $dir->get_all(null,true);
 
+$appldapfilter = &$ipbx->get_application('ldapfilter');
+$ldapfilterlist = $appldapfilter->get_ldapfilters_list();
+$ldapservers = $appldapfilter->get_ldapservers_list();
+
 foreach($dirlist as $v)
 {
 	$urilist[] = $v['uri'];
+}
+
+foreach($ldapfilterlist as $v)
+{
+	$urilist[] = "ldapfilter://".$v['ldapfilter']['name'];
+}
+
+foreach($ldapservers as $v)
+{
+	$urilist[] = "ldap://".$v['name'];
 }
 
 $param = array();
@@ -47,7 +80,7 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('directories',$_QR) === true)
 		{
-			foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
+			foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
 			{
 				if($_QR['directories'][$v] != '')
 				{
@@ -99,7 +132,7 @@ switch($act)
 		{
 			$return = &$result;
 
-			foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
+			foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
 			{
 				if($_QR['directories'][$v] != '')
 				{
@@ -130,7 +163,7 @@ switch($act)
 
 		$arr = array();
 
-		foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
+		foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
 		{
 			if($return['directories'][$v] != '')
 			{

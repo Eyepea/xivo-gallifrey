@@ -32,24 +32,38 @@ switch($act)
 		$act = 'view';
 
 		$app = &$ipbx->get_application('serverfeatures', array('feature' => 'phonebook', 'type' => 'xivo'));
-//		$contexts = &$ipbx->get_application('context');
+		$cticontexts = &$ipbx->get_module('cticontexts');
+		$ctidirectories = &$ipbx->get_module('ctidirectories');
+		$ctidisplays = &$ipbx->get_module('ctidisplays');
+		$ctisheetactions = &$ipbx->get_module('ctisheetactions');
+		$ctisheetevents = &$ipbx->get_module('ctisheetevents');
 		$ctimain = &$ipbx->get_module('ctimain');
 		$ctiprofiles = &$ipbx->get_module('ctiprofiles');
 		$ctipresences = &$ipbx->get_module('ctipresences');
 		$ctistatus = &$ipbx->get_module('ctistatus');
 		$ctiphonehints = &$ipbx->get_module('ctiphonehints');
+		$ctirdid = &$ipbx->get_module('ctireversedirectories');
+
 		$db_type = $app->_serverfeatures->_dso->_dso->_type;
 		$db_path =    $app->_serverfeatures->_dso->_dso->_param['db'];
 		$db_timeout = $app->_serverfeatures->_dso->_dso->_param['timeout'];
+		
+		$load_contexts = $cticontexts->get_all();
+		$load_directories = $ctidirectories->get_all();
+		$load_displays = $ctidisplays->get_all();
+		$load_sheetactions = $ctisheetactions->get_all();
+		$load_sheetevents = $ctisheetevents->get_all();
 		$load_inf = $ctimain->get_all();
 		$load_profiles = $ctiprofiles->get_all();
 		$load_presences = $ctipresences->get_all();
+		$load_status = $ctistatus->get_all();
 		$load_phonehints = $ctiphonehints->get_all();
+		$load_rdid = $ctirdid->get_all();
 		$list = $app->get_server_list();
 
 		$out = array(
 			'main' 			=> array(),
-			'reverseid' 	=> array(),
+			'reversedid' 	=> array(),
 			'contexts' 		=> array(),
 			'directories' 	=> array(),
 			'displays' 		=> array(),
@@ -59,12 +73,126 @@ switch($act)
 			'phonehints' 	=> array()
 		);
 
+		# CONTEXTS
+		if(isset($load_contexts))
+		{
+			$ctxout = array();
+			foreach($load_contexts as $context)
+			{
+				$ctxid = $context['name'];
+				$ctxdirs = explode(',', $context['directories']);
+				$ctxout[$ctxid] = array();
+				$arr = array();
+				foreach($ctxdirs as $cd)
+				{
+					$arr[] = "directories.".$cd;
+				}
+				$ctxout[$ctxid]['directories'] = $arr;
+
+				$ctxout[$ctxid]['display'] = $context['display'];
+			}
+			$out['contexts'] = $ctxout;
+		}
+
+		# DISPLAYS
+		if(isset($load_displays))
+		{
+			$dspout = array();
+
+			foreach($load_displays as $display)
+			{
+				$dspid = $display['name'];
+				$dspout[$dspid] = dwho_json::decode($display['data'], true);
+
+			}
+			$out['displays'] = $dspout;
+		}
+
+		# DIRECTORIES
+		if(isset($load_directories))
+		{
+			$dirout = array();
+
+			foreach($load_directories as $dir)
+			{
+				$dirid = $dir['name'];
+				$dirout[$dirid]['uri'] = $dir['uri'];
+				$dirout[$dirid]['delimiter'] = $dir['delimiter'];
+				$dirout[$dirid]['name'] = $dir['description'];
+				$dirout[$dirid]['match_direct'] = dwho_json::decode($dir['match_direct'], true) == false ? array() : dwho_json::decode($dir['match_direct'], true);
+				$dirout[$dirid]['match_reverse'] = dwho_json::decode($dir['match_reverse'], true) == false ? array() : dwho_json::decode($dir['match_reverse'], true);
+				$dirout[$dirid]['field_phone'] = dwho_json::decode($dir['field_phone'], true) == false ? array() : dwho_json::decode($dir['field_phone'], true);
+				$dirout[$dirid]['field_fullname'] = dwho_json::decode($dir['field_fullname'], true) == false ? array() : dwho_json::decode($dir['field_fullname'], true);
+				$dirout[$dirid]['field_firstname'] = dwho_json::decode($dir['field_firstname'], true) == false ? array() : dwho_json::decode($dir['field_firstname'], true);
+				$dirout[$dirid]['field_lastname'] = dwho_json::decode($dir['field_lastname'], true) == false ? array() : dwho_json::decode($dir['field_lastname'], true);
+				$dirout[$dirid]['field_company'] = dwho_json::decode($dir['field_company'], true) == false ? array() : dwho_json::decode($dir['field_company'], true);
+				$dirout[$dirid]['field_mail'] = dwho_json::decode($dir['field_mail'], true) == false ? array() : dwho_json::decode($dir['field_mail'], true);
+				$dirout[$dirid]['display_reverse'] = dwho_json::decode($dir['display_reverse'], true) == false ? array() : dwho_json::decode($dir['display_reverse'], true);
+			}
+			$out['directories'] = $dirout;
+		}
+
+		# REVERSEDID
+		if(isset($load_rdid))
+		{
+			$rdidout = array();
+
+			foreach($load_rdid as $rdid)
+			{
+				$rdidid = $rdid['number'];
+				$rdidout[$rdidid] = dwho_json::decode($rdid['directories'], true);
+
+			}
+			$out['reversedid'] = $rdidout;
+		}
+
+		# SHEETS
+		$sheetsout = array();
+		if(isset($load_sheetevents))
+		{
+			$evtout = array();
+			foreach(array_keys($load_sheetevents[0]) as $k)
+			{
+				if($k == 'id')
+					continue;
+				$evtout[$k] = $load_sheetevents[0][$k];
+			}
+			$evtout['custom'] = dwho_json::decode($evtout['custom'], true) == false ? array() : dwho_json::decode($evtout['custom'], true);
+			$out['sheets']['events'] = $evtout;
+		}
+		if(isset($load_sheetactions))
+		{
+			$actout = array();
+			$dispout = array();
+			foreach($load_sheetactions as $action)
+			{
+				$actid = $action['name'];
+				$actout[$actid]['whom'] = $action['whom'];
+				$actout[$actid]['focus'] = $action['focus'] == 1 ? "yes" : "no";
+				$actout[$actid]['contexts'] = dwho_json::decode($action['context'], true) == false ? array() : dwho_json::decode($action['context'], true);
+				$actout[$actid]['capaids'] = dwho_json::decode($action['capaids'], true) == false ? array() : dwho_json::decode($action['capaids'], true);
+				$actout[$actid]['sheet_info'] = "sheets.displays.screens.".$actid;
+				$actout[$actid]['systray_info'] = "sheets.displays.systrays.".$actid;
+				$actout[$actid]['sheet_qtui'] = "sheets.displays.qtui.".$actid;
+				$actout[$actid]['action_info'] = "sheets.displays.infos.".$actid;
+
+				$dispout['screens'][$actid] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
+				$dispout['systrays'][$actid] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
+				$dispout['qtui'][$actid] = $action['sheet_qtui'];
+				$dispout['infos'][$actid] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
+
+			}
+			$out['sheets']['actions'] = $actout;
+			$out['sheets']['displays'] = $dispout;
+		}
+			
+
 		# PRESENCES
 		if(isset($load_presences))
 		{
-			$presout = array();
 			foreach($load_presences as $pres)
 			{
+				$presout = array();
 				$presid = $pres['name'];
 				$id = $pres['id'];
 				$where = array();
@@ -93,6 +221,7 @@ switch($act)
 
 					$actions = explode(',', $stat['actions']);
 					$pattern = '/^(.*)\((.*)\)/';
+					$actionsout = array();
 					foreach($actions as $a)
 					{
 						$match = array();
@@ -142,6 +271,7 @@ switch($act)
 				$pfid = $pf['name'];
 				$prefs = array();
 				$prefout = array();
+
 				$prefs = explode(',', $pf['preferences']);
 				$pattern = '/^(.*)\((.*)\)/';
 				foreach($prefs as $p)
@@ -209,24 +339,6 @@ switch($act)
 			$out['main']['userlists'][] = "file:///etc/pf-xivo/ctiservers/guest_account.json";
 		}
 
-
-//		dwho_print_r($out, 'out');
-		/*
-		die('toto');
-		$nocomponents = array('meetmemacro'		=> true,
-				      'meetmeadmininternal'	=> true,
-				      'extenumbers'		=> true,
-				      'contextnummember'	=> true,
-				      'contextmember'		=> true);
-		
-		if(($info = $appmeetme->get($_QRY->get('id'),
-					    null,
-					    $nocomponents)) === false)
-		{
-			$http_response->set_status_line(404);
-			$http_response->send(true);
-		}
-		*/
 		$_TPL->set_var('info',$out);
 		break;
 }

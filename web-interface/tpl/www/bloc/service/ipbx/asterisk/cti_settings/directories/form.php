@@ -82,6 +82,20 @@ endif;
 				  'default'	=> $element['directories']['field_phone']['default'],
 				  'value'	=> $info['directories']['field_phone']));
 
+	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_firstname'),
+				  'name'	=> 'directories[field_firstname]',
+				  'labelid'	=> 'directories-field_firstname',
+				  'size'	=> 40,
+				  'default'	=> $element['directories']['field_firstname']['default'],
+				  'value'	=> $info['directories']['field_firstname']));
+
+	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_lastname'),
+				  'name'	=> 'directories[field_lastname]',
+				  'labelid'	=> 'directories-field_lastname',
+				  'size'	=> 40,
+				  'default'	=> $element['directories']['field_lastname']['default'],
+				  'value'	=> $info['directories']['field_lastname']));
+
 	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_fullname'),
 				  'name'	=> 'directories[field_fullname]',
 				  'labelid'	=> 'directories-field_fullname',

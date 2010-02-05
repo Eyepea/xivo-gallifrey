@@ -23,7 +23,46 @@ $form = &$this->get_module('form');
 ?>
 <div id="sr-agentgroup" class="b-infos b-form">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
-
+	<div class="sb-smenu">
+		<ul>
+			<li id="dwsm-tab-1"
+				class="dwsm-blur"
+				onclick="dwho_submenu.select(this,'sb-part-first');"
+				onmouseout="dwho_submenu.blur(this);"
+				onmouseover="dwho_submenu.focus(this);">
+				<div class="tab">
+					<span class="span-center">
+						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a>
+					</span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</li>
+		   <li id="dwsm-tab-2"
+				class="dwsm-blur"
+				onclick="dwho_submenu.select(this,'sb-part-prefs');"
+				onmouseout="dwho_submenu.blur(this);"
+				onmouseover="dwho_submenu.focus(this);">
+				<div class="tab">
+					<span class="span-center">
+						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_prefs');?></a>
+					</span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</li>
+			<li id="dwsm-tab-7"
+				class="dwsm-blur-last"
+				onclick="dwho_submenu.select(this,'sb-part-last',1);"
+				onmouseout="dwho_submenu.blur(this,1);"
+				onmouseover="dwho_submenu.focus(this,1);">
+				<div class="tab">
+					<span class="span-center">
+						<a href="#" onclick="return(false);"><?=$this->bbf('smenu_xlets');?></a>
+					</span>
+				</div>
+				<span class="span-right">&nbsp;</span>
+			</li>
+		</ul>
+	</div>
 	<div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-services');" onsubmit="dwho.form.select('it-funcs');">
 

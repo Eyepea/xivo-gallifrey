@@ -178,6 +178,8 @@ endif;
 	$type = 'preferences';
 	$count = count($info['preferences']['slt']);
 ?>
+</div>
+<div id="sb-part-prefs" class="b-nodisplay">
 	<div class="sb-list">
 		<table cellspacing="0" cellpadding="0" border="0">
 			<thead>
@@ -199,13 +201,6 @@ endif;
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
-
-	/*				if(isset($error[$type][$i]) === true):
-					$errdisplay = ' l-infos-error';
-				else:
-					$errdisplay = '';
-				endif;
-	*/
 					$errdisplay = '';
 					$pattern = '/^(.*)\((.*)\)/';
 					$match = array();
@@ -291,6 +286,8 @@ endif;
 			</tbody>
 		</table>
 	</div>
+</div>
+<div id="sb-part-last" class="b-nodisplay">
 <?php
 	$type = 'xlets';
 	$count = count($info['xlets']['slt']);

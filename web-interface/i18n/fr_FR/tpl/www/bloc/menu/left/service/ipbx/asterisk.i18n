@@ -37,14 +37,21 @@ Profils
 ; mn_left_ctisettings-directories
 Répertoires
 
-; mn_left_ctisettings-displays
-Affichage
+; mn_left_ctisettings-reversedirectories
+Répertoires inverses
 
-; mn_left_ctisettings-sheets
-Fiches
+; mn_left_ctisettings-displays
+Filtres d'affichage
+
+; mn_left_ctisettings-sheetactions
+Fiches : Actions
+
+; mn_left_ctisettings-sheetevents
+Fiches : Événements
 
 ; mn_left_ctisettings-contexts
 Contextes
+
 ; mn_left_ti_pbxsettings
 Paramètres IPBX
 

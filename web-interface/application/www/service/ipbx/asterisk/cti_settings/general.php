@@ -38,6 +38,7 @@ $fm_save = null;
 	
 if(isset($_QR['fm_send']) === true)
 {
+	$fm_save = false;
 	$parting = array();
 	if(isset($_QR['cti']['parting_astid_context']))
 		$parting[] = 'context';
@@ -62,6 +63,8 @@ if(isset($_QR['fm_send']) === true)
 	else
 		$ret = $ctimain->add($rs);
 
+	if($ret == 1)
+		$fm_save = true;
 	$load_inf = $ctimain->get_all();
 	$info['ctimain'] = $load_inf[0];
 }

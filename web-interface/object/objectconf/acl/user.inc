@@ -38,9 +38,11 @@ $array['tree']['service']['ipbx']['cti_settings']['presences'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['phonehints'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['profiles'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['directories'] = true;
+$array['tree']['service']['ipbx']['cti_settings']['reversedirectories'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['displays'] = true;
-$array['tree']['service']['ipbx']['cti_settings']['sheets'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['contexts'] = true;
+$array['tree']['service']['ipbx']['cti_settings']['sheetactions'] = true;
+$array['tree']['service']['ipbx']['cti_settings']['sheetevents'] = true;
 
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
