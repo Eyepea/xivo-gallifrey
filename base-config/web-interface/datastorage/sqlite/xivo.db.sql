@@ -38,6 +38,18 @@ CREATE INDEX accesswebservice__idx__disable ON accesswebservice(disable);
 CREATE UNIQUE INDEX accesswebservice__uidx__name ON accesswebservice(name);
 
 
+DROP TABLE directories;
+CREATE TABLE directories (
+ id integer unsigned,
+ uri varchar(255),
+ dirtype varchar(20),
+ name varchar(255),
+ tablename varchar(255),
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
 DROP TABLE entity;
 CREATE TABLE entity (
  id integer unsigned,
@@ -195,12 +207,12 @@ CREATE UNIQUE INDEX server__uidx__host_port ON server(host,port);
 
 DROP TABLE session;
 CREATE TABLE session (
- key char(32) NOT NULL DEFAULT '',
- start integer unsigned NOT NULL DEFAULT 0,
- expire integer unsigned NOT NULL DEFAULT 0,
- userid integer unsigned NOT NULL DEFAULT 0,
+ sessid char(32) NOT NULL,
+ start integer unsigned NOT NULL,
+ expire integer unsigned NOT NULL,
+ identifier varchar(255) NOT NULL,
  data longblob NOT NULL,
- PRIMARY KEY(key)
+ PRIMARY KEY(sessid)
 );
 
 CREATE INDEX session__idx__expire ON session(expire);

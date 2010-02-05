@@ -43,6 +43,18 @@ CREATE INDEX `accesswebservice__idx__disable` ON `accesswebservice`(`disable`);
 CREATE UNIQUE INDEX `accesswebservice__uidx__name` ON `accesswebservice`(`name`);
 
 
+DROP TABLE IF EXISTS `directories`;
+CREATE TABLE `directories` (
+ `id` int(10) unsigned auto_increment,
+ `uri` varchar(255),
+ `dirtype` varchar(20),
+ `name` varchar(255),
+ `tablename` varchar(255),
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
  `id` int(10) unsigned auto_increment,
@@ -200,12 +212,12 @@ CREATE UNIQUE INDEX `server__uidx__host_port` ON `server`(`host`,`port`);
 
 DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (
- `key` char(32) NOT NULL DEFAULT '',
- `start` int(10) unsigned NOT NULL DEFAULT 0,
- `expire` int(10) unsigned NOT NULL DEFAULT 0,
- `userid` int(10) unsigned NOT NULL DEFAULT 0,
+ `sessid` char(32) binary NOT NULL,
+ `start` int(10) unsigned NOT NULL,
+ `expire` int(10) unsigned NOT NULL,
+ `identifier` varchar(255) NOT NULL,
  `data` longblob NOT NULL,
- PRIMARY KEY(`key`)
+ PRIMARY KEY(`sessid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `session__idx__expire` ON `session`(`expire`);

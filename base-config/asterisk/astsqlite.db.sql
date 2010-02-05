@@ -231,6 +231,167 @@ CREATE TABLE contextnumbers (
 CREATE INDEX contextnumbers__idx__context_type ON contextnumbers(context,type);
 
 
+DROP TABLE cticontexts;
+CREATE TABLE cticontexts (
+ id integer unsigned,
+ name varchar(50),
+ directories text NOT NULL,
+ display text NOT NULL,
+ description text NOT NULL,
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctidirectories;
+CREATE TABLE ctidirectories (
+ id integer unsigned,
+ name varchar(255),
+ uri varchar(255),
+ delimiter varchar(20),
+ match_direct text NOT NULL,
+ match_reverse text NOT NULL,
+ field_phone text NOT NULL,
+ field_fullname varchar(255),
+ field_company varchar(255),
+ field_mail varchar(255),
+ display_reverse varchar(255),
+ description varchar(255),
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctidisplays;
+CREATE TABLE ctidisplays (
+ id integer unsigned,
+ name varchar(50),
+ data text NOT NULL,
+ deletable tinyint(1),
+ description text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctimain;
+CREATE TABLE ctimain (
+ id integer unsigned,
+ commandset varchar(20),
+ fagi_ip varchar(255),
+ fagi_port integer unsigned,
+ cti_ip varchar(255),
+ cti_port integer unsigned,
+ webi_ip varchar(255),
+ webi_port integer unsigned,
+ info_ip varchar(255),
+ info_port integer unsigned,
+ announce_ip varchar(255),
+ announce_port integer unsigned,
+ asterisklist varchar(255),
+ updates_period integer unsigned,
+ socket_timeout integer unsigned,
+ login_timeout integer unsigned,
+ parting_astid_context varchar(255),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctiphonehints;
+CREATE TABLE ctiphonehints (
+ id integer unsigned,
+ number integer,
+ name varchar(255),
+ color varchar(128),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctipresences;
+CREATE TABLE ctipresences (
+ id integer unsigned,
+ name varchar(255),
+ description varchar(255),
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctiprofiles;
+CREATE TABLE ctiprofiles (
+ id integer unsigned,
+ xlets varchar(255),
+ funcs varchar(255),
+ maxgui integer,
+ appliname varchar(255),
+ name varchar(40),
+ presence varchar(255),
+ services varchar(255),
+ preferences varchar(2048),
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctireversedirectories;
+CREATE TABLE ctireversedirectories (
+ id integer unsigned,
+ number varchar(50),
+ directories text NOT NULL,
+ description text NOT NULL,
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctisheetactions;
+CREATE TABLE ctisheetactions (
+ id integer unsigned,
+ name varchar(50),
+ description text NOT NULL,
+ context varchar(50),
+ whom varchar(50),
+ capaids text NOT NULL,
+ sheet_info varchar(50),
+ systray_info varchar(50),
+ sheet_qtui varchar(50),
+ action_info varchar(50),
+ focus tinyint(1),
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctisheetevents;
+CREATE TABLE ctisheetevents (
+ id integer unsigned,
+ agentlinked varchar(50),
+ agentunlinked varchar(50),
+ faxreceived varchar(50),
+ incomingqueue varchar(50),
+ incominggroup varchar(50),
+ incomingdid varchar(50),
+ dial varchar(50),
+ link varchar(50),
+ unlink varchar(50),
+ custom text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+
+DROP TABLE ctistatus;
+CREATE TABLE ctistatus (
+ id integer unsigned,
+ presence_id integer unsigned,
+ name varchar(255),
+ display_name varchar(255),
+ actions varchar(255),
+ color varchar(20),
+ access_status varchar(255),
+ deletable tinyint(1),
+ PRIMARY KEY(id)
+);
+
+
 DROP TABLE dialaction;
 CREATE TABLE dialaction (
  event varchar(11) NOT NULL,

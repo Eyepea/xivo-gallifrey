@@ -236,6 +236,167 @@ CREATE INDEX `contextnummember__idx__context_type` ON `contextnummember`(`contex
 CREATE INDEX `contextnummember__idx__number` ON `contextnummember`(`number`);
 
 
+DROP TABLE IF EXISTS `cticontexts`;
+CREATE TABLE `cticontexts` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(50),
+ `directories` text NOT NULL,
+ `display` text NOT NULL,
+ `description` text NOT NULL,
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctidirectories`;
+CREATE TABLE `ctidirectories` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(255),
+ `uri` varchar(255),
+ `delimiter` varchar(20),
+ `match_direct` text NOT NULL,
+ `match_reverse` text NOT NULL,
+ `field_phone` text NOT NULL,
+ `field_fullname` varchar(255),
+ `field_company` varchar(255),
+ `field_mail` varchar(255),
+ `display_reverse` varchar(255),
+ `description` varchar(255),
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctidisplays`;
+CREATE TABLE `ctidisplays` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(50),
+ `data` text NOT NULL,
+ `deletable` tinyint(1),
+ `description` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctimain`;
+CREATE TABLE `ctimain` (
+ `id` int(10) unsigned auto_increment,
+ `commandset` varchar(20),
+ `fagi_ip` varchar(255),
+ `fagi_port` int(10) unsigned,
+ `cti_ip` varchar(255),
+ `cti_port` int(10) unsigned,
+ `webi_ip` varchar(255),
+ `webi_port` int(10) unsigned,
+ `info_ip` varchar(255),
+ `info_port` int(10) unsigned,
+ `announce_ip` varchar(255),
+ `announce_port` int(10) unsigned,
+ `asterisklist` varchar(255),
+ `updates_period` int(10) unsigned,
+ `socket_timeout` int(10) unsigned,
+ `login_timeout` int(10) unsigned,
+ `parting_astid_context` varchar(255),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctiphonehints`;
+CREATE TABLE `ctiphonehints` (
+ `id` int(10) unsigned auto_increment,
+ `number` integer,
+ `name` varchar(255),
+ `color` varchar(128),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctipresences`;
+CREATE TABLE `ctipresences` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(255),
+ `description` varchar(255),
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctiprofiles`;
+CREATE TABLE `ctiprofiles` (
+ `id` int(10) unsigned auto_increment,
+ `xlets` varchar(255),
+ `funcs` varchar(255),
+ `maxgui` integer,
+ `appliname` varchar(255),
+ `name` varchar(40),
+ `presence` varchar(255),
+ `services` varchar(255),
+ `preferences` varchar(2048),
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctireversedirectories`;
+CREATE TABLE `ctireversedirectories` (
+ `id` int(10) unsigned auto_increment,
+ `number` varchar(50),
+ `directories` text NOT NULL,
+ `description` text NOT NULL,
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctisheetactions`;
+CREATE TABLE `ctisheetactions` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(50),
+ `description` text NOT NULL,
+ `context` varchar(50),
+ `whom` varchar(50),
+ `capaids` text NOT NULL,
+ `sheet_info` varchar(50),
+ `systray_info` varchar(50),
+ `sheet_qtui` varchar(50),
+ `action_info` varchar(50),
+ `focus` tinyint(1),
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctisheetevents`;
+CREATE TABLE `ctisheetevents` (
+ `id` int(10) unsigned auto_increment,
+ `agentlinked` varchar(50),
+ `agentunlinked` varchar(50),
+ `faxreceived` varchar(50),
+ `incomingqueue` varchar(50),
+ `incominggroup` varchar(50),
+ `incomingdid` varchar(50),
+ `dial` varchar(50),
+ `link` varchar(50),
+ `unlink` varchar(50),
+ `custom` text NOT NULL,
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `ctistatus`;
+CREATE TABLE `ctistatus` (
+ `id` int(10) unsigned auto_increment,
+ `presence_id` int(10) unsigned,
+ `name` varchar(255),
+ `display_name` varchar(255),
+ `actions` varchar(255),
+ `color` varchar(20),
+ `access_status` varchar(255),
+ `deletable` tinyint(1),
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS `dialaction`;
 CREATE TABLE `dialaction` (
  `event` enum('answer',
