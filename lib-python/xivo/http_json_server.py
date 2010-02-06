@@ -258,20 +258,20 @@ class HttpReqHandler(BaseHTTPRequestHandler):
             raise HttpReqError(400, str(e))
     
     @staticmethod
-    def json_from_get(cmd, options=None):
+    def json_from_get(cmd, urlparams=None):
         """
         Callback for .execute_command() for GET requests
         """
         if cmd not in _cmd_r:
             raise HttpReqError(404)
 
-        if not isinstance(options, dict):
-            options = {}
+        if not isinstance(urlparams, dict):
+            urlparams = {}
 
-        res = _cmd_r[cmd].handler({}, options)
+        res = _cmd_r[cmd].handler({}, urlparams)
         return cjson.encode(res)
     
-    def json_from_post(self, cmd, options=None):
+    def json_from_post(self, cmd, urlparams=None):
         """
         Callback for .execute_command() for POST requests
         """
@@ -299,10 +299,10 @@ class HttpReqHandler(BaseHTTPRequestHandler):
         except cjson.DecodeError, e:
             raise HttpReqError(415, text=str(e))
 
-        if not isinstance(options, dict):
-            options = {}
+        if not isinstance(urlparams, dict):
+            urlparams = {}
 
-        res = _cmd_rw[cmd].handler(params, options)
+        res = _cmd_rw[cmd].handler(params, urlparams)
         return cjson.encode(res)
     
     def common_req(self, execute, send_body=True):
@@ -434,10 +434,10 @@ def init(options):
     Must be called just after registration, before anything else
     """
     if hasattr(options, 'testmethods') and options.testmethods:
-        def fortytwo(args):
+        def fortytwo(args, urlargs):
             "test GET method"
             return 42
-        def ping(args):
+        def ping(args, urlargs):
             "test POST method"
             return args
         register(fortytwo, CMD_R)
