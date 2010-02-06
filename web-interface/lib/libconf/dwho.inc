@@ -22,18 +22,6 @@ $array = array();
 
 $array['ini'] = array();
 
-$array['ini']['session'] = array(
-				'name'		=> '_eid',
-				'time'		=> 7200,
-				'path'		=> '/',
-				'save_path'	=> '',
-				'max_per_user'	=> 1);
-
-$array['ini']['locale'] = array(
-				'language'	=> 'fr',
-				'territory'	=> 'FR',
-				'charset'	=> 'UTF-8');
-
 $array['ini']['error'] = array(
 				'level'		=> 2047,
 				'report_type'	=> 7,
@@ -41,5 +29,17 @@ $array['ini']['error'] = array(
 				'report_func'	=> 1,
 				'email'		=> null,
 				'file'		=> null);
+
+$array['ini']['locale'] = array(
+				'language'	=> 'fr',
+				'territory'	=> 'FR',
+				'charset'	=> 'UTF-8');
+
+$array['ini']['session'] = array(
+				'name'		=> '_eid',
+				'time'		=> 7200,
+				'path'		=> '/',
+				'save_path'	=> null,
+				'max_per_user'	=> 1);
 
 ?>

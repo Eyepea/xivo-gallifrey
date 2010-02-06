@@ -23,7 +23,7 @@ require_once(XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'config.inc');
 define('XIVO_PATH_OBJECT',XIVO_PATH_ROOT.DIRECTORY_SEPARATOR.'object');
 define('XIVO_PATH_OBJECTCONF',XIVO_PATH_OBJECT.DIRECTORY_SEPARATOR.'objectconf');
 
-require_once(XIVO_PATH_OBJECTCONF.DIRECTORY_SEPARATOR.'xivo.inc');
+require_once(XIVO_PATH_OBJECTCONF.DIRECTORY_SEPARATOR.'define.inc');
 
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'dwho.inc');
 
@@ -37,6 +37,9 @@ class xivo extends dwho
 		$this->dwho();
 
 		$this->_conf['xivo'] = &$this->_conf['dwho'];
+
+		if(($xivo = dwho_gat::load_get('xivo',XIVO_PATH_OBJECTCONF)) !== false)
+			$this->_conf['xivo'] = array_merge_recursive($this->_conf['xivo'],$xivo);
 
 		$this->_init_cfg();
 
@@ -99,14 +102,24 @@ class xivo extends dwho
 			die('ERR: Missing datastorage configuration in XIVO init file');
 
 		if(dwho_issa('service',$xivo_ini) === true)
-			$this->_cfg_ini_service($xivo_ini['service']);
-		else
-			die('ERR: Missing service configuration in XIVO init file');
+		{
+			if(isset($this->_conf['xivo']['ini']['service']) === true)
+				$this->_conf['xivo']['ini']['service'] = array_merge(
+						(array) $this->_conf['xivo']['ini']['service'],
+						$xivo_ini['service']);
+			else
+				$this->_conf['xivo']['ini']['service'] = $xivo_ini['service'];
+		}
 
 		if(dwho_issa('sysconfd',$xivo_ini) === true)
-			$this->_cfg_ini_sysconfd($xivo_ini['sysconfd']);
-		else
-			die('ERR: Missing sysconfd configuration in XIVO init file');
+		{
+			if(isset($this->_conf['xivo']['ini']['sysconfd']) === true)
+				$this->_conf['xivo']['ini']['sysconfd'] = array_merge(
+						(array) $this->_conf['xivo']['ini']['sysconfd'],
+						$xivo_ini['sysconfd']);
+			else
+				$this->_conf['xivo']['ini']['sysconfd'] = $xivo_ini['sysconfd'];
+		}
 
 		if(defined('XIVO_WEBI_CONFIGURED') === false)
 			define('XIVO_WEBI_CONFIGURED',true);
@@ -144,26 +157,10 @@ class xivo extends dwho
 		dwho_gct::set(new xivo_service($this->_conf['xivo']['ini']['service']));
 	}
 
-	function _cfg_ini_sysconfd($sysconfd)
-	{
-		if(is_array($sysconfd) === false)
-			die('ERR: Invalid sysconfd configuration in XIVO init file');
-
-		$this->_conf['xivo']['ini']['sysconfd'] = $sysconfd;
-	}
-
 	function _set_user()
 	{
 		xivo::load_class('xivo_user',XIVO_PATH_OBJECT,null,false);
 		new xivo_user();
-	}
-
-	function _cfg_ini_service($service)
-	{
-		if(is_array($service) === false)
-			die('ERR: Invalid service configuration in XIVO init file');
-
-		$this->_conf['xivo']['ini']['service'] = $service;
 	}
 
 	function load_datastorage($dso)

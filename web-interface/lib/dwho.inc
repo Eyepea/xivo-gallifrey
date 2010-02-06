@@ -186,7 +186,7 @@ class dwho
 		define('DWHO_SESS_PATH',(string) $session['path']);
 
 		if(isset($session['save_path']) === false
-		|| dwho_file::is_d_rwx($session['save_path']) === false)
+		|| ($session['save_path'] = dwho_file::is_d_rwx($session['save_path'])) === false)
 			$session['save_path'] = $this->_conf['dwho']['ini']['session']['save_path'];
 
 		define('DWHO_SESS_SAVE_PATH',(string) $session['save_path']);

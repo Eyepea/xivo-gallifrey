@@ -689,9 +689,13 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if($xivodso->is_open() === false)
 			$this->_set_error('dbconfig',$backend,'xivo','connection');
+		else
+			$xivodso->close();
 
 		if($ipbxdso->is_open() === false)
 			$this->_set_error('dbconfig',$backend,'ipbx','connection');
+		else
+			$ipbxdso->close();
 
 		if($this->get_errnb() > 0)
 			return(false);

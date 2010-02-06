@@ -24,14 +24,12 @@ class xivo_service
 	var $_services	= array();
 	var $_config	= array();
 
-	function xivo_service($ini)
+	function xivo_service($ini=null)
 	{
 		if(($this->_services = dwho_gat::get_file(XIVO_PATH_OBJECTCONF.DWHO_SEP_DIR.'service')) === false)
 			trigger_error('Failed to load service Array',E_USER_ERROR);
-		else if(is_array($ini) === false || empty($ini) === true)
-			trigger_error('Invalid parameter in '.__CLASS__,E_USER_ERROR);
-
-		$this->_ini = $ini;
+		else if(is_array($ini) === true && empty($ini) === false)
+			$this->_ini = $ini;
 
 		if(dwho_issa('_SRE',$_SESSION) === false)
 			$_SESSION['_SRE'] = array();
