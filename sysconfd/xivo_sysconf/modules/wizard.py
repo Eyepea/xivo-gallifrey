@@ -26,7 +26,6 @@ __license__ = """
 import os
 import logging
 import re
-import pwd
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
@@ -114,18 +113,24 @@ WIZARD_XIVO_DB_ENGINES      = {'mysql':
 def _find_template_file(tplfilename, customtplfilename, newfilename):
     """
     Find configuration file
-    Return configuration filename
+    Return configuration filename and file stat
     """
     if os.access(customtplfilename, (os.F_OK | os.R_OK)):
-        filename = customtplfilename
+        filename    = customtplfilename
+        filestat    = os.stat(customtplfilename)
     elif os.access(newfilename, (os.F_OK | os.R_OK)):
-        filename = newfilename
+        filename    = newfilename
+        filestat    = os.stat(newfilename)
     else:
         filename = tplfilename
+        if os.access(tplfilename, (os.F_OK | os.R_OK)):
+            filestat = os.stat(tplfilename)
+        else:
+            filestat = None
 
-    return filename
+    return filename, filestat
 
-def _write_config_file(filename, config, owner=None, group=None):
+def _write_config_file(filename, config, filestat=None):
     """
     Write configuration file
     """
@@ -135,22 +140,17 @@ def _write_config_file(filename, config, owner=None, group=None):
     config.write(tmp)
     tmp.close()
 
-    if owner is None:
-        owner = -1
-
-    if group is None:
-        group = -1
-
-    if owner or group:
-        os.chown(tmpfilename, owner, group)
+    if filestat:
+        os.chmod(tmpfilename, filestat[0])
+        os.chown(tmpfilename, filestat[4], filestat[5])
 
     os.rename(tmpfilename, filename)
 
-def merge_config_file(tplfilename, customtplfilename, newfilename, cfgdict, owner=None, group=None, ipbxengine=None):
+def merge_config_file(tplfilename, customtplfilename, newfilename, cfgdict, ipbxengine=None):
     """
     Generate a configuration file from a template
     """
-    filename = _find_template_file(tplfilename, customtplfilename, newfilename)
+    filename, filestat = _find_template_file(tplfilename, customtplfilename, newfilename)
 
     xdict = dict(cfgdict)
 
@@ -188,14 +188,14 @@ def merge_config_file(tplfilename, customtplfilename, newfilename, cfgdict, owne
         for optname, optvalue in options.iteritems():
             putfunc(sec, optname, optvalue)
 
-    _write_config_file(newfilename, newcfg, owner, group)
+    _write_config_file(newfilename, newcfg, filestat)
 
-def asterisk_modules_config(tplfilename, customtplfilename, newfilename, modules, owner=None, group=None):
+def asterisk_modules_config(tplfilename, customtplfilename, newfilename, modules):
     """
     Generate Asterisk modules.conf from a template
     """
-    filename    = _find_template_file(tplfilename, customtplfilename, newfilename)
-    customfile  = customtplfilename == filename
+    filename, filestat  = _find_template_file(tplfilename, customtplfilename, newfilename)
+    customfile          = customtplfilename == filename
 
     cfg         = AsteriskConfigParser(filename=filename)
     newcfg      = AsteriskConfigParser()
@@ -236,14 +236,14 @@ def asterisk_modules_config(tplfilename, customtplfilename, newfilename, modules
         for module in mods:
             newcfg.append('modules', 'preload', module)
 
-    _write_config_file(newfilename, newcfg, owner, group)
+    _write_config_file(newfilename, newcfg, filestat)
 
-def asterisk_extconfig(tplfilename, customtplfilename, newfilename, extconfig, dbtype, dbname, owner=None, group=None):
+def asterisk_extconfig(tplfilename, customtplfilename, newfilename, extconfig, dbtype, dbname):
     """
     Generate Asterisk extconfig.conf from a template
     """
-    filename    = _find_template_file(tplfilename, customtplfilename, newfilename)
-    customfile  = customtplfilename == filename
+    filename, filestat  = _find_template_file(tplfilename, customtplfilename, newfilename)
+    customfile          = customtplfilename == filename
 
     cfg         = AsteriskConfigParser(filename=filename)
     newcfg      = AsteriskConfigParser()
@@ -287,7 +287,7 @@ def asterisk_extconfig(tplfilename, customtplfilename, newfilename, extconfig, d
     for optname, table in extcfg.iteritems():
         newcfg.append('settings', optname, '%s,"%s",%s' % (dbtype, dbname, table))
 
-    _write_config_file(newfilename, newcfg, owner, group)
+    _write_config_file(newfilename, newcfg, filestat)
 
 def asterisk_mysql_config(authority, database, params, options):
     """
@@ -332,8 +332,7 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
     """
     Entry point for Asterisk configuration
     """
-    dbname          = 'asterisk'
-    asterisk_uid    = pwd.getpwnam('asterisk')[2]
+    dbname = 'asterisk'
 
     if dburi[0] == 'mysql':
         if dburi[2]:
@@ -350,7 +349,6 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbname,
                                                       dbparams,
                                                       dbinfo['res'])},
-                          owner=asterisk_uid,
                           ipbxengine='asterisk')
 
         merge_config_file(Wdc['asterisk_cdr_mysql_tpl_file'],
@@ -361,7 +359,6 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                                                       dbname,
                                                       dbparams,
                                                       dbinfo['cdr'])},
-                          owner=asterisk_uid,
                           ipbxengine='asterisk')
     elif dburi[0] == 'sqlite':
         merge_config_file(Wdc['asterisk_res_sqlite_tpl_file'],
@@ -369,15 +366,13 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                           Wdc['asterisk_res_sqlite_file'],
                           {'general':
                                 {'dbfile':   dburi[2]}},
-                          owner=asterisk_uid,
                           ipbxengine='asterisk')
 
     if 'modules' in dbinfo:
         asterisk_modules_config(Wdc['asterisk_modules_tpl_file'],
                                 Wdc['asterisk_modules_custom_tpl_file'],
                                 Wdc['asterisk_modules_file'],
-                                dbinfo['modules'],
-                                owner=asterisk_uid)
+                                dbinfo['modules'])
 
     if 'extconfig' in WIZARD_IPBX_ENGINES['asterisk']:
         asterisk_extconfig(Wdc['asterisk_extconfig_tpl_file'],
@@ -385,8 +380,7 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
                            Wdc['asterisk_extconfig_file'],
                            WIZARD_IPBX_ENGINES['asterisk']['extconfig'],
                            dburi[0],
-                           dbname,
-                           owner=asterisk_uid)
+                           dbname)
 
 def set_db_backends(args, options): # pylint: disable-msg=W0613
     """
