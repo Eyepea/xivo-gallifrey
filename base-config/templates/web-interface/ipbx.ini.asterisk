@@ -1,7 +1,6 @@
 [general]
 name = asterisk
 label = Asterisk
-datastorage = "sqlite:/var/lib/asterisk/astsqlite"
 
 [ami]
 bindaddr = 127.0.0.1
