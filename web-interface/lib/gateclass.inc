@@ -87,10 +87,10 @@ class dwho_gct
 		return($agc->set($obj,$name));
 	}
 
-	function &get($name)
+	function get($name)
 	{
 		$agc = &dwho_gateclass::getinstance();
-		return(($ref = &$agc->get($name)));
+		return($agc->get($name));
 	}
 
 	function &set_get(&$obj,$name='')
