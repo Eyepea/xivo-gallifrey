@@ -1,6 +1,5 @@
 [general]
 name = asterisk
-label = Asterisk
 
 [ami]
 bindaddr = 127.0.0.1

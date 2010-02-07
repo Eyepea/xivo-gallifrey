@@ -44,7 +44,7 @@ class dwho_gatearray
 		return(true);
 	}
 
-	function load($file,$path='',$name='')
+	function load($file,$path='',$name='',$includable=false)
 	{
 		$file = (string) $file;
 		$name = (string) $name;
@@ -67,9 +67,15 @@ class dwho_gatearray
 		else
 			$path = rtrim($path,DIRECTORY_SEPARATOR).DIRECTORY_SEPARATOR.$file.'.inc';
 
-		if(dwho_file::is_includable($path) === false)
+		if((bool) $includable === false)
+		{
+			if(dwho_file::is_f_r($path) === false)
+				return(false);
+		}
+		else if(dwho_file::is_includable($path) === false)
 			return(false);
-		else if(isset($this->_array[$name]) === false)
+
+		if(isset($this->_array[$name]) === false)
 		{
 			require_once($path);
 
@@ -82,16 +88,22 @@ class dwho_gatearray
 		return($name);
 	}
 
-	function get_file($path,$once=false)
+	function get_file($path,$once=false,$includable=false)
 	{
 		if(is_array($path) === true)
 			$path = implode(DIRECTORY_SEPARATOR,$path);
 
 		$path = (string) $path.'.inc';
 
-		if(dwho_file::is_includable($path) === false)
+		if((bool) $includable === false)
+		{
+			if(dwho_file::is_f_r($path) === false)
+				return(false);
+		}
+		else if(dwho_file::is_includable($path) === false)
 			return(false);
-		else if((bool) $once === false)
+
+		if((bool) $once === false)
 			require($path);
 		else
 			require_once($path);

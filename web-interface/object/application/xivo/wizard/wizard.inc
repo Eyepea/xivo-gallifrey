@@ -92,12 +92,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			define('XIVO_SRE_IPBX_LABEL',
 			       $engines[$this->_wizsess['ipbxengine']['engine']]['label']);
 
-		$config = $_SRE->get_init_file('ipbx');
-		$config['general']['name'] = $this->_wizsess['ipbxengine']['engine'];
+		$config['general'] = array();
 		$config['general']['datastorage'] = $this->_wizsess['dbconfig']['save']['ipbx'];
-		$_SRE->set_config('ipbx',$config);
 
-		$this->_ipbx = &$_SRE->get('ipbx');
+		$_SRE->set_engine_config('ipbx',$this->_wizsess['ipbxengine']['engine'],$config);
+
+		$this->_ipbx = &$_SRE->get('ipbx',$this->_wizsess['ipbxengine']['engine']);
 
 		return(true);
 	}

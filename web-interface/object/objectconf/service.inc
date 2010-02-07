@@ -22,9 +22,32 @@ define('XIVO_SRE_CLASS_PRE','_sre_');
 
 $array = array();
 
-$array['ipbx'] = array(
-		'asterisk'	=> array('label'	=> 'Asterisk'));
-$array['monitoring'] = array(
-		'monit'		=> array('label'	=> 'Monit'));
+$array['ipbx'] = array();
+
+if(($asterisk_ini = dwho_gat::get_file(
+			array(XIVO_PATH_OBJECT,
+			      'service',
+			      'ipbx',
+			      'asterisk',
+			      'initcfg'))) !== false)
+{
+	$array['ipbx']['asterisk'] = array();
+	$array['ipbx']['asterisk']['label']	= 'Asterisk';
+	$array['ipbx']['asterisk']['ini']	= $asterisk_ini;
+}
+
+$array['monitoring'] = array();
+
+if(($monit_ini = dwho_gat::get_file(
+			array(XIVO_PATH_OBJECT,
+			      'service',
+			      'monitoring',
+			      'monit',
+			      'initcfg'))) !== false)
+{
+	$array['monitoring']['monit'] = array();
+	$array['monitoring']['monit']['label']	= 'Monit';
+	$array['monitoring']['monit']['ini']	= $monit_ini;
+}
 
 ?>

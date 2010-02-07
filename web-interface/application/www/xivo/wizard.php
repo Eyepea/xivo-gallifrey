@@ -130,7 +130,8 @@ switch($step)
 		$_TPL->set_var('max_file_size',dwho_get_memory('upload_max_filesize'));
 		break;
 	case 'validate':
-		if($ressave === true)
+		if($ressave === true
+		&& $_QRY->get('step') === $step)
 		{
 			session_destroy();
 			$_QRY->go($_TPL->url('index'));
