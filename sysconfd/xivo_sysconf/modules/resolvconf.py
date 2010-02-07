@@ -25,6 +25,7 @@ __license__ = """
 
 import os
 import logging
+import subprocess
 
 from time import time
 from shutil import copy2
@@ -45,6 +46,7 @@ RESOLVCONFLOCK          = RWLock()
 
 Rcc =   {'hostname_file':       os.path.join(os.path.sep, 'etc', 'hostname'),
          'hostname_tpl_file':   os.path.join('resolvconf', 'hostname'),
+         'hostname_update_cmd': "/etc/init.d/hostname.sh start",
          'resolvconf_file':     os.path.join(os.path.sep, 'etc', 'resolv.conf'),
          'resolvconf_tpl_file': os.path.join('resolvconf', 'resolv.conf'),
          'lock_timeout':        60}
@@ -105,6 +107,10 @@ def HostName(args, options):    # pylint: disable-msg=W0613
         try:
             hostnamebakfile = _write_config_file('hostname',
                                                  {'_XIVO_HOSTNAME': args['hostname']})
+
+            if Rcc['hostname_update_cmd']:
+                subprocess.call(Rcc['hostname_update_cmd'].strip().split())
+
             return True
         except Exception, e:
             if hostnamebakfile:
@@ -201,6 +207,9 @@ def safe_init(options):
 
         if cfg.has_option('resolvconf', 'hostname_file'):
             Rcc['hostname_file'] = cfg.get('resolvconf', 'hostname_file')
+
+        if cfg.has_option('resolvconf', 'hostname_update_cmd'):
+            Rcc['hostname_update_cmd'] = cfg.get('resolvconf', 'hostname_update_cmd')
 
         if cfg.has_option('resolvconf', 'resolvconf_file'):
             Rcc['resolvconf_file'] = cfg.get('resolvconf', 'resolvconf_file')
