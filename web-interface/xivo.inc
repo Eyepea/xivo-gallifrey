@@ -39,7 +39,7 @@ class xivo extends dwho
 		$this->_conf['xivo'] = &$this->_conf['dwho'];
 
 		if(($xivo = dwho_gat::load_get('xivo',XIVO_PATH_OBJECTCONF)) !== false)
-			$this->_conf['xivo'] = array_merge_recursive($this->_conf['xivo'],$xivo);
+			$this->_conf['xivo'] = dwho_array_merge_replace_recursive($this->_conf['xivo'],$xivo);
 
 		$this->_init_cfg();
 

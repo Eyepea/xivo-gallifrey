@@ -594,6 +594,41 @@ function dwho_array_combine($keys,$values,$notexists=false,$defvalue=null)
 	return($r);
 }
 
+function dwho_array_merge_replace_recursive()
+{
+	if(($argc = func_num_args()) === 0)
+		return(null);
+	else if($argc === 1)
+		return((array) func_get_arg(0));
+
+	$r = (array) func_get_arg(0);
+
+	for($i = 1;$i < $argc;$i++)
+	{
+		$array = (array) func_get_arg($i);
+
+		foreach($array as $key => $value)
+		{
+			if(is_numeric($key) === true
+			&& in_array($value,$r) === false)
+			{
+				if(is_array($value) === true)
+					$r[] = dwho_array_merge_replace_recursive($r[$key],$value);
+				else
+					$r[] = $value;
+			}
+			else if(isset($r[$key]) === true
+			&& is_array($r[$key]) === true
+			&& is_array($value) === true)
+				$r[$key] = dwho_array_merge_replace_recursive($r[$key],$value);
+			else
+				$r[$key] = $value;
+		}
+	}
+
+	return($r);
+}
+
 function dwho_array_startswith_key($arr,$str,$sub=false)
 {
 	$sub = (bool) $sub;

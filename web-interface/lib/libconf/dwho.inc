@@ -39,7 +39,6 @@ $array['ini']['session'] = array(
 				'name'		=> '_eid',
 				'time'		=> 7200,
 				'path'		=> '/',
-				'save_path'	=> null,
-				'max_per_user'	=> 1);
+				'save_path'	=> null);
 
 ?>

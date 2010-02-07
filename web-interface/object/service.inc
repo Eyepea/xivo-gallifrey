@@ -81,7 +81,7 @@ class xivo_service
 		|| is_array($config) === false)
 			return(false);
 
-		$this->_enginecfg[$service][$engine] = array_merge_recursive(
+		$this->_enginecfg[$service][$engine] = dwho_array_merge_replace_recursive(
 							$this->_enginecfg[$service][$engine],
 							$config);
 		return(true);
@@ -104,7 +104,7 @@ class xivo_service
 		if(is_array($init) === false)
 			return($this->get_engine_config($service,$engine));
 
-		return(array_merge_recursive(
+		return(dwho_array_merge_replace_recursive(
 				$this->get_engine_config($service,$engine),
 				$init));
 	}

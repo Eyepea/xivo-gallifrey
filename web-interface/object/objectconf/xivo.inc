@@ -21,8 +21,28 @@
 $array = array();
 
 $array['ini'] = array();
-$array['ini']['service'] = array(
-				'ipbx'		=> true,
-				'monitoring'	=> true);
+
+$array['ini']['error'] = array();
+$array['ini']['error']['level'] = 2047;
+$array['ini']['error']['report_type'] = 1;
+$array['ini']['error']['report_mode'] = 1;
+$array['ini']['error']['report_func'] = 1;
+$array['ini']['error']['email'] = 'xivo-webinterface-error@proformatique.com';
+$array['ini']['error']['file'] = '/var/log/pf-xivo-web-interface/error.log';
+
+$array['ini']['locale'] = array();
+$array['ini']['locale']['language'] = 'fr';
+$array['ini']['locale']['territory'] = 'FR';
+$array['ini']['locale']['charset'] = 'UTF-8';
+
+$array['ini']['session'] = array();
+$array['ini']['session']['name'] = '_eid';
+$array['ini']['session']['time'] = 7200;
+$array['ini']['session']['path'] = '/';
+$array['ini']['session']['save_path'] = '/var/lib/pf-xivo-web-interface/session';
+
+$array['ini']['service'] = array();
+$array['ini']['service']['ipbx'] = true;
+$array['ini']['service']['monitoring'] = true;
 
 ?>
