@@ -256,9 +256,9 @@ class dwho_query
 		return($this->input);
 	}
 
-	function request_meth_raw()
+	function &request_meth_raw()
 	{
-		return($this->query_string('request',DWHO_QUERY_MODE_RAW));
+		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_RAW)));
 	}
 
 	function request_meth_raw_str($sep=null)
@@ -266,9 +266,9 @@ class dwho_query
 		return($this->build_query_str($this->request_meth_raw(),true,$sep));
 	}
 
-	function request_meth_uraw()
+	function &request_meth_uraw()
 	{
-		return($this->query_string('request',DWHO_QUERY_MODE_URAW));
+		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_URAW)));
 	}
 
 	function request_meth_uraw_str($sep=null)
@@ -276,9 +276,9 @@ class dwho_query
 		return($this->build_query_str($this->request_meth_uraw(),true,$sep));
 	}
 
-	function request_meth_qot()
+	function &request_meth_qot()
 	{
-		return($this->query_string('request',DWHO_QUERY_MODE_QOT));
+		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_QOT)));
 	}
 
 	function request_meth_qot_str($sep=null)
@@ -286,9 +286,9 @@ class dwho_query
 		return($this->build_query_str($this->request_meth_qot(),true,$sep));
 	}
 
-	function request_orig()
+	function &request_orig()
 	{
-		return($this->_orig['request']);
+		return(($ref = &$this->_orig['request']));
 	}
 
 	function request_orig_str($sep=null)
@@ -296,9 +296,9 @@ class dwho_query
 		return($this->build_query_str($this->_orig['request'],true,$sep));
 	}
 
-	function qstring_raw()
+	function &qstring_raw()
 	{
-		return($this->query_string('qstring',DWHO_QUERY_MODE_RAW));
+		return(($ref = &$this->query_string('qstring',DWHO_QUERY_MODE_RAW)));
 	}
 
 	function qstring_raw_str($sep=null)
@@ -306,9 +306,9 @@ class dwho_query
 		return($this->build_query_str($this->qstring_raw(),true,$sep));
 	}
 
-	function qstring_qot()
+	function &qstring_qot()
 	{
-		return($this->query_string('qstring',DWHO_QUERY_MODE_QOT));
+		return(($ref = $this->query_string('qstring',DWHO_QUERY_MODE_QOT)));
 	}
 
 	function qstring_qot_str($sep=null)
