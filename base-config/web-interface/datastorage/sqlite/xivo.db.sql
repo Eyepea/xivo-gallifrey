@@ -216,7 +216,7 @@ CREATE TABLE session (
 );
 
 CREATE INDEX session__idx__expire ON session(expire);
-CREATE INDEX session__idx__userid ON session(userid);
+CREATE INDEX session__idx__identifier ON session(identifier);
 
 
 DROP TABLE user;

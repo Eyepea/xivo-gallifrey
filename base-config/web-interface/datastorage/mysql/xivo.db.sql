@@ -221,7 +221,7 @@ CREATE TABLE `session` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `session__idx__expire` ON `session`(`expire`);
-CREATE INDEX `session__idx__userid` ON `session`(`userid`);
+CREATE INDEX `session__idx__identifier` ON `session`(`identifier`);
 
 
 DROP TABLE IF EXISTS `user`;
