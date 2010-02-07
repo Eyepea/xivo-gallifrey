@@ -350,9 +350,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		else if(isset($ref['network:0']) === true)
 			$refnet = &$ref['network:0'];
 		else
-			$refnet = false;
+			$refnet = &$ref;
 
-		if($refnet === false)
+		if(is_array($refnet) === false)
 			return($r);
 
 		if(isset($refnet['vendor']) === true)
