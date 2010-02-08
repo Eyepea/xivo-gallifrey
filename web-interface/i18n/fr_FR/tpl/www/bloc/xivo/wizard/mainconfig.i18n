@@ -4,6 +4,12 @@ Configuration du nom du serveur
 ; fm_mainconfig_hostname
 Nom d'hôte :
 
+; fld-mainconfig-domain
+Configuration du domaine du serveur
+
+; fm_mainconfig_domain
+Domaine :
+
 ; fld-mainconfig-adminpasswd
 Configuration du mot de passe administrateur
 

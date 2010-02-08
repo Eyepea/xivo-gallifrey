@@ -43,11 +43,15 @@ Informations serveur
 ; info_servername
 Nom du serveur :
 
-; error_mainconfig_hostname(save)
+; error_mainconfig_hosts(save)
 Erreurs possibles :
 1. Nom de la machine invalide
-2. Serveur de configuration indisponible
-3. Un problème est survenu lors de la configuration sur le serveur
+2. Domaine invalide
+3. Serveur de configuration indisponible
+4. Un problème est survenu lors de la configuration sur le serveur
+
+; info_serverdomain
+Domaine du serveur :
 
 ; info_adminpasswd
 Mot de passe de l'administrateur :

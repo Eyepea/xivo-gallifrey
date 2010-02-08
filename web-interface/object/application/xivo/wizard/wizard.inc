@@ -787,7 +787,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$this->_set_result('mainconfig',$this->_filter->get_result());
 
-		return($r);	
+		return($r);
 	}
 
 	function save_netiface($data)
@@ -1195,16 +1195,20 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		return(true);
 	}
 
-	function _commit_hostname()
+	function _commit_hosts()
 	{
 		if(dwho_issa('mainconfig',$this->_wizsess) === false
-		|| isset($this->_wizsess['mainconfig']['hostname']) === false)
+		|| isset($this->_wizsess['mainconfig']['hostname'],
+			 $this->_wizsess['mainconfig']['domain']) === false)
 			return(false);
 
-		if($this->_sysconfd->request_post('/hostname',
-						  array('hostname' => $this->_wizsess['mainconfig']['hostname'])) === false)
+		$hosts = array();
+		$hosts['hostname'] = $this->_wizsess['mainconfig']['hostname'];
+		$hosts['domain'] = $this->_wizsess['mainconfig']['domain'];
+
+		if($this->_sysconfd->request_post('/hosts',$hosts) === false)
 		{
-			$this->_set_error('mainconfig','hostname','save');
+			$this->_set_error('mainconfig','hosts','save');
 			return(false);
 		}
 
@@ -1223,6 +1227,10 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if(empty($resolvconf['nameservers']) === true)
 			return(null);
+
+		if(dwho_issa('mainconfig',$this->_wizsess) === true
+		&& isset($this->_wizsess['mainconfig']['domain']) === true)
+			$resolvconf['search'] = $this->_wizsess['mainconfig']['domain'];
 
 		if($this->_sysconfd->request_post('/resolv_conf',$resolvconf) === false)
 		{
@@ -1375,9 +1383,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if($ref_components['adminpasswd'] === false)
 			return(false);
 
-		if(array_key_exists('hostname',$ref_components) === false
-		|| $ref_components['hostname'] === false)
-			$ref_components['hostname'] = $this->_commit_hostname();
+		if(array_key_exists('hosts',$ref_components) === false
+		|| $ref_components['hosts'] === false)
+			$ref_components['hosts'] = $this->_commit_hosts();
 
 		if(array_key_exists('resolvconf',$ref_components) === false
 		|| $ref_components['resolvconf'] === false)

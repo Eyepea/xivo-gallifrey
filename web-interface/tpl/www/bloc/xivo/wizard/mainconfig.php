@@ -41,6 +41,24 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_mainconfig_hostname'),
 ?>
 </fieldset>
 
+<fieldset id="fld-mainconfig-domain">
+	<legend><?=$this->bbf('fld-mainconfig-domain');?></legend>
+<?php
+
+echo	$form->text(array('desc'	=> $this->bbf('fm_mainconfig_domain'),
+			  'name'	=> 'mainconfig[domain]',
+			  'labelid'	=> 'mainconfig-domain',
+			  'size'	=> 15,
+			  'help'	=> $this->bbf('hlp_fm_mainconfig_domain'),
+			  'comment'	=> $this->bbf('cmt_fm_mainconfig_domain'),
+			  'default'	=> $element['mainconfig']['domain'],
+			  'value'	=> $this->get_var('info','mainconfig','domain'),
+			  'error'	=> $this->bbf_args('error_generic',
+							   $this->get_var('error','mainconfig','domain'))));
+
+?>
+</fieldset>
+
 <fieldset id="fld-mainconfig-adminpasswd">
 	<legend><?=$this->bbf('fld-mainconfig-adminpasswd');?></legend>
 <?php

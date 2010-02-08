@@ -75,8 +75,10 @@ endif;
 		<dt><?=$this->bbf('info_servername');?></dt>
 		<dd><?=dwho_htmlen($info['mainconfig']['hostname']),
 		       $dhtml->message_error(
-				nl2br($this->bbf_args('error_mainconfig_hostname',
-					        $this->get_var('error','mainconfig','hostname'))));?></dd>
+				nl2br($this->bbf_args('error_mainconfig_hosts',
+					        $this->get_var('error','mainconfig','hosts'))));?></dd>
+		<dt><?=$this->bbf('info_serverdomain');?></dt>
+		<dd><?=dwho_htmlen($info['mainconfig']['domain']);?></dd>
 		<dt><?=$this->bbf('info_adminpasswd');?></dt>
 		<dd><?=dwho_htmlen($info['mainconfig']['adminpasswd']),
 		       $dhtml->message_error(
