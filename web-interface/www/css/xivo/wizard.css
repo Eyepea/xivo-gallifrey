@@ -9,6 +9,13 @@ body {margin-top: 40px;}
 .sb-snav .span-center {width: 594px;}
 .sb-snav .span-right {text-align: right;padding-right: 2px;}
 
+#xivo-wizard-step-ipbxengine .ipbxengine-info {margin-top: 15px;}
+#xivo-wizard-step-ipbxengine .ipbxengine-info dt {text-align: center;font-weight: bold;background-image: url(../../img/content/top/bg-1.gif);background-repeat: repeat-x;background-color: #fff;padding-top: 2px;border: 1px solid #999;}
+#xivo-wizard-step-ipbxengine .ipbxengine-info dd {margin-bottom: 10px;}
+#xivo-wizard-step-ipbxengine .ipbxengine-info .ipbxengine-description {height: 100px;padding: 5px 2px;width: 49.6%;float: left;border: 1px solid #999;border-top-width: 0px;border-right-width: 0px;}
+#xivo-wizard-step-ipbxengine .ipbxengine-info .ipbxengine-image {line-height:100px;height: 100px;padding: 5px 0px;float: right;width: 49.4%;text-align: center;border: 1px solid #999;border-top-width: 0px;border-left-width: 1px;}
+#xivo-wizard-step-ipbxengine .ipbxengine-info .ipbxengine-image img {vertical-align: text-bottom;}
+
 #b-content .sb-list .l-colhead td {background-color: #f9f9f9;width: 33%;}
 
 #r-wizard .fm-desc-inline label {padding: 0px 2px;}
@@ -30,8 +37,8 @@ body {margin-top: 40px;}
 #ipbximportuser-tooltips-error:hover {text-decoration: none;}
 #ipbximportuser-lines-status {text-align: left;width: 350px;border: 1px solid #bc0000;padding: 5px;background-color: #ffcbcb;position:absolute;}
 #ipbximportuser-lines-status dt {text-align: center;color: #000;font-weight: bold;padding-bottom: 2px;}
-#ipbximportuser-lines-status .ipbximportuser-line-success {color: #408100; font-weight: bold;}
-#ipbximportuser-lines-status .ipbximportuser-line-error {color: #bc0000; font-weight: bold;}
+#ipbximportuser-lines-status .ipbximportuser-line-success {color: #408100;font-weight: bold;}
+#ipbximportuser-lines-status .ipbximportuser-line-error {color: #bc0000;font-weight: bold;}
 
 #xivo-wizard-step-validate #validate-instruction {text-align: center;font-weight: bold;}
 #xivo-wizard-step-validate fieldset {margin-top: 10px;margin-bottom: 0px;}

@@ -108,6 +108,25 @@ function xivo_wizard_chg_dbconfig_backend()
 		xivo_chg_attrib('fm_dbconfig_backend-' + backend.value,'links',0,1);
 }
 
+function xivo_wizard_chg_ipbxbackend()
+{
+	if((backend = dwho_eid('it-ipbxengine')) === false
+	|| backend.type !== 'select-one')
+		return(false);
+
+	var len = backend.options.length;
+
+	for(i = 0;i < len;i++)
+	{
+		if((engine = dwho_eid('ipbxengine-' + backend.options[i].value)) === false)
+			continue;
+		else if(backend.options[i].value !== backend.value)
+			engine.style.display = 'none';
+		else
+			engine.style.display = 'block';
+	}
+}
+
 function xivo_wizard_ipbximportuser_error(sum)
 {
 	var spansum = dwho.dom.create_element('span',
@@ -124,12 +143,6 @@ function xivo_wizard_ipbximportuser_error(sum)
 
 function xivo_wizard_dbconfig_backend_onload()
 {
-	xivo_wizard_chg_dbconfig_backend();
-
-	dwho.dom.add_event('change',
-			   dwho_eid('it-dbconfig-backend'),
-			   xivo_wizard_chg_dbconfig_backend);
-
 	dwho.dom.add_event('change',
 			   dwho_eid('it-language'),
 			   function()
@@ -137,6 +150,18 @@ function xivo_wizard_dbconfig_backend_onload()
 				this.form['refresh'].value = 1;
 				this.form.submit();
 			   });
+
+	xivo_wizard_chg_ipbxbackend();
+
+	dwho.dom.add_event('change',
+			   dwho_eid('it-ipbxengine'),
+			   xivo_wizard_chg_ipbxbackend);
+
+	xivo_wizard_chg_dbconfig_backend();
+
+	dwho.dom.add_event('change',
+			   dwho_eid('it-dbconfig-backend'),
+			   xivo_wizard_chg_dbconfig_backend);
 
 	dwho.dom.add_event('click',
 			   dwho_eid('it-previous'),
