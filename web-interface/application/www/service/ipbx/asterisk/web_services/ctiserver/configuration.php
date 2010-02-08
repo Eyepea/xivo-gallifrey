@@ -136,12 +136,17 @@ switch($act)
 		if(isset($load_rdid))
 		{
 			$rdidout = array();
-
+			
 			foreach($load_rdid as $rdid)
 			{
 				$rdidid = $rdid['number'];
-				$rdidout[$rdidid] = dwho_json::decode($rdid['directories'], true);
-
+				$rdiddir = array();
+				$rdiddir = dwho_json::decode($rdid['directories'], true);
+				foreach($rdiddir as $k => $v)
+				{
+					$rdiddir[$k] = "directories.".$v;
+				}
+				$rdidout[$rdidid] = $rdiddir;
 			}
 			$out['reversedid'] = $rdidout;
 		}
@@ -166,6 +171,7 @@ switch($act)
 			$dispout = array();
 			foreach($load_sheetactions as $action)
 			{
+				$qtui = "null";
 				$actid = $action['name'];
 				$actout[$actid]['whom'] = $action['whom'];
 				$actout[$actid]['focus'] = $action['focus'] == 1 ? "yes" : "no";
@@ -176,9 +182,16 @@ switch($act)
 				$actout[$actid]['sheet_qtui'] = "sheets.displays.qtui.".$actid;
 				$actout[$actid]['action_info'] = "sheets.displays.infos.".$actid;
 
-				$dispout['screens'][$actid] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
+				$arr = array();
+				$arr = dwho_json::decode($action['sheet_info'], true);
+				foreach($arr as $k=>$v)
+				{
+					$a1 = $arr[$k];
+					if($a1[1] == 'form')
+						$qtui = $a1[3];
+				}
 				$dispout['systrays'][$actid] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
-				$dispout['qtui'][$actid] = $action['sheet_qtui'];
+				$dispout['qtui'][$actid][$qtui] = $action['sheet_qtui'];
 				$dispout['infos'][$actid] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
 
 			}

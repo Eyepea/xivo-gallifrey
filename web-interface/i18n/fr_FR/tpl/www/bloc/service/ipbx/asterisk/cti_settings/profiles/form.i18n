@@ -11,7 +11,7 @@ Non
 Nom :
 
 ; fm_profiles_appliname
-Nom applicatif :
+Nom affiché :
 
 ; fm_profiles_maxgui
 Max. GUI :
@@ -55,3 +55,8 @@ Position
 ; no_xlets
 Aucun Xlet configuré
 
+; cmt_profiles_appliname
+Un nom plus compréhensible
+
+; cmt_profiles_maxgui
+Mettre -1 pour aucune limite
