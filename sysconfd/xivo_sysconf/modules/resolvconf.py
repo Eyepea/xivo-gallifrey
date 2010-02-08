@@ -47,6 +47,8 @@ RESOLVCONFLOCK          = RWLock()
 Rcc =   {'hostname_file':       os.path.join(os.path.sep, 'etc', 'hostname'),
          'hostname_tpl_file':   os.path.join('resolvconf', 'hostname'),
          'hostname_update_cmd': "/etc/init.d/hostname.sh start",
+         'hosts_file':          os.path.join(os.path.sep, 'etc', 'hosts'),
+         'hosts_tpl_file':      os.path.join('resolvconf', 'hosts'),
          'resolvconf_file':     os.path.join(os.path.sep, 'etc', 'resolv.conf'),
          'resolvconf_tpl_file': os.path.join('resolvconf', 'resolv.conf'),
          'lock_timeout':        60}
@@ -81,32 +83,42 @@ def _write_config_file(optname, xvars):
     return backupfilename
 
 
-HOSTNAME_SCHEMA = xys.load("""
+HOSTS_SCHEMA = xys.load("""
 hostname:   !~domain_label
+domain:     !~search_domain
 """)
 
-def HostName(args, options):    # pylint: disable-msg=W0613
+def Hosts(args, options):    # pylint: disable-msg=W0613
     """
-    POST /hostname
+    POST /hosts
 
-    >>> hostname({'hostname': 'xivo'})
+    >>> hosts({'hostname':  'xivo',
+               'domain':    'localdomain'})
     """
 
-    if not xys.validate(args, HOSTNAME_SCHEMA):
+    if not xys.validate(args, HOSTS_SCHEMA):
         raise HttpReqError(415, "invalid arguments for command")
 
     if not os.access(Rcc['hostname_path'], (os.X_OK | os.W_OK)):
         raise HttpReqError(415, "path not found or not writable or not executable: %r" % Rcc['hostname_path'])
 
+    if not os.access(Rcc['hosts_path'], (os.X_OK | os.W_OK)):
+        raise HttpReqError(415, "path not found or not writable or not executable: %r" % Rcc['hosts_path'])
+
     if not RESOLVCONFLOCK.acquire_read(Rcc['lock_timeout']):
         raise HttpReqError(503, "unable to take RESOLVCONFLOCK for reading after %s seconds" % Rcc['lock_timeout'])
 
     hostnamebakfile = None
+    hostsbakfile    = None
 
     try:
         try:
             hostnamebakfile = _write_config_file('hostname',
                                                  {'_XIVO_HOSTNAME': args['hostname']})
+
+            hostsbakfile    = _write_config_file('hosts',
+                                                 {'_XIVO_HOSTNAME': args['hostname'],
+                                                  '_XIVO_DOMAIN':   args['domain']})
 
             if Rcc['hostname_update_cmd']:
                 subprocess.call(Rcc['hostname_update_cmd'].strip().split())
@@ -115,6 +127,8 @@ def HostName(args, options):    # pylint: disable-msg=W0613
         except Exception, e:
             if hostnamebakfile:
                 copy2(hostnamebakfile, Rcc['hostname_file'])
+            if hostsbakfile:
+                copy2(hostsbakfile, Rcc['hosts_file'])
             raise e.__class__(str(e))
     finally:
         RESOLVCONFLOCK.release()
@@ -202,19 +216,13 @@ def safe_init(options):
     backup_path     = cfg.get('general', 'backup_path')
 
     if cfg.has_section('resolvconf'):
-        if cfg.has_option('resolvconf', 'lock_timeout'):
-            Rcc['lock_timeout'] = cfg.getfloat('resolvconf', 'lock_timeout')
+        for x in Rcc.iterkeys():
+            if cfg.has_option('resolvconf', x):
+                Rcc[x] = cfg.get('resolvconf', x)
 
-        if cfg.has_option('resolvconf', 'hostname_file'):
-            Rcc['hostname_file'] = cfg.get('resolvconf', 'hostname_file')
+    Rcc['lock_timeout'] = float(Rcc['lock_timeout'])
 
-        if cfg.has_option('resolvconf', 'hostname_update_cmd'):
-            Rcc['hostname_update_cmd'] = cfg.get('resolvconf', 'hostname_update_cmd')
-
-        if cfg.has_option('resolvconf', 'resolvconf_file'):
-            Rcc['resolvconf_file'] = cfg.get('resolvconf', 'resolvconf_file')
-
-    for optname in ('hostname', 'resolvconf'):
+    for optname in ('hostname', 'hosts', 'resolvconf'):
         Rcc["%s_tpl_file" % optname] = os.path.join(tpl_path,
                                                     Rcc["%s_tpl_file" % optname])
 
@@ -227,5 +235,5 @@ def safe_init(options):
         Rcc["%s_backup_path" % optname] = os.path.join(backup_path,
                                                        Rcc["%s_path" % optname].lstrip(os.path.sep))
 
-http_json_server.register(HostName, CMD_RW, safe_init=safe_init, name='hostname')
+http_json_server.register(Hosts, CMD_RW, safe_init=safe_init, name='hosts')
 http_json_server.register(ResolvConf, CMD_RW, name='resolv_conf')
