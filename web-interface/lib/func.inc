@@ -613,7 +613,7 @@ function dwho_array_merge_replace_recursive()
 			&& in_array($value,$r) === false)
 			{
 				if(is_array($value) === true)
-					$r[] = dwho_array_merge_replace_recursive($r[$key],$value);
+					$r[] = dwho_array_merge_replace_recursive($array[$key],$value);
 				else
 					$r[] = $value;
 			}

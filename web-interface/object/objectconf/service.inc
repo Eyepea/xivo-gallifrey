@@ -24,12 +24,7 @@ $array = array();
 
 $array['ipbx'] = array();
 
-if(($asterisk_ini = dwho_gat::get_file(
-			array(XIVO_PATH_OBJECT,
-			      'service',
-			      'ipbx',
-			      'asterisk',
-			      'initcfg'))) !== false)
+if(($asterisk_ini = xivo_service::get_engine_initcfg('ipbx','asterisk')) !== false)
 {
 	$array['ipbx']['asterisk'] = array();
 	$array['ipbx']['asterisk']['label']	= 'Asterisk';
@@ -38,12 +33,7 @@ if(($asterisk_ini = dwho_gat::get_file(
 
 $array['monitoring'] = array();
 
-if(($monit_ini = dwho_gat::get_file(
-			array(XIVO_PATH_OBJECT,
-			      'service',
-			      'monitoring',
-			      'monit',
-			      'initcfg'))) !== false)
+if(($monit_ini = xivo_service::get_engine_initcfg('monitoring','monit')) !== false)
 {
 	$array['monitoring']['monit'] = array();
 	$array['monitoring']['monit']['label']	= 'Monit';

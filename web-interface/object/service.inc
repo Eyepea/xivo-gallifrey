@@ -53,9 +53,19 @@ class xivo_service
 		return(false);
 	}
 
+	function get_engine_initcfg($service,$engine)
+	{
+		return(dwho_gat::get_file(
+				array(XIVO_PATH_OBJECT,
+				      'service',
+				      $service,
+				      $engine,
+				      'initcfg')));
+	}
+
 	function get_init_file($service)
 	{
-		if(preg_match('/^[a-zA-Z0-9\-_]+$/',$service) !== 1)
+		if(dwho_issa($service,$this->_services) === false)
 			return(false);
 
 		return(xivo::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.$service.'.ini'));
