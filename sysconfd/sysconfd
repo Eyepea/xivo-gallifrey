@@ -32,6 +32,7 @@ from ConfigParser import ConfigParser
 
 from xivo import daemonize
 from xivo import http_json_server
+from xivo.http_json_server import CMD_R
 
 
 from xivo_sysconf.modules import * # XXX
@@ -124,6 +125,13 @@ def argv_parse_check():
     return options
 
 
+def server_version(args, options):  # pylint: disable-msg=W0613
+    """ 
+    GET /server-version
+    """
+    return {'version': __version__}
+
+
 def main(options):
     """
     Main function; start the server
@@ -152,7 +160,6 @@ def main(options):
         try:
             log.info("pidfile ok")
             root_logger.setLevel(options.loglevel)
-            # XXX: will be needed if i merge the provi in this daemon
             os.umask(022)
             http_json_server.run(options)
         except SystemExit:
@@ -165,6 +172,7 @@ def main(options):
 if __name__ == '__main__':
     def _start():
         "entry point"
+        http_json_server.register(server_version, CMD_R, name='server-version')
         options = argv_parse_check()
         if not options.dontlauchmain:
             main(options)

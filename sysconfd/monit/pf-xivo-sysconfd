@@ -1,0 +1,10 @@
+check process pf-xivo-sysconfd with pidfile /var/run/xivo-sysconfd.pid
+	group telephony
+	start program = "/etc/init.d/pf-xivo-sysconfd start"
+	stop program = "/etc/init.d/pf-xivo-sysconfd stop"
+	if failed host 127.0.0.1 port 8668 use type tcp
+		send "GET /server-version HTTP/1.1\r\nHost: 127.0.0.1\r\nUser-Agent: monit\r\n\r\n"
+		expect "200 OK"
+		then alert #restart
+	if 5 restarts within 5 cycles then timeout
+
