@@ -241,6 +241,28 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		}
 	}
 
+	function discover_finish_uri()
+	{
+		if(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === false)
+			return(false);
+		else if($_SERVER['SERVER_ADDR'] !== '127.0.0.1'
+		&& dwho_issa('netiface',$this->_wizsess) === true
+		&& isset($this->_wizsess['netiface']['address']) === true)
+			$uri = $this->_wizsess['netiface']['address'];
+		else
+			$uri = $_SERVER['SERVER_ADDR'];
+
+		$uri .= ':'.$_SERVER['SERVER_PORT'];
+
+		$scheme = 'http';
+
+		if(isset($_SERVER['HTTPS']) === true
+		&& (bool) $_SERVER['HTTPS'] === true)
+			$scheme .= 's';
+
+		return($scheme.'://'.$uri);
+	}
+
 	function step_ipbxengine()
 	{
 		$r = array();

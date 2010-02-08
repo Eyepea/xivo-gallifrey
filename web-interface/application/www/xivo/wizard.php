@@ -134,7 +134,9 @@ switch($step)
 		&& $_QRY->get('step') === $step)
 		{
 			session_destroy();
-			$_QRY->go($_TPL->url('index'));
+
+			if(($uri = $appwizard->discover_finish_uri()) !== false)
+				$_QRY->go($uri.$_TPL->url('index'));
 		}
 
 		$_TPL->set_var('info',$appwizard->step_validate());
