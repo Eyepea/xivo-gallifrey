@@ -38,7 +38,7 @@ log = logging.getLogger("xivo.Phones.Nortel") # pylint: disable-msg=C0103
 
 class Nortel(PhoneVendorMixin):
 
-    NORTEL_MODELS = ('1220')
+    NORTEL_MODELS = (('1220', '1220'),)
 
     NORTEL_COMMON_HTTP_USER = "admin"
     NORTEL_COMMON_HTTP_PASS = "1234"

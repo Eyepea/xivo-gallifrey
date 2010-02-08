@@ -38,7 +38,9 @@ log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
 
 class Cisco(PhoneVendorMixin):
 
-    CISCO_MODELS = (('cp7941g', '7941GE'),
+    CISCO_MODELS = (('cp7940', '7940'),
+                      ('cp7960', '7960'),
+                      ('cp7941g', '7941GE'),
                       ('cp7961g', '7961GE'))
 
     CISCO_COMMON_HTTP_USER = "admin"
