@@ -1398,25 +1398,40 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_wizsess['commit']['step']['checkcomponents'] = true;
 		$this->_wizsess['commit']['step']['mainconfig'] = true;
 
-		if(array_key_exists('entity',$ref_components) === false
-		|| $ref_components['entity'] === false)
+		if(array_key_exists('entity',$ref_components) === false)
 			$ref_components['entity'] = $this->_commit_entity();
+		else if($ref_components['entity'] === false)
+		{
+			$this->_commit_adminpasswd();
+			$ref_components['entity'] = $this->_commit_entity();
+		}
 
 		if($ref_components['entity'] === false)
 			return(false);
 
-		if(array_key_exists('context',$ref_components) === false
-		|| $ref_components['context'] === false)
+		if(array_key_exists('context',$ref_components) === false)
 			$ref_components['context'] = $this->_commit_context();
+		else if($ref_components['context'] === false)
+		{
+			$this->_commit_adminpasswd();
+			$this->_commit_entity();
+			$ref_components['context'] = $this->_commit_context();
+		}
 
 		if($ref_components['context'] === false)
 			return(false);
 
 		$this->_wizsess['commit']['step']['entitycontext'] = true;
 
-		if(array_key_exists('ipbximportuser',$ref_components) === false
-		|| $ref_components['ipbximportuser'] === false)
+		if(array_key_exists('ipbximportuser',$ref_components) === false)
 			$ref_components['ipbximportuser'] = $this->_commit_ipbximportuser();
+		else if($ref_components['ipbximportuser'] === false)
+		{
+			$this->_commit_adminpasswd();
+			$this->_commit_entity();
+			$this->_commit_context();
+			$ref_components['ipbximportuser'] = $this->_commit_ipbximportuser();
+		}
 
 		if($ref_components['ipbximportuser'] === false)
 			return(false);
