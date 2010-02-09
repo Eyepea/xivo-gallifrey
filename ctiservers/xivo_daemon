@@ -82,7 +82,7 @@ except:
         DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-XIVO_CONF_FILE            = '/etc/pf-xivo/ctiservers/%s.conf' % DAEMONNAME
+XIVO_CONF_FILE            = 'https://127.0.0.1/service/ipbx/json.php/private/ctiserver/configuration/'
 PIDFILE                 = '/var/run/%s.pid' % DAEMONNAME
 GETOPT_SHORTOPTS        = 'dc:p:'
 GETOPT_LONGOPTS         = ["debug", "config=", "pidfile="]
@@ -129,355 +129,360 @@ class manage_connection:
     # \return none
     @staticmethod
     def manage_cti_connections(daemon, connid, msg, sep):
-            """
-            Handles CTI connections.
-            """
-            requester = '%s:%d' % connid.getpeername()
-            if requester in daemon.commandclass.transfers_ref:
-                    daemon.commandclass.transfer_addbuf(requester, msg)
-                    return
-            
-            multimsg = msg.split(sep)
-            for usefulmsgpart in multimsg:
-                    # remove tailing \r
-                    usefulmsg = usefulmsgpart.split('\r')[0]
-                    if len(usefulmsg) == 0:
-                            break
-                    command = daemon.commandclass.parsecommand(usefulmsg)
-                    if command.name in daemon.commandclass.get_list_commands():
-                            try:
-                                    if command.type in [xivo_commandsets.CMD_LOGIN_ID,
-                                                        xivo_commandsets.CMD_LOGIN_PASS,
-                                                        xivo_commandsets.CMD_LOGIN_CAPAS]:
-                                            # log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
-                                            loginparams = daemon.commandclass.get_login_params(command, daemon.asterisklist[0], connid)
-                                            # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
-                                            uinfo = daemon.commandclass.manage_login(loginparams, command.type, daemon.userinfo_current.get(connid))
-                                            # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
-                                            
-                                            if isinstance(uinfo, str):
-                                                    daemon.commandclass.loginko(loginparams, uinfo, connid)
-                                                    log.info('TCP socket %s closed(loginko) on %s' % (self.fdlist_established[connid],
-                                                                                                      '%s:%d' % connid.getpeername()))
-                                                    del self.fdlist_established[connid]
-                                                    connid.close()
-                                            else:
-                                                    if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
-                                                            uinfo['login']['connection'] = connid
-                                                            daemon.userinfo_by_requester[connid] = uinfo
-                                                            if connid in daemon.userinfo_current:
-                                                                    del daemon.userinfo_current[connid]
-                                                    else:
-                                                            daemon.userinfo_current[connid] = uinfo
-                                                    daemon.commandclass.loginok(loginparams, uinfo, connid, command.type)
-                                    elif command.type == xivo_commandsets.CMD_TRANSFER:
-                                            log.info('TRANSFER on %s : %s' % (requester, command.struct))
-                                            daemon.commandclass.transfer_addref(connid, command.struct)
-                                    else:
-                                            if connid in daemon.userinfo_by_requester:
-                                                    daemon.commandclass.manage_cticommand(daemon.userinfo_by_requester[connid],
-                                                                                   command)
-                                            else:
-                                                    log.warning('unlogged %s is attempting a %s (TCP) : %s'
-                                                                % (requester, command.name, command.args))
-                            except Exception:
-                                    log.exception('CTI connection when managing [%s, %s] for %s'
-                                                  % (command.name, command.type, requester))
-                    else:
-                            connid.sendall('Unknown Command <%s>\n' % command.name)
-    
-    
-    ## \brief Deals with requests from the UI clients.
-    # \param connid connection identifier
-    # \return none
-    def manage_webi_connections(daemon, connid, msg, sep):
-            """
-            Handles WEBI connections.
-            """
-            requester = '%s:%d' % connid.getpeername()
-            requester_ip = connid.getpeername()[0]
-            closemenow = True
-            
-            if requester_ip not in self.ip_reverse_webi:
-                    connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
-                    return closemenow
-            astid = self.ip_reverse_webi[requester_ip]
-            
-            multimsg = msg.split(sep)
-            for usefulmsgpart in multimsg:
-                    usefulmsg = usefulmsgpart.split('\r')[0]
-                    if len(usefulmsg) == 0:
-                            break
-                    try:
-                            if usefulmsg in ['xivo[userlist,update]',
-                                             'xivo[agentlist,update]',
-                                             'xivo[queuelist,update]',
-                                             'xivo[grouplist,update]']:
-                                    self.update_userlist[astid] = True
-                                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                            elif usefulmsg == 'xivo[daemon,reload]':
-                                    self.askedtoquit = True
-                                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                            elif usefulmsg == 'xivo[ctiprofilelist,get]':
-                                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
-                                    connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                    connid.sendall('%s\n' % daemon.commandclass.getprofilelist())
-                                    connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                            elif astid in self.amilist.ami and self.amilist.ami[astid]:
-                                    stripped_usefulmsg = usefulmsg.strip()
-                                    try:
-                                            if stripped_usefulmsg == 'moh reload':
-                                                    daemon.commandclass.pre_moh_reload()
-                                            elif stripped_usefulmsg == 'reload':
-                                                    daemon.commandclass.pre_reload()
-                                    except Exception:
-                                            log.exception('(pre reloads (%s))' % stripped_usefulmsg)
-                                            
-                                    closemenow = False
-                                    try:
-                                            actionid = self.amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
-                                            log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg,
-                                                                                                           actionid, connid))
-                                            waiting_actionid[actionid] = connid
-                                            waiting_actionid_timer[actionid] = threading.Timer(5, callback_timer_main, ('webirequest', actionid))
-                                            waiting_actionid_timer[actionid].start()
-                                    except Exception, exc:
-                                            log.error('(%s) WEBI command exec <%s> : (client %s) : %s'
-                                                      % (astid, stripped_usefulmsg, requester, exc))
-                    except Exception, exc:
-                            log.error('(%s) WEBI <%s> : (client %s) : %s'
-                                      % (astid, usefulmsg.strip(), requester, exc))
-                            connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, exc))
-            return closemenow
-    
-    
-    ## \brief Deals with requests from the UI clients.
-    # \param connid connection identifier
-    # \return none
-    def manage_info_connections(daemon, connid, msg, sep):
-            """
-            Handles INFO connections (basic administration console,
-            primarily aimed at displaying informations first).
-            """
-            global dumpami
-            global log
-            requester = '%s:%d' % connid.getpeername()
-            multimsg = msg.replace('\r', '').split(sep)
-            for usefulmsg in multimsg:
-                    if len(usefulmsg) == 0:
-                            break
-                    try:
-                            retstr = 'OK'
-                            if usefulmsg == 'help':
-                                    helptxt = ['',
-                                               'help                     : this help',
-                                               '-- general purpose commands --',
-                                               'show_infos               : gives a few informations about the daemon (version, uptime)',
-                                               '-- informations about misc lists --',
-                                               'show_users               : the users list',
-                                               'show_phones, show_trunks : phones and trunks lists',
-                                               'show_queues, show_groups,',
-                                               'show_agents              : call-center related lists',
-                                               'show_incomingcalls       : did lists',
-                                               'show_meetme              : conference rooms',
-                                               'show_voicemail           : voicemails',
-                                               'show_phonebook           : phonebook contents',
-                                               '-- selective lists --',
-                                               'show_logged              : only the logged users',
-                                               'show_logged_ip           : the human-readable IPs of logged users',
-                                               '-- for debugging purposes --',
-                                               'loglevel set <level>         : changes the syslog output level',
-                                               'show_varsizes <astid>        : gives the number of items of some variables',
-                                               'show_var <astid> <varname>   : outputs the contents of one such variable',
-                                               'dumpami enable               : enables the line-by-line display of AMI events',
-                                               'dumpami disable              : disables it',
-                                               '-- slightly advanced features --',
-                                               'kick <user>                  : disconnects the user <user>',
-                                               'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
-                                               'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
-                                               'reverse <dirname> <number>   : lookup the number in the given directory',
-                                               '']
-                                    for helpline in helptxt:
-                                            connid.sendall('%s\n' % helpline)
-                            elif usefulmsg == 'show_infos':
-                                    time_uptime = int(time.time() - time.mktime(daemon.time_start))
-                                    reply = 'infos=' \
-                                            'xivo_version=%s;' \
-                                            'server_version=%s;' \
-                                            'commandset=%s;' \
-                                            'commandset_version=%s;' \
-                                            'uptime=%d s' \
-                                            % (XIVOVERSION, __revision__,
-                                               daemon.xdname,
-                                               daemon.commandclass.version(),
-                                               time_uptime)
-                                    connid.sendall(reply + '\n')
-                                    # connid.sendall('server capabilities = %s\n' % (','.join()))
-                            elif usefulmsg == 'dumpami enable':
-                                    dumpami = True
-                            elif usefulmsg == 'dumpami disable':
-                                    dumpami = False
-                            elif usefulmsg.startswith('loglevel '):
-                                    command_args = usefulmsg.split()
-                                    if len(command_args) > 2:
-                                            action = command_args[1]
-                                            levelname = command_args[2]
-                                            levels = {'debug' : logging.DEBUG,
-                                                      'info' : logging.INFO,
-                                                      'warning' : logging.WARNING,
-                                                      'error' : logging.ERROR}
-                                            if action == 'set':
-                                                    if levelname in levels:
-                                                            newlevel = levels[levelname]
-                                                            log.setLevel(logging.INFO)
-                                                            log.info('=== setting loglevel to %s (%s) ===' % (levelname, newlevel))
-                                                            log.setLevel(newlevel)
-                                                            logging.getLogger('xivocti').setLevel(newlevel)
-                                                            logging.getLogger('xivo_ami').setLevel(newlevel)
-                                                            logging.getLogger('urllist').setLevel(newlevel)
-                                                            connid.sendall('loglevel set to %s (%s)\n' % (levelname, newlevel))
-                                                    else:
-                                                            connid.sendall('unknown level name <%s> to set\n' % levelname)
-                                            elif action == 'get':
-                                                    pass
-                                            else:
-                                                    connid.sendall('unknown action <%s> for loglevel : try set or get\n' % action)
-                            elif usefulmsg == 'show_users':
-                                    for user, info in daemon.commandclass.users().iteritems():
-                                            try:
-                                                    connid.sendall('%s %s\n' % (user.encode('latin1'), info))
-                                            except Exception:
-                                                    log.exception('INFO %s' % usefulmsg)
-                            elif usefulmsg in ['show_phones', 'show_trunks',
-                                               'show_queues', 'show_groups', 'show_agents',
-                                               'show_incomingcalls', 'show_phonebook',
-                                               'show_meetme', 'show_voicemail']:
-                                    itemname = usefulmsg[5:]
-                                    for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
-                                            try:
-                                                    connid.sendall('%s for %s\n' % (itemname, astid))
-                                                    for id, idv in itm.keeplist.iteritems():
-                                                            connid.sendall('%s %s\n' % (id, idv))
-                                            except Exception:
-                                                    log.exception('INFO %s' % usefulmsg)
-                            elif usefulmsg.startswith('show_var '):
-                                    command_args = usefulmsg.split()
-                                    if len(command_args) > 2:
-                                            astid = command_args[1]
-                                            varname = command_args[2]
-                                            if hasattr(daemon.commandclass, varname):
-                                                    tvar = getattr(daemon.commandclass, varname)
-                                                    if astid in tvar:
-                                                            connid.sendall('%s on %s\n' % (varname, astid))
-                                                            for ag, agp in tvar[astid].iteritems():
-                                                                    connid.sendall('%s %s\n' % (ag, agp))
-                                                    else:
-                                                            connid.sendall('no such astid %s\n' % astid)
-                                            else:
-                                                    connid.sendall('no such variable %s\n' % varname)
-                                    else:
-                                            connid.sendall('first argument : astid value\n')
-                                            connid.sendall('second argument : one of %s\n' % daemon.commandclass.astid_vars)
-                            elif usefulmsg.startswith('show_varsizes '):
-                                    command_args = usefulmsg.split()
-                                    if len(command_args) > 1:
-                                            astid = command_args[1]
-                                            for varname in daemon.commandclass.astid_vars:
-                                                    if hasattr(daemon.commandclass, varname):
-                                                            tvar = getattr(daemon.commandclass, varname)
-                                                            if astid in tvar:
-                                                                    connid.sendall('%s on %s: %d\n' % (varname, astid, len(tvar[astid])))
-                                                            else:
-                                                                    connid.sendall('no such astid %s\n' % astid)
-                                                    else:
-                                                            connid.sendall('no such variable %s\n' % varname)
-                                    else:
-                                            connid.sendall('argument : astid value\n')
-                            elif usefulmsg == 'show_logged_ip':
-                                    for user, info in daemon.commandclass.connected_users().iteritems():
-                                            if 'connection' in info['login']:
-                                                    try:
-                                                            [ipaddr, ipport] = info['login']['connection'].getpeername()
-                                                    except Exception:
-                                                            log.exception('INFO %s' % usefulmsg)
-                                                            [ipaddr, ipport] = ['err_addr', 'err_port']
-                                                    connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'), ipaddr, ipport))
-                            elif usefulmsg == 'show_logged':
-                                    for user, info in daemon.commandclass.connected_users().iteritems():
-                                            try:
-                                                    connid.sendall('%s %s\n' % (user.encode('latin1'), info))
-                                            except Exception:
-                                                    log.exception('INFO %s' % usefulmsg)
-                            elif usefulmsg.startswith('reverse '):
-                                    command_args = usefulmsg.split()
-                                    if len(command_args) > 2:
-                                            dirnames = command_args[1]
-                                            numbers = command_args[2:]
-                                            for number in numbers:
-                                                    reverses = daemon.commandclass.findreverse(dirnames, number)
-                                                    for number, rep in reverses.iteritems():
-                                                            connid.sendall('%s %s\n' % (number, rep))
-                            elif usefulmsg.startswith('disc '):
-                                    command_args = usefulmsg.split()
-                                    if len(command_args) > 2:
-                                            ipdef = tuple([command_args[1], int(command_args[2])])
-                                            socktoremove = None
-                                            for sockid in self.fdlist_established.keys():
-                                                    if ipdef == sockid.getpeername():
-                                                            socktoremove = sockid
-                                            if socktoremove:
-                                                    connid.sendall('disconnecting %s (%s)\n'
-                                                                   % (socktoremove.getpeername(), self.fdlist_established[socktoremove]))
-                                                    socktoremove.close()
-                                                    del self.fdlist_established[socktoremove]
-                                            else:
-                                                    connid.sendall('nobody disconnected\n')
-                            elif usefulmsg == 'show_ami':
-                                    for astid, ami in self.amilist.ami.iteritems():
-                                            connid.sendall('commands : %s : %s\n' % (astid, ami))
-                            elif usefulmsg.startswith('ami '):
-                                    amicmd = usefulmsg.split()[1:]
-                                    if amicmd:
-                                            connid.sendall('ami request %s\n' % amicmd)
-                                            if len(amicmd) > 1:
-                                                    astid = amicmd[0]
-                                                    cmd = amicmd[1]
-                                                    cmdargs = amicmd[2:]
-                                                    self.amilist.execute(astid, cmd, *cmdargs)
-                            elif usefulmsg.startswith('kick '):
-                                    command_args = usefulmsg.split()
-                                    try:
-                                            if len(command_args) > 1:
-                                                    kickuser = command_args[1]
-                                                    if kickuser in daemon.commandclass.connected_users():
-                                                            uinfo = daemon.commandclass.connected_users()[kickuser]
-                                                            if 'login' in uinfo and 'connection' in uinfo.get('login'):
-                                                                    cid = uinfo.get('login')['connection']
-                                                                    if cid in self.fdlist_established:
-                                                                            del self.fdlist_established[cid]
-                                                                            cid.close()
-                                                                            daemon.commandclass.manage_logout(uinfo, 'admin')
-                                                                            del deamon.userinfo_by_requester[cid]
-                                                                            connid.sendall('kicked %s\n' % kickuser)
-                                                                    else:
-                                                                            connid.sendall('did not kick %s (socket id not in daemon refs)\n' % kickuser)
-                                                            else:
-                                                                    connid.sendall('did not kick %s (no connection attributes for the user)\n' % kickuser)
-                                                    else:
-                                                            connid.sendall('did not kick %s (user not found)\n' % kickuser)
-                                            else:
-                                                    connid.sendall('nobody to kick\n')
-                                    except Exception:
-                                            log.exception('INFO %s' % usefulmsg)
-                                            connid.sendall('(exception when trying to kick - see server log)\n')
-                            elif usefulmsg.startswith('%s:' % commandset):
-                                    daemon.commandclass.cliaction(connid, usefulmsg)
+        """
+        Handles CTI connections.
+        """
+        requester = '%s:%d' % connid.getpeername()
+        if requester in daemon.commandclass.transfers_ref:
+            daemon.commandclass.transfer_addbuf(requester, msg)
+            return
+        
+        multimsg = msg.split(sep)
+        for usefulmsgpart in multimsg:
+            # remove tailing \r
+            usefulmsg = usefulmsgpart.split('\r')[0]
+            if len(usefulmsg) == 0:
+                break
+            command = daemon.commandclass.parsecommand(usefulmsg)
+            if command.name in daemon.commandclass.get_list_commands():
+                try:
+                    if command.type in [xivo_commandsets.CMD_LOGIN_ID,
+                                    xivo_commandsets.CMD_LOGIN_PASS,
+                                    xivo_commandsets.CMD_LOGIN_CAPAS]:
+                        # log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
+                        loginparams = daemon.commandclass.get_login_params(command, daemon.asterisklist[0], connid)
+                        # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
+                        uinfo = daemon.commandclass.manage_login(loginparams, command.type, daemon.userinfo_current.get(connid))
+                        # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
+                        
+                        if isinstance(uinfo, str):
+                            daemon.commandclass.loginko(loginparams, uinfo, connid)
+                            log.info('TCP socket %s closed(loginko) on %s' % (self.fdlist_established[connid],
+                                                                              '%s:%d' % connid.getpeername()))
+                            del self.fdlist_established[connid]
+                            connid.close()
+                        else:
+                            if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
+                                uinfo['login']['connection'] = connid
+                                daemon.userinfo_by_requester[connid] = uinfo
+                                if connid in daemon.userinfo_current:
+                                    del daemon.userinfo_current[connid]
                             else:
-                                    retstr = 'KO'
-                            connid.sendall('XIVO-INFO:%s\n' % retstr)
+                                daemon.userinfo_current[connid] = uinfo
+                            daemon.commandclass.loginok(loginparams, uinfo, connid, command.type)
+                    elif command.type == xivo_commandsets.CMD_TRANSFER:
+                        log.info('TRANSFER on %s : %s' % (requester, command.struct))
+                        daemon.commandclass.transfer_addref(connid, command.struct)
+                    else:
+                        if connid in daemon.userinfo_by_requester:
+                            daemon.commandclass.manage_cticommand(daemon.userinfo_by_requester[connid], command)
+                        else:
+                            log.warning('unlogged %s is attempting a %s (TCP) : %s'
+                                        % (requester, command.name, command.args))
+                except Exception:
+                    log.exception('CTI connection when managing [%s, %s] for %s'
+                                  % (command.name, command.type, requester))
+            else:
+                connid.sendall('Unknown Command <%s>\n' % command.name)
+    
+    
+    ## \brief Deals with requests from the UI clients.
+    # \param connid connection identifier
+    # \return none
+    @staticmethod
+    def manage_webi_connections(daemon, connid, msg, sep):
+        """
+        Handles WEBI connections.
+        """
+        requester = '%s:%d' % connid.getpeername()
+        requester_ip = connid.getpeername()[0]
+        closemenow = True
+        
+        if requester_ip not in daemon.ip_reverse_webi:
+            connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
+            return closemenow
+        astid = daemon.ip_reverse_webi[requester_ip]
+        
+        multimsg = msg.split(sep)
+        for usefulmsgpart in multimsg:
+            usefulmsg = usefulmsgpart.split('\r')[0]
+            if len(usefulmsg) == 0:
+                break
+            try:
+                if usefulmsg in ['xivo[userlist,update]',
+                             'xivo[agentlist,update]',
+                             'xivo[queuelist,update]',
+                             'xivo[grouplist,update]']:
+                    daemon.update_userlist[astid] = True
+                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                elif usefulmsg == 'xivo[daemon,reload]':
+                    daemon.askedtoquit = True
+                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                elif usefulmsg == 'xivo[ctiprofilelist,get]':
+                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                    connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                    connid.sendall('%s\n' % daemon.commandclass.getprofilelist())
+                    connid.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                elif astid in daemon.amilist.ami and daemon.amilist.ami[astid]:
+                    stripped_usefulmsg = usefulmsg.strip()
+                    try:
+                        if stripped_usefulmsg == 'moh reload':
+                            daemon.commandclass.pre_moh_reload()
+                        elif stripped_usefulmsg == 'reload':
+                            daemon.commandclass.pre_reload()
                     except Exception:
-                            log.exception('INFO connection [%s] : KO when sending to %s'
-                                          % (usefulmsg, requester))
+                        log.exception('(pre reloads (%s))' % stripped_usefulmsg)
+                            
+                    closemenow = False
+
+                    try:
+                        actionid = daemon.amilist.execute(astid, 'sendcommand', 'Command', [('Command', stripped_usefulmsg)])
+                        log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg, actionid, connid))
+
+                        waiting_actionid[actionid] = connid
+                        waiting_actionid_timer[actionid] = threading.Timer(5, callback_timer_main, (self,('webirequest', actionid)))
+                        waiting_actionid_timer[actionid].start()
+                    except Exception, exc:
+                        log.error('(%s) WEBI command exec <%s> : (client %s) : %s'
+                                  % (astid, stripped_usefulmsg, requester, exc))
+            except Exception, exc:
+                log.error('(%s) WEBI <%s> : (client %s) : %s'
+                          % (astid, usefulmsg.strip(), requester, exc))
+                connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, exc))
+        return closemenow
+    
+    
+    ## \brief Deals with requests from the UI clients.
+    # \param connid connection identifier
+    # \return none
+    @staticmethod
+    def manage_info_connections(daemon, connid, msg, sep):
+        """
+        Handles INFO connections (basic administration console,
+        primarily aimed at displaying informations first).
+        """
+        global dumpami
+        global log
+        requester = '%s:%d' % connid.getpeername()
+        multimsg = msg.replace('\r', '').split(sep)
+        for usefulmsg in multimsg:
+            if len(usefulmsg) == 0:
+                break
+            try:
+                retstr = 'OK'
+                if usefulmsg == 'help':
+                    helptxt = ['',
+                               'help                     : this help',
+                               '-- general purpose commands --',
+                               'show_infos               : gives a few informations about the daemon (version, uptime)',
+                               '-- informations about misc lists --',
+                               'show_users               : the users list',
+                               'show_phones, show_trunks : phones and trunks lists',
+                               'show_queues, show_groups,',
+                               'show_agents              : call-center related lists',
+                               'show_incomingcalls       : did lists',
+                               'show_meetme              : conference rooms',
+                               'show_voicemail           : voicemails',
+                               'show_phonebook           : phonebook contents',
+                               '-- selective lists --',
+                               'show_logged              : only the logged users',
+                               'show_logged_ip           : the human-readable IPs of logged users',
+                               '-- for debugging purposes --',
+                               'loglevel set <level>         : changes the syslog output level',
+                               'show_varsizes <astid>        : gives the number of items of some variables',
+                               'show_var <astid> <varname>   : outputs the contents of one such variable',
+                               'dumpami enable               : enables the line-by-line display of AMI events',
+                               'dumpami disable              : disables it',
+                               '-- slightly advanced features --',
+                               'kick <user>                  : disconnects the user <user>',
+                               'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
+                               'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
+                               'reverse <dirname> <number>   : lookup the number in the given directory',
+                               '']
+                    for helpline in helptxt:
+                        connid.sendall('%s\n' % helpline)
+                elif usefulmsg == 'show_infos':
+                    time_uptime = int(time.time() - time.mktime(daemon.time_start))
+                    reply = 'infos=' \
+                            'xivo_version=%s;' \
+                            'server_version=%s;' \
+                            'commandset=%s;' \
+                            'commandset_version=%s;' \
+                            'uptime=%d s' \
+                            % (XIVOVERSION, __revision__,
+                               daemon.xdname,
+                               daemon.commandclass.version(),
+                               time_uptime)
+                    connid.sendall(reply + '\n')
+                    # connid.sendall('server capabilities = %s\n' % (','.join()))
+                elif usefulmsg == 'dumpami enable':
+                    dumpami = True
+                elif usefulmsg == 'dumpami disable':
+                    dumpami = False
+                elif usefulmsg.startswith('loglevel '):
+                    command_args = usefulmsg.split()
+                    if len(command_args) > 2:
+                        action = command_args[1]
+                        levelname = command_args[2]
+                        levels = {'debug' : logging.DEBUG,
+                                  'info' : logging.INFO,
+                                  'warning' : logging.WARNING,
+                                  'error' : logging.ERROR}
+                        if action == 'set':
+                            if levelname in levels:
+                                newlevel = levels[levelname]
+                                log.setLevel(logging.INFO)
+                                log.info('=== setting loglevel to %s (%s) ===' % (levelname, newlevel))
+                                log.setLevel(newlevel)
+                                logging.getLogger('xivocti').setLevel(newlevel)
+                                logging.getLogger('xivo_ami').setLevel(newlevel)
+                                logging.getLogger('urllist').setLevel(newlevel)
+                                connid.sendall('loglevel set to %s (%s)\n' % (levelname, newlevel))
+                            else:
+                                connid.sendall('unknown level name <%s> to set\n' % levelname)
+                        elif action == 'get':
+                            pass
+                        else:
+                            connid.sendall('unknown action <%s> for loglevel : try set or get\n' % action)
+                elif usefulmsg == 'show_users':
+                    for user, info in daemon.commandclass.users().iteritems():
+                        try:
+                            connid.sendall('%s %s\n' % (user.encode('latin1'), info))
+                        except Exception:
+                            log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg in ['show_phones', 'show_trunks',
+                                   'show_queues', 'show_groups', 'show_agents',
+                                   'show_incomingcalls', 'show_phonebook',
+                                   'show_meetme', 'show_voicemail']:
+                        itemname = usefulmsg[5:]
+                        for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
+                            try:
+                                connid.sendall('%s for %s\n' % (itemname, astid))
+                                for id, idv in itm.keeplist.iteritems():
+                                        connid.sendall('%s %s\n' % (id, idv))
+                            except Exception:
+                                log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg.startswith('show_var '):
+                    command_args = usefulmsg.split()
+                    if len(command_args) > 2:
+                        astid = command_args[1]
+                        varname = command_args[2]
+                        if hasattr(daemon.commandclass, varname):
+                            tvar = getattr(daemon.commandclass, varname)
+                            if astid in tvar:
+                                connid.sendall('%s on %s\n' % (varname, astid))
+                                for ag, agp in tvar[astid].iteritems():
+                                        connid.sendall('%s %s\n' % (ag, agp))
+                            else:
+                                connid.sendall('no such astid %s\n' % astid)
+                        else:
+                            connid.sendall('no such variable %s\n' % varname)
+                    else:
+                        connid.sendall('first argument : astid value\n')
+                        connid.sendall('second argument : one of %s\n' % daemon.commandclass.astid_vars)
+
+                elif usefulmsg.startswith('show_varsizes '):
+                    command_args = usefulmsg.split()
+                    if len(command_args) > 1:
+                        astid = command_args[1]
+                        for varname in daemon.commandclass.astid_vars:
+                            if hasattr(daemon.commandclass, varname):
+                                tvar = getattr(daemon.commandclass, varname)
+                                if astid in tvar:
+                                    connid.sendall('%s on %s: %d\n' % (varname, astid, len(tvar[astid])))
+                                else:
+                                    connid.sendall('no such astid %s\n' % astid)
+                            else:
+                                connid.sendall('no such variable %s\n' % varname)
+                    else:
+                        connid.sendall('argument : astid value\n')
+
+                elif usefulmsg == 'show_logged_ip':
+                    for user, info in daemon.commandclass.connected_users().iteritems():
+                        if 'connection' in info['login']:
+                            try:
+                                [ipaddr, ipport] = info['login']['connection'].getpeername()
+                            except Exception:
+                                log.exception('INFO %s' % usefulmsg)
+                                [ipaddr, ipport] = ['err_addr', 'err_port']
+                            connid.sendall('user %s : ip:port = %s:%s\n' % (user.encode('latin1'), ipaddr, ipport))
+                elif usefulmsg == 'show_logged':
+                    for user, info in daemon.commandclass.connected_users().iteritems():
+                        try:
+                            connid.sendall('%s %s\n' % (user.encode('latin1'), info))
+                        except Exception:
+                            log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg.startswith('reverse '):
+                    command_args = usefulmsg.split()
+                    if len(command_args) > 2:
+                        dirnames = command_args[1]
+                        numbers = command_args[2:]
+                        for number in numbers:
+                            reverses = daemon.commandclass.findreverse(dirnames, number)
+                            for number, rep in reverses.iteritems():
+                                    connid.sendall('%s %s\n' % (number, rep))
+                elif usefulmsg.startswith('disc '):
+                    command_args = usefulmsg.split()
+                    if len(command_args) > 2:
+                        ipdef = tuple([command_args[1], int(command_args[2])])
+                        socktoremove = None
+                        for sockid in daemon.fdlist_established.keys():
+                            if ipdef == sockid.getpeername():
+                                socktoremove = sockid
+                        if socktoremove:
+                            connid.sendall('disconnecting %s (%s)\n'
+                                           % (socktoremove.getpeername(), daemon.fdlist_established[socktoremove]))
+                            socktoremove.close()
+                            del daemon.fdlist_established[socktoremove]
+                        else:
+                            connid.sendall('nobody disconnected\n')
+                elif usefulmsg == 'show_ami':
+                    for astid, ami in daemon.amilist.ami.iteritems():
+                        connid.sendall('commands : %s : %s\n' % (astid, ami))
+                elif usefulmsg.startswith('ami '):
+                    amicmd = usefulmsg.split()[1:]
+                    if amicmd:
+                        connid.sendall('ami request %s\n' % amicmd)
+                        if len(amicmd) > 1:
+                            astid = amicmd[0]
+                            cmd = amicmd[1]
+                            cmdargs = amicmd[2:]
+                            daemon.amilist.execute(astid, cmd, *cmdargs)
+                elif usefulmsg.startswith('kick '):
+                    command_args = usefulmsg.split()
+                    try:
+                        if len(command_args) > 1:
+                            kickuser = command_args[1]
+                            if kickuser in daemon.commandclass.connected_users():
+                                uinfo = daemon.commandclass.connected_users()[kickuser]
+                                if 'login' in uinfo and 'connection' in uinfo.get('login'):
+                                    cid = uinfo.get('login')['connection']
+                                    if cid in daemon.fdlist_established:
+                                        del daemon.fdlist_established[cid]
+                                        cid.close()
+                                        daemon.commandclass.manage_logout(uinfo, 'admin')
+                                        del deamon.userinfo_by_requester[cid]
+                                        connid.sendall('kicked %s\n' % kickuser)
+                                    else:
+                                        connid.sendall('did not kick %s (socket id not in daemon refs)\n' % kickuser)
+                                else:
+                                    connid.sendall('did not kick %s (no connection attributes for the user)\n' % kickuser)
+                            else:
+                                connid.sendall('did not kick %s (user not found)\n' % kickuser)
+                        else:
+                            connid.sendall('nobody to kick\n')
+                    except Exception:
+                        log.exception('INFO %s' % usefulmsg)
+                        connid.sendall('(exception when trying to kick - see server log)\n')
+                elif usefulmsg.startswith('%s:' % daemon.commandset):
+                    daemon.commandclass.cliaction(connid, usefulmsg)
+                else:
+                    retstr = 'KO'
+
+                connid.sendall('XIVO-INFO:%s\n' % retstr)
+            except Exception:
+                log.exception('INFO connection [%s] : KO when sending to %s'
+                              % (usefulmsg, requester))
     
     @staticmethod
     def manage_tcp_connections(daemon, sel_i, msg, kind):
@@ -486,17 +491,17 @@ class manage_connection:
             """
             closemenow = True
             if kind == 'CTI':
-                    manage_connection.manage_cti_connections(daemon, sel_i, msg, daemon.commandclass.ctiseparator)
+                manage_connection.manage_cti_connections(daemon, sel_i, msg, daemon.commandclass.ctiseparator)
             elif kind == 'WEBI':
-                    closemenow = manage_webi_connections(daemon, sel_i, msg, '\n')
+                closemenow = manage_connection.manage_webi_connections(daemon, sel_i, msg, '\n')
             elif kind == 'INFO':
-                    manage_info_connections(daemon, sel_i, msg, '\n')
+                manage_connection.manage_info_connections(daemon, sel_i, msg, '\n')
             elif kind == 'AGI':
-                    agireply = daemon.commandclass.handle_agi(self.asterisklist[0], msg)
-                    if agireply is not None:
-                            sel_i.sendall(agireply)
+                agireply = daemon.commandclass.handle_agi(daemon.asterisklist[0], msg)
+                if agireply is not None:
+                    sel_i.sendall(agireply)
             else:
-                    log.warning('unknown connection kind %s' % kind)
+                log.warning('unknown connection kind %s' % kind)
             return closemenow
 
 
@@ -509,111 +514,115 @@ class manage_connection:
     # \return none
     @staticmethod
     def handle_ami_event(daemon, astid, idata):
-            """
-            Handles the AMI events occuring on Asterisk.
-            If the Event field is there, calls the handle_ami_function() function.
-            """
-            global save_for_next_packet_events
-            if astid not in daemon.configs:
-                    log.info('%s : no such asterisk Id' % astid)
-                    return
-            
-            full_idata = save_for_next_packet_events[astid] + idata
-            evlist = full_idata.split('\r\n\r\n')
-            save_for_next_packet_events[astid] = evlist.pop()
-            
-            for evt in evlist:
-                    evt = evt.decode('utf8')
-                    this_event = {}
-                    nocolon = []
-                    for myline in evt.split('\r\n'):
-                            if myline.find('\n') < 0:
-                                    myfieldvalue = myline.split(': ', 1)
-                                    if len(myfieldvalue) == 2:
-                                            this_event[myfieldvalue[0]] = myfieldvalue[1]
-                                    else:
-                                            if myline.startswith('Asterisk Call Manager'):
-                                                    log.info('%s : %s' % (astid, myline))
-                                            else:
-                                                    log.warning('%s unable to parse %s' % (astid, myline))
-                            else:
-                                    nocolon.append(myline)
-                    if len(nocolon) > 1:
-                            log.warning('%s nocolon is %s' % (astid, nocolon))
-                    evfunction = this_event.get('Event')
-                    # log.info('%s AMI(all)  %s  : %s' % (astid, evfunction, this_event))
-                    if evfunction is not None:
-                            manage_connection.handle_ami_function(daemon, astid, evfunction, this_event)
-                            if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
-                                    pass
-                                    # verboselog('%s %s' % (astid, this_event), True, False)
+        """
+        Handles the AMI events occuring on Asterisk.
+        If the Event field is there, calls the handle_ami_function() function.
+        """
+        if astid not in daemon.configs:
+            log.info('%s : no such asterisk Id' % astid)
+            return
+        
+        full_idata = daemon.save_for_next_packet_events[astid] + idata
+        evlist = full_idata.split('\r\n\r\n')
+        daemon.save_for_next_packet_events[astid] = evlist.pop()
+        
+        for evt in evlist:
+            evt = evt.decode('utf8')
+            this_event = {}
+            nocolon = []
+            for myline in evt.split('\r\n'):
+                if myline.find('\n') < 0:
+                    myfieldvalue = myline.split(': ', 1)
+                    if len(myfieldvalue) == 2:
+                        this_event[myfieldvalue[0]] = myfieldvalue[1]
                     else:
-                            response = this_event.get('Response')
-                            if response is not None:
-                                    if response == 'Follows' and this_event.get('Privilege') == 'Command':
-                                            if 'ActionID' in this_event:
-                                                    actionid = this_event.get('ActionID')
-                                                    connreply = waiting_actionid.get(actionid)
-                                                    try:
-                                                        if connreply is not None:
-                                                            connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                                        for noc in nocolon:
-                                                            arggs = noc.split('\n')
-                                                            for toremove in ['', '--END COMMAND--']:
-                                                                while toremove in arggs:
-                                                                    arggs.remove(toremove)
-                                                            if arggs:
-                                                                if connreply is not None:
-                                                                    log.info('%s AMI Response : %s : %s' % (astid, actionid, arggs))
-                                                                    for argg in arggs:
-                                                                        connreply.sendall(argg + '\n')
-                                                        if connreply is not None:
-                                                            connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
-                                                            log.info('TCP socket %s closed(actionid-ok) on %s' % (self.fdlist_established[connreply],
-                                                                                                                  '%s:%d' % connreply.getpeername()))
-                                                            del self.fdlist_established[connreply]
-                                                            connreply.close()
-                                                            del waiting_actionid[actionid]
-                                                            waiting_actionid_timer[actionid].cancel()
-                                                            del waiting_actionid_timer[actionid]
-                                                    except Exception:
-                                                        log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
-                                            try:
-                                                daemon.commandclass.amiresponse_follows(astid, this_event, nocolon)
-                                            except Exception:
-                                                log.exception('%s amiresponse_follows (%s) (%s)' % (astid, this_event, nocolon))
-                                    elif response == 'Success':
-                                            try:
-                                                daemon.commandclass.amiresponse_success(astid, this_event, nocolon)
-                                            except Exception:
-                                                log.exception('%s amiresponse_success (%s) (%s)' % (astid, this_event, nocolon))
-                                    elif response == 'Error':
-                                            if 'ActionID' in this_event:
-                                                    actionid = this_event.get('ActionID')
-                                                    connreply = waiting_actionid.get(actionid)
-                                                    try:
-                                                        if connreply is not None:
-                                                            connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
-                                                            connreply.sendall('%s:KO\n' % XIVO_CLI_WEBI_HEADER)
-                                                            log.info('TCP socket %s closed(actionid-ko) on %s' % (self.fdlist_established[connreply],
-                                                                                                                  '%s:%d' % connreply.getpeername()))
-                                                            del self.fdlist_established[connreply]
-                                                            connreply.close()
-                                                            del waiting_actionid[actionid]
-                                                            waiting_actionid_timer[actionid].cancel()
-                                                            del waiting_actionid_timer[actionid]
-                                                    except Exception:
-                                                        log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
-                                            try:
-                                                daemon.commandclass.amiresponse_error(astid, this_event, nocolon)
-                                            except Exception:
-                                                log.exception('%s amiresponse_error (%s) (%s)' % (astid, this_event, nocolon))
-                                    else:
-                                        log.warning('AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
-                            elif len(this_event) > 0:
-                                log.warning('AMI:XXX: <%s> : %s' % (astid, this_event))
-                            else:
-                                log.warning('AMI %s Other : %s' % (astid, this_event))
+                        if myline.startswith('Asterisk Call Manager'):
+                            log.info('%s : %s' % (astid, myline))
+                        else:
+                            log.warning('%s unable to parse %s' % (astid, myline))
+                else:
+                    nocolon.append(myline)
+
+            if len(nocolon) > 1:
+                log.warning('%s nocolon is %s' % (astid, nocolon))
+
+            evfunction = this_event.get('Event')
+            # log.info('%s AMI(all)  %s  : %s' % (astid, evfunction, this_event))
+            if evfunction is not None:
+                manage_connection.handle_ami_function(daemon, astid, evfunction, this_event)
+                if evfunction not in ['Newexten', 'Newchannel', 'Newstate', 'Newcallerid']:
+                    pass
+                    # verboselog('%s %s' % (astid, this_event), True, False)
+            else: # {
+                response = this_event.get('Response')
+
+                if response is not None:
+                    if response == 'Follows' and this_event.get('Privilege') == 'Command':
+                        if 'ActionID' in this_event:
+                            actionid = this_event.get('ActionID')
+                            connreply = waiting_actionid.get(actionid)
+                            try:
+                                if connreply is not None:
+                                    connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                                for noc in nocolon:
+                                    arggs = noc.split('\n')
+                                    for toremove in ['', '--END COMMAND--']:
+                                        while toremove in arggs:
+                                            arggs.remove(toremove)
+                                    if arggs:
+                                        if connreply is not None:
+                                            log.info('%s AMI Response : %s : %s' % (astid, actionid, arggs))
+                                            for argg in arggs:
+                                                connreply.sendall(argg + '\n')
+                                if connreply is not None:
+                                    connreply.sendall('%s:OK\n' % XIVO_CLI_WEBI_HEADER)
+                                    log.info('TCP socket %s closed(actionid-ok) on %s' % (daemon.fdlist_established[connreply],
+                                                                                          '%s:%d' % connreply.getpeername()))
+                                    del daemon.fdlist_established[connreply]
+                                    connreply.close()
+                                    del waiting_actionid[actionid]
+                                    waiting_actionid_timer[actionid].cancel()
+                                    del waiting_actionid_timer[actionid]
+                            except Exception:
+                                log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
+                        try:
+                            daemon.commandclass.amiresponse_follows(astid, this_event, nocolon)
+                        except Exception:
+                            log.exception('%s amiresponse_follows (%s) (%s)' % (astid, this_event, nocolon))
+                    elif response == 'Success':
+                        try:
+                            daemon.commandclass.amiresponse_success(astid, this_event, nocolon)
+                        except Exception:
+                            log.exception('%s amiresponse_success (%s) (%s)' % (astid, this_event, nocolon))
+                    elif response == 'Error':
+                        if 'ActionID' in this_event:
+                            actionid = this_event.get('ActionID')
+                            connreply = waiting_actionid.get(actionid)
+                            try:
+                                if connreply is not None:
+                                    connreply.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
+                                    connreply.sendall('%s:KO\n' % XIVO_CLI_WEBI_HEADER)
+                                    log.info('TCP socket %s closed(actionid-ko) on %s' % (daemon.fdlist_established[connreply],
+                                                                                          '%s:%d' % connreply.getpeername()))
+                                    del daemon.fdlist_established[connreply]
+                                    connreply.close()
+                                    del waiting_actionid[actionid]
+                                    waiting_actionid_timer[actionid].cancel()
+                                    del waiting_actionid_timer[actionid]
+                            except Exception:
+                                log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
+                        try:
+                            daemon.commandclass.amiresponse_error(astid, this_event, nocolon)
+                        except Exception:
+                            log.exception('%s amiresponse_error (%s) (%s)' % (astid, this_event, nocolon))
+                    else:
+                        log.warning('AMI %s Response=%s (untracked) : %s' % (astid, response, this_event))
+
+                elif len(this_event) > 0:
+                    log.warning('AMI:XXX: <%s> : %s' % (astid, this_event))
+                else:
+                    log.warning('AMI %s Other : %s' % (astid, this_event))
+            # }
     
     
     evfunction_to_method_name = {
@@ -702,7 +711,7 @@ class manage_connection:
                 todisp = this_event
                 if 'Event' in todisp:
                     efn = todisp.pop('Event')
-                    for ik, iv in self.fdlist_established.iteritems():
+                    for ik, iv in daemon.fdlist_established.iteritems():
                         if iv == 'INFO':
                             ik.sendall('%s %s %s\n' % (astid, efn, todisp))
             if evfunction == 'Reload':
@@ -745,24 +754,24 @@ class manage_connection:
             log.exception('%s (update_amisocks) %s:%d' % (astid, daemon.configs[astid].remoteaddr, daemon.configs[astid].ami_port))
         return
     
-    tqueue = Queue.Queue()
     
     @staticmethod
     def callback_timer_main(*args):
         thisthread = threading.currentThread()
+        daemon = arg[0]
         tname = thisthread.getName()
         log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
-        thisthread.setName(tname + '-' + '-'.join(args))
-        self.tqueue.put(thisthread)
+        thisthread.setName(tname + '-' + '-'.join(args[1]))
+        daemon.tqueue.put(thisthread)
         os.write(pipe_queued_threads_main[1], thisthread.getName())
         return
     
     @staticmethod
     def checkqueue_main(daemon):
         buf = os.read(pipe_queued_threads_main[0], 1024)
-        log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, self.tqueue.qsize()))
-        while self.tqueue.qsize() > 0:
-            thisthread = self.tqueue.get()
+        log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, daemon.tqueue.qsize()))
+        while daemon.tqueue.qsize() > 0:
+            thisthread = daemon.tqueue.get()
             action = thisthread.args[0]
             if action == 'ipbxup':
                 # check whether the AMI is already connected,
@@ -775,7 +784,7 @@ class manage_connection:
                 actionid = thisthread.args[1]
                 if actionid in waiting_actionid and actionid in waiting_actionid_timer:
                     conn_to_close = waiting_actionid[actionid]
-                    del self.fdlist_established[conn_to_close]
+                    del daemon.fdlist_established[conn_to_close]
                     conn_to_close.close()
                     del waiting_actionid[actionid]
                     del waiting_actionid_timer[actionid]
@@ -822,6 +831,7 @@ class xivo_deamon:
         self.directorylist = xivo_contexts.Contexts()
         self.configs = {}
         self.xdname = None
+        self.tqueue = Queue.Queue()
 
 
         while True:
@@ -947,8 +957,7 @@ class xivo_deamon:
                     log.warning('WARNING - IP address (WEBI) already exists for asterisk <%s> - can not set it for <%s>' %
                                 (self.ip_reverse_webi[ipaddress_webi], astid))
     
-                global save_for_next_packet_events
-                save_for_next_packet_events[astid] = ''
+                self.save_for_next_packet_events[astid] = ''
     # }
     
     def main_loop(self):    # {
@@ -979,8 +988,7 @@ class xivo_deamon:
         xivoconf_general = self.cconf.read_section('general', 'general')
         
         # loads the general configuration
-        commandset = xivoconf_general.get('commandset', 'xivocti')
-        self.commandset = commandset
+        self.commandset = xivoconf_general.get('commandset', 'xivocti')
         if 'incoming_tcp_ports' in xivoconf_general:
             incoming_tcp_ports = xivoconf_general['incoming_tcp_ports'].split(',')
         if 'incoming_udp_ports' in xivoconf_general:
@@ -1025,13 +1033,13 @@ class xivo_deamon:
         self.pipe_queued_threads_main = os.pipe()
 
         self.amilist = xivo_ami.AMIList()
-        if commandset in xivo_commandsets.CommandClasses:
-            self.commandclass = xivo_commandsets.CommandClasses[commandset](self.amilist,
+        if self.commandset in xivo_commandsets.CommandClasses:
+            self.commandclass = xivo_commandsets.CommandClasses[self.commandset](self.amilist,
                                                                        incoming_tcp_ports,
                                                                        self.pipe_queued_threads_commandclass)
         else:
             self.commandclass = xivo_commandsets.BaseCommand()
-            log.warning('# STARTING %s : no such commandset <%s>' % (xdname, commandset))
+            log.warning('# STARTING %s : no such commandset <%s>' % (xdname, self.commandset))
 
         self.xdname = self.commandclass.xdname
 
@@ -1072,8 +1080,7 @@ class xivo_deamon:
                         xivoconf_dir = self.cconf.read_section('directory', dr)
                         self.directorylist.update(contextname, dr, xivoconf_dir)
                                         
-        global save_for_next_packet_events
-        save_for_next_packet_events = {}
+        self.save_for_next_packet_events = {}
         self.ip_reverse_webi = {}
         self.ip_reverse_sht = {}
 
@@ -1149,8 +1156,7 @@ class xivo_deamon:
             self.select_step()
     # }
 
-    def select_step(self):    # {
-
+    def select_step(self):  # {
         try:    # {
             fdtodel = []
             for cn in self.fdlist_established.keys():
@@ -1180,50 +1186,50 @@ class xivo_deamon:
             [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [], self.updates_period)
         # }
         except Exception, exc:  # {
-                log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
-                log.warning('(select) self.askedtoquit=%s fdlist_full=%s' % (self.askedtoquit, self.fdlist_full))
-                log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % self.fdlist_established)
-                log.warning('(select) current open TCP connections : (AMI) %s' % self.amilist.fdlist())
-                log.warning('(select) current open TCP connections : (OUT) %s' % self.outsock)
-                
-                if self.askedtoquit and self.apnoeafile:
-                        try:
-                                tosave = self.commandclass.apnoea_tosave()
-                                e = open(self.apnoeafile, 'w')
-                                e.write(pickle.dumps(tosave))
-                                e.close()
-                        except:
-                                log.exception('write apnoea file %s' % self.apnoeafile)
-                                
-                for s in self.fdlist_full:
-                        if s in self.fdlist_established and self.fdlist_established[s] == 'CTI':
-                                if self.askedtoquit:
-                                        self.commandclass.reset('stop', s)
-                                else:
-                                        self.commandclass.reset('reload', s)
-                        if isinstance(s, int):
-                                os.close(s)
-                        else:
-                                s.close()
-                                
-                if self.askedtoquit:
-                        self.commandclass.reset('stop')
-                        time_uptime = int(time.time() - time.mktime(self.time_start))
-                        log.info('# STOPPING XiVO Daemon %s (pid %d) / svn:%s # uptime %d s (since %s)'
-                                 % (XIVOVERSION, os.getpid(), __revision__,
-                                    time_uptime, time.asctime(self.time_start)))
-                        for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
-                                print '--- (stop) killing thread <%s>' % t.getName()
-                                t._Thread__stop()
-                        daemonize.unlock_pidfile(PIDFILE)
-                        sys.exit(5)
+            log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
+            log.warning('(select) self.askedtoquit=%s fdlist_full=%s' % (self.askedtoquit, self.fdlist_full))
+            log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % self.fdlist_established)
+            log.warning('(select) current open TCP connections : (AMI) %s' % self.amilist.fdlist())
+            log.warning('(select) current open TCP connections : (OUT) %s' % self.outsock)
+
+            if self.askedtoquit and self.apnoeafile:
+                try:
+                    tosave = self.commandclass.apnoea_tosave()
+                    e = open(self.apnoeafile, 'w')
+                    e.write(pickle.dumps(tosave))
+                    e.close()
+                except:
+                    log.exception('write apnoea file %s' % self.apnoeafile)
+
+            for s in self.fdlist_full:
+                if s in self.fdlist_established and self.fdlist_established[s] == 'CTI':
+                    if self.askedtoquit:
+                        self.commandclass.reset('stop', s)
+                    else:
+                        self.commandclass.reset('reload', s)
+                if isinstance(s, int):
+                    os.close(s)
                 else:
-                        self.commandclass.reset('reload')
-                        self.askedtoquit = True
-                        for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
-                                print '--- (reload) the thread <%s> remains' % t.getName()
-                                # t._Thread__stop() # does not work in reload case (vs. stop case)
-                        return
+                    s.close()
+                            
+            if self.askedtoquit:
+                self.commandclass.reset('stop')
+                time_uptime = int(time.time() - time.mktime(self.time_start))
+                log.info('# STOPPING XiVO Daemon %s (pid %d) / svn:%s # uptime %d s (since %s)'
+                         % (XIVOVERSION, os.getpid(), __revision__,
+                            time_uptime, time.asctime(self.time_start)))
+                for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
+                    print '--- (stop) killing thread <%s>' % t.getName()
+                    t._Thread__stop()
+                daemonize.unlock_pidfile(PIDFILE)
+                sys.exit(5)
+            else:
+                self.commandclass.reset('reload')
+                self.askedtoquit = True
+                for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
+                    print '--- (reload) the thread <%s> remains' % t.getName()
+                    # t._Thread__stop() # does not work in reload case (vs. stop case)
+                return
         # }
         try:    # {
             # connexions ready for sending(writing)
@@ -1290,7 +1296,7 @@ class xivo_deamon:
                             log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
                             if astid in self.configs:
                                 # scheduling astid's AMI reconnection
-                                k = threading.Timer(2, callback_timer_main, ('ipbxup', astid))
+                                k = threading.Timer(2, callback_timer_main, (self, ('ipbxup', astid)))
                                 k.start()
                         else:
                             log.warning('unknown kind %s received' % kind)
@@ -1484,6 +1490,7 @@ class xivo_deamon:
 
                     # }
                 # }
+            # }
             else: # { when nothing happens on the sockets, we fall here sooner or later
                 log.info('[%s] updates (select timeout) %s'
                           % (self.xdname, time.asctime()))
@@ -1505,9 +1512,9 @@ class xivo_deamon:
                 # }
             # }
         # }
-        # }
         except Exception:
             log.exception('select step')
+    # }
 
 
 main = xivo_deamon()
