@@ -200,6 +200,10 @@ CREATE TABLE `server` (
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
  `description` text NOT NULL,
+ `webi` varchar(255) NOT NULL DEFAULT '',
+ `ami_port` smallint unsigned NOT NULL,
+ `ami_login` varchar(64) NOT NULL DEFAULT '',
+ `ami_pass` varchar(64) NOT NULL DEFAULT '',
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
