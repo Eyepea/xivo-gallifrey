@@ -58,6 +58,12 @@ Carnet d'adresses
 ; acl(service-ipbx-general_settings-advanced)
 Avancés
 
+; acl(service-ipbx-ctiserver)
+Serveurs CTI
+
+; acl(service-ipbx-ctiserver-configuration)
+Configuration
+
 ; acl(service-ipbx-cti_settings)
 Serveurs CTI
 

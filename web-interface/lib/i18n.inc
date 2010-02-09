@@ -646,6 +646,8 @@ class dwho_i18n
 				{
 					if(isset($babelfish[DWHO_I18N_NAMESPACE_GLOBAL][$name]) === true)
 						$namespace = DWHO_I18N_NAMESPACE_GLOBAL;
+					else if(isset($name_args) === true)
+						return($name_args);
 					else
 						return($name);
 				}
