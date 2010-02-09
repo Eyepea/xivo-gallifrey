@@ -58,6 +58,39 @@ Carnet d'adresses
 ; acl(service-ipbx-general_settings-advanced)
 Avancés
 
+; acl(service-ipbx-cti_settings)
+Serveurs CTI
+
+; acl(service-ipbx-cti_settings-general)
+Options générales
+
+; acl(service-ipbx-cti_settings-presences)
+Présences
+
+; acl(service-ipbx-cti_settings-phonehints)
+Présences téléphoniques
+
+; acl(service-ipbx-cti_settings-profiles)
+Profiles
+
+; acl(service-ipbx-cti_settings-directories)
+Répertoires
+
+; acl(service-ipbx-cti_settings-reversedirectories)
+Répertoires inverses
+
+; acl(service-ipbx-cti_settings-displays)
+Filtres d'affichage
+
+; acl(service-ipbx-cti_settings-contexts)
+Contextes
+
+; acl(service-ipbx-cti_settings-sheetactions)
+Fiches : Actions
+
+; acl(service-ipbx-cti_settings-sheetevents)
+Fiches : Evènements
+
 ; acl(service-ipbx-pbx_settings)
 Paramètres IPBX
 
