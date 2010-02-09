@@ -3,3 +3,9 @@ Contexte
 
 ; col_description
 Description
+
+; no_context
+Aucun contexte
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet élément ?
