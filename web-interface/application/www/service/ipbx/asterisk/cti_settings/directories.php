@@ -80,21 +80,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('directories',$_QR) === true)
 		{
-			foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
-			{
-				if($_QR['directories'][$v] != '')
-				{
-					$str = "[";
-					foreach(explode(',', $_QR['directories'][$v]) as $w)
-					{
-						$str .= '"' . trim($w) . '",';
-					}
-					$str = trim($str, ',');
-					$str .= "]";
-					$_QR['directories'][$v] = $str;
-				}
-			}
-
 			$_QR['directories']['uri'] = $_QR['directories-uri'];
 			$_QR['directories']['deletable'] = 1;
 			if($app->set_add($_QR) === false
@@ -132,20 +117,6 @@ switch($act)
 		{
 			$return = &$result;
 
-			foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
-			{
-				if($_QR['directories'][$v] != '')
-				{
-					$str = "[";
-					foreach(explode(',', $_QR['directories'][$v]) as $w)
-					{
-						$str .= '"' . trim($w) . '",';
-					}
-					$str = trim($str, ',');
-					$str .= "]";
-					$_QR['directories'][$v] = $str;
-				}
-			}
 			$_QR['directories']['deletable'] = 1;
 			$_QR['directories']['uri'] = $_QR['directories-uri'];
 			if($app->set_edit($_QR) === false

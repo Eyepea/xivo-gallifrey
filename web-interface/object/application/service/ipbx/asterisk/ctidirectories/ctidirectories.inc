@@ -162,6 +162,21 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		|| $rs === false)
 			return(false);
 
+		foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
+		{
+			if($rs[$v] != '')
+			{
+				$str = "[";
+				foreach(explode(',', $rs[$v]) as $w)
+				{
+					$str .= '"' . trim($w) . '",';
+				}
+				$str = trim($str, ',');
+				$str .= "]";
+				$rs[$v] = $str;
+			}
+		}
+
 		$this->_return['directories'] = $this->_ctidirectories->add($rs);
 		return($this->_return['directories']);
 	}
@@ -215,6 +230,21 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
         || ($rs = $this->get_result('directories')) === null
         || $rs === false)
             return(false);
+
+		foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
+		{
+			if($rs[$v] != '')
+			{
+				$str = "[";
+				foreach(explode(',', $rs[$v]) as $w)
+				{
+					$str .= '"' . trim($w) . '",';
+				}
+				$str = trim($str, ',');
+				$str .= "]";
+				$rs[$v] = $str;
+			}
+		}
 
         return(($this->_return['directories'] = $this->_ctidirectories->edit($this->_info['directories']['id'],$rs)));
     }

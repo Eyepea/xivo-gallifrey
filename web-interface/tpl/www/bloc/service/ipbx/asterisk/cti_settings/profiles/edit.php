@@ -49,7 +49,7 @@ $form = &$this->get_module('form');
 				</div>
 				<span class="span-right">&nbsp;</span>
 			</li>
-			<li id="dwsm-tab-7"
+			<li id="dwsm-tab-3"
 				class="dwsm-blur-last"
 				onclick="dwho_submenu.select(this,'sb-part-last',1);"
 				onmouseout="dwho_submenu.blur(this,1);"

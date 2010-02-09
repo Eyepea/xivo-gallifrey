@@ -8,25 +8,31 @@ URI :
 Séparateur :
 
 ; fm_directories_match_direct
-(match direct)
+Comparaison directe sur :
 
 ; fm_directories_match_reverse
-(match reverse)
+Comparaison inverse sur :
 
 ; fm_directories_field_phone
-(field phone)
+Champ 'Téléphone' :
 
 ; fm_directories_field_fullname
-(field fullname)
+Champ 'Nom complet' :
 
 ; fm_directories_field_company
-(field company)
+Champ 'Société' :
 
 ; fm_directories_field_mail
-(field mail)
+Champ 'Courriel' :
 
 ; fm_directories_display_reverse
-(display reverse)
+Champ à afficher sur comparaison inverse :
+
+; fm_directories_field_lastname
+Champ 'Nom de famille' :
+
+; fm_directories_field_firstname
+Champ 'Prénom' :
 
 ; fm_description
 Description

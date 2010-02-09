@@ -63,7 +63,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_phonehints');?></td>
+		<td colspan="6" class="td-single"><?=$this->bbf('no_phonehints');?></td>
 	</tr>
 <?php
 	else:
