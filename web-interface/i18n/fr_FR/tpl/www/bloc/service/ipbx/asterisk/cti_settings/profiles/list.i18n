@@ -6,3 +6,7 @@ Description
 
 ; no_profile
 Aucun profil
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet élément ?
+

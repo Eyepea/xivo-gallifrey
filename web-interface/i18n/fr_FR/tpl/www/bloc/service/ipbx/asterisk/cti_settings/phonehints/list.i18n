@@ -9,3 +9,7 @@ Couleur
 
 ; no_phonehints
 Aucune présence téléphonique
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet élément ?
+
