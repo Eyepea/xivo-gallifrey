@@ -269,8 +269,7 @@ class xivo_application_service_asterisk_ctiphonehints extends xivo_application_a
 
 	function delete_phonehints()
 	{
-		if(dwho_issa('phonehints',$this->_info) === false
-		|| (string) $this->_info['phonehints']['id'] === '1')
+		if(dwho_issa('phonehints',$this->_info) === false)
 			return(false);
 
 		$r = $this->_ctiphonehints->delete($this->_info['phonehints']['id']);

@@ -6,3 +6,9 @@ Description
 
 ; col_action
 Action
+
+; no_presence
+Aucune présence
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet élément ?
