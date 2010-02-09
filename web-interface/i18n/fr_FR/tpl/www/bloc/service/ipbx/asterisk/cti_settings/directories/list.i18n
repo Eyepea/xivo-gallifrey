@@ -6,3 +6,9 @@ Description
 
 ; col_uri
 URI
+
+; no_directories
+Aucun répertoire
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cet élément ?
