@@ -61,7 +61,7 @@ switch($act)
 		&& dwho_issa('profiles',$_QR) === true)
 		{
 			$_QR['profiles']['deletable'] = 1;
-			$_QR['profiles']['presence'] = "presence.".$_QR['presence'];
+			$_QR['profiles']['presence'] = $_QR['presence'];
 
 			if(array_key_exists('xletslist', $_QR))
 			{
@@ -181,7 +181,7 @@ switch($act)
 		&& dwho_issa('profiles',$_QR) === true)
 		{
 			$_QR['profiles']['deletable'] = 1;
-			$_QR['profiles']['presence'] = "presence.".$_QR['presence'];
+			$_QR['profiles']['presence'] = $_QR['presence'];
 
 			if(array_key_exists('xletslist', $_QR))
 			{

@@ -198,7 +198,6 @@ if(isset($error_js[0]) === true)
 			}
 		endif;
 		?>
-			</tbody>
 			<tfoot>
 			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
 				<td colspan="7" class="td-single"><?=$this->bbf('no_'.$type);?></td>
@@ -226,7 +225,6 @@ if(isset($error_js[0]) === true)
 									'label'		=> false,
 									'id'		=> false,
 									'key'		=> false,
-									'invalid'	=> true,
 								),
 								$sheetactionslist);
 	 ?>

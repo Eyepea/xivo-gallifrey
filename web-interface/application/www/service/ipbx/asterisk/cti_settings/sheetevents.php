@@ -36,6 +36,7 @@ $error['sheetevents'] = array();
 $fm_save = null;
 
 $sheetactionslist = array();
+$sheetactionslist[] = "";
 foreach($actionslist as $v)
 {
 	$sheetactionslist[] = $v['ctisheetactions']['name'];

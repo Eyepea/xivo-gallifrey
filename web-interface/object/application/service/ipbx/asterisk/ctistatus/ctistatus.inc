@@ -366,7 +366,7 @@ class xivo_application_service_asterisk_ctistatus extends xivo_application_aster
 		|| ($statusid = $this->add_status()) === false)
 		{
 			$r = false;
-			if($presencesid !== null)
+			if($statusid !== null)
 				$this->_reverse_add();
 		}
 

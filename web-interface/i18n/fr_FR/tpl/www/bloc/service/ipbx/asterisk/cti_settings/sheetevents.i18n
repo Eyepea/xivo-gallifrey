@@ -2,10 +2,10 @@
 Fiches : Événements
 
 ; fm_sheetevents_agentlinked
-(agent linked)
+Agent se connecte
 
 ; fm_sheetevents_agentunlinked
-(agent unlinked)
+Agent se déconnecte
 
 ; fm_sheetevents_faxreceived
 Réception fax :
@@ -33,3 +33,6 @@ Numérotation :
 
 ; col_2
 Action
+
+; no_custom
+Aucun évènement personnalisé

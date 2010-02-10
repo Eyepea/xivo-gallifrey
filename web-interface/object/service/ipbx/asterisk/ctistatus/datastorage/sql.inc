@@ -22,7 +22,6 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 
 class xivo_service_asterisk_ctistatus_sql extends xivo_service_asterisk_abstract_sql
 {
-	var $_unique	= array('name');
 }
 
 

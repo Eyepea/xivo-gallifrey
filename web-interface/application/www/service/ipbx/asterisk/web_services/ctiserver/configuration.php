@@ -24,6 +24,7 @@ $access_subcategory = 'configuration';
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
 $act = $_QRY->get('act');
+define("CLIENT_VERSION", '5956');
 
 switch($act)
 {
@@ -61,6 +62,8 @@ switch($act)
 		$load_rdid = $ctirdid->get_all();
 		$list = $app->get_server_list();
 
+		$ctxlist = array();
+
 		$out = array(
 			'main' 			=> array(),
 			'reversedid' 	=> array(),
@@ -80,6 +83,7 @@ switch($act)
 			foreach($load_contexts as $context)
 			{
 				$ctxid = $context['name'];
+				$ctxlist[] = "contexts.".$ctxid;
 				$ctxdirs = explode(',', $context['directories']);
 				$ctxout[$ctxid] = array();
 				$arr = array();
@@ -203,9 +207,9 @@ switch($act)
 		# PRESENCES
 		if(isset($load_presences))
 		{
+			$presout = array();
 			foreach($load_presences as $pres)
 			{
-				$presout = array();
 				$presid = $pres['name'];
 				$id = $pres['id'];
 				$where = array();
@@ -258,7 +262,7 @@ switch($act)
 		$out['main']['updates_period'] = $load_inf[0]['updates_period'];
 		$out['main']['logintimeout'] = $load_inf[0]['login_timeout'];
 		$out['main']['asterisklist'] = array();
-		$out['main']['contextlist'] = array();
+		$out['main']['contextlist'] = $ctxlist;
 		$out['main']['userlists'] = array();
 		$out['main']['parting_astid_context'] = array();
 		if($load_inf[0]['parting_astid_context'] != "")
@@ -293,12 +297,13 @@ switch($act)
 					preg_match($pattern, $p, $match);
 					$prefout[$match[1]] = $match[2];
 				}
+				$out['xivocti']['required_client_version'] = CLIENT_VERSION;
 				$out['xivocti']['profils'][$pfid] = array(
 					'xlets' => dwho_json::decode($pf['xlets'], true),
 					'funcs' => explode(',', $pf['funcs']),
 					'maxgui' => $pf['maxgui'],
 					'appliname' => $pf['appliname'],
-					'presence' => $pf['presence'],
+					'presence' => "presences.".$pf['presence'],
 					'services' => explode(',', $pf['services']),
 					'preferences' => $prefout
 				);
