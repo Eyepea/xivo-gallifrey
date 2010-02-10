@@ -29,7 +29,7 @@ $_DIR = new xivo_directories();
 $param = array();
 $param['act'] = 'list';
 
-$prefixes = array('sqlite', 'mysql', 'file');
+$prefixes = array('sqlite', 'mysql', 'file', 'phonebook');
 
 switch($act)
 {
@@ -57,6 +57,11 @@ switch($act)
 				case 3:
 				{
 					$uri = $_QR['uri'];
+					break;
+				}
+				case 4:
+				{
+					$uri = "phonebook";
 					break;
 				}
 				default:
@@ -127,10 +132,12 @@ switch($act)
 				}
 				# Case webservices
 				case 3:
+				case 4:
 				{
 					$uri = $_QR['uri'];
 					break;
 				}
+
 				default:
 				{
 					if(strpos($_QR['uri'], '://') === false)
@@ -172,10 +179,17 @@ switch($act)
 
 		$parsed = $uri->parse_uri($return['uri']);
 		$return['type'] = -1;
-		foreach($prefixes as $k => $p)
+		if($parsed['path'] == 'phonebook')
 		{
-			if(strcasecmp($parsed['scheme'], $p) == 0)
-				$return['type'] = $k;
+			$return['type'] = 4;
+		}
+		else
+		{
+			foreach($prefixes as $k => $p)
+			{
+				if(strcasecmp($parsed['scheme'], $p) == 0)
+					$return['type'] = $k;
+			}
 		}
 
 		# If we can't find type assume it's webservice
