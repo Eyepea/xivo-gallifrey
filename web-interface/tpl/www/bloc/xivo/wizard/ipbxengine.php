@@ -31,7 +31,7 @@ echo	$form->select(array('desc'	=> $this->bbf('fm_ipbxengine'),
 		      $this->get_var('info','engines'));
 
 ?>
-<div id="ipbxengine-asterisk" class="ipbxengine-info">
+<div id="ipbxengine-asterisk" class="ipbxengine-info b-nodisplay">
 	<dl>
 		<dt><?=$this->bbf('xivo_service_ipbx_engine_label','asterisk');?></dt>
 		<dd class="ipbxengine-description"><?=nl2br($this->bbf('ipbxengine_description','asterisk'));?></dd>
