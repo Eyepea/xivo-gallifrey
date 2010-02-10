@@ -30,20 +30,25 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('incomingcalllist')
 
 class IncomingCallList(AnyList):
-        def __init__(self, newurls = []):
-                self.anylist_properties = {'keywords' : ['exten', 'context', 'action',
-                                                         'destidentity',
-                                                         'userfirstname', 'userlastname',
-                                                         'usernumber', 'usercontext', 'username'],
-                                           'name' : 'incomingcall',
-                                           'action' : 'getincomingcalllist',
-                                           'urloptions' : (1, 5, True)}
-                AnyList.__init__(self, newurls)
-                return
-        
-        # [{"id":"2","preprocess_subroutine":null,"faxdetectenable":"0","faxdetecttimeout":"4","faxdetectemail":"","commented":false,"linked":true,"actionarg1":"3","actionarg2":"","groupname":null,"groupnumber":null,"groupcontext":null,"queuename":null,"queuenumber":null,"queuecontext":null,"meetmename":null,"meetmenumber":null,"meetmecontext":null,"voicemailfullname":null,"voicemailmailbox":null,"voicemailcontext":null,"schedulename":null,"schedulecontext":null,"voicemenuname":null,"voicemenunumber":null,"voicemenucontext":null,"destination":"user","identity":"9964 (from-extern)","destidentity":"Sylvain Boily (104@default)"}
-        
-        def update(self):
-                ret = AnyList.update(self)
-                # self.reverse_index = {}
-                return ret
+    def __init__(self, newurls = []):
+        self.anylist_properties = {'keywords' : ['exten', 'context', 'destidentity', 'action',
+                                                 'userfirstname', 'userlastname',
+                                                 'usernumber', 'username',
+                                                 'usercontext',
+                                                 'groupcontext',
+                                                 'queuecontext',
+                                                 'meetmecontext',
+                                                 'voicemenucontext',
+                                                 'voicemailcontext'],
+                                   'name' : 'incomingcall',
+                                   'action' : 'getincomingcalllist',
+                                   'urloptions' : (1, 5, True)}
+        AnyList.__init__(self, newurls)
+        return
+    
+    # [{"id":"2","preprocess_subroutine":null,"faxdetectenable":"0","faxdetecttimeout":"4","faxdetectemail":"","commented":false,"linked":true,"actionarg1":"3","actionarg2":"","groupname":null,"groupnumber":null,"groupcontext":null,"queuename":null,"queuenumber":null,"queuecontext":null,"meetmename":null,"meetmenumber":null,"meetmecontext":null,"voicemailfullname":null,"voicemailmailbox":null,"voicemailcontext":null,"schedulename":null,"schedulecontext":null,"voicemenuname":null,"voicemenunumber":null,"voicemenucontext":null,"destination":"user","identity":"9964 (from-extern)","destidentity":"Sylvain Boily (104@default)"}
+    
+    def update(self):
+        ret = AnyList.update(self)
+        # self.reverse_index = {}
+        return ret
