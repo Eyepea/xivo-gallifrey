@@ -127,6 +127,9 @@ class dwho_file
 		$info['mtime']		= filemtime($info['path']);
 		$info['size']		= filesize($info['path']);
 
+		if($info['size'] < 0)
+			$info['size'] = sprintf('%u',$info['size']);
+
 		return($info);
 	}
 

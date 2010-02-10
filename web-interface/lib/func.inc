@@ -54,6 +54,11 @@ function dwho_get_memory($value,$name=true)
 
 function dwho_size_iec($size)
 {
+	$size = floatval($size);
+
+	if($size < 0)
+		$size = sprintf('%u',$size);
+
 	$arr = array('Bytes',
 		     'KiB',
 		     'MiB',
@@ -63,8 +68,6 @@ function dwho_size_iec($size)
 		     'EiB',
 		     'ZiB',
 		     'YiB');
-
-	$size = floatval($size);
 
 	for($c = 0;$size >= 1024 && $c < 8;$c++)
 		$size /= 1024;
@@ -76,6 +79,9 @@ function dwho_size_si_to_byte($from,$size)
 {
 	$from = strtoupper(strval($from));
 	$size = floatval($size);
+
+	if($size < 0)
+		$size = sprintf('%u',$size);
 
 	$arr = array('B',
 		     'KB',
