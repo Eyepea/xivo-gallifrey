@@ -691,6 +691,8 @@ CREATE TABLE meetmefeatures (
  noplaymsgfirstenter tinyint(1) NOT NULL DEFAULT 0,
  durationm smallint unsigned,
  closeconfdurationexceeded tinyint(1) NOT NULL DEFAULT 0,
+ nbuserstartdeductduration tinyint unsigned,
+ timeannounceclose smallint unsigned,
  maxuser tinyint unsigned,
  startdate char(19),
  emailfrom varchar(255),

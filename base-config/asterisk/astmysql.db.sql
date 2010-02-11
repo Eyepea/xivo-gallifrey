@@ -730,6 +730,8 @@ CREATE TABLE `meetmefeatures` (
  `noplaymsgfirstenter` tinyint(1) NOT NULL DEFAULT 0,
  `durationm` smallint(3) unsigned,
  `closeconfdurationexceeded` tinyint(1) NOT NULL DEFAULT 0,
+ `nbuserstartdeductduration` tinyint(2) unsigned,
+ `timeannounceclose` smallint(3) unsigned,
  `maxuser` tinyint(2) unsigned,
  `startdate` datetime,
  `emailfrom` varchar(255),

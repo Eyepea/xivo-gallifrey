@@ -662,7 +662,8 @@ class MeetMe:
                                       tuple(["user_%s" % x for x in (self.OPTIONS_COMMON.keys() +
                                                                      self.OPTIONS_USER.keys())]) +
                                       tuple(x for x in self.OPTIONS_GLOBAL.keys()) +
-                                      ('durationm', 'maxuser',
+                                      ('durationm', 'nbuserstartdeductduration',
+                                       'timeannounceclose', 'maxuser',
                                        'startdate', 'preprocess_subroutine'))
 
         columns = ["meetmefeatures." + c for c in meetmefeatures_columns] + \
@@ -753,8 +754,18 @@ class MeetMe:
         if self.OPTIONS_GLOBAL['closeconfdurationexceeded'] in options:
             options.remove(self.OPTIONS_GLOBAL['closeconfdurationexceeded'])
             if self.durationm:
-                options.add("%s(%d)" % (self.OPTIONS_GLOBAL['closeconfdurationexceeded'],
-                                        (int(self.durationm) * 60)))
+                opt = [str(int(self.durationm) * 60)]
+
+                if self.nbuserstartdeductduration:
+                    opt.append(str(self.nbuserstartdeductduration))
+                else:
+                    opt.append("")
+
+                if self.timeannounceclose:
+                    opt.append(str(self.timeannounceclose))
+
+                options.add("%s(%s)" % (self.OPTIONS_GLOBAL['closeconfdurationexceeded'],
+                                        "|".join(opt).rstrip("|")))
 
         return set(options)
 

@@ -73,6 +73,30 @@ Durée en minutes :
 ; fm_meetmefeatures_closeconfdurationexceeded
 Fermer la conférence lorsque la durée a été dépassée :
 
+; fm_meetmefeatures_nbuserstartdeductduration
+Nombre de participants avant le décompte de la durée :
+
+; fm_meetmefeatures_timeannounceclose
+Délai avant la fermeture pour l'annonce de clôture :
+
+; fm_meetmefeatures_timeannounceclose-opt(default)
+Désactivé
+
+; fm_meetmefeatures_timeannounceclose-opt-seconds
+%s secondes
+
+; fm_meetmefeatures_timeannounceclose-opt-minute
+1 minute
+
+; fm_meetmefeatures_timeannounceclose-opt-minute-seconds
+%s min. %s sec.
+
+; fm_meetmefeatures_timeannounceclose-opt-minutes
+%s minutes
+
+; fm_meetmefeatures_timeannounceclose-opt-minutes-seconds
+%s min. %s sec.
+
 ; fm_meetmefeatures_admin-typefrom
 Administrateur :
 

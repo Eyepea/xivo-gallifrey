@@ -218,7 +218,28 @@ endif;
 				      'name'	=> 'meetmefeatures[closeconfdurationexceeded]',
 				      'labelid'	=> 'meetmefeatures-closeconfdurationexceeded',
 				      'default'	=> $element['meetmefeatures']['closeconfdurationexceeded']['default'],
-				      'checked' => $info['meetmefeatures']['closeconfdurationexceeded']));
+				      'checked' => $info['meetmefeatures']['closeconfdurationexceeded'])),
+
+		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_nbuserstartdeductduration'),
+				  'name'	=> 'meetmefeatures[nbuserstartdeductduration]',
+				  'labelid'	=> 'meetmefeatures-nbuserstartdeductduration',
+				  'size'	=> 5,
+				  'default'	=> $element['meetmefeatures']['nbuserstartdeductduration']['default'],
+				  'value'	=> $info['meetmefeatures']['nbuserstartdeductduration'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_timeannounceclose'),
+				    'name'	=> 'meetmefeatures[timeannounceclose]',
+				    'labelid'	=> 'meetmefeatures-timeannounceclose',
+				    'empty'	=> $this->bbf('fm_meetmefeatures_timeannounceclose-opt','default'),
+				    'key'	=> false,
+				    'bbf'	=> 'fm_meetmefeatures_timeannounceclose-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
+				    'selected'	=> $info['meetmefeatures']['timeannounceclose'],
+				    'default'	=> $element['meetmefeatures']['timeannounceclose']['default']),
+			      $element['meetmefeatures']['timeannounceclose']['value']);
 ?>
 </div>
 

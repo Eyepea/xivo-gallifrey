@@ -193,6 +193,17 @@ $array['element']['closeconfdurationexceeded']['value'] = array(0,1);
 $array['element']['closeconfdurationexceeded']['default'] = 0;
 $array['element']['closeconfdurationexceeded']['set'] = true;
 
+$array['element']['nbuserstartdeductduration'] = array();
+$array['element']['nbuserstartdeductduration']['default'] = '';
+$array['element']['nbuserstartdeductduration']['null'] = true;
+
+$array['element']['timeannounceclose'] = array();
+$array['element']['timeannounceclose']['value'] = array(15,30,45,60,75,90,105,120,
+							135,150,165,180,195,210,
+							225,240,255,270,285,300);
+$array['element']['timeannounceclose']['default'] = '';
+$array['element']['timeannounceclose']['null'] = true;
+
 $array['element']['maxuser'] = array();
 $array['element']['maxuser']['default'] = '';
 $array['element']['maxuser']['null'] = true;
@@ -312,6 +323,8 @@ $array['filter']['talkerdetection'] = array('bool' => true);
 $array['filter']['noplaymsgfirstenter'] = array('bool' => true);
 $array['filter']['durationm'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,999));
 $array['filter']['closeconfdurationexceeded'] = array('bool' => true);
+$array['filter']['nbuserstartdeductduration'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
+$array['filter']['timeannounceclose'] = array('set' => false,'cast' => 'uint','between' => array(15,300,15));
 $array['filter']['maxuser'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,99));
 $array['filter']['startdate'] = array('set' => false,'chk' => 2,'callback' => 'dwho_filter::chk_datetime','callbackarg' => array(true));
 $array['filter']['emailfrom'] = array('set' => false,'chk' => 2,'maxlen' => 255,'callback' => 'dwho_network::valid_email');
