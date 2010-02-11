@@ -267,6 +267,7 @@ class xivo_service_asterisk_autoprov extends xivo_service_asterisk_abstract
 		$r = array();
 		$r['actions'] = 'no';
 		$r['iduserfeatures'] = $id;
+		$r['from'] = $this->get_element_default('from');
 
 		if($this->_send_sockprov_mode('userdeleted',$r) === false)
 			return(false);
