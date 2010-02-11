@@ -260,7 +260,7 @@ CREATE TABLE `ctidirectories` (
  `field_fullname` varchar(255),
  `field_company` varchar(255),
  `field_mail` varchar(255),
- ̀`field_firstname` varchar(1024),
+ `field_firstname` varchar(1024),
  `field_lastname` varchar(1024),
  `display_reverse` varchar(255),
  `description` varchar(255),
