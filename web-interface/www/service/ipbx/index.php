@@ -31,11 +31,11 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'.js');
 
 $_TPL->load_i18n_file('struct/service/ipbx/'.$ipbx->get_name());
 
-$application = $_LOC->get_app_path('service/ipbx/'.$ipbx->get_name(),2);
+$action_path = $_LOC->get_action_path('service/ipbx/'.$ipbx->get_name(),2);
 
-if($application === false)
+if($action_path === false)
 	$_QRY->go($_TPL->url('xivo'));
 
-die(include($application));
+die(include($action_path));
 
 ?>

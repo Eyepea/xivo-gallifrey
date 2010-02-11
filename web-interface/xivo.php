@@ -27,7 +27,7 @@ $_XIVO = &dwho_gct::set_get(new xivo());
 $_CF = &dwho_gat::get('_CF');
 $_QR = &dwho_gat::get('_QR');
 $_URL = &dwho_gat::load_get('url',XIVO_PATH_OBJECTCONF);
-$_APP_MISC = &dwho_gat::load_get('app_misc',XIVO_PATH_OBJECTCONF);
+$_ACTION_MISC = &dwho_gat::load_get('action_misc',XIVO_PATH_OBJECTCONF);
 
 $_I18N = &dwho_gct::get('dwho_i18n');
 $_I18N->load_file('xivo');
@@ -35,7 +35,7 @@ $_I18N->load_file('xivo');
 $_QRY = &dwho_gct::get('dwho_query');
 
 dwho::load_class('location');
-$_LOC = &dwho_gct::set_get(new dwho_location($_CF['location'],$_APP_MISC));
+$_LOC = &dwho_gct::set_get(new dwho_location($_CF['location'],$_ACTION_MISC));
 
 $_XOBJ = &dwho_gct::get('xivo_object');
 $_SRE = &dwho_gct::get('xivo_service');

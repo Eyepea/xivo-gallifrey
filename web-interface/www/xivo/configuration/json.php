@@ -23,9 +23,9 @@ define('XIVO_TPL_AREA','json');
 
 require_once('xivo.php');
 
-$application = $_LOC->get_app_path('xivo/configuration/web_services/',3);
+$action_path = $_LOC->get_action_path('xivo/configuration/web_services/',3);
 
-if($application === false)
+if($action_path === false)
 {
 	dwho::load_class('dwho_http');
 	$http_response = dwho_http::factory('response');
@@ -33,6 +33,6 @@ if($application === false)
 	$http_response->send(true);
 }
 
-die(include($application));
+die(include($action_path));
 
 ?>

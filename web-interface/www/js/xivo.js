@@ -257,7 +257,7 @@ function xivo_chg_attrib(name,id,type,link)
 
 function xivo_menu_active()
 {
-	var xivo_menu_active = 'mn-' + dwho_location_app_path.replace(/\//g,'--');
+	var xivo_menu_active = 'mn-' + dwho_location_action_path.replace(/\//g,'--');
 	xivo_menu_active = xivo_menu_active.replace(/_/g,'-');
 
 	if((xivo_menu_active = dwho_eid(xivo_menu_active)) !== false)

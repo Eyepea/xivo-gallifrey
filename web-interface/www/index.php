@@ -22,12 +22,12 @@ require_once('xivo.php');
 
 if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
 {
-	$application = $_LOC->get_app_path('xivo/wizard',0);
+	$action_path = $_LOC->get_action_path('xivo/wizard',0);
 
-	if($application === false)
+	if($action_path === false)
 		dwho_die('XIVO is not configured');
 
-	die(include($application));
+	die(include($action_path));
 }
 
 if(xivo_user::is_valid() === true)

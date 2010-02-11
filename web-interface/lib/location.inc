@@ -20,16 +20,16 @@
 
 class dwho_location
 {
-	var $_app_misc		= array();
-	var $_app_extension	= 'php';
+	var $_action_misc	= array();
+	var $_action_extension	= 'php';
 
-	function dwho_location($options=array(),$app_misc=null)
+	function dwho_location($options=array(),$action_misc=null)
 	{
 		$options = (array) $options;
 
-		if(isset($options['application']) === false
-		|| ($application = dwho_file::is_d_r($options['application'])) === false)
-			trigger_error('Missing or invalid application option in '.__CLASS__,E_USER_ERROR);
+		if(isset($options['action']) === false
+		|| ($action = dwho_file::is_d_r($options['action'])) === false)
+			trigger_error('Missing or invalid action option in '.__CLASS__,E_USER_ERROR);
 
 		if(isset($options['script']) === false
 		|| ($script = dwho_file::is_d_r($options['script'])) === false)
@@ -40,12 +40,12 @@ class dwho_location
 		else
 			$root_url = '';
 
-		define('DWHO_LOCATION_APPLICATION',$application);
+		define('DWHO_LOCATION_ACTION',$action);
 		define('DWHO_LOCATION_SCRIPT',$script);
 		define('DWHO_LOCATION_ROOT_URL',$root_url);
 
-		if(is_array($app_misc) === true)
-			$this->_app_misc = $app_misc;
+		if(is_array($action_misc) === true)
+			$this->_action_misc = $action_misc;
 	}
 
 	function get_current_location($ret=true)
@@ -72,7 +72,7 @@ class dwho_location
 		return((strcmp($url,$_SERVER['SCRIPT_NAME']) === 0));
 	}
 
-	function get_app_path($section=null,$nb=0,$path='',$ext='')
+	function get_action_path($section=null,$nb=0,$path='',$ext='')
 	{
 		$nb = dwho_uint($nb,20);
 		$path = (string) $path;
@@ -107,27 +107,27 @@ class dwho_location
 			$path = substr($path,1);
 		}
 
-		define('DWHO_LOCATION_APP_PATH',$path);
-		define('DWHO_LOCATION_APP_SECTION',$section);
+		define('DWHO_LOCATION_ACTION_PATH',$path);
+		define('DWHO_LOCATION_ACTION_SECTION',$section);
 
 		$filepath = trim($section.DWHO_SEP_DIR.$path,DWHO_SEP_DIR);
-		$newpath = $this->_apply_app_misc($filepath);
+		$newpath = $this->_apply_action_misc($filepath);
 
 		if(is_string($newpath) === true)
 			$filepath = $newpath;
 
-		return(dwho_file::is_f_r(DWHO_LOCATION_APPLICATION.
+		return(dwho_file::is_f_r(DWHO_LOCATION_ACTION.
 					 DWHO_SEP_DIR.
 					 $filepath.
-					 '.'.$this->_app_extension));
+					 '.'.$this->_action_extension));
 	}
 
-	function _apply_app_misc($app_path)
+	function _apply_action_misc($action_path)
 	{
-		if(dwho_issa($app_path,$this->_app_misc) === false)
+		if(dwho_issa($action_path,$this->_action_misc) === false)
 			return(false);
 
-		$list = $this->_app_misc[$app_path];
+		$list = $this->_action_misc[$action_path];
 
 		if(dwho_issa('define',$list) === true)
 		{

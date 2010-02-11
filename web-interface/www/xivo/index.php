@@ -23,11 +23,11 @@ require_once('xivo.php');
 if($_USR->mk_active() === false)
 	$_QRY->go($_TPL->url('xivo/logoff'));
 
-$application = $_LOC->get_app_path('xivo/index',0);
+$action_path = $_LOC->get_action_path('xivo/index',0);
 
-if($application === false)
+if($action_path === false)
 	$_QRY->go($_TPL->url('xivo/logoff'));
 
-die(include($application));
+die(include($action_path));
 
 ?>

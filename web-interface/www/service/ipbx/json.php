@@ -25,9 +25,9 @@ require_once('xivo.php');
 
 $ipbx = &$_SRE->get('ipbx');
 
-$application = $_LOC->get_app_path('service/ipbx/'.$ipbx->get_name().'/web_services/',3);
+$action_path = $_LOC->get_action_path('service/ipbx/'.$ipbx->get_name().'/web_services/',3);
 
-if($application === false)
+if($action_path === false)
 {
 	dwho::load_class('dwho_http');
 	$http_response = dwho_http::factory('response');
@@ -35,6 +35,6 @@ if($application === false)
 	$http_response->send(true);
 }
 
-die(include($application));
+die(include($action_path));
 
 ?>

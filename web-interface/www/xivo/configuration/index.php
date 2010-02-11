@@ -26,11 +26,11 @@ if(xivo_user::chk_authorize('root') === false)
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_css('css/xivo/configuration.css');
 
-$application = $_LOC->get_app_path('xivo/configuration',2);
+$action_path = $_LOC->get_action_path('xivo/configuration',2);
 
-if($application === false)
+if($action_path === false)
 	$_QRY->go($_TPL->url('xivo'));
 
-die(include($application));
+die(include($action_path));
 
 ?>

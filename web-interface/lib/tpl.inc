@@ -36,8 +36,8 @@ class dwho_tpl
 	{
 		$modules	= (array) $modules;
 
-		if(defined('DWHO_LOCATION_APPLICATION') === false)
-			trigger_error('Missing application path',E_USER_ERROR);
+		if(defined('DWHO_LOCATION_ACTION') === false)
+			trigger_error('Missing action path',E_USER_ERROR);
 
 		if(defined('DWHO_LOCATION_SCRIPT') === false)
 			trigger_error('Missing script path',E_USER_ERROR);

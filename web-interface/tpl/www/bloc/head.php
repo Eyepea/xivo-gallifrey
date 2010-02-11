@@ -32,7 +32,7 @@ $dhtml = &$this->get_module('dhtml');
 			var dwho_sess_id		= '<?=$dhtml->escape(DWHO_SESS_ID);?>';
 			var dwho_sess_str		= '<?=$dhtml->escape(DWHO_SESS_STR);?>';
 			var dwho_location_root_url	= '<?=$dhtml->escape(DWHO_LOCATION_ROOT_URL);?>';
-			var dwho_location_app_path	= '<?=$dhtml->escape(dwho_constant('DWHO_LOCATION_APP_PATH'));?>';
+			var dwho_location_action_path	= '<?=$dhtml->escape(dwho_constant('DWHO_LOCATION_ACTION_PATH'));?>';
 			var dwho_form_class_onfocus	= 'it-mfocus';
 			var dwho_form_class_onblur	= 'it-mblur';
 			var dwho_form_class_error	= 'fm-error';
