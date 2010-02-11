@@ -1,4 +1,4 @@
-#! /usr/bin/php4 -q
+#! /usr/bin/php -q
 <?php
 	if(($opt = getopt('h:p:c:')) === false
 	|| isset($opt['h'],$opt['p'],$opt['c']) === false)
@@ -34,10 +34,12 @@
 		$num = count($data);
 		$error = false;
 
-		if(isset($data[0]) === false || ($iduserfeatures = (int) trim($data[0])) === 0)
-			$error = 'iduserfeatures';
-		else
+		if(isset($data[0]) === true
+		&& ($iduserfeatures = trim($data[0])) !== ''
+		&& ctype_digit($iduserfeatures) === true)
 			$r['iduserfeatures'] = 'iduserfeatures='.$iduserfeatures;
+		else
+			$error = 'iduserfeatures';
 
 		if(isset($data[1]) === true)
 		{
