@@ -165,22 +165,22 @@ class SiemensHTTP:
 
         try:
             self.login(host)
- 
+
             # Disable Gigaset account
             request = self.request(host, 'scripts/settings_telephony_voip_multi.js')
- 
+
             for line in request.readlines():
                 if self.RE_ACC_GIGASET(line):
                     request.close()
                     request = self.request(host, 'settings_telephony_voip_multi.html', {'account_id': '6'})
                     break
- 
+
             request.close()
- 
+
             for section, page, extend in self.SECTION_PAGE:
                 if section not in rcp.sections():
                     continue
- 
+
                 args = rcp.items(section)
                 args.extend(extend)
 
@@ -327,7 +327,7 @@ class Siemens(PhoneVendorMixin):
 
         try:
             request = http.request(host, 'scripts/navnodes.js')
- 
+
             for line in request.readlines():
                 m = self.RE_DISCOVER_MODEL(line)
 
@@ -339,7 +339,7 @@ class Siemens(PhoneVendorMixin):
                 if model in self.SIEMENS_MODELS:
                     request.close()
                     return model
- 
+
             request.close()
         except Exception, e: # pylint: disable-msg=W0703
             log.exception(str(e))
@@ -351,20 +351,20 @@ class Siemens(PhoneVendorMixin):
         try:
             http.login(self.phone['ipv4'])
             request = http.request(self.phone['ipv4'], 'settings_telephony_audio.html')
- 
+
             html.feed(request.read())
             request.close()
             html.close()
- 
+
             if len(html.result) != 1:
                 raise LookupError, "Unable to %s the phone. (ip: %s)" % (command, self.phone['ipv4'])
- 
+
             for k, v in html.result[0][1]:
                 if k == 'value':
                     g729b = (int(v) == 0)
- 
+
             html.reset()
- 
+
             request = http.request(self.phone['ipv4'], 'settings_telephony_audio.html', {'use_G729_B': int(g729b)})
             request.close()
         finally:
@@ -468,7 +468,7 @@ class Siemens(PhoneVendorMixin):
                 while loop:
                     request = http.request(self.phone['ipv4'], 'status.html')
                     for line in request.readlines():
-                        match = self.RE_FWDL_STATUS(line) 
+                        match = self.RE_FWDL_STATUS(line)
                         if not match:
                             continue
                         elif match.group(1) == '0':
@@ -591,16 +591,16 @@ class Siemens(PhoneVendorMixin):
             http.provi(self.phone['ipv4'], self.phone['model'], self.phone['macaddr'])
 
     def __action_prov(self, provinfo):
-        if provinfo['sha1sum'] == '0' or not self.phone.get('ipv4'):
+        if provinfo['sha1sum'] == '0':
             return
-
-        http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
-        try:
-            request = http.request(self.phone['ipv4'], 'login.html', None, 10)
-            request.close()
-        except urllib2.URLError, e:
-            log.exception("Unable to connect to host. (host: %r, error: %r)", self.phone['ipv4'], str(e))
-            return
+        elif self.phone.get('ipv4'):
+            http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
+            try:
+                request = http.request(self.phone['ipv4'], 'login.html', None, 10)
+                request.close()
+            except urllib2.URLError, e:
+                log.exception("Unable to connect to host. (host: %r, error: %r)", self.phone['ipv4'], str(e))
+                return
 
         self.__generate(provinfo)
 
