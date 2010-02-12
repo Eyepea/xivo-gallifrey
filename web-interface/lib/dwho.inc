@@ -288,7 +288,7 @@ class dwho
 
 		$this->_conf['location'] = array(
 					'script'	=> null,
-					'application'	=> null,
+					'action'	=> null,
 					'root_url'	=> null);
 
 		if(isset($location['general']['script']) === false)
@@ -296,10 +296,10 @@ class dwho
 		else if(($this->_conf['location']['script'] = dwho_file::is_d_r($location['general']['script'])) === false)
 			die('ERR: Invalid script option in general for path configuration');
 
-		if(isset($location['general']['application']) === false)
-			die('ERR: Missing application option in general for location configuration');
-		else if(($this->_conf['location']['application'] = dwho_file::is_d_r($location['general']['application'])) === false)
-			die('ERR: Invalid application option in general for path configuration');
+		if(isset($location['general']['action']) === false)
+			die('ERR: Missing action option in general for location configuration');
+		else if(($this->_conf['location']['action'] = dwho_file::is_d_r($location['general']['action'])) === false)
+			die('ERR: Invalid action option in general for path configuration');
 
 		if(isset($location['general']['root_url']) === true)
 		{
