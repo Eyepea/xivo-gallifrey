@@ -1,7 +1,15 @@
 ; welcome_description
-Bienvenue sur l'installateur de XIVO.
+Bienvenue sur l'installateur de XiVO.
 
-Ca marche super bien et surtout c'est très facile ! :D
+Merci d'avoir choisi XiVO, l'installateur va vous aider à finir votre configuration de XiVO.
+
+Laissez vous guider et n'oubliez pas de noter les informations que vous allez mettre comme par exemple le mot de passe pour accèder à l'administration de votre XiVO.
+
+Vous pouvez aussi retrouver de l'aide en ligne sur le wiki de XiVO à l'adresse <a href="https://wiki.xivo.fr">https://wiki.xivo.fr</a>.
+
+Bonne installation !
+
+Étape numéro 1 : Choix de la langue.
 
 ; fm_language
 Langue :
