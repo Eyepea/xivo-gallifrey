@@ -115,6 +115,7 @@ class XivoCTICommand(BaseCommand):
                  'database',
                  'meetme',
                  'endinit',
+                 'chitchat',
                  'message',
                  'actionfiche',
                  'availstate',
@@ -4946,8 +4947,18 @@ class XivoCTICommand(BaseCommand):
                                             
                                     elif classcomm == 'sheet':
                                         self.__handle_sheet_command__(userinfo, icommand.struct)
+                            # }
+                            elif classcomm == "chitchat":
+                                to_userid = icommand.struct.get('to')
+                                to_userinfo = self.ulist_ng.keeplist[to_userid]
+                                message = icommand.struct.get('text')
+                                tosend = { 'class' : 'chitchat',
+                                           'from' : userid,
+                                           'text' : message }
+                                
+                                self.__send_msg_to_cti_client__(to_userinfo, self.__cjson_encode__(tosend))
                             else:
-                                    log.warning('unallowed json event %s' % icommand.struct)
+                                log.warning('unallowed json event %s' % icommand.struct)
                                     
             except Exception:
                     log.exception('(manage_cticommand) %s %s %s'

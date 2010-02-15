@@ -82,7 +82,7 @@ except:
         DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-XIVO_CONF_FILE            = 'https://127.0.0.1/service/ipbx/json.php/private/ctiserver/configuration/'
+XIVO_CONF_FILE            = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
 PIDFILE                 = '/var/run/%s.pid' % DAEMONNAME
 GETOPT_SHORTOPTS        = 'dc:p:'
 GETOPT_LONGOPTS         = ["debug", "config=", "pidfile="]
@@ -240,7 +240,7 @@ class manage_connection:
                         log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg, actionid, connid))
 
                         waiting_actionid[actionid] = connid
-                        waiting_actionid_timer[actionid] = threading.Timer(5, callback_timer_main, (self,('webirequest', actionid)))
+                        waiting_actionid_timer[actionid] = threading.Timer(5, manage_connection.callback_timer_main, (daemon,('webirequest', actionid)))
                         waiting_actionid_timer[actionid].start()
                     except Exception, exc:
                         log.error('(%s) WEBI command exec <%s> : (client %s) : %s'
@@ -583,8 +583,9 @@ class manage_connection:
                                     del waiting_actionid[actionid]
                                     waiting_actionid_timer[actionid].cancel()
                                     del waiting_actionid_timer[actionid]
-                            except Exception:
+                            except Exception, e:
                                 log.exception('%s (command reply to %s, %s)' % (astid, connreply, actionid))
+                                print e
                         try:
                             daemon.commandclass.amiresponse_follows(astid, this_event, nocolon)
                         except Exception:
@@ -1012,7 +1013,7 @@ class xivo_deamon:
                     except Exception:
                         log.exception('%s definition' % fieldname)
     
-        extraconn = xivoconf_general.get('extraconn', '')
+        self.extraconn = xivoconf_general.get('extraconn', '')
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
         ctilog = xivoconf_general.get('ctilog')
         socktimeout = xivoconf_general.get('sockettimeout', '2')
@@ -1088,7 +1089,7 @@ class xivo_deamon:
         self.load_asterisk_conf()
                         
     
-        self.outsock = self.commandclass.extrasock(extraconn)
+        self.outsock = self.commandclass.extrasock(self.extraconn)
     
         self.fdlist_established = {}
         self.fdlist_listen_cti = {}
@@ -1296,7 +1297,7 @@ class xivo_deamon:
                             log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
                             if astid in self.configs:
                                 # scheduling astid's AMI reconnection
-                                k = threading.Timer(2, callback_timer_main, (self, ('ipbxup', astid)))
+                                k = threading.Timer(2, manage_connection.callback_timer_main, (daemon, ('ipbxup', astid)))
                                 k.start()
                         else:
                             log.warning('unknown kind %s received' % kind)
@@ -1476,7 +1477,7 @@ class xivo_deamon:
                                       % (self.xdname, astid, time.asctime()))
                             try:
                                 if self.outsock is None:
-                                    self.outsock = self.commandclass.extrasock(extraconn)
+                                    self.outsock = self.commandclass.extrasock(self.extraconn)
                                 manage_connection.update_amisocks(astid, self)
                                 self.update_readconf()
                                 self.commandclass.regular_update()
@@ -1502,7 +1503,7 @@ class xivo_deamon:
                     self.lastrequest_time[astid] = time.time()
                     try:
                         if self.outsock is None:
-                            self.outsock = self.commandclass.extrasock(extraconn)
+                            self.outsock = self.commandclass.extrasock(self.extraconn)
                         manage_connection.update_amisocks(astid, self)
                         self.update_readconf()
                         self.commandclass.regular_update()

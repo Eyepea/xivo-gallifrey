@@ -40,6 +40,8 @@ class Capabilities:
                          'features',
                          'history',
                          'messages',
+
+                         'chitchat',
                          
                          'presence',
                          'database',
