@@ -561,7 +561,7 @@ class dwho_filter
 
 			if($arrvalue === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($arrvalue === true)
@@ -577,7 +577,7 @@ class dwho_filter
 
 			if($arrvalue === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($arrvalue === true)
@@ -593,7 +593,7 @@ class dwho_filter
 
 			if($noarrvalue === false)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 		}
@@ -607,7 +607,7 @@ class dwho_filter
 
 			if($arrkey === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($arrkey === true)
@@ -623,14 +623,14 @@ class dwho_filter
 
 			if($noarrkey === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 		}
 
 		if(is_scalar($value) === false)
 		{
-			$this->_set_error($key,'invalid_value');
+			$this->_set_error($key,'invalidvalue');
 			return(false);
 		}
 
@@ -643,7 +643,7 @@ class dwho_filter
 
 			if($strlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($strlist === true)
@@ -659,7 +659,7 @@ class dwho_filter
 
 			if($strlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($strlist === true)
@@ -675,7 +675,7 @@ class dwho_filter
 
 			if($charlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($charlist === true)
@@ -691,7 +691,7 @@ class dwho_filter
 
 			if($charlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid_value');
+				$this->_set_error($key,'invalidvalue');
 				return(false);
 			}
 			else if($charlist === true)
