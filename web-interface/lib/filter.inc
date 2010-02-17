@@ -561,7 +561,7 @@ class dwho_filter
 
 			if($arrvalue === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($arrvalue === true)
@@ -577,7 +577,7 @@ class dwho_filter
 
 			if($arrvalue === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($arrvalue === true)
@@ -593,7 +593,7 @@ class dwho_filter
 
 			if($noarrvalue === false)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 		}
@@ -607,7 +607,7 @@ class dwho_filter
 
 			if($arrkey === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($arrkey === true)
@@ -623,14 +623,14 @@ class dwho_filter
 
 			if($noarrkey === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 		}
 
 		if(is_scalar($value) === false)
 		{
-			$this->_set_error($key,'invalid value');
+			$this->_set_error($key,'invalid_value');
 			return(false);
 		}
 
@@ -643,7 +643,7 @@ class dwho_filter
 
 			if($strlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($strlist === true)
@@ -659,7 +659,7 @@ class dwho_filter
 
 			if($strlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($strlist === true)
@@ -675,7 +675,7 @@ class dwho_filter
 
 			if($charlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($charlist === true)
@@ -691,7 +691,7 @@ class dwho_filter
 
 			if($charlist === false && $strict === true)
 			{
-				$this->_set_error($key,'invalid value');
+				$this->_set_error($key,'invalid_value');
 				return(false);
 			}
 			else if($charlist === true)
@@ -710,7 +710,7 @@ class dwho_filter
 
 		if($chk === 0 && $len > 0)
 		{
-			$this->_set_error($key,'no empty');
+			$this->_set_error($key,'notempty');
 			return(false);
 		}
 
@@ -737,13 +737,13 @@ class dwho_filter
 
 		if(isset($arr['minlen']) === true && $this->chk_minlen($arr['minlen'],$value) === false)
 		{
-			$this->_set_error($key,'minimum length');
+			$this->_set_error($key,'minimumlength');
 			return(false);
 		}
 
 		if(isset($arr['maxlen']) === true && $this->chk_maxlen($arr['maxlen'],$value) === false)
 		{
-			$this->_set_error($key,'maximum length');
+			$this->_set_error($key,'maximumlength');
 			return(false);
 		}
 
@@ -757,7 +757,7 @@ class dwho_filter
 
 			if($this->chk_between($arr['between'][0],$arr['between'][1],$value,$mod) === false)
 			{
-				$this->_set_error($key,'between false');
+				$this->_set_error($key,'between');
 				return(false);
 			}
 		}
@@ -771,14 +771,14 @@ class dwho_filter
 
 			if($this->callback($arr['callback'],$value,$callbackarg) === false)
 			{
-				$this->_set_error($key,'callback false');
+				$this->_set_error($key,'callback');
 				return(false);
 			}
 		}
 
 		if(isset($arr['regexp']) === true && preg_match($arr['regexp'],$value) !== 1)
 		{
-			$this->_set_error($key,'regexp false');
+			$this->_set_error($key,'regexp');
 			return(false);
 		}
 
@@ -841,7 +841,7 @@ class dwho_filter
 		{
 			if($v[$arr['egal']] !== $val)
 			{
-				$this->_set_error($key,'no egal');
+				$this->_set_error($key,'notegal');
 				return(false);
 			}
 		}
