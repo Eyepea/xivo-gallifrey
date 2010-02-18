@@ -26,7 +26,7 @@ $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $servicesavail = array('enablevm', 'incallrec');
 $preferencesavail = array('logagent', 'pauseagent', 'blinktime', 'fontsize', 'fontname', 'iconsize', 'supervisor', 'queues-showqueuenames', 'queues-showqueues');
-$funcsavail = array('agents', 'presence', 'nojointleave');
+$funcsavail = array('agents', 'presence', 'nojointleave', 'chitchat');
 
 $xletsavail = array();
 $xletsavail = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
