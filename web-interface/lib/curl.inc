@@ -18,6 +18,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+if(defined('CURLOPT_FTPASCII') === false)
+	define('CURLOPT_FTPASCII',CURLOPT_TRANSFERTEXT);
+
+if(defined('CURLOPT_MUTE') === false)
+	define('CURLOPT_MUTE',false);
+
+if(defined('CURLOPT_PASSWDFUNCTION') === false)
+	define('CURLOPT_PASSWDFUNCTION',false);
+
+
 class dwho_curl
 {
 	var $_url	= null;
