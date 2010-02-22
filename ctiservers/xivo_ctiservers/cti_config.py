@@ -64,7 +64,9 @@ class Config:
                     self.xivoconf.set('general','contextlist',','.join(json['main']['contextlist']))
                     self.xivoconf.set('general','logintimeout',json['main']['logintimeout'])
                     self.xivoconf.set('general','commandset',json['main']['commandset'])
-                
+                    self.xivoconf.set('general','userlists',','.join(json['main']['userlists']))
+
+
                     for asterisk_server in json['main']['asterisklist']:
                         debug_add_section(self.xivoconf,asterisk_server)
                         for asterisk_config in json[asterisk_server]:
@@ -81,14 +83,17 @@ class Config:
                                                   json[asterisk_server][asterisk_config].replace("\\/","/"))
 
                     debug_add_section(self.xivoconf,'xivocti')
+                    self.xivoconf.set('xivocti','allowedxlets', "file:///etc/pf-xivo/ctiservers/allowedxlets.json")
                     for profil in json['xivocti']['profils']:
-                        self.xivoconf.set('xivocti', profil + "funcs", ','.join(json['xivocti']['profils'][profil]['funcs']))
+                        self.xivoconf.set('xivocti', profil + "-funcs", ','.join(json['xivocti']['profils'][profil]['funcs']))
                         xletlist = ""
                         for xlet_nu in json['xivocti']['profils'][profil]['xlets']:
                             xletlist += '-'.join(xlet_nu) + ","
                         xletlist = xletlist[:-1]
-                        self.xivoconf.set('xivocti', profil + "xlets", xletlist)
-                        self.xivoconf.set('xivocti', profil + "funcs", ','.join(json['xivocti']['profils'][profil]['funcs']))
+                        self.xivoconf.set('xivocti', profil + "-xlets", xletlist)
+                        self.xivoconf.set('xivocti', profil + "-funcs", ','.join(json['xivocti']['profils'][profil]['funcs']))
+                        self.xivoconf.set('xivocti', profil + "-appliname",json['xivocti']['profils'][profil]['appliname'] )
+                        self.xivoconf.set('xivocti', profil + "-maxgui",json['xivocti']['profils'][profil]['maxgui'] )
 
                     for presence_list_name in json["presences"]:
                         debug_add_section(self.xivoconf,'presence-presence.' + presence_list_name)

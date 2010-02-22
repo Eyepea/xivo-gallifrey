@@ -157,9 +157,9 @@ class manage_connection:
                         
                         if isinstance(uinfo, str):
                             daemon.commandclass.loginko(loginparams, uinfo, connid)
-                            log.info('TCP socket %s closed(loginko) on %s' % (self.fdlist_established[connid],
+                            log.info('TCP socket %s closed(loginko) on %s' % (daemon.fdlist_established[connid],
                                                                               '%s:%d' % connid.getpeername()))
-                            del self.fdlist_established[connid]
+                            del daemon.fdlist_established[connid]
                             connid.close()
                         else:
                             if command.type == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -219,6 +219,9 @@ class manage_connection:
                     daemon.askedtoquit = True
                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                 elif usefulmsg == 'xivo[ctiprofilelist,get]':
+                    print "bloooooooo"
+                    print daemon.commandclass.getprofilelist()
+                    print "bloooooooo"
                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                     connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
                     connid.sendall('%s\n' % daemon.commandclass.getprofilelist())
@@ -1027,7 +1030,7 @@ class xivo_deamon:
             contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
             userlists = xivoconf_general['userlists'].split(',')
-                
+
         socket.setdefaulttimeout(float(socktimeout))
         
         self.pipe_queued_threads_commandclass = os.pipe()
