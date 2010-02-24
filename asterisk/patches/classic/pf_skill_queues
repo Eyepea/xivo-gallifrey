@@ -1,7 +1,7 @@
 Index: asterisk-1.4.29/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.29.orig/apps/app_queue.c	2010-01-26 16:45:22.000000000 +0100
-+++ asterisk-1.4.29/apps/app_queue.c	2010-01-26 16:45:34.000000000 +0100
+--- asterisk-1.4.29.orig/apps/app_queue.c	2010-02-15 18:32:34.000000000 +0100
++++ asterisk-1.4.29/apps/app_queue.c	2010-02-24 15:43:52.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -566,7 +566,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +	return 0;
 +}
 +
-+static int operator_eval_skills(struct skill_rule_operator *op, struct skills_group *skills, struct ao2_container *variables)
++static int operator_eval_skills(struct skill_rule_operator *op, struct skills_group *skills, struct ao2_container *variables, struct queue_ent *qe)
 +{
 +	struct skill_rule_operand *opnd = NULL;
 +	int ret = 0;
@@ -583,7 +583,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +			case SKILL_RULE_OPERAND_VARIABLE:
 +			{
 +				struct rule_var *var = NULL;
-+				char *name = opnd->u.var;
++				const char *name = opnd->u.var;
 +
 +				if (*name == '$') {
 +					/* This is a meta-variable, find the value given to app to it, to
@@ -598,15 +598,15 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +					if (var)
 +						name = var->value;
 +					else
-+						name = NULL;
++						name = pbx_builtin_getvar_helper(qe->chan, name);
 +
 +					ao2_iterator_destroy(&variter);
 +				}
 +
 +				/* Check if the skill name has been given to app. */
 +				if (name) {
-+					char *endptr = name;
-+					int v = strtoul(endptr, &endptr, 10);
++					char *endptr = NULL;
++					int v = strtoul(name, &endptr, 10);
 +
 +					if (endptr == '\0') {
 +						/* name is an integer, so that's a value. */
@@ -636,7 +636,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +				value = opnd->u.value;
 +				break;
 +			case SKILL_RULE_OPERAND_OPERATOR:
-+				value = operator_eval_skills(opnd->u.operator, skills, variables);
++				value = operator_eval_skills(opnd->u.operator, skills, variables, qe);
 +				break;
 +			case SKILL_RULE_OPERAND_UNKNOWN:
 +				/* WTF */
@@ -793,7 +793,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +	return variables;
 +}
 +
-+static int is_member_matches_skill_ruleset(struct member *mem, const char* ruleset_name, struct ao2_container *variables)
++static int is_member_matches_skill_ruleset(struct queue_ent *qe, struct member *mem, const char* ruleset_name, struct ao2_container *variables)
 +{
 +	struct skill_ruleset* rs;
 +	struct skill_rule* rule;
@@ -826,7 +826,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +
 +	iter = ao2_iterator_init(rs->rules, 0);
 +	while (!ret && (rule = ao2_iterator_next(&iter))) {
-+		ret = operator_eval_skills(rule->headop, skills, variables);
++		ret = operator_eval_skills(rule->headop, skills, variables, qe);
 +		ao2_ref(rule, -1);
 +	}
 +	ao2_iterator_destroy(&iter);
@@ -1026,7 +1026,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 +			mem_iter = ao2_iterator_init(q->members, 0);
 +			while ((member = ao2_iterator_next(&mem_iter))) {
 +				if(!ast_strlen_zero(member->skills) &&
-+				   is_member_matches_skill_ruleset(member, tmp, variables)) {
++				   is_member_matches_skill_ruleset(qe, member, tmp, variables)) {
 +					ao2_link(qe->mem_selection, member);
 +					ast_log(LOG_NOTICE, "User %s is associated.\n", member->interface);
 +				} else
@@ -1802,7 +1802,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
 Index: asterisk-1.4.29/configs/queueskillrules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.29/configs/queueskillrules.conf.sample	2010-01-26 16:45:34.000000000 +0100
++++ asterisk-1.4.29/configs/queueskillrules.conf.sample	2010-02-15 18:32:35.000000000 +0100
 @@ -0,0 +1,38 @@
 +; This file describes skill routing rules. The Queue() application can get the
 +; 'skill_ruleset' argument which is the name of one skill routing ruleset. If
@@ -1845,7 +1845,7 @@ Index: asterisk-1.4.29/configs/queueskillrules.conf.sample
 Index: asterisk-1.4.29/configs/queueskills.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.29/configs/queueskills.conf.sample	2010-01-26 16:45:34.000000000 +0100
++++ asterisk-1.4.29/configs/queueskills.conf.sample	2010-02-15 18:32:35.000000000 +0100
 @@ -0,0 +1,47 @@
 +; Describe skills groups here to assign them to queue members. You can set
 +; weight to each skills. It'll be used by skill rules to know if a queue member
