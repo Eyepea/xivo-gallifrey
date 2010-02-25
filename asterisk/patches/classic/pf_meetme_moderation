@@ -1,7 +1,7 @@
 Index: asterisk-1.4.29/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.29.orig/apps/app_meetme.c	2010-01-20 17:33:32.000000000 +0100
-+++ asterisk-1.4.29/apps/app_meetme.c	2010-01-20 17:47:28.000000000 +0100
+--- asterisk-1.4.29.orig/apps/app_meetme.c	2010-02-15 10:40:16.000000000 +0100
++++ asterisk-1.4.29/apps/app_meetme.c	2010-02-25 13:53:02.000000000 +0100
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -62,7 +62,7 @@ Index: asterisk-1.4.29/apps/app_meetme.c
 +"             conference. He can accept or kick or talk to each invited.\n"
 +"             It automatically set the 'I' flag.\n"
  "      'l' -- set listen only mode (Listen only, no talking)\n"
-+"      'L(<secs>[^<minusers>[^<timeoutannounc>]])'\n"
++"      'L(<secs>[^<minusers>[^<timeoutannounce>]])'\n"
 +"          -- set a timeout on conference.\n"
  "      'm' -- set initially muted\n"
  "      'M' -- enable music on hold when the conference has a single caller\n"

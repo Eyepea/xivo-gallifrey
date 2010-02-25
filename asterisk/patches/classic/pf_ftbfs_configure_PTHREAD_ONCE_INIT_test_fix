@@ -6,8 +6,8 @@
 
 Index: asterisk-1.4.29/configure
 ===================================================================
---- asterisk-1.4.29.orig/configure	2010-01-21 12:40:23.000000000 +0100
-+++ asterisk-1.4.29/configure	2010-01-21 12:40:30.000000000 +0100
+--- asterisk-1.4.29.orig/configure	2010-02-25 13:53:33.000000000 +0100
++++ asterisk-1.4.29/configure	2010-02-25 13:55:00.000000000 +0100
 @@ -11487,7 +11487,7 @@
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if PTHREAD_ONCE_INIT needs braces" >&5
  $as_echo_n "checking if PTHREAD_ONCE_INIT needs braces... " >&6; }
@@ -19,8 +19,8 @@ Index: asterisk-1.4.29/configure
  #include <pthread.h>
 Index: asterisk-1.4.29/configure.ac
 ===================================================================
---- asterisk-1.4.29.orig/configure.ac	2010-01-21 12:40:24.000000000 +0100
-+++ asterisk-1.4.29/configure.ac	2010-01-21 12:40:38.000000000 +0100
+--- asterisk-1.4.29.orig/configure.ac	2010-02-25 13:53:33.000000000 +0100
++++ asterisk-1.4.29/configure.ac	2010-02-25 13:55:00.000000000 +0100
 @@ -354,7 +354,7 @@
  
  AC_MSG_CHECKING(if PTHREAD_ONCE_INIT needs braces)
