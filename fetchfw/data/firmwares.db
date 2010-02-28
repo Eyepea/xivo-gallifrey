@@ -24,6 +24,19 @@ size: 1991182
 md5sum: a1ab29d6f554307509b9e73fb1371dff
 sha1sum: 0a4ca2922e1d8c27c8e28c65eae87dcf5fa555c4
 
+# Aastra 6739i 3.0.1
+[aa6739i_301]
+brand: Aastra
+model: 6739i
+version: 3.0.1
+files: LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip 6739i_FC-001274-00_REV01_3_0_1_38_1002.zip
+
+[6739i_FC-001274-00_REV01_3_0_1_38_1002.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/6739i_FC-001274-00_REV01_3_0_1_38_1002.zip
+size: 4457754
+md5sum: f6c6225e4ee694d0cd3504299c33177f
+sha1sum: 6b6f9fb8a1c467d75b4d26a3d0fa7609322b8aaa
+
 # Aastra 6751i 2.5.3
 [aa6751i_253]
 brand: Aastra
@@ -82,6 +95,12 @@ url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-B367EA3D/04/LangPacksPA-001
 size: 124633
 md5sum: c3074d42e419d7bdc817daf4865ff0e9
 sha1sum: c13accdcf4b414140252d3b6c3a691e637bf0692
+
+[LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip
+size: 138130
+md5sum: a3b6b855a2eb0685a55f5e16140273f0
+sha1sum: fd79b1909b41254b864e4f993675a81d87209288
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]
