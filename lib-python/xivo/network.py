@@ -41,10 +41,23 @@ log = logging.getLogger("xivo.network") # pylint: disable-msg=C0103
 
 # CONFIG
 
-SYS_CLASS_NET = "/sys/class/net"
+PROC_NET_VLAN = "/proc/net/vlan"
+VLAN_CONFIG_PARSER = re.compile('^\s*([^\s]+)\s*\|\s*(\d+)\s*\|\s*([^\s]+)\s*$').match
+VLAN_NAME_SPLITTER = re.compile('^(?:vlan(\d+)|(eth\d+)\.(\d+)|(?!vlan)[^\.]*\.(\d+))$').match
 
+SYS_CLASS_NET = "/sys/class/net"
 # /sys/class/net/<ifname>/carrier tells us if the interface if plugged
 CARRIER = "carrier"
+# /sys/class/net/<ifname>/device tells us if the interface is physical
+DEVICE = "device"
+# /sys/class/net/<ifname>/flags tells us the interface flags
+FLAGS = "flags"
+# /sys/class/net/<ifname>/address tells us the interface hardware address
+HWADDRESS = "address"
+# /sys/class/net/<ifname>/type tells us the interface hardware type ID
+HWTYPE = "type"
+# /sys/class/net/<ifname>/mtu tells us the interface MTU
+MTU = "mtu"
 
 IFPLUGD = "/usr/sbin/ifplugd"
 IFPLUGD_START = ["/usr/sbin/invoke-rc.d", "ifplugd", "start"]
@@ -70,7 +83,7 @@ def split_alpha_num(s):
     Don't interpret decimal parts as integers, keep them as string.
 
     Exemples:
-    
+
     >>> split_alpha_num('wazza42sub10')
     ('wazza', '42', 'sub', '10')
     >>> split_alpha_num('42sub010')
@@ -91,9 +104,9 @@ def split_alpha_num(s):
 def split_lexdec(lexdec_str):
     """
     Split the non decimal and the decimal parts of lexdec_str
-    
+
     Exemples:
-    
+
     >>> split_lexdec('wazza42sub10')
     ('wazza', 42, 'sub', 10)
     >>> split_lexdec('42sub010')
@@ -109,7 +122,7 @@ def split_lexdec(lexdec_str):
 def unsplit_lexdec(lexdec_seq):
     """
     Invert of split_lexdec()
-    
+
     WARNING: unsplit_lexdec(split_lexdec("a0001")) == "a1"
     """
     return ''.join(map(str, lexdec_seq))
@@ -134,12 +147,28 @@ def sorted_lst_lexdec(seqof_lexdec_str):
     return sorted(seqof_lexdec_str, cmp = cmp_lexdec)
 
 
+def is_linux_netdev_if(ifname):
+    """
+    Return True if ifname seems to be the name of an interface
+    """
+    return os.path.isdir(os.path.join(SYS_CLASS_NET, ifname))
+
+
+def is_linux_phy_if(ifname):
+    """
+    Return True if ifname seems to be the name of a physical interface
+    """
+    if not is_phy_if(ifname):
+        return False
+    return os.path.isdir(os.path.join(SYS_CLASS_NET, ifname, DEVICE))
+
+
 def get_linux_netdev_list():
     """
     Get an unfiltered view of network interfaces as seen by Linux
     """
     return [entry for entry in os.listdir(SYS_CLASS_NET)
-            if os.path.isdir(os.path.join(SYS_CLASS_NET, entry))]
+            if is_linux_netdev_if(entry)]
 
 
 def get_filtered_ifnames(ifname_match_func=lambda x:True):
@@ -147,6 +176,113 @@ def get_filtered_ifnames(ifname_match_func=lambda x:True):
     Return the filtered list of network interfaces
     """
     return filter(ifname_match_func, get_linux_netdev_list())
+
+
+def is_linux_vlan_if(ifname):
+    """
+    Return True if ifname seems to be a vlan interface
+    """
+    return os.path.isfile(os.path.join(PROC_NET_VLAN, ifname)) and is_linux_netdev_if(ifname)
+
+
+def get_linux_vlan_list():
+    """
+    Get a view of vlan interfaces as seen by Linux
+    """
+    return [entry for entry in os.listdir(PROC_NET_VLAN)
+            if is_linux_vlan_if(entry)]
+
+
+def get_linux_vlan_config(ifname=None):
+    """
+    Return a dict of vlan configuration as seen by Linux
+    """
+    configpath = os.path.join(PROC_NET_VLAN, 'config')
+
+    if not os.access(configpath, os.R_OK):
+        return False
+
+    config = file(configpath)
+
+    r = {}
+
+    for line in config.readlines():
+        parsed = VLAN_CONFIG_PARSER(line)
+        if parsed:
+            r[parsed.group(1)] = {'vlan-id':            int(parsed.group(2)),
+                                  'vlan-raw-device':    parsed.group(3)}
+
+    if ifname is not None:
+        return r.get(ifname, False)
+
+    return r
+
+
+def get_vlan_info_from_ifname(ifname):
+    """
+    Try to return a dict of vlan configuration from the vlan interface name
+    """
+    r = {}
+
+    splitted = VLAN_NAME_SPLITTER(ifname)
+
+    if not splitted:
+        return r
+    elif splitted.group(1) is not None:
+        r['vlan-id'] = int(splitted.group(1))
+    elif splitted.group(2) is not None:
+        r['vlan-id'] = int(splitted.group(3))
+        r['vlan-raw-device'] = splitted.group(2)
+    else:
+        r['vlan-id'] = int(splitted.group(4))
+
+    return r
+
+
+def get_vlan_info(ifname):
+    """
+    Try to return vlan information like VLANID and VLAN_RAW_DEVICE from vlan interface
+    """
+    if not is_linux_vlan_if(ifname):
+        return False
+
+    config = get_linux_vlan_config(ifname)
+    if config:
+        return config
+
+    return get_vlan_info_from_ifname(ifname)
+
+
+def is_alias_if(ifname):
+    """
+    Return True if ifname seems to be the name of an alias interface
+    """
+    pos = ifname.find(':')
+    if pos > 0:
+        return ifname[(pos + 1):].isdigit()
+    return False
+
+
+def phy_name_from_alias_if(ifname):
+    """
+    Return the physical interface name from an alias interface
+    """
+    if not is_alias_if(ifname):
+        raise ValueError, "Invalid interface, it's not an alias interface (ifname: %r)" % ifname
+
+    return ifname[:ifname.find(':')]
+
+
+def is_vlan_if(ifname):
+    """
+    Return True if ifname is a valid vlan interface name
+    """
+    if ifname.startswith('vlan'):
+        return ifname[4:].isdigit()
+    pos = ifname.find('.')
+    if pos > 0:
+        return ifname[(pos + 1):].isdigit()
+    return False
 
 
 def is_phy_if(ifname):
@@ -157,10 +293,17 @@ def is_phy_if(ifname):
     return '.' not in ifname
 
 
+def is_eth_phy_if(ifname):
+    """
+    Return True if ifname is a valid physical ethernet interface name
+    """
+    return ifname.startswith('eth') and not is_alias_if(ifname) and is_phy_if(ifname)
+
+
 def get_filtered_phys(ifname_match_func=lambda x:True):
     """
     Return the filtered list of network interfaces which are not VLANs
-    (the interface name does not contain a '.')
+    (the interface name does not contain a '.' or device directory doesn't exist)
     """
     return [dev for dev in get_filtered_ifnames(ifname_match_func) if is_phy_if(dev)]
 
@@ -169,13 +312,44 @@ def is_interface_plugged(ifname):
     """
     WARNING: Only works on physical interfaces
     """
-    return int(file(os.path.join(SYS_CLASS_NET, ifname, CARRIER)).read().strip())
+    try:
+        return bool(int(file(os.path.join(SYS_CLASS_NET, ifname, CARRIER)).read().strip()))
+    except IOError:
+        return False
+
+
+def get_interface_flags(ifname):
+    """
+    Return the interface flags
+    """
+    return int(file(os.path.join(SYS_CLASS_NET, ifname, FLAGS)).read().strip(), 16)
+
+
+def get_interface_hwaddress(ifname):
+    """
+    Return the hardware address
+    """
+    return file(os.path.join(SYS_CLASS_NET, ifname, HWADDRESS)).read().strip()
+
+
+def get_interface_hwtypeid(ifname):
+    """
+    Return the hardware type id
+    """
+    return int(file(os.path.join(SYS_CLASS_NET, ifname, HWTYPE)).read().strip())
+
+
+def get_interface_mtu(ifname):
+    """
+    Return the interface mtu
+    """
+    return int(file(os.path.join(SYS_CLASS_NET, ifname, MTU)).read().strip())
 
 
 def normalize_ipv4_address(addr):
     """
     Return a canonical string repr of addr (which must be a valid IPv4)
-    
+
     >>> normalize_ipv4_address("1.2.3.077")
     '1.2.3.63'
     >>> normalize_ipv4_address("1.2.3.4")
@@ -243,7 +417,7 @@ def ipv4_from_macaddr(macaddr, exc_info=True, ifname_match_func=lambda x: True, 
     """
     if arping_cmd_list is None:
         arping_cmd_list = ['sudo', 'arping']
-    
+
     # -r : will only display the IP address on stdout, or nothing
     # -c 1 : ping once
     # -w <xxx> : wait for the answer during <xxx> microsec after the ping
@@ -272,7 +446,7 @@ def macaddr_from_ipv4(ipv4, exc_info=True, ifname_match_func=lambda x: True, arp
     ipv4_from_macaddr() is indeed a symetrical fonction that can be
     used to retrieve an ipv4 address from a given mac address.  This
     function just call the former.
-    
+
     WARNING: this is of course ipv4_from_macaddr() implementation dependent
     """
     return ipv4_from_macaddr(ipv4,
@@ -409,6 +583,13 @@ def plausible_netmask(addr):
     return addr in _valid_netmask
 
 
+def ipv4_in_network(addr, netmask, network):
+    """
+    Check that addr (4uple of ints) is in the network
+    """
+    return mask_ipv4(netmask, addr) == network
+
+
 # WARNING: the following function does not test the length which must be <= 63
 DomainLabelOk = re.compile(r'[a-zA-Z]([-a-zA-Z0-9]*[a-zA-Z0-9])?$').match
 
@@ -437,18 +618,18 @@ def force_shutdown(phy):
     Remove all VLAN on the network interface @phy, then shutdown it.
     First "ifplugd" is stopped for this interface, then both VLAN removal and
     interface shutdown are done by calling "ifdown".
-    
+
     Unlike /etc/init.d/networking stop, it won't test for mounted network
     filesystems or other resources.  It just shutdown the given interface,
     right when called.
-    
+
     WARNING: This function won't work properly if "ifplugd" or "ifdown" (and
     "ifup") are not used on the system.
     """
     # NOTE: The order in which ifplugd and ifdown are called is very important.
     # If you invert the order, the interface will probably not be completely
     # down (from the p.o.v. of Linux) when the function returns.
-    
+
     try:
         status = subprocess.call([IFPLUGD, "-i", phy, "-k"], close_fds=True)
     except OSError:
@@ -460,10 +641,10 @@ def force_shutdown(phy):
             log.warning("%r ifplugd instance seems to have already been stopped", phy)
         else:
             raise NetworkOpError("ifplugd miserably failed while trying to kill instance %r" % phy)
-    
+
     vlans_phy = [vlan for vlan in get_linux_netdev_list() if vlan.startswith(phy + ".")]
     vlans_phy.append(phy)
-    
+
     for vlan in vlans_phy:
         try:
             status = subprocess.call([IFDOWN, vlan], close_fds=True)
