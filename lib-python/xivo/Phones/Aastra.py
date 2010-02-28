@@ -40,6 +40,7 @@ class Aastra(PhoneVendorMixin):
 
     AASTRA_MODELS           = (('6730i', '6730i'),
                                ('6731i', '6731i'),
+                               ('6739i', '6739i'),
                                ('6751i', '51i'),
                                ('6753i', '53i'),
                                ('6755i', '55i'),
