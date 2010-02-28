@@ -228,7 +228,7 @@ class dwho_tpl
 		if(isset($this->_var[$name]) === false)
 			return(null);
 
-		$ref = &$this->_var[$name]; 
+		$ref = &$this->_var[$name];
 
 		if($argc === 1)
 			return($ref);

@@ -168,3 +168,30 @@ Inconnu
 
 ; network_arphrd(none)
 Aucune
+
+; network_method(bootp)
+Bootstrap Protocole
+
+; network_method(dhcp)
+DHCP
+
+; network_method(dynamic)
+Dynamique
+
+; network_method(loopback)
+Boucle locale
+
+; network_method(manual)
+Manuelle
+
+; network_method(ppp)
+Protocole point à point
+
+; network_method(static)
+Statique
+
+; network_method(v4tunnel)
+IPv6-dans-IPv4
+
+; network_method(wvdial)
+WvDial

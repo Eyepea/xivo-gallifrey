@@ -57,7 +57,7 @@ $page = $url->pager($pager['pages'],
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
 		<th class="th-center"><?=$this->bbf('col_name');?></th>
-		<th class="th-center"><?=$this->bbf('col_devname');?></th>
+		<th class="th-center"><?=$this->bbf('col_ifname');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwtype');?></th>
 		<th class="th-center"><?=$this->bbf('col_hwaddress');?></th>
 		<th class="th-center"><?=$this->bbf('col_method');?></th>
@@ -80,17 +80,31 @@ $page = $url->pager($pager['pages'],
 
 			$id		= '';
 			$name		= '-';
-			$devname	= '';
+			$ifname		= '';
 			$hwtype		= '';
 			$hwtypeid	= 0;
 			$hwaddress	= '-';
+			$methodname	= null;
 			$method		= '-';
-			$address	= '-';
+			$address	= '';
 			$vlanid		= '-';
 			$icon		= 'unavailable';
 
 			if(empty($netinfo) === false):
-				$devname = $netinfo['interface'];
+				$ifname = $netinfo['interface'];
+
+				if(dwho_has_len($netinfo,'address') === true):
+					$address = $netinfo['address'];
+				endif;
+
+				if(dwho_has_len($netinfo,'method') === true):
+					$methodname	= $netinfo['method'];
+					$method		= $this->bbf('network_method',$netinfo['method']);
+				endif;
+
+				if(dwho_has_len($netinfo,'vlan-id') === true):
+					$vlanid = $netinfo['vlan-id'];
+				endif;
 
 				if($netinfo['hwtype'] !== false):
 					$hwtype = $netinfo['hwtype'];
@@ -105,7 +119,7 @@ $page = $url->pager($pager['pages'],
 					$hwaddress = $netinfo['hwaddress'];
 				endif;
 
-				if($netinfo['carrier'] === true):
+				if($netinfo['carrier'] === true && $netinfo['flags']['up'] === true):
 					$icon = 'enable';
 				endif;
 			endif;
@@ -113,10 +127,11 @@ $page = $url->pager($pager['pages'],
 			if(empty($netiface) === false):
 				$id		= $netiface['name'];
 				$name		= $netiface['name'];
-				$devname	= $netiface['devname'];
+				$ifname		= $netiface['ifname'];
 				$hwtype		= $netiface['hwtype'];
 				$hwtypeid	= dwho_uint($netiface['hwtypeid']);
-				$method		= $this->bbf('method',$netiface['method']);
+				$methodname	= $netiface['method'];
+				$method		= $this->bbf('network_method',$netiface['method']);
 
 				if(dwho_has_len($netiface['address']) === true):
 					$address = $netiface['address'];
@@ -126,15 +141,22 @@ $page = $url->pager($pager['pages'],
 					$vlanid = $netiface['vlanid'];
 				endif;
 
-				if($netiface['state'] !== 'enable'):
-					$icon = $netiface['state'];
+				if($netiface['disable'] === true):
+					$icon = 'disable';
+				endif;
+			endif;
+
+			if(dwho_has_len($address) === false):
+				$address = '-';
+				if($methodname === 'dhcp' && $icon === 'enable'):
+					$icon = 'unknown';
 				endif;
 			endif;
 
 			if($hwtypeid === 1):
 				$displayname = $name;
 			else:
-				$displayname = $devname;
+				$displayname = $ifname;
 			endif;
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
@@ -147,7 +169,7 @@ $page = $url->pager($pager['pages'],
 						 'id'		=> 'it-netiface-'.$i,
 						 'checked'	=> false,
 						 'paragraph'	=> false,
-						 'disabled'	=> ($hwtypeid !== 1 || dwho_has_len($id) === false)));?>
+						 'disabled'	=> ($hwtypeid !== 1 || $list[$i]['deletable'] === false)));?>
 		</td>
 		<td class="txt-left" title="<?=dwho_alttitle($displayname);?>">
 			<label for="it-netiface-<?=$i?>" id="lb-netiface-<?=$i?>">
@@ -157,7 +179,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td title="<?=dwho_alttitle($devname);?>"><?=dwho_htmlen(dwho_trunc($devname,10,'...',false));?></td>
+		<td title="<?=dwho_alttitle($ifname);?>"><?=dwho_htmlen(dwho_trunc($ifname,10,'...',false));?></td>
 		<td><?=$this->bbf('network_arphrd',$hwtype);?></td>
 		<td><?=$hwaddress?></td>
 		<td><?=$method?></td>
@@ -165,7 +187,7 @@ $page = $url->pager($pager['pages'],
 		<td><?=$vlanid?></td>
 		<td class="td-right" colspan="2">
 <?php
-			if($hwtypeid !== 1):
+			if($hwtypeid !== 1 || $list[$i]['actionable'] === false):
 				echo	$url->img_html('/z.gif',null,'width="15" height="15"');
 			elseif(empty($netiface) === true):
 				echo	$url->href_html($url->img_html('img/site/button/add.gif',
@@ -173,7 +195,7 @@ $page = $url->pager($pager['pages'],
 								       'border="0"'),
 							'xivo/configuration/network/interface',
 							array('act'		=> 'add',
-							      'devname'		=> $devname,
+							      'devname'		=> $ifname,
 							      'hwtypeid'	=> $hwtypeid),
 							null,
 							$this->bbf('opt_add'));

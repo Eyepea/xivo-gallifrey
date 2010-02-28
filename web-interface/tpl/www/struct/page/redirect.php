@@ -18,12 +18,26 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
+$url = &$this->get_module('url');
 
-$array['sysconfd'] = array();
-$array['sysconfd']['host'] = '127.0.0.1';
-$array['sysconfd']['port'] = 8668;
-$array['sysconfd']['connect_timeout'] = 15;
-$array['sysconfd']['timeout'] = 90;
+$seconds = $this->get_var('redirect_seconds');
 
 ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
+	<head id="t-head">
+		<title><?=dwho_htmlsc($this->bbf('page_title',php_uname('n')));?></title>
+		<!-- Date: <?=gmstrftime('%Y-%m-%d %H:%M:%S %Z');?> -->
+
+		<meta http-equiv="refresh" content="<?=$seconds?>;
+						    url=<?=$url->href($this->get_var('redirect_url'),
+								      $this->get_var('redirect_url_query'),
+								      true,
+								      null,
+								      true,
+								      false);?>" />
+	</head>
+	<body>
+		<p><?=nl2br($this->bbf('redirect_message',$seconds));?></p>
+	</body>
+</html>

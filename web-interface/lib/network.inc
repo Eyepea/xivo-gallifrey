@@ -202,10 +202,10 @@ class dwho_network
 	{
 		if(dwho_network::valid_ipv4($ip) === false
 		|| ($bit = dwho_network::valid_subnet_ipv4($ip,
-							    $bit,
-							    DWHO_NETWORK_MASK_IPV4_ALL,
-							    DWHO_NETWORK_HOST_IPV4,
-							    true)) === false)
+							   $mask,
+							   DWHO_NETWORK_MASK_IPV4_ALL,
+							   DWHO_NETWORK_HOST_IPV4,
+							   true)) === false)
 			return(false);
 
 		$decmask	= (0xFFFFFFFF >> (32 - $bit)) << (32 - $bit);
@@ -224,7 +224,7 @@ class dwho_network
 		return($r);
 	}
 
-	function ipv4_in_subnet($ip,$sub)
+	function ipv4_in_subnet($ip,$sub,$broadcast=false)
 	{
 		if(is_string($sub) === false || ($pos = strrpos($sub,'/')) === false)
 			return(false);
@@ -247,6 +247,17 @@ class dwho_network
 		$broadcast	= $network | $wildcard;
 
 		return(($decip > $network && $decip < $broadcast));
+	}
+
+	function valid_ipv4_broadcast($broadcast,$address,$netmask)
+	{
+		if(dwho_network::valid_ipv4($broadcast) === false
+		|| ($ipcalc = dwho_network::ipv4_calc($address,
+						      $netmask)) === false
+		|| ip2long($ipcalc['broadcast']) !== ip2long($broadcast))
+			return(false);
+
+		return(true);
 	}
 
 	function ipv4_in_lhost($ip,$host)

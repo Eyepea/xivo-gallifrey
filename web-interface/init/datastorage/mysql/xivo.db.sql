@@ -139,7 +139,7 @@ CREATE UNIQUE INDEX `ldapserver__uidx__host_port` ON `ldapserver`(`host`,`port`)
 DROP TABLE IF EXISTS `netiface`;
 CREATE TABLE `netiface` (
  `name` varchar(64) NOT NULL DEFAULT '',
- `devname` varchar(64) NOT NULL DEFAULT '',
+ `ifname` varchar(64) NOT NULL DEFAULT '',
  `hwtypeid` smallint unsigned NOT NULL DEFAULT 65534,
  `networktype` enum('data','voip') NOT NULL,
  `type` enum('iface') NOT NULL,
@@ -152,7 +152,7 @@ CREATE TABLE `netiface` (
  `mtu` smallint(4) unsigned,
  `vlanrawdevice` varchar(64),
  `vlanid` smallint(4) unsigned,
- `advconfig` text NOT NULL,
+ `options` text NOT NULL,
  `disable` tinyint(1) NOT NULL DEFAULT 0,
  `dcreate` int(10) unsigned NOT NULL DEFAULT 0,
  `description` text NOT NULL,
@@ -172,7 +172,7 @@ CREATE INDEX `netiface__idx__mtu` ON `netiface`(`mtu`);
 CREATE INDEX `netiface__idx__vlanrawdevice` ON `netiface`(`vlanrawdevice`);
 CREATE INDEX `netiface__idx__vlanid` ON `netiface`(`vlanid`);
 CREATE INDEX `netiface__idx__disable` ON `netiface`(`disable`);
-CREATE UNIQUE INDEX `netiface__uidx__devname` ON `netiface`(`devname`);
+CREATE UNIQUE INDEX `netiface__uidx__ifname` ON `netiface`(`ifname`);
 
 
 DROP TABLE IF EXISTS `resolvconf`;

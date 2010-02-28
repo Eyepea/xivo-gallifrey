@@ -22,20 +22,20 @@ xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
 class xivo_object_netiface_sql extends xivo_object_abstract_sql
 {
-	var $_unique	= array('name','devname');
+	var $_unique	= array('name','ifname');
 
-	function exists_link($devname)
+	function exists_link($ifname)
 	{
-		if(dwho_has_len($devname) === false)
+		if(dwho_has_len($ifname) === false)
 			return(null);
 
-		$this->_dso->new_select($this->_table,array('devname'));
+		$this->_dso->new_select($this->_table,array('ifname'));
 
-		// Test if exists a virtual interface
-		$this->_dso->wherebegin('devname',$devname.':');
+		// Test if exists an alias interface
+		$this->_dso->wherebegin('ifname',$ifname.':');
 
 		// Test if exists a vlan-raw-device
-		$this->_dso->orwhere(array('vlanrawdevice' => $devname));
+		$this->_dso->orwhere(array('vlanrawdevice' => $ifname));
 
 		return($this->_dso->select_single());
 	}

@@ -136,7 +136,13 @@ switch($step)
 			session_destroy();
 
 			if(($uri = $appwizard->discover_finish_uri()) !== false)
-				$_QRY->go($uri.$_TPL->url('index'));
+			{
+				$_TPL->set_var('redirect_url',$uri.$_TPL->url('index'));
+				$_TPL->set_var('redirect_url_query',null);
+				$_TPL->set_var('redirect_seconds',5);
+				$_TPL->display('redirect');
+				die();
+			}
 		}
 
 		$_TPL->set_var('info',$appwizard->step_validate());

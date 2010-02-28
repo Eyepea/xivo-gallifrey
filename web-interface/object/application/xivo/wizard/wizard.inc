@@ -325,8 +325,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 					$a[$attrname] = $v->__cdata__;
 				else if(count((array) $v) === 1)
 					$a[$attrname] = '';
-				else
-					$a[$attrname] = $this->_build_lshw($v);
+				else if(($value = $this->_build_lshw($v)) !== null)
+					$a[$attrname] = $value;
 			}
 
 			return($a);
@@ -336,7 +336,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$a = array();
 
 			foreach($o as $k => $v)
+			{
+				if($k === 'disabled' && dwho_bool($v) === true)
+					return(null);
+
 				$a[$k] = $this->_build_lshw($v);
+			}
 
 			return($a);
 		}
@@ -367,10 +372,10 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$ref = &$lshw['lshw']['node'];
 
-		if(isset($ref['network']) === true)
-			$refnet = &$ref['network'];
-		else if(isset($ref['network:0']) === true)
+		if(isset($ref['network:0']) === true)
 			$refnet = &$ref['network:0'];
+		else if(isset($ref['network']) === true)
+			$refnet = &$ref['network'];
 		else
 			$refnet = &$ref;
 
@@ -459,27 +464,34 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function get_eth_iface()
 	{
-		if(isset($_SERVER['SERVER_ADDR']) === true
-		&& ($res = $this->_sysconfd->request_get('/netiface_from_dst_address',
-							 array(array('address',$_SERVER['SERVER_ADDR'])))) !== false
-		&& ($res = current($res)) !== false
-		&& dwho_ak('family',$res,true) === 'inet'
-		&& dwho_ak('type',$res,true) === 'eth')
-			return($res);
-		else if(($res = $this->_sysconfd->request_get('/netiface')) === false
+		if(($res = $this->_sysconfd->request_get('/discover_netifaces')) === false
 		|| is_array($res) === false)
 			return(false);
 
-		ksort($res,SORT_REGULAR);
+		$r = array();
 
-		foreach($res as $iface)
+		foreach($res as $ifname => $iface)
 		{
-			if(dwho_ak('family',$iface,true) === 'inet'
-			&& dwho_ak('type',$iface,true) === 'eth')
-				return($iface);
+			if(dwho_ak('family',$iface,true) !== 'inet'
+			|| dwho_ak('type',$iface,true) !== 'eth'
+			|| dwho_has_len($iface,'address') === false
+			|| dwho_has_len($iface,'netmask') === false)
+				continue;
+			else if(isset($_SERVER['SERVER_ADDR']) === true
+			&& $_SERVER['SERVER_ADDR'] !== '127.0.0.1'
+			&& dwho_network::ipv4_in_subnet($_SERVER['SERVER_ADDR'],
+							$iface['address'].'/'.$iface['netmask']) === false)
+				continue;
+			if($_SERVER['SERVER_ADDR'] !== $iface['address'])
+				array_push($r,$iface);
+			else
+			{
+				array_unshift($r,$iface);
+				break;
+			}
 		}
 
-		return(null);
+		return(array_shift($r));
 	}
 
 	function step_mainconfig()
@@ -673,7 +685,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 				$xivodburi['authority']['user'] = $ref['xivouser'];
 				$xivodburi['authority']['passwd'] = $ref['xivopass'];
 				$xivodburi['path'] = '/'.$ref['xivodbname'];
-			
+
 				$ipbxdburi['host'] = $ref['host'];
 				$ipbxdburi['port'] = $ref['port'];
 				$ipbxdburi['authority'] = array();
@@ -1188,7 +1200,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			       array('id'	=> $info['id'],
 				     'passwd'	=> $this->_wizsess['mainconfig']['adminpasswd'])) === false)
 		{
-			$this->_set_error('mainconfig','adminpasswd','save');	
+			$this->_set_error('mainconfig','adminpasswd','save');
 			return(false);
 		}
 
@@ -1352,9 +1364,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$name = $netiface['name'];
 		unset($netiface['name']);
 
-		if($this->_sysconfd->request_post('/update_eth_ipv4',
+		if(dwho_has_len($netiface,'gateway') === false)
+			unset($netiface['gateway']);
+
+		if($this->_sysconfd->request_post('/modify_eth_ipv4',
 						  $netiface,
-						  array(array('name',$name))) === false)
+						  array(array('ifname',$name))) === false)
 		{
 			$this->_set_error('netiface','save');
 			return(false);

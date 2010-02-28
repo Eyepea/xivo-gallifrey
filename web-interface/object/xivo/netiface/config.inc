@@ -25,8 +25,8 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '';
 
-$array['element']['devname'] = array();
-$array['element']['devname']['default'] = '';
+$array['element']['ifname'] = array();
+$array['element']['ifname']['default'] = '';
 
 $array['element']['hwtypeid'] = array();
 $array['element']['hwtypeid']['default'] = 65534;
@@ -77,8 +77,8 @@ $array['element']['vlanid'] = array();
 $array['element']['vlanid']['default'] = '';
 $array['element']['vlanid']['null'] = true;
 
-$array['element']['advconfig'] = array();
-$array['element']['advconfig']['default'] = '';
+$array['element']['options'] = array();
+$array['element']['options']['default'] = '';
 
 $array['element']['disable'] = array();
 $array['element']['disable']['value'] = array(0,1);
@@ -93,7 +93,9 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/','minlen' => 1,'maxlen' => 64);
-$array['filter']['devname'] = array('regexp' => '/^[a-z0-9_]+(?:\:[0-9]+)?$/','minlen' => 1,'maxlen' => 64);
+$array['filter']['ifname'] = array('regexp'	=> '/^(?:eth[a-z0-9_]+(?:\.[0-9]+)?(?:\:[0-9]+)?|vlan[0-9]+(?:\:[0-9]+)?)$/',
+				   'minlen'	=> 1,
+				   'maxlen'	=> 64);
 $array['filter']['hwtypeid'] = array('cast' => 'uint','between' => array(0,65535));
 $array['filter']['networktype'] = array('key' => array('data','voip'));
 $array['filter']['type'] = array('set' => false,'key' => array('iface'));
@@ -118,7 +120,7 @@ $array['filter']['gateway'] = array('set'		=> false,
 $array['filter']['mtu'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(68,9000));
 $array['filter']['vlanrawdevice'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_]+$/','minlen' => 1,'maxlen' => 64);
 $array['filter']['vlanid'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,4094));
-$array['filter']['advconfig'] = array('set' => false,'chk' => 2,'maxlen' => 2000,'cast' => 'sgraph_crlf_tab','eol' => true);
+$array['filter']['options'] = array('set' => false,'chk' => 2,'maxlen' => 2000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['disable'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

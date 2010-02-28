@@ -296,7 +296,7 @@ function dwho_is_digit($digit)
 	if(is_scalar($digit) === false
 	|| ctype_digit((string) $digit) === false)
 		return(false);
-	
+
 	return(true);
 }
 
@@ -305,7 +305,7 @@ function dwho_is_xdigit($xdigit)
 	if(is_scalar($xdigit) === false
 	|| ctype_xdigit((string) $xdigit) === false)
 		return(false);
-	
+
 	return(true);
 }
 

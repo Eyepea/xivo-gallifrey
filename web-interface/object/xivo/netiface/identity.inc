@@ -22,7 +22,7 @@ class xivo_object_netiface_identity
 {
 	function _prepare_identity(&$data)
 	{
-		$data['identity'] = $data['name'].' ('.$data['devname'].')';
+		$data['identity'] = $data['name'].' ('.$data['ifname'].')';
 
 		return($data);
 	}
@@ -30,7 +30,7 @@ class xivo_object_netiface_identity
 	function mk_identity($arr)
 	{
 		if(is_array($arr) === false
-		|| isset($arr['name'],$arr['devname']) === false)
+		|| isset($arr['name'],$arr['ifname']) === false)
 			return(false);
 
 		$this->_prepare_identity($arr);

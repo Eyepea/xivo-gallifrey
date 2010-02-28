@@ -1,3 +1,5 @@
+; load [global] util/network
+
 ; title_content_name
 Interfaces > Ajouter
 
@@ -13,8 +15,11 @@ Avancé
 ; fm_name
 Nom :
 
-; fm_devname
+; fm_ifname
 Nom de l'interface :
+
+; fm_disable
+Désactiver l'interface :
 
 ; fm_networktype
 Type de réseau :
@@ -27,12 +32,6 @@ VOIP
 
 ; fm_method
 Méthode :
-
-; fm_method-opt(static)
-Statique
-
-; fm_method-opt(dhcp)
-DHCP
 
 ; fm_address
 Adresse :
@@ -61,5 +60,5 @@ Aucune interface physique disponible.
 ; fm_description
 Description :
 
-; fm_advconfig
+; fm_options
 Configuration avancée :

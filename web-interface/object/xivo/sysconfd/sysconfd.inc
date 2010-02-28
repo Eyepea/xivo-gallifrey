@@ -27,10 +27,11 @@ xivo_object::required(array('abstract','abstract.inc'),true);
 
 class xivo_object_sysconfd extends xivo_object_abstract
 {
-	var $_name	= 'sysconfd';
-	var $_curl	= null;
-	var $_uri	= null;
-	var $_url	= array();
+	var $_name		= 'sysconfd';
+	var $_curl		= null;
+	var $_uri		= null;
+	var $_url		= array();
+	var $_status_code	= null;
 
 	function xivo_object_sysconfd(&$xobj)
 	{
@@ -118,8 +119,15 @@ class xivo_object_sysconfd extends xivo_object_abstract
 		return($this->_curl->connect());
 	}
 
+	function last_status_code()
+	{
+		return($this->_status_code);
+	}
+
 	function request_get($path,$query=null,$decode_assoc=true)
 	{
+		$this->_status_code = null;
+
 		if($this->_create() === false)
 			return(false);
 
@@ -128,6 +136,8 @@ class xivo_object_sysconfd extends xivo_object_abstract
 		if(($r = $this->_connect($path,$query)) !== false)
 			$r = dwho_json::decode(rtrim($r),$decode_assoc);
 
+		$this->_status_code = $this->_curl->get_info('http_code');
+
 		$this->_curl->close();
 
 		return($r);
@@ -135,6 +145,8 @@ class xivo_object_sysconfd extends xivo_object_abstract
 
 	function request_post($path,$data,$query=null,$decode_assoc=true)
 	{
+		$this->_status_code = null;
+
 		if($this->_create() === false)
 			return(false);
 
@@ -143,6 +155,8 @@ class xivo_object_sysconfd extends xivo_object_abstract
 
 		if(($r = $this->_connect($path,$query)) !== false)
 			$r = dwho_json::decode(rtrim($r),$decode_assoc);
+
+		$this->_status_code = $this->_curl->get_info('http_code');
 
 		$this->_curl->close();
 

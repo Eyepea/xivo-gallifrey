@@ -1148,4 +1148,5 @@ dwho.form.execregexp = function()
 
 dwho.dom.set_onload(dwho.form.onfocus_onblur);
 dwho.dom.set_onload(dwho.form.show_error);
-dwho.dom.set_onload(dwho.form.execregexp);
+// BUG: Risk of infinite recursion
+//dwho.dom.set_onload(dwho.form.execregexp);

@@ -3,11 +3,11 @@
 ; col_name
 Nom
 
-; col_devname
-Nom de l'interface
+; col_ifname
+Interface
 
 ; col_hwtype
-Type de matériel
+Matériel
 
 ; col_hwaddress
 Adresse MAC
@@ -15,17 +15,11 @@ Adresse MAC
 ; col_method
 Méthode
 
-; method(static)
-Statique
-
-; method(dhcp)
-DHCP
-
 ; col_address
 Adresse
 
 ; col_vlanid
-ID du VLAN
+VLAN ID
 
 ; no_netiface
 Aucune interface trouvée

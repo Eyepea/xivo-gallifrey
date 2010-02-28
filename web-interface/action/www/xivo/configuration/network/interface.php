@@ -29,31 +29,51 @@ $appnetiface = &$_XOBJ->get_application('netiface');
 switch($act)
 {
 	case 'add':
-		$result = $fm_save = $devname = null;
+		$result = $fm_save = $ifname = $devinfo = null;
+
+		if(isset($_QR['devname']) === true)
+			$devname = $_QR['devname'];
+		else
+			$devname = null;
 
 		if(isset($_QR['fm_send']) === true)
 		{
+			$currentiface = $appnetiface->discover_current_interface();
+
 			if($appnetiface->set_add($_QR) === false
 			|| $appnetiface->add() === false)
 			{
 				$fm_save = false;
 				$result = $appnetiface->get_result('netiface');
-				$devname = $appnetiface->get_result_var('netiface','devname');
+				$ifname = $appnetiface->get_result_var('netiface','ifname');
+			}
+			else if(is_array($currentiface) === true
+			&& isset($currentiface['name']) === true
+			&& ($uri = $appnetiface->get_redirect_uri(
+					$appnetiface->get_result_var('netiface',
+								     'ifname'),
+					$currentiface['name'])) !== false)
+			{
+				$_TPL->set_var('redirect_url',$uri.$_TPL->url('xivo/configuration/network/interface'));
+				$_TPL->set_var('redirect_url_query',$param);
+				$_TPL->set_var('redirect_seconds',5);
+				$_TPL->display('redirect');
+				die();
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 		}
-		else if(isset($_QR['devname']) === true)
-			$devname = $_QR['devname'];
+		else if(isset($devname) === true)
+			$devinfo = $appnetiface->get_sysconf_netiface_info($devname,1,true,true);
 
-		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$devname)) !== false)
+		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$ifname)) !== false)
 		{
 			dwho::load_class('dwho_sort');
 			$ifacesort = new dwho_sort();
 			uksort($interfaces,array(&$ifacesort,'str_usort'));
 		}
 
-		$_TPL->set_var('devname',$devname);
+		$_TPL->set_var('devinfo',$devinfo);
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appnetiface->get_elements());
@@ -74,17 +94,32 @@ switch($act)
 		{
 			$return = &$result;
 
+			$currentiface = $appnetiface->discover_current_interface();
+
 			if($appnetiface->set_edit($_QR) === false
 			|| $appnetiface->edit() === false)
 			{
 				$fm_save = false;
 				$result = $appnetiface->get_result('netiface');
 			}
+			else if(is_array($currentiface) === true
+			&& isset($currentiface['name']) === true
+			&& ($uri = $appnetiface->get_redirect_uri(
+					$appnetiface->get_result_var('netiface',
+								     'ifname'),
+					$currentiface['name'])) !== false)
+			{
+				$_TPL->set_var('redirect_url',$uri.$_TPL->url('xivo/configuration/network/interface'));
+				$_TPL->set_var('redirect_url_query',$param);
+				$_TPL->set_var('redirect_seconds',5);
+				$_TPL->display('redirect');
+				die();
+			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/network/interface'),$param);
 		}
 
-		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$return['devname'])) !== false)
+		if(($interfaces = $appnetiface->get_physical_interfaces_for_vlan(null,$return['ifname'])) !== false)
 		{
 			dwho::load_class('dwho_sort');
 			$ifacesort = new dwho_sort();
@@ -93,6 +128,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['netiface']['name']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('deletable',$info['deletable']);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appnetiface->get_elements());
 		$_TPL->set_var('interfaces',$interfaces);

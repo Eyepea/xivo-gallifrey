@@ -40,12 +40,19 @@ endif;
 				  'default'	=> $element['netiface']['name']['default'],
 				  'value'	=> $info['name'])),
 
-		$form->text(array('desc'	=> $this->bbf('fm_devname'),
-				  'name'	=> 'devname',
-				  'labelid'	=> 'devname',
+		$form->text(array('desc'	=> $this->bbf('fm_ifname'),
+				  'name'	=> 'ifname',
+				  'labelid'	=> 'ifname',
 				  'size'	=> 15,
-				  'default'	=> $element['netiface']['devname']['default'],
-				  'value'	=> $this->get_var_default('info','devname',$this->get_var('devname')))),
+				  'default'	=> $element['netiface']['ifname']['default'],
+				  'value'	=> $this->get_var_default('info','ifname',$this->get_var('devinfo','name')))),
+
+		$form->checkbox(array('desc'		=> $this->bbf('fm_disable'),
+				      'name'		=> 'disable',
+				      'labelid'		=> 'disable',
+				      'default'		=> $element['netiface']['disable']['default'],
+				      'checked'		=> $this->get_var_default('info','disable',$this->get_var('devinfo','auto')),
+				      'disabled'	=> $this->get_var('deletable') === false)),
 
 		$form->select(array('desc'	=> $this->bbf('fm_networktype'),
 				    'name'	=> 'networktype',
@@ -61,10 +68,10 @@ endif;
 				    'name'	=> 'method',
 				    'labelid'	=> 'method',
 				    'key'	=> false,
-				    'bbf'	=> 'fm_method-opt',
+				    'bbf'	=> 'network_method',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['netiface']['method']['default'],
-				    'selected'	=> $info['method']),
+				    'selected'	=> $this->get_var_default('info','method',$this->get_var('devinfo','method'))),
 			      $element['netiface']['method']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_address'),
@@ -72,35 +79,35 @@ endif;
 				  'labelid'	=> 'address',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['address']['default'],
-				  'value'	=> $info['address'])),
+				  'value'	=> $this->get_var_default('info','address',$this->get_var('devinfo','address')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_netmask'),
 				  'name'	=> 'netmask',
 				  'labelid'	=> 'netmask',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['netmask']['default'],
-				  'value'	=> $info['netmask'])),
+				  'value'	=> $this->get_var_default('info','netmask',$this->get_var('devinfo','netmask')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_broadcast'),
 				  'name'	=> 'broadcast',
 				  'labelid'	=> 'broadcast',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['broadcast']['default'],
-				  'value'	=> $info['broadcast'])),
+				  'value'	=> $this->get_var_default('info','broadcast',$this->get_var('devinfo','broadcast')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_gateway'),
 				  'name'	=> 'gateway',
 				  'labelid'	=> 'gateway',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['gateway']['default'],
-				  'value'	=> $info['gateway'])),
+				  'value'	=> $this->get_var_default('info','gateway',$this->get_var('devinfo','gateway')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_mtu'),
 				  'name'	=> 'mtu',
 				  'labelid'	=> 'mtu',
 				  'size'	=> 10,
 				  'default'	=> $element['netiface']['mtu']['default'],
-				  'value'	=> $info['mtu']));
+				  'value'	=> $this->get_var_default('info','mtu',$this->get_var('devinfo','mtu'))));
 	?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -125,9 +132,11 @@ endif;
 					    'labelid'	=> 'vlanrawdevice',
 					    'empty'	=> true,
 					    'key'	=> 'identity',
-					    'altkey'	=> 'name',
+					    'altkey'	=> 'ifname',
 					    'default'	=> $element['netiface']['vlanrawdevice']['default'],
-					    'selected'	=> $info['vlanrawdevice']),
+					    'selected'	=> $this->get_var_default('info',
+										  'vlanrawdevice',
+										  $this->get_var('devinfo','vlan-raw-device'))),
 				      $interfaces),
 
 			$form->text(array('desc'	=> $this->bbf('fm_vlanid'),
@@ -135,11 +144,11 @@ endif;
 					  'labelid'	=> 'vlanid',
 					  'size'	=> 10,
 					  'default'	=> $element['netiface']['vlanid']['default'],
-					  'value'	=> $info['vlanid']));
+					  'value'	=> $this->get_var_default('info','vlanid',$this->get_var('devinfo','vlan-id'))));
 	else:
 		echo	'<div class="txt-center">',
 			$this->bbf('no_available_physical_interface'),
-			'</div>';		
+			'</div>';
 	endif;
 ?>
 </div>
@@ -147,15 +156,15 @@ endif;
 <div id="sb-part-last" class="b-nodisplay">
 	<div class="fm-paragraph fm-description">
 		<p>
-			<label id="lb-advconfig" for="it-advconfig"><?=$this->bbf('fm_advconfig');?></label>
+			<label id="lb-options" for="it-options"><?=$this->bbf('fm_options');?></label>
 		</p>
 		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
-					 'name'		=> 'advconfig',
-					 'id'		=> 'it-advconfig',
+					 'name'		=> 'options',
+					 'id'		=> 'it-options',
 					 'cols'		=> 72,
 					 'rows'		=> 30,
-					 'default'	=> $element['netiface']['advconfig']['default']),
-				   $info['advconfig']);?>
+					 'default'	=> $element['netiface']['options']['default']),
+				   $this->get_var_default('info','options',$this->get_var('devinfo','options')));?>
 	</div>
 </div>

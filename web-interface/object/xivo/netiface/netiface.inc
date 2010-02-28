@@ -51,21 +51,6 @@ class xivo_object_netiface extends xivo_object_abstract
 
 		$data['disable'] = (bool) $data['disable'];
 
-		if($data['disable'] === true)
-			$data['state'] = 'disable';
-		else if($this->_sysnet->netinfo_interface_is_virtual($data['devname']) === false)
-			$data['state'] = 'enable';
-		else
-		{
-			$realname = $this->_sysnet->netinfo_interface_realname($data['devname']);
-
-			if((int) $data['hwtypeid'] === (int) $this->_sysnet->netinfo_hwtypeid($realname)
-			&& $this->_sysnet->netinfo_carrier($realname) === false)
-				$data['state'] = 'unavailable';
-			else
-				$data['state'] = 'unknown';
-		}
-
 		return($data);
 	}
 
@@ -79,8 +64,8 @@ class xivo_object_netiface extends xivo_object_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
-		if(isset($arr['devname']) === true)
-			$arr['devname'] = strtolower($arr['devname']);
+		if(isset($arr['ifname']) === true)
+			$arr['ifname'] = strtolower($arr['ifname']);
 
 		return(parent::add($arr,$id));
 	}
@@ -92,15 +77,15 @@ class xivo_object_netiface extends xivo_object_abstract
 		else if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
-		if(isset($arr['devname']) === true)
-			$arr['devname'] = strtolower($arr['devname']);
+		if(isset($arr['ifname']) === true)
+			$arr['ifname'] = strtolower($arr['ifname']);
 
 		return(parent::edit($id,$arr,$disable));
 	}
 
-	function exists_link($devname)
+	function exists_link($ifname)
 	{
-		return($this->_dso->exists_link($devname));
+		return($this->_dso->exists_link($ifname));
 	}
 }
 

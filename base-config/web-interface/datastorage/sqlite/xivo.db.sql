@@ -134,7 +134,7 @@ CREATE UNIQUE INDEX ldapserver__uidx__host_port ON ldapserver(host,port);
 DROP TABLE netiface;
 CREATE TABLE netiface (
  name varchar(64) NOT NULL DEFAULT '',
- devname varchar(64) NOT NULL DEFAULT '',
+ ifname varchar(64) NOT NULL DEFAULT '',
  networktype char(4) NOT NULL,
  hwtypeid smallint unsigned NOT NULL DEFAULT 65534,
  type char(5) NOT NULL,
@@ -147,7 +147,7 @@ CREATE TABLE netiface (
  mtu smallint unsigned,
  vlanrawdevice varchar(64),
  vlanid smallint unsigned,
- advconfig text NOT NULL,
+ options text NOT NULL,
  disable tinyint(1) NOT NULL DEFAULT 0,
  dcreate integer unsigned NOT NULL DEFAULT 0,
  description text NOT NULL,
@@ -167,7 +167,7 @@ CREATE INDEX netiface__idx__mtu ON netiface(mtu);
 CREATE INDEX netiface__idx__vlanrawdevice ON netiface(vlanrawdevice);
 CREATE INDEX netiface__idx__vlanid ON netiface(vlanid);
 CREATE INDEX netiface__idx__disable ON netiface(disable);
-CREATE UNIQUE INDEX netiface__uidx__devname ON netiface(devname);
+CREATE UNIQUE INDEX netiface__uidx__ifname ON netiface(ifname);
 
 
 DROP TABLE resolvconf;

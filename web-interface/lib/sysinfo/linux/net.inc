@@ -79,9 +79,6 @@ class dwho_sysinfo_linux_net
 	{
 		$iface = basename($iface);
 
-		if(substr($iface,0,1) === '.')
-			return(false);
-
 		$path = dwho_file::joinpath(DWHO_SYSINFO_SYS_CLASS_NET_PATH,$iface);
 
 		if((bool) dwho_file::is_d($path) === true)
@@ -92,11 +89,50 @@ class dwho_sysinfo_linux_net
 		return(false);
 	}
 
+	function is_physical_if($iface)
+	{
+		return((strpos($iface,'.') === false));
+	}
+
+	function is_alias_if($iface)
+	{
+		return((($pos = strpos($iface,':')) > 0 && ctype_digit(substr($iface,$pos + 1))));
+	}
+
+	function is_vlan_if($iface)
+	{
+		if(strncmp('vlan',$iface,4) === 0)
+			return(ctype_digit(substr($iface,4)));
+		else if(($pos = strpos($iface,'.')) !== false)
+			return(ctype_digit(substr($iface,$pos + 1)));
+
+		return(false);
+	}
+
+	function vlan_info_from_ifname($iface)
+	{
+		$r = array();
+
+		if(preg_match('/^(?:vlan(\d+)|(eth\d+)\.(\d+)|(?!vlan)[^\.]*\.(\d+))(?:\:\d*)?$/',$iface,$match) === 0)
+			return($r);
+		else if(dwho_has_len($match[1]) === true)
+			$r['vlan-id'] = dwho_uint($match[1]);
+		else if(dwho_has_len($match[2]) === true)
+		{
+			$r['vlan-id'] = dwho_uint($match[3]);
+			$r['vlan-raw-device'] = $match[2];
+		}
+		else
+			$r['vlan-id'] = dwho_uint($match[4]);
+
+		return($r);
+	}
+
 	function netinfo_interface_is_physical($iface)
 	{
 		$iface = basename($iface);
 
-		if(substr($iface,0,1) === '.')
+		if(dwho_sysinfo_linux_net::is_physical_if($iface) === false)
 			return(false);
 
 		$path = dwho_file::joinpath(DWHO_SYSINFO_SYS_CLASS_NET_PATH,$iface);
@@ -107,17 +143,14 @@ class dwho_sysinfo_linux_net
 		return(null);
 	}
 
-	function netinfo_interface_realname($iface)
+	function physical_ifname_from_alias_if($iface)
 	{
-		if(($pos = strpos($iface,':')) > 0)
+		if(dwho_sysinfo_linux_net::is_alias_if($iface) === false)
+			return(false);
+		else if(($pos = strpos($iface,':')) > 0)
 			return(substr($iface,0,$pos));
 
 		return($iface);
-	}
-
-	function netinfo_interface_is_virtual($iface)
-	{
-		return((strpos($iface,':') > 0));
 	}
 
 	function netstats_interface()
@@ -352,6 +385,24 @@ class dwho_sysinfo_linux_net
 		$r = array();
 
 		$flag = hexdec($content);
+
+		foreach($flags as $name => $bit)
+			$r[$name] = (bool) ($flag & $bit);
+
+		return($r);
+	}
+
+	function netinfo_iff_to_dict($flag)
+	{
+		$flags = &dwho_gat::load_get('iff',
+					     dwho_file::joinpath(DWHO_PATH_ROOT,'sysinfo','linux','net'),
+					     'dwho_sysinfo_linux_net_iff');
+
+		if(dwho_is_uint($flag) === false)
+			return(dwho_array_combine(array_keys($flags),
+						  array_fill(0,count($flags),null)));
+
+		$r = array();
 
 		foreach($flags as $name => $bit)
 			$r[$name] = (bool) ($flag & $bit);

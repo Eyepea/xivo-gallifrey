@@ -549,7 +549,7 @@ class dwho_tpl_form extends dwho_tpl_module
 		if(isset($o{0}) === true)
 			$r .= ($o{0} === ' ' ? '' : ' ').$o;
 
-		if(($this->_param['regexp'] !== '') || ($this->_param['modifier'] !== ''))
+		if($this->_param['regexp'] !== '' || $this->_param['modifier'] !== '')
 		{
 			$dhtml = &$this->_get_module('dhtml');
 
