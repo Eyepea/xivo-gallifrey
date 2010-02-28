@@ -84,6 +84,51 @@ class EniBlockIface(EniBlockWithIfName):
     """
     pass
 
+class EniBlockFamily(EniBlockIface):
+    """
+    A family block
+    """
+    def __init__(self, ifname, method):
+        EniBlockIface.__init__(self, ifname)
+        if method in self.METHODS:
+            self.method = method
+        else:
+            raise ValueError, "Method: %r should be in %r" % (method, self.METHODS)
+
+class EniBlockFamilyInet(EniBlockFamily):
+    """
+    An inet address family block
+    """
+    family  = 'inet'
+    METHODS = ('loopback',
+               'static',
+               'manual',
+               'dhcp',
+               'bootp',
+               'ppp',
+               'wvdial')
+    pass
+
+class EniBlockFamilyIPX(EniBlockFamily):
+    """
+    An IPX address family block
+    """
+    family  = 'ipx'
+    METHODS = ('static',
+               'dynamic')
+    pass
+
+class EniBlockFamilyInet6(EniBlockFamily):
+    """
+    An Inet6 address family block
+    """
+    family  = 'inet6'
+    METHODS = ('loopback',
+               'static',
+               'manual',
+               'v4tunnel')
+    pass
+
 class EniBlockAllow(EniBlock):
     """
     An "auto" / "allow-" stanza of interfaces(5)
@@ -225,7 +270,8 @@ def parse(lines, warnfunc=warn):
     This function parses the sequence of lines of an interfaces(5) file.
     It returns a list of EniBlock instances, more precisely a list of
     instances of classes of the set: EniBlockSpace, EniBlockMapping,
-    EniBlockIface, EniBlockAllow, EniBlockAllow.
+    EniBlockIface, EniBlockFamilyInet, EniBlockFamilyIPX, EniBlockFamilyInet6,
+    EniBlockAllow, EniBlockUnknown.
     """
     block_list = []
 
@@ -301,11 +347,25 @@ def parse(lines, warnfunc=warn):
             current_semantic_block = new_block
         elif firstword == "iface":
             ifname = None
+            family = None
+            method = None
             if len(words) < 2:
                 warnfunc("iface stanza with no interface name - %r" % cooked_line)
+            elif len(words) > 3:
+                ifname = words[1]
+                family = words[2]
+                method = words[3]
             else:
                 ifname = words[1]
-            new_block = EniBlockIface(ifname)
+
+            if family == "inet":
+                new_block = EniBlockFamilyInet(ifname, method)
+            elif family == "ipx":
+                new_block = EniBlockFamilyIPX(ifname, method)
+            elif family == "inet6":
+                new_block = EniBlockFamilyInet6(ifname, method)
+            else:
+                new_block = EniBlockIface(ifname)
             current_semantic_block = new_block
         elif firstword.startswith("allow-") or firstword == "auto":
             if len(words) < 2:
@@ -372,12 +432,14 @@ def get_mapping_dests(block_list, base, full):
             logicals.add(splitted[2])
     return logicals
 
+# TODO: Take account of vlan interface name like vlan42 with option vlan-raw-device
+# TODO: Take account of alias interface name for example: eth0.42:0 and vlan42:0
 def normalize_vlan(ifname):
     """
     Ensure 'ifname' contains a VLan interface name in its right part,
     formatted as a canonical decimal
     """
-    if '.' not in ifname:
+    if '.' not in ifname or ':' in ifname:
         return ifname + ".0"
     else:
         left, right = ifname.split(".")
@@ -392,9 +454,10 @@ def ifname_in_base_full(ifname, base, full):
     'base'
     """
     norm_vlan_ifname = normalize_vlan(ifname)
-    left = norm_vlan_ifname.split(".", 1)[0]
+    left = norm_vlan_ifname.rsplit(".", 1)[0]
     return (norm_vlan_ifname in full) or (left in base)
 
+# TODO: Add a set of unmapped alias interface names (eth0:0)
 def ifname_in_base_full_mapsymbs(ifname, base, full, mapsymbs):
     """
     * 'ifname' is an interface name
