@@ -714,6 +714,16 @@ class xivo_application_service_asterisk_voicemail extends xivo_application_aster
 
 		return(true);
 	}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set_edit($data) === false
+		|| $this->edit() === false)
+			return(false);
+
+		return(true);
+	}
 }
 
 ?>

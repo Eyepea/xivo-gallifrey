@@ -680,9 +680,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->set_netiface($arr);
 		$this->set_sysconfnet($devname);
 
-		if($this->get_errnb() > 0)
-			return(false);
-
 		return(($this->get_errnb() < 1));
 	}
 

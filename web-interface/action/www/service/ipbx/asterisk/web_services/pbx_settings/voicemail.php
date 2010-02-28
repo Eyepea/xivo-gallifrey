@@ -50,6 +50,25 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'edit':
+		if(XIVO_LOC_WEBSERVICES_MODE !== 'private')
+		{
+			$http_response->set_status_line(403);
+			$http_response->send(true);
+		}
+
+		$appvoicemail = &$ipbx->get_application('voicemail');
+
+		if($appvoicemail->get($_QRY->get('id')) === false)
+			$status = 404;
+		else if($appvoicemail->edit_from_json() === true)
+			$status = 200;
+		else
+			$status = 400;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
 	case 'delete':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
