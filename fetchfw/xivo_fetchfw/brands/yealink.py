@@ -22,19 +22,19 @@ from xivo_fetchfw import fetchfw
 
 FW_PATHS = {
     'T28': {
-        '2.42.0.50': 'Yealink SIP-T28(P) V42 Firmware-2.42.0.50.rom'
+        '2.43.0.50': '2.43.0.50.rom'
     },
 
     'T26': {
-        '6.42.0.30': 'Yealink SIP-T26(P) V42 Firmware-6.42.0.30.rom'
+        '6.43.0.50': '6.43.0.50.rom'
     },
 
     'T22': {
-        '7.42.0.30': 'Yealink SIP-T22(P) V42 Firmware-7.42.0.30.rom'
+        '7.43.0.50': '7.43.0.50.rom'
     },
 
     'T20': {
-        '9.41.0.70': '9.41.0.70.rom'
+        '9.43.0.50': '9.43.0.50.rom'
     }
 }
 

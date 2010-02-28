@@ -535,56 +535,56 @@ md5sum: 2b5360a39fdd551eabf250d1c2a1239c
 sha1sum: f43e3d32895c9f5c340d9c6025372c591f31a731
 
 # Yealink T20
-[yealinkt20_941]
+[yealinkt20_943]
 brand: Yealink
 model: T20
-version: 9.41.0.70
-files: 9.41.0.70.rom
+version: 9.43.0.50
+files: 9.43.0.50.rom
 
-[9.41.0.70.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20Entey%20Level%20IP%20Phone%20SIP-T20P%20firmware%20V1.4.1.zip
-size: 5485552
-md5sum: e4a028682b2d2d0ba805b90e69e6868f
-sha1sum: b9b38d6b4441f0324cc06ae53257f23704192de9
+[9.43.0.50.rom]
+url: http://yealink.com/download/firmware/Yealink%20SIP-T20(P)%20V43%20Firmware-9.43.0.50.zip
+size: 5620222
+md5sum: 9bc8cf295e8b55990c2e64b1e09ba643
+sha1sum: cb4cdb9632e7cd6d71f34f21ae519268b22c1bc6
 
 # Yealink T22
-[yealinkt22_742]
+[yealinkt22_743]
 brand: Yealink
 model: T22
-version: 7.42.0.30
-files: 7.42.0.30.rom
+version: 7.43.0.50
+files: 7.43.0.50.rom
 
-[7.42.0.30.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V42%20Firmware-7.42.0.30.zip
-size: 5786394
-md5sum: 957dad39e97d98b3fdcff0d1301cdfed
-sha1sum: 62b2718ab7ac7bd78ad47f4c86e84a1633bf35f5
+[7.43.0.50.rom]
+url: http://yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V43%20Firmware-7.43.0.50.zip
+size: 6074878
+md5sum: 366183b5dbf61342d2c3354f9fff35be
+sha1sum: ac74d14a6995766971785079c4b7566996c94386
 
 # Yealink T26
-[yealinkt26_642]
+[yealinkt26_643]
 brand: Yealink
 model: T26
-version: 6.42.0.30
-files: 6.42.0.30.rom
+version: 6.43.0.50
+files: 6.43.0.50.rom
 
-[6.42.0.30.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V42%20Firmware-6.42.0.30.zip
-size: 5719455
-md5sum: 59393bbf057e1c6e6d9dcacba9269fa4
-sha1sum: 21a315795d5869830d99d3720af422987de9c0b4
+[6.43.0.50.rom]
+url: http://yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V43%20Firmware-6.43.0.50.zip
+size: 6078974
+md5sum: 816975dac6bc01a6d5fc0940d221b137
+sha1sum: b8649f6ec918f5ed0f4fff19a4f719ebde374e80
 
 # Yealink T28
-[yealinkt28_242]
+[yealinkt28_243]
 brand: Yealink
 model: T28
-version: 2.42.0.50
-files: 2.42.0.50.rom
+version: 2.43.0.50
+files: 2.43.0.50.rom
 
-[2.42.0.50.rom]
-url: http://www.yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V42%20Firmware-2.42.0.50.zip
-size: 6156248
-md5sum: 61d4e1114b7e52a0831dc263691bde3e
-sha1sum: 32ae3af6360963649d1889e519f2e0a371a4fd57
+[2.43.0.50.rom]
+url: http://yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V43%20Firmware-2.43.0.50.zip
+size: 6238718
+md5sum: 49eb92098ad11bcb388c7daa0cbb6227
+sha1sum: 0ccebea69d80cc1eb7cb8c86697c90703167c0c3
 
 ###
 ### Cards Firmwares starting from here ###
@@ -777,11 +777,11 @@ sha1sum: 28ffa475ab151fecaac33b018720edf2b0c1bbfc
 [aft_echocan]
 brand: Sangoma
 model: Echo Canceller for all cards
-version: 3.5.8
-files: wanpipe-3.5.8.tgz
+version: 3.5.10
+files: wanpipe-3.5.10.tgz
 
-[wanpipe-3.5.8.tgz]
-url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.8.tgz
-size: 21388487
-md5sum: 3f0cbcba14d9021a12ac340c0ff0dcc9
-sha1sum: 9637694f6d184c587324b8ead63ada9b29bf26d2
+[wanpipe-3.5.10.tgz]
+url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.10.tgz
+size: 22581851
+md5sum: f2888f03a74fe00a0d382efc3b460f07
+sha1sum: 06759bbec8e6f9c69283531bb6b315a24b05d3a4
