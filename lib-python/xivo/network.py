@@ -303,7 +303,7 @@ def is_eth_phy_if(ifname):
 def get_filtered_phys(ifname_match_func=lambda x:True):
     """
     Return the filtered list of network interfaces which are not VLANs
-    (the interface name does not contain a '.' or device directory doesn't exist)
+    (the interface name does not contain a '.')
     """
     return [dev for dev in get_filtered_ifnames(ifname_match_func) if is_phy_if(dev)]
 
