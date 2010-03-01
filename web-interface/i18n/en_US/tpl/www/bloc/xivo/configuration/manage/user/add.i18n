@@ -1,0 +1,35 @@
+; title_content_name
+Utilisateur > Ajouter
+
+; fm_login
+identifiant
+
+; fm_password
+mot de passe
+
+; error_fm_login(empty)
+login field must be filled
+
+; error_fm_password(regexp)
+login contains invalid characters
+
+; error_fm_login(minimumlength)
+login must be at least 4 characters long
+
+; error_fm_login(maximumlength)
+login must be at most 64 characters long
+
+; error_fm_login(alreadyexist)
+This login is already owned by another user
+
+; error_fm_password(empty)
+password field must be filled
+
+; error_fm_password(regexp)
+password contains invalid characters
+
+; error_fm_password(minimumlength)
+password must be at least 4 characters long
+
+; error_fm_password(maximumlength)
+password must be at most 64 characters long

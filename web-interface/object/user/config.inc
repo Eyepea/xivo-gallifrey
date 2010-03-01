@@ -35,4 +35,7 @@ $array['element']['valid']['value'] = array(0,1);
 $array['element']['valid']['default'] = 0;
 $array['element']['valid']['set'] = true;
 
+$array['element']['obj'] = array();
+$array['element']['obj']['default'] = '';
+
 ?>

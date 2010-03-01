@@ -12,3 +12,16 @@ Type:
 
 ; fm_enable
 Enable:
+
+; error_fm_password(empty)
+You must fill the password
+
+; error_fm_password(regexp)
+The password contains invalid characters
+
+; error_fm_password(minimumlength)
+The password must be AT LEAST 4 characters long
+
+; error_fm_password(maximumlength)
+The password must be AT MOST 64 characters long
+

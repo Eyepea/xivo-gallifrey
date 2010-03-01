@@ -1,0 +1,21 @@
+; title_content_name
+Fichiers de configuration > Ajouter
+
+; fm_filename
+Nom du fichier :
+
+; fm_content
+Contenu :
+
+; error_fm_filename(empty)
+Le nom de fichier ne doit pas être vide
+
+; error_fm_filename(regexp)
+Le nom de fichier contient des caractères interdits('/', '$', ...)
+
+; error_fm_filename(alreadyexists)
+Un fichier avec le même nom existe déjà
+
+; error_fm_filename(creationerror)
+Impossible d'enregistrer le fichier sur le disque
+

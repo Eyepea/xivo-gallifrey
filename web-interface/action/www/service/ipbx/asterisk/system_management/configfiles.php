@@ -28,6 +28,29 @@ $configfiles = &$ipbx->get_module('configfiles');
 
 switch($act)
 {
+	case 'add':	
+		$info = array('configfile' => null);
+
+		if(isset($_QR['fm_send'], $_QR['configfile']['content']) === true)
+		{
+			if($configfiles->add($_QR['configfile']['filename'],$_QR['configfile']['content']) !== false)
+				$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'),$param);
+
+			$info['configfile'] = $_QR['configfile'];
+		}
+
+		$_TPL->set_var('error', $configfiles->get_error());
+		$_TPL->set_var('info', $info);
+		break;
+
+	case 'import':
+		if(isset($_QR['fm_send']) === true && $configfiles->import())
+			$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'), $param);
+
+		$_TPL->set_var('error'	    , $configfiles->get_error());
+		$_TPL->set_var('import_file', $configfiles->get_config_import_file());
+		break;
+
 	case 'edit':
 		if(isset($_QR['id']) === false || ($info = $configfiles->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'),$param);
@@ -42,6 +65,24 @@ switch($act)
 
 		$_TPL->set_var('info',$info);
 		break;
+	case 'delete':
+		$param['page'] = $page;
+
+		if($configfiles->delete($_QR['filename']))
+			$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'),$param);
+
+		$_TPL->set_var('error', $configfiles->get_error());
+		break;
+
+	case 'deletes':
+		$param['page'] = $page;
+
+		foreach(array_values($_QR['configfiles']) as $file)
+			$configfiles->delete($file);
+
+		$_QRY->go($_TPL->url('service/ipbx/system_management/configfiles'),$param);
+		break;
+
 	default:
 		$act = 'list';
 		$total = 0;
@@ -63,6 +104,7 @@ $_TPL->set_var('act',$act);
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/system_management/configfiles');
 
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/system_management/configfiles/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());

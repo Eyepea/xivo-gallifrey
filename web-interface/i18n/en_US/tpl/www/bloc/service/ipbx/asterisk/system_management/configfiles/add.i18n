@@ -1,0 +1,20 @@
+; title_content_name
+Configuration files > Add
+
+; fm_filename
+Filename :
+
+; fm_content
+Content :
+
+; error_fm_filename(empty)
+Filename must not be empty
+
+; error_fm_filename(regexp)
+The filename contains forbidden characters ('/', '$', ...)
+
+; error_fm_filename(alreadyexists)
+Another configuration file own this name
+
+; error_fm_filename(creationerror)
+Cannot record the file on disk

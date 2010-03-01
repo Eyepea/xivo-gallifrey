@@ -1,0 +1,19 @@
+; title_content_name
+Fichiers de configuration > Importer
+
+; fm_import
+Fichier
+
+; error_fm_import(empty)
+Vous devez sélectionner un fichier à importer
+
+; error_fm_import(regexp)
+Le nom du fichier à importer contient des caractères non autorisés
+
+; error_fm_import(alreadyexists)
+Un fichier du même nom a déjà été importé
+
+; error_fm_import(importerror)
+Impossible d'importer le fichier
+
+

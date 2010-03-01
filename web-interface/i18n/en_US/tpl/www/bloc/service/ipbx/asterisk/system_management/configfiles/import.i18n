@@ -1,0 +1,19 @@
+; title_content_name
+Configuration files > Import
+
+; fm_import
+File
+
+; error_fm_import(empty)
+You must choose a file to import
+
+; error_fm_import(regexp)
+The filename contains forbidden characters ('/', '$', ...)
+
+; error_fm_import(alreadyexists)
+Another configuration file own this name
+
+; error_fm_import(importerror)
+Cannot record the file on disk
+
+

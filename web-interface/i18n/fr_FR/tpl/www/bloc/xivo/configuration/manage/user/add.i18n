@@ -1,0 +1,38 @@
+; title_content_name
+Utilisateur > Ajouter
+
+; fm_login
+identifiant
+
+; fm_password
+mot de passe
+
+; error_fm_login(empty)
+Le login doit être renseigné
+
+; error_fm_password(regexp)
+Le login contient des caractères non autorisés
+
+; error_fm_login(minimumlength)
+Le login doit avoir AU MOINS 4 caractères
+
+; error_fm_login(maximumlength)
+Le login doit avoir AU PLUS 64 caractères
+
+; error_fm_login(alreadyexist)
+Un autre utilisateur possède déjà le même login
+
+; error_fm_password(empty)
+Le mot de passe doit être renseigné
+
+; error_fm_password(regexp)
+Le mot de passe contient des caractères non autorisés
+
+; error_fm_password(minimumlength)
+Le mot de passe doit avoir AU MOINS 4 caractères
+
+; error_fm_password(maximumlength)
+Le mot de passe doit avoir AU PLUS 64 caractères
+
+; error_fm_password(cast)
+Le mot de passe contient des caractères non autorisés

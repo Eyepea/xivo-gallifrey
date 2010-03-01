@@ -289,7 +289,6 @@ class xivo_libconfig_abstract
 
 		$rs = $this->_filter->get_result();
 
-
 		if((bool) $set === false
 		|| is_array($rs) === false
 		|| empty($rs) === true)

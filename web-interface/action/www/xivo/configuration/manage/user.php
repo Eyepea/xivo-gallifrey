@@ -26,22 +26,86 @@ $param['act'] = 'list';
 
 switch($act)
 {
+	// Adding a new user
+	case 'add':
+
+		// after form validation, fm_send == 1
+		if(isset($_QR['fm_send']) === true)
+		{			
+			$_QR['user']['meta'] 	= 'admin';
+			$_QR['user']['valid']   = 1;
+			$_QR['user']['obj']  	= '';
+
+			if($_USR->add($_QR['user']))
+			{ $_QRY->go($_TPL->url('xivo/configuration/manage/user'), $param); }
+		} else {
+			$_QR['user'] = array('login' => null, 'passwd' => null);
+		}
+
+		$_TPL->set_var('error'	, $_USR->get_error());
+		$_TPL->set_var('info'	, $_QR['user']);
+		break;
+
+
 	case 'edit':
 		if(isset($_QR['id']) === false
 		|| ($info = $_USR->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
 
-		if(isset($_QR['fm_send']) === true
-		&& $_USR->edit($info['meta'],$_QR) !== false)
+		if(isset($_QR['fm_send']) === true)
 		{
-			if(dwho_ulongint($_USR->get_info('id')) === dwho_ulongint($info['id']))
-				$_USR->load_by_id($info['id']);
+			if($_USR->edit($info['meta'],$_QR) !== false)
+			{
+				if(dwho_ulongint($_USR->get_info('id')) === dwho_ulongint($info['id']))
+					$_USR->load_by_id($info['id']);
 
-			$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
+				$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
+			} else {
+				// error
+				$info['passwd'] = $_QR['passwd'];
+				$info['valid']	= $_QR['valid'];
+			}
 		}
 
-		$_TPL->set_var('info',$info);
+		$_TPL->set_var('error'	, $_USR->get_error());
+		$_TPL->set_var('info'	, $info);
 		break;
+
+	case 'delete':
+		$param['page'] = $page;
+
+		if(isset($_QR['id']) === true
+		&& ($id = intval($_QR['id'])) > 0)
+		{
+			$info = $_USR->get($_QR['id']);
+			// we forbid root accounts deletion
+			if($info !== false && strncmp($info['meta'], 'root', 4) != 0)
+			{ $_USR->delete($id); }
+		}
+
+		$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
+		break;
+
+	case 'deletes':
+		$param['page'] = $page;
+
+		if(dwho_issa('userselection',$_QR))
+		{
+
+			// root users can't be disabled
+			$roots  = $_USR->get_list_where(array('meta' => 'root'));
+			$values = array_diff($_QR['userselection'], $roots);
+
+			for($i = count($values) - 1; $i >= 0; $i--)
+			{
+				if(($id = intval($values[$i])) > 0)
+				{ $_USR->delete($id); }
+			}
+		}
+
+		$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
+		break;
+
 	case 'acl':
 		if(isset($_QR['id']) === false
 		|| ($info = $_USR->get($_QR['id'])) === false
@@ -62,6 +126,29 @@ switch($act)
 		}
 		else $_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
 		break;
+
+	case 'enables':
+	case 'disables':
+		$param['page'] = $page;
+		$disable = $act === 'disables';
+
+		if(($values = dwho_issa_val('userselection',$_QR)) === false)
+			$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
+
+		// root users can't be disabled
+		$roots  = $_USR->get_list_where(array('meta' => 'root'));
+		$values = array_diff($values, $roots);
+
+		// 'valid' field works in the reverse logic compare to 'disable' field
+		$disable ^= 1;
+		for($i = count($values) - 1; $i >= 0; $i--)
+		{
+			$_USR->disable(intval($values[$i]), $disable);
+		}
+
+		$_QRY->go($_TPL->url('xivo/configuration/manage/user'),$param);
+		break;
+
 	default:
 		$act = 'list';
 		$prevpage = $page - 1;
@@ -93,9 +180,11 @@ $_TPL->set_var('act',$act);
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
+$menu->set_toolbar('toolbar/xivo/configuration/manage/user');
 
 $_TPL->set_bloc('main','xivo/configuration/manage/user/'.$act);
 $_TPL->set_struct('xivo/configuration');
 $_TPL->display('index');
 
 ?>
+

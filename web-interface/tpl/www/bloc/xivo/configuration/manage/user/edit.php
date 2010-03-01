@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form = &$this->get_module('form');
-$info = $this->get_var('info');
+$form  = &$this->get_module('form');
+$info  = $this->get_var('info');
 
 ?>
 <div class="b-infos b-form">
@@ -54,7 +54,8 @@ $info = $this->get_var('info');
 				  'name'	=> 'passwd',
 				  'labelid'	=> 'passwd',
 				  'size'	=> 15,
-				  'value'	=> $info['passwd']));
+				  'value'	=> $info['passwd'],
+				  'error'	=> $this->bbf_args('error_fm_password', $this->get_var('error', 'passwd'))));
 
 	if(xivo_user::chk_authorize('admin',$info['meta']) === true):
 		echo	$form->checkbox(array('desc'	=> $this->bbf('fm_enable'),

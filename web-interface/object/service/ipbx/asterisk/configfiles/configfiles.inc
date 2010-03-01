@@ -20,11 +20,15 @@
 
 xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
+dwho::load_class('dwho_http');
+
 class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 {
 	var $_name	= 'configfiles';
 	var $_filter	= false;
 	var $_cfgpath	= '';
+	var $_error	= array();
+	var $_conf	= array();	
 
 	function xivo_service_asterisk_configfiles(&$sre)
 	{
@@ -37,6 +41,11 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 			trigger_error('Invalid or missing configuration path in '.$this->_sre->get_type().' init file',E_USER_ERROR);
 
 		$this->_load_config();
+
+		if(($size = $this->_verify_can_upload_file()) === false)
+			die();
+
+		$this->_conf['import']['file']['size'] = $size;
 	}
 
 	function _chk_cfgpath()
@@ -79,6 +88,94 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 		return(false);
 	}
 
+	function _checkfile($shortname)
+	{
+		$shortname = trim($shortname);
+		if(strlen($shortname) == 0)
+		{ $this->_error['filename'] = 'empty'; return false; }
+			
+		if(strpos($shortname, '.conf') !== strlen($shortname) - 5)
+			$shortname .= '.conf';
+
+		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$shortname) !== 1)
+		{ $this->_error['filename'] = 'regexp'; return false; }
+		
+		$filename = $this->_cfgpath.DWHO_SEP_DIR.$shortname;
+		if(dwho_file::is_f($filename) || dwho_file::is_d($filename))
+		{ $this->_error['filename'] = 'alreadyexists'; return false; }
+
+		return $filename;
+	}
+
+	function add($shortname, $contents)
+	{
+		$this->_error = array();
+		if(($filename = $this->_checkfile($shortname)) === false)
+			return false;
+
+		if(!touch($filename))
+		{ $this->_error['filename'] = 'creationerror'; return false; }
+
+		if(dwho_file::put_contents($filename,dwho_eol($contents)) === false)
+		{ return false; }
+
+		@chmod($filename, 0664);
+		@chown($filename, 'asterisk');
+
+		return true;
+	}
+
+	function _get_config_file_maxsize()
+	{
+		if(($import_file = $this->_chk_exists_cfg('import','file',true)) !== false
+		&& isset($import_file['size']) === true)
+			return(dwho_get_memory($import_file['size'],false));
+
+		return(false);
+	}
+
+	function get_config_import_file()
+	{
+		return($this->_chk_exists_cfg('import','file',true));
+	}
+
+	function import()
+	{
+		$this->_error = array();
+
+		if(($http_response = dwho_http::factory('response')) === false
+		|| ($fileinfo = $http_response->upload_file('import',
+							    $this->_conf['import']['file'])) === false)
+		{ $this->_error['import'] = 'empty'; return(false); }
+		
+		$shortname = $fileinfo['name'];
+		if(($pos = strpos($shortname, '.')) !== null)
+			$shortname = substr($shortname, 0, $pos);
+		$shortname .= ".conf";
+
+		if(($filename = $this->_checkfile($shortname)) === false)
+			return false;
+		if(!move_uploaded_file($fileinfo['tmp_name'], $filename))
+		{ $this->_error['import'] = 'creationerror'; return false; }
+
+		return true;
+	}
+
+	function delete($filename)
+	{
+		$this->_error = array();
+		$filename = trim($filename);
+
+		if(preg_match('/^[a-zA-Z0-9_-]+\.conf$/',$filename) !== 1)
+		{ $this->_error['filename'] = 'regexp'; return false; }
+
+		$filename = $this->_cfgpath.DWHO_SEP_DIR.$filename;
+		if(!dwho_file::is_f($filename))
+		{ $this->_error['filename'] = 'notexists'; return false; }
+
+		return(dwho_file::rm($filename));
+	}
+
 	function get_list()
 	{
 		$r = dwho_file::read_d($this->_cfgpath,'file',(FILE_R_OK | FILE_W_OK),'/^[a-zA-Z0-9_-]+\.conf$/',true);
@@ -88,6 +185,9 @@ class xivo_service_asterisk_configfiles extends xivo_service_asterisk_abstract
 
 		return($r);
 	}
+
+	function get_error()
+	{ return($this->_error); }
 }
 
 ?>

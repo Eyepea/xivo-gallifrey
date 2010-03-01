@@ -12,3 +12,18 @@ Type :
 
 ; fm_enable
 Activer :
+
+; error_fm_password(empty)
+Vous devez saisir une valeur non vide
+
+; error_fm_password(regexp)
+Le mot de passe contient des caractères non autorisés
+
+; error_fm_password(minimumlength)
+Le mot de passe doit avoir AU MOINS 4 caractères
+
+; error_fm_password(maximumlength)
+Le mot de passe doit avoir AU PLUS 64 caractères
+
+; error_fm_password(cast)
+Le mot de passe contient des caractères non autorisés

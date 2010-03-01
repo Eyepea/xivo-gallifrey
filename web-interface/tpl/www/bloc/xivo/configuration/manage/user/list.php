@@ -71,13 +71,32 @@ $page = $url->pager($pager['pages'],
 	else:
 		for($i = 0;$i < $nb;$i++):
 
-			$ref = &$list[$i];
+			$ref  = &$list[$i];
+			$icon = $ref['valid']?'enable':'disable';
+
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
 	    class="sb-content l-infos-<?=(($i % 2) + 1)?>on2">
-		<td class="td-left" colspan="2"><?=dwho_htmlen($ref['login']);?></td>
+		<td class="td-left">
+			<?=$form->checkbox(array('name'		=> 'userselection[]',
+						 'value'	=> $ref['id'],
+						 'label'	=> false,
+						 'id'		=> 'it-user-'.$i,
+						 'checked'	=> false,
+						 'paragraph'	=> false));?>
+		</td>
+		<td class="txt-left" title="<?=dwho_alttitle($ref['login']);?>">
+			<label for="it-user-<?=$i?>" id="lb-user-<?=$i?>">
+<?php
+				echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
+					dwho_trunc($ref['login'],20,'...',false);
+?>
+			</label>
+		</td>
+
 		<td><?=dwho_htmlen($ref['passwd']);?></td>
+
 		<td><?=$ref['meta']?></td>
 		<td><?=dwho_i18n::strftime_l($this->bbf('date_format_yymmdd'),
 					     null,
@@ -92,7 +111,7 @@ $page = $url->pager($pager['pages'],
 						array('act'	=> 'edit',
 						      'id'	=> $ref['id']),
 						null,
-						$this->bbf('opt_modify')),"\n";
+						$this->bbf('opt_modify'));
 
 			if(xivo_user::chk_authorize('admin',$ref['meta']) === true):
 				echo	$url->href_html($url->img_html('img/site/button/key.gif',
@@ -102,7 +121,19 @@ $page = $url->pager($pager['pages'],
 							array('act'	=> 'acl',
 							      'id'	=> $ref['id']),
 							null,
-							$this->bbf('opt_acl'));
+							$this->bbf('opt_acl')),
+
+
+					$url->href_html($url->img_html('img/site/button/delete.gif',
+				 				       $this->bbf('opt_delete'),
+								       'border="0"'),
+							'xivo/configuration/manage/user',
+							array('act'	=> 'delete',
+				      			      'id'	=> $ref['id'],
+				      			      'page'	=> $pager['page']),
+							'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
+							$this->bbf('opt_delete'));
+
 			endif;
 ?>
 		</td>
