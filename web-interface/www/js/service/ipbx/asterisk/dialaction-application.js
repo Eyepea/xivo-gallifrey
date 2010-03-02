@@ -117,6 +117,11 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 	return(xivo_ast_set_defapplication('macro|queue',targetid,optargs,valargs));
 }
 
+function xivo_ast_defapplication_get_queue_identity(dialevent,id)
+{
+	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id,true));
+}
+
 function xivo_ast_defapplication_queueskill(dialevent,targetid)
 {
 	if((value = dwho_eid('it-dialaction-'+dialevent+'-queueskill-skill')) === false

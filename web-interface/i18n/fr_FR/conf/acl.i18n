@@ -219,3 +219,18 @@ Activer le monitoring
 
 ; acl(service-monitoring-control_system-unmonitor)
 Désactiver le monitoring
+
+; acl(service-ipbx-call_center)
+Centre de contacts
+
+; acl(service-ipbx-call_center-agents)
+Agents
+
+; acl(service-ipbx-call_center-queues)
+Files d'attente
+
+; acl(service-ipbx-call_center-queueskills)
+Compétences
+
+; acl(service-ipbx-call_center-queueskillrules)
+Règles
