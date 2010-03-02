@@ -490,7 +490,7 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 	}
 
 	function _insertupdate($proc,$table,&$data,$set=false,$condwhere='',$valwhere='',$usewhere=false,$useorder=false,$uselimit=false)
-	{
+	{		
 		$proc = strtolower($proc);
 		$table = trim($table);
 		$set = (bool) $set;

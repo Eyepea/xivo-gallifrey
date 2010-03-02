@@ -36,6 +36,13 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_announce		= array();
 	var $_contextlist	= array();
 
+	var $_skill		= false;
+	var $_skillcat		= false;
+	var $_skillrule 	= false;
+	var $_userskill 	= false;
+
+	var $_errors		= array();
+
 	function xivo_application_service_asterisk_queue(&$service,&$dso,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
@@ -59,6 +66,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_components = true;
 
 		if(($this->_extensions = &$this->_service->get_module('extensions')) === false
+		|| ($this->_skill = &$this->_service->get_module('queueskill')) === false
+		|| ($this->_skillcat = &$this->_service->get_module('queueskillcat')) === false
+		|| ($this->_skillrule = &$this->_service->get_module('queueskillrule')) === false
+		|| ($this->_userskill = &$this->_service->get_module('userqueueskill')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'queue'))) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'queue'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
@@ -1237,6 +1248,333 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		return(true);
 	}
+
+	function skills_count($search)
+	{ 
+		$res= $this->_dso->skills_count($search);
+		return($res[0]['count']);
+	}
+
+	function skills_getall($search, $limit)
+	{
+		return($this->_dso->skills_getall($search, $limit));
+	}
+
+	function skills_get($id)
+	{
+		return $this->_dso->skills_getone((int) $id);
+	}
+
+	function skills_delete($id, $vals_only=false)
+	{
+		// deleting related user skills
+		$skills = $this->_skill->get_list_where(array('catid' => $id));
+		if(is_array($skills))
+		{
+			foreach($skills as $skid)
+				$this->_userskill->delete_where(array('skillid' => $skid));
+		}
+
+		$res = $this->_skill->delete_where(array('catid' => $id));
+		if(!$vals_only)
+			$res = $this->_skillcat->delete($id);
+
+		return($res);
+	}
+
+	function skills_setadd($name, $values)
+	{
+		$this->_reset();
+		$ret = ($this->_skillcat->chk_value('name', $name) === false);
+		$this->_errors = $this->_skillcat->get_filter_error();
+
+		$this->_errors['values'] = array();
+		for($i = count($values)-1; $i >= 0; $i--)
+		{			
+			$ret |= ($this->_skill->chk_values($values[$i]) === false);
+			$this->_errors['values'][$i] = $this->_skill->get_filter_error();
+		}
+
+		return !$ret;
+	}
+
+	/**Save a new queue skill
+
+		@param item $_QR array with skill values
+		@verbatim
+			array
+			  'name' => string 'OS' (length=2)
+			  'values' => 
+			    array
+			      0 => 
+			        array
+			          0 => string 'linux' (length=5)
+			          1 => string 'best' (length=4)
+			          2 => string 'LNX' (length=3)
+		@endverbatim
+	*/
+	function skills_add($name, $values)
+	{
+		// save skill category and return autoincremented ID
+		$catid =  $this->_skillcat->add(array('id' => null, 'name' => $name));		
+		if(is_null($catid) || $catid === false)
+		{ return(false); }
+
+		// prepare skill save-array
+		foreach(array_values($values) as $value)
+		{
+			$value['id'] = null;
+			$value['catid'] = $catid;
+			$valid = $this->_skill->add($value);
+		}
+
+		return(($this->get_errnb() < 1));
+	}
+
+	function skills_setedit($name, $values)
+	{ return $this->skills_setadd($name, $values); }
+
+	/**Update a queue skill
+
+		@param item $_QR array with skill values
+		@verbatim
+			array
+			  'name' => string 'OS' (length=2)
+			  'values' => 
+			    array
+			      0 => 
+			        array
+				  'id'		=> string '4' (length=1)
+			          'name' 	=> string 'linux' (length=5)
+			          'description' => string 'best' (length=4)
+			          'printscreen' => string 'LNX' (length=3)
+		@endverbatim
+
+		skill values are referenced by users (with weight) and rules,
+		so we can't simply delete & recreate all the values
+	*/
+	function skills_edit($id, $name, $values)
+	{
+		$this->_reset();
+
+		// update skill name
+		$ret =  $this->_skillcat->edit($id, array('name' => $name));		
+		if(is_null($ret) || $ret === false)
+		{ return(false); }
+
+		// we retrieve stored values ids
+		$stored_values = $this->_skill->get_list_where(array('catid' => $id));
+		if($stored_values === false)
+		{ $stored_values = array(); }
+		$update_values = array();	
+
+		// insert new values
+		// prepare skill save-array
+		foreach(array_values($values) as $value)
+		{
+			$value['catid'] = $id;
+		
+			// new skill value
+			if($value['id'] == -1)
+			{ 
+				$value['id'] = null;
+				$valid = $this->_skill->add($value);
+			}
+			else
+			{ 
+				$ret = $this->_skill->edit($value['id'], $value);
+				$valid = $value['id'];
+			}
+
+			$update_values[] = $valid;
+		}
+
+		$delete_values = array_diff($stored_values, $update_values);
+
+		// WARNING: skills may be users by users & by skill rules
+		//	- we also delete user skills
+		//	  (rule skills just be ignored)
+		foreach($delete_values as $id)
+		{ 
+			$this->_userskill->delete_where(array('skillid' => $id));
+			$res = $this->_skill->delete($id); 
+		}
+
+		return(($this->get_errnb() < 1));
+	}
+
+	function skills_gettree()
+	{
+		return($this->_dso->skills_gettree());
+	}
+
+	/*** skill rules */
+
+	function skillrules_count($search)
+	{ 
+		$res= $this->_dso->skillrules_count($search);
+		return($res[0]['count']);
+	}
+
+	function skillrules_getall($search=null, $limit=null)
+	{
+		return($this->_dso->skillrules_getall($search, $limit));
+	}
+	
+	function skillrules_save($name, $rules)
+	{
+		$this->_reset();
+		$err = false;
+
+		$name = trim($name);
+		if(strlen($name) == 0)
+		{ $err = true; $this->_set_error('name', 'empty'); }
+		else if($this->_skillrule->exists(array('name' => $name)))
+		{ $err = true; $this->_set_error('name', 'alreadyset'); }		
+
+		$catrules = '';
+		for($i = 0; $i < count($rules); $i++)
+		{
+			if(strlen($rules[$i]) == 0)
+			{ $err = true; $this->_set_error("rule-$i",'empty'); }
+
+			if(!$this->_skillrule->check_rule($rules[$i]))
+			{ $err = true; $this->_set_error("rule-$i", 'syntaxincorrect'); }
+
+			$catrules .= ";" . $rules[$i];
+		}
+
+		if(strlen($catrules) == 0)
+		{ $err = true; $this->_set_error('all-rules', 'norule'); }
+
+		if($err)
+		{ return false; }
+	
+		// save skill category and return autoincremented ID
+		$data	= array('name' => $name, 'rule' => substr($catrules, 1));
+		$id =  $this->_skillrule->add($data);
+
+		return(($this->get_errnb() < 1));
+	}
+
+	function skillrules_update($item)
+	{
+		$this->_reset();
+		$err = false;
+
+		$name 		= trim($item['name']);
+		if(strlen($name) == 0)
+		{ $err = true; $this->_set_error('name','empty'); }
+
+		$ret = $this->_skillrule->get_where(array('name' => $name));
+		if($ret !== false && ((int)$ret['id']) != ((int)$item['id']))
+		{ $err = true; $this->_set_error('name', 'alreadyset'); }
+
+		$catrules = '';
+		for($i = 0; $i < count($item['rule']); $i++)
+		{
+			$rule = $item['rule'][$i];
+			if(strlen($rule) == 0)
+			{ $err = true; $this->_set_error("rule-$i",'empty'); }
+
+			if(!$this->_skillrule->check_rule($rule))
+			{ $err = true; $this->_set_error("rule-$i", 'syntaxincorrect'); }
+
+			$catrules .= ";$rule";
+		}
+
+		if(strlen($catrules) == 0)
+		{ $err = true; $this->_set_error('all-rules', 'norule'); }
+
+		if($err)
+		{ return false; }
+
+		// update skill name
+		$ret =  $this->_skillrule->edit($item['id'], 
+			array('name' => $name, 'rule' => substr($catrules, 1)));
+		return(!is_null($ret));
+	}
+
+	function skillrules_delete($id)
+	{
+		$ret =  $this->_skillrule->delete($id);
+
+		return $ret;
+	}
+
+	function skillrules_getone($id)
+	{
+		$skr = $this->_dso->skillrules_getone((int) $id);
+		if($skr !== false && array_key_exists('rule', $skr));
+			$skr['rule'] = split(';', $skr['rule']);
+
+		return($skr);
+	}
+
+	/** user skills */
+	/**
+		check values
+	*/
+	function userskills_setadd($userskills)
+	{
+		$this->_errors = array();
+		$skillids = array();
+		$err = true;
+
+		for($i = count($userskills) - 1; $i >= 0; $i--)
+		{	
+			$this->_errors[$i] = array();
+
+			if(strlen($userskills[$i]['weight']) == 0)
+			{ $err = false; $this->_errors[$i]['weight'] = 'empty'; }
+			else if(!ctype_digit($userskills[$i]['weight']))
+			{ $err = false; $this->_errors[$i]['weight'] = 'notnumeric'; }
+			else if(((int)$userskills[$i]['weight']) < 0 
+			|| ((int)$userskills[$i]['weight']) > 100)
+			{ $err = false; $this->_errors[$i]['weight'] = 'unbound'; } 
+
+			if(strlen($userskills[$i]['skillid']) == 0)
+			{ $err = false; $this->_errors[$i]['skillid'] = 'empty'; }
+			if(array_key_exists($userskills[$i]['skillid'], $skillids))
+			{ 
+				$err = false;
+				$this->_errors[$i]['skillid'] = 'doubloon'; 
+				$this->_errors[$skillids[$userskills[$i]['skillid']]]['skillid'] = 'doubloon';
+			} 
+			else 
+			{ $skillids[$userskills[$i]['skillid']] = $i; }
+	
+		}
+
+		return($err);
+	}
+
+	function userskills_get_error()
+	{ return $this->_errors; }
+
+	function userskills_add($userskills)
+	{
+		$count = count($userskills); 
+		for($i =  0; $i < $count; $i++)
+			$this->_userskill->add($userskills[$i]);
+	
+		return true;
+	}
+
+	function userskills_setedit($userskills)
+	{ return $this->userskills_setadd($userskills); }
+
+	function userskills_edit($userid, $userskills)
+	{ 
+		$this->userskills_delete($userid);
+		return $this->userskills_add($userskills);
+	}
+
+	function userskills_delete($userid)
+	{ return $this->_userskill->delete_where(array('userid' => $userid)); }
+
+	function userskills_get($userid)
+	{ return $this->_userskill->get_all_where(array('userid' => $userid)); }
 }
 
 ?>

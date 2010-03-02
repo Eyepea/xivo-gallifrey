@@ -21,7 +21,7 @@
 require_once('xivo.php');
 
 if(dwho_constant('XIVO_WEBI_CONFIGURED',false) === false)
-{
+{	
 	$action_path = $_LOC->get_action_path('xivo/wizard',0);
 
 	if($action_path === false)

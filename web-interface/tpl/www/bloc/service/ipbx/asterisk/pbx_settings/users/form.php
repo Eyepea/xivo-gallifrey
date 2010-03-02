@@ -962,7 +962,7 @@ endif;
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-advanced" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_protocol_callerid'),
 				  'name'	=> 'protocol[callerid]',
@@ -1193,6 +1193,7 @@ endif;
 				    'default'	=> $element['protocol']['sip']['useclientcode']['default'],
 				    'selected'	=> $this->get_var('info','protocol','useclientcode')),
 			      $element['protocol']['sip']['useclientcode']['value']);
+
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -1208,3 +1209,10 @@ endif;
 				   $info['userfeatures']['description']);?>
 	</div>
 </div>
+
+<div id="sb-part-queueskills" class="b-nodisplay">
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/queueskills');
+?>
+</div>
+

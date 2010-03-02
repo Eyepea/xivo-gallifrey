@@ -21,7 +21,7 @@
 define('ARGIN_SEPARATOR','&');
 define('ARGOUT_SEPARATOR','&');
 define('DWHO_PHP_VER_MIN','4.4');
-define('DWHO_PHP_VER_MAX','5.4');
+define('DWHO_PHP_VER_MAX','5.3.2');
 
 class dwho_sysinfo
 {

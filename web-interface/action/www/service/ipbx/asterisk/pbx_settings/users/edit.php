@@ -58,14 +58,31 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 							null,
 							true);
 
+$appqueue = &$ipbx->get_application('queue');
+$_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
+
 if(isset($_QR['fm_send']) === true
 && dwho_issa('protocol',$_QR) === true
 && dwho_issa('userfeatures',$_QR) === true
 && isset($_QR['protocol']['protocol']) === true)
 {
 	$return = &$result;
+	$queueskills = array();
+		
+	// skipping the last one (empty entry)
+	$count = count($_QR['queueskill-skill']) - 1;
+	for($i = 0; $i < $count; $i++)
+	{
+		$queueskills[] = array(
+			'userid'	=> $_QR['id'],
+			'skillid'	=> $_QR['queueskill-skill'][$i],
+			'weight'	=> $_QR['queueskill-weight'][$i],
+		);
+	}
+	$skillerr = $appqueue->userskills_setedit($queueskills);
 
 	if($appuser->set_edit($_QR,$_QR['protocol']['protocol']) === false
+	|| $skillerr === false
 	|| $appuser->edit() === false)
 	{
 		$fm_save = false;
@@ -74,15 +91,20 @@ if(isset($_QR['fm_send']) === true
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
 
 		$error = $appuser->get_error();
+		$error['queueskills'] = $appqueue->userskills_get_error();
 
 		if(dwho_issa('protocol',$result) === true
 		&& isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
+		$_TPL->set_var('queueskills', $queueskills);
 	}
 	else
 	{
+		// updating skills
+		$appqueue->userskills_edit($_QR['id'], $queueskills);
+
 		$ipbx->discuss('xivo[userlist,update]');
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
@@ -178,6 +200,8 @@ if(empty($return) === false)
 }
 else
 	$return = null;
+
+$element['queueskills'] =  $appqueue->skills_gettree();
 
 $_TPL->set_var('id',$info['userfeatures']['id']);
 $_TPL->set_var('info',$return);

@@ -725,7 +725,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(isset($arr['protocol']['callerid']) === true)
 			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
-
 		$this->set_protocol($arr['protocol'],$protocolname);
 
 		$arr['userfeatures']['protocol'] = $protocolname;
@@ -742,7 +741,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			$arr['voicemail-option'] = 'none';
-
+	
 		if(isset($arr['voicemail-option']) === true)
 		{
 			switch($arr['voicemail-option'])

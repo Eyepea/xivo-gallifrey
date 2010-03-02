@@ -148,7 +148,7 @@ class dwho_datastorage
 
 		if(dwho_datastorage::chk_extension_exists($type) === false)
 			return(false);
-
+	
 		$datastorage = &dwho_gat::get('datastorage');
 
 		if((bool) $load === true)

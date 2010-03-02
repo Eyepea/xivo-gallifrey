@@ -92,6 +92,10 @@ endif;
 			    array('event'	=> 'voicemenuflow'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/queue',
 			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/queueskill',
+			    array('event'	=> 'voicemenuflow'));
+	$this->file_include('bloc/service/ipbx/asterisk/dialaction/queueskillrule',
+			    array('event'	=> 'voicemenuflow'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/meetme',
 			    array('event'	=> 'voicemenuflow'));
 	$this->file_include('bloc/service/ipbx/asterisk/dialaction/voicemail',
@@ -297,6 +301,7 @@ endif;
 </div>
 <div class="clearboth"></div>
 <?php
+		
 	echo	$form->select(array('name'	=> 'voicemenuflowhidden[]',
 				    'label'	=> false,
 				    'id'	=> 'it-voicemenu-flow-hidden',

@@ -55,7 +55,7 @@ class dwho
 		else if(function_exists('version_compare') === false
 		|| version_compare(PHP_VERSION,DWHO_PHP_VER_MIN,'<') === true
 		|| version_compare(PHP_VERSION,DWHO_PHP_VER_MAX,'>=') === true)
-			die('ERR: Please update your PHP');
+			die('ERR: Please update your PHP (current version is \'' . PHP_VERSION . '\')');
 
 		$this->_cfg_ini_get();
 		$this->_cfg_url();
@@ -266,7 +266,7 @@ class dwho
 		if(dwho_datastorage::is_valid($dso['type']) === false)
 			die('ERR: Invalid datastorage "type" configuration');
 		else if(dwho_datastorage::chk_extension_loaded($dso['type'],true) === false)
-			die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
+			die('ERR: Datastorage '.$dso['type'].' extension is not loaded'); 
 		else if(($datastorage = &dwho_gct::set_get(
 						dwho_datastorage::factory($dso['type'],
 									  $dso),

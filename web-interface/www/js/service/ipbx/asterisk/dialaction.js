@@ -33,6 +33,8 @@ var xivo_dialaction_actiontype = {
 			'user':		['actiontype','actionarg1','actionarg2'],
 			'group':	['actiontype','actionarg1','actionarg2'],
 			'queue':	['actiontype','actionarg1','actionarg2'],
+			'queueskill':	['actiontype','skill','varname'],
+			'queueskillrule':['actiontype','name'],
 			'meetme':	['actiontype','actionarg1'],
 			'voicemail':	['actiontype',
 					 'actionarg1',
@@ -165,6 +167,7 @@ function xivo_ast_register_dialaction(dialevent,actiontype)
 
 function xivo_ast_chg_dialaction(dialevent,actiontype)
 {
+	
 	if(dwho_type_object(xivo_elt_dialaction[dialevent]) === false
 	|| dwho_is_undef(actiontype.value) === true
 	|| (dwho_is_undef(actiontype.disabled) === false && actiontype.disabled === true) === true

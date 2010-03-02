@@ -196,6 +196,18 @@ $array['queuemember'] = array();
 $array['queuemember']['table'] = 'queuemember';
 $array['queuemember']['primary'] = array('queue_name' => '','interface' => '');
 
+$array['queueskill'] = array();
+$array['queueskill']['table'] = 'queueskill';
+$array['queueskill']['primary'] = array('id' => '');
+
+$array['queueskillcat'] = array();
+$array['queueskillcat']['table'] = 'queueskillcat';
+$array['queueskillcat']['primary'] = array('id' => '');
+
+$array['queueskillrule'] = array();
+$array['queueskillrule']['table'] = 'queueskillrule';
+$array['queueskillrule']['primary'] = array('id' => '');
+
 $array['rightcall'] = array();
 $array['rightcall']['table'] = 'rightcall';
 $array['rightcall']['primary'] = array('id' => '');
@@ -267,6 +279,10 @@ $array['userfeatures']['primary'] = array('id' => '');
 $array['useriax'] = array();
 $array['useriax']['table'] = 'useriax';
 $array['useriax']['primary'] = array('id' => '');
+
+$array['userqueueskill'] = array();
+$array['userqueueskill']['table'] = 'userqueueskill';
+$array['userqueueskill']['primary'] = array('userid' => '', 'skillid' => '');
 
 $array['usersip'] = array();
 $array['usersip']['table'] = 'usersip';

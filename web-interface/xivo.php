@@ -57,6 +57,7 @@ switch($tpl_area)
 			dwho_die('XIVO is not configured');
 
 		dwho::load_class('dwho_tpl');
+
 		$_TPL = &new dwho_tpl($_CF['template']['www']['path'],
 				      array('menu','url','dhtml'),
 				      $_URL);

@@ -383,7 +383,7 @@ class xivo_application_service_asterisk_voicemenu extends xivo_application_aster
 
 			$this->set_extenumbers($action,$number,$context);
 		}
-
+	
 		return(($this->get_errnb() < 1));
 	}
 

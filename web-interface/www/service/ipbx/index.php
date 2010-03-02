@@ -36,6 +36,7 @@ $action_path = $_LOC->get_action_path('service/ipbx/'.$ipbx->get_name(),2);
 if($action_path === false)
 	$_QRY->go($_TPL->url('xivo'));
 
+
 die(include($action_path));
 
 ?>

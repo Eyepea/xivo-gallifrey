@@ -22,6 +22,7 @@ $form = &$this->get_module('form');
 
 $fkdata = $this->get_var('fkdata');
 $list = $this->get_var('fktype_list');
+
 $select = array();
 $select['paragraph'] = false;
 $select['name'] = 'phonefunckey[type][]';

@@ -1,0 +1,29 @@
+; title_content_name
+Règles de compétence > Ajouter
+
+; fm_queueskillrule_name
+Nom :
+
+; fm_queueskillrule_rule
+Règle :
+
+; col_1
+Règles
+
+; no_disp
+Aucune règle n'est définie
+
+; queueskillrule-name(empty)
+Vous devez spécifier un nom pour la règle
+
+; queueskillrule-name(alreadyset)
+Le nom spécifié est déjà attribué à une autre règle
+
+; queueskillrule-rule(empty)
+Vous devez spécifier une règle
+
+; queueskillrule-rule(syntaxincorrect)
+La syntaxe de la règle est incorrecte
+
+; queueskillrule-allrules(norule)
+Vous devez spécifier au moins une règle

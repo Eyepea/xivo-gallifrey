@@ -441,3 +441,19 @@ Touche invalide (i)
 
 ; voicemenu_event-h
 Raccrocher (h)
+
+; fm_dialaction_actiontype-opt(queueskill|Asterisk)
+Compétences (Qualification des appels)
+
+; fm_dialaction_queueskill-skill
+Compétence : 
+
+; fm_dialaction_queueskill-varname
+Nom de la variable : 
+
+; fm_dialaction_queueskillrule-name
+Règle : 
+
+; fm_dialaction_actiontype-opt(queueskillrule|Asterisk)
+Règles de compétences (Qualification des appels)
+

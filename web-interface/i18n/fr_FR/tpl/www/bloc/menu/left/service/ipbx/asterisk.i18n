@@ -1,3 +1,4 @@
+
 ; mn_left_name
 IPBX
 
@@ -52,20 +53,29 @@ Fiches : Événements
 ; mn_left_ctisettings-contexts
 Contextes
 
+; mn_left_ti_callcenter
+Centre de contacts
+
+; mn_left_callcenter-queues
+Files d'attente
+
+; mn_left_callcenter-agents
+Agents
+
+; mn_left_callcenter-queueskills
+Compétences
+
+; mn_left_callcenter-queueskillrules
+Règles
+
 ; mn_left_ti_pbxsettings
 Paramètres IPBX
-
-; mn_left_pbxsettings-agents
-Agents
 
 ; mn_left_pbxsettings-users
 Utilisateurs
 
 ; mn_left_pbxsettings-groups
 Groupes
-
-; mn_left_pbxsettings-queues
-Files d'attente
 
 ; mn_left_pbxsettings-meetme
 Chambres de conférence
@@ -171,3 +181,4 @@ Etes-vous certain de vouloir redémarrer ?
 
 ; controlsystem_ipbxrestart_confirm
 Etes-vous certain de vouloir redémarrer %s ?
+

@@ -138,6 +138,47 @@ $dhtml = &$this->get_module('dhtml');
 	echo	'</dl>';
 
 
+	if(xivo_user::chk_acl('call_center') === true):
+		echo	'<dl><dt>',$this->bbf('mn_left_ti_callcenter'),'</dt>';
+
+		// must be migrate from pbxsettings to callcenter
+		if(xivo_user::chk_acl('call_center','agents') === true):
+			echo	'<dd id="mn-call-center--agents">',
+				$url->href_html($this->bbf('mn_left_callcenter-agents'),
+						'service/ipbx/pbx_settings/agents',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		// must be migrate from pbxsettings to callcenter
+		if(xivo_user::chk_acl('call_center','queues') === true):
+			echo	'<dd id="mn-call-center--queues">',
+				$url->href_html($this->bbf('mn_left_callcenter-queues'),
+						'service/ipbx/pbx_settings/queues',
+						'act=list'),
+				'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('call_center','queueskills') === true):
+			echo	'<dd id="mn-call-center--queueskills">',
+				$url->href_html($this->bbf('mn_left_callcenter-queueskills'),
+						'service/ipbx/call_center/queueskills',
+						'act=list'),
+						'</dd>';
+		endif;
+
+		if(xivo_user::chk_acl('call_center','queueskillrules') === true):
+			echo	'<dd id="mn-call-center--queueskillrules">',
+				$url->href_html($this->bbf('mn_left_callcenter-queueskillrules'),
+						'service/ipbx/call_center/queueskillrules',
+						'act=list'),
+						'</dd>';
+		endif;
+
+		echo	'</dl>';
+	endif;
+
+
 	if(xivo_user::chk_acl('pbx_settings') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_pbxsettings'),'</dt>';
 
@@ -161,22 +202,6 @@ $dhtml = &$this->get_module('dhtml');
 			echo	'<dd id="mn-pbx-settings--voicemail">',
 				$url->href_html($this->bbf('mn_left_pbxsettings-voicemail'),
 						'service/ipbx/pbx_settings/voicemail',
-						'act=list'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('pbx_settings','agents') === true):
-			echo	'<dd id="mn-pbx-settings--agents">',
-				$url->href_html($this->bbf('mn_left_pbxsettings-agents'),
-						'service/ipbx/pbx_settings/agents',
-						'act=list'),
-				'</dd>';
-		endif;
-
-		if(xivo_user::chk_acl('pbx_settings','queues') === true):
-			echo	'<dd id="mn-pbx-settings--queues">',
-				$url->href_html($this->bbf('mn_left_pbxsettings-queues'),
-						'service/ipbx/pbx_settings/queues',
 						'act=list'),
 				'</dd>';
 		endif;

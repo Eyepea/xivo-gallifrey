@@ -1,0 +1,39 @@
+; title_content_name
+Compétences > Ajouter
+
+; fm_queueskill_name
+Catégorie :
+
+; fm_queueskill_items
+Valeurs :
+
+; col_1
+Nom
+
+; col_2
+Description
+
+; col_3
+Affichage écran
+
+; no_disp
+Aucune information
+
+; queueskill-name(empty)
+Vous devez saisir un nom de catégorie
+
+; queueskill-name(regexp false)
+Le nom de la catégorie contient des caractères invalides
+
+; queueskill-value-name(empty)
+Vous devez saisir un nom pour la compétence
+
+; queueskill-value-name(regexp false)
+le nom de la compétence contient des caractères invalides
+
+; queueskill-value-printscr(maximum length)
+l'affichage écran doit faire AU PLUS 5 caractères
+
+; queueskill-value-printscr(regexp false)
+l'affichage écran contient des caractères invalides
+

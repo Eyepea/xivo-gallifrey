@@ -189,7 +189,6 @@ class xivo_user
 			 $_SESSION['_ACL']['user_section']) === false
 		|| is_scalar($section) === false)
 			return(false);
-
 		$section = trim(preg_replace('@/+@','/',$section),'/');
 
 		$tree = $_SESSION['_ACL']['tree'];

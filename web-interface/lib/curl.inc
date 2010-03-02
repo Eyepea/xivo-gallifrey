@@ -395,7 +395,7 @@ class dwho_curl
 				return(CURLOPT_READFUNCTION);
 			case 'passwdfunction':
 			case CURLOPT_PASSWDFUNCTION:
-				return(CURLOPT_PASSWDFUNCTION);
+		  		return(CURLOPT_PASSWDFUNCTION);
 			case 'headerfunction':
 			case CURLOPT_HEADERFUNCTION:
 				return(CURLOPT_HEADERFUNCTION);

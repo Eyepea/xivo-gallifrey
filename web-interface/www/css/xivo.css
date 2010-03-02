@@ -278,6 +278,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 #b-content .sb-list th {text-align: center;background-position: left top; background-repeat: repeat-x;background-image: url(../img/content/top/bg-1.gif);background-color: #fff;padding-top: 2px;border: 1px solid #999;border-right-width: 0px;font-size: 8pt;}
 #b-content .sb-list .th-left {border-right-width: 0px;}
 #b-content .sb-list .th-right, #b-content .sb-list .th-single {border-right-width: 1px;}
+#b-content .sb-list .th-rule { width: 40px; }
 #b-content .sb-list td {text-align: center;padding: 2px 0px;background-color: #eee;border: 0px solid #999;border-left-width: 1px;border-bottom-width: 1px;font-size: 8pt;}
 #b-content .sb-list .td-left {border-right-width: 0px;}
 #b-content .sb-list .td-right {border-right-width: 1px;}

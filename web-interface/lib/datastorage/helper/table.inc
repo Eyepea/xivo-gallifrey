@@ -307,7 +307,6 @@ class dwho_datastorage_helper_table extends dwho_datastorage_helper_abstract
 
 				if($i === 0)
 					continue;
-
 				$this->_dso->orwhere($where);
 				$this->_dso->aggregate_where();
 			}

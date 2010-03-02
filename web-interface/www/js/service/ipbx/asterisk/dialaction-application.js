@@ -117,9 +117,42 @@ function xivo_ast_defapplication_queue(dialevent,targetid)
 	return(xivo_ast_set_defapplication('macro|queue',targetid,optargs,valargs));
 }
 
-function xivo_ast_defapplication_get_queue_identity(dialevent,id)
+function xivo_ast_defapplication_queueskill(dialevent,targetid)
 {
-	return(dwho.form.get_text_opt_select('it-dialaction-'+dialevent+'-queue-actionarg1',id,true));
+	if((value = dwho_eid('it-dialaction-'+dialevent+'-queueskill-skill')) === false
+	|| (name = dwho_eid('it-dialaction-'+dialevent+'-queueskill-varname')) === false)
+		return(false);
+
+	var namevalue  = xivo_ast_application_sanitize_arg(name.value).replace(/=/g,'');
+	var valuevalue = xivo_ast_application_sanitize_arg(value.value).replace(/=/g,'');
+
+	if(namevalue.length < 1 || valuevalue.length < 1 )
+		return(false);
+
+	var args = [namevalue+'='+valuevalue];
+	return(xivo_fm_select_add_ast_application('set',args));
+}
+
+function xivo_ast_defapplication_queueskill_onskillchange(dialevent,targetid)
+{
+	if((skill = dwho_eid('it-dialaction-'+dialevent+'-queueskill-skill')) === false
+	|| (varname = dwho_eid('it-dialaction-'+dialevent+'-queueskill-varname')) === false)
+		return(false);
+
+	if(varname.value.length > 0 && varname.getAttribute('autoset') != 1)
+		return true;
+
+	varname.value = skill.options[skill.selectedIndex].parentNode.label;
+	varname.setAttribute('autoset', 1);
+}
+
+function xivo_ast_defapplication_queueskillrule(dialevent,targetid)
+{
+	if((rule  = dwho_eid('it-dialaction-'+dialevent+'-queueskillrule-name')) === false)
+		return(false);
+
+	var args = ['USR_XIVO_QUEUESKILLRULESET'+'='+rule.value];
+	return(xivo_fm_select_add_ast_application('set',args));
 }
 
 function xivo_ast_defapplication_meetme(dialevent,targetid)

@@ -197,6 +197,15 @@ $array['module']['queuefeatures']['datastorage'] = true;
 $array['module']['queuemember'] = array();
 $array['module']['queuemember']['datastorage'] = true;
 
+$array['module']['queueskill'] = array();
+$array['module']['queueskill']['datastorage'] = true;
+
+$array['module']['queueskillcat'] = array();
+$array['module']['queueskillcat']['datastorage'] = true;
+
+$array['module']['queueskillrule'] = array();
+$array['module']['queueskillrule']['datastorage'] = true;
+
 $array['module']['rightcall'] = array();
 $array['module']['rightcall']['datastorage'] = true;
 
@@ -236,6 +245,9 @@ $array['module']['userfeatures']['datastorage'] = true;
 $array['module']['useriax'] = array();
 $array['module']['useriax']['datastorage'] = true;
 
+$array['module']['userqueueskill'] = array();
+$array['module']['userqueueskill']['datastorage'] = true;
+
 $array['module']['usersip'] = array();
 $array['module']['usersip']['datastorage'] = true;
 
@@ -247,6 +259,7 @@ $array['module']['voicemailfeatures']['datastorage'] = true;
 
 $array['module']['voicemenu'] = array();
 $array['module']['voicemenu']['datastorage'] = true;
+
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP] = array('module' => 'usersip');

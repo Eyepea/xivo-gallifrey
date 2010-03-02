@@ -86,6 +86,139 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 
 		return($this->get_all($disable,$order,$limit,$value));
 	}
+
+	function skills_count($search=null)
+	{
+		$this->_dso->new_select('queueskillcat', array('count' => (object) 'COUNT(*)'));
+		if(!is_null($search) && strlen($search) > 0)
+			$this->_dso->wherecontain("name", $search);
+
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return($res);
+	}
+
+	function skills_getall($search=null, $limit=null)
+	{
+		$this->_dso->new_select('queueskillcat',array('id', 'name'));
+		if(!is_null($search) && strlen($search) > 0)
+			$this->_dso->wherecontain("name", $search, true, 'queueskillcat');
+
+		$this->_dso->leftjoin('queueskill',
+			'queueskillcat.id = queueskill.catid',
+			null,
+			array('sum' => (object) 'COUNT(queueskill.id)'));
+
+		$this->_dso->new_group('id', 'queueskillcat');
+		$this->_dso->new_order('name', null, 'queueskillcat');
+		$this->_dso->limit($limit);
+		
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return($res);
+	}
+
+	function skills_getone($id)
+	{
+		if(!is_int($id))
+		{ return false; }
+
+		// 1. get skill name
+		$this->_dso->new_select('queueskillcat');
+		$this->_dso->where("id = %d", $id);
+		$res = $this->_dso->select_single();
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		if($res === false || count($res) == 0)
+		{ return false; }
+
+		$name = $res['name'];
+
+		// 2. get skill values
+		$this->_dso->new_select('queueskill');
+		$this->_dso->where("catid = %d", $id);
+
+		$res = $this->_dso->select_all(null, true);
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return array('id' => $id, 'name' => $name, 'values' => $res);
+	}
+
+	function skills_gettree()
+	{
+		$this->_dso->new_select('queueskill',array('id', 'name'));
+		$this->_dso->leftjoin('queueskillcat',
+			'queueskillcat.id = queueskill.catid',
+			null,
+			array('category' => 'name'));
+		
+		$this->_dso->new_order('name', null, 'queueskillcat');
+		$this->_dso->add_order('name', null, 'queueskill');
+
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+		return($res);
+	}
+
+	/** skill rules */
+	function skillrules_count($search=null)
+	{
+		$this->_dso->new_select('queueskillrule', array('count' => (object) 'COUNT(*)'));
+		if(!is_null($search) && strlen($search) > 0)
+			$this->_dso->wherecontain("name", $search);
+
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return($res);
+	}
+
+	function skillrules_getall($search=null, $limit=null)
+	{
+		$this->_dso->new_select('queueskillrule');
+		if(!is_null($search) && strlen($search) > 0)
+			$this->_dso->wherecontain("name", $search);
+
+		$this->_dso->new_order('name', null, 'queueskillrule');
+		$this->_dso->limit($limit);
+		
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return($res);
+	}
+
+	function skillrules_getone($id)
+	{
+		if(!is_int($id))
+		{ return false; }
+
+		// 1. get skill name
+		$this->_dso->new_select('queueskillrule');
+		$this->_dso->where("id = %d", $id);
+
+		$res = $this->_dso->select_single();
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return $res;
+	}
+	// **
 }
 
 ?>

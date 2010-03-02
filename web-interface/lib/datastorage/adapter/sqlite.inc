@@ -214,7 +214,7 @@ class dwho_datastorage_adapter_sqlite extends dwho_datastorage_adapter_abstract_
 		$this->_query = $query;
 
 		if((bool) $buffer === false)
-			$this->_result = sqlite_unbuffered_query($this->_query,$this->_link);
+			$this->_result = sqlite_unbuffered_query($this->_query,$this->_link);			
 		else
 			$this->_result = sqlite_query($this->_query,$this->_link);
 

@@ -44,14 +44,21 @@ $array['tree']['service']['ipbx']['cti_settings']['contexts'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['sheetactions'] = true;
 $array['tree']['service']['ipbx']['cti_settings']['sheetevents'] = true;
 
+$array['tree']['service']['ipbx']['call_center'] = array();
+$array['tree']['service']['ipbx']['call_center']['agents'] = true;
+$array['tree']['service']['ipbx']['call_center']['queues'] = true;
+$array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
+$array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
-$array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
-$array['tree']['service']['ipbx']['pbx_settings']['queues'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
+//
+$array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;
+$array['tree']['service']['ipbx']['pbx_settings']['queues'] = true;
+
 
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;
@@ -92,7 +99,6 @@ $array['tree']['service']['monitoring']['control_system']['stop'] = true;
 $array['tree']['service']['monitoring']['control_system']['restart'] = true;
 $array['tree']['service']['monitoring']['control_system']['monitor'] = true;
 $array['tree']['service']['monitoring']['control_system']['unmonitor'] = true;
-
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

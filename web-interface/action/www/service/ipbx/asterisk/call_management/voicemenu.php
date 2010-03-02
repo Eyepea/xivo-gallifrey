@@ -76,7 +76,13 @@ switch($act)
 		$_TPL->set_var('moh_list',$appvoicemenu->get_musiconhold());
 		$_TPL->set_var('context_list',$appvoicemenu->get_context_list());
 		$_TPL->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
+
+
+		$appqueue = &$ipbx->get_application('queue');
+		$_TPL->set_var('skills_tree', $appqueue->skills_gettree());
+		$_TPL->set_var('skillrules', $appqueue->skillrules_getall());
 		break;
+
 	case 'edit':
 		$appvoicemenu = &$ipbx->get_application('voicemenu');
 
@@ -129,7 +135,12 @@ switch($act)
 		$_TPL->set_var('moh_list',$appvoicemenu->get_musiconhold());
 		$_TPL->set_var('context_list',$appvoicemenu->get_context_list());
 		$_TPL->set_var('ipbxapplications',$appvoicemenu->get_ipbxapplications());
+
+		$appqueue = &$ipbx->get_application('queue');
+		$_TPL->set_var('skills_tree', $appqueue->skills_gettree());
+		$_TPL->set_var('skillrules', $appqueue->skillrules_getall());
 		break;
+
 	case 'delete':
 		$param['page'] = $page;
 
