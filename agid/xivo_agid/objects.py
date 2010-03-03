@@ -492,6 +492,19 @@ class User:
         if not self.vmbox:
             self.enablevoicemail = 0
 
+        # user skills
+        cursor.query("SELECT count(*) FROM userqueueskill WHERE userid = %d", (xid))
+        res = cursor.fetchone()
+        if not res:
+            raise LookupError("Unable to find user queueskills)
+
+        self.skills = ''
+        if res[0] > 0:
+	    self.skills = xid
+        ###
+
+
+
     def disable_forwards(self):
         self.cursor.query("UPDATE userfeatures "
                           "SET enablebusy = 0, "
