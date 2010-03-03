@@ -1006,6 +1006,7 @@ CREATE TABLE `queuemember` (
  `userid` int(10) unsigned NOT NULL,
  `channel` varchar(25) NOT NULL,
  `category` enum('group','queue') NOT NULL,
+ `skills` varchar(64) NOT NULL DEFAULT '',
  PRIMARY KEY(`queue_name`,`interface`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
@@ -1769,5 +1770,50 @@ CREATE INDEX `voicemenu__idx__number` ON `voicemenu`(`number`);
 CREATE INDEX `voicemenu__idx__context` ON `voicemenu`(`context`);
 CREATE INDEX `voicemenu__idx__commented` ON `voicemenu`(`commented`);
 CREATE UNIQUE INDEX `voicemenu__uidx__name` ON `voicemenu`(`name`);
+
+
+-- queueskill categories
+DROP TABLE IF EXISTS `queueskillcat`;
+CREATE TABLE `queueskillcat` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(64) NOT NULL DEFAULT '',
+ PRIMARY KEY(`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+CREATE UNIQUE INDEX `queueskillcat__uidx__name` ON `queueskillcat`(`name`);
+
+-- queueskill values
+DROP TABLE IF EXISTS `queueskill`;
+CREATE TABLE `queueskill` (
+ `id` int(10) unsigned auto_increment,
+ `catid` int(10) unsigned NOT NULL DEFAULT 1,
+ `name` varchar(64) NOT NULL DEFAULT '',
+ `description` text,
+ `printscreen` varchar(5),
+ PRIMARY KEY(`id`)
+);
+
+CREATE INDEX `queueskill__idx__catid` ON `queueskill`(`catid`);
+CREATE UNIQUE INDEX `queueskill__uidx__name` ON `queueskill`(`name`);
+
+-- queueskill rules;
+DROP TABLE IF EXISTS `queueskillrule`;
+CREATE TABLE `queueskillrule` (
+ `id` int(10) unsigned auto_increment,
+ `name` varchar(64) NOT NULL DEFAULT '',
+ `rule` text,
+ PRIMARY KEY(`id`)
+);
+
+-- user queueskills
+DROP TABLE IF `userqueueskill`;
+CREATE TABLE `userqueueskill` (
+ `userid` int(10) unsigned,
+ `skillid` int(10) unsigned,
+ `weight` int(3) unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(`userid`, `skillid`)
+);
+
+CREATE INDEX `userqueueskill__idx__userid` ON `userqueueskill`(`userid`);
 
 COMMIT;
