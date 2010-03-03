@@ -42,6 +42,9 @@
 					<li><a href="#"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-service');
 							return(false);"><?=$this->bbf('smenu_services');?></a></li>
+					<li><a href="#"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-queueskills');
+							return(false);"><?=$this->bbf('smenu_queueskills');?></a></li>
 				</ul>
 			</div>
 		</li>
@@ -76,10 +79,10 @@
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-5"
-		    class="dwsm-blur"		    
+		    class="dwsm-blur-last"		    
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
-			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-advanced');">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-advanced',1);">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_advanced');?></a></span>
 				</div>
@@ -95,18 +98,6 @@
 							return(false);"><?=$this->bbf('smenu_t38');?></a></li>
 				</ul>
 			</div>
-		</li>
-		<li id="dwsm-tab-6"
-		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-queueskills');"
-		    onmouseout="dwho_submenu.blur(this,1);"
-		    onmouseover="dwho_submenu.focus(this,1);">
-			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);">
-					<?=$this->bbf('smenu_queueskills');?></a>
-				</span>
-			</div>
-			<span class="span-right">&nbsp;</span>
 		</li>
 	</ul>
 </div>

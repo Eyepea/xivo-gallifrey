@@ -26,6 +26,9 @@ $array['element'] = array();
 $array['element']['userid'] = array();
 $array['element']['userid']['default'] = 0;
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = '';
+
 $array['element']['skillid'] = array();
 $array['element']['skillid']['default'] = 0;
 

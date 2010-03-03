@@ -566,13 +566,12 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$tmp = $reslist = array();
 
 		for($i = 0;$i < $nb;$i++)
-		{
+		{			
 			if(($uinfo = $module->get($list[$i])) === false)
 			{
 				$this->_set_error($type,'wrong '.$type);
 				continue;
 			}
-
 			$where['userid'] = $uinfo['id'];
 
 			$info = $where;
@@ -604,11 +603,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			}
 
 			$info['queue_name'] = $name;
+			$info['skills']	    = '';
+			// set user queueskill 
+			if($this->_userskill->exists(array('userid' => $uinfo['id'])) !== false)
+				$info['skills'] = $uinfo['id'];
 
 			if(($rs = $this->_queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
 				continue;
-
+			
 			$tmp[$uinfo['id']] = 1;
 			$reslist[] = $rs;
 		}
@@ -1557,7 +1560,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$count = count($userskills); 
 		for($i =  0; $i < $count; $i++)
 			$this->_userskill->add($userskills[$i]);
-	
+
 		return true;
 	}
 

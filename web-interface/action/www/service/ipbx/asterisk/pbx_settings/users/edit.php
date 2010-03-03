@@ -57,7 +57,6 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 							array('name' => SORT_ASC),
 							null,
 							true);
-
 $appqueue = &$ipbx->get_application('queue');
 $_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
 

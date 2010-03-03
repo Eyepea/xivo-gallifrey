@@ -1074,6 +1074,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$callgroup = array();
 			$info['penalty'] = 0;
 		}
+		if($type == 'queue')
+			$info['skills'] = ''; 
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -1384,10 +1386,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$ret = $this->_return[$key] = array();
 
 		$nb = count($rs);
-
 		for($i = 0;$i < $nb;$i++)
 		{
 			$rs[$i]['userid'] = $userfeaturesid;
+			if($type == 'queue')
+			{ $rs[$i]['skills'] = $userfeaturesid; }
 
 			unset($rs[$i]['groupfeaturesid'],$rs[$i]['queuefeaturesid']);
 
@@ -1796,6 +1799,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		for($i = 0;$i < $nb;$i++)
 		{
 			$rs[$i]['userid'] = $this->_info['userfeatures']['id'];
+			if($type == 'queue')
+			{ $rs[$i]['skills'] = $this->_info['userfeatures']['id']; }
 
 			unset($rs[$i]['groupfeaturesid'],$rs[$i]['queuefeaturesid']);
 
