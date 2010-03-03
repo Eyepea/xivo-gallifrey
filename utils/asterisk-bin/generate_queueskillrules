@@ -1,0 +1,36 @@
+#!/usr/bin/python
+#__version__ = "$Revision: 5525 $ $Date: 2009-03-03 12:30:31 +0100 (Tue, 03 Mar 2009) $"
+__license__ = """
+    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import sys
+from xivo import OrderedConf
+from xivo import xivo_helpers
+
+cursor = xivo_helpers.db_connect().cursor()
+
+cursor.query("SELECT ${columns} FROM queueskillrule", ('name', 'rule'))
+res = cursor.fetchall()
+
+for line in res:
+		print "[%s]" % line['name']
+
+		for rule in line['rule'].split(';'):
+			print "rule = %s" % rule
+
+		print ''
+
