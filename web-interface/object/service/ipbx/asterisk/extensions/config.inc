@@ -343,7 +343,7 @@ $array['app']['set'] = array();
 $array['app']['set']['displayname'] = 'Set';
 $array['app']['set']['arg'] = array();
 $array['app']['set']['arg'][0] = array('minlen'	=> 2,
-				       'regexp'	=> '/^(?![_]{0,2}(?:XIVO|REAL)_)[a-zA-Z0-9_\(\)]+=[^\|,]*(?:\|[a-zA-Z0-9_\(\)]+=[^\|,]*)*$/');
+				       'regexp'	=> '/^[a-zA-Z0-9_\(\)]+=[^\|,]*(?:\|[a-zA-Z0-9_\(\)]+=[^\|,]*)*$/');
 $array['app']['set']['arg'][1] = array('set'	=> false,
 				       'chk'	=> 2,
 				       'key'	=> array('g'));

@@ -156,7 +156,7 @@ function xivo_ast_defapplication_queueskillrule(dialevent,targetid)
 	if((rule  = dwho_eid('it-dialaction-'+dialevent+'-queueskillrule-name')) === false)
 		return(false);
 
-	var args = ['USR_XIVO_QUEUESKILLRULESET'+'='+rule.value];
+	var args = ['XIVO_QUEUESKILLRULESET'+'='+rule.value];
 	return(xivo_fm_select_add_ast_application('set',args));
 }
 
