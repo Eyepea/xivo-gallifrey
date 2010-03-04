@@ -70,6 +70,6 @@ def groupmember(agi, cursor, args):
     agi.set_variable('XIVO_GROUPMEMBER_NUMBER', obj.number)
     agi.set_variable('XIVO_GROUPMEMBER_ACTION', args[1])
     agi.set_variable('XIVO_GROUPMEMBER_USER_INTERFACE', user.interface)
-    agi.set_variable('XIVO_GROUPMEMBER_USER_SKILLS', user.skills
+    agi.set_variable('XIVO_GROUPMEMBER_USER_SKILLS', user.skills)
 
 agid.register(groupmember)
