@@ -63,6 +63,8 @@ switch($act)
 			{
 				// save is ok: redirecting to list view
 				$fm_save = false;
+				// must reload configuration files
+				$ipbx->discuss('module reload app_queue.so');
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskillrules'), $param);
 			}
 		}
@@ -90,6 +92,9 @@ switch($act)
 			{
 				// save is ok: redirecting to list view
 				$fm_save = false;
+				// must reload configuration files
+				$ipbx->discuss('module reload app_queue.so');
+
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskillrules'), $param);
 			}
 
@@ -107,6 +112,9 @@ switch($act)
 
 		if(isset($_QR['id']))
 			$appqueue->skillrules_delete($_QR['id']);
+
+		// must reload configuration files
+		$ipbx->discuss('module reload app_queue.so');
 
 		$_QRY->go($_TPL->url('service/ipbx/call_center/queueskillrules'),$param);
 		break;
@@ -126,6 +134,9 @@ switch($act)
 			// we delete each value one by one
 			$appqueue->skillrules_delete($values[$i]);
 		}
+
+		// must reload configuration files
+		$ipbx->discuss('module reload app_queue.so');
 
 		$_QRY->go($_TPL->url('service/ipbx/call_center/queueskillrules'), $param);
 		break;

@@ -75,6 +75,9 @@ switch($act)
 			{
 				// save is ok: redirecting to list view
 				$fm_save = false;
+				// must reload configuration files
+				$ipbx->discuss('module reload app_queue.so');
+
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskills'), $param);
 			}
 		}
@@ -112,6 +115,9 @@ switch($act)
 			{
 				// save is ok: redirecting to list view
 				$fm_save = false;
+				// must reload configuration files
+				$ipbx->discuss('module reload app_queue.so');
+
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskills'), $param);
 			}
 
@@ -133,6 +139,8 @@ switch($act)
 		if(isset($_QR['id']))
 			$appqueue->skills_delete($_QR['id']);
 
+		// must reload configuration files
+		$ipbx->discuss('module reload app_queue.so');
 		$_QRY->go($_TPL->url('service/ipbx/call_center/queueskills'),$param);
 
 		// $ipbx->discuss('xivo[userlist,update]');
@@ -154,6 +162,8 @@ switch($act)
 			$appqueue->skills_delete($values[$i]);
 		}
 
+		// must reload configuration files
+		$ipbx->discuss('module reload app_queue.so');
 		$_QRY->go($_TPL->url('service/ipbx/call_center/queueskills'), $param);
 		break;
 
