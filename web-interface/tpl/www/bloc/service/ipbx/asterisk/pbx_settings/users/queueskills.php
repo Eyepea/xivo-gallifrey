@@ -45,7 +45,7 @@ $data 		= $this->get_var('queueskills');
 
 				<th class="th-left"><?=$this->bbf('col_1');?></th>
 				<th class="th-center"><?=$this->bbf('col_2');?></th>
-				<th class="th-right">
+				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_add'),
 									  'border="0"'),
@@ -67,6 +67,7 @@ $data 		= $this->get_var('queueskills');
 	<?php
 					echo	$form->select(array(
 							'name'		=> 'queueskill-skill[]',
+							'id'		=> "it-queueskill-skill[$i]",
 							'key'		=> 'name',
 							'altkey'	=> 'id',
 							'empty'		=> true,
@@ -122,6 +123,7 @@ $data 		= $this->get_var('queueskills');
 	<?php
 					echo	$form->select(array(
 							'name'		=> 'queueskill-skill[]',
+							'id'		=> "it-queueskill-skill[]",
 							'key'		=> 'name',
 							'altkey'	=> 'id',
 							'empty'		=> true,
@@ -158,8 +160,5 @@ $data 		= $this->get_var('queueskills');
 			</tbody>
 		</table>
 	</div>
-</div>
-<br />
-
 </div>
 

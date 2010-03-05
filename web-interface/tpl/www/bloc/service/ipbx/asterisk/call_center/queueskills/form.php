@@ -65,7 +65,7 @@ endif;
 				<th class="th-left"><?=$this->bbf('col_1');?></th>
 				<th class="th-center"><?=$this->bbf('col_2');?></th>
 				<th class="th-center"><?=$this->bbf('col_3');?></th>
-				<th class="th-right">
+				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_add'),
 									  'border="0"'),

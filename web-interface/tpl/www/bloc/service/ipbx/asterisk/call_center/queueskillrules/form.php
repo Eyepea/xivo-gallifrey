@@ -102,7 +102,7 @@ endif;
 						 'name'		=> 'queueskillrule[rule][]',
 						 'id'		=> 'it-queueskillrule-rule',
 						 'cols'		=> 80,
-						 'rows'		=> 10,
+						 'rows'		=> 3,
 						 'default'	=> $element['queuekillrule']['rule'][$i],
 					         'error'	=> $this->bbf_args('queueskillrule-rule',
 								   $this->get_var('error',"rule-$i"))),
@@ -142,7 +142,7 @@ endif;
 						 'name'		=> 'queueskillrule[rule][]',
 						 'id'		=> 'it-queueskillrule-rule',
 						 'cols'		=> 80,
-						 'rows'		=> 10));
+						 'rows'		=> 3));
 	 ?>
 				</td>
 				<td class="td-right">
