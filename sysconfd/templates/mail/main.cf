@@ -1,0 +1,84 @@
+## Network options
+inet_protocols = ipv4
+inet_interfaces = all
+myorigin = /etc/mailname
+mydomain = {{_XIVO_SMTP_MYDOMAIN}}
+mydestination = ${myhostname}, localhost.localdomain, localhost
+mynetworks =	127.0.0.0/8
+		[::1/128]
+
+relayhost = {{XIVO_SMTP_RELAYHOST}}
+smtp_fallback_relay = {{XIVO_SMTP_FALLBACK_RELAYHOST}}
+
+alias_maps = hash:/etc/aliases
+alias_database = hash:/etc/aliases
+canonical_maps = hash:${config_directory}/canonical
+
+## Security options
+# (you can test any directive by prepending warn_if_reject)
+# (you can also set "soft_bounce = yes" to to transform permanent rejects into temporary rejects)
+smtpd_helo_required = yes
+smtpd_helo_restrictions =
+        reject_invalid_hostname
+        permit_mynetworks
+        reject_non_fqdn_hostname
+        reject_unknown_hostname
+        permit
+smtpd_client_restrictions =
+        reject_unauth_pipelining
+        permit_mynetworks
+        reject_unknown_client_hostname
+        permit
+smtpd_recipient_restrictions =
+        reject_unknown_recipient_domain
+        permit_mynetworks
+        reject_non_fqdn_recipient
+        reject_unauth_destination
+        permit
+smtpd_etrn_restrictions =
+        permit_mynetworks
+        reject
+smtpd_data_restrictions =
+        reject_multi_recipient_bounce
+smtpd_authorized_verp_clients = ${mynetworks}
+smtpd_delay_open_until_valid_rcpt = yes
+disable_vrfy_command = yes
+strict_rfc821_envelopes = yes
+strict_mime_encoding_domain = yes
+biff = no
+#header_checks = regexp:${config_directory}/header_checks
+smtpd_delay_reject = yes
+
+## Limits
+default_process_limit = 50
+# (necessary for MX2 purpose)
+maximal_queue_lifetime = 2w
+bounce_queue_lifetime = 1d
+mailbox_size_limit = 1073741824
+#header_size_limit = 102400
+message_size_limit = 31457280
+#line_length_limit = 8096
+#smtp_line_length_limit = 990
+qmqpd_error_delay = 5s
+qmgr_message_active_limit = 10000
+qmgr_message_recipient_limit = 10000
+anvil_rate_time_unit = 60s
+smtpd_client_connection_rate_limit = 30
+smtpd_client_message_rate_limit = 100
+smtpd_client_recipient_rate_limit = 100
+smtpd_soft_error_limit = 5
+smtpd_hard_error_limit = 10
+smtpd_error_sleep_time = 7s
+smtpd_junk_command_limit = 10
+smtpd_recipient_limit = 30
+delay_warning_time = 1h
+trigger_timeout = 5s
+max_idle = 30s
+
+## Misc
+recipient_delimiter = +
+append_at_myorigin = yes
+append_dot_mydomain = no
+
+readme_directory = /usr/share/doc/postfix
+html_directory = /usr/share/doc/postfix/html
