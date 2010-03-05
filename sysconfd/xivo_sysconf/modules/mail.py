@@ -78,6 +78,8 @@ class MailConfig:
 
             content = txtsubst(content, args, files['dest'], 'utf8')
             system.file_writelines_flush_sync(files['dest'], content)
+            
+        return True
 
 
 def safe_init(options):
