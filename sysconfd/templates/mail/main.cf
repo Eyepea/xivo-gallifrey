@@ -2,7 +2,7 @@
 inet_protocols = ipv4
 inet_interfaces = all
 myorigin = /etc/mailname
-mydomain = {{_XIVO_SMTP_MYDOMAIN}}
+mydomain = {{XIVO_SMTP_MYDOMAIN}}
 mydestination = ${myhostname}, localhost.localdomain, localhost
 mynetworks =	127.0.0.0/8
 		[::1/128]

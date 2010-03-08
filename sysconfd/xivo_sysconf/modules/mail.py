@@ -26,6 +26,7 @@ __license__ = """
 
 import os
 import logging
+import subprocess
 #import pprint
 
 from xivo import http_json_server
@@ -52,21 +53,24 @@ class MailConfig:
     relayhost:          !!str   smtp.orange.fr
     fallback_relayhost: !!str   smtp.free.fr
     canonical:          !!str   xivo.proformatique.com
+    mydomain:           !!str   avencall.com
     """)
 
     def set(self, args, options):
         """
         POST /set
 
-        >>> set({'origin':              'xivo-cleints.proformatique.com',
+        >>> set({'origin':              'xivo-clients.proformatique.com',
                  'relayhost':           'smtp.orange.fr',
                  'fallback_relayhost':  'smtp.free.fr',
-                 'canonical':           'xivo.proformatique.com')
+                 'canonical':           'xivo.proformatique.com',
+                 'mydomain':            'avencall.com')
         """
         if not xys.validate(args, self.SET_SCHEMA):
             raise HttpReqError(415, "invalid arguments for command")
 
         args = dict(map(lambda key: ("XIVO_SMTP_%s" % key.upper(), args[key]), args))
+        #pprint.pprint(args)
 
         for type, files in FILES.iteritems():
             tpl = files['tpl']
@@ -79,6 +83,8 @@ class MailConfig:
             content = txtsubst(content, args, files['dest'], 'utf8')
             system.file_writelines_flush_sync(files['dest'], content)
             
+        subprocess.call("/etc/init.d/postfix reload")
+        #TODO: check postfix processes correctly running & reloaded
         return True
 
 

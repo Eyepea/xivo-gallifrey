@@ -30,10 +30,11 @@ class TestGeneric(unittest.TestCase):
 
     def test_mail(self):
         params = {
-            'origin': 'xorigin', 
-            'relayhost': 'xrelayhost', 
-            'fallback_relayhost': 'xfbrelayhost', 
-            'canonical': 'xcanonical'
+            'origin'            : 'TEST_ORIGIN', 
+            'relayhost'         : 'TEST_RELAYHOST', 
+            'fallback_relayhost': 'TEST_FB_RELAYHOST', 
+            'canonical'         : 'TEST_CANONICAL',
+            'mydomain'          : 'TEST_MYDOMAIN',
         }
         (response, data) = self.client.request("POST", "/mailconfig_set", params)
         
