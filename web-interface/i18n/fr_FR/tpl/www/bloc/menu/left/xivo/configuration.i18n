@@ -33,3 +33,6 @@ Routes IP statiques
 
 ; mn_left_network-resolvconf
 Résolution DNS
+
+; mn_left_network-mail
+Messagerie

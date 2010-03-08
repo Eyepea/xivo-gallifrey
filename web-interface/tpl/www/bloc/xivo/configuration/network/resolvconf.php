@@ -80,6 +80,13 @@ endif;
 				  'default'	=> $element['resolvconf']['hostname']['default'],
 				  'value'	=> $this->get_var('info','hostname'))),
 
+		$form->text(array('desc'	=> $this->bbf('fm_domain'),
+				  'name'	=> 'domain',
+				  'labelid'	=> 'domain',
+				  'size'	=> 15,
+				  'default'	=> $element['resolvconf']['domain']['default'],
+				  'value'	=> $this->get_var('info','domain'))),
+
 		$form->text(array('desc'	=> $this->bbf('fm_nameserver1'),
 				  'name'	=> 'nameserver1',
 				  'labelid'	=> 'nameserver1',

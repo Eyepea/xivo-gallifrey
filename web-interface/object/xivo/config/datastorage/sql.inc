@@ -36,6 +36,10 @@ $array['ldapserver'] = array();
 $array['ldapserver']['table'] = 'ldapserver';
 $array['ldapserver']['primary'] = array('id' => '');
 
+$array['mail'] = array();
+$array['mail']['table'] = 'mail';
+$array['mail']['primary'] = array('id' => '');
+
 $array['netiface'] = array();
 $array['netiface']['table'] = 'netiface';
 $array['netiface']['primary'] = array('name' => '');

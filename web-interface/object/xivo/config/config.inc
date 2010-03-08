@@ -34,6 +34,9 @@ $array['module']['iproute']['datastorage'] = true;
 $array['module']['ldapserver'] = array();
 $array['module']['ldapserver']['datastorage'] = true;
 
+$array['module']['mail'] = array();
+$array['module']['mail']['datastorage'] = true;
+
 $array['module']['netiface'] = array();
 $array['module']['netiface']['datastorage'] = true;
 

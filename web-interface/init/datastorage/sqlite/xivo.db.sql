@@ -174,6 +174,7 @@ DROP TABLE resolvconf;
 CREATE TABLE resolvconf (
  id tinyint(1),
  hostname varchar(63) NOT NULL DEFAULT 'xivo',
+ domain varchar(255) NOT NULL DEFAULT '',
  nameserver1 varchar(255),
  nameserver2 varchar(255),
  nameserver3 varchar(255),
@@ -246,5 +247,20 @@ CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
 INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datetime('now','utc')),0,'');
 INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
+
+
+DROP TABLE mail;
+CREATE TABLE mail (
+ id tinyint(1),
+ origin varchar(255) NOT NULL DEFAULT 'xivo-clients.proformatique.com',
+ relayhost varchar(255),
+ fallback_relayhost varchar(255),
+ canonical text NOT NULL,
+ PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX mail__uidx__origin ON mail(origin);
+
+INSERT INTO mail VALUES (1,'xivo-clients.proformatique.com','','','');
 
 COMMIT;

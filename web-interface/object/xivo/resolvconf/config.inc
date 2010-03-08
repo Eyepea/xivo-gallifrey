@@ -25,6 +25,9 @@ $array['element'] = array();
 $array['element']['hostname'] = array();
 $array['element']['hostname']['default'] = php_uname('n');
 
+$array['element']['domain'] = array();
+$array['element']['domain']['default'] = '';
+
 $array['element']['nameserver1'] = array();
 $array['element']['nameserver1']['default'] = '';
 $array['element']['nameserver1']['null'] = true;
@@ -48,6 +51,7 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['hostname'] = array('callback' => 'dwho_network::valid_hostname_part');
+$array['filter']['domain'] = array('callback' => 'dwho_network::valid_hostname');
 $array['filter']['nameserver1'] = array('set'		=> 'false',
 					'chk'		=> 2,
 					'callback'	=> 'dwho_network::valid_host',

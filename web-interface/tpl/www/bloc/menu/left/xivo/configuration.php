@@ -77,6 +77,10 @@ $url = &$this->get_module('url');
 				<?=$url->href_html($this->bbf('mn_left_network-resolvconf'),
 						   'xivo/configuration/network/resolvconf');?>
 			</dd>
+			<dd id="mn-network--mail">
+				<?=$url->href_html($this->bbf('mn_left_network-mail'),
+						   'xivo/configuration/network/mail');?>
+			</dd>
 		</dl>
 	</dd>
 	<dd class="b-nosize">

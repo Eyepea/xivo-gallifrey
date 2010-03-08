@@ -93,7 +93,8 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->save_resolvconf() === false)
+		|| $this->save_resolvconf() === false
+		|| $this->update_mail() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -110,6 +111,23 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		$this->_return['resolvconf'] = $this->_resolvconf->save($rs);
 
 		return($this->_return['resolvconf']);
+	}
+	
+	function update_mail()
+	{
+	    $appmail 	= &$this->_xobj->get_application('mail');
+	    $rs         = $appmail->get(1);
+	    if($rs === false)
+	        return true;
+	    
+	    $rs = $rs['mail'];
+		if(strlen($rs['origin']) == 0)
+		{
+		    $appmail->set($rs);
+		    $appmail->save();
+		}
+		
+		return true;
 	}
 
 	function save_from_json()
