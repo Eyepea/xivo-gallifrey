@@ -37,8 +37,9 @@ class SysconfdClient():
         if method == 'POST':
             params = json.encode(params)
         else:
-            params = urllib.urlencode(params)
-    
+            uri    = "%s?%s" % (uri, urllib.urlencode(params))
+            params = None
+
         self.conn.request(method, uri, params, self.headers)
         response = self.conn.getresponse()
         data     = response.read()

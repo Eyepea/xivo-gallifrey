@@ -29,17 +29,40 @@ class TestGeneric(unittest.TestCase):
         self.client = sysconfd_client.SysconfdClient()
 
     def test_mail(self):
+        """
+            We should test all the cases and read resulting files
+        """
         params = {
             'origin'            : 'TEST_ORIGIN', 
             'relayhost'         : 'TEST_RELAYHOST', 
             'fallback_relayhost': 'TEST_FB_RELAYHOST', 
             'canonical'         : 'TEST_CANONICAL',
             'mydomain'          : 'TEST_MYDOMAIN',
+            'hostname'          : 'TEST_HOSTNAME',
+            'domain'            : 'TEST_DOMAIN',
+            'maintenance'       : True
         }
-        (response, data) = self.client.request("POST", "/mailconfig_set", params)
+#        (response, data) = self.client.request("POST", "/mailconfig_set", params)
         
-        self.assertEqual(response.status, 200)
+#        self.assertEqual(response.status, 200)
+        
+    def test_commonconf_get(self):
+        (resp, data) = self.client.request('GET', '/commonconf_get', {'key': '*'})
 
+    def test_commonconf_set(self):
+        (resp, data) = self.client.request('POST', '/commonconf_set', {})
+        self.assertEqual(resp.status, 415)
+
+        (resp, data) = self.client.request('POST', '/commonconf_set', 
+                {'key': 'sysconfd.unittest.kv0', 'value': 'value0'})
+        self.assertEqual(resp.status, 200)
+
+        (resp, data) = self.client.request('POST', '/commonconf_set', 
+                {'keyvalues': [('sysconfd.unittest.kv1', 'value1'), ('sysconfd.unittest.kv2', 'value2')]})
+        self.assertEqual(resp.status, 200)
+
+        (resp, data) = self.client.request('GET', '/commonconf_genconfig', ())
+        self.assertEqual(resp.status, 200)
 
 if __name__ == '__main__':
     unittest.main()

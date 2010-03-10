@@ -1,0 +1,44 @@
+/*
+ * XiVO Web-Interface
+ * Copyright (C) 2010  Proformatique <technique@proformatique.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+BEGIN TRANSACTION;
+
+DROP TABLE items;
+CREATE TABLE items (
+ key            varchar(255),
+ value          text,
+ type           varchar(255),
+ PRIMARY KEY(key)
+);
+
+INSERT INTO items VALUES('xivo.hostname'                , 'xivo', '');
+INSERT INTO items VALUES('xivo.domain'                  , 'proformatique.com', '');
+
+INSERT INTO items VALUES('xivo.dhcp.pool'               , '192.168.0.50 192.168.0.100', '');
+INSERT INTO items VALUES('xivo.dhcp.extra_ifaces'       , '', '');
+INSERT INTO items VALUES('xivo.smtp.origin'             , 'xivo-clients.proformatique.com', '');
+INSERT INTO items VALUES('xivo.smtp.relayhost'          , '', '');
+INSERT INTO items VALUES('xivo.smtp.fallback_relayhost' , '', '');
+INSERT INTO items VALUES('xivo.smtp.canonical'          , '', '');
+
+INSERT INTO items VALUES('xivo.maintenance'             , '', '');
+INSERT INTO items VALUES('alert_emails'                 , '', '');
+INSERT INTO items VALUES('dahdi_monitor_ports'          , '', '');
+INSERT INTO items VALUES('max_call_duration'            , '', '');
+
+COMMIT;

@@ -31,6 +31,7 @@ from StringIO import StringIO
 from ConfigParser import ConfigParser
 
 from xivo import daemonize
+from xivo import xivo_helpers
 from xivo import http_json_server
 from xivo.http_json_server import CMD_R
 
@@ -48,8 +49,8 @@ xivo_config_path        = /etc/pf-xivo
 templates_path          = /usr/share/pf-xivo-sysconfd/templates
 custom_templates_path   = /etc/pf-xivo/sysconfd/custom-templates
 backup_path             = /var/backups/pf-xivo-sysconfd
+db_uri                  = sqlite:/etc/pf-xivo/sysconfd/sysconfd.db?timeout_ms=150
 """)
-
 
 def get_log_level_by_name(loglevel_name):
     "Returns the corresponding logging numerical value or raises ValueError"
@@ -148,7 +149,12 @@ def main(options):
 
     options.configuration   = cp
     options.testmethods     = True # XXX
+
+    # open database
+    options.database        = xivo_helpers.db_connect(cp.get('general', 'db_uri'))
+
     http_json_server.init(options)
+
 
     if not options.foreground:
         log.info("Transforming into a daemon from hell")
