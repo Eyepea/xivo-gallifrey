@@ -40,6 +40,10 @@ $array['mail'] = array();
 $array['mail']['table'] = 'mail';
 $array['mail']['primary'] = array('id' => '');
 
+$array['monitoring'] = array();
+$array['monitoring']['table'] = 'monitoring';
+$array['monitoring']['primary'] = array('id' => '');
+
 $array['netiface'] = array();
 $array['netiface']['table'] = 'netiface';
 $array['netiface']['primary'] = array('name' => '');

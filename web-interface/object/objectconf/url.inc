@@ -33,6 +33,12 @@ $array['xivo/configuration/network/interface'] = 'xivo/configuration/index.php/n
 $array['xivo/configuration/network/iproute'] = 'xivo/configuration/index.php/network/iproute/';
 $array['xivo/configuration/network/resolvconf'] = 'xivo/configuration/index.php/network/resolvconf/';
 $array['xivo/configuration/network/mail'] = 'xivo/configuration/index.php/network/mail/';
+$array['xivo/configuration/network/dhcp'] = 'xivo/configuration/index.php/network/dhcp/';
+
+$array['xivo/configuration/support/xivo'] = 'xivo/configuration/index.php/support/xivo/';
+$array['xivo/configuration/support/alerts'] = 'xivo/configuration/index.php/support/alerts/';
+$array['xivo/configuration/support/limits'] = 'xivo/configuration/index.php/support/limits/';
+
 $array['xivo/preferences'] = 'xivo/preferences.php';
 $array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';

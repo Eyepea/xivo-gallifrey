@@ -18,18 +18,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$appmail 	= &$_XOBJ->get_application('mail');
-$fm_save    = null;
+$appdhcp    = &$_XOBJ->get_application('dhcp');
+
+$result 	= $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
 
-	if($appmail->set($_QR) === false)
+	if($appdhcp->set($_QR) === false)
 		$fm_save = false;
 }
 
-$info 		= $appmail->get();
+$info 		= $appdhcp->get();
 
 $_TPL->set_var('fm_save'	, $fm_save);
 $_TPL->set_var('info'		, $info);
@@ -38,7 +39,7 @@ $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 
-$_TPL->set_bloc('main','xivo/configuration/network/mail');
+$_TPL->set_bloc('main','xivo/configuration/network/dhcp');
 $_TPL->set_struct('xivo/configuration');
 $_TPL->display('index');
 

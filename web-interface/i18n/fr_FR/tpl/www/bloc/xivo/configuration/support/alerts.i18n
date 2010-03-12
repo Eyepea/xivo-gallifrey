@@ -1,0 +1,14 @@
+; title_content_name
+Configuration des alertes
+
+; fm_emails
+Adresses email : 
+
+; fm_dahdi_monitor_ports
+Ports DAHDI monitorés : 
+ 
+; fm_help-alert_emails
+NE PAS AJOUTER les adresses de maintenance Proformatique, elles le seront automatiquement si le support XiVO est activé
+
+; fm_help-dahdi_ports
+Liste des ports, chacuns séparés par un espace

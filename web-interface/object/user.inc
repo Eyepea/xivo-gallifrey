@@ -85,7 +85,7 @@ class xivo_user
 	}
 
 	function is_valid()
-	{
+	{       
 		if(isset($_SESSION['_USR'],$_SESSION['_USR']->_valid) === true
 		&& $_SESSION['_USR']->_valid === true)
 			return(true);

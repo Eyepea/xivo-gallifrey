@@ -1,0 +1,8 @@
+; title_content_name
+Limitations
+
+; fm_max_call_duration
+Durée max d'un appel (en minutes) avant alerte : 
+
+; fm_help-max_call_duration
+Envoi un avertissement si un appel dépasse cette durée

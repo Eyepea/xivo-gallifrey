@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$form	 = &$this->get_module('form');
-$dhtml 	 = &$this->get_module('dhtml');
+$form    = &$this->get_module('form');
+$dhtml   = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
 
@@ -49,47 +49,28 @@ endif;
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
 
-		$form->text(array('desc'	=> $this->bbf('fm_mydomain'),
-				  'name'	=> 'xivo-smtp-mydomain',
-				  'labelid'	=> 'mydomain',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['mydomain']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.mydomain'))),
+		$form->text(array('desc'	=> $this->bbf('fm_pool_start'),
+				  'name'	=> 'xivo-dhcp-pool-start',
+				  'labelid'	=> 'pool_start',
+				  'size'	=> 15,
+				  'default'	=> $element['dhcp']['pool_start']['default'],
+				  'value'	=> $this->get_var('info','xivo.dhcp.pool.start'))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_origin'),
-				  'name'	=> 'xivo-smtp-origin',
-				  'labelid'	=> 'origin',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['origin']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.origin'))),
+		$form->text(array('desc'	=> $this->bbf('fm_pool_end'),
+				  'name'	=> 'xivo-dhcp-pool-end',
+				  'labelid'	=> 'pool_end',
+				  'size'	=> 15,
+				  'default'	=> $element['dhcp']['pool_end']['default'],
+				  'value'	=> $this->get_var('info','xivo.dhcp.pool.end'))),
 
-		$form->text(array('desc'	=> $this->bbf('fm_relayhost'),
-				  'name'	=> 'xivo-smtp-relayhost',
-				  'labelid'	=> 'relayhost',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.relayhost'))),
+		$form->text(array('desc'	=> $this->bbf('fm_interfaces'),
+				  'name'	=> 'xivo-dhcp-extra_ifaces',
+				  'labelid'	=> 'extra_ifaces',
+				  'size'	=> 15,
+				  'default'	=> $element['dhcp']['interfaces']['default'],
+				  'value'	=> $this->get_var('info','xivo.dhcp.extra_ifaces')));
 
-		$form->text(array('desc'	=> $this->bbf('fm_fallback_relayhost'),
-				  'name'	=> 'xivo-smtp-fallback_relayhost',
-				  'labelid'	=> 'fallback_relayhost',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['fallback_relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.fallback_relayhost')));
 ?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-description" for="it-description"><?=$this->bbf('fm_canonical');?></label>
-		</p>
-		<?=$form->textarea(array('paragraph'	=> false,
-					 'label'	=> false,
-					 'name'		=> 'xivo-smtp-canonical',
-					 'id'		=> 'it-canonical',
-					 'cols'		=> 60,
-					 'rows'		=> 5,
-					 'default'	=> $element['mail']['canonical']['default']),
-				   $this->get_var('info','xivo.smtp.canonical'));?>
-	</div>
 </div>
 <?php
 

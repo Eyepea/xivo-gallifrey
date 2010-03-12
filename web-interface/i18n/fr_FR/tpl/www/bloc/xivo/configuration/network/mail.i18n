@@ -1,15 +1,18 @@
 ; title_content_name
 Messagerie
 
+; fm_mydomain
+Nom de domaine de messagerie : 
+
 ; fm_origin
-Adresse d'origine du serveur:
+Adresse d'origine du serveur : 
 
 ; fm_relayhost
-Relai SMTP :
+Relai SMTP : 
 
 ; fm_fallback_relayhost
-Relai SMTP de secours :
+Relai SMTP de secours : 
 
 ; fm_canonical
-Réécriture des addresses d'expédition (canonical) :
+Réécriture des addresses d'expédition (canonical) : 
 

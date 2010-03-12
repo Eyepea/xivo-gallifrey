@@ -18,27 +18,32 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$appmail 	= &$_XOBJ->get_application('mail');
-$fm_save    = null;
+$appmonit 	= &$_XOBJ->get_application('monitoring');
+$result 	= $fm_save = null;
 
+$info       = array();
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
+	$return 	= &$result;
 
-	if($appmail->set($_QR) === false)
+	if($appmonit->set_alerts($_QR['alert_emails'], $_QR['dahdi_monitor_ports']) === false)
 		$fm_save = false;
-}
 
-$info 		= $appmail->get();
+    $info['alert_emails'] = $_QR['alert_emails'];
+    $info['dahdi_monitor_ports']  = $_QR['dahdi_monitor_ports'];
+}
+else
+{ $info   	= $appmonit->get_alerts(); }
 
 $_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('info'		, $info);
+$_TPL->set_var('info'	    , $info);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 
-$_TPL->set_bloc('main','xivo/configuration/network/mail');
+$_TPL->set_bloc('main','xivo/configuration/support/alerts');
 $_TPL->set_struct('xivo/configuration');
 $_TPL->display('index');
 

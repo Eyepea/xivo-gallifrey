@@ -49,47 +49,12 @@ endif;
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
 
-		$form->text(array('desc'	=> $this->bbf('fm_mydomain'),
-				  'name'	=> 'xivo-smtp-mydomain',
-				  'labelid'	=> 'mydomain',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['mydomain']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.mydomain'))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_origin'),
-				  'name'	=> 'xivo-smtp-origin',
-				  'labelid'	=> 'origin',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['origin']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.origin'))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_relayhost'),
-				  'name'	=> 'xivo-smtp-relayhost',
-				  'labelid'	=> 'relayhost',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.relayhost'))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_fallback_relayhost'),
-				  'name'	=> 'xivo-smtp-fallback_relayhost',
-				  'labelid'	=> 'fallback_relayhost',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['fallback_relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.fallback_relayhost')));
+		$form->checkbox(array('desc'		=> $this->bbf('fm_maintenance'),
+				      'name'		=> 'maintenance',
+				      'labelid'		=> 'maintenance',
+				      'checked'		=> $element['xivo.maintenance'],
+				      'help'        => $this->bbf('fm_help-maintenance')));
 ?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-description" for="it-description"><?=$this->bbf('fm_canonical');?></label>
-		</p>
-		<?=$form->textarea(array('paragraph'	=> false,
-					 'label'	=> false,
-					 'name'		=> 'xivo-smtp-canonical',
-					 'id'		=> 'it-canonical',
-					 'cols'		=> 60,
-					 'rows'		=> 5,
-					 'default'	=> $element['mail']['canonical']['default']),
-				   $this->get_var('info','xivo.smtp.canonical'));?>
-	</div>
 </div>
 <?php
 

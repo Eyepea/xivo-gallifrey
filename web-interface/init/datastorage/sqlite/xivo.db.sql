@@ -249,18 +249,4 @@ INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datet
 INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
 
 
-DROP TABLE mail;
-CREATE TABLE mail (
- id tinyint(1),
- origin varchar(255) NOT NULL DEFAULT 'xivo-clients.proformatique.com',
- relayhost varchar(255),
- fallback_relayhost varchar(255),
- canonical text NOT NULL,
- PRIMARY KEY(id)
-);
-
-CREATE UNIQUE INDEX mail__uidx__origin ON mail(origin);
-
-INSERT INTO mail VALUES (1,'xivo-clients.proformatique.com','','','');
-
 COMMIT;

@@ -23,12 +23,14 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_object_abstract
 {
 	var $_resolvconf	= false;
+	var $_sysconfd	 = false;
 
 	function xivo_application_xivo_object_resolvconf(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_resolvconf = &$this->_xobj->get_module('resolvconf')) === false)
+		if(($this->_resolvconf = &$this->_xobj->get_module('resolvconf')) === false
+		|| ($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))     === false)
 			return(false);
 
 		return(true);
@@ -43,6 +45,17 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 
 		$this->_origin['resolvconf'] = $this->_resolvconf->get_origin();
 
+        // NOTE: sysconfd datas superseeds local ones (hostname, domain)
+        $sysconfd_data = $this->_sysconfd->request_post('/commonconf_get', 
+            array('key' =>  array('xivo.domain', 'xivo.hostname')));
+        if($sysconfd_data === false)
+            return false;
+            
+        $this->_info['resolvconf']['hostname'] = 
+            $this->_origin['resolvconf']['hostname'] = $sysconfd_data['xivo.hostname'];
+        $this->_info['resolvconf']['domain']   = 
+            $this->_origin['resolvconf']['domain'] = $sysconfd_data['xivo.domain'];
+        
 		return($this->_info);
 	}
 
@@ -94,7 +107,7 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 
 		if($this->get_errnb() > 0
 		|| $this->save_resolvconf() === false
-		|| $this->update_mail() === false)
+		|| $this->update_sysconfd() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -113,21 +126,20 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		return($this->_return['resolvconf']);
 	}
 	
-	function update_mail()
+	function update_sysconfd()
 	{
-	    $appmail 	= &$this->_xobj->get_application('mail');
-	    $rs         = $appmail->get(1);
-	    if($rs === false)
-	        return true;
+        $rs = $this->get_result('resolvconf');
+
+	    $conf = array(
+	        'xivo.hostname' => $rs['hostname'],
+	        'xivo.domain'   => $rs['domain']
+	    );
 	    
-	    $rs = $rs['mail'];
-		if(strlen($rs['origin']) == 0)
-		{
-		    $appmail->set($rs);
-		    $appmail->save();
-		}
-		
-		return true;
+        if($this->_sysconfd->request_post('/commonconf_set', 
+            array('keyvalues' => $conf)) === false)
+                return false;
+            
+        return $this->_sysconfd->request_get('/commonconf_genconfig');
 	}
 
 	function save_from_json()

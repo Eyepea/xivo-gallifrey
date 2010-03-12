@@ -34,5 +34,21 @@ Routes IP statiques
 ; mn_left_network-resolvconf
 Résolution DNS
 
+; mn_left_network-dhcp
+Serveur DHCP
+
 ; mn_left_network-mail
 Messagerie
+
+; mn_left_ti_support
+Monitoring
+
+; mn_left_support-xivo
+Maintenance XiVO
+
+; mn_left_support-alerts
+Gestion des alertes
+
+; mn_left_support-limits
+Limitations
+

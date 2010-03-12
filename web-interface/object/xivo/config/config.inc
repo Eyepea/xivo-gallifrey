@@ -37,6 +37,9 @@ $array['module']['ldapserver']['datastorage'] = true;
 $array['module']['mail'] = array();
 $array['module']['mail']['datastorage'] = true;
 
+$array['module']['monitoring'] = array();
+$array['module']['monitoring']['datastorage'] = false;
+
 $array['module']['netiface'] = array();
 $array['module']['netiface']['datastorage'] = true;
 

@@ -20,15 +20,15 @@
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
-class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abstract
+class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abstract
 {
 	var $_sysconfd	 = false;
 
-	function xivo_application_xivo_object_mail(&$xobj)
+	function xivo_application_xivo_object_dhcp(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd'))     === false)
+		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))    === false)
 			return(false);
 
 		return(true);
@@ -36,24 +36,28 @@ class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abs
 
 	function get()
 	{
-        return $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' =>  'xivo.smtp.*'));
+        $data = $this->_sysconfd->request_post('/commonconf_get', 
+            array('key' =>  'xivo.dhcp.*'));
+            
+        $pool = split(' ', $data['xivo.dhcp.pool']);
+        $data['xivo.dhcp.pool.start'] = $pool[0];
+        $data['xivo.dhcp.pool.end']   = $pool[1];
+        
+        return $data;
 	}
-	function set($arr)
-	{
-	    $conf = array();
-	    foreach($arr as $k => $v)
-	    {
-	        if(strncmp($k, 'xivo-smtp', 9) === 0)
-                $conf[str_replace('-', '.', $k)] = $v;
-	    }
-	    
+
+	function set($config)
+    {
+        $dhcpconf = array();
+        $dhcpconf['xivo.dhcp.pool'] = $config['xivo-dhcp-pool-start'] . ' ' . $config['xivo-dhcp-pool-end'];
+        $dhcpconf['xivo.dhcp.extra_ifaces'] = $config['xivo-dhcp-extra_ifaces'];
+
         if($this->_sysconfd->request_post('/commonconf_set', 
-            array('keyvalues' => $conf)) === false)
-                return false;
+            array('keyvalues' => $dhcpconf)) === false)
+            return false;
             
         return $this->_sysconfd->request_get('/commonconf_genconfig');
-	}
+    }
 }
 
 ?>

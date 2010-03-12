@@ -21,7 +21,7 @@
 $form	 = &$this->get_module('form');
 $dhtml 	 = &$this->get_module('dhtml');
 
-$element = $this->get_var('element');
+$info = $this->get_var('info');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -49,47 +49,14 @@ endif;
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
 
-		$form->text(array('desc'	=> $this->bbf('fm_mydomain'),
-				  'name'	=> 'xivo-smtp-mydomain',
-				  'labelid'	=> 'mydomain',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['mydomain']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.mydomain'))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_origin'),
-				  'name'	=> 'xivo-smtp-origin',
-				  'labelid'	=> 'origin',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['origin']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.origin'))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_relayhost'),
-				  'name'	=> 'xivo-smtp-relayhost',
-				  'labelid'	=> 'relayhost',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.relayhost'))),
-
-		$form->text(array('desc'	=> $this->bbf('fm_fallback_relayhost'),
-				  'name'	=> 'xivo-smtp-fallback_relayhost',
-				  'labelid'	=> 'fallback_relayhost',
-				  'size'	=> 30,
-				  'default'	=> $element['mail']['fallback_relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.fallback_relayhost')));
+		$form->text(array('desc'	=> $this->bbf('fm_max_call_duration'),
+				  'name'	=> 'max_call_duration',
+				  'labelid'	=> 'max_call_duration',
+				  'size'	=> 15,
+				  'default'	=> $element['monitoring']['max_call_duration']['default'],
+				  'value'	=> $info['max_call_duration'],
+				  'help'    => $this->bbf('fm_help-max_call_duration')));
 ?>
-	<div class="fm-paragraph fm-description">
-		<p>
-			<label id="lb-description" for="it-description"><?=$this->bbf('fm_canonical');?></label>
-		</p>
-		<?=$form->textarea(array('paragraph'	=> false,
-					 'label'	=> false,
-					 'name'		=> 'xivo-smtp-canonical',
-					 'id'		=> 'it-canonical',
-					 'cols'		=> 60,
-					 'rows'		=> 5,
-					 'default'	=> $element['mail']['canonical']['default']),
-				   $this->get_var('info','xivo.smtp.canonical'));?>
-	</div>
 </div>
 <?php
 

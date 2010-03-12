@@ -17,28 +17,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+$appmonitor 	= &$_XOBJ->get_application('monitoring');
 
-$appmail 	= &$_XOBJ->get_application('mail');
-$fm_save    = null;
+$fm_save        = null;
+$info 		    = $appmonitor->get_xivo_maintenance();
 
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
 
-	if($appmail->set($_QR) === false)
+    if(!array_key_exists('maintenance', $_QR))
+        $_QR['maintenance'] = 0;
+        
+	if($appmonitor->set_xivo_maintenance($_QR['maintenance']) === false)
 		$fm_save = false;
+
+    $info['xivo.maintenance'] = $_QR['maintenance'];
 }
 
-$info 		= $appmail->get();
-
 $_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('info'		, $info);
+$_TPL->set_var('element'	, $info);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');
 
-$_TPL->set_bloc('main','xivo/configuration/network/mail');
+$_TPL->set_bloc('main','xivo/configuration/support/xivo');
 $_TPL->set_struct('xivo/configuration');
 $_TPL->display('index');
 

@@ -22,6 +22,10 @@ $array = array();
 
 $array['element'] = array();
 
+# XIVO_MYDOMAIN
+$array['element']['mydomain'] = array();
+$array['element']['mydomain']['default'] = '';
+
 # XIVO_SMTP_ORIGIN
 $array['element']['origin'] = array();
 $array['element']['origin']['default'] = '';
@@ -40,6 +44,7 @@ $array['element']['canonical']['default'] = '';
 
 ### filters ###
 $array['filter'] = array();
+$array['filter']['mydomain']	        = array('chk' => 2, 'maxlen' => 255);
 $array['filter']['origin'] 		        = array('chk' => 2, 'maxlen' => 255);
 $array['filter']['relayhost'] 		    = array('chk' => 2, 'maxlen' => 255);
 $array['filter']['fallback_relayhost'] 	= array('chk' => 2, 'maxlen' => 255);

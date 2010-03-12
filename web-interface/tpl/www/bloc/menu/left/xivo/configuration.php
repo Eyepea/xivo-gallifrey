@@ -81,6 +81,26 @@ $url = &$this->get_module('url');
 				<?=$url->href_html($this->bbf('mn_left_network-mail'),
 						   'xivo/configuration/network/mail');?>
 			</dd>
+			<dd id="mn-network--dhcp">
+				<?=$url->href_html($this->bbf('mn_left_network-dhcp'),
+						   'xivo/configuration/network/dhcp');?>
+			</dd>
+
+		</dl>
+		<dl>
+			<dt><?=$this->bbf('mn_left_ti_support');?></dt>
+			<dd id="mn-support--xivo">
+				<?=$url->href_html($this->bbf('mn_left_support-xivo'),
+						   'xivo/configuration/support/xivo');?>
+			</dd>
+			<dd id="mn-support--alerts">
+				<?=$url->href_html($this->bbf('mn_left_support-alerts'),
+						   'xivo/configuration/support/alerts');?>
+			</dd>
+			<dd id="mn-support--limits">
+				<?=$url->href_html($this->bbf('mn_left_support-limits'),
+						   'xivo/configuration/support/limits');?>
+			</dd>
 		</dl>
 	</dd>
 	<dd class="b-nosize">

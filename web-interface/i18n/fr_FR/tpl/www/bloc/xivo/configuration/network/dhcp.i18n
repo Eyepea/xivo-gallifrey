@@ -1,0 +1,12 @@
+; title_content_name
+Serveur DHCP
+
+; fm_pool_start
+Adresse de départ (plage d'adressage) : 
+
+; fm_pool_end
+Adresse de fin (plage d'adressage) : 
+
+; fm_interfaces
+Interfaces réseau : 
+
