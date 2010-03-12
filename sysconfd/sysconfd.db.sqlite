@@ -18,7 +18,6 @@
 
 BEGIN TRANSACTION;
 
-DROP TABLE items;
 CREATE TABLE items (
  key            varchar(255),
  value          text,
@@ -31,12 +30,14 @@ INSERT INTO items VALUES('xivo.domain'                  , 'proformatique.com', '
 
 INSERT INTO items VALUES('xivo.dhcp.pool'               , '192.168.0.50 192.168.0.100', '');
 INSERT INTO items VALUES('xivo.dhcp.extra_ifaces'       , '', '');
+
+INSERT INTO items VALUES('xivo.smtp.mydomain'           , '', '');
 INSERT INTO items VALUES('xivo.smtp.origin'             , 'xivo-clients.proformatique.com', '');
 INSERT INTO items VALUES('xivo.smtp.relayhost'          , '', '');
 INSERT INTO items VALUES('xivo.smtp.fallback_relayhost' , '', '');
 INSERT INTO items VALUES('xivo.smtp.canonical'          , '', '');
 
-INSERT INTO items VALUES('xivo.maintenance'             , '', '');
+INSERT INTO items VALUES('xivo.maintenance'             , '0', '');
 INSERT INTO items VALUES('alert_emails'                 , '', '');
 INSERT INTO items VALUES('dahdi_monitor_ports'          , '', '');
 INSERT INTO items VALUES('max_call_duration'            , '', '');

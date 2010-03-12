@@ -22,6 +22,7 @@ __license__ = """
 """
 
 import os
+import re
 import logging
 import subprocess
 from datetime import datetime
@@ -42,42 +43,50 @@ class CommonConf:
     """
     """
     def __init__(self):
-        http_json_server.register(self.get, CMD_R, safe_init=self.safe_init, name='commonconf_get')
+        http_json_server.register(self.get      , CMD_RW, safe_init=self.safe_init, name='commonconf_get')
         http_json_server.register(self.set      , CMD_RW      , name='commonconf_set')
         http_json_server.register(self.genconfig, CMD_R       , name='commonconf_genconfig')
         
     def safe_init(self, options):
         self.db         = options.database
         self.file       = options.configuration.get('commonconf', 'commonconf_file')
+        self.cmd        = options.configuration.get('commonconf', 'commonconf_cmd')
    
-    GET_SCHEMA = xys.load("""
-    key:            !!str   xivo.*
-    """)
+    GET_SCHEMA = [
+        xys.load("""key: !!str   xivo.*"""),
+        xys.load("""key: !~~seqlen(0,64) [!!str xivo.maintenance]""")
+    ]
 
     def get(self, args, options):
         """
         GET /get
 
-        >>> get({}, {'key':              'xivo.smtp.origin'})
+        >>> get({'key': 'xivo.smtp.origin'})
+        >>> get({'key': ['xivo.smtp.origin', 'xivo.domain']})
         """
-
-        if not xys.validate(options, self.GET_SCHEMA):
+        
+        #TODO: protect key string agains SQL injection
+        if xys.validate(args, self.GET_SCHEMA[0]):
+            query = "SELECT ${columns} FROM items WHERE key LIKE '%s'" % \
+                args['key'].replace('*', '%');
+            
+        elif xys.validate(args, self.GET_SCHEMA[1]):
+            query = "SELECT ${columns} FROM items WHERE key IN (%s)" % \
+                ','.join(["'%s'" % x for x in args['key']])
+        else:
             raise HttpReqError(415, "invalid arguments for command")
 
-        key = options['key'].replace('*', '%');
-        
         cursor = self.db.cursor()
-
-        cursor.query("SELECT ${columns} FROM items WHERE key like %s", ('key', 'value'), (key,))
+        cursor.query(query, ('key', 'value'))
         res = dict(cursor.fetchall())
-        
         cursor.close()
+
         return res
 
     SET_SCHEMA = xys.load("""
         key?:            !!str   xivo.smtp.relayhost
         value?:          !!str   smtp.free.fr
-        keyvalues?:      !~~seqlen(0,64) [ 'key', 'value' ]
+        keyvalues?:      !~~seqlen(0,64) [ 'key':  'value' ]
     """)
     
     def set(self, args, options):
@@ -86,25 +95,26 @@ class CommonConf:
 
         >>> set({'key'   : 'xivo.smtp.relayhost',
                  'value' : 'smtp.free.fr'})
-        >>> set({'keyvalues': [('xivo.maintenance': 1), ('max_call_duration': 30)]})
+        >>> set({'keyvalues': {'xivo.maintenance': 1, 'max_call_duration': 30}})
         """
-        pprint.pprint(args)
         if not xys.validate(options, self.SET_SCHEMA):
             raise HttpReqError(415, "invalid arguments for command")
 
         kv = []
         if args.has_key('keyvalues'):
-                kv = args['keyvalues']
+                kv = [(k, args['keyvalues'][k]) for k in args['keyvalues']]
         if args.has_key('key') and args.has_key('key'):
                 kv.append((args['key'], args['value']))
                 
         if len(kv) == 0:
             raise HttpReqError(415, "invalid arguments for command")
 
-        cursor = self.db.cursor()
-        cursor.querymany("INSERT OR REPLACE INTO items VALUES(%s, %s, '')", None, kv)
-        cursor.close()
-        self.db.commit()
+        try:
+            cursor = self.db.cursor()
+            cursor.querymany("INSERT OR REPLACE INTO items VALUES(%s, %s, '')", None, kv)
+        finally:
+            cursor.close()
+            self.db.commit()
 
         return True
 
@@ -116,7 +126,7 @@ class CommonConf:
                 '1. Network'    : ['xivo.hostname', 'xivo.domain'],
                 '2. DHCP'       : ['xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'],
                 '3. Mail'       : ['xivo.smtp.origin', 'xivo.smtp.relayhost', 
-                                   'xivo.smtp.fallback.relayhost', 'xivo.smtp.canonical'],
+                                   'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'],
                 '4. Maintenance': ['xivo.maintenance'],
                 '5. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
         }
@@ -136,8 +146,10 @@ class CommonConf:
                         else:
                                 log.error("undefined key '%s' in sysconfd items database table" % key)
                                 value = ''
-                                
-                        f.write("%s=\"%s\"\n" % (key.upper().replace('.', '_'), value))
+                        
+                        #TODO: \r\n protection should be generic
+                        f.write("%s=\"%s\"\n" % (key.upper().replace('.', '_'), 
+                            re.sub(r'\r\n', r'\\r\\n', value)))
         
                 def write_section(name):
                         f.write("\n# %s\n" % name)
@@ -147,5 +159,17 @@ class CommonConf:
                 f.write("### Configuration")
                 for key in sorted(sections.keys()):
                         write_section(key)
-                
+
+        try:
+            p = subprocess.Popen([self.cmd])
+            ret = p.wait()
+        except OSError:
+            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
+
+        if ret != 0:
+            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
+
+        return True
+        
+        
 commonconf = CommonConf()

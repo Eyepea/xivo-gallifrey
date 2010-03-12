@@ -21,33 +21,27 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import unittest
+import unittest, pprint, cjson
 import sysconfd_client
 
 class TestGeneric(unittest.TestCase):
     def setUp(self):
         self.client = sysconfd_client.SysconfdClient()
 
-    def test_mail(self):
-        """
-            We should test all the cases and read resulting files
-        """
-        params = {
-            'origin'            : 'TEST_ORIGIN', 
-            'relayhost'         : 'TEST_RELAYHOST', 
-            'fallback_relayhost': 'TEST_FB_RELAYHOST', 
-            'canonical'         : 'TEST_CANONICAL',
-            'mydomain'          : 'TEST_MYDOMAIN',
-            'hostname'          : 'TEST_HOSTNAME',
-            'domain'            : 'TEST_DOMAIN',
-            'maintenance'       : True
-        }
-#        (response, data) = self.client.request("POST", "/mailconfig_set", params)
-        
-#        self.assertEqual(response.status, 200)
-        
+
     def test_commonconf_get(self):
-        (resp, data) = self.client.request('GET', '/commonconf_get', {'key': '*'})
+        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': '*'})
+        pprint.pprint(cjson.decode(data))
+        self.assertEqual(resp.status, 200)
+
+        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': 'xivo.*'})
+        pprint.pprint(cjson.decode(data))
+        self.assertEqual(resp.status, 200)
+
+        (resp, data) = self.client.request('POST', '/commonconf_get', 
+            {'key': ('xivo.maintenance', 'alert_emails')})
+        pprint.pprint(cjson.decode(data))
+        self.assertEqual(resp.status, 200)
 
     def test_commonconf_set(self):
         (resp, data) = self.client.request('POST', '/commonconf_set', {})
@@ -58,7 +52,7 @@ class TestGeneric(unittest.TestCase):
         self.assertEqual(resp.status, 200)
 
         (resp, data) = self.client.request('POST', '/commonconf_set', 
-                {'keyvalues': [('sysconfd.unittest.kv1', 'value1'), ('sysconfd.unittest.kv2', 'value2')]})
+                {'keyvalues': {'sysconfd.unittest.kv1': 'value1', 'sysconfd.unittest.kv2': 'value2'}})
         self.assertEqual(resp.status, 200)
 
         (resp, data) = self.client.request('GET', '/commonconf_genconfig', ())
