@@ -1,0 +1,98 @@
+; title_content_name
+Haute-Disponibilité
+
+; smenu_services
+Services activés
+
+; smenu_network
+Configuration réseau
+
+; smenu_params
+Paramètres heartbeat
+
+; fm_ha_apache2
+Apache2 : 
+
+; fm_ha_asterisk
+Asterisk : 
+
+; fm_ha_dhcp
+Dhcp : 
+
+; fm_ha_monit
+Monit : 
+
+; fm_ha_mysql
+MySQL : 
+
+; fm_ha_ntp
+Ntp : 
+
+; fm_ha_rsync
+Rsync : 
+
+; fm_ha_smokeping
+Smokeping : 
+
+; fm_ha_mailto
+Mailto : 
+
+; fm_ha_ping_ipaddr0
+Adresse IP à monitorer : 
+
+; fm_ha_uname_node0
+noeud heartbeat #0 (valeur uname) : 
+
+; fm_ha_uname_node1
+noeud heartbeat #1 (valeur uname) : 
+
+; fm_ha_ipaddr0
+Adresse IP du réseau virtuel : 
+
+; fm_ha_netmask0
+Masque de sous-réseau du réseau virtuel : 
+
+; fm_ha_broadcast0
+Adresse de broadcast du réseau virtuel : 
+
+; fm_ha_dest_iface0
+Interface réseau noeud #0 : 
+
+; fm_ha_dest_host0
+Adresse IP noeud #0 : 
+
+; fm_ha_dest_transfer0
+transfert noeud #0 : 
+
+; fm_ha_dest_iface1
+Interface réseau noeud #1 : 
+
+; fm_ha_dest_host1
+Adresse IP noeud #1 : 
+
+; fm_ha_dest_transfer1
+transfert noeud #1 : 
+
+; fm_ha_alert_emails
+Adresses emails pour les alertes : 
+
+; fm_ha_serial
+port(s) série : 
+
+; fm_ha_authkeys
+clé secrète : 
+
+; fm_ha_com_mode
+mode de communication heartbeat : 
+
+; fm_ha_user
+Utilisateur MySQL et Rsync sur ce noeud : 
+
+; fm_ha_password
+Mot de passe associé
+
+; fm_ha_dest_user
+Utilisateur pour se connecter sur les autres noeuds : 
+
+; fm_ha_dest_password
+Mot de passe associé

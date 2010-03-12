@@ -34,6 +34,7 @@ $array['xivo/configuration/network/iproute'] = 'xivo/configuration/index.php/net
 $array['xivo/configuration/network/resolvconf'] = 'xivo/configuration/index.php/network/resolvconf/';
 $array['xivo/configuration/network/mail'] = 'xivo/configuration/index.php/network/mail/';
 $array['xivo/configuration/network/dhcp'] = 'xivo/configuration/index.php/network/dhcp/';
+$array['xivo/configuration/network/ha'] = 'xivo/configuration/index.php/network/ha/';
 
 $array['xivo/configuration/support/xivo'] = 'xivo/configuration/index.php/support/xivo/';
 $array['xivo/configuration/support/alerts'] = 'xivo/configuration/index.php/support/alerts/';

@@ -85,6 +85,10 @@ $url = &$this->get_module('url');
 				<?=$url->href_html($this->bbf('mn_left_network-dhcp'),
 						   'xivo/configuration/network/dhcp');?>
 			</dd>
+			<dd id="mn-network--ha">
+				<?=$url->href_html($this->bbf('mn_left_network-ha'),
+						   'xivo/configuration/network/ha');?>
+			</dd>
 
 		</dl>
 		<dl>

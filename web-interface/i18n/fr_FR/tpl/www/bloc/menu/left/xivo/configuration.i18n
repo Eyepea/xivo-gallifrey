@@ -40,6 +40,9 @@ Serveur DHCP
 ; mn_left_network-mail
 Messagerie
 
+; mn_left_network-ha
+Haute-Disponibilité
+
 ; mn_left_ti_support
 Monitoring
 
