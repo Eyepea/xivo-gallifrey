@@ -1,7 +1,7 @@
-Index: asterisk-1.4.29/apps/app_queue.c
+Index: asterisk-1.4.30/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.29.orig/apps/app_queue.c	2010-02-25 13:53:34.000000000 +0100
-+++ asterisk-1.4.29/apps/app_queue.c	2010-02-25 13:54:53.000000000 +0100
+--- asterisk-1.4.30.orig/apps/app_queue.c	2010-03-16 12:16:29.000000000 +0100
++++ asterisk-1.4.30/apps/app_queue.c	2010-03-16 12:16:32.000000000 +0100
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -1151,7 +1151,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  			idx++;
  		ch = ch->next;			
  	}
-@@ -2626,7 +3506,7 @@
+@@ -2628,7 +3508,7 @@
  			break;
  		}
  
@@ -1160,7 +1160,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  		/* leave the queue if no agents, if enabled */
  		if (qe->parent->leavewhenempty && (stat == QUEUE_NO_MEMBERS)) {
-@@ -3149,6 +4029,7 @@
+@@ -3153,6 +4033,7 @@
  		member = lpeer->member;
  		/* Increment the refcount for this member, since we're going to be using it for awhile in here. */
  		ao2_ref(member, 1);
@@ -1168,7 +1168,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  		hangupcalls(outgoing, peer);
  		outgoing = NULL;
  		if (announce || qe->parent->reportholdtime || qe->parent->memberdelay) {
-@@ -3465,7 +4346,7 @@
+@@ -3469,7 +4350,7 @@
  
  /* Dump all members in a specific queue to the database
   *
@@ -1177,7 +1177,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
   *
   */
  static void dump_queue_members(struct call_queue *pm_queue)
-@@ -3488,8 +4369,9 @@
+@@ -3492,8 +4373,9 @@
  			continue;
  		}
  
@@ -1189,7 +1189,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  		ao2_ref(cur_member, -1);
  
-@@ -3561,7 +4443,7 @@
+@@ -3565,7 +4447,7 @@
  }
  
  
@@ -1198,7 +1198,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  {
  	struct call_queue *q;
  	struct member *new_member, *old_member;
-@@ -3576,7 +4458,7 @@
+@@ -3580,7 +4462,7 @@
  
  	ao2_lock(q);
  	if ((old_member = interface_exists(q, interface)) == NULL) {
@@ -1207,7 +1207,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  			add_to_interfaces(new_member->state_interface);
  			new_member->dynamic = 1;
  			ao2_link(q->members, new_member);
-@@ -3679,6 +4561,7 @@
+@@ -3683,6 +4565,7 @@
  	char *member;
  	char *interface;
  	char *membername = NULL;
@@ -1215,7 +1215,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	char *state_interface;
  	char *penalty_tok;
  	int penalty = 0;
-@@ -3732,6 +4615,7 @@
+@@ -3736,6 +4619,7 @@
  			membername = strsep(&member, ";");
  			state_interface = strsep(&member,";");
  			incominglimit_tok = strsep(&member,";");
@@ -1223,7 +1223,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  			if (!penalty_tok) {
  				ast_log(LOG_WARNING, "Error parsing persistent member string for '%s' (penalty)\n", queue_name);
-@@ -3767,8 +4651,8 @@
+@@ -3771,8 +4655,8 @@
  
  			if (option_debug)
  				ast_log(LOG_DEBUG, "Reload Members: Queue: %s  Member: %s  Name: %s  Penalty: %d  Paused: %d IncomingLimit: %d\n", queue_name, interface, membername, penalty, paused, incominglimit);
@@ -1234,7 +1234,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  				ast_log(LOG_ERROR, "Out of Memory when reloading persistent queue member\n");
  				break;
  			}
-@@ -3969,12 +4853,13 @@
+@@ -3973,12 +4857,13 @@
  		AST_APP_ARG(membername);
  		AST_APP_ARG(state_interface);
  		AST_APP_ARG(incominglimit);
@@ -1249,7 +1249,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  		return -1;
  	}
  
-@@ -4010,7 +4895,7 @@
+@@ -4014,7 +4899,7 @@
  		}
  	}
  
@@ -1258,7 +1258,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	case RES_OKAY:
  		ast_queue_log(args.queuename, chan->uniqueid, args.interface, "ADDMEMBER", "%s", "");
  		ast_log(LOG_NOTICE, "Added interface '%s' to queue '%s'\n", args.interface, args.queuename);
-@@ -4111,15 +4996,16 @@
+@@ -4115,15 +5000,16 @@
  		AST_APP_ARG(announceoverride);
  		AST_APP_ARG(queuetimeoutstr);
  		AST_APP_ARG(agi);
@@ -1278,7 +1278,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	parse = ast_strdupa(data);
  	AST_STANDARD_APP_ARGS(args, parse);
  
-@@ -4177,6 +5063,11 @@
+@@ -4181,6 +5067,11 @@
  	qe.chan = chan;
  	qe.prio = prio;
  	qe.max_penalty = max_penalty;
@@ -1290,7 +1290,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	qe.last_pos_said = 0;
  	qe.last_pos = 0;
  	qe.last_periodic_announce_time = time(NULL);
-@@ -4254,7 +5145,7 @@
+@@ -4258,7 +5149,7 @@
  			if (res)
  				goto stop;
  
@@ -1299,7 +1299,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  			/* exit after 'timeout' cycle if 'n' option enabled */
  			if (noption && tries >= qe.parent->membercount) {
-@@ -4353,6 +5244,15 @@
+@@ -4357,6 +5248,15 @@
  		set_queue_result(chan, reason);
  		res = 0;
  	}
@@ -1315,7 +1315,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	if (qe.parent) {
  		/* every queue_ent is given a reference to it's parent call_queue when it joins the queue.
  		 * This ref must be taken away right before the queue_ent is destroyed.  In this case
-@@ -4607,6 +5507,7 @@
+@@ -4611,6 +5511,7 @@
  	char *parse;
  	char *interface, *state_interface;
  	char *membername = NULL;
@@ -1323,7 +1323,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	int penalty;
  	int incominglimit;
  	AST_DECLARE_APP_ARGS(args,
-@@ -4615,8 +5516,9 @@
+@@ -4619,8 +5520,9 @@
  		AST_APP_ARG(membername);
  		AST_APP_ARG(state_interface);
  		AST_APP_ARG(incominglimit);
@@ -1334,7 +1334,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	if (!(cfg = ast_config_load("queues.conf"))) {
  		ast_log(LOG_NOTICE, "No call queueing config file (queues.conf), so no call queues\n");
  		return 0;
-@@ -4712,6 +5614,10 @@
+@@ -4716,6 +5618,10 @@
  							membername = ast_skip_blanks(args.membername);
  						}
  
@@ -1345,7 +1345,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  						if (!ast_strlen_zero(args.state_interface)) {
  							state_interface = ast_skip_blanks(args.state_interface);
  						} else {
-@@ -4736,7 +5642,7 @@
+@@ -4740,7 +5646,7 @@
  							remove_from_interfaces(cur->state_interface);
  						}
  
@@ -1354,7 +1354,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  						if (!cur || (cur && strcasecmp(cur->state_interface, state_interface))) {
  							add_to_interfaces(state_interface);
  						}
-@@ -4800,9 +5706,122 @@
+@@ -4804,9 +5710,122 @@
  	}
  	AST_LIST_TRAVERSE_SAFE_END;
  	AST_LIST_UNLOCK(&queues);
@@ -1477,7 +1477,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  static int __queues_show(struct mansession *s, int manager, int fd, int argc, char **argv)
  {
  	struct call_queue *q;
-@@ -4913,6 +5932,8 @@
+@@ -4917,6 +5936,8 @@
  					ast_build_string(&max, &max_left, " (paused)");
  				if (mem->incominglimit && mem->current_calls >= mem->incominglimit)
  					ast_build_string(&max, &max_left, " (incoming limit reached)");
@@ -1486,7 +1486,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  				ast_build_string(&max, &max_left, " (%s)", devstate2str(mem->status));
  				if (mem->calls) {
  					ast_build_string(&max, &max_left, " has taken %d calls (last was %ld secs ago)",
-@@ -4931,12 +5952,42 @@
+@@ -4935,12 +5956,42 @@
  		else	
  			ast_cli(fd, "   No Members%s", term);
  		if (q->head) {
@@ -1529,7 +1529,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  				if (s)
  					astman_append(s, "      %d. %s (wait: %ld:%2.2ld, prio: %d)%s",
  						pos++, qe->chan->name, (long) (now - qe->start) / 60,
-@@ -5063,6 +6114,7 @@
+@@ -5067,6 +6118,7 @@
                                                        "Paused: %d\r\n"
                                                        "IncomingLimit: %d\r\n"
                                                        "CurrentCalls: %d\r\n"
@@ -1537,7 +1537,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
                                                        "%s"
                                                        "\r\n",
                                                        q->name,
-@@ -5076,6 +6128,7 @@
+@@ -5080,6 +6132,7 @@
                                                        mem->paused,
                                                        mem->incominglimit,
                                                        mem->current_calls,
@@ -1545,7 +1545,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
                                                        idText);
  				}
  				ao2_ref(mem, -1);
-@@ -5118,7 +6171,7 @@
+@@ -5122,7 +6175,7 @@
  
  static int manager_add_queue_member(struct mansession *s, const struct message *m)
  {
@@ -1554,7 +1554,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	int paused, penalty, incominglimit = 0;
  
  	queuename = astman_get_header(m, "Queue");
-@@ -5128,6 +6181,7 @@
+@@ -5132,6 +6185,7 @@
  	membername = astman_get_header(m, "MemberName");
  	state_interface = astman_get_header(m, "StateInterface");
  	incominglimit_s = astman_get_header(m, "IncomingLimit");
@@ -1562,7 +1562,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  	if (ast_strlen_zero(queuename)) {
  		astman_send_error(s, m, "'Queue' not specified.");
-@@ -5154,7 +6208,7 @@
+@@ -5158,7 +6212,7 @@
  	else if (sscanf(incominglimit_s, "%30d", &incominglimit) != 1 || incominglimit < 0)
  		incominglimit = 0;
  
@@ -1571,7 +1571,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	case RES_OKAY:
  		ast_queue_log(queuename, "MANAGER", interface, "ADDMEMBER", "%s", "");
  		astman_send_ack(s, m, "Added interface to queue");
-@@ -5230,12 +6284,85 @@
+@@ -5234,12 +6288,85 @@
  	return 0;
  }
  
@@ -1659,7 +1659,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  		return RESULT_SHOWUSAGE;
  	} else if (strcmp(argv[4], "to")) {
  		return RESULT_SHOWUSAGE;
-@@ -5247,6 +6374,8 @@
+@@ -5251,6 +6378,8 @@
  		return RESULT_SHOWUSAGE;
  	} else if ((argc == 14) && strcmp(argv[12], "incominglimit")) {
  		return RESULT_SHOWUSAGE;
@@ -1668,7 +1668,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	}
  
  	queuename = argv[5];
-@@ -5287,7 +6416,11 @@
+@@ -5291,7 +6420,11 @@
  		incominglimit = 0;
  	}
  
@@ -1681,7 +1681,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	case RES_OKAY:
  		ast_queue_log(queuename, "CLI", interface, "ADDMEMBER", "%s", "");
  		ast_cli(fd, "Added interface '%s' to queue '%s'\n", interface, queuename);
-@@ -5306,9 +6439,56 @@
+@@ -5310,9 +6443,56 @@
  	}
  }
  
@@ -1739,7 +1739,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	switch (pos) {
  	case 3:	/* Don't attempt to complete name of interface (infinite possibilities) */
  		return NULL;
-@@ -5337,6 +6517,8 @@
+@@ -5341,6 +6521,8 @@
  		return state == 0 ? ast_strdup("state_interface") : NULL;
  	case 12:
  		return state == 0 ? ast_strdup("incominglimit") : NULL;
@@ -1748,7 +1748,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	default:
  		return NULL;
  	}
-@@ -5421,8 +6603,16 @@
+@@ -5425,8 +6607,16 @@
  "Usage: queue show\n"
  "       Provides summary information on a specified queue.\n";
  
@@ -1766,7 +1766,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  
  static char qrm_cmd_usage[] =
  "Usage: queue remove member <channel> from <queue>\n";
-@@ -5452,6 +6642,14 @@
+@@ -5456,6 +6646,14 @@
  	queue_show, "Show status of a specified queue",
  	queue_show_usage, complete_queue_show, &cli_show_queue_deprecated },
  
@@ -1781,7 +1781,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	{ { "queue", "add", "member", NULL },
  	handle_queue_add_member, "Add a channel to a specified queue",
  	qam_cmd_usage, complete_queue_add_member, &cli_add_queue_member_deprecated },
-@@ -5503,7 +6701,7 @@
+@@ -5507,7 +6705,7 @@
  {
  	int res;
  
@@ -1790,7 +1790,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  		return AST_MODULE_LOAD_DECLINE;
  
  	if (queue_persistent_members)
-@@ -5537,7 +6735,7 @@
+@@ -5541,7 +6739,7 @@
  
  static int reload(void)
  {
@@ -1799,10 +1799,10 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	return 0;
  }
  
-Index: asterisk-1.4.29/configs/queueskillrules.conf.sample
+Index: asterisk-1.4.30/configs/queueskillrules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.29/configs/queueskillrules.conf.sample	2010-02-25 13:54:53.000000000 +0100
++++ asterisk-1.4.30/configs/queueskillrules.conf.sample	2010-03-16 12:16:32.000000000 +0100
 @@ -0,0 +1,38 @@
 +; This file describes skill routing rules. The Queue() application can get the
 +; 'skill_ruleset' argument which is the name of one skill routing ruleset. If
@@ -1842,10 +1842,10 @@ Index: asterisk-1.4.29/configs/queueskillrules.conf.sample
 +; [client-cool]
 +; rule => technic = 0
 +
-Index: asterisk-1.4.29/configs/queueskills.conf.sample
+Index: asterisk-1.4.30/configs/queueskills.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.29/configs/queueskills.conf.sample	2010-02-25 13:54:53.000000000 +0100
++++ asterisk-1.4.30/configs/queueskills.conf.sample	2010-03-16 12:16:32.000000000 +0100
 @@ -0,0 +1,47 @@
 +; Describe skills groups here to assign them to queue members. You can set
 +; weight to each skills. It'll be used by skill rules to know if a queue member

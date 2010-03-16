@@ -1,8 +1,8 @@
-Index: asterisk-1.4.29/apps/app_queue.c
+Index: asterisk-1.4.30/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.29.orig/apps/app_queue.c	2010-02-25 13:52:42.000000000 +0100
-+++ asterisk-1.4.29/apps/app_queue.c	2010-02-25 13:53:34.000000000 +0100
-@@ -4502,6 +4502,52 @@
+--- asterisk-1.4.30.orig/apps/app_queue.c	2010-03-16 12:10:39.000000000 +0100
++++ asterisk-1.4.30/apps/app_queue.c	2010-03-16 12:16:29.000000000 +0100
+@@ -4506,6 +4506,52 @@
  	return 0;
  }
  
@@ -55,7 +55,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  static struct ast_custom_function queueagentcount_function = {
  	.name = "QUEUEAGENTCOUNT",
  	.synopsis = "Count number of agents answering a queue",
-@@ -4539,6 +4585,15 @@
+@@ -4543,6 +4589,15 @@
  	.read = queue_function_queuememberlist,
  };
  
@@ -71,7 +71,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  static int reload_queues(void)
  {
  	struct call_queue *q;
-@@ -5434,6 +5489,7 @@
+@@ -5438,6 +5493,7 @@
  	res |= ast_custom_function_unregister(&queuemembercount_function);
  	res |= ast_custom_function_unregister(&queuememberlist_function);
  	res |= ast_custom_function_unregister(&queuewaitingcount_function);
@@ -79,7 +79,7 @@ Index: asterisk-1.4.29/apps/app_queue.c
  	ast_devstate_del(statechange_queue, NULL);
  
  	ast_module_user_hangup_all();
-@@ -5473,6 +5529,7 @@
+@@ -5477,6 +5533,7 @@
  	res |= ast_custom_function_register(&queuemembercount_function);
  	res |= ast_custom_function_register(&queuememberlist_function);
  	res |= ast_custom_function_register(&queuewaitingcount_function);

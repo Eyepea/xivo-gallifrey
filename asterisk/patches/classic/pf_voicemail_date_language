@@ -7,10 +7,10 @@
 	The date language is appropriately set in the main body of
 	voicemail-issued e-mails.
 
-Index: asterisk-1.4.28/apps/app_voicemail.c
+Index: asterisk-1.4.30/apps/app_voicemail.c
 ===================================================================
---- asterisk-1.4.28.orig/apps/app_voicemail.c	2009-12-22 15:02:13.000000000 +0100
-+++ asterisk-1.4.28/apps/app_voicemail.c	2009-12-22 15:03:27.000000000 +0100
+--- asterisk-1.4.30.orig/apps/app_voicemail.c	2010-03-01 20:35:01.000000000 +0100
++++ asterisk-1.4.30/apps/app_voicemail.c	2010-03-16 12:10:34.000000000 +0100
 @@ -65,6 +65,9 @@
  #include <sys/types.h>
  #include <sys/mman.h>
@@ -21,7 +21,7 @@ Index: asterisk-1.4.28/apps/app_voicemail.c
  #include <dirent.h>
  #ifdef IMAP_STORAGE
  #include <ctype.h>
-@@ -579,6 +582,10 @@
+@@ -630,6 +633,10 @@
  static unsigned char adsifdn[4] = "\x00\x00\x00\x0F";
  static unsigned char adsisec[4] = "\x9B\xDB\xF7\xAC";
  static int adsiver = 1;
@@ -32,7 +32,7 @@ Index: asterisk-1.4.28/apps/app_voicemail.c
  static char emaildateformat[32] = "%A, %B %d, %Y at %r";
  
  
-@@ -3220,7 +3227,22 @@
+@@ -3273,7 +3280,22 @@
  	fprintf(p, "Date: %s" ENDL, date);
  
  	/* Set date format for voicemail mail */
@@ -55,7 +55,7 @@ Index: asterisk-1.4.28/apps/app_voicemail.c
  
  	if (*fromstring) {
  		struct ast_channel *ast;
-@@ -8428,6 +8450,14 @@
+@@ -8516,6 +8538,14 @@
  			ast_copy_string(emaildateformat, emaildateformatstr, sizeof(emaildateformat));
  		}
  

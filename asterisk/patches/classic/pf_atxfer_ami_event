@@ -8,11 +8,11 @@ SrcUniqueid:
 DstChannel:
 DstUniqueid:
 
-Index: asterisk-1.4.29/res/res_features.c
+Index: asterisk-1.4.30/res/res_features.c
 ===================================================================
---- asterisk-1.4.29.orig/res/res_features.c	2010-01-20 17:46:57.000000000 +0100
-+++ asterisk-1.4.29/res/res_features.c	2010-01-20 17:47:13.000000000 +0100
-@@ -1001,6 +1001,16 @@
+--- asterisk-1.4.30.orig/res/res_features.c	2010-03-16 12:10:09.000000000 +0100
++++ asterisk-1.4.30/res/res_features.c	2010-03-16 12:10:27.000000000 +0100
+@@ -1007,6 +1007,16 @@
  			return -1;
  		return FEATURE_RETURN_SUCCESS;
  	}
@@ -27,5 +27,5 @@ Index: asterisk-1.4.29/res/res_features.c
 +	                               newchan->name,
 +	                               newchan->uniqueid);
  
- 	if (check_compat(transferer, newchan)) {
- 		/* we do mean transferee here, NOT transferer */
+ 	if (!ast_check_hangup(transferer)) {
+ 		if (check_compat(transferer, newchan)) {

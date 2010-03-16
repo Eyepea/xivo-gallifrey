@@ -10,10 +10,10 @@
 	If both priexclusive and pripreferred are TRUE, the behavior will be the same
 	as if only priexclusive were TRUE.
 
-Index: asterisk-1.4.28/channels/chan_dahdi.c
+Index: asterisk-1.4.30/channels/chan_dahdi.c
 ===================================================================
---- asterisk-1.4.28.orig/channels/chan_dahdi.c	2009-12-22 15:02:56.000000000 +0100
-+++ asterisk-1.4.28/channels/chan_dahdi.c	2009-12-22 15:03:07.000000000 +0100
+--- asterisk-1.4.30.orig/channels/chan_dahdi.c	2010-03-16 12:07:54.000000000 +0100
++++ asterisk-1.4.30/channels/chan_dahdi.c	2010-03-16 12:08:04.000000000 +0100
 @@ -595,6 +595,13 @@
  	 */
  	unsigned int priexclusive:1;
@@ -41,7 +41,7 @@ Index: asterisk-1.4.28/channels/chan_dahdi.c
  			exclusive = 1;
  		} else {
  			exclusive = 0;
-@@ -7975,6 +7986,7 @@
+@@ -8000,6 +8011,7 @@
  		tmp->restrictcid = conf->chan.restrictcid;
  		tmp->use_callingpres = conf->chan.use_callingpres;
  		tmp->priexclusive = conf->chan.priexclusive;
@@ -49,7 +49,7 @@ Index: asterisk-1.4.28/channels/chan_dahdi.c
  		if (tmp->usedistinctiveringdetection) {
  			if (!tmp->use_callerid) {
  				ast_log(LOG_NOTICE, "Distinctive Ring detect requires 'usecallerid' be on\n");
-@@ -11845,6 +11857,8 @@
+@@ -11870,6 +11882,8 @@
  						v->value, v->lineno);
  			} else if (!strcasecmp(v->name, "priexclusive")) {
  				confp->chan.priexclusive = ast_true(v->value);
