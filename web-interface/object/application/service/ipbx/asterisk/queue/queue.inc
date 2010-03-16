@@ -1289,13 +1289,13 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{
 		$this->_reset();
 		$ret = ($this->_skillcat->chk_value('name', $name) === false);
-		$this->_errors = $this->_skillcat->get_filter_error();
+		$this->_error = $this->_skillcat->get_filter_error();
 
-		$this->_errors['values'] = array();
+		$this->_error['values'] = array();
 		for($i = count($values)-1; $i >= 0; $i--)
 		{			
 			$ret |= ($this->_skill->chk_values($values[$i]) === false);
-			$this->_errors['values'][$i] = $this->_skill->get_filter_error();
+			$this->_error['values'][$i] = $this->_skill->get_filter_error();
 		}
 
 		return !$ret;
@@ -1319,7 +1319,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	function skills_add($name, $values)
 	{
 		// save skill category and return autoincremented ID
-		$catid =  $this->_skillcat->add(array('id' => null, 'name' => $name));		
+		$catid =  $this->_skillcat->add(array('id' => null, 'name' => $name));
 		if(is_null($catid) || $catid === false)
 		{ return(false); }
 

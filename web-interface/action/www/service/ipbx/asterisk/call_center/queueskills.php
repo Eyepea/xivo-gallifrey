@@ -41,7 +41,7 @@ switch($act)
 		// add a new item (either display add form (fm_send not set)
 		// 	OR save new entered item
 		$appqueue = &$ipbx->get_application('queue');
-		$fm_save = true;
+		$fm_save = false;
 
 		// we must save new item ?
 		if(isset($_QR['fm_send']) 	 === true 
@@ -70,11 +70,11 @@ switch($act)
 
 				$_TPL->set_var('info', array('queueskill' => $_QR['queueskill']));
 				$_TPL->set_var('data', $queueskills);
+				
+				$fm_save = false;
 			}
 			else
 			{
-				// save is ok: redirecting to list view
-				$fm_save = false;
 				// must reload configuration files
 				$ipbx->discuss('module reload app_queue.so');
 

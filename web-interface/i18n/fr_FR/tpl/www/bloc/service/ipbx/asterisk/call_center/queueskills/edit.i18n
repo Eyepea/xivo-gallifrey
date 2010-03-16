@@ -22,18 +22,18 @@ Aucune information
 ; queueskill-name(empty)
 Vous devez saisir un nom de catégorie
 
-; queueskill-name(regexp false)
+; queueskill-name(regexp)
 Le nom de la catégorie contient des caractères invalides
 
 ; queueskill-value-name(empty)
 Vous devez saisir un nom pour la compétence
 
-; queueskill-value-name(regexp false)
+; queueskill-value-name(regexp)
 le nom de la compétence contient des caractères invalides
 
-; queueskill-value-printscr(maximum length)
+; queueskill-value-printscr(maximumlength)
 l'affichage écran doit faire AU PLUS 5 caractères
 
-; queueskill-value-printscr(regexp false)
+; queueskill-value-printscr(regexp)
 l'affichage écran contient des caractères invalides
 
