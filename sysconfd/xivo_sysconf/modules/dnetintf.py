@@ -539,6 +539,7 @@ class DNETIntf:
                 info = self.get_netiface_info(iface)
                 if info:
                     rs[iface] = info
+                    
             return rs
         finally:
             self.LOCK.release()
@@ -692,6 +693,9 @@ class DNETIntf:
         self.args       = args
         self.options    = options
 
+        import pprint
+        pprint.pprint(args)
+        pprint.pprint(options)
         if not xys.validate(self.args, self.MODIFY_PHYSICAL_ETH_IPV4_SCHEMA):
             raise HttpReqError(415, "invalid arguments for command")
 

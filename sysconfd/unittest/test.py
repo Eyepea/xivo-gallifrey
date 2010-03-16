@@ -29,34 +29,63 @@ class TestGeneric(unittest.TestCase):
         self.client = sysconfd_client.SysconfdClient()
 
 
-    def test_commonconf_get(self):
-        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': '*'})
+#    def test_commonconf_get(self):
+#        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': '*'})
+#        pprint.pprint(cjson.decode(data))
+#        self.assertEqual(resp.status, 200)
+
+#        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': 'xivo.*'})
+#        pprint.pprint(cjson.decode(data))
+#        self.assertEqual(resp.status, 200)
+
+#        (resp, data) = self.client.request('POST', '/commonconf_get', 
+#            {'key': ('xivo.maintenance', 'alert_emails')})
+#        pprint.pprint(cjson.decode(data))
+#        self.assertEqual(resp.status, 200)
+
+#    def test_commonconf_set(self):
+#        (resp, data) = self.client.request('POST', '/commonconf_set', {})
+#        self.assertEqual(resp.status, 415)
+
+#        (resp, data) = self.client.request('POST', '/commonconf_set', 
+#                {'key': 'sysconfd.unittest.kv0', 'value': 'value0'})
+#        self.assertEqual(resp.status, 200)
+
+#        (resp, data) = self.client.request('POST', '/commonconf_set', 
+#                {'keyvalues': {'sysconfd.unittest.kv1': 'value1', 'sysconfd.unittest.kv2': 'value2'}})
+#        self.assertEqual(resp.status, 200)
+
+#        (resp, data) = self.client.request('GET', '/commonconf_genconfig', ())
+#        self.assertEqual(resp.status, 200)
+
+
+    def test_ha_generate(self):
+        (resp, data) = self.client.request('GET', '/ha_generate', {})
+        self.assertEqual(resp.status, 200)
+
+    def test_ha_get(self):
+        (resp, data) = self.client.request('POST', '/ha_get', {'key': 'pf.ha.*'})
         pprint.pprint(cjson.decode(data))
         self.assertEqual(resp.status, 200)
 
-        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': 'xivo.*'})
-        pprint.pprint(cjson.decode(data))
+    def test_ha_set(self):
+        (resp, data) = self.client.request('POST', '/ha_set', {
+            'pf.ha.apache2'     : True,
+            'pf.ha.monit'       : True,
+            
+            'pf.ha.serial'      : 'ttyS0', 
+            
+            'pf.ha.uname_node'  : ['xivo-1', 'xivo-2'],
+            'pf.ha.dest'        : [
+                {'iface': 'eth0', 'host': '192.168.0.253', 'transfer': False},
+                {'iface': 'vboxnet0', 'host': '172.16.1.253' , 'transfer': True}
+            ],
+            'pf.ha'             : [
+                {'ipaddr': '192.168.0.254', 'netmask': '255.255.255.0', 'broadcast': '192.168.0.255'}
+            ],
+            'pf.ha.ping_ipaddr' : ['192.168.0.1'],
+        })
         self.assertEqual(resp.status, 200)
-
-        (resp, data) = self.client.request('POST', '/commonconf_get', 
-            {'key': ('xivo.maintenance', 'alert_emails')})
-        pprint.pprint(cjson.decode(data))
-        self.assertEqual(resp.status, 200)
-
-    def test_commonconf_set(self):
-        (resp, data) = self.client.request('POST', '/commonconf_set', {})
-        self.assertEqual(resp.status, 415)
-
-        (resp, data) = self.client.request('POST', '/commonconf_set', 
-                {'key': 'sysconfd.unittest.kv0', 'value': 'value0'})
-        self.assertEqual(resp.status, 200)
-
-        (resp, data) = self.client.request('POST', '/commonconf_set', 
-                {'keyvalues': {'sysconfd.unittest.kv1': 'value1', 'sysconfd.unittest.kv2': 'value2'}})
-        self.assertEqual(resp.status, 200)
-
-        (resp, data) = self.client.request('GET', '/commonconf_genconfig', ())
-        self.assertEqual(resp.status, 200)
-
+        
 if __name__ == '__main__':
     unittest.main()
