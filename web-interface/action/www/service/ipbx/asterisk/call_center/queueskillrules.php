@@ -58,11 +58,11 @@ switch($act)
 			{
 				$info = array('queueskillrule' => $_QR['queueskillrule']);
 				$_TPL->set_var('info'		, $info);
+
+				$fm_save = false;
 			}
 			else
 			{
-				// save is ok: redirecting to list view
-				$fm_save = false;
 				// must reload configuration files
 				$ipbx->discuss('module reload app_queue.so');
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskillrules'), $param);
@@ -76,6 +76,7 @@ switch($act)
 
 	case 'edit':
 		$appqueue = &$ipbx->get_application('queue');
+	    $fm_save  = true;
 
 		// id not set or skillcat[id] not found => redirect to list view
 		if(isset($_QR['id']) === false || ($info = $appqueue->skillrules_getone($_QR['id'])) === false)
@@ -90,20 +91,20 @@ switch($act)
 
 			if($appqueue->skillrules_update($_QR['queueskillrule']) === true)
 			{
-				// save is ok: redirecting to list view
-				$fm_save = false;
 				// must reload configuration files
 				$ipbx->discuss('module reload app_queue.so');
 
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskillrules'), $param);
 			}
 
+			$fm_save = false;
 			$info = $_QR['queueskillrule'];
 		}
 	
 		$_TPL->set_var('error', $appqueue->get_error());
 		$_TPL->set_var('info', array('queueskillrule' => $info));
 		$_TPL->set_var('rules', $info['rule']);
+		$_TPL->set_var('fm_save', $fm_save);
 		break;
 
 	case 'delete':
