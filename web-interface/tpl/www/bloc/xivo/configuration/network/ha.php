@@ -21,7 +21,8 @@
 $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
-$info = $this->get_var('info');
+$info     = $this->get_var('info');
+$commodes = $this->get_var('commodes');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\'' .$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -133,81 +134,30 @@ endif;
 </div>
 
 <div id="sb-part-network" class="b-nodisplay">
-<?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_ping_ipaddr0'),
-				  'name'	=> 'pf-ha-ping_ipaddr0',
-				  'labelid'	=> 'ping_ipaddr[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.ping_ipaddr[0]'))),
+    <div style="margin-bottom:15px">
+    <?php
+        $this->file_include('bloc/xivo/configuration/network/ha/uname');
+    ?>
+    </div>
+  
+    <div style="margin-bottom:15px">
+    <?php
+        $this->file_include('bloc/xivo/configuration/network/ha/ping');
+    ?>
+    </div>
 
-	$form->text(array('desc'	=> $this->bbf('fm_ha_uname_node0'),
-				  'name'	=> 'pf-ha-uname_node0',
-				  'labelid'	=> 'uname_node[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.uname_node[0]'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_uname_node1'),
-				  'name'	=> 'pf-ha-uname_node1',
-				  'labelid'	=> 'uname_node[1]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.uname_node[1]'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_ipaddr0'),
-				  'name'	=> 'pf-ha-ipaddr0',
-				  'labelid'	=> 'ipaddr[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.ipaddr[0]'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_netmask0'),
-				  'name'	=> 'pf-ha-netmask0',
-				  'labelid'	=> 'netmask[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.netmask[0]'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_broadcast0'),
-				  'name'	=> 'pf-ha-broadcast0',
-				  'labelid'	=> 'broadcast[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.broadcast[0]'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_iface0'),
-				  'name'	=> 'pf-ha-dest_iface0',
-				  'labelid'	=> 'dest_iface[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_iface[0]'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_host0'),
-				  'name'	=> 'pf-ha-dest_host0',
-				  'labelid'	=> 'dest_host[0]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_host[0]'))),
-				  
-	$form->checkbox(array('desc'		=> $this->bbf('fm_ha_dest_transfer0'),
-				      'name'		=> 'pf-ha-dest_transfer0',
-				      'labelid'		=> 'dest_transfer[0]',
-				      'checked'		=> $info['pf.ha.dest_transfer[0]'],
-				      'help'        => $this->bbf('fm_help-ha_dest_transfer[0]'))),
+    <div style="margin-bottom:15px">
+    <?php
+        $this->file_include('bloc/xivo/configuration/network/ha/virtnet');
+    ?>
+    </div>
 
-	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_iface1'),
-				  'name'	=> 'pf-ha-dest_iface1',
-				  'labelid'	=> 'dest_iface[1]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_iface1'))),
-				  
-	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_host1'),
-				  'name'	=> 'pf-ha-dest_host1',
-				  'labelid'	=> 'dest_host[1]',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_host[1]'))),
-				  
-	$form->checkbox(array('desc'		=> $this->bbf('fm_ha_dest_transfer1'),
-				      'name'		=> 'pf-ha-dest_transfer1',
-				      'labelid'		=> 'dest_transfer[1]',
-				      'checked'		=> $info['pf.ha.dest_transfer[1]'],
-				      'help'        => $this->bbf('fm_help-ha_dest_transfer[1]')));
-?>
+    <div>
+    <?php
+	    $this->file_include('bloc/xivo/configuration/network/ha/nodes');
+    ?>
+    </div>
 </div>
-
 
 <div id="sb-part-last" class="b-nodisplay">
 <?php
@@ -215,6 +165,7 @@ endif;
 				  'name'	=> 'pf-ha-alert_emails',
 				  'labelid'	=> 'alert_emails',
 				  'size'	=> 15,
+			      'help'    => $this->bbf('fm_help-ha_alert_emails'),
 				  'value'	=> $this->get_var('info', 'pf.ha.alert_emails'))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ha_serial'),
@@ -230,13 +181,22 @@ endif;
 				  'value'	=> $this->get_var('info', 'pf.ha.authkeys'))),
 
     // bcast, mcast, ucast
-	$form->text(array('desc'	=> $this->bbf('fm_ha_com_mode'),
-				  'name'	=> 'pf-ha-com_mode',
-				  'labelid'	=> 'com_mode',
-				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.com_mode'))),
-
-	$form->text(array('desc'	=> $this->bbf('fm_ha_user'),
+	$form->select(array(
+	        'desc'      => $this->bbf('fm_ha_com_mode'),
+			'name'		=> 'pf-ha-com_mode',
+			'id'		=> "it-pf-ha-com_mode",
+			'empty'		=> false,
+			'key'		=> false,
+			'selected'	=> $this->get_var('info', 'pf.ha.com_mode'),
+    		'error'    	=> $this->bbf_args	('error_pf_ha_com_mode', 
+		    $this->get_var('error', 'pf_ha_com_mode'))),
+		$commodes);
+?>
+<br/>
+<p><?= $this->bbf('fm_ha_user_title') ?></p>
+<div style="border: 1px solid grey; margin: 10px; padding-left: 5px;">
+<?php
+    echo $form->text(array('desc'	=> $this->bbf('fm_ha_user'),
 				  'name'	=> 'pf-ha-user',
 				  'labelid'	=> 'user',
 				  'size'	=> 15,
@@ -246,13 +206,19 @@ endif;
 				  'name'	=> 'pf-ha-password',
 				  'labelid'	=> 'password',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.password'))),
+				  'value'	=> $this->get_var('info', 'pf.ha.password')));
+?>
+</div>
 
-	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_user'),
+<br/>
+<p><?= $this->bbf('fm_ha_dest_user_title') ?></p>
+<div style="border: 1px solid grey; margin: 10px; padding-left: 5px;">
+<?php
+	echo $form->text(array('desc'	=> $this->bbf('fm_ha_dest_user'),
 				  'name'	=> 'pf-ha-dest_user',
 				  'labelid'	=> 'dest_user',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_user')));
+				  'value'	=> $this->get_var('info', 'pf.ha.dest_user'))),
 				  
 	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_password'),
 				  'name'	=> 'pf-ha-dest_password',
@@ -260,6 +226,7 @@ endif;
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('info', 'pf.ha.dest_password')));
 ?>
+</div>
 </div>
 <?php
 

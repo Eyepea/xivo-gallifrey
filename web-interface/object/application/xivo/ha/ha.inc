@@ -37,25 +37,50 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	function get()
 	{
         return $this->_sysconfd->request_post('/ha_get', 
-            array('key' =>  'pf.ha.*'));
+            array('key' =>  'pf.ha*'));
+	}
+
+	
+	function get_netifaces()
+	{
+	    $netifaces = $this->_sysconfd->request_get('/discover_netifaces');
+	    if($netifaces === false)
+	    { return false; }
+	    
+	    $netifaces = array_keys($netifaces);
+	    asort($netifaces);
+	    return $netifaces;
 	}
 	
-    /*
 	function set($arr)
 	{
 	    $conf = array();
-	    foreach($arr as $k => $v)
-	    {
-	        if(strncmp($k, 'xivo-smtp', 9) === 0)
-                $conf[str_replace('-', '.', $k)] = $v;
-	    }
-	    
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('keyvalues' => $conf)) === false)
-                return false;
+
+        // services
+        $services = array('apache2', 'asterisk', 'dhcp', 'monit', 'mysql', 
+            'ntp', 'rsync', 'smokeping', 'mailto');
+
+        foreach($services as $svc)
+            $conf["pf.ha.$svc"] = array_key_exists("pf-ha-$svc", $arr);
+        
+        $settings = array('alert_emails', 'serial', 'authkeys', 'com_mode',
+            'user', 'password', 'dest_user', 'dest_password');
+        foreach($settings as $setting)
+            $conf["pf.ha.$setting"] = $arr["pf-ha-$setting"];
+        
+        $lists = array('uname_node', 'ping_ipaddr');
+        foreach($lists as $list)
+        {
+            $conf["pf.ha.$list"] = $arr["pf-ha-$list"];
+            array_pop($conf["pf.ha.$list"]);
+        }
+        
+        //var_dump($conf);
+        if($this->_sysconfd->request_post('/ha_set', $conf) === false)
+            return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
-	}*/
+        return $this->_sysconfd->request_get('/ha_generate');
+	}
 }
 
 ?>

@@ -41,7 +41,7 @@ switch($act)
 		// add a new item (either display add form (fm_send not set)
 		// 	OR save new entered item
 		$appqueue = &$ipbx->get_application('queue');
-		$fm_save = false;
+		$fm_save = true;
 
 		// we must save new item ?
 		if(isset($_QR['fm_send']) 	 === true 
@@ -87,6 +87,7 @@ switch($act)
 
 	case 'edit':
 		$appqueue = &$ipbx->get_application('queue');
+		$fm_save  = true;
 
 		// id not set or skillcat[id] not found => redirect to list view
 		if(isset($_QR['id']) === false || ($info = $appqueue->skills_get($_QR['id'])) === false)
@@ -111,15 +112,15 @@ switch($act)
 			}
 
 			if($appqueue->skills_setedit($_QR['queueskill']['name'], $queueskills) === true
-			&& $appqueue->skills_edit($_QR['id'], $_QR['queueskill']['name'], $queueskills))
+			&& $appqueue->skills_edit($_QR['id'], $_QR['queueskill']['name'], $queueskills) === true)
 			{
-				// save is ok: redirecting to list view
-				$fm_save = false;
 				// must reload configuration files
 				$ipbx->discuss('module reload app_queue.so');
 
 				$_QRY->go($_TPL->url('service/ipbx/call_center/queueskills'), $param);
 			}
+			
+			$fm_save = false;
 
 			// on update error
 			$error = $appqueue->get_error();
@@ -130,6 +131,7 @@ switch($act)
 
 		$info = array('queueskill' => array('name' => $info['name'], 'id' => $info['id']));
 		$_TPL->set_var('info' , $info);
+		$_TPL->set_var('fm_save' , $fm_save);
 		break;
 
 	case 'delete':

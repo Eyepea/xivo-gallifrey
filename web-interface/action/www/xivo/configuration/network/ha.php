@@ -17,37 +17,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+$appHA = &$_XOBJ->get_application('ha');
 
-$appha = &$_XOBJ->get_application('ha');
+$fm_save    = true;
+// XiVO server network interfaces
+$netifaces  = $appHA->get_netifaces();
+// valid heartbeat com_mode values
+$commodes   = array('bcast', 'mcast', 'ucast');
 
-$fm_save = null;
-
-$info = $appha->get();
-#$return = &$info['resolvconf'];
 
 if(isset($_QR['fm_send']) === true)
 {
-	$fm_save = true;
-    var_dump($_QR);
+	if($appHA->set($_QR) === false)
+	{
+		$fm_save = false;
+		//var_dump($appHA->get_error());
+    }
 }
-#	if($appresolvconf->set($_QR) === false
-#	|| $appresolvconf->save() === false)
-#		$fm_save = false;
 
-#	$result = $appresolvconf->get_result('resolvconf');
-#}
+$info       = $appHA->get();
 
-#if(dwho_issa('search',$return) === true)
-#	$searches = $return['search'];
-#else if(dwho_has_len($return,'search') === true)
-#	$searches = explode(' ',$return['search']);
-#else 
-#	$searches = null;
-
-$_TPL->set_var('fm_save', $fm_save);
-$_TPL->set_var('info'   , $info);
-#$_TPL->set_var('element',$appresolvconf->get_elements());
-#$_TPL->set_var('searches',$searches);
+$_TPL->set_var('fm_save'     , $fm_save);
+$_TPL->set_var('info'        , $info);
+$_TPL->set_var('netifaces'   , $netifaces);
+$_TPL->set_var('commodes'    , $commodes);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');

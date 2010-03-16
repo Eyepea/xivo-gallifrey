@@ -86,13 +86,73 @@ clé secrète :
 mode de communication heartbeat : 
 
 ; fm_ha_user
-Utilisateur MySQL et Rsync sur ce noeud : 
+Nom d'utilisateur : 
 
 ; fm_ha_password
-Mot de passe associé
+Mot de passe : 
 
 ; fm_ha_dest_user
-Utilisateur pour se connecter sur les autres noeuds : 
+Nom d'utilisateur : 
 
 ; fm_ha_dest_password
-Mot de passe associé
+Mot de passe : 
+
+; fm_ha_uname_node
+Nom de machine des noeuds Heartbeat : 
+
+; fm_ha_uname_col
+Nom
+
+; col_add
+Ajouter
+
+; opt_disp-uname-delete
+Supprimer
+
+; opt_disp-ping-delete
+Supprimer
+
+; opt_disp-virtnet-delete
+Supprimer
+
+; opt_disp-nodes-delete
+Supprimer
+
+; fm_ha_ping
+Monitoring des connexions réseau : 
+
+; fm_ha_ping_col_ipaddr
+Adresses IP à monitorer
+
+; fm_ha_virtual_network
+Réseaux virtuels : 
+
+; fm_ha_virtnet_col_ipaddr
+Adresse IP
+
+; fm_ha_virtnet_col_netmask
+Masque de sous-réseau
+
+; fm_ha_virtnet_col_bcast
+Adresse broadcast
+
+; fm_ha_nodes
+Liens de communication heartbeat : 
+
+; fm_ha_virtnet_col_iface
+Interface réseau
+
+; fm_ha_virtnet_col_peer
+Adresse IP du pair
+
+; fm_ha_virtnet_col_xfer
+Transfert activé via ce lien
+
+; fm_ha_user_title
+Paramètres de ce noeud (MySQL et Rsync) : 
+
+; fm_ha_dest_user_title
+Paramètres pour se connecter aux autres noeuds : 
+
+; fm_help-ha_alert_emails
+Séparer les adresses par un espace
