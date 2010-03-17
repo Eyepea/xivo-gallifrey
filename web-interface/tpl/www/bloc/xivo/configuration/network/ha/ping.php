@@ -23,6 +23,7 @@ $url  = &$this->get_module('url');
 
 $info = $this->get_var('info');
 $data = array_key_exists('pf.ha.ping_ipaddr', $info)?$info['pf.ha.ping_ipaddr']:null;
+
 ?>
 
 <div class="sb-list" id="ping">
@@ -64,10 +65,10 @@ $data = array_key_exists('pf.ha.ping_ipaddr', $info)?$info['pf.ha.ping_ipaddr']:
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0',
+								   'default'	=> '',
 								   'value'	=> $data[$i],
-								   'error'      => $this->bbf_args	('error_pf_ha_ping', 
-								        $this->get_var('error', 'pf_ha_ping_ipaddr', $i)))
+								   'error'      => $this->bbf_args	('ipaddr', 
+								        $this->get_var('error', "ping_ipaddr[$data[$i]]")))
 			        );
 	 ?>
 				</td>

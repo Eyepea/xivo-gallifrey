@@ -156,3 +156,42 @@ Paramètres pour se connecter aux autres noeuds :
 
 ; fm_help-ha_alert_emails
 Séparer les adresses par un espace
+
+; ipaddr(empty)
+Vous devez saisir une adresse IP
+
+; ipaddr(callback)
+Vous devez saisir une adresse IP valide
+
+; netmask(empty)
+Vous devez saisir un masque de sous-réseau
+
+; netmask(callback)
+Vous devez saisir un masque de sous-réseau valide
+
+; broadcast(empty)
+Vous devez saisir une adresse de broadcast
+
+; broadcast(callback)
+Vous devez saisir une adresse de broadcast valide
+
+; iface(empty)
+Vous devez sélectionner une interface réseau
+
+; host(empty)
+Vous devez saisir une adresse IP
+
+; host(callback)
+Vous devez saisir une adresse IP valide
+
+; no_disp-uname
+Aucun noeud défini
+
+; no_disp-ping
+Aucune adresse définie
+
+; no_disp-virtnet
+Aucun réseau virtuel défini
+
+; no_disp-nodes
+Aucun lien défini

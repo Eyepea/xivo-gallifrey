@@ -70,10 +70,10 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0',
+								   'default'	=> '',
 								   'value'	=> $data[$i]['ipaddr'],
-								   'error'      => $this->bbf_args	('error_pf_ha_ipaddr', 
-								       $this->get_var('error', 'pf_ha_vnet', $i, 'ipaddr'))));
+								   'error'      => $this->bbf_args('ipaddr',
+								       $this->get_var('error', "virtnet[$i]", 'ipaddr'))));
 	 ?>
 				</td>
 				<td>
@@ -84,9 +84,9 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0',
+								   'default'	=> '',
 								   'value'	=> $data[$i]['netmask'],
-								   'error'      => $this->bbf_args	('error_pf_ha_netmask', $this->get_var('error', 'pf_ha_vnet', $i, 'netmask'))));
+								   'error'      => $this->bbf_args	('netmask', $this->get_var('error', "virtnet[$i]", 'netmask'))));
 	 ?>
 				</td>
 				<td>
@@ -97,9 +97,9 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0',
+								   'default'	=> '',
 								   'value'	=> $data[$i]['broadcast'],
-								   'error'      => $this->bbf_args	('error_pf_ha_bcast', $this->get_var('error', 'pf_ha_vnet', $i, 'bcast'))));
+								   'error'      => $this->bbf_args	('broadcast', $this->get_var('error', "virtnet[$i]", 'broadcast'))));
 	 ?>
 				</td>
                 <td class="td-right">
@@ -135,7 +135,7 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0'));
+								   'default'	=> ''));
 	 ?>
 				</td>
 				<td>
@@ -146,7 +146,7 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0'));
+								   'default'	=> ''));
 	 ?>
 				</td>
 				<td>
@@ -157,7 +157,7 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0'));
+								   'default'	=> ''));
 	 ?>
 				</td>
 

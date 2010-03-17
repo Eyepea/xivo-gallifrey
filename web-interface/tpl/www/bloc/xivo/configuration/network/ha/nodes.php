@@ -25,7 +25,6 @@ $info = $this->get_var('info');
 $data = array_key_exists('pf.ha.dest', $info)?$info['pf.ha.dest']:null;
 
 $netifaces 	= $this->get_var('netifaces');
-
 ?>
 
 <div class="sb-list">
@@ -69,8 +68,8 @@ $netifaces 	= $this->get_var('netifaces');
 							'empty'		=> true,
 							'key'		=> false,
 							'selected'	=> $data[$i]['iface'],
-							'error'    	=> $this->bbf_args	('error_pf_ha_ipaddr', 
-							    $this->get_var('error', 'pf_ha_nodes', $i, 'ipaddr'))
+							'error'    	=> $this->bbf_args	('iface', 
+							    $this->get_var('error', "nodes[$i]", 'iface'))
 						),
 						$netifaces);
 	 ?>
@@ -83,18 +82,28 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0',
+								   'default'	=> '',
 								   'value'	=> $data[$i]['host'],
-								   'error'      => $this->bbf_args	('error_pf_ha_netmask', $this->get_var('error', 'pf_ha_vnet', $i, 'netmask'))));
+								   'error'      => $this->bbf_args	('host', 
+								       $this->get_var('error', "nodes[$i]", 'host'))));
 	 ?>
 				</td>
 				<td>
 	<?php
-		            echo $form->checkbox(array('desc' => '&nbsp',
-             				      'name'	=> 'pf.ha.xfer[]',
+/*		            echo $form->checkbox(array('desc' => '&nbsp',
+             				      'name'	=> "pf.ha.xfer[$i]",
             				      'labelid'	=> 'pf.ha.xfer',
 			            	      'default'	=> false,
 			            	      'checked'	=> $data[$i]['transfer']));
+*/
+					echo	$form->select(array('desc' => '&nbsp;',
+							'name'		=> 'pf.ha.xfer[]',
+							'id'		=> "it-pf-ha-xfer[$i]",
+							'empty'		=> false,
+							'key'		=> 'value',
+							'selected'	=> $data[$i]['transfer']
+						),
+						array('no', 'yes'));
 	 ?>
 				</td>
 				<td class="td-right">
@@ -141,16 +150,25 @@ $netifaces 	= $this->get_var('netifaces');
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0'));
+								   'default'	=> ''));
 	 ?>
 				</td>
 				<td>
 	<?php
+	/*
 		            echo $form->checkbox(array('desc'	=> '&nbsp',
              				      'name'	=> 'pf.ha.xfer[]',
             				      'labelid'	=> 'pf.ha.xfer',
 			            	      'default'	=> false,
 			            	      'checked'	=> false));
+	*/
+					echo	$form->select(array('desc' => '&nbsp',
+							'name'		=> 'pf.ha.xfer[]',
+							'id'		=> "it-pf-ha-xfer[$i]",
+							'key'		=> 'value',
+							'empty'		=> false,
+						),
+						array('no', 'yes'));
 	 ?>
 				</td>
 

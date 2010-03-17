@@ -19,16 +19,23 @@
 #
 
 dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
+//dwho_file::required(array(DWHO_PATH_ROOT  ,'network.inc'),true);
 
 class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstract
 {
-	var $_sysconfd	 = false;
+	var $_sysconfd	    = false;
+	var $_ping_svc      = false;
+	var $_virtnet_svc   = false;
+	var $_nodes_svc     = false;
 
 	function xivo_application_xivo_object_ha(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd'))     === false)
+		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd'))      === false
+		|| ($this->_ping_svc = &$this->_xobj->get_module('ha_ping'))       === false
+		|| ($this->_virtnet_svc = &$this->_xobj->get_module('ha_virtnet')) === false
+		|| ($this->_nodes_svc   = &$this->_xobj->get_module('ha_nodes'))   === false)
 			return(false);
 
 		return(true);
@@ -74,8 +81,50 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
             $conf["pf.ha.$list"] = $arr["pf-ha-$list"];
             array_pop($conf["pf.ha.$list"]);
         }
+
+        // validate ip addresses
+        $this->_reset();
+        foreach($conf['pf.ha.ping_ipaddr'] as $ipaddr)
+        {
+            if($this->_ping_svc->chk_values(array('ipaddr' => $ipaddr)) === false)
+                $this->_set_error("ping_ipaddr[$ipaddr]", 
+                    $this->_ping_svc->get_filter_error());
+        }
         
-        //var_dump($conf);
+        $conf['pf.ha'] = array();
+        for($i = 0; $i < count($arr['pf_ha_ipaddr']) - 1; $i++)
+        {
+            $virtnet = array(
+                'ipaddr'    => $arr['pf_ha_ipaddr'][$i],
+                'netmask'   => $arr['pf_ha_netmask'][$i],
+                'broadcast' => $arr['pf_ha_broadcast'][$i],
+            );
+            
+            $conf['pf.ha'][] = $virtnet;
+            if($this->_virtnet_svc->chk_values($virtnet) === false)
+                $this->_set_error("virtnet[$i]", $this->_virtnet_svc->get_filter_error());
+        }
+
+        $conf['pf.ha.dest'] = array();
+        for($i = 0; $i < count($arr['pf_ha_iface']) - 1; $i++)
+        {
+            $nodes = array(
+                'iface'     => $arr['pf_ha_iface'][$i],
+                'host'      => $arr['pf_ha_host'][$i],
+                'transfer'  => strcmp($arr['pf_ha_xfer'][$i], '1') === 0?True:False,
+            );
+            
+            $conf['pf.ha.dest'][] = $nodes;
+            if($this->_nodes_svc->chk_values($nodes) === false)
+                $this->_set_error("nodes[$i]", $this->_nodes_svc->get_filter_error());
+        }
+        
+        $this->_result = $conf;
+        
+
+        if($this->get_errnb() > 0)
+            return false;
+            
         if($this->_sysconfd->request_post('/ha_set', $conf) === false)
             return false;
             

@@ -52,4 +52,13 @@ $array['module']['server']['datastorage'] = true;
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
 
+$array['module']['ha_ping'] = array();
+$array['module']['ha_ping']['datastorage'] = false;
+
+$array['module']['ha_virtnet'] = array();
+$array['module']['ha_virtnet']['datastorage'] = false;
+
+$array['module']['ha_nodes'] = array();
+$array['module']['ha_nodes']['datastorage'] = false;
+
 ?>

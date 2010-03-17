@@ -31,11 +31,13 @@ if(isset($_QR['fm_send']) === true)
 	if($appHA->set($_QR) === false)
 	{
 		$fm_save = false;
-		//var_dump($appHA->get_error());
+		$_TPL->set_var('error'        , $appHA->get_error());
     }
+    
+    $info = $appHA->get_result();
 }
-
-$info       = $appHA->get();
+else
+{ $info       = $appHA->get(); }
 
 $_TPL->set_var('fm_save'     , $fm_save);
 $_TPL->set_var('info'        , $info);
