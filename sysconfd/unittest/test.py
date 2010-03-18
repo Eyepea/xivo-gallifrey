@@ -28,7 +28,6 @@ class TestGeneric(unittest.TestCase):
     def setUp(self):
         self.client = sysconfd_client.SysconfdClient()
 
-
 #    def test_commonconf_get(self):
 #        (resp, data) = self.client.request('POST', '/commonconf_get', {'key': '*'})
 #        pprint.pprint(cjson.decode(data))
@@ -47,8 +46,9 @@ class TestGeneric(unittest.TestCase):
 #        (resp, data) = self.client.request('POST', '/commonconf_set', {})
 #        self.assertEqual(resp.status, 415)
 
-#        (resp, data) = self.client.request('POST', '/commonconf_set', 
-#                {'key': 'sysconfd.unittest.kv0', 'value': 'value0'})
+#        (resp, data) = self.client.request('POST', '/commonconf_set', {
+#            ''
+#        })
 #        self.assertEqual(resp.status, 200)
 
 #        (resp, data) = self.client.request('POST', '/commonconf_set', 
@@ -57,6 +57,10 @@ class TestGeneric(unittest.TestCase):
 
 #        (resp, data) = self.client.request('GET', '/commonconf_genconfig', ())
 #        self.assertEqual(resp.status, 200)
+
+    def test_commonconf_generate(self):
+        (resp, data) = self.client.request('GET', '/commonconf_generate', {})
+        self.assertEqual(resp.status, 200)
 
 
     def test_ha_generate(self):
@@ -68,24 +72,24 @@ class TestGeneric(unittest.TestCase):
         pprint.pprint(cjson.decode(data))
         self.assertEqual(resp.status, 200)
 
-    def test_ha_set(self):
-        (resp, data) = self.client.request('POST', '/ha_set', {
-            'pf.ha.apache2'     : True,
-            'pf.ha.monit'       : True,
-            
-            'pf.ha.serial'      : 'ttyS0', 
-            
-            'pf.ha.uname_node'  : ['xivo-1', 'xivo-2'],
-            'pf.ha.dest'        : [
-                {'iface': 'eth0', 'host': '192.168.0.253', 'transfer': False},
-                {'iface': 'vboxnet0', 'host': '172.16.1.253' , 'transfer': True}
-            ],
-            'pf.ha'             : [
-                {'ipaddr': '192.168.0.254', 'netmask': '255.255.255.0', 'broadcast': '192.168.0.255'}
-            ],
-            'pf.ha.ping_ipaddr' : ['192.168.0.1'],
-        })
-        self.assertEqual(resp.status, 200)
+#    def test_ha_set(self):
+#        (resp, data) = self.client.request('POST', '/ha_set', {
+#            'pf.ha.apache2'     : True,
+#            'pf.ha.monit'       : True,
+#            
+#            'pf.ha.serial'      : 'ttyS0', 
+#            
+#            'pf.ha.uname_node'  : ['xivo-1', 'xivo-2'],
+#            'pf.ha.dest'        : [
+#                {'iface': 'eth0', 'host': '192.168.0.253', 'transfer': False},
+#                {'iface': 'vboxnet0', 'host': '172.16.1.253' , 'transfer': True}
+#            ],
+#            'pf.ha'             : [
+#                {'ipaddr': '192.168.0.254', 'netmask': '255.255.255.0', 'broadcast': '192.168.0.255'}
+#            ],
+#            'pf.ha.ping_ipaddr' : ['192.168.0.1'],
+#        })
+#        self.assertEqual(resp.status, 200)
         
 if __name__ == '__main__':
     unittest.main()

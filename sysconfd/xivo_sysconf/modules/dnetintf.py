@@ -693,9 +693,6 @@ class DNETIntf:
         self.args       = args
         self.options    = options
 
-        import pprint
-        pprint.pprint(args)
-        pprint.pprint(options)
         if not xys.validate(self.args, self.MODIFY_PHYSICAL_ETH_IPV4_SCHEMA):
             raise HttpReqError(415, "invalid arguments for command")
 

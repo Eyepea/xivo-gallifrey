@@ -26,26 +26,31 @@ CREATE TABLE items (
 );
 
 /* common.conf */
-INSERT INTO items VALUES('xivo.hostname'                , 'xivo', '');
-INSERT INTO items VALUES('xivo.domain'                  , 'proformatique.com', '');
-INSERT INTO items VALUES('xivo.net4.ip'                 , '192.168.0.254', '');
-INSERT INTO items VALUES('xivo.net4.netmask'            , '255.255.255.255', '');
-INSERT INTO items VALUES('xivo.net4.broadcast'          , '192.168.0.255', '');
-INSERT INTO items VALUES('xivo.net4.subnet'             , '192.168.0.0/24', '');
+INSERT INTO items VALUES('xivo.voip.ifaces'             , '"eth0"'             , '');
+INSERT INTO items VALUES('xivo.voip.vlan.id'            , '"0"'                , '');
 
-INSERT INTO items VALUES('xivo.dhcp.pool'               , '192.168.0.50 192.168.0.100', '');
-INSERT INTO items VALUES('xivo.dhcp.extra_ifaces'       , '', '');
+INSERT INTO items VALUES('xivo.hostname'                , '"xivo"'             , '');
+INSERT INTO items VALUES('xivo.domain'                  , '"proformatique.com"', '');
+INSERT INTO items VALUES('xivo.net4.ip'                 , '"192.168.0.254"'    , '');
+INSERT INTO items VALUES('xivo.net4.netmask'            , '"55.255.255.255"'   , '');
+INSERT INTO items VALUES('xivo.net4.broadcast'          , '"192.168.0.255"'    , '');
+INSERT INTO items VALUES('xivo.net4.subnet'             , '"192.168.0.0/24"'   , '');
+INSERT INTO items VALUES('xivo.extra.dns.search'        , '""'                 , '');
+INSERT INTO items VALUES('xivo.nameservers'             , '""'                 , '');
 
-INSERT INTO items VALUES('xivo.smtp.mydomain'           , '', '');
-INSERT INTO items VALUES('xivo.smtp.origin'             , 'xivo-clients.proformatique.com', '');
-INSERT INTO items VALUES('xivo.smtp.relayhost'          , '', '');
-INSERT INTO items VALUES('xivo.smtp.fallback_relayhost' , '', '');
-INSERT INTO items VALUES('xivo.smtp.canonical'          , '', '');
+INSERT INTO items VALUES('xivo.dhcp.pool'               , '"192.168.0.50 192.168.0.100"', '');
+INSERT INTO items VALUES('xivo.dhcp.extra_ifaces'       , '""', '');
 
-INSERT INTO items VALUES('xivo.maintenance'             , '0', '');
-INSERT INTO items VALUES('alert_emails'                 , '', '');
-INSERT INTO items VALUES('dahdi_monitor_ports'          , '', '');
-INSERT INTO items VALUES('max_call_duration'            , '', '');
+INSERT INTO items VALUES('xivo.smtp.mydomain'           , 'null', '');
+INSERT INTO items VALUES('xivo.smtp.origin'             , '"xivo-clients.proformatique.com"', '');
+INSERT INTO items VALUES('xivo.smtp.relayhost'          , '""', '');
+INSERT INTO items VALUES('xivo.smtp.fallback_relayhost' , '""', '');
+INSERT INTO items VALUES('xivo.smtp.canonical'          , '""', '');
+
+INSERT INTO items VALUES('xivo.maintenance'             , 'false', '');
+INSERT INTO items VALUES('alert_emails'                 , 'null' , '');
+INSERT INTO items VALUES('dahdi_monitor_ports'          , 'null' , '');
+INSERT INTO items VALUES('max_call_duration'            , 'null', '');
 
 /* HA */
 INSERT INTO items VALUES('pf.ha.apache2'                , 'false', '');
@@ -57,28 +62,17 @@ INSERT INTO items VALUES('pf.ha.ntp'                    , 'false', '');
 INSERT INTO items VALUES('pf.ha.rsync'                  , 'false', '');
 INSERT INTO items VALUES('pf.ha.smokeping'              , 'false', '');
 INSERT INTO items VALUES('pf.ha.mailto'                 , 'false', '');
-INSERT INTO items VALUES('pf.ha.alert_emails'           , 'null', '');
-INSERT INTO items VALUES('pf.ha.serial'                 , '""', '');
-INSERT INTO items VALUES('pf.ha.authkeys'               , '""', '');
-INSERT INTO items VALUES('pf.ha.com_mode'               , '"ucast"', '');
+INSERT INTO items VALUES('pf.ha.alert_emails'           , 'null' , '');
+INSERT INTO items VALUES('pf.ha.serial'                 , '""'   , '');
+INSERT INTO items VALUES('pf.ha.authkeys'               , '""'   , '');
+INSERT INTO items VALUES('pf.ha.com_mode'               , '"ucast"'         , '');
 INSERT INTO items VALUES('pf.ha.user'                   , '"pf-replication"', '');
-INSERT INTO items VALUES('pf.ha.password'               , '"proformatique"', '');
+INSERT INTO items VALUES('pf.ha.password'               , '"proformatique"' , '');
 INSERT INTO items VALUES('pf.ha.dest_user'              , '"pf-replication"', '');
-INSERT INTO items VALUES('pf.ha.dest_password'          , '"proformatique"', '');
+INSERT INTO items VALUES('pf.ha.dest_password'          , '"proformatique"' , '');
 INSERT INTO items VALUES('pf.ha.ping_ipaddr'            , '[]', '');
 INSERT INTO items VALUES('pf.ha.uname_node'             , '[]', '');
-/*INSERT INTO items VALUES('pf.ha.ping_ipaddr[0]'         , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.uname.node[0]'          , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.uname.node[1]'          , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.ipaddr[0]'              , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.netmask[0]'             , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.broadcast[0]'           , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.dest_iface[0]'          , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.dest_host[0]'           , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.dest_transfer[0]'       , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.dest_iface[1]'          , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.dest_host[1]'           , '', '');*/
-/*INSERT INTO items VALUES('pf.ha.dest_transfer[1]'       , '', '');*/
-
+INSERT INTO items VALUES('pf.ha'                        , '[]', '');
+INSERT INTO items VALUES('pf.ha.dest'                   , '[]', '');
 
 COMMIT;

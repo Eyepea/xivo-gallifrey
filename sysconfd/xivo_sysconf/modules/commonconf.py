@@ -21,145 +21,59 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os
-import re
-import logging
-import subprocess
+import os, logging, subprocess
 from datetime import datetime
-import pprint
 
 from xivo import http_json_server
-from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
-from xivo.xivo_config import txtsubst
-from xivo import xys
-from xivo import system
 
-from xivo_sysconf import helpers
+from xivo_sysconf import helpers, jsondb
 
-log = logging.getLogger('xivo_sysconf.modules.commonconf') # pylint: disable-msg=C0103
 
-class CommonConf:
+class CommonConf(jsondb.JsonDB):
     """
     """
     def __init__(self):
-        http_json_server.register(self.get      , CMD_RW, safe_init=self.safe_init, name='commonconf_get')
+        super(CommonConf, self).__init__()
+        self.log = logging.getLogger('xivo_sysconf.modules.commonconf')
+
+        http_json_server.register(self.get      , CMD_RW, safe_init=self.safe_init,
+            name='commonconf_get')
         http_json_server.register(self.set      , CMD_RW      , name='commonconf_set')
-        http_json_server.register(self.genconfig, CMD_R       , name='commonconf_genconfig')
+        http_json_server.register(self.generate , CMD_R       , name='commonconf_generate')
+        
+
         
     def safe_init(self, options):
-        self.db         = options.database
+        super(CommonConf, self).safe_init(options)
+
         self.file       = options.configuration.get('commonconf', 'commonconf_file')
         self.cmd        = options.configuration.get('commonconf', 'commonconf_cmd')
    
-    GET_SCHEMA = [
-        xys.load("""key: !!str   xivo.*"""),
-        xys.load("""key: !~~seqlen(0,64) [!!str xivo.maintenance]""")
-    ]
-
-    def get(self, args, options):
-        """
-        GET /get
-
-        >>> get({'key': 'xivo.smtp.origin'})
-        >>> get({'key': ['xivo.smtp.origin', 'xivo.domain']})
-        """
-        
-        #TODO: protect key string agains SQL injection
-        if xys.validate(args, self.GET_SCHEMA[0]):
-            query = "SELECT ${columns} FROM items WHERE key LIKE '%s'" % \
-                args['key'].replace('*', '%');
-            
-        elif xys.validate(args, self.GET_SCHEMA[1]):
-            query = "SELECT ${columns} FROM items WHERE key IN (%s)" % \
-                ','.join(["'%s'" % x for x in args['key']])
-        else:
-            raise HttpReqError(415, "invalid arguments for command")
-
-        cursor = self.db.cursor()
-        cursor.query(query, ('key', 'value'))
-        res = dict(cursor.fetchall())
-        cursor.close()
-
-        return res
-
-    SET_SCHEMA = xys.load("""
-        key?:            !!str   xivo.smtp.relayhost
-        value?:          !!str   smtp.free.fr
-        keyvalues?:      !~~seqlen(0,64) [ 'key':  'value' ]
-    """)
+    SECTIONS  = {
+        '1. VoIP'       : ['xivo.voip.ifaces', 'xivo.voip.vlan.id'],
+        '2. Network'    : [
+            'xivo.hostname', 'xivo.domain', 'xivo.net4.ip', 
+            'xivo.net4.netmask', 'xivo.net4.broadcast', 'xivo.net4.subnet', 
+            'xivo.extra.dns.search', 'xivo.nameservers'
+         ],
+        '3. DHCP'       : ['xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'],
+        '4. Mail'       : [
+            'xivo.smtp.origin', 'xivo.smtp.relayhost', 
+            'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'
+         ],
+        '5. Maintenance': ['xivo.maintenance'],
+        '6. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
+    }
+    KEYSELECT = ''
     
-    def set(self, args, options):
-        """
-        POST /set
+    ## overriden generators
+    def _gen_bool(self, f, key, value):
+        value = 1 if value else 0
+        f.write("%s=%d\n" % (key, value))
+    ## /
 
-        >>> set({'key'   : 'xivo.smtp.relayhost',
-                 'value' : 'smtp.free.fr'})
-        >>> set({'keyvalues': {'xivo.maintenance': 1, 'max_call_duration': 30}})
-        """
-        if not xys.validate(options, self.SET_SCHEMA):
-            raise HttpReqError(415, "invalid arguments for command")
-
-        kv = []
-        if args.has_key('keyvalues'):
-                kv = [(k, args['keyvalues'][k]) for k in args['keyvalues']]
-        if args.has_key('key') and args.has_key('key'):
-                kv.append((args['key'], args['value']))
-                
-        if len(kv) == 0:
-            raise HttpReqError(415, "invalid arguments for command")
-
-        try:
-            cursor = self.db.cursor()
-            cursor.querymany("INSERT OR REPLACE INTO items VALUES(%s, %s, '')", None, kv)
-        finally:
-            cursor.close()
-            self.db.commit()
-
-        return True
-
-    def genconfig(self, args, options):
-        """
-        GET /genconfig
-        """
-        sections = {
-                '1. Network'    : ['xivo.hostname', 'xivo.domain'],
-                '2. DHCP'       : ['xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'],
-                '3. Mail'       : ['xivo.smtp.origin', 'xivo.smtp.relayhost', 
-                                   'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'],
-                '4. Maintenance': ['xivo.maintenance'],
-                '5. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
-        }
-                
-        with open(self.file, 'w') as f:
-                f.write("### AUTOMATICALLY GENERATED BY sysconfd. DO NOT EDIT ###\n")
-                f.write(datetime.now().strftime("# $%Y/%m/%d %H:%M:%S$\n\n"))
-                
-                cursor = self.db.cursor()
-                cursor.query("SELECT ${columns} FROM items", ('key', 'value'))
-                dbvalues = dict(cursor.fetchall())
-                cursor.close()
-
-                def write_keyval(key):                        
-                        if dbvalues.has_key(key):
-                                value = dbvalues[key]
-                        else:
-                                log.error("undefined key '%s' in sysconfd items database table" % key)
-                                value = ''
-                        
-                        #TODO: \r\n protection should be generic
-                        f.write("%s=\"%s\"\n" % (key.upper().replace('.', '_'), 
-                            re.sub(r'\r\n', r'\\r\\n', value)))
-        
-                def write_section(name):
-                        f.write("\n# %s\n" % name)
-                        for dbkey in sections[name]:
-                                write_keyval(dbkey)
-
-                f.write("### Configuration")
-                for key in sorted(sections.keys()):
-                        write_section(key)
-
+    """
         try:
             p = subprocess.Popen([self.cmd])
             ret = p.wait()
@@ -170,6 +84,7 @@ class CommonConf:
             raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
 
         return True
+    """
         
         
 commonconf = CommonConf()
