@@ -87,7 +87,6 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		if(dwho_issa('search',$arr) === true)
 			$arr['search'] = trim(dwho_implode(' ',$arr['search']));
 
-        $
 		if(($rs = $this->_resolvconf->chk_values($arr)) === false)
 		{
 			$this->_set_result('resolvconf',$this->_resolvconf->get_filter_result());
