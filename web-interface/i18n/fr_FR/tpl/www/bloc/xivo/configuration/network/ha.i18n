@@ -149,10 +149,10 @@ Adresse IP du pair
 Transfert activé via ce lien
 
 ; fm_ha_user_title
-Paramètres de ce noeud (MySQL et Rsync) : 
+Paramètres de ce noeud (MySQL et Rsync)
 
 ; fm_ha_dest_user_title
-Paramètres pour se connecter aux autres noeuds : 
+Paramètres pour se connecter aux autres noeuds
 
 ; fm_help-ha_alert_emails
 Séparer les adresses par un espace

@@ -19,7 +19,7 @@
 #
 $appHA = &$_XOBJ->get_application('ha');
 
-$fm_save    = true;
+$fm_save    = null;
 // XiVO server network interfaces
 $netifaces  = $appHA->get_netifaces();
 // valid heartbeat com_mode values

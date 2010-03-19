@@ -193,8 +193,10 @@ endif;
 		$commodes);
 ?>
 <br/>
-<p><?= $this->bbf('fm_ha_user_title') ?></p>
-<div style="border: 1px solid grey; margin: 10px; padding-left: 5px;">
+
+<fieldset id="fld-group">
+	<legend><?=$this->bbf('fm_ha_user_title');?></legend>
+<div>
 <?php
     echo $form->text(array('desc'	=> $this->bbf('fm_ha_user'),
 				  'name'	=> 'pf-ha-user',
@@ -209,10 +211,11 @@ endif;
 				  'value'	=> $this->get_var('info', 'pf.ha.password')));
 ?>
 </div>
+</fieldset>
 
-<br/>
-<p><?= $this->bbf('fm_ha_dest_user_title') ?></p>
-<div style="border: 1px solid grey; margin: 10px; padding-left: 5px;">
+<fieldset id="fld-group">
+	<legend><?= $this->bbf('fm_ha_dest_user_title') ?></legend>
+<div>
 <?php
 	echo $form->text(array('desc'	=> $this->bbf('fm_ha_dest_user'),
 				  'name'	=> 'pf-ha-dest_user',
@@ -227,6 +230,8 @@ endif;
 				  'value'	=> $this->get_var('info', 'pf.ha.dest_password')));
 ?>
 </div>
+</fieldset>
+
 </div>
 <?php
 
