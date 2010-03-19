@@ -19,18 +19,21 @@
 #
 
 $appmonit 	= &$_XOBJ->get_application('monitoring');
-$result 	= $fm_save = null;
+$fm_save    = null;
 
 $info       = array();
+$error      = null;
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
-	$return 	= &$result;
 
 	if($appmonit->set_alerts($_QR['alert_emails'], $_QR['dahdi_monitor_ports']) === false)
+	{
 		$fm_save = false;
+		$error   = $appmonit->get_error();
+	}
 
-    $info['alert_emails'] = $_QR['alert_emails'];
+    $info['alert_emails']         = $_QR['alert_emails'];
     $info['dahdi_monitor_ports']  = $_QR['dahdi_monitor_ports'];
 }
 else
@@ -38,6 +41,7 @@ else
 
 $_TPL->set_var('fm_save'	, $fm_save);
 $_TPL->set_var('info'	    , $info);
+$_TPL->set_var('error'	    , $error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

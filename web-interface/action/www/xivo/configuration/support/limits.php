@@ -22,13 +22,17 @@ $appmonit 	= &$_XOBJ->get_application('monitoring');
 $result 	= $fm_save = null;
 
 $info       = array();
+$error      = null;
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
 
 	if($appmonit->set_max_call_duration($_QR['max_call_duration']) === false)
+	{
 		$fm_save = false;
-	
+		$error   = $appmonit->get_error();
+    }
+
     $info['max_call_duration'] = $_QR['max_call_duration'];
 }
 else
@@ -36,6 +40,7 @@ else
 
 $_TPL->set_var('fm_save'	, $fm_save);
 $_TPL->set_var('info'		, $info);
+$_TPL->set_var('error'		, $error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

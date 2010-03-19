@@ -25,8 +25,20 @@ $array['module'] = array();
 $array['module']['accesswebservice'] = array();
 $array['module']['accesswebservice']['datastorage'] = true;
 
+$array['module']['dhcp'] = array();
+$array['module']['dhcp']['datastorage'] = false;
+
 $array['module']['entity'] = array();
 $array['module']['entity']['datastorage'] = true;
+
+$array['module']['ha_nodes'] = array();
+$array['module']['ha_nodes']['datastorage'] = false;
+
+$array['module']['ha_ping'] = array();
+$array['module']['ha_ping']['datastorage'] = false;
+
+$array['module']['ha_virtnet'] = array();
+$array['module']['ha_virtnet']['datastorage'] = false;
 
 $array['module']['iproute'] = array();
 $array['module']['iproute']['datastorage'] = true;
@@ -51,14 +63,5 @@ $array['module']['server']['datastorage'] = true;
 
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
-
-$array['module']['ha_ping'] = array();
-$array['module']['ha_ping']['datastorage'] = false;
-
-$array['module']['ha_virtnet'] = array();
-$array['module']['ha_virtnet']['datastorage'] = false;
-
-$array['module']['ha_nodes'] = array();
-$array['module']['ha_nodes']['datastorage'] = false;
 
 ?>

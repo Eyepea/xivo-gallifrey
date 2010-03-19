@@ -22,6 +22,7 @@ $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
 $element = $this->get_var('element');
+$netifaces = $this->get_var('netifaces');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -49,26 +50,37 @@ endif;
 		$form->hidden(array('name'	=> 'fm_send',
 				    'value'	=> 1)),
 
+		$form->checkbox(array('desc'		=> $this->bbf('fm_active'),
+				      'name'		=> 'active',
+				      'labelid'		=> 'active',
+				      'checked'		=> $this->get_var('info', 'active'))),
+
 		$form->text(array('desc'	=> $this->bbf('fm_pool_start'),
-				  'name'	=> 'xivo-dhcp-pool-start',
+				  'name'	=> 'pool_start',
 				  'labelid'	=> 'pool_start',
 				  'size'	=> 15,
 				  'default'	=> $element['dhcp']['pool_start']['default'],
-				  'value'	=> $this->get_var('info','xivo.dhcp.pool.start'))),
+				  'value'	=> $this->get_var('info','pool_start'),
+				  'error'   => $this->bbf_args('ipaddr', 
+                    $this->get_var('error', 'pool_start'))
+               )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_pool_end'),
-				  'name'	=> 'xivo-dhcp-pool-end',
+				  'name'	=> 'pool_end',
 				  'labelid'	=> 'pool_end',
 				  'size'	=> 15,
 				  'default'	=> $element['dhcp']['pool_end']['default'],
-				  'value'	=> $this->get_var('info','xivo.dhcp.pool.end'))),
+				  'value'	=> $this->get_var('info','pool_end'),
+				  'error'   => $this->bbf_args('ipaddr', 
+                    $this->get_var('error', 'pool_end'))
+				  )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_interfaces'),
-				  'name'	=> 'xivo-dhcp-extra_ifaces',
+				  'name'	=> 'extra_ifaces',
 				  'labelid'	=> 'extra_ifaces',
 				  'size'	=> 15,
 				  'default'	=> $element['dhcp']['interfaces']['default'],
-				  'value'	=> $this->get_var('info','xivo.dhcp.extra_ifaces')));
+				  'value'	=> $this->get_var('info','extra_ifaces')));
 
 ?>
 </div>

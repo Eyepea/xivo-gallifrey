@@ -295,7 +295,6 @@ class xivo_libconfig_abstract
 			return($rs);
 
 		$r = array();
-
 		foreach($rs as $key => $val)
 		{
 			if($this->unset_element_value($key) === true)

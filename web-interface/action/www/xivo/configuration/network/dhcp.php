@@ -20,20 +20,26 @@
 
 $appdhcp    = &$_XOBJ->get_application('dhcp');
 
-$result 	= $fm_save = null;
-
+$fm_save    = null;
+$error      = null;
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
 
 	if($appdhcp->set($_QR) === false)
-		$fm_save = false;
-}
+	{
+		$fm_save    = false;
+		$error      = $appdhcp->get_error();
+	}
 
-$info 		= $appdhcp->get();
+	$info = $_QR;
+}
+else
+{ $info 		= $appdhcp->get(); }
 
 $_TPL->set_var('fm_save'	, $fm_save);
 $_TPL->set_var('info'		, $info);
+$_TPL->set_var('error'		, $error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

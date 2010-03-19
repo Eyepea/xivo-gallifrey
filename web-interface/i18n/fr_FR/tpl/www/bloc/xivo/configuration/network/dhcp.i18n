@@ -1,6 +1,9 @@
 ; title_content_name
 Serveur DHCP
 
+; fm_active
+Activer le serveur DHCP : 
+
 ; fm_pool_start
 Adresse de départ (plage d'adressage) : 
 
@@ -10,3 +13,8 @@ Adresse de fin (plage d'adressage) :
 ; fm_interfaces
 Interfaces réseau : 
 
+; ipaddr(callback)
+L'adresse IP n'est pas valide
+
+; ipaddr(empty)
+Vous devez saisir une adresse IP

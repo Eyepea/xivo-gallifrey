@@ -21,7 +21,7 @@
 $form	 = &$this->get_module('form');
 $dhtml 	 = &$this->get_module('dhtml');
 
-$element = $this->get_var('element');
+$info = $this->get_var('info');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
 	$dhtml->write_js('xivo_form_result(true,\''.$dhtml->escape($this->bbf('fm_success-save')).'\');');
@@ -52,7 +52,7 @@ endif;
 		$form->checkbox(array('desc'		=> $this->bbf('fm_maintenance'),
 				      'name'		=> 'maintenance',
 				      'labelid'		=> 'maintenance',
-				      'checked'		=> $element['xivo.maintenance'],
+				      'checked'		=> $info['xivo.maintenance'],
 				      'help'        => $this->bbf('fm_help-maintenance')));
 ?>
 </div>

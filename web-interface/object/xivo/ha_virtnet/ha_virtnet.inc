@@ -29,11 +29,6 @@ class xivo_object_ha_virtnet extends xivo_object_abstract
 	function xivo_object_ha_virtnet(&$xobj,&$dso)
 	{
 		$this->xivo_object_abstract(&$xobj);
-
-		if(is_object($dso) === false)
-			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
-
-		$this->_dso = &$dso;
 	}
 }
 

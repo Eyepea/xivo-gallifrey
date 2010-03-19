@@ -5,4 +5,7 @@ Limitations
 Durée max d'un appel (en minutes) avant alerte : 
 
 ; fm_help-max_call_duration
-Envoi un avertissement si un appel dépasse cette durée
+Envoi un avertissement si un appel dépasse cette durée (laisser vide pour désactiver l'alerte)
+
+; max_call_duration(typechecking)
+Vous devez saisir une durée en minutes (entier)

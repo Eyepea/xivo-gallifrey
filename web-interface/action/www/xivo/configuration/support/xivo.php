@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 $appmonitor 	= &$_XOBJ->get_application('monitoring');
 
 $fm_save        = null;
@@ -24,19 +25,17 @@ $info 		    = $appmonitor->get_xivo_maintenance();
 
 if(isset($_QR['fm_send']) === true)
 {
-	$fm_save 	= true;
+	$fm_save     = true;
 
-    if(!array_key_exists('maintenance', $_QR))
-        $_QR['maintenance'] = 0;
-        
-	if($appmonitor->set_xivo_maintenance($_QR['maintenance']) === false)
+    $maintenance = array_key_exists('maintenance', $_QR);
+	if($appmonitor->set_xivo_maintenance($maintenance) === false)
 		$fm_save = false;
 
-    $info['xivo.maintenance'] = $_QR['maintenance'];
+    $info['xivo.maintenance'] = $maintenance;
 }
 
 $_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('element'	, $info);
+$_TPL->set_var('info'   	, $info);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

@@ -46,10 +46,10 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
 	function set_xivo_maintenance($value)
     {
         if($this->_sysconfd->request_post('/commonconf_set', 
-            array('key' => 'xivo.maintenance', 'value' => $value)) === false)
+            array('xivo.maintenance' => $value)) === false)
             return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
+        return $this->_sysconfd->request_get('/commonconf_generate');
     }
 
     function get_alerts()
@@ -61,14 +61,25 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
     
     function set_alerts($mails, $dahdi_ports)
     {
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('keyvalues' => array(
-                'alert_emails'        => $mails, 
-                'dahdi_monitor_ports' => $dahdi_ports
-        ))) === false)
+        $this->_reset();
+
+        // check dahdi_monitor_ports
+        foreach(split(' ', $dahdi_ports) as $port)
+        {
+            if(!ctype_digit($port))
+                $this->_set_error('dahdi_monitor_ports', 'typechecking');
+        }
+        
+        if($this->get_errnb() > 0)
+            return false;
+        
+        if($this->_sysconfd->request_post('/commonconf_set', array(
+            'alert_emails'        => $mails, 
+            'dahdi_monitor_ports' => $dahdi_ports
+        )) === false)
             return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
+        return $this->_sysconfd->request_get('/commonconf_generate');
     }
     
     function get_max_call_duration()
@@ -79,11 +90,20 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
 
     function set_max_call_duration($duration)
     {
+        $this->_reset();
+
+        // checking duration is int or empty
+        if(strlen($duration) > 0 && !ctype_digit($duration))
+            $this->_set_error('max_call_duration', 'typechecking');
+            
+        if($this->get_errnb() > 0)
+            return false;
+        
         if($this->_sysconfd->request_post('/commonconf_set', 
-            array('key' => 'max_call_duration', 'value' => $duration)) === false)
+            array('max_call_duration' => $duration)) === false)
             return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
+        return $this->_sysconfd->request_get('/commonconf_generate');
     }
 }
 

@@ -23,12 +23,14 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abstract
 {
 	var $_sysconfd	 = false;
+	var $_dhcp       = false;
 
 	function xivo_application_xivo_object_dhcp(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))    === false)
+		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))    === false
+		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))    === false)
 			return(false);
 
 		return(true);
@@ -40,23 +42,35 @@ class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abs
             array('key' =>  'xivo.dhcp.*'));
             
         $pool = split(' ', $data['xivo.dhcp.pool']);
-        $data['xivo.dhcp.pool.start'] = $pool[0];
-        $data['xivo.dhcp.pool.end']   = $pool[1];
-        
+        $data['pool_start']     = $pool[0];
+        $data['pool_end']       = $pool[1];
+        $data['extra_ifaces']   = $data['xivo.dhcp.extra_ifaces'];
+        $data['active']         = $data['xivo.dhcp.active'];
+
         return $data;
 	}
 
-	function set($config)
+	function set($arr)
     {
-        $dhcpconf = array();
-        $dhcpconf['xivo.dhcp.pool'] = $config['xivo-dhcp-pool-start'] . ' ' . $config['xivo-dhcp-pool-end'];
-        $dhcpconf['xivo.dhcp.extra_ifaces'] = $config['xivo-dhcp-extra_ifaces'];
+        $this->_reset();
 
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('keyvalues' => $dhcpconf)) === false)
+        if($this->_dhcp->chk_values($arr) === false)
+            $this->_set_errors($this->_dhcp->get_filter_error());
+
+        if($this->get_errnb() > 0)
+            return false;
+
+        $conf = array(
+            'xivo.dhcp.pool'         => $arr['pool_start'].' '.$arr['pool_end'],
+            'xivo.dhcp.extra_ifaces' => $arr['extra_ifaces'],
+            'xivo.dhcp.active'       => array_key_exists('active', $arr),
+        );
+        $this->_result = $conf;
+
+        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
             return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
+        return $this->_sysconfd->request_get('/commonconf_generate');
     }
 }
 

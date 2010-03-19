@@ -8,7 +8,10 @@ Adresses email :
 Ports DAHDI monitorés : 
  
 ; fm_help-alert_emails
-NE PAS AJOUTER les adresses de maintenance Proformatique, elles le seront automatiquement si le support XiVO est activé
+Une adresse par ligne.<br/>NE PAS AJOUTER les adresses de maintenance Proformatique, elles le seront automatiquement si le support XiVO est activé
 
-; fm_help-dahdi_ports
+; fm_help-dahdi_monitor_ports
 Liste des ports, chacuns séparés par un espace
+
+; dahdi_monitor_ports(typechecking)
+Vous devez saisir une liste de numéro de ports (entier) séparés par un espace

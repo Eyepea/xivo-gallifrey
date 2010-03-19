@@ -55,7 +55,10 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['monitoring']['max_call_duration']['default'],
 				  'value'	=> $info['max_call_duration'],
-				  'help'    => $this->bbf('fm_help-max_call_duration')));
+				  'help'    => $this->bbf('fm_help-max_call_duration'),
+				  'error'   => $this->bbf_args('max_call_duration',
+				      $this->get_var('error', 'max_call_duration'))
+            ));
 ?>
 </div>
 <?php

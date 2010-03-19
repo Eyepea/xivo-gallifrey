@@ -71,7 +71,10 @@ endif;
 				  'size'	=> 29,
 				  'default'	=> $element['monitoring']['dahdi_monitor_ports']['default'],
 			      'help'    => $this->bbf('fm_help-dahdi_monitor_ports'),
-				  'value'	=> $this->get_var('info','dahdi_monitor_ports')));
+				  'value'	=> $this->get_var('info','dahdi_monitor_ports'),
+				  'error'   => $this->bbf_args('dahdi_monitor_ports',
+				      $this->get_var('error', 'dahdi_monitor_ports'))
+			    ));
 ?>
 </div>
 <?php
