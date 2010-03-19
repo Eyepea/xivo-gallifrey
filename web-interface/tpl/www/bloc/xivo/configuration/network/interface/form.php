@@ -38,14 +38,18 @@ endif;
 				  'labelid'	=> 'name',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['name']['default'],
-				  'value'	=> $info['name'])),
+				  'value'	=> $info['name'],
+		          'error'	=> $this->bbf_args('name',
+					   $this->get_var('error', 'name')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_ifname'),
 				  'name'	=> 'ifname',
 				  'labelid'	=> 'ifname',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['ifname']['default'],
-				  'value'	=> $this->get_var_default('info','ifname',$this->get_var('devinfo','name')))),
+				  'value'	=> $this->get_var_default('info','ifname',$this->get_var('devinfo','name')),
+		          'error'	=> $this->bbf_args('ifname',
+					   $this->get_var('error', 'ifname')))),
 
 		$form->checkbox(array('desc'		=> $this->bbf('fm_disable'),
 				      'name'		=> 'disable',
@@ -79,35 +83,45 @@ endif;
 				  'labelid'	=> 'address',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['address']['default'],
-				  'value'	=> $this->get_var_default('info','address',$this->get_var('devinfo','address')))),
+				  'value'	=> $this->get_var_default('info','address',$this->get_var('devinfo','address')),
+		          'error'	=> $this->bbf_args('address',
+					   $this->get_var('error', 'address')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_netmask'),
 				  'name'	=> 'netmask',
 				  'labelid'	=> 'netmask',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['netmask']['default'],
-				  'value'	=> $this->get_var_default('info','netmask',$this->get_var('devinfo','netmask')))),
+				  'value'	=> $this->get_var_default('info','netmask',$this->get_var('devinfo','netmask')),
+		          'error'	=> $this->bbf_args('netmask',
+					   $this->get_var('error', 'netmask')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_broadcast'),
 				  'name'	=> 'broadcast',
 				  'labelid'	=> 'broadcast',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['broadcast']['default'],
-				  'value'	=> $this->get_var_default('info','broadcast',$this->get_var('devinfo','broadcast')))),
+				  'value'	=> $this->get_var_default('info','broadcast',$this->get_var('devinfo','broadcast')),
+		          'error'	=> $this->bbf_args('broadcast',
+					   $this->get_var('error', 'broadcast')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_gateway'),
 				  'name'	=> 'gateway',
 				  'labelid'	=> 'gateway',
 				  'size'	=> 15,
 				  'default'	=> $element['netiface']['gateway']['default'],
-				  'value'	=> $this->get_var_default('info','gateway',$this->get_var('devinfo','gateway')))),
+				  'value'	=> $this->get_var_default('info','gateway',$this->get_var('devinfo','gateway')),
+		          'error'	=> $this->bbf_args('gateway',
+					   $this->get_var('error', 'gateway')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_mtu'),
 				  'name'	=> 'mtu',
 				  'labelid'	=> 'mtu',
 				  'size'	=> 10,
 				  'default'	=> $element['netiface']['mtu']['default'],
-				  'value'	=> $this->get_var_default('info','mtu',$this->get_var('devinfo','mtu'))));
+				  'value'	=> $this->get_var_default('info','mtu',$this->get_var('devinfo','mtu')),
+		          'error'	=> $this->bbf_args('mtu',
+					   $this->get_var('error', 'mtu'))));
 	?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -119,7 +133,9 @@ endif;
 					 'id'		=> 'it-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['netiface']['description']['default']),
+					 'default'	=> $element['netiface']['description']['default'],
+		          'error'	=> $this->bbf_args('description',
+					   $this->get_var('error', 'description'))),
 				   $info['description']);?>
 	</div>
 </div>
@@ -144,7 +160,9 @@ endif;
 					  'labelid'	=> 'vlanid',
 					  'size'	=> 10,
 					  'default'	=> $element['netiface']['vlanid']['default'],
-					  'value'	=> $this->get_var_default('info','vlanid',$this->get_var('devinfo','vlan-id'))));
+					  'value'	=> $this->get_var_default('info','vlanid',$this->get_var('devinfo','vlan-id')),
+		          'error'	=> $this->bbf_args('vlanid',
+					   $this->get_var('error', 'vlanid'))));
 	else:
 		echo	'<div class="txt-center">',
 			$this->bbf('no_available_physical_interface'),
@@ -164,7 +182,9 @@ endif;
 					 'id'		=> 'it-options',
 					 'cols'		=> 72,
 					 'rows'		=> 30,
-					 'default'	=> $element['netiface']['options']['default']),
+					 'default'	=> $element['netiface']['options']['default'],
+		          'error'	=> $this->bbf_args('options',
+					   $this->get_var('error', 'options'))),
 				   $this->get_var_default('info','options',$this->get_var('devinfo','options')));?>
 	</div>
 </div>

@@ -29,6 +29,8 @@ $_DIR = new xivo_directories();
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 $prefixes = array('sqlite', 'mysql', 'file', 'phonebook');
 
 switch($act)
@@ -81,7 +83,9 @@ switch($act)
 			$result = $_DIR->chk_values($data);
 			if(($result = $_DIR->chk_values($data)) === false)
 			{
+				$fm_save = false;
 				$result = $_DIR->get_filter_result();
+				$error = $_DIR->get_filter_error();
 			}
 			else 
 			{
@@ -158,7 +162,9 @@ switch($act)
 
 			if(($result = $_DIR->chk_values($data)) === false)
 			{
+				$fm_save = false;
 				$result = $_DIR->get_filter_result();
+				$error = $_DIR->get_filter_error();
 			}
 			else 
 			{
@@ -252,6 +258,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

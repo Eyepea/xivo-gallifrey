@@ -22,6 +22,7 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
 $info = $this->get_var('info');
+$error = $this->get_var('error');
 $element = $this->get_var('element');
 
 $voicemail_list = $this->get_var('voicemail_list');
@@ -83,40 +84,52 @@ endif;
 				  'labelid'	=> 'userfeatures-firstname',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['firstname']['default'],
-				  'value'	=> $info['userfeatures']['firstname'])),
+				  'value'	=> $info['userfeatures']['firstname'],
+			      'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'firstname')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_lastname'),
 				  'name'	=> 'userfeatures[lastname]',
 				  'labelid'	=> 'userfeatures-lastname',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['lastname']['default'],
-				  'value'	=> $info['userfeatures']['lastname'])),
+				  'value'	=> $info['userfeatures']['lastname'],
+			      'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'lastname')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_name'),
 				  'name'	=> 'protocol[name]',
 				  'labelid'	=> 'protocol-name',
 				  'size'	=> 15,
-				  'value'	=> $info['protocol']['name'])),
+				  'value'	=> $info['protocol']['name'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'name')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_secret'),
 				  'name'	=> 'protocol[secret]',
 				  'labelid'	=> 'protocol-secret',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','secret'))),
+				  'value'	=> $this->get_var('info','protocol','secret'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'secret')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_interface'),
 				  'name'	=> 'protocol[interface]',
 				  'labelid'	=> 'protocol-interface',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['custom']['interface']['default'],
-				  'value'	=> $this->get_var('info','protocol','interface'))),
+				  'value'	=> $this->get_var('info','protocol','interface'),
+			          'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'interface')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_number'),
 				  'name'	=> 'userfeatures[number]',
 				  'labelid'	=> 'userfeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['number']['default'],
-				  'value'	=> $info['userfeatures']['number'])),
+				  'value'	=> $info['userfeatures']['number'],
+			          'error'	=> $this->bbf_args('userfeatures-number',
+						   $this->get_var('error', 'userfeatures', 'number')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_ringseconds'),
 				    'name'	=> 'userfeatures[ringseconds]',
@@ -215,35 +228,45 @@ endif;
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_suggest'),
 				  'name'	=> 'voicemail-suggest',
 				  'labelid'	=> 'voicemail-suggest',
-				  'size'	=> 20)),
+				  'size'	=> 20,
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemail', 'suggest')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_fullname'),
 				  'name'	=> 'voicemail[fullname]',
 				  'labelid'	=> 'voicemail-fullname',
 				  'size'	=> 15,
 				  'default'	=> $element['voicemail']['fullname']['default'],
-				  'value'	=> $this->get_var('voicemail','fullname'))),
+				  'value'	=> $this->get_var('voicemail','fullname'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemail', 'fullname')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_mailbox'),
 				  'name'	=> 'voicemail[mailbox]',
 				  'labelid'	=> 'voicemail-mailbox',
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['mailbox']['default'],
-				  'value'	=> $this->get_var('voicemail','mailbox'))),
+				  'value'	=> $this->get_var('voicemail','mailbox'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemail', 'mailbox')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_password'),
 				  'name'	=> 'voicemail[password]',
 				  'labelid'	=> 'voicemail-password',
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['password']['default'],
-				  'value'	=> $this->get_var('voicemail','password'))),
+				  'value'	=> $this->get_var('voicemail','password'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemail', 'password')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_email'),
 				  'name'	=> 'voicemail[email]',
 				  'labelid'	=> 'voicemail-email',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('voicemail','email'),
-				  'default'	=> $element['voicemail']['email']['default']));
+				  'default'	=> $element['voicemail']['email']['default'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemail', 'email')) ));
 
 	if(($tz_list = $this->get_var('tz_list')) !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_voicemail_tz'),
@@ -346,14 +369,18 @@ endif;
 				  'labelid'	=> 'userfeatures-loginclient',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['loginclient']['default'],
-				  'value'	=> $info['userfeatures']['loginclient'])),
+				  'value'	=> $info['userfeatures']['loginclient'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'loginclient')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_passwdclient'),
 				  'name'	=> 'userfeatures[passwdclient]',
 				  'labelid'	=> 'userfeatures-passwdclient',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['passwdclient']['default'],
-				  'value'	=> $info['userfeatures']['passwdclient']));
+				  'value'	=> $info['userfeatures']['passwdclient'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'passwdclient')) ));
 
 	if(is_array($profileclient_list) === true && empty($profileclient_list) === false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_userfeatures_profileclient'),
@@ -416,7 +443,9 @@ endif;
 				  'labelid'	=> 'userfeatures-mobilephonenumber',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['mobilephonenumber']['default'],
-				  'value'	=> $info['userfeatures']['mobilephonenumber'])),
+				  'value'	=> $info['userfeatures']['mobilephonenumber'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'mobilephonenumber')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_bsfilter'),
 				    'name'	=> 'userfeatures[bsfilter]',
@@ -464,7 +493,9 @@ endif;
 				  'labelid'	=> 'userfeatures-destrna',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['destrna']['default'],
-				  'value'	=> $info['userfeatures']['destrna'])),
+				  'value'	=> $info['userfeatures']['destrna'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'destrna')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enablebusy'),
 				      'name'	=> 'userfeatures[enablebusy]',
@@ -477,7 +508,9 @@ endif;
 				  'labelid'	=> 'userfeatures-destbusy',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['destbusy']['default'],
-				  'value'	=> $info['userfeatures']['destbusy'])),
+				  'value'	=> $info['userfeatures']['destbusy'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'destbusy')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_userfeatures_enableunc'),
 				      'name'	=> 'userfeatures[enableunc]',
@@ -490,7 +523,9 @@ endif;
 				  'labelid'	=> 'userfeatures-destunc',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['destunc']['default'],
-				  'value'	=> $info['userfeatures']['destunc']));
+				  'value'	=> $info['userfeatures']['destunc'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'destunc')) ));
 ?>
 	</fieldset>
 </div>
@@ -670,7 +705,9 @@ endif;
 				  'labelid'	=> 'protocol-maxcallbitrate',
 				  'size'	=> 10,
 				  'default'	=> $element['protocol']['sip']['maxcallbitrate']['default'],
-				  'value'	=> $this->get_var('info','protocol','maxcallbitrate'))),
+				  'value'	=> $this->get_var('info','protocol','maxcallbitrate'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'maxcallbitrate')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_g726nonstandard'),
 				    'name'	=> 'protocol[g726nonstandard]',
@@ -975,7 +1012,9 @@ endif;
 				  'labelid'	=> 'protocol-callerid',
 				  'value'	=> $this->get_var('info','protocol','callerid'),
 				  'size'	=> 15,
-				  'notag'	=> false)),
+				  'notag'	=> false,
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'callerid')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_outcallerid'),
 				    'name'	=> 'userfeatures[outcallerid-type]',
@@ -991,7 +1030,9 @@ endif;
 				  'labelid'	=> 'userfeatures-outcallerid-custom',
 				  'value'	=> ($outcallerid_custom === true ? $outcallerid : ''),
 				  'size'	=> 15,
-				  'notag'	=> false)),
+				  'notag'	=> false,
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'outcallerid-custom')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_protocol_sendani'),
 				      'name'	=> 'protocol[sendani]',
@@ -1004,7 +1045,9 @@ endif;
 				  'labelid'	=> 'userfeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['userfeatures']['preprocess_subroutine'])),
+				  'value'	=> $info['userfeatures']['preprocess_subroutine'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'preprocess_subroutine')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_insecure'),
 				    'name'	=> 'protocol[insecure]',
@@ -1029,26 +1072,34 @@ endif;
 				  'name'	=> 'protocol[host-static]',
 				  'labelid'	=> 'protocol-host-static',
 				  'size'	=> 15,
-				  'value'	=> ($host_static === true ? $host : ''))),
+				  'value'	=> ($host_static === true ? $host : ''),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'host-static')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_mask'),
 				  'name'	=> 'protocol[mask]',
 				  'labelid'	=> 'protocol-mask',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['iax']['mask']['default'],
-				  'value'	=> $this->get_var('info','protocol','mask'))),
+				  'value'	=> $this->get_var('info','protocol','mask'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'mask')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_permit'),
 				  'name'	=> 'protocol[permit]',
 				  'labelid'	=> 'protocol-permit',
 				  'size'	=> 20,
-				  'value'	=> $this->get_var('info','protocol','permit'))),
+				  'value'	=> $this->get_var('info','protocol','permit'),
+                  'error'   => $this->bbf_args('error',
+                           $this->get_var('error', 'protocol', 'permit')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_deny'),
 				  'name'	=> 'protocol[deny]',
 				  'labelid'	=> 'protocol-deny',
 				  'size'	=> 20,
-				  'value'	=> $this->get_var('info','protocol','deny'))),
+				  'value'	=> $this->get_var('info','protocol','deny'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'deny')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_trustrpid'),
 				    'name'	=> 'protocol[trustrpid]',
@@ -1131,14 +1182,18 @@ endif;
 				  'labelid'	=> 'protocol-fromuser',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['sip']['fromuser']['default'],
-				  'value'	=> $this->get_var('info','protocol','fromuser'))),
+				  'value'	=> $this->get_var('info','protocol','fromuser'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'fromuser')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_fromdomain'),
 				  'name'	=> 'protocol[fromdomain]',
 				  'labelid'	=> 'protocol-fromdomain',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['sip']['fromdomain']['default'],
-				  'value'	=> $this->get_var('info','protocol','fromdomain'))),
+				  'value'	=> $this->get_var('info','protocol','fromdomain'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'fromdomain')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_maxauthreq'),
 				    'name'	=> 'protocol[maxauthreq]',
@@ -1187,7 +1242,9 @@ endif;
 				  'name'	=> 'protocol[accountcode]',
 				  'labelid'	=> 'protocol-accountcode',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info','protocol','accountcode'))),
+				  'value'	=> $this->get_var('info','protocol','accountcode'),
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'accountcode')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_useclientcode'),
 				    'name'	=> 'protocol[useclientcode]',
@@ -1211,7 +1268,9 @@ endif;
 					 'id'		=> 'it-userfeatures-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['userfeatures']['description']['default']),
+					 'default'	=> $element['userfeatures']['description']['default'],
+					'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'description')) ),
 				   $info['userfeatures']['description']);?>
 	</div>
 </div>

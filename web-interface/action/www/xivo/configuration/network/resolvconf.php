@@ -20,7 +20,7 @@
 
 $appresolvconf = &$_XOBJ->get_application('resolvconf');
 
-$result = $fm_save = null;
+$result = $fm_save = $error = null;
 
 $info = $appresolvconf->get();
 $return = &$info['resolvconf'];
@@ -33,7 +33,10 @@ if(isset($_QR['fm_send']) === true)
 
 	if($appresolvconf->set($_QR) === false
 	|| $appresolvconf->save() === false)
+	{
 		$fm_save = false;
+		$error = $appresolvconf->get_error('resolvconf');
+	}
 
 	$result = $appresolvconf->get_result('resolvconf');
 }
@@ -47,6 +50,7 @@ else
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('info',$return);
+$_TPL->set_var('error',$error);
 $_TPL->set_var('element',$appresolvconf->get_elements());
 $_TPL->set_var('searches',$searches);
 

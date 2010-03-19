@@ -24,6 +24,8 @@ $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 $appnetiface = &$_XOBJ->get_application('netiface');
 
 switch($act)
@@ -45,6 +47,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appnetiface->get_result('netiface');
+				$error = $appnetiface->get_error('netiface');
 				$ifname = $appnetiface->get_result_var('netiface','ifname');
 			}
 			else if(is_array($currentiface) === true
@@ -101,6 +104,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appnetiface->get_result('netiface');
+				$error = $appnetiface->get_error('netiface');
 			}
 			else if(is_array($currentiface) === true
 			&& isset($currentiface['name']) === true
@@ -210,6 +214,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

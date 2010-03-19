@@ -33,8 +33,7 @@ if(isset($_QR['fm_send']) === true)
 	{
 		$info = $rs['result'];
 		$error = $rs['error'];
-
-		$fm_save = isset($rs['error'][0]) === false;
+		$fm_save = empty($error);
 	}
 }
 
@@ -59,6 +58,7 @@ $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('info',$info);
+$_TPL->set_var('error',$error);
 $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneralsip->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsip->get_context_list());

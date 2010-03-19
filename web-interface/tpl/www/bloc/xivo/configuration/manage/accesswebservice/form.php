@@ -28,28 +28,36 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 			  'labelid'	=> 'name',
 			  'size'	=> 15,
 			  'default'	=> $element['name']['default'],
-			  'value'	=> $info['name'])),
+			  'value'	=> $info['name'],
+	          'error'	=> $this->bbf_args('name',
+				   $this->get_var('error', 'name')))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_login'),
 			  'name'	=> 'login',
 			  'labelid'	=> 'login',
 			  'size'	=> 15,
 			  'default'	=> $element['login']['default'],
-			  'value'	=> $info['login'])),
+			  'value'	=> $info['login'],
+	          'error'	=> $this->bbf_args('login',
+				   $this->get_var('error', 'login')))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_passwd'),
 			  'name'	=> 'passwd',
 			  'labelid'	=> 'passwd',
 			  'size'	=> 15,
 			  'default'	=> $element['passwd']['default'],
-			  'value'	=> $info['passwd'])),
+			  'value'	=> $info['passwd'],
+	          'error'	=> $this->bbf_args('passwd',
+				   $this->get_var('error', 'passwd')))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_host'),
 			  'name'	=> 'host',
 			  'labelid'	=> 'host',
 			  'size'	=> 15,
 			  'default'	=> $element['host']['default'],
-			  'value'	=> $info['host']));
+			  'value'	=> $info['host'],
+	          'error'	=> $this->bbf_args('host',
+				   $this->get_var('error', 'host'))));
 ?>
 <div class="fm-paragraph fm-description">
 	<p>
@@ -61,6 +69,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 				 'id'		=> 'it-description',
 				 'cols'		=> 60,
 				 'rows'		=> 5,
-				 'default'	=> $element['description']['default']),
+				 'default'	=> $element['description']['default'],
+	          'error'	=> $this->bbf_args('description',
+				   $this->get_var('error', 'description'))),
 			   $info['description']);?>
 </div>

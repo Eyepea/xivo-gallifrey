@@ -27,6 +27,8 @@ $_AWS = new xivo_accesswebservice();
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 switch($act)
 {
 	case 'add':
@@ -37,7 +39,11 @@ switch($act)
 			$add = false;
 
 			if(($result = $_AWS->chk_values($_QR)) === false)
+			{
+				$fm_save = false;
 				$result = $_AWS->get_filter_result();
+				$error = $_AWS->get_filter_error();
+			}
 			else if(dwho_has_len($result['login']) === true
 			&& dwho_has_len($result['passwd']) === true)
 				$add = true;
@@ -68,7 +74,11 @@ switch($act)
 			$_QR['disable'] = $info['disable'];
 
 			if(($result = $_AWS->chk_values($_QR)) === false)
+			{
+				$fm_save = false;
 				$result = $_AWS->get_filter_result();
+				$error = $_AWS->get_filter_error();
+			}
 			else if(dwho_has_len($result['login']) === true
 			&& dwho_has_len($result['passwd']) === true)
 				$edit = true;
@@ -168,6 +178,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

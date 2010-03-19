@@ -19,20 +19,24 @@
 #
 
 $appmail 	= &$_XOBJ->get_application('mail');
-$fm_save    = null;
+$fm_save = $error = null;
 
 if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
 
 	if($appmail->set($_QR) === false)
+	{
 		$fm_save = false;
+		$error = $appmail->get_error();
+	}
 }
 
 $info 		= $appmail->get();
 
-$_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('info'		, $info);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('info', $info);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

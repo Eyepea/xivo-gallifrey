@@ -27,6 +27,8 @@ $_LDAPSVR = new xivo_ldapserver();
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 switch($act)
 {
 	case 'add':
@@ -35,7 +37,11 @@ switch($act)
 		if(isset($_QR['fm_send']) === true)
 		{
 			if(($result = $_LDAPSVR->chk_values($_QR)) === false)
+			{
+				$fm_save = false;
 				$result = $_LDAPSVR->get_filter_result();
+				$error = $_LDAPSVR->get_filter_error();
+			}
 			else if($_LDAPSVR->add($result) !== false)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
@@ -60,7 +66,11 @@ switch($act)
 			$_QR['disable'] = $info['disable'];
 
 			if(($result = $_LDAPSVR->chk_values($_QR)) === false)
+			{
+				$fm_save = false;
 				$result = $_LDAPSVR->get_filter_result();
+				$error = $_LDAPSVR->get_filter_error();
+			}
 			else if($_LDAPSVR->edit($info['id'],$result) !== false)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/ldapserver'),$param);
 		}
@@ -137,6 +147,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

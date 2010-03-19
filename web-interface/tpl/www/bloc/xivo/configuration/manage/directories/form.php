@@ -36,7 +36,9 @@ endif;
 				  'labelid'	=> 'name',
 				  'size'	=> 15,
 				  'default'	=> $element['name']['default'],
-				  'value' => $info['name'])),
+				  'value' => $info['name'],
+		          'error'	=> $this->bbf_args('name',
+					   $this->get_var('error', 'name')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_type'),
 					'name'	=> 'type',
@@ -50,7 +52,9 @@ endif;
 				  'name'	=> 'uri',
 				  'labelid'	=> 'uri',
 				  'default'	=> $element['uri']['default'],
-				  'value'	=> $info['uri']));
+				  'value'	=> $info['uri'],
+		          'error'	=> $this->bbf_args('uri',
+					   $this->get_var('error', 'uri')) ));
 ?>
 <div id="sgbdr" class="b-nodisplay">
 <?php
@@ -58,37 +62,49 @@ endif;
 				  'name'	=> 'host',
 				  'labelid'	=> 'host',
 				  'default'	=> $element['host']['default'],
-				  'value'	=> $info['host'])),
+				  'value'	=> $info['host'],
+		          'error'	=> $this->bbf_args('host',
+					   $this->get_var('error', 'host')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_port'),
 				  'name'	=> 'port',
 				  'labelid'	=> 'port',
 				  'default'	=> $element['port']['default'],
-				  'value'	=> $info['port'])),
+				  'value'	=> $info['port'],
+		          'error'	=> $this->bbf_args('port',
+					   $this->get_var('error', 'port')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_dbname'),
 				  'name'	=> 'dbname',
 				  'labelid'	=> 'dbname',
 				  'default'	=> $element['dbname']['default'],
-				  'value'	=> $info['dbname'])),
+				  'value'	=> $info['dbname'],
+		          'error'	=> $this->bbf_args('dbname',
+					   $this->get_var('error', 'dbname')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_tablename'),
 				  'name'	=> 'tablename',
 				  'labelid'	=> 'tablename',
 				  'default'	=> $element['tablename']['default'],
-				  'value'	=> $info['tablename'])),
+				  'value'	=> $info['tablename'],
+		          'error'	=> $this->bbf_args('tablename',
+					   $this->get_var('error', 'tablename')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_user'),
 				  'name'	=> 'user',
 				  'labelid'	=> 'user',
 				  'default'	=> $element['user']['default'],
-				  'value'	=> $info['user'])),
+				  'value'	=> $info['user'],
+		          'error'	=> $this->bbf_args('user',
+					   $this->get_var('error', 'user')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_password'),
 				  'name'	=> 'password',
 				  'labelid'	=> 'password',
 				  'default'	=> $element['password']['default'],
-				  'value'	=> $info['password']));
+				  'value'	=> $info['password'],
+		          'error'	=> $this->bbf_args('password',
+					   $this->get_var('error', 'password')) ));
 	?>
 	</div>
 	<div class="fm-paragraph fm-description">
@@ -101,6 +117,8 @@ endif;
 					 'id'		=> 'it-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['description']['default']),
+					 'default'	=> $element['description']['default'],
+		          'error'	=> $this->bbf_args('description',
+					   $this->get_var('error', 'description')) ),
 				   $info['description']);?>
 	</div>

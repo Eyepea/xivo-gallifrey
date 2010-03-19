@@ -62,6 +62,9 @@ class dwho_tpl
 		if(empty($modules) === true)
 			return(null);
 
+		//calimero
+		$this->load_i18n_file('errors');
+
 		foreach($modules as $class)
 		{
 			if(is_object($class) === true)

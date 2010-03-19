@@ -46,7 +46,7 @@ endif;
 				  'default'	=> $element['queueskill']['name']['default'],
 				  'value'	=> $info['queueskill']['name'],
 			          'error'	=> $this->bbf_args('queueskill-name',
-							   $this->get_var('error', 'name'))));
+						   $this->get_var('error', 'name')) ));
 	// *end*
 ?>
 

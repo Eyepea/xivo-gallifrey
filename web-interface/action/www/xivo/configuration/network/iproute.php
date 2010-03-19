@@ -24,6 +24,8 @@ $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 $appiproute = &$_XOBJ->get_application('iproute');
 
 switch($act)
@@ -38,6 +40,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appiproute->get_result('iproute');
+				$error = $appiproute->get_error('iproute');
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/network/iproute'),$param);
@@ -66,6 +69,7 @@ switch($act)
 			|| $appiproute->edit() === false)
 			{
 				$fm_save = false;
+				$error = $appiproute->get_error('iproute');
 				$result = $appiproute->get_result('iproute');
 			}
 			else
@@ -153,6 +157,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

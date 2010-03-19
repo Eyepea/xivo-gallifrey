@@ -87,14 +87,18 @@ $incall_err = $this->get_var('error','contextnumbers','incall');
 				  'labelid'	=> 'context-name',
 				  'size'	=> 15,
 				  'default'	=> $element['context']['name']['default'],
-				  'value'	=> $info['context']['name'])),
+				  'value'	=> $info['context']['name'],
+			          'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'context', 'name')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_context_displayname'),
 				  'name'	=> 'context[displayname]',
 				  'labelid'	=> 'context-displayname',
 				  'size'	=> 15,
 				  'default'	=> $element['context']['displayname']['default'],
-				  'value'	=> $info['context']['displayname']));
+				  'value'	=> $info['context']['displayname'],
+			          'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'context', 'displayname')) ));
 
 	if(($entities = $this->get_var('entities')) !== false):
 		echo $form->select(array('desc'		=> $this->bbf('fm_context_entity'),

@@ -80,12 +80,15 @@ if(isset($_QR['fm_send']) === true
 	|| $appuser->add() === false)
 	{
 		$fm_save = false;
+
 		$result = $appuser->get_result();
 		$result['dialaction'] = $appuser->get_dialaction_result();
 		$result['phonefunckey'] = $appuser->get_phonefunckey_result();
 
 		$error = $appuser->get_error();
-		$error['queueskills'] = $appqueue->userskills_get_error();
+
+		if (dwho_empty($aq = $appqueue->userskills_get_error()) === false)
+		  $error['queueskills'] = $aq;
 
 		if(dwho_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];

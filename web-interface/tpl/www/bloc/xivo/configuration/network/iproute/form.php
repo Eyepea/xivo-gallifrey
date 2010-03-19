@@ -34,7 +34,9 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_name'),
 			  'labelid'	=> 'name',
 			  'size'	=> 15,
 			  'default'	=> $element['iproute']['name']['default'],
-			  'value'	=> $info['name']));
+			  'value'	=> $info['name'],
+	          'error'	=> $this->bbf_args('name',
+				   $this->get_var('error', 'name'))));
 
 	if(($interfaces = $this->get_var('interfaces')) !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_iface'),
@@ -56,20 +58,26 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_destination'),
 			  'labelid'	=> 'destination',
 			  'size'	=> 15,
 			  'default'	=> $element['iproute']['destination']['default'],
-			  'value'	=> $info['destination'])),
+			  'value'	=> $info['destination'],
+	          'error'	=> $this->bbf_args('destination',
+				   $this->get_var('error', 'destination')))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_netmask'),
 			  'name'	=> 'netmask',
 			  'labelid'	=> 'netmask',
 			  'size'	=> 15,
-			  'value'	=> $info['netmask'])),
+			  'value'	=> $info['netmask'],
+	          'error'	=> $this->bbf_args('netmask',
+				   $this->get_var('error', 'netmask')))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_gateway'),
 			  'name'	=> 'gateway',
 			  'labelid'	=> 'gateway',
 			  'size'	=> 15,
 			  'default'	=> $element['iproute']['gateway']['default'],
-			  'value'	=> $info['gateway']));
+			  'value'	=> $info['gateway'],
+	          'error'	=> $this->bbf_args('gateway',
+				   $this->get_var('error', 'gateway'))));
 ?>
 <div class="fm-paragraph fm-description">
 	<p>
@@ -81,6 +89,8 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_destination'),
 				 'id'		=> 'it-description',
 				 'cols'		=> 60,
 				 'rows'		=> 5,
-				 'default'	=> $element['iproute']['description']['default']),
+				 'default'	=> $element['iproute']['description']['default'],
+	          'error'	=> $this->bbf_args('description',
+				   $this->get_var('error', 'description'))),
 			   $info['description']);?>
 </div>

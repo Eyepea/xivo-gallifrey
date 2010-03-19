@@ -27,19 +27,24 @@ $_SVR = new xivo_server();
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 switch($act)
 {
 	case 'add':
-		$result = null;
 
 		if(isset($_QR['fm_send']) === true)
 		{
 			if(($result = $_SVR->chk_values($_QR)) === false)
+			{
+				$fm_save = false;
 				$result = $_SVR->get_filter_result();
+				$error = $_SVR->get_filter_error();
+			}
 			else if($_SVR->add($result) !== false)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/server'),$param);
 		}
-
+		
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('element',$_SVR->get_element());
 		break;
@@ -58,7 +63,11 @@ switch($act)
 			$_QR['disable'] = $info['disable'];
 
 			if(($result = $_SVR->chk_values($_QR)) === false)
+			{
+				$fm_save = false;
 				$result = $_SVR->get_filter_result();
+				$error = $_SVR->get_filter_error();
+			}
 			else if($_SVR->edit($info['id'],$result) !== false)
 				$_QRY->go($_TPL->url('xivo/configuration/manage/server'),$param);
 		}
@@ -148,6 +157,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('error',$error);
+$_TPL->set_var('fm_save',$fm_save);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

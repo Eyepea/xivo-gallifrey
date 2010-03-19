@@ -24,12 +24,12 @@ $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 $param = array();
 $param['act'] = 'list';
 
+$result = $fm_save = $error = null;
+
 switch($act)
 {
 	case 'add':
 		$appentity = &$_XOBJ->get_application('entity',null,false);
-
-		$result = $fm_save = null;
 
 		if(isset($_QR['fm_send']) === true)
 		{
@@ -38,13 +38,13 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appentity->get_result('entity');
+				$error = $appentity->get_error('entity');
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 		}
 
 		$_TPL->set_var('info',$result);
-		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appentity->get_elements());
 		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
@@ -54,7 +54,6 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appentity->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
 
-		$result = $fm_save = null;
 		$return = &$info['entity'];
 
 		if(isset($_QR['fm_send']) === true)
@@ -66,6 +65,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appentity->get_result('entity');
+				$error = $appentity->get_error('entity');
 			}
 			else
 				$_QRY->go($_TPL->url('xivo/configuration/manage/entity'),$param);
@@ -73,7 +73,6 @@ switch($act)
 
 		$_TPL->set_var('id',$info['entity']['id']);
 		$_TPL->set_var('info',$return);
-		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appentity->get_elements());
 		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
 		break;
@@ -158,6 +157,8 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
+$_TPL->set_var('fm_save',$fm_save);
+$_TPL->set_var('error',$error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

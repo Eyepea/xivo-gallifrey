@@ -22,6 +22,7 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
+$error = $this->get_var('error');
 $element = $this->get_var('element');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');

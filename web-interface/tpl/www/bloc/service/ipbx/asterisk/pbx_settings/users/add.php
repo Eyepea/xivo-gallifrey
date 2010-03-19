@@ -19,6 +19,19 @@
 #
 
 $form = &$this->get_module('form');
+$url = &$this->get_module('url');
+$context_list = $this->get_var('context_list');
+
+if($context_list === false):
+  $dhtml = &$this->get_module('dhtml');
+  echo	'<div id="fd-protocol-context" class="txt-center">',
+	  $url->href_html($this->bbf('create_context'),
+			  'service/ipbx/system_management/context',
+			  'act=add'),
+	  $dhtml->message_error($this->bbf('error_before_create_context'));
+	  '</div>';
+  return;
+endif;
 
 ?>
 <div id="sr-users" class="b-infos b-form">
@@ -30,6 +43,7 @@ $form = &$this->get_module('form');
 
 <?php
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/submenu');
+
 ?>
 
 	<div class="sb-content">

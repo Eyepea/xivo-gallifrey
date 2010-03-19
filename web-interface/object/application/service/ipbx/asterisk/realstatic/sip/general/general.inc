@@ -142,6 +142,7 @@ class xivo_application_service_asterisk_realstatic_sip_general extends xivo_appl
 			$arr['mohsuggest'] = '';
 
 		return(parent::set_save_all($arr,$disable));
+        
 	}
 }
 
