@@ -1,0 +1,33 @@
+; mn_left_name
+Statistiques Munin
+
+; mn_left_ti_localhost
+Localhost
+
+; mn_left_munin-apache
+Apache
+
+; mn_left_munin-asterisk
+Asterisk
+
+; mn_left_munin-disk
+Disques
+
+; mn_left_munin-network
+Réseau
+
+; mn_left_munin-other
+Autres
+
+; mn_left_munin-postfix
+Postfix
+
+; mn_left_munin-processes
+Processus
+
+; mn_left_munin-system
+Système
+
+; mn_left_munin-time
+NTP
+

@@ -43,6 +43,10 @@ $this->file_include('bloc/menu/top/user/loginbox');
 						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
 								   'xivo');?>
 					</li>
+					<li>
+						<?=$url->href_html($this->bbf('mn_sub_top_services_stats'),
+								   'stats');?>
+					</li>
 				</ul>
 			</div>
 		</li>

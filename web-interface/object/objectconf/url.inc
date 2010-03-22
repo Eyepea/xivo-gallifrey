@@ -149,4 +149,9 @@ $array['service/ipbx/ui/pbx_settings/queues'] = 'service/ipbx/ui.php/pbx_setting
 $array['service/ipbx/ui/pbx_settings/meetme'] = 'service/ipbx/ui.php/pbx_settings/meetme/';
 $array['service/ipbx/ui/pbx_settings/voicemail'] = 'service/ipbx/ui.php/pbx_settings/voicemail/';
 
+// munin stats
+$array['stats'] = 'stats/index.php';
+$array['stats/munin/apache'] = 'stats/munin/index.php/apache';
+
+
 ?>

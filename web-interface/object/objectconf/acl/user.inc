@@ -100,6 +100,8 @@ $array['tree']['service']['monitoring']['control_system']['restart'] = true;
 $array['tree']['service']['monitoring']['control_system']['monitor'] = true;
 $array['tree']['service']['monitoring']['control_system']['unmonitor'] = true;
 
+$array['tree']['service']['stats'] = array();
+
 $array['group'] = array();
 $array['group']['visitor'] = false;
 
