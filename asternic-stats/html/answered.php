@@ -387,9 +387,9 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
 ################################################################################
 
 
-	$mysqlconnect = mysql_connect("localhost", "xivo", "proformatique") or die("connect impossible : " . mysql_error());
+	$mysqlconnect = mysql_connect($dbhost, $dbuser, $dbpass) or die("connect impossible : " . mysql_error());
 
-	$db = mysql_select_db('xivo', $mysqlconnect);
+	$db = mysql_select_db($dbname, $mysqlconnect);
 	if (!$db) {
    		die ('connect bdd impossible : ' . mysql_error());
 	}
