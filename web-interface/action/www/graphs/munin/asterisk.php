@@ -18,15 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_QRY->go($_TPL->url('stats/munin/apache'), $param);
+$module     = 'asterisk';
+$domain     = 'localdomain';
+$graphs     = array('asterisk_channels', 'asterisk_channelstypes', 'asterisk_codecs',
+    'asterisk_iaxchannels', 'asterisk_iaxlag', 'asterisk_iaxpeers', 'asterisk_meetme',
+    'asterisk_meetmeusers', 'asterisk_sipchannels', 'asterisk_sippeers',
+    'asterisk_voicemail');
+$freqs      = array('day', 'week', 'month', 'year');
 
-/*
-$menu = &$_TPL->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_info('meta'));
-$menu->set_left('left/stats/stats');
+include(dirname(__FILE__).'/common.php');
 
-$_TPL->set_bloc('main','stats/index');
-$_TPL->set_struct('stats/index');
-$_TPL->display('index');
-*/
 ?>
+

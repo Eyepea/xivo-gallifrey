@@ -1,0 +1,11 @@
+; title_content_name
+Disques
+
+; df
+Usage (en %)
+
+; df_inode
+Inodes utilisés (en %)
+
+; iostat
+Statistiques d'Entrées/Sorties (IOStat)

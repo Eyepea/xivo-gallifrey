@@ -1,5 +1,4 @@
 <?php
-
 #
 # XiVO Web-Interface
 # Copyright (C) 2010  Proformatique <technique@proformatique.com>
@@ -18,20 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$_TPL->set_var('basedir', 'img/stats/munin/localdomain/');
-$_TPL->set_var('basedir', 'img/stats/munin/localdomain/');
-
-
-$menu = &$_TPL->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_info('meta'));
-$menu->set_left('left/stats/stats');
-
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_css('css/stats/stats.css');
-
-$_TPL->set_bloc('main','stats/munin/apache');
-$_TPL->set_struct('stats/index');
-$_TPL->display('index');
+include(dirname(__FILE__).'/common.php');
 
 ?>
 

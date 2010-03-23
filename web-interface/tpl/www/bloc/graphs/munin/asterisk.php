@@ -1,5 +1,4 @@
 <?php
-
 #
 # XiVO Web-Interface
 # Copyright (C) 2010  Proformatique <technique@proformatique.com>
@@ -18,16 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once('xivo.php');
-
-if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
-
-$action_path = $_LOC->get_action_path('stats/munin',0);
-
-if($action_path === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
-
-die(include($action_path));
+include(dirname(__FILE__).'/common.php');
 
 ?>
+

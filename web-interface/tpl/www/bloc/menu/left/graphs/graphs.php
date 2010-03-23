@@ -32,39 +32,39 @@ $url = &$this->get_module('url');
 			<dt><?=$this->bbf('mn_left_ti_localhost');?></dt>
 			<dd id="mn-apache">
 				<?=$url->href_html($this->bbf('mn_left_munin-apache'),
-						   'stats/munin/apache');?>
+						   'graphs/munin/apache');?>
 			</dd>
 			<dd id="mn-asterisk">
 				<?=$url->href_html($this->bbf('mn_left_munin-asterisk'),
-						   'stats/munin/asterisk');?>
+						   'graphs/munin/asterisk');?>
 			</dd>
 			<dd id="mn-disk">
 				<?=$url->href_html($this->bbf('mn_left_munin-disk'),
-						   'stats/munin/disk');?>
+						   'graphs/munin/disk');?>
 			</dd>
 			<dd id="mn-time">
 				<?=$url->href_html($this->bbf('mn_left_munin-time'),
-						   'stats/munin/time');?>
+						   'graphs/munin/time');?>
 			</dd>
 			<dd id="mn-postfix">
 				<?=$url->href_html($this->bbf('mn_left_munin-postfix'),
-						   'stats/munin/postfix');?>
+						   'graphs/munin/postfix');?>
 			</dd>
 			<dd id="mn-processes">
 				<?=$url->href_html($this->bbf('mn_left_munin-processes'),
-						   'stats/munin/processes');?>
+						   'graphs/munin/processes');?>
 			</dd>
 			<dd id="mn-network">
 				<?=$url->href_html($this->bbf('mn_left_munin-network'),
-						   'stats/munin/network');?>
+						   'graphs/munin/network');?>
 			</dd>
 			<dd id="mn-system">
 				<?=$url->href_html($this->bbf('mn_left_munin-system'),
-						   'stats/munin/system');?>
+						   'graphs/munin/system');?>
 			</dd>
 			<dd id="mn-other">
 				<?=$url->href_html($this->bbf('mn_left_munin-other'),
-						   'stats/munin/other');?>
+						   'graphs/munin/other');?>
 			</dd>
 		</dl>
 	</dd>

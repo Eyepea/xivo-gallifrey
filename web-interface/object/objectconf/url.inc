@@ -150,8 +150,16 @@ $array['service/ipbx/ui/pbx_settings/meetme'] = 'service/ipbx/ui.php/pbx_setting
 $array['service/ipbx/ui/pbx_settings/voicemail'] = 'service/ipbx/ui.php/pbx_settings/voicemail/';
 
 // munin stats
-$array['stats'] = 'stats/index.php';
-$array['stats/munin/apache'] = 'stats/munin/index.php/apache';
+$array['graphs'] = 'graphs/index.php';
+$array['graphs/munin/apache']       = 'graphs/munin/index.php/apache';
+$array['graphs/munin/asterisk']     = 'graphs/munin/index.php/asterisk';
+$array['graphs/munin/disk']         = 'graphs/munin/index.php/disk';
+$array['graphs/munin/time']         = 'graphs/munin/index.php/time';
+$array['graphs/munin/postfix']      = 'graphs/munin/index.php/postfix';
+$array['graphs/munin/processes']    = 'graphs/munin/index.php/processes';
+$array['graphs/munin/network']      = 'graphs/munin/index.php/network';
+$array['graphs/munin/system']       = 'graphs/munin/index.php/system';
+$array['graphs/munin/other']        = 'graphs/munin/index.php/other';
 
 
 ?>

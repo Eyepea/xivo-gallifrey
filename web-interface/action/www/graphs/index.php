@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,16 +18,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once('xivo.php');
-
-if($_USR->mk_active() === false)
-	$_QRY->go($_TPL->url('xivo/logoff'));
-
-$action_path = $_LOC->get_action_path('stats/index',0);
-
-if($action_path === false)
-	echo "err"; //$_QRY->go($_TPL->url('xivo/logoff'));
-
-die(include($action_path));
+$_QRY->go($_TPL->url('graphs/munin/apache'), $param);
 
 ?>

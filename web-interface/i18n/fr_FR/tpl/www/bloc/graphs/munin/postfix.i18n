@@ -1,0 +1,11 @@
+; title_content_name
+Postfix
+
+; postfix_mailqueue
+Nombre d'emails dans la file
+
+; postfix_mailstats
+Nombre d'emails envoyés / secondes
+
+; postfix_mailvolume
+Taille totale des emails envoyés / secondes

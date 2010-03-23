@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,12 +18,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+$module     = 'apache';
+$domain     = 'localdomain';
+$graphs     = array('apache_accesses', 'apache_processes');
+$freqs      = array('day', 'week', 'month', 'year');
+
+include(dirname(__FILE__).'/common.php');
+
 ?>
-<div id="r-home">
-	<div class="b-rubric">
-<?php
-	//$this->file_include('bloc/stats/index');
-	$this->mk_bloc('main');
-?>
-	</div>
-</div>
+

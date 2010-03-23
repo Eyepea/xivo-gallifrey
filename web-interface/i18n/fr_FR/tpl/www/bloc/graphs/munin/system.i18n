@@ -1,0 +1,29 @@
+; title_content_name
+Système
+
+; cpu
+Usage CPU
+
+; entropy
+Entropie du système
+
+; interrupts
+Interruptions
+
+; irqstats
+Détail des interruptions
+
+; load
+Charge du système
+
+; memory
+Utilisation de la mémoire
+
+; open_files
+Nombre de fichiers ouverts
+
+; open_inodes
+Nombre de inodes ouverts
+
+; swap
+Utilisation de la swap

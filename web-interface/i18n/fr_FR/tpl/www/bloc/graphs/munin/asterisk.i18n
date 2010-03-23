@@ -1,0 +1,36 @@
+; title_content_name
+Asterisk
+
+; asterisk_channels
+Canaux asterisk
+
+; asterisk_channelstypes
+Types de canaux
+
+; asterisk_codecs
+Codecs
+
+; asterisk_iaxchannels
+Canaux IAX
+
+; asterisk_iaxlag
+Latence sur les canaux IAX
+
+; asterisk_iaxpeers
+Comptes IAX actifs
+
+; asterisk_meetme
+Chambres de conférence actives
+
+; asterisk_meetmeusers
+Nombre d'utilisateurs dans les chambres de conférence
+
+; asterisk_sipchannels
+Canaux SIP
+
+; asterisk_sippeers
+Comptes SIP actifs (enregistrés)
+
+; asterisk_voicemail
+Messages vocaux
+

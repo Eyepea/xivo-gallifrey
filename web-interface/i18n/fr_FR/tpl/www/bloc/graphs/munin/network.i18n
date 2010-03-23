@@ -1,0 +1,17 @@
+; title_content_name
+Réseau
+
+; if_err_eth0
+Erreurs sur l'interface eth0
+
+; if_eth0
+Trafic sur l'interface eth0
+
+; if_err_eth1
+Erreurs sur l'interface eth1
+
+; if_eth1
+Trafic sur l'interface eth1
+
+; netstat
+Netstat
