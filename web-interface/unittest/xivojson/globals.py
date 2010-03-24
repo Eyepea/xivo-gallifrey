@@ -21,9 +21,17 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
+# local dev
 IP          = 'xivo.local'
 PORT        = 80
 SSL         = False
 USERNAME    = 'root'
 PASSWORD    = 'proformatique'
+
+# dalek 1.0.10 testbox
+#IP          = '192.168.0.141'
+#PORT        = 443
+#SSL         = True
+#USERNAME    = 'root'
+#PASSWORD    = 'proformatique'
 

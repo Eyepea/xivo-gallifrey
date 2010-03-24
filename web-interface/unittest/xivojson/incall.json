@@ -3,7 +3,7 @@
            "exten": "1001",
            "context": "ctx1",
            "preprocess_subroutine": "",
-           "faxdetectenable": "",
+           "faxdetectenable": "0",
            "faxdetecttimeout": "",
            "faxdetectemail": ""
       },

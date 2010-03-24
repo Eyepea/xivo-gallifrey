@@ -37,18 +37,21 @@ class Test03Incall(unittest.TestCase):
 
     def test_01_incall(self):
         (resp, data) = self.client.list('incall')
-        self.assertEqual(resp.status, 200)
+        # 204 == no content
+        self.assertTrue(resp.status == 200 or resp.status == 204)
         
-        data = cjson.decode(data)
-#        pprint.pprint(data)
-        count = len(data)
+        if resp.status == 204:
+            count = 0
+        else:
+            data = cjson.decode(data)
+#            pprint.pprint(data)
+            count = len(data)
         
         
         # ADD
         with open('xivojson/incall.json') as f:
             content = cjson.decode(f.read())
             
-#        print content
         (resp, data) = self.client.add('incall', content)
         self.assertEqual(resp.status, 200)
 

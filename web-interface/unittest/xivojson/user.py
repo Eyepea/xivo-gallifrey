@@ -31,9 +31,10 @@ class Test02User(unittest.TestCase):
         global IP, PORT, SSL, USERNAME, PASSWORD
 
         self.client = JSONClient(IP, PORT, SSL, USERNAME, PASSWORD)
+        self.obj    = 'users'
 
     def test_01_user(self):
-        (resp, data) = self.client.list('users')
+        (resp, data) = self.client.list(self.obj)
         self.assertEqual(resp.status, 200)
         
 #        pprint.pprint(data)
@@ -41,11 +42,42 @@ class Test02User(unittest.TestCase):
 #        pprint.pprint(data)
         count = len(data)
         
+        # ADD
         with open('xivojson/user.json') as f:
             content = cjson.decode(f.read())
             
 #        print content
-#        (resp, data) = self.client.add('users', content)
+        (resp, data) = self.client.add(self.obj, content)
+        self.assertEqual(resp.status, 200)
+
+#        # LIST / Check add
+#        (resp, data) = self.client.list('incall')
 #        self.assertEqual(resp.status, 200)
-        
+#        
+#        data = cjson.decode(data)
+##        pprint.pprint(data)
+#        count2 = len(data)
+#        self.assertEqual(count2, count+1)
+#        self.assertTrue('exten' in data[1])
+#        self.assertTrue(data[1]['exten'] == '1001')
+#        
+#        id = data[1]['id']
+
+#        # SEARCH
+#        (resp, data) = self.client.view('incall', id)
+#        self.assertEqual(resp.status, 200)
+
+#        data = cjson.decode(data)
+##        pprint.pprint(data)
+#        self.assertTrue('incall' in data)
+#        self.assertTrue(data['incall']['exten'] == '1001')
+
+#        # DELETE
+#        (resp, data) = self.client.delete('incall', id)
+#        self.assertEqual(resp.status, 200)
+
+#        # try to redelete => must return 404
+#        (resp, data) = self.client.delete('incall', id)
+#        self.assertEqual(resp.status, 404)
+#        
 
