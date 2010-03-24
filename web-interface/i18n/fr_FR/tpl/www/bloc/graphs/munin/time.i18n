@@ -2,7 +2,7 @@
 NTP
 
 ; ntp_offset
-Décalage
+Décalage temporel
 
 ; ntp_states
 &Eacute;tat des serveurs

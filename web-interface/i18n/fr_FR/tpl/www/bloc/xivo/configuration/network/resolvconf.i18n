@@ -10,6 +10,9 @@ Recherche des noms d'hôte
 ; fm_hostname
 Nom d'hôte :
 
+; fm_domain
+Nom de domaine : 
+
 ; fm_nameserver1
 Serveur DNS primaire :
 

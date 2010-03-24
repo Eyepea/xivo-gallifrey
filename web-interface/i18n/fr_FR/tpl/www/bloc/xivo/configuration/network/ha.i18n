@@ -1,6 +1,9 @@
 ; title_content_name
 Haute-Disponibilité
 
+; smenu_status
+Status
+
 ; smenu_services
 Services activés
 
@@ -195,3 +198,18 @@ Aucun réseau virtuel défini
 
 ; no_disp-nodes
 Aucun lien défini
+
+; fm_ha_status
+&Eacute;tat du noeud : 
+
+; ha_status(down)
+Heartbeat désactivé
+
+; ha_status(master)
+Maître
+
+; ha_status(slave)
+Esclave
+
+; fm_help-ha_status
+Affiche le status Heartbeat actuel du serveur

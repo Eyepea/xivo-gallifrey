@@ -22,6 +22,8 @@ $appHA = &$_XOBJ->get_application('ha');
 $fm_save    = null;
 // XiVO server network interfaces
 $netifaces  = $appHA->get_netifaces();
+// HA node status
+$status     = $appHA->get_status();
 // valid heartbeat com_mode values
 $commodes   = array('bcast', 'mcast', 'ucast');
 
@@ -42,6 +44,7 @@ else
 $_TPL->set_var('fm_save'     , $fm_save);
 $_TPL->set_var('info'        , $info);
 $_TPL->set_var('netifaces'   , $netifaces);
+$_TPL->set_var('status'      , $status);
 $_TPL->set_var('commodes'    , $commodes);
 
 $dhtml = &$_TPL->get_module('dhtml');

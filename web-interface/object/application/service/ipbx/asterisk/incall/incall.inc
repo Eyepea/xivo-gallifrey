@@ -775,6 +775,7 @@ class xivo_application_service_asterisk_incall extends xivo_application_asterisk
 		if(isset($data['incall']['arg2']) === true)
 			$data['dialaction']['answer']['actionarg2'] = $data['incall']['arg2'];
 
+
 		if($this->set_add($data) === false
 		|| $this->add() === false)
 			return(false);

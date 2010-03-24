@@ -22,6 +22,7 @@ $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
 $info     = $this->get_var('info');
+$status   = $this->get_var('status');
 $commodes = $this->get_var('commodes');
 
 if(($fm_save = $this->get_var('fm_save')) === true):
@@ -46,11 +47,21 @@ endif;
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
-				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_services');?></a></span>
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_status');?></a></span>
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-2"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-services');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_services');?></a></span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-3"
 		    class="dwsm-blur"
 		    onclick="dwho_submenu.select(this,'sb-part-network');"
 		    onmouseout="dwho_submenu.blur(this);"
@@ -60,7 +71,7 @@ endif;
 			</div>
 			<span class="span-right">&nbsp;</span>
 		</li>
-		<li id="dwsm-tab-3"
+		<li id="dwsm-tab-4"
 		    class="dwsm-blur-last"
 		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
@@ -77,6 +88,17 @@ endif;
 <form action="#" method="post" accept-charset="utf-8">
 
 <div id="sb-part-first">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_status'),
+	              'class'   => 'readonly',
+				  'size'	=> 20,
+				  'readonly'=> true,
+			      'help'    => $this->bbf('fm_help-ha_status'),
+				  'value'	=> $this->bbf_args('ha_status', $status)));
+
+?></div>
+
+<div id="sb-part-services" class="b-nodisplay">
 <?php
 	echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),

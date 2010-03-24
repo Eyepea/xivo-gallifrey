@@ -1,0 +1,20 @@
+{
+      "incall": {
+           "exten": "1001",
+           "context": "ctx1",
+           "preprocess_subroutine": "",
+           "faxdetectenable": "",
+           "faxdetecttimeout": "",
+           "faxdetectemail": ""
+      },
+      "dialaction": {
+            "answer": {
+                 "actiontype": "user",
+                 "actionarg1": "2",
+                 "actionarg2": ""
+            }
+      },
+      "rightcall": [
+           "1"
+      ]
+}

@@ -882,6 +882,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 	function edit()
 	{
+	    print 'EDOT';
 		$r = true;
 
 		$this->_status = 'edit';

@@ -59,6 +59,15 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	    return $netifaces;
 	}
 	
+	function get_status()
+    {
+	    $status = $this->_sysconfd->request_get('/ha_status');
+	    if($status === false)
+	    { return false; }
+	    
+	    return $status;
+	}
+	
 	function set($arr)
 	{
 	    $conf = array();

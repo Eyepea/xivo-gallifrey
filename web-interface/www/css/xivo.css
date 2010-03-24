@@ -384,3 +384,9 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 
 .dwho-form-help {position: absolute; padding: 5px;border: 1px solid #c0c0c0;background-color: #ffec5a;}
 .dwho-form-error {position: absolute; padding: 5px;border: 1px solid #c0c0c0;background-color: #ffcbcb;}
+
+input.readonly {
+    background-color: #F1F1F1;
+    color: #7E7E7E;
+}
+}

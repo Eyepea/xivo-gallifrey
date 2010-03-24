@@ -43,6 +43,7 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
+	    echo 'ADD\n';
 		$appincall = &$ipbx->get_application('incall');
 		$status = $appincall->add_from_json() === true ? 200 : 400;
 

@@ -1,0 +1,177 @@
+{
+      "userfeatures": {
+            "firstname": "unittest",
+            "lastname": "user_create",
+            "number": "",
+            "ringseconds": "30",
+            "simultcalls": "5",
+            "musiconhold": "default",
+            "voicemailid": "add",
+            "enableclient": "1",
+            "loginclient": "unittest",
+            "passwdclient": "",
+            "profileclient": "client",
+            "enablehint": "1",
+            "enablevoicemail": "1",
+            "enablexfer": "1",
+            "enableautomon": "0",
+            "callrecord": "0",
+            "callfilter": "0",
+            "enablednd": "0",
+            "mobilephonenumber": "",
+            "bsfilter": "no",
+            "agentid": "",
+            "enablerna": "0",
+            "destrna": "0033141389960",
+            "enablebusy": "0",
+            "destbusy": "0033141389960",
+            "enableunc": "0",
+            "destunc": "0033141389960",
+            "outcallerid": "default",
+            "preprocess_subroutine": "",
+            "description": ""
+      },
+      "protocol": {
+            "name": "666",
+            "secret": "1234",
+            "protocol": "sip",
+            "context": "default",
+            "language": "",
+            "nat": "",
+            "subscribemwi": "1",
+            "buggymwi": "0",
+            "progressinband": "",
+            "dtmfmode": "",
+            "rfc2833compensate": "",
+            "qualify": "",
+            "rtptimeout": "",
+            "rtpholdtimeout": "",
+            "rtpkeepalive": "",
+            "allowtransfer": "",
+            "autoframing": "",
+            "videosupport": "",
+            "maxcallbitrate": "",
+            "g726nonstandard": "",
+            "disallow": "all",
+            "allow": [
+                  "alaw",
+                  "ulaw"
+            ],
+            "t38pt_udptl": "",
+            "t38pt_rtp": "",
+            "t38pt_tcp": "",
+            "t38pt_usertpsource": "",
+            "callerid": "\"Adrien DELLE CAVE\" <666>",
+            "insecure": "",
+            "host-type": "dynamic",
+            "permit": "",
+            "deny": "",
+            "trustrpid": "",
+            "sendrpid": "",
+            "allowsubscribe": "",
+            "allowoverlap": "",
+            "promiscredir": "",
+            "usereqphone": "",
+            "canreinvite": "",
+            "fromuser": "",
+            "fromdomain": "",
+            "amaflags": "default",
+            "accountcode": "",
+            "useclientcode": ""
+      },
+      "voicemail": {
+            "fullname": "Adrien DELLE CAVE",
+            "mailbox": "666",
+            "password": "0000",
+            "email": "adellecave@proformatique.com",
+            "tz": "eu-fr",
+            "attach": "1",
+            "deletevoicemail": "1"
+      },
+      "vmfeatures": {
+            "skipcheckpass": "1"
+      },
+      "dialaction": {
+            "noanswer": {
+                  "actiontype": "group",
+                  "actionarg1": "2",
+                  "actionarg2": "15"
+            },
+            "busy": {
+                  "actiontype": "queue",
+                  "actionarg1": "1",
+                  "actionarg2": ""
+            },
+            "congestion": {
+                  "actiontype": "voicemenu",
+                  "actionarg1": "1"
+            },
+            "chanunavail": {
+                  "actiontype": "application",
+                  "action": "faxtomail",
+                  "actionarg1": "fax@proformatique.com"
+            }
+      },
+      "group-select": [
+            "tous"
+      ],
+      "group": {
+            "accueil": {
+                  "chantype": "default",
+                  "call-limit": "0"
+            },
+            "tous": {
+                  "chantype": "default",
+                  "call-limit": "3"
+            }
+      },
+      "queue-select": [
+            "technique"
+      ],
+      "queue": {
+            "commerciale": {
+                  "chantype": "default",
+                  "penalty": "0",
+                  "call-limit": "0"
+            },
+            "technique": {
+                  "chantype": "default",
+                  "penalty": "4",
+                  "call-limit": "10"
+            }
+      },
+      "autoprov": {
+            "vendormodel": "aastra.6757i",
+            "macaddr": "00:08:5D:00:00:00"
+      },
+      "phonefunckey": {
+            "fknum": [
+                  "13",
+                  "14",
+                  "15",
+                  "17",
+                  "18"
+            ],
+            "type": [
+                  "user",
+                  "extension",
+                  "meetme",
+                  "group",
+                  "queue"
+            ],
+            "typeval": [
+                  "41",
+                  "extenfeatures-vmusermsg",
+                  "3",
+                  "2",
+                  "1"
+            ],
+            "supervision": [
+                  "1",
+                  "0",
+                  "0",
+                  "0",
+                  "0"
+            ]
+      }
+}
