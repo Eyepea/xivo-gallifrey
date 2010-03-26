@@ -13,7 +13,7 @@ port = 8666
 path = /var/backups/pf-xivo
 
 [configfiles]
-path = /etc/asterisk
+path = /etc/asterisk/extensions_extra.d
 
 [musiconhold]
 path = /var/lib/pf-xivo/moh
