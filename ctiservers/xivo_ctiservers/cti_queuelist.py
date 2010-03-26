@@ -30,6 +30,95 @@ from xivo_ctiservers.cti_anylist import AnyList
 
 log = logging.getLogger('queuelist')
 
+
+import sqlite3
+
+class QueueStats:
+    def __init__(self, statdbpath):
+        self.conn = sqlite3.connect(statdbpath)
+        self.cache = {}
+
+    def __cache(self, queuename, attribute, value):
+        self.cache[queuename][attribute] = (time.clock(), value)
+
+    def __get_cache(self, queuename, attribute):
+        if self.cache[queuename].has_key(attribute):
+            (ctime, value) = self.cache[queuename][attribute]
+            # avoid to do more than 1 sql request for 1 kind of request per second
+            if ctime < time.clock() - 1:
+                return value
+
+        return None
+
+
+    def __get_queue_qos(self, queuename, param):
+        
+        cachekey = "qos%d-%d" % (param['window'], param['xqos'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql='''
+        SELECT ( count(*) / (( SELECT count(*) FROM queue_info
+                                            WHERE call_picker IS NOT NULL and
+                                                  queue_name = ? and
+                                                  call_time_t > (strftime("%%s") - ?)
+                                           ) * 1.0 ) * 100.0 )
+        FROM queue_info
+        WHERE call_picker IS NOT NULL and
+              call_time_t > (strftime("%%s") - ?) and
+              hold_time < ? and
+              queue_name = ?
+        ''' 
+        cur = self.conn.cursor()
+        cur.execute(sql, (queuename, param['window'], param['window'], param['xqos'], queuename))
+
+        qos = (cur.fetchone()[0])
+        if qos != None:
+            qos = "%.2f" % ( qos )
+        else:
+            qos = 'na'
+
+        self.__cache(queuename, cachekey, qos)
+        return qos
+
+    def __get_queue_holdtime(self, queuename, param):
+        cachekey = "ht%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql='''
+        SELECT avg(hold_time)
+        FROM queue_info
+        WHERE call_picker IS NOT NULL and
+              call_time_t > (strftime("%%s") - ?) and
+              queue_name = ?
+        ''' 
+        cur = self.conn.cursor()
+        cur.execute(sql, (param['window'], queuename))
+
+        holdtime = (cur.fetchone()[0])
+        if holdtime != None:
+            holdtime = "%.2f" % ( holdtime )
+        else:
+            holdtime = 'na'
+
+        self.__cache(queuename, cachekey, holdtime)
+        return holdtime
+
+    def get_queue_stats(self, queuename, param):
+        if not self.cache.has_key(queuename):
+            self.cache[queuename]={}
+        
+        return {
+                "Qos": self.__get_queue_qos(queuename, param),
+                "Holdtime": self.__get_queue_holdtime(queuename, param)
+               }
+
+
+
+
 class QueueList(AnyList):
     def __init__(self, newurls = [], virtual = False):
         self.anylist_properties = {'keywords' : ['number', 'context', 'queuename'],
@@ -37,6 +126,8 @@ class QueueList(AnyList):
                                    'action' : 'getqueueslist',
                                    'urloptions' : (1, 5, True)}
         AnyList.__init__(self, newurls)
+
+        self.stats = QueueStats("/woot/xivo/branches/people/ra/queues_logger/beast.db");
         return
     
     queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
@@ -159,3 +250,9 @@ class QueueList(AnyList):
             lst['context'] = ql['context']
             queuelist[qref] = lst
         return queuelist
+
+    def get_queuesstats(self, param):
+        payload = {}
+        for queue, param in param.iteritems():
+            payload[queue] = self.stats.get_queue_stats(self.keeplist[queue]['queuename'], param)
+        return payload

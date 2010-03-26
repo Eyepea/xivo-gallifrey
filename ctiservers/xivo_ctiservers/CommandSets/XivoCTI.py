@@ -4957,14 +4957,22 @@ class XivoCTICommand(BaseCommand):
                                            'text' : message }
                                 
                                 self.__send_msg_to_cti_client__(to_userinfo, self.__cjson_encode__(tosend))
+                            elif classcomm == "getqueuesstats":
+                                on = icommand.struct.get('on')
+                                
+                                tosend = { 'class' : 'queuestats',
+                                           'function': 'update',
+                                           'stats': self.weblist['queues'][astid].get_queuesstats(on) }
+                                repstr = self.__cjson_encode__(tosend)
                             else:
                                 log.warning('unallowed json event %s' % icommand.struct)
                                     
             except Exception:
                     log.exception('(manage_cticommand) %s %s %s'
                                   % (icommand.name, icommand.args, userinfo.get('login').get('connection')))
-                    
-            if repstr is not None: # might be useful to reply sth different if there is a capa problem for instance, a bad syntaxed command
+            if repstr is not None:
+                    # might be useful to reply sth different if there is a 
+                    # capa problem for instance, a bad syntaxed command 
                     try:
                             userinfo.get('login').get('connection').sendall(repstr + '\n')
                     except Exception:
