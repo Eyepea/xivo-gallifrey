@@ -72,6 +72,11 @@ class TestGeneric(unittest.TestCase):
         pprint.pprint(cjson.decode(data))
         self.assertEqual(resp.status, 200)
 
+    def test_ha_status(self):
+        (resp, data) = self.client.request('GET', '/ha_status', {})
+        pprint.pprint(cjson.decode(data))
+        self.assertEqual(resp.status, 200)
+        
 #    def test_ha_set(self):
 #        (resp, data) = self.client.request('POST', '/ha_set', {
 #            'pf.ha.apache2'     : True,

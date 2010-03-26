@@ -415,6 +415,7 @@ class DNETIntf:
             info['carrier']     = network.is_interface_plugged(iface)
             info['flags']       = network.get_interface_flags(iface)
             info['physicalif']  = network.is_linux_phy_if(iface)
+            info['dummyif']     = network.is_linux_dummy_if(iface)
             info['vlanif']      = network.is_linux_vlan_if(iface)
             info['hwtypeid']    = network.get_interface_hwtypeid(iface)
 
@@ -698,7 +699,8 @@ class DNETIntf:
 
         eth = self._get_valid_eth_ipv4()
 
-        if not eth['physicalif']:
+        # allow dummy interfaces
+        if not (eth['physicalif'] or eth['dummyif']):
             raise HttpReqError(415, "invalid interface, it is not a physical interface")
 
         self.normalize_inet_options()

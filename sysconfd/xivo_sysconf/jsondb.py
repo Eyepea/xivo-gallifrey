@@ -130,6 +130,9 @@ class JsonDB(object):
         value = re.sub(r'\r\n', r'\\r\\n', value)
         f.write("%s=\"%s\"\n" % (key, value))
         
+    def _gen_int(self, f, key, value):
+        f.write("%s=%d\n" % (key, value))
+
     def _gen_NoneType(self, f, key, value):
         f.write("#%s=\"\"\n" % key)
         

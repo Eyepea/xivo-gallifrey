@@ -26,8 +26,9 @@ from datetime import datetime
 
 from xivo import http_json_server
 from xivo.http_json_server import CMD_RW, CMD_R
-
 from xivo_sysconf import helpers, jsondb
+
+from pf_lib import ocf
 
 
 class Ha(jsondb.JsonDB):
@@ -41,6 +42,7 @@ class Ha(jsondb.JsonDB):
             safe_init=self.safe_init)
         http_json_server.register(self.set      , CMD_RW, name='ha_set')
         http_json_server.register(self.generate , CMD_R , name='ha_generate')
+        http_json_server.register(self.status   , CMD_R , name='ha_status')
         
     def safe_init(self, options):
         super(Ha, self).safe_init(options)
@@ -76,6 +78,20 @@ class Ha(jsondb.JsonDB):
             raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
 
         return True
+        
+    def status(self, args, options):
+        master = ocf.ha_master_uname()
+        myself = ocf.ha_node_uname(ocf.ha_uuid())
+        
+        status = 'unknown'
+        if master is None:
+            status = 'down'
+        elif myself == master:
+            status = 'master'
+        else:
+            status = 'slave'
+            
+        return status
         
         
 ha = Ha()
