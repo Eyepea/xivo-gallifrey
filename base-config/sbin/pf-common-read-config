@@ -10,15 +10,16 @@ echo "Generating configuration"
 
 #### Set and check general variables ####
 
-if [ -z "${XIVO_NET4_CIDR}" ]; then
+if [ -n "${XIVO_NET4_CIDR}" ]; then
+  XIVO_NET4_IP=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Address:" | awk '{print $2}')
+  XIVO_NET4_NETMASK=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Netmask:" | awk '{print $2}')
+  XIVO_NET4_BROADCAST=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Broadcast:" | awk '{print $2}')
+  XIVO_NET4_SUBNET=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
+elif [ -z "${XIVO_NET4_IP}" -o -z "${XIVO_NET4_NETMASK}" -o -z "${XIVO_NET4_BROADCAST}" -o -z "${XIVO_NET4_SUBNET}"]; then
   echo "ERROR: Network badly configured" >&2
   exit 1
 fi
 
-XIVO_NET4_IP=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Address:" | awk '{print $2}')
-XIVO_NET4_NETMASK=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Netmask:" | awk '{print $2}')
-XIVO_NET4_BROADCAST=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Broadcast:" | awk '{print $2}')
-XIVO_NET4_SUBNET=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
 
 if [ -z "${XIVO_VOIP_VLAN_ID}" -o "${XIVO_VOIP_VLAN_ID}" = "0" ]; then
   XIVO_HAS_VOIP_VLAN_10=0
