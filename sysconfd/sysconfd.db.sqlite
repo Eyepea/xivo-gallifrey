@@ -38,6 +38,7 @@ INSERT INTO items VALUES('xivo.net4.subnet'             , '"192.168.0.0/24"'   ,
 INSERT INTO items VALUES('xivo.extra.dns.search'        , '""'                 , '');
 INSERT INTO items VALUES('xivo.nameservers'             , '""'                 , '');
 
+INSERT INTO items VALUES('xivo.dhcp.active'             , 'false', '');
 INSERT INTO items VALUES('xivo.dhcp.pool'               , '"192.168.0.50 192.168.0.100"', '');
 INSERT INTO items VALUES('xivo.dhcp.extra_ifaces'       , '""', '');
 

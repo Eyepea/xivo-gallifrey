@@ -57,7 +57,9 @@ class CommonConf(jsondb.JsonDB):
             'xivo.net4.netmask', 'xivo.net4.broadcast', 'xivo.net4.subnet', 
             'xivo.extra.dns.search', 'xivo.nameservers'
          ],
-        '3. DHCP'       : ['xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'],
+        '3. DHCP'       : [
+            'xivo.dhcp.active', 'xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'
+         ],
         '4. Mail'       : [
             'xivo.smtp.origin', 'xivo.smtp.relayhost', 
             'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'
