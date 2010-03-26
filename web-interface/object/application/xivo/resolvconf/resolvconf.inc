@@ -131,15 +131,16 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
         $rs = $this->get_result('resolvconf');
 
 	    $conf = array(
-	        'xivo.hostname' => $rs['hostname'],
-	        'xivo.domain'   => $rs['domain']
+	        'xivo.hostname'     => $rs['hostname'],
+	        'xivo.domain'       => $rs['domain'],
+#	        'xivo.nameservers'  => trim(sprintf('%s %s %s', 
+#	            $rs['nameserver1'], $rs['nameserver2'], $rs['nameserver3'])),
 	    );
 	    
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('keyvalues' => $conf)) === false)
+        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
                 return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
+        return $this->_sysconfd->request_get('/commonconf_generate');
 	}
 
 	function save_from_json()

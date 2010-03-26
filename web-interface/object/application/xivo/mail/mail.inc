@@ -48,11 +48,10 @@ class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abs
                 $conf[str_replace('-', '.', $k)] = $v;
 	    }
 	    
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('keyvalues' => $conf)) === false)
+        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
                 return false;
             
-        return $this->_sysconfd->request_get('/commonconf_genconfig');
+        return $this->_sysconfd->request_get('/commonconf_generate');
 	}
 }
 
