@@ -20,10 +20,10 @@
 
 $module     = 'asterisk';
 $domain     = 'localdomain';
-$graphs     = array('asterisk_channels', 'asterisk_channelstypes', 'asterisk_codecs',
-    'asterisk_iaxchannels', 'asterisk_iaxlag', 'asterisk_iaxpeers', 'asterisk_meetme',
-    'asterisk_meetmeusers', 'asterisk_sipchannels', 'asterisk_sippeers',
-    'asterisk_voicemail');
+#$graphs     = array('asterisk_channels', 'asterisk_channelstypes', 'asterisk_codecs',
+#    'asterisk_iaxchannels', 'asterisk_iaxlag', 'asterisk_iaxpeers', 'asterisk_meetme',
+#    'asterisk_meetmeusers', 'asterisk_sipchannels', 'asterisk_sippeers',
+#    'asterisk_voicemail');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

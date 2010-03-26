@@ -20,7 +20,7 @@
 
 $module     = 'disk';
 $domain     = 'localdomain';
-$graphs     = array('df', 'df_inode', 'iostat');
+#$graphs     = array('df', 'df_inode', 'iostat');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

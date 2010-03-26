@@ -20,8 +20,8 @@
 
 $module     = 'system';
 $domain     = 'localdomain';
-$graphs     = array('cpu', 'entropy', 'interrupts', 'irqstats', 'load', 'memory',
-    'open_files', 'open_inodes', 'swap');
+#$graphs     = array('cpu', 'entropy', 'interrupts', 'irqstats', 'load', 'memory',
+#    'open_files', 'open_inodes', 'swap');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

@@ -20,7 +20,7 @@
 
 $module     = 'apache';
 $domain     = 'localdomain';
-$graphs     = array('apache_accesses', 'apache_processes');
+#$graphs     = array('apache_accesses', 'apache_processes');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

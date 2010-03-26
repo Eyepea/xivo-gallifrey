@@ -20,7 +20,7 @@
 
 $module     = 'time';
 $domain     = 'localdomain';
-$graphs     = array('ntp_offset', 'ntp_states');
+#$graphs     = array('ntp_offset', 'ntp_states');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

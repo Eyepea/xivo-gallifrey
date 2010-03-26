@@ -18,12 +18,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'munin.inc');
 
-$_TPL->set_var('basedir', "img/graphs/munin/$domain/");
-$_TPL->set_var('domain', $domain);
-$_TPL->set_var('graphs', $graphs);
-$_TPL->set_var('freqs' , $freqs);
+$basedir        = "img/graphs/munin/$domain/";
+$graph_tree     =  dwho_munin_graphstree($basedir, $domain);
+$module_tree    = $graph_tree[$module];
+sort($module_tree);
 
+$_TPL->set_var('basedir', $basedir);
+$_TPL->set_var('domain' , $domain);
+$_TPL->set_var('graphs' , $module_tree);
+$_TPL->set_var('freqs'  , $freqs);
+
+$_TPL->set_var('tree'   , $graph_tree);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

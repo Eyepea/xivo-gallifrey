@@ -6,3 +6,15 @@ Nombre d'adresses DHCP servies
 
 ; uptime
 Uptime du serveur
+
+; acpi
+Température du processeur
+
+; sensors_fan
+Vitesse de rotation des ventilateurs
+
+; sensors_temp
+Températures du système
+
+; sensors_volt
+Voltage de la carte mère

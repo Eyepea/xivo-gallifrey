@@ -20,7 +20,7 @@
 
 $module     = 'other';
 $domain     = 'localdomain';
-$graphs     = array('dhcpd3', 'uptime');
+#$graphs     = array('dhcpd3', 'uptime');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

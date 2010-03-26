@@ -9,3 +9,12 @@ Inodes utilisés (en %)
 
 ; iostat
 Statistiques d'Entrées/Sorties (IOStat)
+
+; hddtemp_smartctl
+Température des disques
+
+; smart_twe0_0
+Statistiques SMART (Disque #0)
+
+; smart_twe0_1
+Statistiques SMART (Disque #1)

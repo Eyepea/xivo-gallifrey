@@ -20,7 +20,7 @@
 
 $module     = 'network';
 $domain     = 'localdomain';
-$graphs     = array('if_err_eth0', 'if_eth0', 'if_err_eth1', 'if_eth1', 'netstat');
+#$graphs     = array('if_err_eth0', 'if_eth0', 'if_err_eth1', 'if_eth1', 'netstat');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

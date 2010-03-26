@@ -20,7 +20,7 @@
 
 $module     = 'postfix';
 $domain     = 'localdomain';
-$graphs     = array('postfix_mailqueue', 'postfix_mailstats', 'postfix_mailvolume');
+#$graphs     = array('postfix_mailqueue', 'postfix_mailstats', 'postfix_mailvolume');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');

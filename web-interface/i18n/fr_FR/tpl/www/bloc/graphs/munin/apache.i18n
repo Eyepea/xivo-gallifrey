@@ -6,3 +6,6 @@ Nombre d'accés
 
 ; apache_processes
 Nombre de processus
+
+; apache_volume
+Volume de données transférées

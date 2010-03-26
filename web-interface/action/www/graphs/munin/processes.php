@@ -20,7 +20,7 @@
 
 $module     = 'processes';
 $domain     = 'localdomain';
-$graphs     = array('forks', 'processes', 'vmstat');
+#$graphs     = array('forks', 'processes', 'vmstat');
 $freqs      = array('day', 'week', 'month', 'year');
 
 include(dirname(__FILE__).'/common.php');
