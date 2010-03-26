@@ -3,9 +3,9 @@
            "exten": "1001",
            "context": "ctx1",
            "preprocess_subroutine": "",
-           "faxdetectenable": "0",
-           "faxdetecttimeout": "",
-           "faxdetectemail": ""
+           "faxdetectenable": "1",
+           "faxdetecttimeout": "4",
+           "faxdetectemail": "fax@proformatique.com"
       },
       "dialaction": {
             "answer": {

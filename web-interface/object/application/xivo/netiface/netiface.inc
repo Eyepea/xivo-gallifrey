@@ -392,7 +392,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 			$phyiface = $this->_sysconfd->request_get('/netiface',
 								  array(array('ifname',$phyifname)));
-
+            
 			if(is_array($phyiface) === false)
 				return(false);
 
@@ -489,7 +489,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$devinfo = $this->_sysconfd->request_get('/netiface',
 							 array(array('ifname',$ifname)));
-
+        
 		if(is_array($devinfo) === true)
 		{
 			if($hwtypeid === null)
@@ -679,8 +679,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$this->set_netiface($arr);
 		$this->set_sysconfnet($devname);
-
-		return(($this->get_errnb() < 1));
+		
+		return($this->get_errnb() < 1);
 	}
 
 	function set_netiface($arr)
@@ -798,8 +798,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
+        if($r === false)
+            return false;
 
-		return($r);
+        return $this->update_commonconf();
 	}
 
 	function add_netiface()
@@ -882,7 +884,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 	function edit()
 	{
-	    print 'EDOT';
 		$r = true;
 
 		$this->_status = 'edit';
@@ -897,8 +898,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
+        if($r === false)
+            return false;
 
-		return($r);
+        return $this->update_commonconf();
 	}
 
 	function edit_netiface()
@@ -973,8 +976,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
-
-		return($r);
+        if($r === false)
+            return false;
+    
+        return $this->update_commonconf();
 	}
 
 	function delete_netiface()
@@ -1053,8 +1058,11 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
-
-		return($r);
+    
+        if($r === false)
+            return false;
+    
+        return $this->update_commonconf();
 	}
 
 	function disable()
@@ -1079,7 +1087,10 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 
 		$this->_status = '';
 
-		return($r);
+        if($r === false)
+            return false;
+    
+        return $this->update_commonconf();
 	}
 
 	function enable_netiface()
@@ -1176,11 +1187,84 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	{
 		if(($data = $this->_get_data_from_json()) === false
 		|| $this->set_edit($data) === false
-		|| $this->edit() === false)
+		    || $this->edit() === false)
 			return(false);
 
 		return(true);
 	}
+	
+	/**
+	    Send device network configuration IFF device is voip type
+	    
+	    Return true if sysconfd store values & regenerate common.conf correctly,
+	    false otherwise
+	*/
+	function update_commonconf()
+    {
+        $list = $this->get_netifaces_list();
+        
+        // we filter network devices list, keeping only 'voip' interfaces:
+        //  1. 1st vlan
+        //  2. 1st voip iface
+        //  3. voip ifaces list
+        $vlanid     = 0;        //0 means no vlan
+        $ifaces     = "";
+        $cidr_id    = -1;
+        
+        for($i = 0; $i < count($list); $i++)
+        {
+            $item = $list[$i];
+            if(!$item['actionable']
+            || $item['netiface']['disable']
+            || strcmp($item['netiface']['networktype'], 'voip') != 0)
+                continue;
+                
+            $ifaces .= $item['netiface']['ifname'] . ' ';
+
+            if($vlanid == 0 && $item['netinfo']['vlanif'])
+                $vlanid = intval($item['netiface']['vlanid']);
+                
+            if($cidr_id < 0 && strcmp($item['netinfo']['method'], 'static') == 0)
+                $cidr_id = $i;
+        }
+
+        $ifaces = trim($ifaces);
+        
+##        var_dump($list);
+#        var_dump($ifaces);
+#        var_dump($vlanid);
+#        var_dump($cidr_id);
+        
+        $subnet = null;
+        if($cidr_id >= 0)
+        {
+            $dotted_ip = split('\.', $list[$cidr_id]['netiface']['address']);
+            $dotted_nm = split('\.', $list[$cidr_id]['netiface']['netmask']);
+        
+            $subnet = sprintf("%d.%d.%d.%d",
+                (((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
+                (((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
+                (((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
+                (((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
+            );
+        }
+        
+        $conf = array(
+            'xivo.voip.ifaces'      => $ifaces,
+            'xivo.voip.vlan.id'     => $vlanid,
+            
+            'xivo.net4.ip'          => ($cidr_id < 0)?null:$list[$cidr_id]['netiface']['address'],
+            'xivo.net4.netmask'     => $cidr_id < 0?null:$list[$cidr_id]['netiface']['netmask'],
+            'xivo.net4.broadcast'   => $cidr_id < 0?null:$list[$cidr_id]['netiface']['broadcast'],
+            'xivo.net4.subnet'      => $subnet,
+        );
+        
+#        var_dump($conf);
+        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
+            return false;
+            
+        return $this->_sysconfd->request_get('/commonconf_generate');
+    }
 }
 
-?>
+    ?>

@@ -6,7 +6,7 @@
             "ringseconds": "30",
             "simultcalls": "5",
             "musiconhold": "default",
-            "voicemailid": "0",
+            "voicemailid": "add",
             "enableclient": "1",
             "loginclient": "unittest",
             "passwdclient": "",
