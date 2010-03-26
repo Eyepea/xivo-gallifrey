@@ -178,6 +178,16 @@ def get_filtered_ifnames(ifname_match_func=lambda x:True):
     return filter(ifname_match_func, get_linux_netdev_list())
 
 
+def is_linux_dummy_if(ifname):
+    """
+    Return True if ifname seems to be a dummy interface
+    
+    NOTE: flaky test, as a dummy interface can be renamed:
+      $> ip link set name ethX dev dummyY
+    """
+    return is_linux_netdev_if(ifname) and ifname.startswith('dummy')
+
+
 def is_linux_vlan_if(ifname):
     """
     Return True if ifname seems to be a vlan interface

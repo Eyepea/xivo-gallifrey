@@ -100,7 +100,7 @@ ProvGeneralConf = {
     'ntp_server_ipv4':          "192.168.0.254",
 }
 Pgc = ProvGeneralConf
-AUTHORIZED_PREFIXES = ("eth", "vlan")
+AUTHORIZED_PREFIXES = ("eth", "vlan", "dummy")
 
 
 def LoadConfig(filename):
