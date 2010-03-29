@@ -125,22 +125,6 @@ class QueueStats:
         self.cur.execute(sql, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.01f"))
 
-    def __get_queue_talktime(self, queuename, param):
-        cachekey = "tt%d" % (param['window'])
-        cache = self.__get_cache(queuename, cachekey)
-        if cache != None:
-            return cache
-
-        sql = '''
-        SELECT avg(talk_time)
-        FROM queue_info
-        WHERE call_picker IS NOT NULL and
-              call_time_t > (strftime("%s") - ?) and
-              queue_name = ?
-        ''' 
-        self.cur.execute(sql, (param['window'], queuename))
-        return self.__cache(queuename, cachekey, self.__format_result("%.01f"))
-
     def __get_queue_lost(self, queuename, param):
         cachekey = "ls%d" % (param['window'])
         cache = self.__get_cache(queuename, cachekey)
