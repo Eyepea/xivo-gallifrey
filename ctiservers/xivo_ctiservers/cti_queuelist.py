@@ -36,51 +36,62 @@ import sqlite3
 class QueueStats:
     def __init__(self, statdbpath):
         self.conn = sqlite3.connect(statdbpath)
+        self.cur = self.conn.cursor()
         self.cache = {}
+        self.collect = 1000 
 
     def __cache(self, queuename, attribute, value):
-        self.cache[queuename][attribute] = (time.clock(), value)
+        self.cache[queuename][attribute] = (time.time(), value)
+        self.collect -= 1
+        if not self.collect:
+            self.collect = 1000
+            self.__cache_collect()
+        return value
 
     def __get_cache(self, queuename, attribute):
         if self.cache[queuename].has_key(attribute):
             (ctime, value) = self.cache[queuename][attribute]
             # avoid to do more than 1 sql request for 1 kind of request per second
-            if ctime < time.clock() - 1:
+            if ctime < time.time() - 1:
                 return value
 
         return None
 
+    def __cache_collect(self):
+        for queuename, queue in self.cache.items():
+            for cachedkey, cachedvalue in queue.items():
+                if cachedvalue[0] < time.time() - 1:
+                    del queue[cachedkey]
+
+    def __format_result(self, format, default="na"):
+        var = (self.cur.fetchone()[0])
+        if var != None:
+            var = format % ( var )
+        else:
+            var = default
+
+        return var
 
     def __get_queue_qos(self, queuename, param):
-        
         cachekey = "qos%d-%d" % (param['window'], param['xqos'])
         cache = self.__get_cache(queuename, cachekey)
         if cache != None:
             return cache
 
-        sql='''
+        sql = '''
         SELECT ( count(*) / (( SELECT count(*) FROM queue_info
                                             WHERE call_picker IS NOT NULL and
                                                   queue_name = ? and
-                                                  call_time_t > (strftime("%%s") - ?)
+                                                  call_time_t > (strftime("%s") - ?)
                                            ) * 1.0 ) * 100.0 )
         FROM queue_info
         WHERE call_picker IS NOT NULL and
-              call_time_t > (strftime("%%s") - ?) and
+              call_time_t > (strftime("%s") - ?) and
               hold_time < ? and
               queue_name = ?
         ''' 
-        cur = self.conn.cursor()
-        cur.execute(sql, (queuename, param['window'], param['window'], param['xqos'], queuename))
-
-        qos = (cur.fetchone()[0])
-        if qos != None:
-            qos = "%.2f" % ( qos )
-        else:
-            qos = 'na'
-
-        self.__cache(queuename, cachekey, qos)
-        return qos
+        self.cur.execute(sql, (queuename, param['window'], param['window'], param['xqos'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
     def __get_queue_holdtime(self, queuename, param):
         cachekey = "ht%d" % (param['window'])
@@ -88,33 +99,117 @@ class QueueStats:
         if cache != None:
             return cache
 
-        sql='''
+        sql = '''
         SELECT avg(hold_time)
         FROM queue_info
         WHERE call_picker IS NOT NULL and
-              call_time_t > (strftime("%%s") - ?) and
+              call_time_t > (strftime("%s") - ?) and
               queue_name = ?
         ''' 
-        cur = self.conn.cursor()
-        cur.execute(sql, (param['window'], queuename))
+        self.cur.execute(sql, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
-        holdtime = (cur.fetchone()[0])
-        if holdtime != None:
-            holdtime = "%.2f" % ( holdtime )
-        else:
-            holdtime = 'na'
+    def __get_queue_talktime(self, queuename, param):
+        cachekey = "tt%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
 
-        self.__cache(queuename, cachekey, holdtime)
-        return holdtime
+        sql = '''
+        SELECT avg(talk_time)
+        FROM queue_info
+        WHERE call_picker IS NOT NULL and
+              call_time_t > (strftime("%s") - ?) and
+              queue_name = ?
+        ''' 
+        self.cur.execute(sql, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%.01f"))
+
+    def __get_queue_talktime(self, queuename, param):
+        cachekey = "tt%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql = '''
+        SELECT avg(talk_time)
+        FROM queue_info
+        WHERE call_picker IS NOT NULL and
+              call_time_t > (strftime("%s") - ?) and
+              queue_name = ?
+        ''' 
+        self.cur.execute(sql, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%.01f"))
+
+    def __get_queue_lost(self, queuename, param):
+        cachekey = "ls%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql = '''
+        SELECT count(*)
+        FROM queue_info
+        WHERE call_picker IS NULL and
+              hold_time IS NOT NULL and
+              call_time_t > (strftime("%s") - ?) and
+              queue_name = ?
+        ''' 
+        self.cur.execute(sql, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
+
+    def __get_queue_link(self, queuename, param):
+        cachekey = "li%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql = '''
+        SELECT count(*)
+        FROM queue_info
+        WHERE call_picker IS NOT NULL and
+              hold_time IS NOT NULL and
+              call_time_t > (strftime("%s") - ?) and
+              queue_name = ?
+        ''' 
+        self.cur.execute(sql, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
+
+    def __get_queue_join(self, queuename, param):
+        cachekey = "jo%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql = '''
+        SELECT count(*)
+        FROM queue_info
+        WHERE hold_time IS NOT NULL and
+              call_time_t > (strftime("%s") - ?) and
+              queue_name = ?
+        ''' 
+        self.cur.execute(sql, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
     def get_queue_stats(self, queuename, param):
         if not self.cache.has_key(queuename):
             self.cache[queuename]={}
         
-        return {
-                "Qos": self.__get_queue_qos(queuename, param),
-                "Holdtime": self.__get_queue_holdtime(queuename, param)
-               }
+        queue_stats = {
+                       'Qos': self.__get_queue_qos(queuename, param),
+                       'Holdtime': self.__get_queue_holdtime(queuename, param),
+                       'Xivo-Chat': self.__get_queue_talktime(queuename, param),
+                       'Xivo-Lost': self.__get_queue_lost(queuename, param),
+                       'Xivo-Join': self.__get_queue_join(queuename, param),
+                       'Xivo-Link': self.__get_queue_link(queuename, param)
+                      }
+
+        if float(queue_stats['Xivo-Join']) == 0:
+            queue_stats['Xivo-Rate'] = "na"
+        else:
+            queue_stats['Xivo-Rate'] = "%02.01f" % ( float(queue_stats['Xivo-Link']) * 100 / float(queue_stats['Xivo-Join']))
+
+        return queue_stats
 
 
 
