@@ -43,6 +43,11 @@ else
   exit 1
 fi
 
+XIVO_DHCP_IFACES="none"
+if [ "${XIVO_DHCP_ACTIVE}" = "1" ]; then
+    XIVO_DHCP_IFACES="${XIVO_VOIP_IFACES} ${XIVO_DHCP_EXTRA_IFACES}"
+fi
+
 if [ -n "${XIVO_DHCP_POOL}" ]; then
   _XIVO_DHCP_SUBNET="\# Include of the subnet declaration (XIVO_DHCP_POOL is not void in common.conf)\ninclude \"/etc/dhcp3/dhcpd_subnet.conf\";"
 else
