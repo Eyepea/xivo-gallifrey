@@ -42,7 +42,9 @@ endif;
 				  'labelid'	=> 'incall-exten',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['exten']['default'],
-				  'value'	=> $this->get_var('incall','exten')));
+				  'value'	=> $this->get_var('incall','exten'),
+				  'error'	=> $this->bbf_args('incall-exten',
+					   $this->get_var('error','incall','exten'))));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_incall_context'),
@@ -82,14 +84,18 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $callerid['callerdisplay'])),
+				  'value'	=> $callerid['callerdisplay'],
+				  'error'	=> $this->bbf_args('callerid-callerdisplay',
+					   $this->get_var('error','callerid','callerdisplay')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_incall_preprocess-subroutine'),
 				  'name'	=> 'incall[preprocess_subroutine]',
 				  'labelid'	=> 'incall-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['preprocess_subroutine']['default'],
-				  'value'	=> $this->get_var('incall','preprocess_subroutine')));
+				  'value'	=> $this->get_var('incall','preprocess_subroutine'),
+				  'error'	=> $this->bbf_args('incall-preprocess-subroutine',
+					   $this->get_var('error','incall','preprocess_subroutine'))));
 ?>
 </div>
 
@@ -117,7 +123,9 @@ endif;
 				  'labelid'	=> 'incall-faxdetectemail',
 				  'size'	=> 15,
 				  'default'	=> $element['incall']['faxdetectemail']['default'],
-				  'value'	=> $this->get_var('incall','faxdetectemail')));
+				  'value'	=> $this->get_var('incall','faxdetectemail'),
+				  'error'	=> $this->bbf_args('incall-faxdetectemail',
+					   $this->get_var('error','incall','faxdetectemail'))));
 ?>
 </div>
 

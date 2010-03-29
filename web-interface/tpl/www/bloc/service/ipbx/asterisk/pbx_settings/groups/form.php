@@ -42,14 +42,18 @@ endif;
 				  'labelid'	=> 'groupfeatures-name',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['name']['default'],
-				  'value'	=> $info['groupfeatures']['name'])),
+				  'value'	=> $info['groupfeatures']['name'],
+				  'error'	=> $this->bbf_args('groupfeatures-name',
+					   $this->get_var('error','groupfeatures','name')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_number'),
 				  'name'	=> 'groupfeatures[number]',
 				  'labelid'	=> 'groupfeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['number']['default'],
-				  'value' 	=> $info['groupfeatures']['number'])),
+				  'value' 	=> $info['groupfeatures']['number'],
+				  'error'	=> $this->bbf_args('groupfeatures-number',
+					   $this->get_var('error','groupfeatures','number')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_strategy'),
 				    'name'	=> 'queue[strategy]',
@@ -134,14 +138,18 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $info['callerid']['callerdisplay'])),
+				  'value'	=> $info['callerid']['callerdisplay'],
+				  'error'	=> $this->bbf_args('callerid-callerdisplay',
+					   $this->get_var('error','callerid','callerdisplay')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_groupfeatures_preprocess-subroutine'),
 				  'name'	=> 'groupfeatures[preprocess_subroutine]',
 				  'labelid'	=> 'groupfeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['groupfeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['groupfeatures']['preprocess_subroutine']));
+				  'value'	=> $info['groupfeatures']['preprocess_subroutine'],
+				  'error'	=> $this->bbf_args('groupfeatures-preprocess-subroutine',
+					   $this->get_var('error','groupfeatures','preprocess_subroutine'))));
 ?>
 </div>
 

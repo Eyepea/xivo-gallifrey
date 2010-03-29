@@ -44,28 +44,36 @@ endif;
 				  'labelid'	=> 'agentfeatures-firstname',
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['firstname']['default'],
-				  'value'	=> $info['agentfeatures']['firstname'])),
+				  'value'	=> $info['agentfeatures']['firstname'],
+				  'error'	=> $this->bbf_args('agentfeatures-firstname',
+					   $this->get_var('error','agentfeatures','firstname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_lastname'),
 				  'name'	=> 'agentfeatures[lastname]',
 				  'labelid'	=> 'agentfeatures-lastname',
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['lastname']['default'],
-				  'value'	=> $info['agentfeatures']['lastname'])),
+				  'value'	=> $info['agentfeatures']['lastname'],
+				  'error'	=> $this->bbf_args('agentfeatures-lastname',
+					   $this->get_var('error','agentfeatures','lastname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_number'),
 				  'name'	=> 'agentfeatures[number]',
 				  'labelid'	=> 'agentfeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['number']['default'],
-				  'value'	=> $info['agentfeatures']['number'])),
+				  'value'	=> $info['agentfeatures']['number'],
+				  'error'	=> $this->bbf_args('agentfeatures-number',
+					   $this->get_var('error','agentfeatures','number')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_passwd'),
 				  'name'	=> 'agentfeatures[passwd]',
 				  'labelid'	=> 'agentfeatures-passwd',
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['passwd']['default'],
-				  'value'	=> $info['agentfeatures']['passwd']));
+				  'value'	=> $info['agentfeatures']['passwd'],
+				  'error'	=> $this->bbf_args('agentfeatures-passwd',
+					   $this->get_var('error','agentfeatures','passwd'))));
 
 		if($context_list !== false):
 			echo	$form->select(array('desc'	=> $this->bbf('fm_agentfeatures_context'),

@@ -43,7 +43,9 @@ endif;
 				  'labelid'	=> 'agentgroup-name',
 				  'size'	=> 15,
 				  'default'	=> $element['agentgroup']['name']['default'],
-				  'value'	=> $info['agentgroup']['name']));
+				  'value'	=> $info['agentgroup']['name'],
+				  'error'	=> $this->bbf_args('agentgroup-name',
+					   $this->get_var('error','agentgroup','name'))));
 
 	if($amember['list'] !== false):
 ?>
@@ -110,7 +112,9 @@ endif;
 					 'id'		=> 'it-agentgroup-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['agentgroup']['description']['default']),
+					 'default'	=> $element['agentgroup']['description']['default'],
+					 'error'	=> $this->bbf_args('it-agentgroup-description',
+					   $this->get_var('error','agentgroup','description'))),
 				   $info['agentgroup']['description']);?>
 	</div>
 </div>

@@ -56,7 +56,7 @@ switch($act)
 
 		$appagentgroup = &$ipbx->get_application('agentgroup');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('agentgroup',$_QR) === true)
@@ -65,6 +65,7 @@ switch($act)
 			|| $appagentgroup->add() === false)
 			{
 				$fm_save = false;
+				$error = $appagentgroup->get_error();
 				$result = $appagentgroup->get_result();
 			}
 			else
@@ -114,6 +115,7 @@ switch($act)
 									array('name'	=> SORT_ASC));
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appagentgroup->get_elements());
 		$_TPL->set_var('amember',$amember);
@@ -154,7 +156,7 @@ switch($act)
 							 true)) !== false)
 			$qmember['list'] = $queues;
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
@@ -166,6 +168,7 @@ switch($act)
 			|| $appagentgroup->edit() === false)
 			{
 				$fm_save = false;
+				$error = $appagentgroup->get_error();
 				$result = $appagentgroup->get_result();
 			}
 			else
@@ -215,6 +218,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['agentgroup']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appagentgroup->get_elements());
 		$_TPL->set_var('amember',$amember);
@@ -319,7 +323,7 @@ switch($act)
 
 		$appagent = &$ipbx->get_application('agent');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('agentfeatures',$_QR) === true
@@ -330,6 +334,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appagent->get_result();
+				$error = $appagent->get_error();
 			}
 			else
 			{
@@ -380,6 +385,7 @@ switch($act)
 		}
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appagent->get_elements());
 		$_TPL->set_var('umember',$umember);
@@ -428,7 +434,7 @@ switch($act)
 							 true)) !== false)
 			$qmember['list'] = $queues;
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true
@@ -442,6 +448,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appagent->get_result();
+				$error = $appagent->get_error();
 			}
 			else
 			{
@@ -498,6 +505,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['agentfeatures']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appagent->get_elements());
 		$_TPL->set_var('umember',$umember);

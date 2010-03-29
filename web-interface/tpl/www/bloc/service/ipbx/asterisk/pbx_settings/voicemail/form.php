@@ -39,28 +39,36 @@ endif;
 				  'labelid'	=> 'voicemail-fullname',
 				  'size'	=> 15,
 				  'default'	=> $element['voicemail']['fullname']['default'],
-				  'value' => $info['voicemail']['fullname'])),
+				  'value' => $info['voicemail']['fullname'],
+				  'error'	=> $this->bbf_args('voicemail-fullname',
+					   $this->get_var('error','voicemail','fullname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_mailbox'),
 				  'name'	=> 'voicemail[mailbox]',
 				  'labelid'	=> 'voicemail-mailbox',
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['mailbox']['default'],
-				  'value' => $info['voicemail']['mailbox'])),
+				  'value' => $info['voicemail']['mailbox'],
+				  'error'	=> $this->bbf_args('voicemail-mailbox',
+					   $this->get_var('error','voicemail','mailbox')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_password'),
 				  'name'	=> 'voicemail[password]',
 				  'labelid'	=> 'voicemail-password',
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['password']['default'],
-				  'value' => $info['voicemail']['password'])),
+				  'value' => $info['voicemail']['password'],
+				  'error'	=> $this->bbf_args('voicemail-password',
+					   $this->get_var('error','voicemail','password')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_email'),
 				  'name'	=> 'voicemail[email]',
 				  'labelid'	=> 'voicemail-email',
 				  'size'	=> 15,
 				  'default'	=> $element['voicemail']['email']['default'],
-				  'value' => $info['voicemail']['email']));
+				  'value' => $info['voicemail']['email'],
+				  'error'	=> $this->bbf_args('voicemail-email',
+					   $this->get_var('error','voicemail','email'))));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_voicemail_context'),
@@ -139,7 +147,9 @@ endif;
 				  'labelid'	=> 'voicemail-pager',
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['pager']['default'],
-				  'value' => $info['voicemail']['pager'])),
+				  'value' => $info['voicemail']['pager'],
+				  'error'	=> $this->bbf_args('voicemail-pager',
+					   $this->get_var('error','voicemail','pager')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail_saycid'),
 				    'name'	=> 'voicemail[saycid]',

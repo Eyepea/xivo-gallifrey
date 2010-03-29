@@ -28,7 +28,7 @@ if($context_list === false):
 	  $url->href_html($this->bbf('create_context'),
 			  'service/ipbx/system_management/context',
 			  'act=add'),
-	  $dhtml->message_error($this->bbf('error_before_create_context'));
+	  $dhtml->message_error($this->bbf('error_create_context_before'));
 	  '</div>';
   return;
 endif;

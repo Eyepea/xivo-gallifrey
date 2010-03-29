@@ -35,7 +35,7 @@ switch($act)
 	case 'add':
 		$appincall = &$ipbx->get_application('incall');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$rightcall['slt'] = $rightcall = array();
 
 		$apprightcall = &$ipbx->get_application('rightcall',null,false);
@@ -48,6 +48,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appincall->get_result();
+				$error = $appincall->get_error();
 				$result['dialaction'] = $appincall->get_dialaction_result();
 			}
 			else
@@ -85,6 +86,7 @@ switch($act)
 		$_TPL->set_var('dialaction',$result['dialaction']);
 		$_TPL->set_var('dialaction_from','incall');
 		$_TPL->set_var('callerid',$result['callerid']);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());
@@ -102,7 +104,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appincall->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/incall'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 		$rightcall['slt'] = $rightcall = array();
 
@@ -118,6 +120,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appincall->get_result();
+				$error = $appincall->get_error();
 				$result['dialaction'] = $appincall->get_dialaction_result();
 			}
 			else
@@ -156,6 +159,7 @@ switch($act)
 		$_TPL->set_var('dialaction',$return['dialaction']);
 		$_TPL->set_var('dialaction_from','incall');
 		$_TPL->set_var('callerid',$return['callerid']);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appincall->get_elements());
 		$_TPL->set_var('destination_list',$appincall->get_dialaction_destination_list());

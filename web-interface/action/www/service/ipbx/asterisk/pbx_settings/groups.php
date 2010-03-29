@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appgroup = &$ipbx->get_application('group');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		$user = $rightcall = array();
 		$user['slt'] = $rightcall['slt'] = array();
@@ -58,6 +58,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appgroup->get_result();
+				$error = $appgroup->get_error();
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
 			else
@@ -105,6 +106,7 @@ switch($act)
 		}
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('dialaction',$result['dialaction']);
 		$_TPL->set_var('dialaction_from','group');
@@ -127,7 +129,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appgroup->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/groups'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		$user = $rightcall = array();
@@ -157,6 +159,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appgroup->get_result();
+				$error = $appgroup->get_error();
 				$result['dialaction'] = $appgroup->get_dialaction_result();
 			}
 			else
@@ -205,6 +208,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['groupfeatures']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('dialaction',$return['dialaction']);
 		$_TPL->set_var('dialaction_from','group');

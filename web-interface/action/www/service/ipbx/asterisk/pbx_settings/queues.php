@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appqueue = &$ipbx->get_application('queue');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		$pannounce = array();
 		$pannounce['list'] = $appqueue->get_announce();
@@ -74,6 +74,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appqueue->get_result();
+				$error = $appqueue->get_error();
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
@@ -166,6 +167,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('dialaction',$result['dialaction']);
 		$_TPL->set_var('dialaction_from','queue');
@@ -185,7 +187,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appqueue->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		$pannounce = array();
@@ -231,6 +233,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appqueue->get_result();
+				$error = $appqueue->get_error();
 				$result['dialaction'] = $appqueue->get_dialaction_result();
 			}
 			else
@@ -324,6 +327,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['queuefeatures']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('dialaction',$return['dialaction']);
 		$_TPL->set_var('dialaction_from','queue');

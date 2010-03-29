@@ -48,7 +48,9 @@ endif;
 				  'labelid'	=> 'meetmeroom-confno',
 				  'size'	=> 15,
 				  'default'	=> $element['meetmeroom']['confno']['default'],
-				  'value'	=> $info['meetmeroom']['confno'])),
+				  'value'	=> $info['meetmeroom']['confno'],
+				  'error'	=> $this->bbf_args('meetmeroom-confno',
+					   $this->get_var('error','meetmeroom','confno')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_number'),
 				  'name'	=> 'meetmefeatures[number]',
@@ -56,14 +58,18 @@ endif;
 				  'label'	=> 'lb-meetmefeatures-number',
 				  'size'	=> 15,
 				  'default'	=> $element['meetmefeatures']['number']['default'],
-				  'value'	=> $info['meetmefeatures']['number'])),
+				  'value'	=> $info['meetmefeatures']['number'],
+				  'error'	=> $this->bbf_args('meetmefeatures-number',
+					   $this->get_var('error','meetmefeatures','number')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmeroom_pin'),
 				  'name'	=> 'meetmeroom[pin]',
 				  'labelid'	=> 'meetmeroom-pin',
 				  'size'	=> 15,
 				  'default'	=> $element['meetmeroom']['pin']['default'],
-				  'value'	=> $info['meetmeroom']['pin']));
+				  'value'	=> $info['meetmeroom']['pin'],
+				  'error'	=> $this->bbf_args('meetmeroom-pin',
+					   $this->get_var('error','meetmeroom','pin'))));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_context'),
@@ -99,14 +105,18 @@ endif;
 				  'labelid'	=> 'meetmefeatures-maxuser',
 				  'size'	=> 5,
 				  'default'	=> $element['meetmefeatures']['maxuser']['default'],
-				  'value'	=> $info['meetmefeatures']['maxuser'])),
+				  'value'	=> $info['meetmefeatures']['maxuser'],
+				  'error'	=> $this->bbf_args('meetmefeatures-maxuser',
+					   $this->get_var('error','meetmefeatures','maxuser')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_preprocess-subroutine'),
 				  'name'	=> 'meetmefeatures[preprocess_subroutine]',
 				  'labelid'	=> 'meetmefeatures-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['meetmefeatures']['preprocess_subroutine']['default'],
-				  'value'	=> $info['meetmefeatures']['preprocess_subroutine']));
+				  'value'	=> $info['meetmefeatures']['preprocess_subroutine'],
+				  'error'	=> $this->bbf_args('meetmefeatures-preprocess-subroutine',
+					   $this->get_var('error','meetmefeatures','preprocess_subroutine'))));
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -120,7 +130,9 @@ endif;
 					 'id'		=> 'it-meetmefeatures-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['meetmefeatures']['description']['default']),
+					 'default'	=> $element['meetmefeatures']['description']['default'],
+					 'error'	=> $this->bbf_args('it-meetmefeatures-description',
+					   $this->get_var('error','meetmefeatures','description'))),
 				   $info['meetmefeatures']['description']);?>
 	</div>
 </div>
@@ -212,7 +224,9 @@ endif;
 				  'labelid'	=> 'meetmefeatures-durationm',
 				  'size'	=> 5,
 				  'default'	=> $element['meetmefeatures']['durationm']['default'],
-				  'value'	=> $info['meetmefeatures']['durationm'])),
+				  'value'	=> $info['meetmefeatures']['durationm'],
+				  'error'	=> $this->bbf_args('meetmefeatures-durationm',
+					   $this->get_var('error','meetmefeatures','durationm')))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_meetmefeatures_closeconfdurationexceeded'),
 				      'name'	=> 'meetmefeatures[closeconfdurationexceeded]',
@@ -225,7 +239,9 @@ endif;
 				  'labelid'	=> 'meetmefeatures-nbuserstartdeductduration',
 				  'size'	=> 5,
 				  'default'	=> $element['meetmefeatures']['nbuserstartdeductduration']['default'],
-				  'value'	=> $info['meetmefeatures']['nbuserstartdeductduration'])),
+				  'value'	=> $info['meetmefeatures']['nbuserstartdeductduration'],
+				  'error'	=> $this->bbf_args('meetmefeatures-nbuserstartdeductduration',
+					   $this->get_var('error','meetmefeatures','nbuserstartdeductduration')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_timeannounceclose'),
 				    'name'	=> 'meetmefeatures[timeannounceclose]',
@@ -263,19 +279,25 @@ endif;
 				  'name'	=> 'meetme-admin-suggest',
 				  'labelid'	=> 'meetme-admin-suggest',
 				  'size'	=> 20,
-				  'default'	=> $this->bbf('fm_meetme_admin-suggest-default'))),
+				  'default'	=> $this->bbf('fm_meetme_admin-suggest-default'),
+				  'error'	=> $this->bbf_args('meetme-admin-suggest',
+					   $this->get_var('error','meetme-admin-suggest')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_admin-externalid'),
 				  'name'	=> 'meetmefeatures[admin_externalid]',
 				  'labelid'	=> 'meetmefeatures-admin-externalid',
-				  'value'	=> $info['meetmefeatures']['admin_externalid'])),
+				  'value'	=> $info['meetmefeatures']['admin_externalid'],
+				  'error'	=> $this->bbf_args('meetmefeatures-admin-externalid',
+					   $this->get_var('error','meetmefeatures','admin_externalid')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmeroom_pinadmin'),
 				  'name'	=> 'meetmeroom[pinadmin]',
 				  'labelid'	=> 'meetmeroom-pinadmin',
 				  'size'	=> 15,
 				  'default'	=> $element['meetmeroom']['pinadmin']['default'],
-				  'value'	=> $info['meetmeroom']['pinadmin'])),
+				  'value'	=> $info['meetmeroom']['pinadmin'],
+				  'error'	=> $this->bbf_args('meetmeroom-pinadmin',
+					   $this->get_var('error','meetmeroom','pinadmin')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_meetmefeatures_admin-identification'),
 				    'name'	=> 'meetmefeatures[admin_identification]',
@@ -480,21 +502,27 @@ endif;
 				  'labelid'	=> 'meetmefeatures-emailfrom',
 				  'size'	=> 20,
 				  'default'	=> $element['meetmefeatures']['emailfrom']['default'],
-				  'value'	=> $info['meetmefeatures']['emailfrom'])),
+				  'value'	=> $info['meetmefeatures']['emailfrom'],
+				  'error'	=> $this->bbf_args('meetmefeatures-emailfrom',
+					   $this->get_var('error','meetmefeatures','emailfrom')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_emailfromname'),
 				  'name'	=> 'meetmefeatures[emailfromname]',
 				  'labelid'	=> 'meetmefeatures-emailfromname',
 				  'size'	=> 20,
 				  'default'	=> $element['meetmefeatures']['emailfromname']['default'],
-				  'value'	=> $info['meetmefeatures']['emailfromname'])),
+				  'value'	=> $info['meetmefeatures']['emailfromname'],
+				  'error'	=> $this->bbf_args('meetmefeatures-emailfromname',
+					   $this->get_var('error','meetmefeatures','emailfromname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_emailsubject'),
 				  'name'	=> 'meetmefeatures[emailsubject]',
 				  'labelid'	=> 'meetmefeatures-emailsubject',
 				  'size'	=> 20,
 				  'default'	=> $this->bbf('meetmefeatures_emailsubject'),
-				  'value'	=> $info['meetmefeatures']['emailsubject']));
+				  'value'	=> $info['meetmefeatures']['emailsubject'],
+				  'error'	=> $this->bbf_args('meetmefeatures-emailsubject',
+					   $this->get_var('error','meetmefeatures','emailsubject'))));
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -508,7 +536,9 @@ endif;
 					 'id'		=> 'it-meetmefeatures-emailbody',
 					 'cols'		=> 60,
 					 'rows'		=> 10,
-					 'default'	=> $this->bbf('meetmefeatures_emailbody')),
+					 'default'	=> $this->bbf('it-meetmefeatures-emailbody'),
+					 'error'	=> $this->bbf_args('meetmefeatures-name',
+					   $this->get_var('error','meetmefeatures','emailbody'))),
 				   $info['meetmefeatures']['emailbody']);?>
 	</div>
 </div>

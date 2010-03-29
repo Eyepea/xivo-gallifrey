@@ -35,7 +35,7 @@ switch($act)
 	case 'add':
 		$appvoicemail = &$ipbx->get_application('voicemail');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 		{
@@ -44,6 +44,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appvoicemail->get_result();
+				$error = $appvoicemail->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
@@ -53,6 +54,7 @@ switch($act)
 		$dhtml->set_js('js/dwho/submenu.js');
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appvoicemail->get_elements());
 		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
@@ -65,7 +67,7 @@ switch($act)
 		|| ($info = $appvoicemail->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
@@ -77,6 +79,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appvoicemail->get_result();
+				$error = $appvoicemail->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/voicemail'),$param);
@@ -87,6 +90,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['voicemail']['uniqueid']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appvoicemail->get_elements());
 		$_TPL->set_var('tz_list',$appvoicemail->get_timezones());
