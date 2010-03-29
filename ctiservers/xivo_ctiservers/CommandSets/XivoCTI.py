@@ -6183,7 +6183,7 @@ class XivoCTICommand(BaseCommand):
                 return
             
             elif function == 'cti2dialplan':
-                if len(fastagi.args) > 2:
+                if len(fastagi.args) > 1:
                     dp_varname = fastagi.args[0]
                     cti_varname = fastagi.args[1]
                 else:
