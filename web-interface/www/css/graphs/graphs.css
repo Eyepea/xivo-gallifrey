@@ -1,6 +1,8 @@
 
 .sb-content {
     text-align: center;
+    vertical-align: middle;
+/*    font-size: 1.8em;*/
 }
 
 .sb-content fieldset {
@@ -9,9 +11,26 @@
 
 .sb-content img {
     border: none;
+    vertical-align: middle;
 }
 
 .sb-content img.mini {
     width: 352px;
     margin: 2px;
 }
+
+.sb-content img.nav-left {
+    width: 100px;
+    margin: 0px 10px 0px 0px;
+}
+
+.sb-content img.nav-right {
+    width: 100px;
+    margin: 0px 0px 0px 10px;
+}
+
+.sb-content a {
+    font-size: 1.8em;
+    font-weight: bold;
+}
+

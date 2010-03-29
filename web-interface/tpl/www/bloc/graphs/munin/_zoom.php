@@ -19,11 +19,10 @@
 
 $url     = &$this->get_module('url');
 $basedir = $this->get_var('basedir');
+
 $zoom    = $this->get_var('zoom');
 $prev    = $this->get_var('prev');
 $next    = $this->get_var('next');
-
-$elts    = split('-', $zoom);
 
 function bbf_format($ctx, $link)
 {
@@ -43,17 +42,18 @@ function bbf_format($ctx, $link)
 	<div class="sb-content">
 <?php
     if(!is_null($prev))
-        echo $url->href_html($this->bbf('previous'), null, array("zoom" => $prev), 
-                null, bbf_format($this, $prev)),
-            '&nbsp;&nbsp;';
-    
+        echo $url->href_html('«&nbsp;'.$url->img_html("$basedir/XIVO.$prev.png", 
+                null, "class=nav-left"), 
+            null, array("zoom" => $prev), null, bbf_format($this, $prev)
+        );
+
     echo $url->img_html("$basedir/XIVO.$zoom.png", "$zoom graph");
 
     if(!is_null($next))
-        echo '&nbsp;&nbsp;',
-            $url->href_html($this->bbf('next'), null, array("zoom" => $next),
-                null, bbf_format($this, $next));
-            
+        echo $url->href_html($url->img_html("$basedir/XIVO.$next.png", 
+                null, "class=nav-right").'&nbsp;»', 
+            null, array("zoom" => $next), null, bbf_format($this, $next)
+        );
 ?>
     </div>
 	<div class="sb-foot xspan">
