@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appschedule = &$ipbx->get_application('schedule');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('schedule',$_QR) === true)
 		{
@@ -40,6 +40,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appschedule->get_result_for_display();
+				$error = $appschedule->get_error();
 				$result['dialaction'] = $appschedule->get_dialaction_result();
 			}
 			else
@@ -52,6 +53,7 @@ switch($act)
 			$result['dialaction'] = null;
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('dialaction',$result['dialaction']);
 		$_TPL->set_var('dialaction_from','schedule');
 		$_TPL->set_var('fm_save',$fm_save);
@@ -70,7 +72,7 @@ switch($act)
 		|| ($info = $appschedule->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/schedule'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('schedule',$_QR) === true)
@@ -82,6 +84,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appschedule->get_result_for_display();
+				$error = $appschedule->get_error();
 				$result['dialaction'] = $appschedule->get_dialaction_result();
 			}
 			else
@@ -95,6 +98,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['schedule']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('dialaction',$return['dialaction']);
 		$_TPL->set_var('dialaction_from','schedule');
 		$_TPL->set_var('fm_save',$fm_save);

@@ -46,7 +46,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['name']['default'],
 				  'value'	=> $info['queuefeatures']['name'],
-				  'error'	=> $this->bbf_args('queuefeatures-name',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queuefeatures','name')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_number'),
@@ -55,7 +55,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['number']['default'],
 				  'value'	=> $info['queuefeatures']['number'],
-				  'error'	=> $this->bbf_args('queuefeatures-number',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queuefeatures','number')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_strategy'),
@@ -133,7 +133,7 @@ endif;
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
 				  'value'	=> $info['callerid']['callerdisplay'],
-				  'error'	=> $this->bbf_args('callerid-callerdisplay',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','callerid','callerdisplay')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_queuefeatures_preprocess-subroutine'),
@@ -142,7 +142,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['queuefeatures']['preprocess_subroutine']['default'],
 				  'value'	=> $info['queuefeatures']['preprocess_subroutine'],
-				  'error'	=> $this->bbf_args('queuefeatures-preprocess-subroutine',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queuefeatures','preprocess_subroutine'))));
 ?>
 </div>
@@ -667,7 +667,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['queue']['servicelevel']['default'],
 				  'value'	=> $info['queue']['servicelevel'],
-				  'error'	=> $this->bbf_args('queue-servicelevel',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queue','servicelevel')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_timeout'),
@@ -714,7 +714,7 @@ endif;
 				  'size'	=> 5,
 				  'default'	=> $element['queue']['maxlen']['default'],
 				  'value'	=> $info['queue']['maxlen'],
-				  'error'	=> $this->bbf_args('queue-maxlen',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','queue','maxlen')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_queue_monitor-type'),

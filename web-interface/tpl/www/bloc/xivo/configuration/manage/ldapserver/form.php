@@ -39,7 +39,7 @@ endif;
 			  'size'	=> 15,
 			  'default'	=> $element['name']['default'],
 			  'value' => $info['name'],
-	          'error'	=> $this->bbf_args('name',
+			  'error'	=> $this->bbf_args('error',
 				   $this->get_var('error', 'name')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_host'),
@@ -48,7 +48,7 @@ endif;
 			  'size'	=> 15,
 			  'default'	=> $element['host']['default'],
 			  'value'	=> $info['host'],
-	          'error'	=> $this->bbf_args('host',
+			  'error'	=> $this->bbf_args('error',
 				   $this->get_var('error', 'host')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_port'),
@@ -56,7 +56,7 @@ endif;
 			  'labelid'	=> 'port',
 			  'default'	=> $element['port']['default'],
 			  'value'	=> $info['port'],
-	          'error'	=> $this->bbf_args('port',
+			  'error'	=> $this->bbf_args('error',
 				   $this->get_var('error', 'port')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_securitylayer'),
@@ -92,7 +92,7 @@ endif;
 			 'cols'		=> 60,
 			 'rows'		=> 5,
 			 'default'	=> $element['description']['default'],
-	          'error'	=> $this->bbf_args('description',
+			 'error'	=> $this->bbf_args('error',
 				   $this->get_var('error', 'description')) ),
 				   $info['description']);?>
 	</div>

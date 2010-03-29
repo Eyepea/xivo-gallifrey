@@ -40,7 +40,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['voicemail']['fullname']['default'],
 				  'value' => $info['voicemail']['fullname'],
-				  'error'	=> $this->bbf_args('voicemail-fullname',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','voicemail','fullname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_mailbox'),
@@ -49,7 +49,7 @@ endif;
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['mailbox']['default'],
 				  'value' => $info['voicemail']['mailbox'],
-				  'error'	=> $this->bbf_args('voicemail-mailbox',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','voicemail','mailbox')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_password'),
@@ -58,7 +58,7 @@ endif;
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['password']['default'],
 				  'value' => $info['voicemail']['password'],
-				  'error'	=> $this->bbf_args('voicemail-password',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','voicemail','password')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemail_email'),
@@ -67,7 +67,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['voicemail']['email']['default'],
 				  'value' => $info['voicemail']['email'],
-				  'error'	=> $this->bbf_args('voicemail-email',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','voicemail','email'))));
 
 if($context_list !== false):
@@ -148,7 +148,7 @@ endif;
 				  'size'	=> 10,
 				  'default'	=> $element['voicemail']['pager']['default'],
 				  'value' => $info['voicemail']['pager'],
-				  'error'	=> $this->bbf_args('voicemail-pager',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','voicemail','pager')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_voicemail_saycid'),

@@ -40,14 +40,18 @@ endif;
 				  'labelid'	=> 'voicemenu-name',
 				  'size'	=> 15,
 				  'default'	=> $element['voicemenu']['name']['default'],
-				  'value'	=> $info['voicemenu']['name'])),
+				  'value'	=> $info['voicemenu']['name'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemenu', 'name')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_voicemenu_number'),
 				  'name'	=> 'voicemenu[number]',
 				  'labelid'	=> 'voicemenu-number',
 				  'size'	=> 10,
 				  'default'	=> $element['voicemenu']['number']['default'],
-				  'value'	=> $info['voicemenu']['number']));
+				  'value'	=> $info['voicemenu']['number'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemenu', 'number')) ));
 
 	if($context_list !== false):
 		echo $form->select(array('desc'		=> $this->bbf('fm_voicemenu_context'),
@@ -76,7 +80,9 @@ endif;
 					 'id'		=> 'it-voicemenu-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['voicemenu']['description']['default']),
+					 'default'	=> $element['voicemenu']['description']['default'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'voicemenu', 'description')) ),
 				   $info['voicemenu']['description']);?>
 	</div>
 </div>

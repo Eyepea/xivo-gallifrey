@@ -1,8 +1,13 @@
 
 ; error(empty)
-Doit être renseigné 
+Champ obligatoire
 
+; error(regexp)
+Contient des caractères invalide
+
+; error(callback)
+Contient des caractères invalide
 
 ; error_before_create_context
-Vous devez dabord créer un contexte 
+Vous devez dabord créer un contexte
 

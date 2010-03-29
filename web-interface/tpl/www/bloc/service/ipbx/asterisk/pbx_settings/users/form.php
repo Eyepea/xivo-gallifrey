@@ -128,7 +128,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['userfeatures']['number']['default'],
 				  'value'	=> $info['userfeatures']['number'],
-				  'error'	=> $this->bbf_args('userfeatures-number',
+				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'userfeatures', 'number')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_ringseconds'),

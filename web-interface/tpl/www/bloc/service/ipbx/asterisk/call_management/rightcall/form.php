@@ -45,7 +45,9 @@ endif;
 				  'labelid'	=> 'rightcall-name',
 				  'size'	=> 15,
 				  'default'	=> $element['rightcall']['name']['default'],
-				  'value'	=> $info['rightcall']['name']));
+				  'value'	=> $info['rightcall']['name'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'rightcall', 'name')) ));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_rightcall_context'),
@@ -69,7 +71,9 @@ endif;
 				  'labelid'	=> 'rightcall-passwd',
 				  'size'	=> 15,
 				  'default'	=> $element['rightcall']['passwd']['default'],
-				  'value'	=> $info['rightcall']['passwd'])),
+				  'value'	=> $info['rightcall']['passwd'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'rightcall', 'passwd')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_rightcall_authorization'),
 				    'name'	=> 'rightcall[authorization]',
@@ -125,7 +129,9 @@ endif;
 				 'id'		=> 'it-rightcall-description',
 				 'cols'		=> 60,
 				 'rows'		=> 5,
-				 'default'	=> $element['rightcall']['description']['default']),
+				 'default'	=> $element['rightcall']['description']['default'],
+				 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'rightcall', 'description')) ),
 			   $info['rightcall']['description']);?>
 </div>
 </div>

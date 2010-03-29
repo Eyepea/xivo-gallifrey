@@ -54,28 +54,36 @@ endif;
 				  'labelid'	=> 'mydomain',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['mydomain']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.mydomain'))),
+				  'value'	=> $this->get_var('info','xivo.smtp.mydomain'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'xivo-smtp-mydomain')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_origin'),
 				  'name'	=> 'xivo-smtp-origin',
 				  'labelid'	=> 'origin',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['origin']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.origin'))),
+				  'value'	=> $this->get_var('info','xivo.smtp.origin'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'xivo-smtp-origin')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_relayhost'),
 				  'name'	=> 'xivo-smtp-relayhost',
 				  'labelid'	=> 'relayhost',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.relayhost'))),
+				  'value'	=> $this->get_var('info','xivo.smtp.relayhost'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'xivo-smtp-relayhost')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_fallback_relayhost'),
 				  'name'	=> 'xivo-smtp-fallback_relayhost',
 				  'labelid'	=> 'fallback_relayhost',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['fallback_relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.fallback_relayhost')));
+				  'value'	=> $this->get_var('info','xivo.smtp.fallback_relayhost'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'xivo-smtp-fallback_relayhost')) ));
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>

@@ -32,7 +32,7 @@ switch($act)
 		$apptrunk = &$ipbx->get_application('trunk',
 						    array('protocol' => XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
 		{
@@ -41,12 +41,14 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $apptrunk->get_result();
+				$error = $apptrunk->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/trunk_management/custom'),$param);
 		}
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$apptrunk->get_elements());
 		$_TPL->set_var('context_list',$apptrunk->get_context_list());
@@ -59,7 +61,7 @@ switch($act)
 		|| ($info = $apptrunk->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/trunk_management/custom'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('protocol',$_QR) === true)
@@ -71,6 +73,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $apptrunk->get_result();
+				$error = $apptrunk->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/trunk_management/custom'),$param);
@@ -78,6 +81,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['trunkfeatures']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$apptrunk->get_elements());
 		$_TPL->set_var('context_list',$apptrunk->get_context_list());

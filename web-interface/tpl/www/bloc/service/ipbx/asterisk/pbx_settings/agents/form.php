@@ -44,7 +44,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['agentgroup']['name']['default'],
 				  'value'	=> $info['agentgroup']['name'],
-				  'error'	=> $this->bbf_args('agentgroup-name',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','agentgroup','name'))));
 
 	if($amember['list'] !== false):
@@ -113,7 +113,7 @@ endif;
 					 'cols'		=> 60,
 					 'rows'		=> 5,
 					 'default'	=> $element['agentgroup']['description']['default'],
-					 'error'	=> $this->bbf_args('it-agentgroup-description',
+					 'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','agentgroup','description'))),
 				   $info['agentgroup']['description']);?>
 	</div>

@@ -45,7 +45,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['firstname']['default'],
 				  'value'	=> $info['agentfeatures']['firstname'],
-				  'error'	=> $this->bbf_args('agentfeatures-firstname',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','agentfeatures','firstname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_lastname'),
@@ -54,7 +54,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['lastname']['default'],
 				  'value'	=> $info['agentfeatures']['lastname'],
-				  'error'	=> $this->bbf_args('agentfeatures-lastname',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','agentfeatures','lastname')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_number'),
@@ -63,7 +63,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['number']['default'],
 				  'value'	=> $info['agentfeatures']['number'],
-				  'error'	=> $this->bbf_args('agentfeatures-number',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','agentfeatures','number')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_agentfeatures_passwd'),
@@ -72,7 +72,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['agentfeatures']['passwd']['default'],
 				  'value'	=> $info['agentfeatures']['passwd'],
-				  'error'	=> $this->bbf_args('agentfeatures-passwd',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error','agentfeatures','passwd'))));
 
 		if($context_list !== false):

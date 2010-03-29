@@ -79,7 +79,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['resolvconf']['hostname']['default'],
 				  'value'	=> $this->get_var('info','hostname'),
-		          'error'	=> $this->bbf_args('hostname',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'hostname')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_domain'),
@@ -88,7 +88,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['resolvconf']['domain']['default'],
 				  'value'	=> $this->get_var('info','domain'),
-		          'error'	=> $this->bbf_args('domain',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'domain')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_nameserver1'),
@@ -97,7 +97,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['resolvconf']['nameserver1']['default'],
 				  'value'	=> $this->get_var('info','nameserver1'),
-		          'error'	=> $this->bbf_args('nameserver1',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'nameserver1')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_nameserver2'),
@@ -106,7 +106,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['resolvconf']['nameserver2']['default'],
 				  'value'	=> $this->get_var('info','nameserver2'),
-		          'error'	=> $this->bbf_args('nameserver2',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'nameserver2')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_nameserver3'),
@@ -115,7 +115,7 @@ endif;
 				  'size'	=> 15,
 				  'default'	=> $element['resolvconf']['nameserver3']['default'],
 				  'value'	=> $this->get_var('info','nameserver3'),
-		          'error'	=> $this->bbf_args('nameserver3',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'nameserver3')) ));
 ?>
 	<div class="fm-paragraph fm-description">
@@ -129,7 +129,7 @@ endif;
 					 'cols'		=> 60,
 					 'rows'		=> 5,
 					 'default'	=> $element['resolvconf']['description']['default'],
-		          'error'	=> $this->bbf_args('description',
+					 'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'description')) ),
 				   $this->get_var('info','description'));?>
 	</div>
@@ -142,7 +142,7 @@ endif;
 				  'labelid'	=> 'search1',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('search',0),
-		          'error'	=> $this->bbf_args('search',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'search',0)) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_search2'),
@@ -150,7 +150,7 @@ endif;
 				  'labelid'	=> 'search2',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('search',1),
-		          'error'	=> $this->bbf_args('search',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'search',1)) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_search3'),
@@ -158,7 +158,7 @@ endif;
 				  'labelid'	=> 'search3',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('search',2),
-		          'error'	=> $this->bbf_args('search',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'search',2)) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_search4'),
@@ -166,7 +166,7 @@ endif;
 				  'labelid'	=> 'search4',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('search',3),
-		          'error'	=> $this->bbf_args('search',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'search',3)) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_search5'),
@@ -174,7 +174,7 @@ endif;
 				  'labelid'	=> 'search5',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('search',4),
-		          'error'	=> $this->bbf_args('search',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'search',4)) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_search6'),
@@ -182,7 +182,7 @@ endif;
 				  'labelid'	=> 'search6',
 				  'size'	=> 15,
 				  'value'	=> $this->get_var('search',5),
-		          'error'	=> $this->bbf_args('name',
+				  'error'	=> $this->bbf_args('error',
 					   $this->get_var('error', 'name',5)) ));
 ?>
 </div>

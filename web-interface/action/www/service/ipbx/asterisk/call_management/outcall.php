@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appoutcall = &$ipbx->get_application('outcall');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		$outcalltrunk = $rightcall = array();
 		$outcalltrunk['slt'] = $rightcall['slt'] = array();
@@ -55,6 +55,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appoutcall->get_result();
+				$error = $appoutcall->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
@@ -90,6 +91,7 @@ switch($act)
 
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
 		$_TPL->set_var('rightcall',$rightcall);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('context_list',$appoutcall->get_context_list());
 		$_TPL->set_var('element',$appoutcall->get_elements());
@@ -101,7 +103,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appoutcall->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 		$outcalltrunk = $rightcall = array();
 		$outcalltrunk['slt'] = $rightcall['slt'] = array();
@@ -127,6 +129,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appoutcall->get_result();
+				$error = $appoutcall->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/outcall'),$param);
@@ -164,6 +167,7 @@ switch($act)
 		$_TPL->set_var('outcalltrunk',$outcalltrunk);
 		$_TPL->set_var('rightcall',$rightcall);
 		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('context_list',$appoutcall->get_context_list());
 		$_TPL->set_var('element',$appoutcall->get_elements());
 		$_TPL->set_var('info',$return);

@@ -50,7 +50,9 @@ endif;
 				  'labelid'	=> 'callfilter-name',
 				  'size'	=> 15,
 				  'default'	=> $element['callfilter']['name']['default'],
-				  'value'	=> $info['callfilter']['name']));
+				  'value'	=> $info['callfilter']['name'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'callfilter', 'name')) ));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_callfilter_context'),
@@ -118,7 +120,9 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['callerid']['callerdisplay']['default'],
-				  'value'	=> $info['callerid']['callerdisplay']));
+				  'value'	=> $info['callerid']['callerdisplay'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'callerid', 'callerdisplay')) ));
 ?>
 
 <fieldset id="fld-callfilter-boss">
@@ -241,7 +245,9 @@ endif;
 				 'id'		=> 'it-callfilter-description',
 				 'cols'		=> 60,
 				 'rows'		=> 5,
-				 'default'	=> $element['callfilter']['description']['default']),
+				 'default'	=> $element['callfilter']['description']['default'],
+				 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'callfilter', 'description')) ),
 			   $info['callfilter']['description']);?>
 </div>
 

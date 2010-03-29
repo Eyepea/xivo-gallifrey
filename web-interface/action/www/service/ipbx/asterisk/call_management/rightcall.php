@@ -29,7 +29,7 @@ switch($act)
 	case 'add':
 		$apprightcall = &$ipbx->get_application('rightcall');
 
-		$result = null;
+		$result = $fm_save = $error = null;
 
 		$rcalluser = $rcallgroup = $rcallincall = $rcalloutcall = array();
 		$rcalluser['slt'] = $rcallgroup['slt'] = $rcallincall['slt'] = $rcalloutcall['slt'] = null;
@@ -70,7 +70,11 @@ switch($act)
 		{
 			if($apprightcall->set_add($_QR) === false
 			|| $apprightcall->add() === false)
+			{
+				$fm_save = false;
 				$result = $apprightcall->get_result();
+				$error = $apprightcall->get_error();
+			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
@@ -145,6 +149,8 @@ switch($act)
 		$_TPL->set_var('context_list',$apprightcall->get_context_list());
 		$_TPL->set_var('element',$apprightcall->get_elements());
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('fm_save',$fm_save);
 		break;
 	case 'edit':
 		$apprightcall = &$ipbx->get_application('rightcall');
@@ -152,7 +158,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $apprightcall->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 
-		$result = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		$rcalluser = $rcallgroup = $rcallincall = $rcalloutcall = array();
@@ -196,7 +202,11 @@ switch($act)
 
 			if($apprightcall->set_edit($_QR) === false
 			|| $apprightcall->edit() === false)
+			{
+				$fm_save = false;
 				$result = $apprightcall->get_result();
+				$error = $apprightcall->get_error();
+			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/call_management/rightcall'),$param);
 		}
@@ -277,6 +287,8 @@ switch($act)
 		$_TPL->set_var('context_list',$apprightcall->get_context_list());
 		$_TPL->set_var('element',$apprightcall->get_elements());
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
+		$_TPL->set_var('fm_save',$fm_save);
 		break;
 	case 'delete':
 		$param['page'] = $page;

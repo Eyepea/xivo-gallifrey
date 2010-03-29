@@ -36,7 +36,9 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_schedule_name'),
 			  'labelid'	=> 'schedule-name',
 			  'size'	=> 15,
 			  'default'	=> $element['schedule']['name']['default'],
-			  'value'	=> $info['schedule']['name']));
+			  'value'	=> $info['schedule']['name'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'schedule', 'name')) ));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_schedule_context'),

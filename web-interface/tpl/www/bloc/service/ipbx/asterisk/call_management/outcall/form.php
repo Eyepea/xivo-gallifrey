@@ -42,7 +42,9 @@ endif;
 				  'labelid'	=> 'outcall-name',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['name']['default'],
-				  'value'	=> $info['outcall']['name']));
+				  'value'	=> $info['outcall']['name'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'name')) ));
 
 if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_outcall_context'),
@@ -66,7 +68,9 @@ endif;
 				  'labelid'	=> 'outcall-externprefix',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['externprefix']['default'],
-				  'value'	=> $info['outcall']['externprefix'])),
+				  'value'	=> $info['outcall']['externprefix'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'externprefix')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_stripnum'),
 				    'name'	=> 'outcall[stripnum]',
@@ -91,7 +95,9 @@ endif;
 				  'labelid'	=> 'outcall-prefix',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['prefix']['default'],
-				  'value'	=> '')),
+				  'value'	=> '',
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'prefix')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_numlen'),
 				    'name'	=> 'outcall[numlen]',
@@ -107,7 +113,9 @@ endif;
 				  'labelid'	=> 'outcall-exten',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['exten']['default'],
-				  'value'	=> $info['outcall']['exten'])),
+				  'value'	=> $info['outcall']['exten'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'exten')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_setcallerid'),
 				      'name'	=> 'outcall[setcallerid]',
@@ -121,7 +129,9 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['outcall']['callerid']['default'],
-				  'value'	=> $info['outcall']['callerid'])),
+				  'value'	=> $info['outcall']['callerid'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'callerid')) )),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_outcall_useenum'),
 				      'name'	=> 'outcall[useenum]',
@@ -140,7 +150,9 @@ endif;
 				  'labelid'	=> 'outcall-preprocess-subroutine',
 				  'size'	=> 15,
 				  'default'	=> $element['outcall']['preprocess_subroutine']['default'],
-				  'value'	=> $info['outcall']['preprocess_subroutine'])),
+				  'value'	=> $info['outcall']['preprocess_subroutine'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'preprocess_subroutine')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_outcall_hangupringtime'),
 				    'name'	=> 'outcall[hangupringtime]',

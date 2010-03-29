@@ -61,21 +61,27 @@ endif;
 				  'labelid'	=> 'protocol-name',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['name']['default'],
-				  'value'	=> $info['protocol']['name'])),
+				  'value'	=> $info['protocol']['name'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'name')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_username'),
 				  'name'	=> 'protocol[username]',
 				  'labelid'	=> 'protocol-username',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['username']['default'],
-				  'value'	=> $info['protocol']['username'])),
+				  'value'	=> $info['protocol']['username'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'username')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_secret'),
 				  'name'	=> 'protocol[secret]',
 				  'labelid'	=> 'protocol-secret',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['secret']['default'],
-				  'value'	=> $info['protocol']['secret'])),
+				  'value'	=> $info['protocol']['secret'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'secret')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_callerid'),
 				  'name'	=> 'protocol[callerid]',
@@ -83,7 +89,9 @@ endif;
 				  'size'	=> 15,
 				  'notag'	=> false,
 				  'default'	=> $element['protocol']['callerid']['default'],
-				  'value'	=> $info['protocol']['callerid'])),
+				  'value'	=> $info['protocol']['callerid'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'callerid')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_host-type'),
 				    'name'	=> 'protocol[host-type]',
@@ -103,7 +111,9 @@ endif;
 				  'labelid'	=> 'protocol-host-static',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['host-static']['default'],
-				  'value'	=> ($host_static === true ? $host : ''))),
+				  'value'	=> ($host_static === true ? $host : ''),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'host-static')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_type'),
 				    'name'	=> 'protocol[type]',
@@ -155,28 +165,36 @@ endif;
 				  'labelid'	=> 'register-username',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['username']['default'],
-				  'value'	=> $this->get_var('info','register','username'))),
+				  'value'	=> $this->get_var('info','register','username'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'register', 'username')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_password'),
 				  'name'	=> 'register[password]',
 				  'labelid'	=> 'register-password',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['password']['default'],
-				  'value'	=> $this->get_var('info','register','password'))),
+				  'value'	=> $this->get_var('info','register','password'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'register', 'password')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_host'),
 				  'name'	=> 'register[host]',
 				  'labelid'	=> 'register-host',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['host']['default'],
-				  'value'	=> $this->get_var('info','register','host'))),
+				  'value'	=> $this->get_var('info','register','host'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'register', 'host')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_register_port'),
 				  'name'	=> 'register[port]',
 				  'labelid'	=> 'register-port',
 				  'size'	=> 15,
 				  'default'	=> $element['register']['port']['default'],
-				  'value'	=> $this->get_var('info','register','port')));
+				  'value'	=> $this->get_var('info','register','port'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'register', 'port')) ));
 ?>
 </div>
 
@@ -392,28 +410,36 @@ endif;
 				  'labelid'	=> 'protocol-port',
 				  'size'	=> 10,
 				  'default'	=> $element['protocol']['port']['default'],
-				  'value'	=> $info['protocol']['port'])),
+				  'value'	=> $info['protocol']['port'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'port')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_mask'),
 				  'name'	=> 'protocol[mask]',
 				  'labelid'	=> 'protocol-mask',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['mask']['default'],
-				  'value'	=> $info['protocol']['mask'])),
+				  'value'	=> $info['protocol']['mask'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'mask')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_permit'),
 				  'name'	=> 'protocol[permit]',
 				  'labelid'	=> 'protocol-permit',
 				  'size'	=> 20,
 				  'default'	=> $element['protocol']['permit']['default'],
-				  'value'	=> $info['protocol']['permit'])),
+				  'value'	=> $info['protocol']['permit'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'permit')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_deny'),
 				  'name'	=> 'protocol[deny]',
 				  'labelid'	=> 'protocol-deny',
 				  'size'	=> 20,
 				  'default'	=> $element['protocol']['deny']['default'],
-				  'value'	=> $info['protocol']['deny'])),
+				  'value'	=> $info['protocol']['deny'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'deny')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_auth'),
 				    'name'	=> 'protocol[auth]',
@@ -430,14 +456,18 @@ endif;
 				  'labelid'	=> 'protocol-inkeys',
 				  'size'	=> 20,
 				  'default'	=> $element['protocol']['inkeys']['default'],
-				  'value'	=> $info['protocol']['inkeys'])),
+				  'value'	=> $info['protocol']['inkeys'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'inkeys')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_outkey'),
 				  'name'	=> 'protocol[outkey]',
 				  'labelid'	=> 'protocol-outkey',
 				  'size'	=> 20,
 				  'default'	=> $element['protocol']['outkey']['default'],
-				  'value'	=> $info['protocol']['outkey'])),
+				  'value'	=> $info['protocol']['outkey'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'outkey')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_encryption'),
 				    'name'	=> 'protocol[encryption]',
@@ -488,7 +518,9 @@ endif;
 				  'labelid'	=> 'protocol-accountcode',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['accountcode']['default'],
-				  'value'	=> $info['protocol']['accountcode']));
+				  'value'	=> $info['protocol']['accountcode'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'accountcode')) ));
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
@@ -502,7 +534,9 @@ endif;
 					 'id'		=> 'it-trunkfeatures-description',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
-					 'default'	=> $element['trunkfeatures']['description']['default']),
+					 'default'	=> $element['trunkfeatures']['description']['default'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'trunkfeatures', 'description')) ),
 				   $info['trunkfeatures']['description']);?>
 	</div>
 </div>
