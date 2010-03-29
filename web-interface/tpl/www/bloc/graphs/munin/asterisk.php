@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-include(dirname(__FILE__).'/common.php');
+include(dirname(__FILE__). ($this->get_var('zoom')?'/_zoom.php':'/_common.php'));
 
 ?>
 

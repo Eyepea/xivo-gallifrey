@@ -41,8 +41,11 @@ $freqs   = $this->get_var('freqs');
 <?php
         foreach($freqs as $freq)
         {
-            echo $url->img_html("$basedir/XIVO.$domain-$graph-$freq.png", 
-                "$graph $freq graph");
+            echo $url->href_html(
+                $url->img_html("$basedir/XIVO.$domain-$graph-$freq.png", 
+                    "$graph $freq graph", "class=\"mini\""),
+                null, array("zoom" => "$domain-$graph-$freq"), null, $this->bbf("Zoom")
+            );
         }
 ?>
         </div>

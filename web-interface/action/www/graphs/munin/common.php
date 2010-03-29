@@ -25,6 +25,46 @@ $graph_tree     =  dwho_munin_graphstree($basedir, $domain);
 $module_tree    = $graph_tree[$module];
 sort($module_tree);
 
+if(isset($_QR['zoom']))
+{
+    // get previous/next graphs
+    list($domain, $zoomod, $zoofreq)    = split('-', $_QR['zoom']);
+    $current = array(
+        array_search($zoomod , $module_tree),   // module index
+        array_search($zoofreq, $freqs)          // frequency index
+     );
+    
+    $previous  = array(
+        $current[0],
+        ($current[1] + count($freqs) - 1) % count($freqs)
+    );
+    
+    if($previous[1] == count($freqs) - 1)
+        $previous[0] = ($current[0] == 0)?null:$current[0] - 1;
+        
+    $prev_lnk = is_null($previous[0])?
+            null:
+            sprintf("%s-%s-%s", $domain, $module_tree[$previous[0]], $freqs[$previous[1]]);
+    
+        
+    $next      = array(
+        $current[0],
+        ($current[1] + 1) % count($freqs)
+    );
+    
+    if($next[1] == 0)
+        $next[0] = ($current[0] == count($module_tree)-1)?null:$current[0] + 1;
+        
+    $next_lnk = is_null($next[0])?
+            null:
+            sprintf("%s-%s-%s", $domain, $module_tree[$next[0]], $freqs[$next[1]]);
+        
+
+    $_TPL->set_var('zoom', $_QR['zoom']);
+    $_TPL->set_var('prev', $prev_lnk);
+    $_TPL->set_var('next', $next_lnk);
+}
+
 $_TPL->set_var('basedir', $basedir);
 $_TPL->set_var('domain' , $domain);
 $_TPL->set_var('graphs' , $module_tree);

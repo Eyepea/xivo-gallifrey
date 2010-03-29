@@ -93,3 +93,21 @@ Vérifier
 
 ; number_percent
 %.2f %%
+
+; per-day
+par jour
+
+; per-week
+par semaine
+
+; per-month
+par mois
+
+; per-year
+par année
+
+; previous
+« précédent
+
+; next
+suivant »
