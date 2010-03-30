@@ -26,7 +26,7 @@ $array['module']['accesswebservice'] = array();
 $array['module']['accesswebservice']['datastorage'] = true;
 
 $array['module']['dhcp'] = array();
-$array['module']['dhcp']['datastorage'] = false;
+$array['module']['dhcp']['datastorage'] = true;
 
 $array['module']['entity'] = array();
 $array['module']['entity']['datastorage'] = true;
@@ -63,5 +63,8 @@ $array['module']['server']['datastorage'] = true;
 
 $array['module']['sysconfd'] = array();
 $array['module']['sysconfd']['datastorage'] = false;
+
+$array['module']['commonconf'] = array();
+$array['module']['commonconf']['datastorage'] = false;
 
 ?>

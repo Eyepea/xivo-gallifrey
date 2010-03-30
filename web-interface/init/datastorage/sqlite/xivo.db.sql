@@ -249,4 +249,17 @@ INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datet
 INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
 
 
+DROP TABLE dhcp;
+CREATE TABLE dhcp (
+ id integer unsigned,
+ active tinyint(1) NOT NULL DEFAULT 0,
+ pool_start varchar(64) NOT NULL DEFAULT '',
+ pool_end varchar(64) NOT NULL DEFAULT '',
+ extra_ifaces varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+);
+
+INSERT INTO dhcp VALUES (1,0,'','','');
+
+
 COMMIT;

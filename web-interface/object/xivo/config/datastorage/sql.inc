@@ -56,4 +56,8 @@ $array['server'] = array();
 $array['server']['table'] = 'server';
 $array['server']['primary'] = array('id' => '');
 
+$array['dhcp'] = array();
+$array['dhcp']['table'] = 'dhcp';
+$array['dhcp']['primary'] = array('id' => '');
+
 ?>

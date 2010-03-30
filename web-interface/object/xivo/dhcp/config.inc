@@ -21,15 +21,22 @@
 $array = array();
 $array['element'] = array();
 
+$array['element']['active'] = array();
+$array['element']['active']['default'] = false;
+
 $array['element']['pool_start'] = array();
 $array['element']['pool_start']['default'] = '';
 
 $array['element']['pool_end'] = array();
 $array['element']['pool_end']['default'] = '';
 
+$array['element']['extra_ifaces'] = array();
+$array['element']['extra_ifaces']['default'] = '';
+
 
 ### filters ###
 $array['filter'] = array();
+
 $array['filter']['pool_start']	    = array('set'		=> false,
 				    'chk'		    => 1,
 				    'callback'		=> 'dwho_network::valid_host',

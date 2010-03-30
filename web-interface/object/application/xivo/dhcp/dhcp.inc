@@ -22,15 +22,15 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
 class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abstract
 {
-	var $_sysconfd	 = false;
+	var $_commonconf = false;
 	var $_dhcp       = false;
 
 	function xivo_application_xivo_object_dhcp(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))    === false
-		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))    === false)
+		if(($this->_commonconf  = &$this->_xobj->get_module('commonconf'))    === false
+		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))          === false)
 			return(false);
 
 		return(true);
@@ -38,15 +38,7 @@ class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abs
 
 	function get()
 	{
-        $data = $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' =>  'xivo.dhcp.*'));
-            
-        $pool = split(' ', $data['xivo.dhcp.pool']);
-        $data['pool_start']     = $pool[0];
-        $data['pool_end']       = $pool[1];
-        $data['extra_ifaces']   = $data['xivo.dhcp.extra_ifaces'];
-        $data['active']         = $data['xivo.dhcp.active'];
-
+	    $data = $this->_dhcp->get(1);
         return $data;
 	}
 
@@ -60,17 +52,21 @@ class xivo_application_xivo_object_dhcp extends xivo_application_xivo_object_abs
         if($this->get_errnb() > 0)
             return false;
 
-        $conf = array(
-            'xivo.dhcp.pool'         => $arr['pool_start'].' '.$arr['pool_end'],
-            'xivo.dhcp.extra_ifaces' => $arr['extra_ifaces'],
-            'xivo.dhcp.active'       => array_key_exists('active', $arr),
-        );
-        $this->_result = $conf;
-
-        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
-            return false;
+        $keys = array('active', 'pool_start', 'pool_end', 'extra_ifaces');
+        foreach(array_keys($arr) as $key)
+        {
+            if(!in_array($key, $keys))
+                unset($arr[$key]);
+        }
+        
+        if(!array_key_exists('active', $arr))
+            $arr['active'] = 0;
             
-        return $this->_sysconfd->request_get('/commonconf_generate');
+        if($this->_dhcp->edit(1, $arr) === false)
+            return false;
+
+        // update commonconf via sysconfd
+        return $this->_commonconf->generate();
     }
 }
 
