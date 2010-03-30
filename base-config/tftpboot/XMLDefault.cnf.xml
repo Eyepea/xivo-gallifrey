@@ -1,0 +1,50 @@
+<Default>
+ <callManagerGroup>
+  <members>
+   <member priority="0">
+    <callManager>
+     <ports>
+      <ethernetPhonePort>2000</ethernetPhonePort>
+       <mgcpPorts>
+        <listen>2427</listen>
+        <keepAlive>2428</keepAlive>
+       </mgcpPorts>
+     </ports>
+     <processNodeName></processNodeName>
+    </callManager>
+   </member>
+  </members>
+ </callManagerGroup>
+ <loadInformation115   model="Cisco 7941">SIP41.9-0-2SR1S</loadInformation115>
+ <loadInformation30018 model="Cisco 7961">SIP41.9-0-2SR1S</loadInformation30018>
+ <loadInformation308   model="Cisco 7961G-GE">SIP41.9-0-2SR1S</loadInformation308>
+ <loadInformation309   model="Cisco 7941G-GE">SIP41.9-0-2SR1S</loadInformation309>
+ <loadInformation30002 model="Cisco 7920"></loadInformation30002>
+ <loadInformation30006 model="Cisco 7970"></loadInformation30006>
+ <loadInformation30019 model="Cisco 7936"></loadInformation30019>
+ <loadInformation365   model="Cisco 7921"></loadInformation365>
+ <loadInformation30007 model="Cisco 7912"></loadInformation30007>
+ <loadInformation369   model="Cisco 7906"></loadInformation369>
+ <loadInformation20000 model="Cisco 7905"></loadInformation20000>
+ <loadInformation307   model="Cisco 7911"></loadInformation307>
+ <loadInformation7     model="Cisco 7960"></loadInformation7>
+ <loadInformation348   model="Cisco 7931"></loadInformation348>
+ <loadInformation9     model="Cisco 7935"></loadInformation9>
+ <loadInformation431   model="Cisco 7937"></loadInformation431>
+ <loadInformation30008 model="Cisco 7902"></loadInformation30008>
+ <loadInformation6     model="Cisco 7910"></loadInformation6>
+ <loadInformation8     model="Cisco 7940"></loadInformation8>
+ <loadInformation119   model="Cisco 7971"></loadInformation119>
+ <loadInformation437   model="Cisco 7975"></loadInformation437>
+ <loadInformation404   model="Cisco 7962"></loadInformation404>
+ <loadInformation435   model="Cisco 7945"></loadInformation435>
+ <loadInformation302   model="Cisco 7985"></loadInformation302>
+ <loadInformation434   model="Cisco 7942"></loadInformation434>
+ <loadInformation436   model="Cisco 7965"></loadInformation436>
+ <authenticationURL></authenticationURL>
+ <directoryURL></directoryURL>
+ <idleURL></idleURL>
+ <informationURL></informationURL>
+ <messagesURL></messagesURL>
+ <servicesURL></servicesURL>
+</Default>
