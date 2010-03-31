@@ -250,12 +250,23 @@ CREATE INDEX `user__idx__valid` ON `user`(`valid`);
 CREATE INDEX `user__idx__time` ON `user`(`time`);
 CREATE UNIQUE INDEX `user__uidx__login_meta` ON `user`(`login`,`meta`);
 
-INSERT INTO `user` VALUES (1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
-INSERT INTO `user` VALUES (2,'admin','proformatique','admin',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
+
+DROP TABLE IF EXISTS `dhcp`;
+CREATE TABLE `dhcp` (
+ `id` int(10 unsigned auto_increment,
+ `active` int(1) unsigned NOT NULL DEFAULT 0,
+ `pool_start` varchar(64) NOT NULL DEFAULT '',
+ `pool_end` varchar(64) NOT NULL DEFAULT '',
+ `extra_ifaces` varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO `dhcp` VALUES (1,0,'','','');
 
 DROP TABLE IF EXISTS `mail`;
 CREATE TABLE `mail` (
  `id` int(10) unsigned auto_increment,
+ `mydomain` varchar(255) NOT NULL DEFAULT 0,
  `origin` varchar(255) NOT NULL DEFAULT 'xivo-clients.proformatique.com',
  `relayhost` varchar(255),
  `fallback_relayhost` varchar(255),
@@ -265,6 +276,19 @@ CREATE TABLE `mail` (
 
 CREATE UNIQUE INDEX `mail__uidx__origin` ON `mail`(`origin`);
 
-INSERT INTO `mail` VALUES (1,'xivo-clients.proformatique.com','','','');
+INSERT INTO `mail` VALUES (1,'','xivo-clients.proformatique.com','','','');
+
+
+DROP TABLE IF EXISTS `monitoring`;
+CREATE TABLE monitoring (
+ `id` int(10) unsigned auto_increment,
+ `maintenance` int(1) unsigned NOT NULL DEFAULT 0,
+ `alert_emails` varchar(4096) DEFAULT NULL,
+ `dahdi_monitor_ports` varchar(255) DEFAULT NULL,
+ `max_call_duration` int(5) DEFAULT NULL,
+ PRIMARY KEY(id)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+INSERT INTO monitoring VALUES (1,0,NULL,NULL,NULL);
 
 COMMIT;

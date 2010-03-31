@@ -16,3 +16,5 @@ Relai SMTP de secours :
 ; fm_canonical
 Réécriture des addresses d'expédition (canonical) : 
 
+; help-mydomain
+Si vous laissez le champ vide, le nom d'hôte (voir menu <i>Résolution DNS</i>) sera utilisé comme nom de domaine pour les emails

@@ -101,6 +101,7 @@ $array['tree']['service']['monitoring']['control_system']['monitor'] = true;
 $array['tree']['service']['monitoring']['control_system']['unmonitor'] = true;
 
 $array['tree']['service']['graphs'] = array();
+$array['tree']['service']['graphs']['munin'] = true;
 
 $array['group'] = array();
 $array['group']['visitor'] = false;

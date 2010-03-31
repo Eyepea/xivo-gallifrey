@@ -22,88 +22,83 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
 class xivo_application_xivo_object_monitoring extends xivo_application_xivo_object_abstract
 {
-	var $_sysconfd	 = false;
+	var $_commonconf	 = false;
+	var $_monitoring	 = false;
 
 	function xivo_application_xivo_object_monitoring(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))    === false)
+		if(($this->_monitoring    = &$this->_xobj->get_module('monitoring'))    === false
+		|| ($this->_commonconf    = &$this->_xobj->get_module('commonconf'))    === false)
 			return(false);
 
 		return(true);
 	}
 
-	function get_xivo_maintenance()
+	function get_monitoring()
 	{
-        $data = $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' =>  'xivo.maintenance'));
-  
-        return $data;
-		
+        return $this->_monitoring->get(1);
 	}
 	
-	function set_xivo_maintenance($value)
+	function set_monitoring($arr)
     {
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('xivo.maintenance' => $value)) === false)
+        $this->_reset();
+
+        if($this->_monitoring->chk_values($arr) === false)
+            $this->_set_errors($this->_monitoring->get_filter_error());
+
+        if($this->get_errnb() > 0)
             return false;
-            
-        return $this->_sysconfd->request_get('/commonconf_generate');
+
+        $keys = array('maintenance', 'alert_emails', 'dahdi_monitor_ports', 'max_call_duration');
+        foreach(array_keys($arr) as $key)
+        {
+            if(!in_array($key, $keys))
+                unset($arr[$key]);
+        }
+        
+        if($this->_monitoring->edit(1, $arr) === false)
+            return false;
+
+        // update commonconf via sysconfd
+        return $this->_commonconf->generate();
     }
 
-    function get_alerts()
-    {
-        return $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' => array('alert_emails', 'dahdi_monitor_ports')));    
-    }
     
-    
-    function set_alerts($mails, $dahdi_ports)
+    function set_alerts($arr)
     {
         $this->_reset();
 
         // check dahdi_monitor_ports
-        foreach(split(' ', $dahdi_ports) as $port)
+        if(strlen(trim($arr['dahdi_monitor_ports'])) > 0)
         {
-            if(!ctype_digit($port))
-                $this->_set_error('dahdi_monitor_ports', 'typechecking');
+            foreach(split(' ', $arr['dahdi_monitor_ports']) as $port)
+            {
+                if(!ctype_digit($port))
+                    $this->_set_error('dahdi_monitor_ports', 'typechecking');
+            }
         }
         
         if($this->get_errnb() > 0)
             return false;
         
-        if($this->_sysconfd->request_post('/commonconf_set', array(
-            'alert_emails'        => $mails, 
-            'dahdi_monitor_ports' => $dahdi_ports
-        )) === false)
-            return false;
-            
-        return $this->_sysconfd->request_get('/commonconf_generate');
+        return $this->set_monitoring($arr);
     }
     
-    function get_max_call_duration()
-    {
-        return $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' => 'max_call_duration'));
-    }
 
-    function set_max_call_duration($duration)
+    function set_max_call_duration($arr)
     {
         $this->_reset();
 
         // checking duration is int or empty
-        if(strlen($duration) > 0 && !ctype_digit($duration))
+        if(strlen($arr['duration']) > 0 && !ctype_digit($arr['duration']))
             $this->_set_error('max_call_duration', 'typechecking');
             
         if($this->get_errnb() > 0)
             return false;
         
-        if($this->_sysconfd->request_post('/commonconf_set', 
-            array('max_call_duration' => $duration)) === false)
-            return false;
-            
-        return $this->_sysconfd->request_get('/commonconf_generate');
+        return $this->set_monitoring($arr);
     }
 }
 

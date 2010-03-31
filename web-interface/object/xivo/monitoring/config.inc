@@ -18,31 +18,24 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$appmonitor 	= &$_XOBJ->get_application('monitoring');
+$array = array();
 
-$fm_save        = null;
-$info 		    = $appmonitor->get_monitoring();
+$array['element'] = array();
 
-if(isset($_QR['fm_send']) === true)
-{
-	$fm_save     = true;
+$array['element']['maintenance'] = array();
+$array['element']['maintenance']['default'] = false;
 
-    $maintenance = array('maintenance' => array_key_exists('maintenance', $_QR));
-	if($appmonitor->set_monitoring($maintenance) === false)
-		$fm_save = false;
+$array['element']['alert_emails'] = array();
+$array['element']['alert_emails']['default'] = null;
 
-    $info['maintenance'] = $maintenance;
-}
+$array['element']['dahdi_monitor_ports'] = array();
+$array['element']['dahdi_monitor_ports']['default'] = null;
 
-$_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('info'   	, $info);
+$array['element']['max_call_duration'] = array();
+$array['element']['max_call_duration']['default'] = null;
 
-$menu = &$_TPL->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_info('meta'));
-$menu->set_left('left/xivo/configuration');
 
-$_TPL->set_bloc('main','xivo/configuration/support/xivo');
-$_TPL->set_struct('xivo/configuration');
-$_TPL->display('index');
+### filters ###
+#$array['filter'] = array();
 
 ?>

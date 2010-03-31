@@ -245,9 +245,6 @@ CREATE INDEX user__idx__valid ON user(valid);
 CREATE INDEX user__idx__time ON user(time);
 CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
-INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datetime('now','utc')),0,'');
-INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
-
 
 DROP TABLE dhcp;
 CREATE TABLE dhcp (
@@ -261,5 +258,31 @@ CREATE TABLE dhcp (
 
 INSERT INTO dhcp VALUES (1,0,'','','');
 
+
+DROP TABLE mail;
+CREATE TABLE mail (
+ id integer unsigned,
+ mydomain varchar(255) NOT NULL DEFAULT 0,
+ origin varchar(255) NOT NULL DEFAULT 'xivo-clients.proformatique.com',
+ relayhost varchar(255) NOT NULL DEFAULT '',
+ fallback_relayhost varchar(255) NOT NULL DEFAULT '',
+ canonical varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+);
+
+INSERT INTO mail VALUES (1,'', 'xivo-clients.proformatique.com', '', '', '');
+
+
+DROP TABLE monitoring;
+CREATE TABLE monitoring (
+ id integer unsigned,
+ maintenance tinyint(1) NOT NULL DEFAULT 0,
+ alert_emails varchar(4096) DEFAULT NULL,
+ dahdi_monitor_ports varchar(255) DEFAULT NULL,
+ max_call_duration integer DEFAULT NULL,
+ PRIMARY KEY(id)
+);
+
+INSERT INTO monitoring VALUES (1,0,NULL,NULL,NULL);
 
 COMMIT;

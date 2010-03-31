@@ -50,38 +50,39 @@ endif;
 				    'value'	=> 1)),
 
 		$form->text(array('desc'	=> $this->bbf('fm_mydomain'),
-				  'name'	=> 'xivo-smtp-mydomain',
+				  'name'	=> 'mydomain',
 				  'labelid'	=> 'mydomain',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['mydomain']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.mydomain'),
+				  'value'	=> $this->get_var('info','mydomain'),
+				  'help'    => $this->bbf('help-mydomain'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'xivo-smtp-mydomain')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_origin'),
-				  'name'	=> 'xivo-smtp-origin',
+				  'name'	=> 'origin',
 				  'labelid'	=> 'origin',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['origin']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.origin'),
+				  'value'	=> $this->get_var('info','origin'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'xivo-smtp-origin')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_relayhost'),
-				  'name'	=> 'xivo-smtp-relayhost',
+				  'name'	=> 'relayhost',
 				  'labelid'	=> 'relayhost',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.relayhost'),
+				  'value'	=> $this->get_var('info','relayhost'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'xivo-smtp-relayhost')) )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_fallback_relayhost'),
-				  'name'	=> 'xivo-smtp-fallback_relayhost',
+				  'name'	=> 'fallback_relayhost',
 				  'labelid'	=> 'fallback_relayhost',
 				  'size'	=> 30,
 				  'default'	=> $element['mail']['fallback_relayhost']['default'],
-				  'value'	=> $this->get_var('info','xivo.smtp.fallback_relayhost'),
+				  'value'	=> $this->get_var('info','fallback_relayhost'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'xivo-smtp-fallback_relayhost')) ));
 ?>
@@ -91,12 +92,12 @@ endif;
 		</p>
 		<?=$form->textarea(array('paragraph'	=> false,
 					 'label'	=> false,
-					 'name'		=> 'xivo-smtp-canonical',
+					 'name'		=> 'canonical',
 					 'id'		=> 'it-canonical',
 					 'cols'		=> 60,
 					 'rows'		=> 5,
 					 'default'	=> $element['mail']['canonical']['default']),
-				   $this->get_var('info','xivo.smtp.canonical'));?>
+				   $this->get_var('info','canonical'));?>
 	</div>
 </div>
 <?php

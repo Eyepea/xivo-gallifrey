@@ -27,7 +27,7 @@ if(isset($_QR['fm_send']) === true)
 {
 	$fm_save 	= true;
 
-	if($appmonit->set_alerts($_QR['alert_emails'], $_QR['dahdi_monitor_ports']) === false)
+	if($appmonit->set_alerts($_QR) === false)
 	{
 		$fm_save = false;
 		$error   = $appmonit->get_error();
@@ -37,7 +37,7 @@ if(isset($_QR['fm_send']) === true)
     $info['dahdi_monitor_ports']  = $_QR['dahdi_monitor_ports'];
 }
 else
-{ $info   	= $appmonit->get_alerts(); }
+{ $info   	= $appmonit->get_monitoring(); }
 
 $_TPL->set_var('fm_save'	, $fm_save);
 $_TPL->set_var('info'	    , $info);

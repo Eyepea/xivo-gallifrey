@@ -18,31 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$appmonitor 	= &$_XOBJ->get_application('monitoring');
+xivo_object::required(array('abstract','abstract.inc'),true);
 
-$fm_save        = null;
-$info 		    = $appmonitor->get_monitoring();
-
-if(isset($_QR['fm_send']) === true)
+class xivo_object_monitoring extends xivo_object_abstract
 {
-	$fm_save     = true;
+	var $_dso		= null;
+	var $_name		= 'monitoring';
 
-    $maintenance = array('maintenance' => array_key_exists('maintenance', $_QR));
-	if($appmonitor->set_monitoring($maintenance) === false)
-		$fm_save = false;
+	function xivo_object_monitoring(&$xobj,&$dso)
+	{
+		$this->xivo_object_abstract(&$xobj);
 
-    $info['maintenance'] = $maintenance;
+		if(is_object($dso) === false)
+			trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+
+		$this->_dso = &$dso;
+	}
 }
-
-$_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('info'   	, $info);
-
-$menu = &$_TPL->get_module('menu');
-$menu->set_top('top/user/'.$_USR->get_info('meta'));
-$menu->set_left('left/xivo/configuration');
-
-$_TPL->set_bloc('main','xivo/configuration/support/xivo');
-$_TPL->set_struct('xivo/configuration');
-$_TPL->display('index');
 
 ?>

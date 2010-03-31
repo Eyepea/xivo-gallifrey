@@ -52,7 +52,7 @@ endif;
 		$form->checkbox(array('desc'		=> $this->bbf('fm_maintenance'),
 				      'name'		=> 'maintenance',
 				      'labelid'		=> 'maintenance',
-				      'checked'		=> $info['xivo.maintenance'],
+				      'checked'		=> $info['maintenance'],
 				      'help'        => $this->bbf('fm_help-maintenance')));
 ?>
 </div>

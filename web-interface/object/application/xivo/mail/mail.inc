@@ -22,13 +22,15 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
 class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abstract
 {
-	var $_sysconfd	 = false;
+	var $_mail           = false;
+	var $_commonconf     = false;
 
 	function xivo_application_xivo_object_mail(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd = &$this->_xobj->get_module('sysconfd'))     === false)
+		if(($this->_mail       = &$this->_xobj->get_module('mail'))       === false
+        || ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)
 			return(false);
 
 		return(true);
@@ -36,23 +38,30 @@ class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abs
 
 	function get()
 	{
-        return $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' =>  'xivo.smtp.*'));
+	    return $this->_mail->get(1);
 	}
+
 	function set($arr)
 	{
-	    $conf = array();
-	    foreach($arr as $k => $v)
-	    {
-	        if(strncmp($k, 'xivo-smtp', 9) === 0)
-                $conf[str_replace('-', '.', $k)] = $v;
-	    }
-	    
-        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
-                return false;
-            
-        return $this->_sysconfd->request_get('/commonconf_generate');
-	}
+        $this->_reset();
+
+        if($this->_mail->chk_values($arr) === false)
+            $this->_set_errors($this->_mail->get_filter_error());
+
+        if($this->get_errnb() > 0)
+            return false;
+
+        $keys = array('mydomain', 'origin', 'relayhost', 'fallback_relayhost', 'canonical');
+        foreach(array_keys($arr) as $key)
+            if(!in_array($key, $keys))
+                unset($arr[$key]);
+
+        if($this->_mail->edit(1, $arr) === false)
+            return false;
+
+        // update commonconf via sysconfd
+        return $this->_commonconf->generate();
+    }
 }
 
 ?>

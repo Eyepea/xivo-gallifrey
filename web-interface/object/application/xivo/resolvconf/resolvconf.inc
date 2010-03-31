@@ -23,14 +23,14 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_object_abstract
 {
 	var $_resolvconf	= false;
-	var $_sysconfd	 = false;
+	var $_commonconf    = false;
 
 	function xivo_application_xivo_object_resolvconf(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
 		if(($this->_resolvconf = &$this->_xobj->get_module('resolvconf')) === false
-		|| ($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))     === false)
+		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)
 			return(false);
 
 		return(true);
@@ -44,17 +44,6 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 			return(false);
 
 		$this->_origin['resolvconf'] = $this->_resolvconf->get_origin();
-
-        // NOTE: sysconfd datas superseeds local ones (hostname, domain)
-        $sysconfd_data = $this->_sysconfd->request_post('/commonconf_get', 
-            array('key' =>  array('xivo.domain', 'xivo.hostname')));
-        if($sysconfd_data === false)
-            return false;
-            
-        $this->_info['resolvconf']['hostname'] = 
-            $this->_origin['resolvconf']['hostname'] = $sysconfd_data['xivo.hostname'];
-        $this->_info['resolvconf']['domain']   = 
-            $this->_origin['resolvconf']['domain'] = $sysconfd_data['xivo.domain'];
         
 		return($this->_info);
 	}
@@ -107,7 +96,7 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 
 		if($this->get_errnb() > 0
 		|| $this->save_resolvconf() === false
-		|| $this->update_sysconfd() === false)
+		|| $this->_commonconf->generate() === false)
 			$r = false;
 
 		$this->_status = '';
@@ -126,23 +115,6 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		return($this->_return['resolvconf']);
 	}
 	
-	function update_sysconfd()
-	{
-        $rs = $this->get_result('resolvconf');
-
-	    $conf = array(
-	        'xivo.hostname'     => $rs['hostname'],
-	        'xivo.domain'       => $rs['domain'],
-#	        'xivo.nameservers'  => trim(sprintf('%s %s %s', 
-#	            $rs['nameserver1'], $rs['nameserver2'], $rs['nameserver3'])),
-	    );
-	    
-        if($this->_sysconfd->request_post('/commonconf_set', $conf) === false)
-                return false;
-            
-        return $this->_sysconfd->request_get('/commonconf_generate');
-	}
-
 	function save_from_json()
 	{
 		if(($data = $this->_get_data_from_json()) === false
