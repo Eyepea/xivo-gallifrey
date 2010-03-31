@@ -38,8 +38,9 @@ log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
 
 class Cisco(PhoneVendorMixin):
 
-    CISCO_MODELS = (('cp7940', '7940'),
-                      ('cp7960', '7960'),
+    CISCO_MODELS = (('cp7912g', '7912'),
+		      ('cp7940g', '7940'),
+                      ('cp7960g', '7960'),
                       ('cp7941g', '7941GE'),
                       ('cp7961g', '7961GE'))
 
@@ -52,7 +53,7 @@ class Cisco(PhoneVendorMixin):
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
-        cls.CISCO_COMMON_DIR = os.path.join(cls.TFTPROOT, "Cisco/")
+        cls.CISCO_COMMON_DIR = "/tftpboot/"
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
@@ -99,7 +100,7 @@ class Cisco(PhoneVendorMixin):
         this phone.
         """
         model = self.phone['model']
-        macaddr = self.phone['macaddr'].replace(":", "").lower()
+        macaddr = self.phone['macaddr'].replace(":", "").upper()
         fromdhcp = 0
 
         if self.phone.get('from') == 'dhcp':
@@ -124,8 +125,12 @@ class Cisco(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml.tmp")
-        cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml")
+	if model not in ('cp7960g', 'cp7940g'):
+            tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml.tmp")
+            cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml")
+	else:
+            tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SIP" + macaddr + ".cnf.tmp")
+            cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SIP" + macaddr + ".cnf")
 
         if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
@@ -212,16 +217,23 @@ class Cisco(PhoneVendorMixin):
         """
 
 	# Cisco-CP7941G-GE/8.0
+	# Cisco-CP7961G-GE/8.0
+	# Cisco-CP7940G/8.0
+	# Cisco-CP7960G/8.0
 
-        ua_splitted = ua.split("-", 2)
-        if ua_splitted[0] != 'Cisco':
-            return None
-        model = 'unknown'
-        fw = 'unknown'
-        if len(ua_splitted) == 3:
-            fws = ua_splitted[2].split("/", 1)
+	ua_splitted = ua.split("-", 2)
+	if ua_splitted[0] != 'Cisco':
+	    return None
+	model = 'unknown'
+	fw = 'unknown'
+	if len(ua_splitted) == 3:
+	    fws = ua_splitted[2].split("/", 1)
 	    fw = fws[1]
-            model = ua_splitted[1].lower()
+	    model = ua_splitted[1].lower()
+	elif len(ua_splitted) == 2:
+	    fws = ua_splitted[1].split("/", 1)
+	    fw = fws[1]
+	    model = fws[0].lower()
         return ("cisco", model, fw)
 
     @classmethod
