@@ -42,7 +42,7 @@ function bbf_format($ctx, $link)
 	<div class="sb-content">
 <?php
     if(!is_null($prev))
-        echo $url->href_html('«&nbsp;'.$url->img_html("$basedir/XIVO.$prev.png", 
+        echo $url->href_html('«'.$url->img_html("$basedir/XIVO.$prev.png", 
                 null, "class=nav-left"), 
             null, array("zoom" => $prev), null, bbf_format($this, $prev)
         );
@@ -51,7 +51,7 @@ function bbf_format($ctx, $link)
 
     if(!is_null($next))
         echo $url->href_html($url->img_html("$basedir/XIVO.$next.png", 
-                null, "class=nav-right").'&nbsp;»', 
+                null, "class=nav-right").'»', 
             null, array("zoom" => $next), null, bbf_format($this, $next)
         );
 ?>

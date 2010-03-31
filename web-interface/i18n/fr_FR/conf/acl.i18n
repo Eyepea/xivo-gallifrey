@@ -234,3 +234,9 @@ Compétences
 
 ; acl(service-ipbx-call_center-queueskillrules)
 Règles
+
+; acl(service-graphs)
+Statistiques
+
+; acl(service-graphs-munin)
+Graphiques munin

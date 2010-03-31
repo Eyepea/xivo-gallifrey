@@ -46,6 +46,12 @@ $this->file_include('bloc/menu/top/user/loginbox');
 						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
 								   'xivo');?>
 					</li>
+				    <?php if(xivo_user::chk_acl_section('service/graphs/munin') === true): ?>
+					<li>
+						<?=$url->href_html($this->bbf('mn_sub_top_services_stats'),
+								   'graphs');?>
+					</li>
+					<?php endif; ?>
 				</ul>
 			</div>
 		</li>
