@@ -26,22 +26,20 @@ from datetime import datetime
 
 from xivo import http_json_server
 from xivo.http_json_server import CMD_RW, CMD_R
-from xivo_sysconf import helpers, jsondb
+from xivo_sysconf import helpers, jsoncore
 
 from pf_lib import ocf
 
 
-class Ha(jsondb.JsonDB):
+class Ha(jsoncore.JsonCore):
     """
     """
     def __init__(self):
         super(Ha, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.ha')
 
-        http_json_server.register(self.get      , CMD_RW, name='ha_get',
+        http_json_server.register(self.generate , CMD_R , name='ha_generate',
             safe_init=self.safe_init)
-        http_json_server.register(self.set      , CMD_RW, name='ha_set')
-        http_json_server.register(self.generate , CMD_R , name='ha_generate')
         http_json_server.register(self.status   , CMD_R , name='ha_status')
         
     def safe_init(self, options):

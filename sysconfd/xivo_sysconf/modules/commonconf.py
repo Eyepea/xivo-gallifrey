@@ -27,22 +27,19 @@ from datetime import datetime
 from xivo import http_json_server
 from xivo.http_json_server import CMD_RW, CMD_R
 
-from xivo_sysconf import helpers, jsondb
+from xivo_sysconf import helpers, jsoncore
 
 
-class CommonConf(jsondb.JsonDB):
+class CommonConf(jsoncore.JsonCore):
     """
     """
     def __init__(self):
         super(CommonConf, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.commonconf')
 
-        http_json_server.register(self.get      , CMD_RW, safe_init=self.safe_init,
-            name='commonconf_get')
-        http_json_server.register(self.set      , CMD_RW      , name='commonconf_set')
-        http_json_server.register(self.generate , CMD_R       , name='commonconf_generate')
-        
-
+        http_json_server.register(self.generate , CMD_RW, 
+            safe_init=self.safe_init, 
+            name='commonconf_generate')
         
     def safe_init(self, options):
         super(CommonConf, self).safe_init(options)
@@ -61,7 +58,7 @@ class CommonConf(jsondb.JsonDB):
             'xivo.dhcp.active', 'xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'
          ],
         '4. Mail'       : [
-            'xivo.smtp.origin', 'xivo.smtp.relayhost', 
+            'xivo.smtp.mydomain', 'xivo.smtp.origin', 'xivo.smtp.relayhost', 
             'xivo.smtp.fallback_relayhost', 'xivo.smtp.canonical'
          ],
         '5. Maintenance': ['xivo.maintenance'],
@@ -75,18 +72,19 @@ class CommonConf(jsondb.JsonDB):
         f.write("%s=%d\n" % (key, value))
     ## /
 
-    """
-        try:
-            p = subprocess.Popen([self.cmd])
-            ret = p.wait()
-        except OSError:
-            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
+#    def apply(self, args, options):
+#    """
+#        try:
+#            p = subprocess.Popen([self.cmd])
+#            ret = p.wait()
+#        except OSError:
+#            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
 
-        if ret != 0:
-            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
+#        if ret != 0:
+#            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
 
-        return True
-    """
-        
+#        return True
+#    """
+#    pass
         
 commonconf = CommonConf()
