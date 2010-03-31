@@ -134,6 +134,11 @@ class cursor(object):
         """
         tmp_query = self.__preparequery(sql_query, columns)
 
+        if self.__methods[METHOD_MODULE].paramstyle == "qmark":
+            if parameters is not None:
+                tmp_query = tmp_query % parameters
+                parameters = None
+
         if parameters is None:
             self.__dbapi2_cursor.execute(tmp_query)
         else:
@@ -145,6 +150,12 @@ class cursor(object):
         of the underlying DBAPI2.0 cursor instead of .execute()
         """
         tmp_query = self.__preparequery(sql_query, columns)
+
+        if self.__methods[METHOD_MODULE].paramstyle == "qmark":
+            if seq_of_parameters is not None:
+                tmp_query = tmp_query % seq_of_parameters
+                seq_of_parameters = None
+
         self.__dbapi2_cursor.executemany(tmp_query, seq_of_parameters)
 
     def fetchone(self):
@@ -349,8 +360,8 @@ def register_uri_backend(uri_scheme, create_method, module, c14n_uri_method, esc
         raise NotImplementedError, "This module does not support registration of non DBAPI services of at least apilevel 2.0"
     if delta_api < 0 or delta_api > 1:
         raise NotImplementedError, "This module does not support registration of DBAPI services with a specified apilevel of %s" % module.apilevel
-    if mod_paramstyle != 'pyformat' and mod_paramstyle != 'format':
-        raise NotImplementedError, "This module only supports registration of DBAPI services with a 'format' or 'pyformat' paramstyle, not %r" % mod_paramstyle
+    if mod_paramstyle not in ['pyformat', 'format', 'qmark']:
+        raise NotImplementedError, "This module only supports registration of DBAPI services with a 'format' or 'pyformat' 'qmark' paramstyle, not %r" % mod_paramstyle
     if mod_threadsafety < any_threadsafety:
         raise NotImplementedError, "This module does not support registration of DBAPI services of threadsafety %d (more generally under %d)" % (mod_threadsafety, any_threadsafety)
     if not urisup.valid_scheme(uri_scheme):
