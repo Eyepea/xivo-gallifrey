@@ -26,7 +26,7 @@ $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 $servicesavail = array('enablevm', 'incallrec');
 $preferencesavail = array('logagent', 'pauseagent', 'blinktime', 'fontsize', 'fontname', 'iconsize', 'supervisor', 'queues-showqueuenames', 'queues-showqueues');
-$funcsavail = array('agents', 'presence', 'chitchat');
+$funcsavail = array('agents', 'presence', 'switchboard', 'customerinfo', 'search', 'dial', 'chitchat');
 
 $xletsavail = array();
 $xletsavail = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
@@ -70,7 +70,7 @@ switch($act)
 				{
 					if($v != '')
 					{
-						$str .= "[ \"".$v."\", \"" . $_QR['xletsloc'][$k] . "\", \"";
+						$str = "[ \"".$v."\", \"" . $_QR['xletsloc'][$k] . "\", \"";
 						if($_QR['xletsf'][$k] == 1)
 							$str .= 'f';
 						if($_QR['xletsc'][$k] == 1)
@@ -79,6 +79,8 @@ switch($act)
 							$str .= 'm';
 						if($_QR['xletss'][$k] == 1)
 							$str .= 's';
+						$str .= "\", \"";
+						$str .= $_QR['xletposnum'][$k];
 						$str .= "\" ]";
 						$arr[] = $str;
 					}
@@ -199,6 +201,8 @@ switch($act)
 							$str .= 'm';
 						if($_QR['xletss'][$k] == 1)
 							$str .= 's';
+						$str .= "\", \"";
+						$str .= $_QR['xletposnum'][$k];
 						$str .= "\" ]";
 						$arr[] = $str;
 					}

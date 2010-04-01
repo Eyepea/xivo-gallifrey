@@ -23,7 +23,7 @@ $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
 xivo::load_class('xivo_directories',XIVO_PATH_OBJECT,null,false);
 dwho::load_class('dwho_uri');
-$uri = new dwho_uri();
+$uriobject = new dwho_uri();
 $_DIR = new xivo_directories();
 
 $param = array();
@@ -134,23 +134,21 @@ switch($act)
 
 					break;
 				}
-				# Case webservices
 				case 3:
-				case 4:
 				{
 					$uri = $_QR['uri'];
 					break;
 				}
-
-				default:
+				case 4:
 				{
-					if(strpos($_QR['uri'], '://') === false)
-						$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
-					else
-						$uri = $_QR['uri'];
+					$uri = "phonebook";
 					break;
 				}
-
+				default:
+				{
+					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
+					break;
+				}
 			}
 
 			$data['uri'] = $uri;
@@ -183,7 +181,7 @@ switch($act)
 
 		$return['type'] = $return['host'] = $return['port'] = $return['dbname'] = $return['user'] = $return['password'] = '';
 
-		$parsed = $uri->parse_uri($return['uri']);
+		$parsed = $uriobject->parse_uri($return['uri']);
 		$return['type'] = -1;
 		if($parsed['path'] == 'phonebook')
 		{

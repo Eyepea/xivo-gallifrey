@@ -303,6 +303,7 @@ endif;
 				<th class="th-center"><?=$this->bbf('col_'.$type.'-c');?></th>
 				<th class="th-center"><?=$this->bbf('col_'.$type.'-m');?></th>
 				<th class="th-center"><?=$this->bbf('col_'.$type.'-s');?></th>
+				<th class="th-center"><?=$this->bbf('col_'.$type.'-num');?></th>
 				<th class="th-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_'.$type.'-add'),
@@ -318,6 +319,7 @@ endif;
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
+				$errdisplay = '';
 
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
@@ -379,6 +381,16 @@ endif;
 							 ),
 							 $yesno);?>
 				</td>
+				<td>
+					<?=$form->text(array('paragraph'	=> false,
+								 'name'		=> 'xletposnum[]',
+								 'id'		=> false,
+								 'label'		=> false,
+								 'size'		=> 4,
+								 'disabled'	=> false,
+								 'value'	=> $info['xlets']['slt'][$i][3],
+								 'default'		=> 'N/A'));?>
+				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
 									  $this->bbf('opt_'.$type.'-delete'),
@@ -397,7 +409,7 @@ endif;
 			</tbody>
 			<tfoot>
 			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
-				<td colspan="7" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+				<td colspan="8" class="td-single"><?=$this->bbf('no_'.$type);?></td>
 			</tr>
 			</tfoot>
 		</table>
@@ -461,6 +473,15 @@ endif;
 								   'default'	=> 1
 							 ),
 							 $yesno);?>
+				</td>
+				<td>
+					<?=$form->text(array('paragraph'	=> false,
+								 'name'		=> 'xletposnum[]',
+								 'id'		=> false,
+								 'label'		=> false,
+								 'size'		=> 4,
+								 'disabled'	=> false,
+								 'default'		=> 'N/A'));?>
 				</td>
 				<td class="td-right">
 					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',

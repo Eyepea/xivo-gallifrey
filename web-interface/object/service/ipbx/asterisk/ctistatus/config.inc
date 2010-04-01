@@ -43,7 +43,7 @@ $array['element']['deletable']['default'] = 1;
 $array['filter'] = array();
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
 $array['filter']['presence_id'] = array('cast' => 'ulongint');
-$array['filter']['display_name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,\s]+$/i');
+$array['filter']['display_name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['actions'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/.*/i');
 $array['filter']['actions'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 #$array['filter']['actions'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\'\(\)\-\,]+$/i');

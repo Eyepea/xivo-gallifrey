@@ -65,7 +65,7 @@ $form = &$this->get_module('form');
 	</div>
 
 	<div class="sb-content">
-<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-services');" onsubmit="dwho.form.select('it-funcs');">
+<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-services'); dwho.form.select('it-funcs');">
 
 <?=$form->hidden(array('name' => DWHO_SESS_NAME,'value' => DWHO_SESS_ID));?>
 <?=$form->hidden(array('name' => 'act','value' => 'add'));?>
