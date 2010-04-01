@@ -126,6 +126,7 @@ $data 		= $this->get_var('queueskills');
 							'id'		=> "it-queueskill-skill[]",
 							'key'		=> 'name',
 							'altkey'	=> 'id',
+							'label'     => false,
 							'empty'		=> true,
 							'optgroup'	=> array(
 								'key'		=> 'category', 
