@@ -36,7 +36,7 @@ class Munin(object):
         super(Munin, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.munin')
 
-        http_json_server.register(self.update , CMD_RW, 
+        http_json_server.register(self.update , CMD_R, 
             safe_init=self.safe_init, 
             name='munin_update')
             

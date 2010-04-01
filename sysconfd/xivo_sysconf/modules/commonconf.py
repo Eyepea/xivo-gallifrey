@@ -40,6 +40,7 @@ class CommonConf(jsoncore.JsonCore):
         http_json_server.register(self.generate , CMD_RW, 
             safe_init=self.safe_init, 
             name='commonconf_generate')
+        http_json_server.register(self.apply, CMD_R, name='commonconf_apply')
         
     def safe_init(self, options):
         super(CommonConf, self).safe_init(options)
@@ -72,19 +73,16 @@ class CommonConf(jsoncore.JsonCore):
         f.write("%s=%d\n" % (key, value))
     ## /
 
-#    def apply(self, args, options):
-#    """
-#        try:
-#            p = subprocess.Popen([self.cmd])
-#            ret = p.wait()
-#        except OSError:
-#            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
+    def apply(self, args, options):
+        try:
+            p = subprocess.Popen([self.cmd])
+            ret = p.wait()
+        except OSError:
+            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
 
-#        if ret != 0:
-#            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
+        if ret != 0:
+            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
 
-#        return True
-#    """
-#    pass
+        return True
         
 commonconf = CommonConf()
