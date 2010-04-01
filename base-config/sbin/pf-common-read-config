@@ -15,7 +15,7 @@ if [ -n "${XIVO_NET4_CIDR}" ]; then
   XIVO_NET4_NETMASK=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Netmask:" | awk '{print $2}')
   XIVO_NET4_BROADCAST=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Broadcast:" | awk '{print $2}')
   XIVO_NET4_SUBNET=$(ipcalc -n ${XIVO_NET4_CIDR} | grep "Network:" | awk '{print $2}' | cut -d/ -f1)
-elif [ -z "${XIVO_NET4_IP}" -o -z "${XIVO_NET4_NETMASK}" -o -z "${XIVO_NET4_BROADCAST}" -o -z "${XIVO_NET4_SUBNET}"]; then
+elif [ -z "${XIVO_NET4_IP}" -o -z "${XIVO_NET4_NETMASK}" -o -z "${XIVO_NET4_BROADCAST}" -o -z "${XIVO_NET4_SUBNET}" ]; then
   echo "ERROR: Network badly configured" >&2
   exit 1
 fi
@@ -38,7 +38,7 @@ if [ -n "${XIVO_NAMESERVERS}" ]; then
   for NS in ${XIVO_NAMESERVERS}; do
     XIVO_NAMESERVER_LIST="${XIVO_NAMESERVER_LIST}nameserver ${NS}\n"
   done
-# XIVO_NAMESERVERS
+# XIVO_NAMESERVERS MUST BE facultative
 #else
 #  echo "ERROR: no nameservers defined" >&2
 #  exit 1
