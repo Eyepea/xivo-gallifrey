@@ -57,7 +57,6 @@ class xivo_object_commonconf extends xivo_object_abstract
 
         // mail (postfix)
         $rawdata = $this->_mail->get(1);
-        var_dump($rawdata);
         $conf = array_merge($conf, array(
             'xivo.smtp.mydomain'           => 
                 strlen($rawdata['mydomain'])==0?null:$rawdata['mydomain'],
@@ -160,6 +159,11 @@ class xivo_object_commonconf extends xivo_object_abstract
         ));
   
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
+	}
+
+    function apply()
+    {
+        return $this->_sysconfd->request_get('/commonconf_apply');
 	}
 }
 
