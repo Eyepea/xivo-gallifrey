@@ -40,6 +40,9 @@ $array['xivo/configuration/support/xivo'] = 'xivo/configuration/index.php/suppor
 $array['xivo/configuration/support/alerts'] = 'xivo/configuration/index.php/support/alerts/';
 $array['xivo/configuration/support/limits'] = 'xivo/configuration/index.php/support/limits/';
 
+$array['xivo/configuration/controlsystem/commonconf'] = 'xivo/configuration/index.php/controlsystem/commonconf/';
+$array['xivo/configuration/controlsystem/ha'] = 'xivo/configuration/index.php/controlsystem/ha/';
+
 $array['xivo/preferences'] = 'xivo/preferences.php';
 $array['xivo/help'] = 'xivo/help.php';
 $array['xivo/contact'] = 'xivo/contact.php';

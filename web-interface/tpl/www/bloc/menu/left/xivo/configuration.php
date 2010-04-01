@@ -19,6 +19,7 @@
 #
 
 $url = &$this->get_module('url');
+$dhtml = &$this->get_module('dhtml');
 
 ?>
 <dl>
@@ -104,6 +105,27 @@ $url = &$this->get_module('url');
 			<dd id="mn-support--limits">
 				<?=$url->href_html($this->bbf('mn_left_support-limits'),
 						   'xivo/configuration/support/limits');?>
+			</dd>
+		</dl>
+		<dl>
+			<dt><?=$this->bbf('mn_left_ti_controlsystem');?></dt>
+			<dd id="mn-controlsystem--commonconf">
+				<?=$url->href_html($this->bbf('mn_left_controlsystem-commonconf'),
+						   'xivo/configuration/controlsystem/commonconf',
+						   null,
+						   'onclick="return(confirm(\''.
+						       $dhtml->escape($this->bbf('controlsystem_commonconf_confirm')).
+						       '\'));"'
+			    );?>
+			</dd>
+			<dd id="mn-controlsystem--ha">
+				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha'),
+						   'xivo/configuration/controlsystem/ha',
+						   null,
+						   'onclick="return(confirm(\'plop'.
+						       $dhtml->escape($this->bbf('controlsystem_ha_confirm')).
+						       '\'));"'
+			    );?>
 			</dd>
 		</dl>
 	</dd>
