@@ -40,20 +40,32 @@ class Munin(object):
             safe_init=self.safe_init, 
             name='munin_update')
             
-        self.cmd = '/usr/sbin/update-pf-stats-munin'
+        self.cmd1 = ['/usr/sbin/update-pf-stats-munin']
+        self.cmd2 = ['/usr/bin/munin-cron', '--force-root']
         
     def safe_init(self, options):
         pass
    
     def update(self, args, options):
         try:
-            p = subprocess.Popen([self.cmd])
+            p = subprocess.Popen(self.cmd1)
             ret = p.wait()
-        except OSError:
-            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
-
+        except Exception:
+            self.log.debug("can't execute '%s'" % self.cmd1)
+            raise http_json_server.HttpReqError(500, "can't execute '%s'" % self.cmd1)
         if ret != 0:
-            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
+            raise http_json_server.HttpReqError(500, "'%s' process return error %d" % (self.cmd1, ret))
+
+        try:
+            # NOTE: process run in background
+            p = subprocess.Popen(self.cmd2)
+            #ret = p.wait()
+        except Exception:
+            self.log.debug("can't execute '%s'" % self.cmd2)
+            raise http_json_server.HttpReqError(500, "can't execute '%s'" % self.cmd2[0])
+#        if ret != 0:
+#            raise http_json_server.HttpReqError(500, "'%s' process return error %d" % (self.cmd2[0], ret))
+
 
         return True
         
