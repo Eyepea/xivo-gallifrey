@@ -25,16 +25,37 @@ define('XIVO_SOFT_LABEL','XIVO');
 define('XIVO_SOFT_VERSION','1.1');
 define('XIVO_SOFT_CODENAME','Gallifrey');
 define('XIVO_SOFT_URL','xivo.fr');
-define('XIVO_CORP_NAME','proformatique');
 define('XIVO_CORP_LABEL','Proformatique');
-define('XIVO_CORP_EMAIL','contact@proformatique.com');
-define('XIVO_CORP_URL','proformatique.com');
-define('XIVO_CORP_ADDRESS','10 bis, rue Lucien VOILIN');
-define('XIVO_CORP_ZIPCODE','92800');
-define('XIVO_CORP_CITY','Puteaux');
-define('XIVO_CORP_COUNTRY','France');
-define('XIVO_CORP_PHONE','+33 (0) 1 41 38 99 60');
-define('XIVO_CORP_FAX','+33 (0) 1 41 38 99 70');
+
+define('XIVO_AV_FR_CORP_NAME'		,'AVENCALL');
+define('XIVO_AV_FR_CORP_EMAIL'		,'contact@avencall.com');
+define('XIVO_AV_FR_CORP_URL'		,'avencall.com');
+define('XIVO_AV_FR_CORP_ADDRESS'	,'3 allée des Séquoïas <br> Le Chinook');
+define('XIVO_AV_FR_CORP_ZIPCODE'	,'69760');
+define('XIVO_AV_FR_CORP_CITY'		,'Limonest');
+define('XIVO_AV_FR_CORP_COUNTRY'	,'France');
+define('XIVO_AV_FR_CORP_PHONE'		,'+33 (0) 4 37 49 78 10');
+define('XIVO_AV_FR_CORP_FAX'		,'');
+
+define('XIVO_PF_FR_CORP_NAME'		,'proformatique');
+define('XIVO_PF_FR_CORP_EMAIL'		,'contact@proformatique.fr');
+define('XIVO_PF_FR_CORP_URL'		,'proformatique.fr');
+define('XIVO_PF_FR_CORP_ADDRESS'	,'10 bis, rue Lucien VOILIN');
+define('XIVO_PF_FR_CORP_ZIPCODE'	,'92800');
+define('XIVO_PF_FR_CORP_CITY'		,'Puteaux');
+define('XIVO_PF_FR_CORP_COUNTRY'	,'France');
+define('XIVO_PF_FR_CORP_PHONE'		,'+33 (0) 1 41 38 99 60');
+define('XIVO_PF_FR_CORP_FAX'		,'+33 (0) 1 41 38 99 70');
+
+define('XIVO_PF_CA_CORP_NAME'		,'proformatique');
+define('XIVO_PF_CA_CORP_EMAIL'		,'contact@proformatique.ca');
+define('XIVO_PF_CA_CORP_URL'		,'proformatique.ca');
+define('XIVO_PF_CA_CORP_ADDRESS'	,'address canada');
+define('XIVO_PF_CA_CORP_ZIPCODE'	,'92800');
+define('XIVO_PF_CA_CORP_CITY'		,'Quebec');
+define('XIVO_PF_CA_CORP_COUNTRY'	,'Canada');
+define('XIVO_PF_CA_CORP_PHONE'		,'');
+define('XIVO_PF_CA_CORP_FAX'		,'');
 
 define('XIVO_WS_HEADER_NAME_VERSION','X-XIVO-WS-VERSION');
 define('XIVO_WS_VERSION','1.0');

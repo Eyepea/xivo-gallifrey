@@ -16,7 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#r-xivo-contact .sb-content div {padding: 10px 0px;}
+#r-xivo-contact .sb-content {padding: 10px 0px;display: block;}
+#r-xivo-contact .sb-content .logo {float: left;width: 49%;text-align: center;padding: 5px;}
+#r-xivo-contact .sb-content .body {margin-left: 50%;width: 49%;}
+#r-xivo-contact .sb-content .clear {clear: both;}
 #r-xivo-contact dl {padding-bottom: 10px;}
 #r-xivo-contact dt {font-weight: bold;padding-top: 4px;}
 #r-xivo-contact dd {padding-left: 20px;}
