@@ -803,7 +803,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
         if($r === false)
             return false;
 
-        return $this->update_commonconf();
+        return $this->update_server();
 	}
 
 	function add_netiface()
@@ -903,7 +903,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
         if($r === false)
             return false;
 
-        return $this->update_commonconf();
+        return $this->update_server();
 	}
 
 	function edit_netiface()
@@ -981,7 +981,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
         if($r === false)
             return false;
     
-        return $this->update_commonconf();
+        return $this->update_server();
 	}
 
 	function delete_netiface()
@@ -1064,7 +1064,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
         if($r === false)
             return false;
     
-        return $this->update_commonconf();
+        return $this->update_server();
 	}
 
 	function disable()
@@ -1092,7 +1092,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
         if($r === false)
             return false;
     
-        return $this->update_commonconf();
+        return $this->update_server();
 	}
 
 	function enable_netiface()
@@ -1196,14 +1196,18 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	}
 	
 	/**
-	    Send device network configuration IFF device is voip type
+	    Send device network configuration IFF device is voip type,
+	    Update munin graphs
 	    
 	    Return true if sysconfd store values & regenerate common.conf correctly,
 	    false otherwise
 	*/
-	function update_commonconf()
+	function update_server()
     {
-        return $this->_commonconf->generate();
+        if(!$this->_commonconf->generate())
+            return false;
+        
+        return $this->_sysconfd->request_get('/munin_update');
     }
 }
 
