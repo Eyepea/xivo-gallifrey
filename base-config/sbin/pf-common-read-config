@@ -38,9 +38,10 @@ if [ -n "${XIVO_NAMESERVERS}" ]; then
   for NS in ${XIVO_NAMESERVERS}; do
     XIVO_NAMESERVER_LIST="${XIVO_NAMESERVER_LIST}nameserver ${NS}\n"
   done
-else
-  echo "ERROR: no nameservers defined" >&2
-  exit 1
+# XIVO_NAMESERVERS
+#else
+#  echo "ERROR: no nameservers defined" >&2
+#  exit 1
 fi
 
 XIVO_DHCP_IFACES="none"
