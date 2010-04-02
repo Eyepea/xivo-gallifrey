@@ -323,8 +323,8 @@ endif;
 				  'required'=> false,
 				  'value'	=> $this->get_var('info','accountcode','var_val'),
 				  'default'	=> $element['accountcode']['default'],
-				  'error'	=> $this->bbf_args('accountcode',
-					   $this->get_var('error', 'bindaddr')) )),
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'accountcode')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_amaflags'),
 				    'name'		=> 'amaflags',

@@ -485,11 +485,8 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set'		=> false,
-				     'chk'		=> 2,
-				     'callback'		=> 'dwho_network::valid_host',
-				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
-								  DWHO_NETWORK_HOST_HOSTNAME)),
+$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
+				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)),
 				     'maxlen'		=> 64);
 $array['filter']['videosupport'] = array('bool' => true);
 $array['filter']['autocreatepeer'] = array('bool' => true);

@@ -200,12 +200,9 @@ dwho::load_class('dwho_network');
 
 $array['filter'] = array();
 $array['filter']['bindport'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
-$array['filter']['bindaddr'] = array('set'		=> false,
-				     'chk'		=> 2,
-				     'callback'		=> 'dwho_network::valid_host',
-				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |
-								  DWHO_NETWORK_HOST_HOSTNAME_ALL)),
-				     'maxlen'		=> 64);
+$array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
+				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC |DWHO_NETWORK_HOST_HOSTNAME_ALL)),
+				     'maxlen' => 64);
 $array['filter']['iaxthreadcount'] = array('cast' => 'uint','between' => array(1,256));
 $array['filter']['iaxmaxthreadcount'] = array('cast' => 'uint','between' => array(0,256));
 $array['filter']['iaxcompat'] = array('bool' => true);

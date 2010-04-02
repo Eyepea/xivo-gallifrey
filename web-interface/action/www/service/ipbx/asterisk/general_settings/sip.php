@@ -21,7 +21,7 @@
 $appsip = &$ipbx->get_apprealstatic('sip');
 $appgeneralsip = &$appsip->get_module('general');
 
-$fm_save = null;
+$fm_save = $error = null;
 
 $info = $appgeneralsip->get_all_val_by_category(false);
 
