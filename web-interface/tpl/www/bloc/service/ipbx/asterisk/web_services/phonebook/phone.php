@@ -31,6 +31,7 @@ switch($vendor)
 	case 'snom':
 	case 'thomson':
 	case 'yealink':
+	case 'cisco':
 		$directory = 'genericxml';
 		break;
 }

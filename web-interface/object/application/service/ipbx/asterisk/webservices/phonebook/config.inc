@@ -26,10 +26,11 @@ $array['xivoserver']['option']['ssl_verifypeer'] = false;
 $array['ldapfilter'] = array();
 
 $array['vendor'] = array();
-$array['vendor']['aastra'] = 'aastra';
+$array['vendor']['aastra']  = 'aastra';
 $array['vendor']['polycom'] = 'polycom';
-$array['vendor']['snom'] = 'snom';
+$array['vendor']['snom']    = 'snom';
 $array['vendor']['thomson'] = 'thomson';
 $array['vendor']['yealink'] = 'yealink';
+$array['vendor']['cisco']   = 'cisco';
 
 ?>
