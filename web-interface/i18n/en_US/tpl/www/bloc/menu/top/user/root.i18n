@@ -13,6 +13,9 @@ IPBX
 ; mn_sub_top_services_monitoring
 Monitoring
 
+; mn_sub_top_services_stats
+Graphics
+
 ; mn_top_configuration
 Configuration
 
