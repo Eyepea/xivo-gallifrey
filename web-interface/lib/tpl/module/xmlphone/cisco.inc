@@ -41,12 +41,11 @@ class dwho_tpl_xmlphone_cisco extends dwho_tpl_xmlphone_abstract
 	function get_model()
 	{
 		if(isset($_SERVER['HTTP_USER_AGENT']) === false
-		|| preg_match('/^Allegro-/',
-			      $_SERVER['HTTP_USER_AGENT'],
-			      $match) !== 1)
+		|| preg_match('/Allegro-/i',
+			      $_SERVER['HTTP_USER_AGENT']) !== 1)
 			return(null);
 
-		return($match[1]);
+		return('cisco7960');
 	}
 }
 

@@ -31,6 +31,6 @@ $array['vendor']['polycom'] = 'polycom';
 $array['vendor']['snom']    = 'snom';
 $array['vendor']['thomson'] = 'thomson';
 $array['vendor']['yealink'] = 'yealink';
-$array['vendor']['cisco']   = 'cisco';
+$array['vendor']['cisco']   = 'allegro';
 
 ?>
