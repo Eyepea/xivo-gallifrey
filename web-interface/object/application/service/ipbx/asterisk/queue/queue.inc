@@ -1263,6 +1263,11 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($this->_dso->skills_getall($search, $limit));
 	}
 
+	function skills_json_getall()
+	{
+		return($this->_dso->skills_json_getall());
+	}
+
 	function skills_get($id)
 	{
 		return $this->_dso->skills_getone((int) $id);

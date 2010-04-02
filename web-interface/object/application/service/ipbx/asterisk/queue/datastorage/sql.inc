@@ -124,6 +124,25 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		return($res);
 	}
 
+    function skills_json_getall()
+	{
+		$this->_dso->new_select('queueskill', array('id', 'name', 'description', 'printscreen'));
+		$this->_dso->leftjoin('queueskillcat',
+    		'queueskillcat.id = queueskill.catid',
+    		null,
+    		array('category_name' => 'name'));
+
+		$this->_dso->new_order('id', null, 'queueskill');
+		$this->_dso->limit($limit);
+		
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+
+		return($res);
+	}
+	
 	function skills_getone($id)
 	{
 		if(!is_int($id))
