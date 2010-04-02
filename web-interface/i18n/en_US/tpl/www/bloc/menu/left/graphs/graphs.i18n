@@ -1,0 +1,32 @@
+; mn_left_name
+Graphics
+
+; mn_left_ti_localhost
+Localhost
+
+; mn_left_munin-apache 
+Apache
+
+; mn_left_munin-asterisk 
+Asterisk
+
+; mn_left_munin-disk 
+Disk
+
+; mn_left_munin-time 
+Time
+
+; mn_left_munin-postfix 
+Postfix
+
+; mn_left_munin-processes 
+Processes
+
+; mn_left_munin-network 
+Network
+
+; mn_left_munin-system 
+System
+
+; mn_left_munin-other
+Other
