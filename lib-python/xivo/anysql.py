@@ -152,9 +152,7 @@ class cursor(object):
         tmp_query = self.__preparequery(sql_query, columns)
 
         if self.__methods[METHOD_MODULE].paramstyle == "qmark":
-            if seq_of_parameters is not None:
-                tmp_query = tmp_query % seq_of_parameters
-                seq_of_parameters = None
+            raise NotImplementedError, "qmark isn't fully supported"
 
         self.__dbapi2_cursor.executemany(tmp_query, seq_of_parameters)
 
