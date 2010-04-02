@@ -124,6 +124,9 @@ $array['service/ipbx/json/restricted/pbx_settings/queues'] = 'service/ipbx/json.
 $array['service/ipbx/json/restricted/pbx_settings/meetme'] = 'service/ipbx/json.php/restricted/pbx_settings/meetme/';
 $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/json.php/restricted/pbx_settings/voicemail/';
 $array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
+$array['service/ipbx/json/restricted/call_center/queueskills'] = 'service/ipbx/json.php/restricted/call_center/queueskills/';
+
+
 
 $array['service/ipbx/json/private/ctiserver/configuration'] = 'service/ipbx/json.php/private/ctiserver/configuration/';
 
