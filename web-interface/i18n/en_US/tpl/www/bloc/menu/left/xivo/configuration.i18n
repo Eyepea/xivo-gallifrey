@@ -15,3 +15,51 @@ Servers
 
 ; mn_left_manage-ldapserver
 LDAP Servers
+
+; mn_left_manage-directories 
+Directories
+
+; mn_left_manage-accesswebservice 
+Acces Web Service
+
+; mn_left_ti_network
+Network
+
+; mn_left_network-interface 
+Interfaces
+
+; mn_left_network-iproute
+Routes
+
+; mn_left_network-resolvconf
+Resolver
+
+; mn_left_network-mail 
+Mail
+
+; mn_left_network-dhcp 
+DHCP
+
+; mn_left_network-ha 
+High Availability
+
+; mn_left_ti_support
+Support
+
+; mn_left_support-xivo
+XiVO
+
+; mn_left_support-alerts 
+Alerts
+
+; mn_left_support-limits
+Limits
+
+; mn_left_ti_controlsystem
+Control System
+
+; mn_left_controlsystem-commonconf 
+Reload Config
+
+; mn_left_controlsystem-ha 
+Reload HA
