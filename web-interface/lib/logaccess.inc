@@ -18,27 +18,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require_once('xivo.php');
 
-if(xivo_user::chk_acl(true) === false)
-	$_QRY->go($_TPL->url('xivo'));
+if(($ipbx_ini = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini')) === false)
+	die('ERR: Missing ipbx init file');
 
-$ipbx = &$_SRE->get('ipbx');
+if(dwho_issa('logaccess',$ipbx_ini) === true
+&& isset($ipbx_ini['logaccess']['file']) === true
+&& dwho_empty($ipbx_ini['logaccess']['file']) === false)
+	define('XIVO_LOG_FILE',$ipbx_ini['logaccess']['file']);
+else
+	die('ERR: [logaccess] in ipbx.ini not configured');
 
-$dhtml = &$_TPL->get_module('dhtml');
-$dhtml->set_css('css/service/ipbx/'.$ipbx->get_name().'.css');
-$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'.js');
-
-$_TPL->load_i18n_file('struct/service/ipbx/'.$ipbx->get_name());
-
-$action_path = $_LOC->get_action_path('service/ipbx/'.$ipbx->get_name(),2);
-
-require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
-
-if($action_path === false)
-	$_QRY->go($_TPL->url('xivo'));
-
-
-die(include($action_path));
+if ((($_QR['act'] === 'add'
+|| $_QR['act'] === 'edit')
+&& $_QR['fm_send'] === '1')
+|| $_QR['act'] === 'del'
+|| $_QR['act'] === 'enables'
+|| $_QR['act'] === 'disables')
+	dwho_logw($action_path,&$_USR->_info['login'],$_QR['act']);
 
 ?>

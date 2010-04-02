@@ -25,6 +25,8 @@ if($_USR->mk_active() === false)
 
 $action_path = $_LOC->get_action_path('xivo/index',0);
 
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
+
 if($action_path === false)
 	$_QRY->go($_TPL->url('xivo/logoff'));
 

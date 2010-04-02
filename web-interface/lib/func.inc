@@ -18,6 +18,28 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+
+function dwho_logw($str,$username,$act)
+{
+	if (defined('XIVO_LOG_FILE') === false)
+		die('xivo_log_file_not_exist');
+
+	if (empty($username) === true)
+		return(false);
+
+	$datetime = strftime('%c');
+	$log = '['.$datetime.'] ['.$username.'] ['.$act.'] '.$str."\n";
+
+	if(($fh = fopen(XIVO_LOG_FILE, 'a+')) !== false)
+	{
+		fputs($fh, $log, strlen($log));
+		fclose($fh);
+		return(true);
+	}
+	else
+		die('ERR: can\'t create or write '.XIVO_LOG_FILE);
+}
+
 function dwho_constant($name,$default=null)
 {
 	if(defined($name) === true)

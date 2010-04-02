@@ -26,6 +26,7 @@ define('XIVO_SOFT_VERSION','1.1');
 define('XIVO_SOFT_CODENAME','Gallifrey');
 define('XIVO_SOFT_URL','xivo.fr');
 define('XIVO_CORP_LABEL','Proformatique');
+define('XIVO_CORP_URL','xivo.fr');
 
 define('XIVO_AV_FR_CORP_NAME'		,'AVENCALL');
 define('XIVO_AV_FR_CORP_EMAIL'		,'contact@avencall.com');
