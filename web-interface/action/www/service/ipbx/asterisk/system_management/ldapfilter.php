@@ -31,7 +31,7 @@ switch($act)
 	case 'add':
 		$appldapfilter = &$ipbx->get_application('ldapfilter');
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('ldapfilter',$_QR) === true)
 		{
@@ -40,6 +40,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appldapfilter->get_result();
+				$error = $appldapfilter->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
@@ -57,6 +58,7 @@ switch($act)
 		}
 
 		$_TPL->set_var('info',$result);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appldapfilter->get_elements());
 		$_TPL->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));
@@ -71,7 +73,7 @@ switch($act)
 		if(isset($_QR['id']) === false || ($info = $appldapfilter->get($_QR['id'])) === false)
 			$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
 
-		$result = $fm_save = null;
+		$result = $fm_save = $error = null;
 		$return = &$info;
 
 		if(isset($_QR['fm_send']) === true && dwho_issa('ldapfilter',$_QR) === true)
@@ -83,6 +85,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appldapfilter->get_result();
+				$error = $appldapfilter->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/system_management/ldapfilter'),$param);
@@ -101,6 +104,7 @@ switch($act)
 
 		$_TPL->set_var('id',$info['ldapfilter']['id']);
 		$_TPL->set_var('info',$return);
+		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appldapfilter->get_elements());
 		$_TPL->set_var('ldapservers',$appldapfilter->get_ldapservers_list(null,array('name' => SORT_ASC)));

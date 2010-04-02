@@ -38,7 +38,9 @@ endif;
 				  'labelid'	=> 'ldapfilter-name',
 				  'size'	=> 15,
 				  'default'	=> $element['ldapfilter']['name']['default'],
-				  'value'	=> $info['ldapfilter']['name']));
+				  'value'	=> $info['ldapfilter']['name'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'ldapfilter', 'name'))));
 
 	if(($ldapservers = $this->get_var('ldapservers')) !== false):
 		echo	$form->select(array('desc'	=> $this->bbf('fm_ldapfilter_ldapserverid'),
@@ -63,21 +65,27 @@ endif;
 				  'labelid'	=> 'ldapfilter-user',
 				  'size'	=> 15,
 				  'default'	=> $element['ldapfilter']['user']['default'],
-				  'value'	=> $info['ldapfilter']['user'])),
+				  'value'	=> $info['ldapfilter']['user'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'ldapfilter', 'user')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_ldapfilter_passwd'),
 				  'name'	=> 'ldapfilter[passwd]',
 				  'labelid'	=> 'ldapfilter-passwd',
 				  'size'	=> 15,
 				  'default'	=> $element['ldapfilter']['passwd']['default'],
-				  'value'	=> $info['ldapfilter']['passwd'])),
+				  'value'	=> $info['ldapfilter']['passwd'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'ldapfilter', 'passwd')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_ldapfilter_basedn'),
 				  'name'	=> 'ldapfilter[basedn]',
 				  'labelid'	=> 'ldapfilter-basedn',
 				  'size'	=> 30,
 				  'default'	=> $element['ldapfilter']['basedn']['default'],
-				  'value'	=> $info['ldapfilter']['basedn'])),
+				  'value'	=> $info['ldapfilter']['basedn'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'ldapfilter', 'basedn')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_ldapfilter_filter'),
 				  'name'	=> 'ldapfilter[filter]',
@@ -85,7 +93,9 @@ endif;
 				  'size'	=> 30,
 				  'notag'	=> false,
 				  'default'	=> $element['ldapfilter']['filter']['default'],
-				  'value'	=> $info['ldapfilter']['filter'])),
+				  'value'	=> $info['ldapfilter']['filter'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'ldapfilter', 'filter')))),
 
 		$form->select(array('desc'	=> $this->bbf('fm_ldapfilter_additionaltype'),
 				    'name'	=> 'ldapfilter[additionaltype]',
@@ -103,7 +113,9 @@ endif;
 				  'labelid'	=> 'ldapfilter-additionaltext',
 				  'size'	=> 15,
 				  'default'	=> $element['ldapfilter']['additionaltext']['default'],
-				  'value'	=> $info['ldapfilter']['additionaltext']));
+				  'value'	=> $info['ldapfilter']['additionaltext'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'ldapfilter', 'additionaltext'))));
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
