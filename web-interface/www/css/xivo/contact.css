@@ -17,8 +17,8 @@
  */
 
 #r-xivo-contact .sb-content {padding: 10px 0px;display: block;}
-#r-xivo-contact .sb-content .logo {float: left;width: 49%;text-align: center;padding: 5px;}
-#r-xivo-contact .sb-content .body {margin-left: 50%;width: 49%;}
+#r-xivo-contact .sb-content .logo {float: left;width: 49%;text-align: center;padding-top: 5px;padding-bottom: 5px;}
+#r-xivo-contact .sb-content .body {float: left;width: 33%;}
 #r-xivo-contact .sb-content .clear {clear: both;}
 #r-xivo-contact dl {padding-bottom: 10px;}
 #r-xivo-contact dt {font-weight: bold;padding-top: 4px;}

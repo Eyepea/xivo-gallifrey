@@ -8,6 +8,9 @@ Contient des caractères invalide
 ; error(callback)
 Contient des caractères invalide
 
+; error(cast)
+Contient des caractères invalide
+
 ; error_before_create_context
 Vous devez dabord créer un contexte
 
