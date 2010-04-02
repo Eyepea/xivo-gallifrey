@@ -19,6 +19,54 @@ Phonebook
 ; mn_left_generalsettings-advanced
 Advanced
 
+; mn_left_ti_ctisettings
+CTI Server
+
+; mn_left_ctisettings-general
+General
+
+; mn_left_ctisettings-presences
+Presences
+
+; mn_left_ctisettings-phonehints
+Phone Hints
+
+; mn_left_ctisettings-profiles
+Profiles
+
+; mn_left_ctisettings-directories
+Directories
+
+; mn_left_ctisettings-reversedirectories
+Reverse Directories
+
+; mn_left_ctisettings-displays
+Displays
+
+; mn_left_ctisettings-contexts
+Contexts
+
+; mn_left_ctisettings-sheetactions
+Sheet Actions
+
+; mn_left_ctisettings-sheetevents
+Sheet Events
+
+; mn_left_ti_callcenter
+Call Center
+
+; mn_left_callcenter-agents
+Agents
+
+; mn_left_callcenter-queues
+Queues
+
+; mn_left_callcenter-queueskills
+Skills
+
+; mn_left_callcenter-queueskillrules
+Skill Rules
+
 ; mn_left_ti_pbxsettings
 IPBX settings
 
@@ -97,6 +145,9 @@ Phonebook
 ; mn_left_ti_systemmanagement
 IPBX configuration
 
+; mn_left_systemmanagement-backupfiles
+Backup Files
+
 ; mn_left_systemmanagement-configfiles
 Configuration files
 
@@ -117,6 +168,9 @@ Manager
 
 ; mn_left_ti_controlsystem
 Control
+
+; mn_left_controlsystem-logfiles
+Log Files
 
 ; mn_left_controlsystem-ipbxreload(unknown)
 Reload
