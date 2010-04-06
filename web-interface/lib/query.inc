@@ -258,7 +258,7 @@ class dwho_query
 
 	function &request_meth_raw()
 	{
-		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_RAW)));
+		return(($ref = $this->query_string('request',DWHO_QUERY_MODE_RAW)));
 	}
 
 	function request_meth_raw_str($sep=null)

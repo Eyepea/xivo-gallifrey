@@ -57,6 +57,7 @@ switch($tpl_area)
 			dwho_die('XIVO is not configured');
 
 		dwho::load_class('dwho_tpl');
+		define('XIVO_LOG_TYPE', 'www');
 
 		$_TPL = &new dwho_tpl($_CF['template']['www']['path'],
 				      array('menu','url','dhtml'),
@@ -65,6 +66,7 @@ switch($tpl_area)
 	case 'ui':
 	case 'json':
 		dwho::load_class('dwho_tpl');
+		define('XIVO_LOG_TYPE', 'json');
 		$_TPL = &new dwho_tpl($_CF['template'][$tpl_area]['path'],
 				      array('json','url','dhtml'),
 				      $_URL);

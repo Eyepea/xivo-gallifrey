@@ -19,16 +19,23 @@
 #
 
 
-function dwho_logw($str,$username,$act)
+function dwho_logw($str,$login,$act)
 {
 	if (defined('XIVO_LOG_FILE') === false)
 		die('xivo_log_file_not_exist');
 
-	if (empty($username) === true)
-		return(false);
+	if (empty($login) === true)
+		$login = 'unknow';
+	
+	if (XIVO_LOG_TYPE === 'json') 
+		$type = 'web_services';
+	elseif (XIVO_LOG_TYPE === 'www')
+		$type = 'www';
+	else
+		$type = 'unknow';
 
-	$datetime = strftime('%c');
-	$log = '['.$datetime.'] ['.$username.'] ['.$act.'] '.$str."\n";
+	$datetime = date('c');
+	$log = '['.$datetime.'] ['.$_SERVER['REMOTE_ADDR'].'] ['.$login.'] ['.$act.'] ['.$type.'] '.$str."\n";
 
 	if(($fh = fopen(XIVO_LOG_FILE, 'a+')) !== false)
 	{

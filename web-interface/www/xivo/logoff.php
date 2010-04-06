@@ -20,6 +20,9 @@
 
 require_once('xivo.php');
 
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
+dwho_logw('logoff',$_USR->_info['login'],'logoff');
+
 xivo_user::logoff();
 $_QRY->go($_TPL->url('index'));
 

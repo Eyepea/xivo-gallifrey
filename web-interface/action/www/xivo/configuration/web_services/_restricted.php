@@ -29,6 +29,8 @@ $_AWS = new xivo_accesswebservice();
 
 $http_access = $_AWS->chk_http_access($access_category,$access_subcategory);
 
+require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
+
 if($http_access === null)
 {
 	$http_response->authent_basic('Access Restricted');
