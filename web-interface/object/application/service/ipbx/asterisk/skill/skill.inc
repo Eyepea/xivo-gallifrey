@@ -80,20 +80,10 @@ class xivo_application_service_asterisk_skill extends xivo_application_asterisk_
 	**/
 	function get_all()
 	{
-		//$rs = $this->_dso->get_all(null, null, null, null, null);
 		$rs = $this->_dso->get_all();
 		return ($rs);
-
 	}
 
-/*
-	function _reset()
-	{
-		$this->_protocolname = false;
-
-		return(parent::_reset());
-	}
-*/
 	function set_n_add($arr)
 	{
 		$this->_reset();

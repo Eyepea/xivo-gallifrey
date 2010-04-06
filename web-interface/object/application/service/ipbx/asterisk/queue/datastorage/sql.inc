@@ -124,25 +124,44 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		return($res);
 	}
 
-    function skills_json_getall()
+    function skills_json_get($id=null,$filter=null)
 	{
 		$this->_dso->new_select('queueskill', array('id', 'name', 'description', 'printscreen'));
 		$this->_dso->leftjoin('queueskillcat',
     		'queueskillcat.id = queueskill.catid',
     		null,
     		array('category_name' => 'name'));
+		
+        // search by ID
+        if(!is_null($id))
+        {
+            $this->_dso->where("\"queueskill\".\"id\" = $id");
+        }
+        // search by string match (LIKE)
+        else if(!is_null($filter))
+        {
+            $this->_dso->wherecontain('name'          , $filter, true, 'queueskill');
+            $this->_dso->orwherecontain('description' , $filter, true, 'queueskill');
+            $this->_dso->orwherecontain('printscreen' , $filter, true, 'queueskill');
+            $this->_dso->orwherecontain('name'        , $filter, true, 'queueskillcat');
+        }
+
 
 		$this->_dso->new_order('id', null, 'queueskill');
 		$this->_dso->limit($limit);
 		
-		$res = $this->_dso->select_all(null, true);
+#        var_dump($this->_dso->_query);
+		if(!is_null($id))
+		{ $res = $this->_dso->select_single(); }
+		else
+		{ $res = $this->_dso->select_all(null, true); }
 
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
 		return($res);
 	}
-	
+    
 	function skills_getone($id)
 	{
 		if(!is_int($id))
