@@ -23,6 +23,24 @@ xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.i
 class xivo_service_asterisk_userqueueskill_sql extends xivo_service_asterisk_abstract_sql
 {
 	//var $_unique	= array('userid', 'skillid');
+    var $_disable = null;
+    
+	function get_skills($userid)
+	{
+		$this->_dso->new_select('userqueueskill', array('weight'));
+		$this->_dso->where("\"userqueueskill\".\"userid\" = $userid");
+		$this->_dso->leftjoin('queueskill',
+			'queueskill.id = userqueueskill.skillid',
+			null,
+			array('id', 'name'));
+		
+		$this->_dso->new_order('name', null, 'queueskill');
+		$res = $this->_dso->select_all(null, true);
+
+		$this->_dso->reset_order();
+		$this->_dso->reset_limit();
+		return($res);
+	}
 }
 
 ?>

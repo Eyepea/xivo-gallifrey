@@ -41,6 +41,11 @@ class xivo_service_asterisk_userqueueskill extends xivo_service_asterisk_abstrac
 
 		$this->_load_config();
 	}
+
+	function get_skills($userid)
+	{
+	    return $this->_dso->get_skills($userid);
+	}
 }
 
 ?>

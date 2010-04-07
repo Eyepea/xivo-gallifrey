@@ -39,7 +39,7 @@ class Test02User(unittest.TestCase):
         
 #        pprint.pprint(data)
         data = cjson.decode(data)
-#        pprint.pprint(data)
+#        pprint.pprint(data[0])
         count = len(data)
         
         # ADD
@@ -48,12 +48,13 @@ class Test02User(unittest.TestCase):
             
 #        print content
         (resp, data) = self.client.add(self.obj, content)
+        pprint.pprint(data)
         self.assertEqual(resp.status, 200)
 
 #        # LIST / Check add
 #        (resp, data) = self.client.list('incall')
 #        self.assertEqual(resp.status, 200)
-#        
+##        
 #        data = cjson.decode(data)
 ##        pprint.pprint(data)
 #        count2 = len(data)
@@ -73,8 +74,10 @@ class Test02User(unittest.TestCase):
 #        self.assertTrue(data['incall']['exten'] == '1001')
 
 #        # DELETE
-#        (resp, data) = self.client.delete('incall', id)
-#        self.assertEqual(resp.status, 200)
+        id = 3
+        (resp, data) = self.client.delete(self.obj, id)
+        self.assertEqual(resp.status, 200)
+        pprint.pprint(data)
 
 #        # try to redelete => must return 404
 #        (resp, data) = self.client.delete('incall', id)

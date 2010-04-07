@@ -1583,7 +1583,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 			if(strlen($userskills[$i]['weight']) == 0)
 			{ $err = false; $this->_errors[$i]['weight'] = 'empty'; }
-			else if(!ctype_digit($userskills[$i]['weight']))
+			else if(!(is_int($userskills[$i]['weight']) || ctype_digit($userskills[$i]['weight'])))
 			{ $err = false; $this->_errors[$i]['weight'] = 'notnumeric'; }
 			else if(((int)$userskills[$i]['weight']) < 0 
 			|| ((int)$userskills[$i]['weight']) > 100)

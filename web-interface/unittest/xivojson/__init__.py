@@ -1,7 +1,7 @@
 
 from xivojson import *
 #from entity   import *
-#from user     import *
+from user     import *
 #from incall   import *
 #from queueskill         import *
-from queueskillrule      import *
+#from queueskillrule      import *

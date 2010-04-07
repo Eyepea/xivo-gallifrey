@@ -67,16 +67,14 @@ if(isset($_QR['fm_send']) === true
 	for($i = 0; $i < $count; $i++)
 	{
 		$queueskills[] = array(
-			'userid'	=> -1,
-			'skillid'	=> $_QR['queueskill-skill'][$i],
+			'id'    	=> $_QR['queueskill-skill'][$i],
 			'weight'	=> $_QR['queueskill-weight'][$i],
 		);
 	}
 
-	$skillerr = $appqueue->userskills_setadd($queueskills);
+    $_QR['queueskills'] = $queueskills;
 
 	if($appuser->set_add($_QR,$_QR['protocol']['protocol']) === false
-	|| $skillerr === false
 	|| $appuser->add() === false)
 	{
 		$fm_save = false;
@@ -87,21 +85,11 @@ if(isset($_QR['fm_send']) === true
 
 		$error = $appuser->get_error();
 
-		if (dwho_empty($aq = $appqueue->userskills_get_error()) === false)
-		  $error['queueskills'] = $aq;
-
 		if(dwho_issa('protocol',$result) === true && isset($result['protocol']['allow']) === true)
 			$allow = $result['protocol']['allow'];
 
 		$result['voicemail-option'] = $_QRY->get('voicemail-option');
 	} else {
-		// return['userfeatures'] == user ID
-		$return = $appuser->get_return();
-		for($i = count($queueskills) - 1; $i >= 0; $i--)
-			$queueskills[$i]['userid'] = $return['userfeatures'];
-
-		$appqueue->userskills_add($queueskills);
-
 		$ipbx->discuss('xivo[userlist,update]');
 		// must reload app_queue
 		$ipbx->discuss('module reload app_queue.so');

@@ -6,7 +6,7 @@
             "ringseconds": "30",
             "simultcalls": "5",
             "musiconhold": "default",
-            "voicemailid": "add",
+            "voicemailid": "0",
             "enableclient": "1",
             "loginclient": "unittest",
             "passwdclient": "",
@@ -78,5 +78,15 @@
             "amaflags": "default",
             "accountcode": "",
             "useclientcode": ""
-      }
+      },
+      "queueskills": [
+        {
+            "id"    : 5,
+            "weight": 22
+        },
+        {
+            "id"    : 2,
+            "weight": 97
+        }
+      ]
 }
