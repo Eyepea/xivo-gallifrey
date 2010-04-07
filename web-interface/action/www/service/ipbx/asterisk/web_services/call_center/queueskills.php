@@ -29,47 +29,44 @@ $act = $_QRY->get('act');
 
 switch($act)
 {
-/*
+	case 'delete':
+		if(dwho_is_uint($_QRY->get('id')) === false)
+		    $status = 400;
+		else if($appqueue->skills_json_get($_QRY->get('id')) === false)
+			$status = 404;
+		else if($appqueue->skills_json_delete($_QRY->get('id')) === false)
+			$status = 500;
+		else
+			$status = 200;
+
+		$http_response->set_status_line($status);
+		$http_response->send(true);
+		break;
+
+	case 'add':
+	    $status = 200;
+        if(($id = $appqueue->skills_json_add()) === false)
+            $status = 500;
+
+		$http_response->set_status_line($status);
+#		$http_response->send(true);
+		$_TPL->set_var('list',$id);
+		break;
+	
 	case 'view':
-		$appincall = &$ipbx->get_application('incall');
-
-		$nocomponents = array('contextnummember'	=> true);
-
-		if(($info = $appincall->get($_QRY->get('id'),
-					    null,
-					    $nocomponents)) === false)
+		if(dwho_is_uint($_QRY->get('id')) === false
+		|| ($info = $appqueue->skills_json_get($_QRY->get('id'))) === false)
 		{
-			$http_response->set_status_line(404);
+			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
 
 		$_TPL->set_var('info',$info);
 		break;
-	case 'add':
-	    echo 'ADD\n';
-		$appincall = &$ipbx->get_application('incall');
-		$status = $appincall->add_from_json() === true ? 200 : 400;
 
-		$http_response->set_status_line($status);
-		$http_response->send(true);
-		break;
-	case 'delete':
-		$appincall = &$ipbx->get_application('incall');
-
-		if($appincall->get($_QRY->get('id')) === false)
-			$status = 404;
-		else if($appincall->delete() === true)
-			$status = 200;
-		else
-			$status = 500;
-
-		$http_response->set_status_line($status);
-		$http_response->send(true);
-		break;
 	case 'search':
-		$appincall = &$ipbx->get_application('incall',null,false);
-
-		if(($list = $appincall->get_incalls_search($_QRY->get('search'))) === false)
+		if(dwho_has_len($_QRY->get('search')) === false
+		|| ($list = $appqueue->skills_json_get(null, $_QRY->get('search'))) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
@@ -77,10 +74,10 @@ switch($act)
 
 		$_TPL->set_var('list',$list);
 		break;
-*/
+
 	case 'list':
 	default:
-		if(($list = $appqueue->skills_json_getall()) === false)
+		if(($list = $appqueue->skills_json_get()) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
