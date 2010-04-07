@@ -36,7 +36,7 @@ define('XIVO_AV_FR_CORP_ZIPCODE'	,'69760');
 define('XIVO_AV_FR_CORP_CITY'		,'Limonest');
 define('XIVO_AV_FR_CORP_COUNTRY'	,'France');
 define('XIVO_AV_FR_CORP_PHONE'		,'+33 (0) 4 37 49 78 10');
-define('XIVO_AV_FR_CORP_FAX'		,'');
+define('XIVO_AV_FR_CORP_FAX'		,'+33 (0) 4 27 46 63 30');
 
 define('XIVO_PF_FR_CORP_NAME'		,'proformatique');
 define('XIVO_PF_FR_CORP_EMAIL'		,'contact@proformatique.fr');
@@ -52,7 +52,7 @@ define('XIVO_PF_CA_CORP_NAME'		,'proformatique');
 define('XIVO_PF_CA_CORP_EMAIL'		,'contact@proformatique.ca');
 define('XIVO_PF_CA_CORP_URL'		,'proformatique.ca');
 define('XIVO_PF_CA_CORP_ADDRESS'	,'address canada');
-define('XIVO_PF_CA_CORP_ZIPCODE'	,'92800');
+define('XIVO_PF_CA_CORP_ZIPCODE'	,'zipcode');
 define('XIVO_PF_CA_CORP_CITY'		,'Quebec');
 define('XIVO_PF_CA_CORP_COUNTRY'	,'Canada');
 define('XIVO_PF_CA_CORP_PHONE'		,'');
