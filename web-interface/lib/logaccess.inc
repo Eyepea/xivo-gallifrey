@@ -70,7 +70,7 @@ elseif (XIVO_LOG_TYPE === 'www')
 			case 'start':
 			case 'restart':
 			case 'stop':
-			case 'monito':
+			case 'monitor':
 			case 'unmonitor':
 				dwho_logw($_QR['service'],&$_USR->_info['login'],$_QR['action']);
 			break;
