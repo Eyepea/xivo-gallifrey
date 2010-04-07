@@ -53,22 +53,24 @@ class AsteriskConfig:
         # \brief AMI password of the monitored Asterisk
         
         ##  \brief Class initialization.
-        def __init__(self,
-                     astid,
-                     localaddr = '127.0.0.1',
-                     remoteaddr = '127.0.0.1',
-                     ipaddress_webi = '127.0.0.1',
-                     ami_port = 5038,
-                     ami_login = 'xivouser',
-                     ami_pass = 'xivouser',
-                     userfeatures_db_uri = None,
-                     capafeatures = [],
-                     cdr_db_uri = None,
-                     realm = 'asterisk',
-                     parkingnumber = '700',
-                     faxcallerid = 'faxcallerid',
-                     linkestablished = '',
-                     aoriginate = 'AOriginate'):
+        def __init__(
+            self,
+            astid,
+            localaddr = '127.0.0.1',
+            remoteaddr = '127.0.0.1',
+            ipaddress_webi = '127.0.0.1',
+            ami_port = 5038,
+            ami_login = 'xivouser',
+            ami_pass = 'xivouser',
+            userfeatures_db_uri = None,
+            capafeatures = [],
+            cdr_db_uri = None,
+            realm = 'asterisk',
+            parkingnumber = '700',
+            faxcallerid = 'faxcallerid',
+            linkestablished = '',
+            aoriginate = 'AOriginate'
+            ):
 
                 self.astid = astid
                 self.localaddr = localaddr

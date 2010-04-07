@@ -79,9 +79,7 @@ class PhoneList:
                                                         self.normal[phonenum].build_basestatus(),
                                                         self.normal[phonenum].build_fullstatlist())
 
-        def normal_channel_fills(self, chan_src, num_src,
-                                 action, timeup, direction,
-                                 chan_dst, num_dst, comment):
+        def normal_channel_fills(self, chan_src, num_src, action, timeup, direction, chan_dst, num_dst, comment):
                 phoneid_src = channel_splitter(chan_src)
                 phoneid_dst = channel_splitter(chan_dst)
                 

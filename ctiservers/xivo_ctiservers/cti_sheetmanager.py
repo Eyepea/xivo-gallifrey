@@ -90,5 +90,3 @@ class SheetManager:
 
     def setcustomersheet(self, channel, sheet):
         self.sheets[channel].sheet = sheet
-
-

@@ -30,11 +30,12 @@ log = logging.getLogger('voicemaillist')
 
 class VoiceMailList(AnyList):
         def __init__(self, newurls = []):
-                self.anylist_properties = {'keywords' : ['mailbox', 'context', 'fullname',
-                                                         'password', 'email'],
-                                           'name' : 'voicemail',
-                                           'action' : 'getvoicemaillist',
-                                           'urloptions' : (1, 5, True)}
+                self.anylist_properties = {
+                    'keywords' : ['mailbox', 'context', 'fullname',
+                                  'password', 'email'],
+                    'name' : 'voicemail',
+                    'action' : 'getvoicemaillist',
+                    'urloptions' : (1, 5, True) }
                 AnyList.__init__(self, newurls)
                 return
 

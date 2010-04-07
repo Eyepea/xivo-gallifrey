@@ -77,9 +77,9 @@ dumpami = False
 
 LOGDAEMONNAME = 'cti-server'
 try:
-        DAEMONNAME = os.path.basename(sys.argv[0])
+    DAEMONNAME = os.path.basename(sys.argv[0])
 except:
-        DAEMONNAME = 'xivo_daemon'
+    DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
 XIVO_CONF_FILE            = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
@@ -146,9 +146,10 @@ class manage_connection:
             command = daemon.commandclass.parsecommand(usefulmsg)
             if command.name in daemon.commandclass.get_list_commands():
                 try:
-                    if command.type in [xivo_commandsets.CMD_LOGIN_ID,
-                                    xivo_commandsets.CMD_LOGIN_PASS,
-                                    xivo_commandsets.CMD_LOGIN_CAPAS]:
+                    commandtype_list = [xivo_commandsets.CMD_LOGIN_ID,
+                                        xivo_commandsets.CMD_LOGIN_PASS,
+                                        xivo_commandsets.CMD_LOGIN_CAPAS]
+                    if command.type in commandtype_list:
                         # log.info('LOGIN(%s) %s : args   %s' % (command.type, requester, command.args))
                         loginparams = daemon.commandclass.get_login_params(command, daemon.asterisklist[0], connid)
                         # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
@@ -209,10 +210,11 @@ class manage_connection:
             if len(usefulmsg) == 0:
                 break
             try:
-                if usefulmsg in ['xivo[userlist,update]',
-                             'xivo[agentlist,update]',
-                             'xivo[queuelist,update]',
-                             'xivo[grouplist,update]']:
+                xivocmd_update_list = ['xivo[userlist,update]',
+                                       'xivo[agentlist,update]',
+                                       'xivo[queuelist,update]',
+                                       'xivo[grouplist,update]']
+                if usefulmsg in xivocmd_update_list:
                     daemon.update_userlist[astid] = True
                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                 elif usefulmsg == 'xivo[daemon,reload]':
@@ -273,6 +275,10 @@ class manage_connection:
                 break
             try:
                 retstr = 'OK'
+                show_command_list = ['show_phones', 'show_trunks',
+                                     'show_queues', 'show_groups', 'show_agents',
+                                     'show_incomingcalls', 'show_phonebook',
+                                     'show_meetme', 'show_voicemail']
                 if usefulmsg == 'help':
                     helptxt = ['',
                                'help                     : this help',
@@ -353,18 +359,15 @@ class manage_connection:
                             connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
-                elif usefulmsg in ['show_phones', 'show_trunks',
-                                   'show_queues', 'show_groups', 'show_agents',
-                                   'show_incomingcalls', 'show_phonebook',
-                                   'show_meetme', 'show_voicemail']:
-                        itemname = usefulmsg[5:]
-                        for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
-                            try:
-                                connid.sendall('%s for %s\n' % (itemname, astid))
-                                for id, idv in itm.keeplist.iteritems():
-                                        connid.sendall('%s %s\n' % (id, idv))
-                            except Exception:
-                                log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg in show_command_list:
+                    itemname = usefulmsg[5:]
+                    for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
+                        try:
+                            connid.sendall('%s for %s\n' % (itemname, astid))
+                            for id, idv in itm.keeplist.iteritems():
+                                connid.sendall('%s %s\n' % (id, idv))
+                        except Exception:
+                            log.exception('INFO %s' % usefulmsg)
                 elif usefulmsg.startswith('show_var '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -375,7 +378,7 @@ class manage_connection:
                             if astid in tvar:
                                 connid.sendall('%s on %s\n' % (varname, astid))
                                 for ag, agp in tvar[astid].iteritems():
-                                        connid.sendall('%s %s\n' % (ag, agp))
+                                    connid.sendall('%s %s\n' % (ag, agp))
                             else:
                                 connid.sendall('no such astid %s\n' % astid)
                         else:
@@ -423,7 +426,7 @@ class manage_connection:
                         for number in numbers:
                             reverses = daemon.commandclass.findreverse(dirnames, number)
                             for number, rep in reverses.iteritems():
-                                    connid.sendall('%s %s\n' % (number, rep))
+                                connid.sendall('%s %s\n' % (number, rep))
                 elif usefulmsg.startswith('disc '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -489,23 +492,23 @@ class manage_connection:
     
     @staticmethod
     def manage_tcp_connections(daemon, sel_i, msg, kind):
-            """
-            Dispatches the message's handling according to the connection's kind.
-            """
-            closemenow = True
-            if kind == 'CTI':
-                manage_connection.manage_cti_connections(daemon, sel_i, msg, daemon.commandclass.ctiseparator)
-            elif kind == 'WEBI':
-                closemenow = manage_connection.manage_webi_connections(daemon, sel_i, msg, '\n')
-            elif kind == 'INFO':
-                manage_connection.manage_info_connections(daemon, sel_i, msg, '\n')
-            elif kind == 'AGI':
-                agireply = daemon.commandclass.handle_agi(daemon.asterisklist[0], msg)
-                if agireply is not None:
-                    sel_i.sendall(agireply)
-            else:
-                log.warning('unknown connection kind %s' % kind)
-            return closemenow
+        """
+        Dispatches the message's handling according to the connection's kind.
+        """
+        closemenow = True
+        if kind == 'CTI':
+            manage_connection.manage_cti_connections(daemon, sel_i, msg, daemon.commandclass.ctiseparator)
+        elif kind == 'WEBI':
+            closemenow = manage_connection.manage_webi_connections(daemon, sel_i, msg, '\n')
+        elif kind == 'INFO':
+            manage_connection.manage_info_connections(daemon, sel_i, msg, '\n')
+        elif kind == 'AGI':
+            agireply = daemon.commandclass.handle_agi(daemon.asterisklist[0], msg)
+            if agireply is not None:
+                sel_i.sendall(agireply)
+        else:
+            log.warning('unknown connection kind %s' % kind)
+        return closemenow
 
 
     """
@@ -630,75 +633,75 @@ class manage_connection:
     
     
     evfunction_to_method_name = {
-            'Registry':             'ami_registry',
-            'Dial':                 'ami_dial',
-            'Link':                 'ami_link',
-            'Unlink':               'ami_unlink',
-            'Bridge':               'ami_bridge',                   # (1.6) Seems to replace partly Link/Unlink events
-            'Masquerade':           'ami_masquerade',               # (1.6 backported) for indirect transfers & intercepts
-            'Hangup':               'ami_hangup',
-            'HangupRequest':        'ami_hanguprequest',            # (xivo) to know who 'ordered' the hangup
-            'Join':                 'ami_join',
-            'Leave':                'ami_leave',
-            'DTMF':                 'ami_dtmf',                     # (1.6 backported)
-            'PeerStatus':           'ami_peerstatus',
-            'Agentlogin':           'ami_agentlogin',
-            'Agentlogoff':          'ami_agentlogoff',
-            'Agentcallbacklogin':   'ami_agentcallbacklogin',
-            'Agentcallbacklogoff':  'ami_agentcallbacklogoff',
-            'AgentCalled':          'ami_agentcalled',
-            'AgentComplete':        'ami_agentcomplete',
-            'AgentsComplete':       'ami_agentscomplete',
-            'AgentConnect':         'ami_agentconnect',
-            'AgentDump':            'ami_agentdump',
-            'Agents':               'ami_agents',
-            'ChannelReload':        'ami_channelreload',            # (1.4)
-            'ParkedCall':           'ami_parkedcall',               # when the requested parking is acked
-            'UnParkedCall':         'ami_unparkedcall',
-            'ParkedCallTimeOut':    'ami_parkedcalltimeout',
-            'ParkedCallGiveUp':     'ami_parkedcallgiveup',
-            'ParkedCallsComplete':  'ami_parkedcallscomplete',
-            'DNDState':             'ami_dndstate',
-            'Cdr':                  'ami_cdr',
-            'Hold':                 'ami_hold',
-            'Unhold':               'ami_unhold',
-            'Alarm':                'ami_alarm',
-            'AlarmClear':           'ami_alarmclear',
-            'FaxSent':              'ami_faxsent',
-            'FaxReceived':          'ami_faxreceived',
-            'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
-            'MeetmeNoAuthed':       'ami_meetmenoauthed',           # when a member was accepted or not by an admin
-            'MeetmePause':          'ami_meetmepause',              # when a conf chamber is put in pause or activated
-            'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
-            'MeetmeMute':           'ami_meetmemute',               # when a member is (un)muted
-            'MeetmeTalking':        'ami_meetmetalking',
-            'MeetmeList':           'ami_meetmelist',
-            'MeetmeListComplete':   'ami_meetmelistcomplete',
-            'Transfer':             'ami_transfer',                 # (1.6 backported)
-            'ExtensionStatus':      'ami_extensionstatus',
-            'OriginateSuccess':     'ami_originatesuccess',
-            'AOriginateSuccess':    'ami_aoriginatesuccess',
-            'OriginateFailure':     'ami_originatefailure',
-            'AOriginateFailure':    'ami_aoriginatefailure',
-            'OriginateResponse':    'ami_originateresponse',
-            'Rename':               'ami_rename',                   # appears when there is a transfer
-            'Newstate':             'ami_newstate',
-            'Newcallerid':          'ami_newcallerid',              # useful for tricky managements
-            'Newchannel':           'ami_newchannel',
-            'Newexten':             'ami_newexten',                 # in order to handle outgoing calls ?
-            'MessageWaiting':       'ami_messagewaiting',
-            'QueueParams':          'ami_queueparams',
-            'QueueMemberAdded':     'ami_queuememberadded',
-            'QueueMemberPaused':    'ami_queuememberpaused',
-            'QueueMemberRemoved':   'ami_queuememberremoved',
-            'QueueMember':          'ami_queuemember',
-            'QueueMemberStatus':    'ami_queuememberstatus',
-            'QueueStatusComplete':  'ami_queuestatuscomplete',
-            'QueueEntry':           'ami_queueentry',
-            'QueueCallerAbandon':   'ami_queuecallerabandon',       # (1.4)
-            'Status':               'ami_status',
-            'StatusComplete':       'ami_statuscomplete',
-            'Atxfer':               'ami_atxfer',                   #
+        'Registry':             'ami_registry',
+        'Dial':                 'ami_dial',
+        'Link':                 'ami_link',
+        'Unlink':               'ami_unlink',
+        'Bridge':               'ami_bridge',                   # (1.6) Seems to replace partly Link/Unlink events
+        'Masquerade':           'ami_masquerade',               # (1.6 backported) for indirect transfers & intercepts
+        'Hangup':               'ami_hangup',
+        'HangupRequest':        'ami_hanguprequest',            # (xivo) to know who 'ordered' the hangup
+        'Join':                 'ami_join',
+        'Leave':                'ami_leave',
+        'DTMF':                 'ami_dtmf',                     # (1.6 backported)
+        'PeerStatus':           'ami_peerstatus',
+        'Agentlogin':           'ami_agentlogin',
+        'Agentlogoff':          'ami_agentlogoff',
+        'Agentcallbacklogin':   'ami_agentcallbacklogin',
+        'Agentcallbacklogoff':  'ami_agentcallbacklogoff',
+        'AgentCalled':          'ami_agentcalled',
+        'AgentComplete':        'ami_agentcomplete',
+        'AgentsComplete':       'ami_agentscomplete',
+        'AgentConnect':         'ami_agentconnect',
+        'AgentDump':            'ami_agentdump',
+        'Agents':               'ami_agents',
+        'ChannelReload':        'ami_channelreload',            # (1.4)
+        'ParkedCall':           'ami_parkedcall',               # when the requested parking is acked
+        'UnParkedCall':         'ami_unparkedcall',
+        'ParkedCallTimeOut':    'ami_parkedcalltimeout',
+        'ParkedCallGiveUp':     'ami_parkedcallgiveup',
+        'ParkedCallsComplete':  'ami_parkedcallscomplete',
+        'DNDState':             'ami_dndstate',
+        'Cdr':                  'ami_cdr',
+        'Hold':                 'ami_hold',
+        'Unhold':               'ami_unhold',
+        'Alarm':                'ami_alarm',
+        'AlarmClear':           'ami_alarmclear',
+        'FaxSent':              'ami_faxsent',
+        'FaxReceived':          'ami_faxreceived',
+        'MeetmeJoin':           'ami_meetmejoin',               # when a member joins a conference
+        'MeetmeNoAuthed':       'ami_meetmenoauthed',           # when a member was accepted or not by an admin
+        'MeetmePause':          'ami_meetmepause',              # when a conf chamber is put in pause or activated
+        'MeetmeLeave':          'ami_meetmeleave',              # when a member leaves a conference
+        'MeetmeMute':           'ami_meetmemute',               # when a member is (un)muted
+        'MeetmeTalking':        'ami_meetmetalking',
+        'MeetmeList':           'ami_meetmelist',
+        'MeetmeListComplete':   'ami_meetmelistcomplete',
+        'Transfer':             'ami_transfer',                 # (1.6 backported)
+        'ExtensionStatus':      'ami_extensionstatus',
+        'OriginateSuccess':     'ami_originatesuccess',
+        'AOriginateSuccess':    'ami_aoriginatesuccess',
+        'OriginateFailure':     'ami_originatefailure',
+        'AOriginateFailure':    'ami_aoriginatefailure',
+        'OriginateResponse':    'ami_originateresponse',
+        'Rename':               'ami_rename',                   # appears when there is a transfer
+        'Newstate':             'ami_newstate',
+        'Newcallerid':          'ami_newcallerid',              # useful for tricky managements
+        'Newchannel':           'ami_newchannel',
+        'Newexten':             'ami_newexten',                 # in order to handle outgoing calls ?
+        'MessageWaiting':       'ami_messagewaiting',
+        'QueueParams':          'ami_queueparams',
+        'QueueMemberAdded':     'ami_queuememberadded',
+        'QueueMemberPaused':    'ami_queuememberpaused',
+        'QueueMemberRemoved':   'ami_queuememberremoved',
+        'QueueMember':          'ami_queuemember',
+        'QueueMemberStatus':    'ami_queuememberstatus',
+        'QueueStatusComplete':  'ami_queuestatuscomplete',
+        'QueueEntry':           'ami_queueentry',
+        'QueueCallerAbandon':   'ami_queuecallerabandon',       # (1.4)
+        'Status':               'ami_status',
+        'StatusComplete':       'ami_statuscomplete',
+        'Atxfer':               'ami_atxfer',                   #
     }
     
     

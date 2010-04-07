@@ -32,10 +32,11 @@ log = logging.getLogger('grouplist')
 
 class GroupList(AnyList):
     def __init__(self, newurls = [], virtual = False):
-        self.anylist_properties = {'keywords' : ['number', 'context', 'groupname'],
-                                   'name' : 'groups',
-                                   'action' : 'getgroupslist',
-                                   'urloptions' : (1, 5, True)}
+        self.anylist_properties = {
+            'keywords' : ['number', 'context', 'groupname'],
+            'name' : 'groups',
+            'action' : 'getgroupslist',
+            'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return
     

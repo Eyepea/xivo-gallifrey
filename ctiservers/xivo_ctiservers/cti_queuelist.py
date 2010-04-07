@@ -186,7 +186,7 @@ class QueueStats:
                        'Xivo-Lost': self.__get_queue_lost(queuename, param),
                        'Xivo-Join': self.__get_queue_join(queuename, param),
                        'Xivo-Link': self.__get_queue_link(queuename, param)
-                      }
+                       }
 
         if float(queue_stats['Xivo-Join']) == 0:
             queue_stats['Xivo-Rate'] = "na"
@@ -200,10 +200,11 @@ class QueueStats:
 
 class QueueList(AnyList):
     def __init__(self, newurls = [], virtual = False):
-        self.anylist_properties = {'keywords' : ['number', 'context', 'queuename'],
-                                   'name' : 'queues',
-                                   'action' : 'getqueueslist',
-                                   'urloptions' : (1, 5, True)}
+        self.anylist_properties = {
+            'keywords' : ['number', 'context', 'queuename'],
+            'name' : 'queues',
+            'action' : 'getqueueslist',
+            'urloptions' : (1, 5, True)}
         AnyList.__init__(self, newurls)
 
         self.stats = QueueStats("/woot/xivo/branches/people/ra/queues_logger/beast.db");

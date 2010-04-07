@@ -31,18 +31,19 @@ log = logging.getLogger('incomingcalllist')
 
 class IncomingCallList(AnyList):
     def __init__(self, newurls = []):
-        self.anylist_properties = {'keywords' : ['exten', 'context', 'destidentity', 'action',
-                                                 'userfirstname', 'userlastname',
-                                                 'usernumber', 'username',
-                                                 'usercontext',
-                                                 'groupcontext',
-                                                 'queuecontext',
-                                                 'meetmecontext',
-                                                 'voicemenucontext',
-                                                 'voicemailcontext'],
-                                   'name' : 'incomingcall',
-                                   'action' : 'getincomingcalllist',
-                                   'urloptions' : (1, 5, True)}
+        self.anylist_properties = {
+            'keywords' : ['exten', 'context', 'destidentity', 'action',
+                          'userfirstname', 'userlastname',
+                          'usernumber', 'username',
+                          'usercontext',
+                          'groupcontext',
+                          'queuecontext',
+                          'meetmecontext',
+                          'voicemenucontext',
+                          'voicemailcontext'],
+            'name' : 'incomingcall',
+            'action' : 'getincomingcalllist',
+            'urloptions' : (1, 5, True) }
         AnyList.__init__(self, newurls)
         return
     

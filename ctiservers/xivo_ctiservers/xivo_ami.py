@@ -614,12 +614,15 @@ class AMIList:
                         amicl.login()
                         
                         self.updaterefs(amicl)
-                        amicl.sendcommand('Command',
-                                          [('Command',
-                                            'core show version'),
-                                           ('ActionID' ,
-                                            '%s-%s' % (''.join(random.sample(__alphanums__, 10)),
-                                                       hex(int(time.time()))))])
+                        amicl.sendcommand(
+                            'Command',
+                            [('Command', 'core show version'),
+                             ('ActionID' ,
+                              '%s-%s' % (''.join(random.sample(__alphanums__, 10)),
+                                         hex(int(time.time())))
+                              )
+                             ]
+                            )
                         self.request_initvalues(astid)
                 else:
                         log.info('%s AMI : already connected %s'

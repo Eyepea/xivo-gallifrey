@@ -30,13 +30,14 @@ log = logging.getLogger('userlist')
 
 class UserList(AnyList):
         def __init__(self, newurls = []):
-                self.anylist_properties = { 'keywords' : ['capaids', 'user', 'password', 'fullname',
-                                                          'agentid', 'voicemailid', 'simultcalls', #'mwi',
-                                                          'techlist', 'phoneid', 'phonenum', 'mobilenum',
-                                                          'context'],
-                                            'name' : 'users',
-                                            'action' : 'getuserslist',
-                                            'urloptions' : (0, 11, True) }
+                self.anylist_properties = {
+                    'keywords' : ['capaids', 'user', 'password', 'fullname',
+                                  'agentid', 'voicemailid', 'simultcalls', #'mwi',
+                                  'techlist', 'phoneid', 'phonenum', 'mobilenum',
+                                  'context'],
+                    'name' : 'users',
+                    'action' : 'getuserslist',
+                    'urloptions' : (0, 11, True) }
                 AnyList.__init__(self, newurls)
                 return
         
@@ -85,3 +86,4 @@ class UserList(AnyList):
         def deluser(self, username):
                 if self.keeplist.has_key(username):
                         self.keeplist.pop(username)
+                return
