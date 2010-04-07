@@ -24,44 +24,44 @@ __author__    = 'Corentin Le Gall'
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 class Users:
-        def __init__(self):
-                self.list = {}
-                self.commandclass = None
-                return
+    def __init__(self):
+        self.list = {}
+        self.commandclass = None
+        return
 
-        def setcommandclass(self, commandclass):
-                self.commandclass = commandclass
-                return
+    def setcommandclass(self, commandclass):
+        self.commandclass = commandclass
+        return
 
-        def adduser(self, inparams):
-                username = inparams.get('user')
-                if self.list.has_key(username):
-                        # updates
-                        # self.list[username]['agentnum'] = agentnum
-                        pass
-                else:
-                        self.list[username] = {}
-                        for f in self.fields:
-                                self.list[username][f] = inparams[f]
-                return
+    def adduser(self, inparams):
+        username = inparams.get('user')
+        if self.list.has_key(username):
+            # updates
+            # self.list[username]['agentnum'] = agentnum
+            pass
+        else:
+            self.list[username] = {}
+            for f in self.fields:
+                self.list[username][f] = inparams[f]
+        return
 
-        def deluser(self, username):
-                if self.list.has_key(username):
-                        self.list.pop(username)
+    def deluser(self, username):
+        if self.list.has_key(username):
+            self.list.pop(username)
 
-        def finduser(self, username):
-                return self.list.get(username)
+    def finduser(self, username):
+        return self.list.get(username)
 
-        def listconnected(self):
-                lst = {}
-                for user, info in self.list.iteritems():
-                        if 'login' in info:
-                                lst[user] = info
-                return lst
+    def listconnected(self):
+        lst = {}
+        for user, info in self.list.iteritems():
+            if 'login' in info:
+                lst[user] = info
+        return lst
 
-        def update(self):
-                self.fields = self.commandclass.userfields
-                userl = self.commandclass.getuserlist()
-                for ul, vv in userl.iteritems():
-                        self.adduser(vv)
-                return
+    def update(self):
+        self.fields = self.commandclass.userfields
+        userl = self.commandclass.getuserlist()
+        for ul, vv in userl.iteritems():
+            self.adduser(vv)
+        return

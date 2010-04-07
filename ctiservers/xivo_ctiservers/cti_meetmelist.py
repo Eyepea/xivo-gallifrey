@@ -29,29 +29,29 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('meetmelist')
 
 class MeetmeList(AnyList):
-        def __init__(self, newurls = []):
-                self.anylist_properties = {
-                    'keywords' : ['confno', 'number', 'name', 'context',
-                                  'pin', 'pinadmin'],
-                    'name' : 'meetme',
-                    'action' : 'getmeetmelist',
-                    'urloptions' : (1, 5, True) }
-                AnyList.__init__(self, newurls)
-                return
-        
-        def update(self):
-                ret = AnyList.update(self)
-                self.reverse_index = {}
-                for idx, ag in self.keeplist.iteritems():
-                        if ag['confno'] not in self.reverse_index:
-                                self.reverse_index[ag['confno']] = idx
-                        else:
-                                log.warning('2 meetme have the same confno')
-                return ret
-        
-        def byconfno(self, confno):
-                meetmeref = None
-                meetme_id = self.reverse_index.get(confno)
-                if meetme_id:
-                        meetmeref = self.keeplist.get(meetme_id)
-                return (meetmeref, meetme_id)
+    def __init__(self, newurls = []):
+        self.anylist_properties = {
+            'keywords' : ['confno', 'number', 'name', 'context',
+                'pin', 'pinadmin'],
+            'name' : 'meetme',
+            'action' : 'getmeetmelist',
+            'urloptions' : (1, 5, True) }
+        AnyList.__init__(self, newurls)
+        return
+
+    def update(self):
+        ret = AnyList.update(self)
+        self.reverse_index = {}
+        for idx, ag in self.keeplist.iteritems():
+            if ag['confno'] not in self.reverse_index:
+                self.reverse_index[ag['confno']] = idx
+            else:
+                log.warning('2 meetme have the same confno')
+        return ret
+
+    def byconfno(self, confno):
+        meetmeref = None
+        meetme_id = self.reverse_index.get(confno)
+        if meetme_id:
+            meetmeref = self.keeplist.get(meetme_id)
+        return (meetmeref, meetme_id)

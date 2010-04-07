@@ -43,66 +43,66 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 log = logging.getLogger('fax')
 
 class Fax:
-        def __init__(self, uinfo, size, number, hide):
-                self.reference = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
-                self.size = size
-                self.number = number.replace('.', '').replace(' ', '')
-                self.hide = hide
-                self.uinfo = uinfo
-                return
-        
-        def sendfax(self, b64buffer, callerid, ami):
-                filename = 'astfaxsend-' + self.reference
-                tmpfilepath = PATH_SPOOL_ASTERISK_TMP + '/' + filename
-                faxfilepath = PATH_SPOOL_ASTERISK_FAX + '/' + filename + '.tif'
-                buffer = base64.b64decode(b64buffer.strip())
-                z = open(tmpfilepath, 'w')
-                z.write(buffer)
-                z.close()
-                log.info('size = %s (%d), number = %s, hide = %s'
-                         % (self.size, len(buffer), self.number, self.hide))
-                if self.hide != '0':
-                    callerid = 'anonymous'
-                    
-                reply = 'ko;unknown'
-                comm = commands.getoutput('file -b %s' % tmpfilepath)
-                brieffile = ' '.join(comm.split()[0:2])
-                if brieffile == 'PDF document,':
-                    pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
-                    log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
-                    reply = 'ko;convert-pdftif'
-                    sysret = os.system(pdf2fax_command)
-                    ret = os.WEXITSTATUS(sysret)
-                    if ret != 0:
-                        log.warning('fax (ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
-                                    % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
-                else:
-                    reply = 'ko;filetype'
-                    log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
-                    ret = -1
-                    
-                if ret == 0:
-                        if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
-                                try:
-                                        reply = 'ko;AMI'
-                                        ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
-                                                        self.uinfo.get('xivo_userid'),
-                                                        callerid, self.number,
-                                                        self.uinfo.get('context'),
-                                                        self.reference)
-                                        if ret:
-                                                reply = 'queued;'
-                                except Exception:
-                                        log.exception('(fax handler - AMI)')
-                        else:
-                                reply = 'ko;exists-pathspool'
-                                log.warning('directory %s does not exist - could not send fax ref %s'
-                                            % (PATH_SPOOL_ASTERISK_FAX, self.reference))
-                                
-                # BUGFIX: myconn is undefined
-                # filename is actually an identifier.
-                # faxclients[filename] = myconn
-                
-                os.unlink(tmpfilepath)
-                log.info('fax (ref %s) removed %s (reply will be %s)' % (self.reference, tmpfilepath, reply))
-                return reply
+    def __init__(self, uinfo, size, number, hide):
+        self.reference = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+        self.size = size
+        self.number = number.replace('.', '').replace(' ', '')
+        self.hide = hide
+        self.uinfo = uinfo
+        return
+
+    def sendfax(self, b64buffer, callerid, ami):
+        filename = 'astfaxsend-' + self.reference
+        tmpfilepath = PATH_SPOOL_ASTERISK_TMP + '/' + filename
+        faxfilepath = PATH_SPOOL_ASTERISK_FAX + '/' + filename + '.tif'
+        buffer = base64.b64decode(b64buffer.strip())
+        z = open(tmpfilepath, 'w')
+        z.write(buffer)
+        z.close()
+        log.info('size = %s (%d), number = %s, hide = %s'
+            % (self.size, len(buffer), self.number, self.hide))
+        if self.hide != '0':
+            callerid = 'anonymous'
+
+        reply = 'ko;unknown'
+        comm = commands.getoutput('file -b %s' % tmpfilepath)
+        brieffile = ' '.join(comm.split()[0:2])
+        if brieffile == 'PDF document,':
+            pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
+            log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
+            reply = 'ko;convert-pdftif'
+            sysret = os.system(pdf2fax_command)
+            ret = os.WEXITSTATUS(sysret)
+            if ret != 0:
+                log.warning('fax (ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
+                    % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
+        else:
+            reply = 'ko;filetype'
+            log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
+            ret = -1
+
+        if ret == 0:
+            if os.path.exists(PATH_SPOOL_ASTERISK_FAX):
+                try:
+                    reply = 'ko;AMI'
+                    ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
+                        self.uinfo.get('xivo_userid'),
+                        callerid, self.number,
+                        self.uinfo.get('context'),
+                        self.reference)
+                    if ret:
+                        reply = 'queued;'
+                except Exception:
+                    log.exception('(fax handler - AMI)')
+            else:
+                reply = 'ko;exists-pathspool'
+                log.warning('directory %s does not exist - could not send fax ref %s'
+                    % (PATH_SPOOL_ASTERISK_FAX, self.reference))
+
+        # BUGFIX: myconn is undefined
+        # filename is actually an identifier.
+        # faxclients[filename] = myconn
+
+        os.unlink(tmpfilepath)
+        log.info('fax (ref %s) removed %s (reply will be %s)' % (self.reference, tmpfilepath, reply))
+        return reply

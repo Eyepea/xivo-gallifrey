@@ -28,73 +28,73 @@ Asterisk Contexts.
 """
 
 class Contexts:
-        def __init__(self):
-                self.ctxlist = {}
-                self.dirlist = {}
-                
-                self.displays = {}
-                self.display_header = {}
-                self.display_items = {}
-                return
-        
-        def setdisplay(self, ctxname, xivoconf_items):
-                if ctxname not in self.displays:
-                        self.displays[ctxname] = {}
-                self.displays[ctxname] = xivoconf_items
-                self.display_header[ctxname] = []
-                self.display_items[ctxname] = xivoconf_items.keys()
-                self.display_items[ctxname].sort()
-                self.display_header[ctxname] = []
-                for k in self.display_items[ctxname]:
-                        [title, type, defaultval, format] = self.displays[ctxname][k].split('|')
-                        self.display_header[ctxname].append(title)
-                return
-        
-        def update(self, ctxname, dirname, xivoconf_local):
-                z = Directory()
-                z.setProps(xivoconf_local)
-                
-                if ctxname not in self.ctxlist:
-                        self.ctxlist[ctxname] = []
-                self.ctxlist[ctxname].append(dirname)
-                self.dirlist[dirname] = z
-                return
-        
-        def updatedir(self, dirname, xivoconf_local):
-                z = Directory()
-                z.setProps(xivoconf_local)
-                self.dirlist[dirname] = z
-                return
+    def __init__(self):
+        self.ctxlist = {}
+        self.dirlist = {}
+
+        self.displays = {}
+        self.display_header = {}
+        self.display_items = {}
+        return
+
+    def setdisplay(self, ctxname, xivoconf_items):
+        if ctxname not in self.displays:
+            self.displays[ctxname] = {}
+        self.displays[ctxname] = xivoconf_items
+        self.display_header[ctxname] = []
+        self.display_items[ctxname] = xivoconf_items.keys()
+        self.display_items[ctxname].sort()
+        self.display_header[ctxname] = []
+        for k in self.display_items[ctxname]:
+            [title, type, defaultval, format] = self.displays[ctxname][k].split('|')
+            self.display_header[ctxname].append(title)
+        return
+
+    def update(self, ctxname, dirname, xivoconf_local):
+        z = Directory()
+        z.setProps(xivoconf_local)
+
+        if ctxname not in self.ctxlist:
+            self.ctxlist[ctxname] = []
+        self.ctxlist[ctxname].append(dirname)
+        self.dirlist[dirname] = z
+        return
+
+    def updatedir(self, dirname, xivoconf_local):
+        z = Directory()
+        z.setProps(xivoconf_local)
+        self.dirlist[dirname] = z
+        return
 
 class Directory:
-        def __init__(self):
-                self.uri = ''
-                self.delimiter = ';'
-                self.sqltable = ''
-                self.name = '(noname)'
-                self.display_reverse = '{db-fullname}'
-                self.match_direct = []
-                self.match_reverse = []
-                return
-        
-        def setProps(self, xivoconf_local):
-                self.fkeys = {}
-                for field in xivoconf_local:
-                        if field.startswith('field_'):
-                                keyword = field.split('_')[1]
-                                self.fkeys['db-%s' % keyword] = xivoconf_local[field].split(',')
-                        elif field in 'uri':
-                                self.uri = xivoconf_local[field]
-                        elif field == 'name':
-                                self.name = xivoconf_local[field]
-                        elif field == 'delimiter':
-                                self.delimiter = xivoconf_local[field]
-                        elif field == 'dir_db_sqltable':
-                                self.sqltable = xivoconf_local[field]
-                        elif field == 'display_reverse':
-                                self.display_reverse = xivoconf_local[field]
-                        elif field == 'match_direct':
-                                self.match_direct = str(xivoconf_local[field]).split(',')
-                        elif field == 'match_reverse':
-                                self.match_reverse = str(xivoconf_local[field]).split(',')
-                return
+    def __init__(self):
+        self.uri = ''
+        self.delimiter = ';'
+        self.sqltable = ''
+        self.name = '(noname)'
+        self.display_reverse = '{db-fullname}'
+        self.match_direct = []
+        self.match_reverse = []
+        return
+
+    def setProps(self, xivoconf_local):
+        self.fkeys = {}
+        for field in xivoconf_local:
+            if field.startswith('field_'):
+                keyword = field.split('_')[1]
+                self.fkeys['db-%s' % keyword] = xivoconf_local[field].split(',')
+            elif field in 'uri':
+                self.uri = xivoconf_local[field]
+            elif field == 'name':
+                self.name = xivoconf_local[field]
+            elif field == 'delimiter':
+                self.delimiter = xivoconf_local[field]
+            elif field == 'dir_db_sqltable':
+                self.sqltable = xivoconf_local[field]
+            elif field == 'display_reverse':
+                self.display_reverse = xivoconf_local[field]
+            elif field == 'match_direct':
+                self.match_direct = str(xivoconf_local[field]).split(',')
+            elif field == 'match_reverse':
+                self.match_reverse = str(xivoconf_local[field]).split(',')
+        return

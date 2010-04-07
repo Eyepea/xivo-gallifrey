@@ -29,23 +29,23 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('voicemaillist')
 
 class VoiceMailList(AnyList):
-        def __init__(self, newurls = []):
-                self.anylist_properties = {
-                    'keywords' : ['mailbox', 'context', 'fullname',
-                                  'password', 'email'],
-                    'name' : 'voicemail',
-                    'action' : 'getvoicemaillist',
-                    'urloptions' : (1, 5, True) }
-                AnyList.__init__(self, newurls)
-                return
+    def __init__(self, newurls = []):
+        self.anylist_properties = {
+            'keywords' : ['mailbox', 'context', 'fullname',
+                'password', 'email'],
+            'name' : 'voicemail',
+            'action' : 'getvoicemaillist',
+            'urloptions' : (1, 5, True) }
+        AnyList.__init__(self, newurls)
+        return
 
-        def update(self):
-                ret = AnyList.update(self)
-                self.reverse_index = {}
-                for idx, ag in self.keeplist.iteritems():
-                        rev = '%s@%s' % (ag['mailbox'], ag['context'])
-                        if rev not in self.reverse_index:
-                                self.reverse_index[rev] = idx
-                        else:
-                                log.warning('2 voicemails have the same mailbox@context')
-                return ret
+    def update(self):
+        ret = AnyList.update(self)
+        self.reverse_index = {}
+        for idx, ag in self.keeplist.iteritems():
+            rev = '%s@%s' % (ag['mailbox'], ag['context'])
+            if rev not in self.reverse_index:
+                self.reverse_index[rev] = idx
+            else:
+                log.warning('2 voicemails have the same mailbox@context')
+        return ret

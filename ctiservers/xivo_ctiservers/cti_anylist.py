@@ -29,65 +29,65 @@ import cti_urllist
 log = logging.getLogger('anylist')
 
 class AnyList:
-        def __init__(self, newurls):
-                self.commandclass = None
-                self.requested_list = {}
-                self.keeplist = {}
-                self.__clean_urls__()
-                self.__add_urls__(newurls)
-                return
-        
-        def update(self):
-                lstadd = []
-                lstdel = []
-                oldlist = self.keeplist
-                newlist = {}
-                for url, urllist in self.requested_list.iteritems():
-                        gl = urllist.getlist(* self.anylist_properties['urloptions'])
-                        if gl == 2:
-                                tmplist = getattr(self.commandclass, self.anylist_properties['action'])(urllist.jsonreply)
-                                newlist.update(tmplist)
-                for a, b in newlist.iteritems():
-                        if a not in oldlist:
-                                self.keeplist[a] = b
-                                lstadd.append(a)
-                        else:
-                                for keyw in self.anylist_properties['keywords']:
-                                        if keyw in b:
-                                                self.keeplist[a][keyw] = b[keyw]
-                for a, b in oldlist.iteritems():
-                        if a not in newlist:
-                                lstdel.append(a)
-                for a in lstdel:
-                        del self.keeplist[a]
-                if len(lstadd) > 0:
-                        log.info('%d new %s from %s' % (len(lstadd),
-                                                        self.anylist_properties['name'],
-                                                        self.requested_list.keys()))
-                if len(lstdel) > 0:
-                        log.info('%d old %s from %s' % (len(lstdel),
-                                                        self.anylist_properties['name'],
-                                                        self.requested_list.keys()))
-                return { 'add' : lstadd,
-                         'del' : lstdel }
-        
-        def setcommandclass(self, commandclass):
-                self.commandclass = commandclass
-                return
-        
-        def __clean_urls__(self):
-                self.requested_list = {}
-                return
-        
-        def __add_urls__(self, newurls):
-                for url in newurls:
-                        if url not in self.requested_list:
-                                self.requested_list[url] = cti_urllist.UrlList(url)
-                return
-        
-        def setandupdate(self, newurls):
-                self.__add_urls__(newurls)
-                if len(self.requested_list) == 0:
-                        return
-                self.update()
-                return
+    def __init__(self, newurls):
+        self.commandclass = None
+        self.requested_list = {}
+        self.keeplist = {}
+        self.__clean_urls__()
+        self.__add_urls__(newurls)
+        return
+
+    def update(self):
+        lstadd = []
+        lstdel = []
+        oldlist = self.keeplist
+        newlist = {}
+        for url, urllist in self.requested_list.iteritems():
+            gl = urllist.getlist(* self.anylist_properties['urloptions'])
+            if gl == 2:
+                tmplist = getattr(self.commandclass, self.anylist_properties['action'])(urllist.jsonreply)
+                newlist.update(tmplist)
+        for a, b in newlist.iteritems():
+            if a not in oldlist:
+                self.keeplist[a] = b
+                lstadd.append(a)
+            else:
+                for keyw in self.anylist_properties['keywords']:
+                    if keyw in b:
+                        self.keeplist[a][keyw] = b[keyw]
+        for a, b in oldlist.iteritems():
+            if a not in newlist:
+                lstdel.append(a)
+        for a in lstdel:
+            del self.keeplist[a]
+        if len(lstadd) > 0:
+            log.info('%d new %s from %s' % (len(lstadd),
+                self.anylist_properties['name'],
+                self.requested_list.keys()))
+        if len(lstdel) > 0:
+            log.info('%d old %s from %s' % (len(lstdel),
+                self.anylist_properties['name'],
+                self.requested_list.keys()))
+        return { 'add' : lstadd,
+            'del' : lstdel }
+
+    def setcommandclass(self, commandclass):
+        self.commandclass = commandclass
+        return
+
+    def __clean_urls__(self):
+        self.requested_list = {}
+        return
+
+    def __add_urls__(self, newurls):
+        for url in newurls:
+            if url not in self.requested_list:
+                self.requested_list[url] = cti_urllist.UrlList(url)
+        return
+
+    def setandupdate(self, newurls):
+        self.__add_urls__(newurls)
+        if len(self.requested_list) == 0:
+            return
+        self.update()
+        return

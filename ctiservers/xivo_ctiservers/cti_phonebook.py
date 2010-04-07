@@ -29,10 +29,10 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('phonebook')
 
 class PhoneBook(AnyList):
-        def __init__(self, newurls = []):
-            self.anylist_properties = {'keywords' : ['phonebook.firstname', 'phonebook.lastname', 'phonebook.displayname'],
-                                       'name' : 'phonebook',
-                                       'action' : 'getphonebook',
-                                       'urloptions' : (1, 5, True)}
-            AnyList.__init__(self, newurls)
-            return
+    def __init__(self, newurls = []):
+        self.anylist_properties = {'keywords' : ['phonebook.firstname', 'phonebook.lastname', 'phonebook.displayname'],
+            'name' : 'phonebook',
+            'action' : 'getphonebook',
+            'urloptions' : (1, 5, True)}
+        AnyList.__init__(self, newurls)
+        return
