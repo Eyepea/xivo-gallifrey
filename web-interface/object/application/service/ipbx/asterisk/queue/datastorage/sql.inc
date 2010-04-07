@@ -223,11 +223,16 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		return($res);
 	}
 
-	function skillrules_getall($search=null, $limit=null)
+	function skillrules_getall($search=null, $limit=null, $inrule=false)
 	{
 		$this->_dso->new_select('queueskillrule');
 		if(!is_null($search) && strlen($search) > 0)
+		{
 			$this->_dso->wherecontain("name", $search);
+			
+			if($inrule)
+                $this->_dso->orwherecontain('rule' , $search);
+		}
 
 		$this->_dso->new_order('name', null, 'queueskillrule');
 		$this->_dso->limit($limit);

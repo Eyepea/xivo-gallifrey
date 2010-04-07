@@ -20,16 +20,16 @@ __license__ = """
 """
 
 # local dev
-#IP          = 'xivo.local'
-#PORT        = 80
-#SSL         = False
-#USERNAME    = 'root'
-#PASSWORD    = 'proformatique'
-
-# dalek 1.0.10 testbox
-IP          = '192.168.0.141'
-PORT        = 443
-SSL         = True
+IP          = 'xivo.local'
+PORT        = 80
+SSL         = False
 USERNAME    = 'root'
 PASSWORD    = 'proformatique'
+
+# dalek 1.0.10 testbox
+#IP          = '192.168.0.141'
+#PORT        = 443
+#SSL         = True
+#USERNAME    = 'root'
+#PASSWORD    = 'proformatique'
 

@@ -46,6 +46,7 @@ $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 
 $array['tree']['service']['ipbx']['call_center'] = array();
 $array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
+$array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
 
 $array['tree']['service']['ipbx']['call_management'] = array();
 $array['tree']['service']['ipbx']['call_management']['incall'] = true;

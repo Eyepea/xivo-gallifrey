@@ -1467,9 +1467,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		return($res[0]['count']);
 	}
 
-	function skillrules_getall($search=null, $limit=null)
+	function skillrules_getall($search=null, $limit=null, $inrule=false)
 	{
-		return($this->_dso->skillrules_getall($search, $limit));
+		return($this->_dso->skillrules_getall($search, $limit, $inrule));
 	}
 	
 	function skillrules_save($name, $rules)
@@ -1477,12 +1477,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		$this->_reset();
 		$err = false;
 
+        if($this->_skillrule === false)
+            $this->load_components();
+
 		$name = trim($name);
 		if(strlen($name) == 0)
 		{ $err = true; $this->_set_error('name', 'empty'); }
 		else if($this->_skillrule->exists(array('name' => $name)))
-		{ $err = true; $this->_set_error('name', 'alreadyset'); }		
-
+		{ $err = true; $this->_set_error('name', 'alreadyset'); }
+		
 		$catrules = '';
 		for($i = 0; $i < count($rules); $i++)
 		{
@@ -1504,6 +1507,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		// save skill category and return autoincremented ID
 		$data	= array('name' => $name, 'rule' => substr($catrules, 1));
 		$id =  $this->_skillrule->add($data);
+		$this->_set_result('id', $id);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -1548,9 +1552,10 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function skillrules_delete($id)
 	{
-		$ret =  $this->_skillrule->delete($id);
+        if($this->_skillrule === false)
+            $this->load_components();
 
-		return $ret;
+		return $this->_skillrule->delete($id);
 	}
 
 	function skillrules_getone($id)

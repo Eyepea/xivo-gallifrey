@@ -245,5 +245,9 @@ $array['service/ipbx/asterisk/web_services/restricted/call_center/queueskills'] 
 	'path'		=> 'service/ipbx/asterisk/web_services/call_center/queueskills',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['service/ipbx/asterisk/web_services/restricted/call_center/queueskillrules'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/queueskillrules',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
 ?>
