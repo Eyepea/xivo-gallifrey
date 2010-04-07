@@ -945,11 +945,11 @@ class XivoCTICommand(BaseCommand):
             try:
                 if not vitem.get('commented'):
                     lvlist[vitem.get('uniqueid')] = { 'mailbox' :  vitem.get('mailbox'),
-                        'context' :  vitem.get('context'),
-                        'fullname' : vitem.get('fullname'),
-                        'password' : vitem.get('password'),
-                        'email' :    vitem.get('email')
-                        }
+                                                      'context' :  vitem.get('context'),
+                                                      'fullname' : vitem.get('fullname'),
+                                                      'password' : vitem.get('password'),
+                                                      'email' :    vitem.get('email')
+                                                      }
             except Exception:
                 log.exception('(getvoicemaillist : %s)' % vitem)
         return lvlist
@@ -1158,12 +1158,14 @@ class XivoCTICommand(BaseCommand):
                 userinfo['login']['connection'].toClose = True
         return wassent
 
-    def __check_astid_context__(self, userinfo, astid, context = None):
+    def __check_astid_context__(self, userinfo, astid, context):
         mycond_astid = True
         mycond_context = True
         if self.parting_astid:
             mycond_astid = (astid == userinfo['astid'])
         if self.parting_context and context is not None:
+            # context = None can occur when some __send_msg_to_cti_clients__ calls
+            # are not aware of the context
             mycond_context = (context == userinfo['context'])
         return (mycond_astid and mycond_context)
 
@@ -1559,7 +1561,7 @@ class XivoCTICommand(BaseCommand):
 
     def __dialplan_fill_src__(self, dialplan_data):
         origin = dialplan_data.get('xivo-origin')
-        if origin == 'did':
+        if origin == 'did' or origin == 'forcelookup':
             self.__did__(dialplan_data)
         elif origin == 'internal':
             self.__internal__(dialplan_data)
@@ -3866,7 +3868,7 @@ class XivoCTICommand(BaseCommand):
             channel = event.get('CHANNEL')
             uniqueid = event.get('UNIQUEID')
             if uniqueid not in self.uniqueids[astid]:
-                log.warning('%s AMI UserEvent %s undefined %s' % (astid, eventname, uniqueid))
+                log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
                 return
 
             calleridnum = event.get('XIVO_SRCNUM')
@@ -3920,6 +3922,40 @@ class XivoCTICommand(BaseCommand):
                     destdetails.get('context'))
             #self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
             self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
+
+        elif eventname == 'LookupDirectory':
+            channel = event.get('CHANNEL')
+            uniqueid = event.get('UNIQUEID')
+            xivo_userid = event.get('XIVO_USERID')
+            xivo_dstid = event.get('XIVO_DSTID')
+            log.info('%s AMI UserEvent %s %s %s %s' % (astid, uniqueid, eventname, xivo_userid, xivo_dstid))
+            if uniqueid not in self.uniqueids[astid]:
+                log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
+                return
+            if 'dialplan_data' in self.uniqueids[astid][uniqueid]:
+                dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
+            else:
+                dialplan_data = {}
+                self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
+
+            calleridnum = event.get('XIVO_SRCNUM')
+            calleridname = event.get('XIVO_SRCNAME')
+            calleridton = event.get('XIVO_SRCTON')
+            calleridrdnis = event.get('XIVO_SRCRDNIS')
+            context = event.get('XIVO_CONTEXT')
+
+            dialplan_data.update( { 'xivo-astid' : astid,
+                                    'xivo-origin' : 'forcelookup',
+                                    'xivo-channel' : channel,
+                                    'xivo-uniqueid' : uniqueid,
+                                    'xivo-calleridnum' : calleridnum,
+                                    'xivo-calleridname' : calleridname,
+                                    'xivo-calleridrdnis' : calleridrdnis,
+                                    'xivo-calleridton' : calleridton,
+                                    'xivo-context' : context
+                                    } )
+
+            self.__dialplan_fill_src__(dialplan_data)
 
         elif eventname in ['MacroUser', 'MacroGroup', 'MacroQueue', 'MacroOutcall', 'MacroMeetme']:
             channel = event.get('CHANNEL')
@@ -4066,7 +4102,7 @@ class XivoCTICommand(BaseCommand):
 
         (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
         if meetmeref is None:
-            log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, confno))
+            log.warning('%s ami_meetmenoauthed : unable to find room %s' % (astid, confno))
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
@@ -4095,7 +4131,7 @@ class XivoCTICommand(BaseCommand):
 
         (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
         if meetmeref is None:
-            log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, confno))
+            log.warning('%s ami_meetmepause : unable to find room %s' % (astid, confno))
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
@@ -4140,6 +4176,7 @@ class XivoCTICommand(BaseCommand):
         if uniqueid in meetmeref['uniqueids']:
             log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
                 % (astid, uniqueid, channel, confno))
+
         phoneid = self.__phoneid_from_channel__(astid, channel)
         if phoneid:
             self.weblist['phones'][astid].ami_meetmejoin(phoneid, uniqueid, meetmenum)
@@ -5140,14 +5177,13 @@ class XivoCTICommand(BaseCommand):
             log.exception('(regular update)')
         return
 
-    def __getlist__(self, userinfo, ccomm, context=None):
+    def __getlist__(self, userinfo, ccomm, context = None):
         capaid = userinfo.get('capaid')
         ucapa = self.capas[capaid].all()
         if ccomm == 'users':
             # XXX define capas ?
             fullstat = []
             for uinfo in self.ulist_ng.keeplist.itervalues():
-                #if self.__check_astid_context__(userinfo, uinfo.get('astid')):
                 if self.__check_astid_context__(userinfo, uinfo.get('astid'), uinfo.get('context')):
                     duinfo = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                     icapaid = uinfo.get('capaid')
