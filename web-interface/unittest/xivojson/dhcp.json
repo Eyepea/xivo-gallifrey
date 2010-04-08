@@ -1,0 +1,6 @@
+{
+    "active"                : false,
+    "pool_start"            : "192.168.0.10",
+    "pool_end"              : "192.168.0.50",
+    "extra_ifaces"          : [ "eth0" ]
+}

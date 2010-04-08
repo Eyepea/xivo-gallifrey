@@ -34,6 +34,7 @@ class JSONClient(object):
         'queueskillrules': ['service/ipbx'            , 'call_center'],
         
         'mail'          : ['xivo/configuration'      , 'network'],
+        'dhcp'          : ['xivo/configuration'      , 'network'],
     }
 
     def __init__(self, ip='localhost', port=80, ssl=False, username=None, password=None):
