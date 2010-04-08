@@ -55,3 +55,11 @@ Gestion des alertes
 ; mn_left_support-limits
 Limitations
 
+; mn_left_ti_controlsystem
+Système de contrôle
+
+; mn_left_controlsystem-commonconf
+Appliquer les modifications système
+
+; mn_left_controlsystem-ha
+Appliquer la configuration HA

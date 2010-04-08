@@ -32,6 +32,8 @@ class JSONClient(object):
 
         'queueskill'    : ['service/ipbx'            , 'call_center'],
         'queueskillrules': ['service/ipbx'            , 'call_center'],
+        
+        'mail'          : ['xivo/configuration'      , 'network'],
     }
 
     def __init__(self, ip='localhost', port=80, ssl=False, username=None, password=None):
@@ -84,6 +86,17 @@ class JSONClient(object):
             self.baseuri % (params[0], params[1], obj, 'add'), 
             content
         )
+
+    def edit(self, obj, content):
+        if obj not in self.objects:
+            raise 'Unknown %s object' % obj
+         
+        params = self.objects[obj]
+        return self.request('POST', 
+            self.baseuri % (params[0], params[1], obj, 'edit'), 
+            content
+        )
+
     def view(self, obj, id):
         if obj not in self.objects:
             raise 'Unknown %s object' % obj

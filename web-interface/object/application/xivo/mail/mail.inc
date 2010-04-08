@@ -47,7 +47,6 @@ class xivo_application_xivo_object_mail extends xivo_application_xivo_object_abs
 
         if($this->_mail->chk_values($arr) === false)
             $this->_set_errors($this->_mail->get_filter_error());
-
         if($this->get_errnb() > 0)
             return false;
 

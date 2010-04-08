@@ -240,3 +240,25 @@ Statistiques
 
 ; acl(service-graphs-munin)
 Graphiques munin
+
+; acl(xivo-configuration-support)
+Monitoring
+
+; acl(xivo-configuration-network-mail)
+Messagerie
+
+; acl(xivo-configuration-network-dhcp)
+Serveur DHCP
+
+; acl(xivo-configuration-network-ha)
+Haute-Disponibilité
+
+; acl(xivo-configuration-support-xivo)
+Maintenance XiVO
+
+; acl(xivo-configuration-support-alerts)
+Gestion des alertes
+
+; acl(xivo-configuration-support-limits)
+Limitations
+

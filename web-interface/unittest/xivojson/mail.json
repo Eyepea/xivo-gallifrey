@@ -1,0 +1,8 @@
+{
+    "mydomain"              : "proformatique.com",
+    "origin"                : "devel.proformatique.com",
+    "relayhost"             : "smtp.free.fr",
+    "fallback_relayhost"    : "smtp.orange.fr",
+    "canonical"             : ""
+}
+

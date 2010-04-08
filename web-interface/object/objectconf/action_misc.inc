@@ -84,6 +84,8 @@ $array['xivo/configuration/web_services/private/network/resolvconf'] = array(
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
+
+
 $array['service/ipbx/asterisk/web_services/private/ctiserver/configuration'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
 	'define'	=> array(
@@ -154,6 +156,8 @@ $array['service/ipbx/asterisk/web_services/private/control_system/restart'] = ar
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
+
+// RESTRICTED
 $array['xivo/configuration/web_services/restricted/manage/entity'] = array(
 	'path'		=> 'xivo/configuration/web_services/manage/entity',
 	'define'	=> array(
@@ -170,6 +174,31 @@ $array['xivo/configuration/web_services/restricted/network/resolvconf'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/resolvconf',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/network/mail'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/mail',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/network/dhcp'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/dhcp',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/network/ha'] = array(
+	'path'		=> 'xivo/configuration/web_services/network/ha',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/support/xivo'] = array(
+	'path'		=> 'xivo/configuration/web_services/support/xivo',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/support/alerts'] = array(
+	'path'		=> 'xivo/configuration/web_services/support/alerts',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['xivo/configuration/web_services/restricted/support/limits'] = array(
+	'path'		=> 'xivo/configuration/web_services/support/limits',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+			
 
 $array['service/ipbx/asterisk/web_services/restricted/ctiserver/configuration'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
