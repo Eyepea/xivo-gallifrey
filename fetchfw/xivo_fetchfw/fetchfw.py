@@ -43,6 +43,7 @@ TFTP_PATH = None            # modified by _init()
 KFW_PATH = None             # modified by _init()
 TMP_PATH = None             # modified by _init()
 FIRMWARES_DB_PATH = None    # modified by _init()
+PROXY_URL = None            # modified by _init()
 
 
 # Installation functions by brand and optionnally model.  INSTALL_FNS is
@@ -93,7 +94,12 @@ class RemoteFile:
             src = open(self.path)
             dst = None
         except IOError:
-            src = urllib2.urlopen(self.url)
+            if PROXY_URL:
+                thisproxy = urllib2.ProxyHandler({"http" : PROXY_URL})
+                opener = urllib2.build_opener(urllib2.HTTPDefaultErrorHandler, thisproxy)
+                src = opener.open(self.url)
+            else:
+                src = urllib2.urlopen(self.url)
             dst = open(self.path, "w")
 
         while True:
@@ -282,6 +288,7 @@ def _init():
     global KFW_PATH
     global TMP_PATH
     global FIRMWARES_DB_PATH
+    global PROXY_URL
     
     config = ConfigParser.RawConfigParser()
     config.readfp(open(CONFIG_FILE))
@@ -289,6 +296,8 @@ def _init():
     KFW_PATH = config.get(CONFIG_SECTION_GENERAL, 'kfw_path')
     TMP_PATH = config.get(CONFIG_SECTION_GENERAL, 'tmp_path')
     FIRMWARES_DB_PATH = config.get(CONFIG_SECTION_GENERAL, 'firmwares_db_path')
+    if 'proxy_url' in dict(config.items(CONFIG_SECTION_GENERAL)):
+        PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'proxy_url')
     
     try:
         os.makedirs(TMP_PATH)
