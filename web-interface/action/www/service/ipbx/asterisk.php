@@ -18,12 +18,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$userstat = $groupstat = $queuestat = $meetmestat = array();
+$userstat = $groupstat = $queuestat = $meetmestat = $agentstat = $sipstat = $iaxstat = array();
 $userstat['enable'] = $userstat['disable'] = $userstat['initialized'] = $userstat['total'] = 0;
 $groupstat['enable'] = $groupstat['disable'] = $groupstat['total'] = 0;
 $queuestat['enable'] = $queuestat['disable'] = $queuestat['total'] = 0;
 $meetmestat['enable'] = $meetmestat['disable'] = $meetmestat['total'] = 0;
 $voicemailstat['enable'] = $voicemailstat['disable'] = $voicemailstat['total'] = 0;
+$agentstat['enable'] = $agentstat['disable'] = $agentstat['total'] = 0;
+$sipstat['enable'] = $sipstat['disable'] = $sipstat['total'] = 0;
+$iaxstat['enable'] = $iaxstat['disable'] = $iaxstat['total'] = 0;
 
 $activecalls = 0;
 
@@ -32,6 +35,36 @@ if(($recvactivecalls = $ipbx->discuss('core show channels',true)) !== false
 && ($pos = strpos($recvactivecalls[$nb],' ')) !== false
 && $pos !== 0)
 	$activecalls = substr($recvactivecalls[$nb],0,$pos);
+
+$appsip = &$ipbx->get_application('trunk',array('protocol' => XIVO_SRE_IPBX_AST_PROTO_SIP));
+
+if(($enablesip = $appsip->get_nb(true,true)) !== false)
+	$sipstat['enable'] = $enablesip;
+
+if(($disablesip = $appsip->get_nb(true,false)) !== false)
+	$sipstat['disable'] = $disablesip;
+	
+$sipstat['total'] = $sipstat['enable'] + $sipstat['disable'];
+
+$appiax = &$ipbx->get_application('trunk',array('protocol' => XIVO_SRE_IPBX_AST_PROTO_IAX));
+
+if(($enableiax = $appiax->get_nb(true,null)) !== false)
+	$iaxstat['enable'] = $enableiax;
+
+if(($disableiax = $appiax->get_nb(true,true)) !== false)
+	$iaxstat['disable'] = $disableiax;
+	
+$iaxstat['total'] = $iaxstat['enable'] + $iaxstat['disable'];
+
+$appagent = &$ipbx->get_application('agent',null,false);
+
+if(($enableagent = $appagent->get_nb(null,false)) !== false)
+	$agentstat['enable'] = $enableagent;
+
+if(($disableagent = $appagent->get_nb(null,true)) !== false)
+	$agentstat['disable'] = $disableagent;
+
+$agentstat['total'] = $agentstat['enable'] + $agentstat['disable'];
 
 $appuser = &$ipbx->get_application('user',null,false);
 
@@ -94,7 +127,10 @@ $_TPL->set_var('userstat',$userstat);
 $_TPL->set_var('groupstat',$groupstat);
 $_TPL->set_var('queuestat',$queuestat);
 $_TPL->set_var('meetmestat',$meetmestat);
+$_TPL->set_var('agentstat',$agentstat);
 $_TPL->set_var('voicemailstat',$voicemailstat);
+$_TPL->set_var('sipstat',$sipstat);
+$_TPL->set_var('iaxstat',$iaxstat);
 $_TPL->set_var('activecalls',$activecalls);
 
 $_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/index');

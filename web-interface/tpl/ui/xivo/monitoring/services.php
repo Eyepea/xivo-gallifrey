@@ -21,7 +21,10 @@
 $url = &$this->get_module('url');
 $dhtml = &$this->get_module('dhtml');
 
-$grpname = $this->get_var('group_name');
+$groups = array('mon_server','mon_telephony','mon_grpundef');
+
+foreach ($groups as $grpname) :
+
 $grpdata = $this->get_var($grpname);
 $memtotal = $this->get_var('memstats','memtotal');
 
@@ -168,5 +171,7 @@ if(is_array($grpdata) === true && ($nb = count($grpdata)) > 0):
 <?php
 
 endif;
+
+endforeach;
 
 ?>

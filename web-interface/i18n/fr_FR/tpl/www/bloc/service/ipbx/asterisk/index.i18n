@@ -19,6 +19,12 @@ Utilisateur
 ; stats_col_total
 Total
 
+; stats_col_action
+Action
+
+; stats_type-agent
+Agent
+
 ; stats_type-user
 Utilisateur
 
@@ -33,6 +39,36 @@ Chambre de conférence
 
 ; stats_type-voicemail
 Messagerie vocale
+
+; stats_type-sip
+Trunk SIP
+
+;stats_type-iax
+Trunk IAX
+
+; opt_add_agent
+Ajouter un agent
+
+; opt_add_user
+Ajouter un utilisateur
+
+; opt_add_group
+Ajouter un groupe
+
+; opt_add_queue
+Ajouter une file d'attente
+
+; opt_add_meetme
+Ajouter une chambre de conférence
+
+; opt_add_voicemail
+Ajouter une messagerie vocale
+
+; opt_add_sip
+Ajouter un trunk SIP
+
+; opt_add_iax
+Ajouter un trunk IAX
 
 ; stats_status-initialized
 Initialisé

@@ -59,7 +59,7 @@ class xivo_application_service_asterisk_trunk_sql extends xivo_application_abstr
 		if($disable !== null)
 		{
 			$disable = intval((bool) $disable);
-			$arr['commented'] = $disable;
+			#$arr['commented'] = $disable;
 			$sip['commented'] = $disable;
 			$iax['commented'] = $disable;
 			$custom['commented'] = $disable;

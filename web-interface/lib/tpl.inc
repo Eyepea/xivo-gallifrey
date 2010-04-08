@@ -62,7 +62,7 @@ class dwho_tpl
 		if(empty($modules) === true)
 			return(null);
 
-		//calimero
+		// load i18n errors message in all page
 		$this->load_i18n_file('errors');
 
 		foreach($modules as $class)
@@ -435,7 +435,7 @@ class dwho_tpl
 			DWHO_SEP_DIR.
 			$file.
 			$this->get_file_extension($ext);
-
+			
 		if(($path = dwho_file::is_f_r($path)) === false)
 			return(false);
 

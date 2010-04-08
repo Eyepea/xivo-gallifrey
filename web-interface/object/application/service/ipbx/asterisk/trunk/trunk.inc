@@ -176,6 +176,14 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 		return($r);
 	}
 
+	function get_nb($protocols=null,$disable=null)
+	{
+		if (($nb = $this->get_trunks_list($protocols,$disable)) !== false)
+			return(count($nb));
+
+		return(0);
+	}
+
 	function get_trunks_search($search,$protocols=null,$disable=null,$order=null,$limit=null,$assoc=false)
 	{
 		return($this->_get_trunks('search',$search,$protocols,$disable,$order,$limit,$assoc));

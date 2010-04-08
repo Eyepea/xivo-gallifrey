@@ -23,13 +23,13 @@ else if(typeof(dwho.http) === 'undefined')
 
 dwho.http = function(url,options,data,send)
 {
-	this._url		= null;
+	this._url			= null;
 	this._urlparsed		= null;
-	this._uri		= null;
+	this._uri			= null;
 	this._request		= null;
 	this._completed		= false;
 	this._status		= 0;
-	this._data		= null;
+	this._data			= null;
 	this._datatosend	= null;
 	this._intervalid	= null;
 	this._timeoutid		= null;

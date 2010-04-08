@@ -21,7 +21,7 @@
 $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
-$info = $result = array();
+$info = $result = $error = array();
 
 $param = array();
 $param['act'] = 'list';

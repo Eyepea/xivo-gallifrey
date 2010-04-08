@@ -19,6 +19,12 @@ User
 ; stats_col_total
 Total
 
+; stats_col_action
+Action
+
+; stats_type-agent
+Agent
+
 ; stats_type-user
 User
 
@@ -33,6 +39,36 @@ Conference room
 
 ; stats_type-voicemail
 Voicemail
+
+; stats_type-sip
+Trunk SIP
+
+;stats_type-iax
+Trunk IAX
+
+; opt_add_agent
+Add a agent
+
+; opt_add_user
+Add a user
+
+; opt_add_group
+Add a group
+
+; opt_add_queue
+Add a queue
+
+; opt_add_meetme
+Add a conference room
+
+; opt_add_voicemail
+Add a voicemail
+
+; opt_add_sip
+Add a trunk SIP
+
+; opt_add_iax
+Add a trunk IAX
 
 ; stats_status-initialized
 Initialized

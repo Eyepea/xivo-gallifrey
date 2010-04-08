@@ -20,7 +20,7 @@ function xivo_ast_meetme_http_search_user(dwsptr)
 {
 	new dwho.http('/service/ipbx/ui.php/pbx_settings/meetme/users/search/?' + dwho_sess_str,
 		      {'callbackcomplete':	function(xhr) { dwsptr.set(xhr,dwsptr.get_search_value()); },
-		       'method':		'post',
+		       'method':		'get',
 		       'cache':			false},
 		      {'search':	dwsptr.get_search_value()},
 		      true);
