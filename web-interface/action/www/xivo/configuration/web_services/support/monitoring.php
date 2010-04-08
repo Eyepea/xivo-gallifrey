@@ -33,7 +33,6 @@ switch($act)
 	    $data['maintenance']            = (int) $data['maintenance'];
 	    $data['alert_emails']           = implode(' ', $data['alert_emails']);
 	    $data['dahdi_monitor_ports']    = implode(' ', $data['dahdi_monitor_ports']);
-	    var_dump($data);
 	    
 		$status = ($data !== false && $app->set_monitoring($data) === true) ? 200 : 400;
 
@@ -62,7 +61,8 @@ switch($act)
         for($i = 0; $i < count($info['dahdi_monitor_ports']); $i++)
             $info['dahdi_monitor_ports'][$i] = (int) $info['dahdi_monitor_ports'][$i];
         
-        $info['max_call_duration'] = intval($info['max_call_duration']);
+        if(!is_null($info['max_call_duration']))
+            $info['max_call_duration'] = intval($info['max_call_duration']);
         
 		$_TPL->set_var('info',$info);
 }

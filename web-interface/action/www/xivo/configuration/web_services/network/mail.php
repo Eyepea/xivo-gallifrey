@@ -29,6 +29,13 @@ switch($act)
 {
 	case 'edit':
 	    $data = $app->_get_data_from_json();
+	    
+	    $canonical = "";
+	    foreach($data['canonical'] as $rule)
+	        $canonical .= $rule['pattern'] . ' ' . $rule['result'] . "\n";
+	    $data['canonical'] = $canonical;
+	    var_dump($data);
+	    
 		$status = $app->set($data) === true ? 200 : 400;
 
 		$http_response->set_status_line($status);
@@ -38,13 +45,24 @@ switch($act)
 	default:
 		$act = 'view';
 
-		if(($list = $app->get()) === false)
+		if(($view = $app->get()) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
 		}
 
-		$_TPL->set_var('info',$list);
+        $canonical = array();
+        foreach(preg_split('/\r?\n/', $view['canonical']) as $rule)
+        {
+            list($src, $dst) = preg_split('/\s+/', $rule);
+            if(strlen($src) == 0)
+                continue;
+                
+            $canonical[] = array('pattern' => $src, 'result' => $dst);
+        }
+        $view['canonical'] = $canonical;
+        
+		$_TPL->set_var('info',$view);
 }
 
 $_TPL->set_var('act',$act);

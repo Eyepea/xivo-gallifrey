@@ -3,6 +3,8 @@
     "origin"                : "devel.proformatique.com",
     "relayhost"             : "smtp.free.fr",
     "fallback_relayhost"    : "smtp.orange.fr",
-    "canonical"             : ""
+    "canonical"             : [
+      { "pattern": "@proformatique.com", "result": "john.doe@gov.fr" }
+    ],
 }
 
