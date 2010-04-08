@@ -35,6 +35,7 @@ class JSONClient(object):
         
         'mail'          : ['xivo/configuration'      , 'network'],
         'dhcp'          : ['xivo/configuration'      , 'network'],
+        'monitoring'    : ['xivo/configuration'      , 'support'],
     }
 
     def __init__(self, ip='localhost', port=80, ssl=False, username=None, password=None):

@@ -253,12 +253,6 @@ Serveur DHCP
 ; acl(xivo-configuration-network-ha)
 Haute-Disponibilité
 
-; acl(xivo-configuration-support-xivo)
-Maintenance XiVO
-
-; acl(xivo-configuration-support-alerts)
-Gestion des alertes
-
-; acl(xivo-configuration-support-limits)
-Limitations
+; acl(xivo-configuration-support-monitoring)
+Monitoring
 

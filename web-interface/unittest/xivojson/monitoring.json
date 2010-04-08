@@ -1,0 +1,9 @@
+{
+    "maintenance"           : false,
+    "alert_emails"          : [
+        "toto@gmail.com",
+        "john.doe@gov.fr"
+    ],
+    "dahdi_monitor_ports"   : [1, 4, 7],
+    "max_call_duration"     : 45
+}

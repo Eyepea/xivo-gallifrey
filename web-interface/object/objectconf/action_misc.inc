@@ -186,16 +186,9 @@ $array['xivo/configuration/web_services/restricted/network/ha'] = array(
 	'path'		=> 'xivo/configuration/web_services/network/ha',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['xivo/configuration/web_services/restricted/support/xivo'] = array(
-	'path'		=> 'xivo/configuration/web_services/support/xivo',
-	'define'	=> array(
-			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['xivo/configuration/web_services/restricted/support/alerts'] = array(
-	'path'		=> 'xivo/configuration/web_services/support/alerts',
-	'define'	=> array(
-			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['xivo/configuration/web_services/restricted/support/limits'] = array(
-	'path'		=> 'xivo/configuration/web_services/support/limits',
+
+$array['xivo/configuration/web_services/restricted/support/monitoring'] = array(
+	'path'		=> 'xivo/configuration/web_services/support/monitoring',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 			

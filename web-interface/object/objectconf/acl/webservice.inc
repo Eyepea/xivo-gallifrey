@@ -32,9 +32,7 @@ $array['tree']['xivo']['configuration']['network']['resolvconf'] = true;
 $array['tree']['xivo']['configuration']['network']['mail'] = true;
 $array['tree']['xivo']['configuration']['network']['dhcp'] = true;
 $array['tree']['xivo']['configuration']['network']['ha'] = true;
-$array['tree']['xivo']['configuration']['support']['xivo'] = true;
-$array['tree']['xivo']['configuration']['support']['alerts'] = true;
-$array['tree']['xivo']['configuration']['support']['limits'] = true;
+$array['tree']['xivo']['configuration']['support']['monitoring'] = true;
 
 $array['tree']['service'] = array();
 $array['tree']['service']['ipbx'] = array();

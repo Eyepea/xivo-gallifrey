@@ -7,3 +7,4 @@ from queueskill           import *
 from queueskillrule       import *
 from mail                 import *
 from dhcp                 import *
+from monitoring           import *

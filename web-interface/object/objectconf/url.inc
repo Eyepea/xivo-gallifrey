@@ -55,9 +55,7 @@ $array['xivo/configuration/json/restricted/network/resolvconf'] = 'xivo/configur
 $array['xivo/configuration/json/restricted/network/mail'] = 'xivo/configuration/json.php/restricted/network/mail/';
 $array['xivo/configuration/json/restricted/network/dhcp'] = 'xivo/configuration/json.php/restricted/network/dhcp/';
 $array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
-$array['xivo/configuration/json/restricted/support/xivo'] = 'xivo/configuration/json.php/restricted/support/xivo/';
-$array['xivo/configuration/json/restricted/support/alerts'] = 'xivo/configuration/json.php/restricted/support/alerts/';
-$array['xivo/configuration/json/restricted/support/limits'] = 'xivo/configuration/json.php/restricted/support/limits/';
+$array['xivo/configuration/json/restricted/support/monitoring'] = 'xivo/configuration/json.php/restricted/support/monitoring/';
 
 
 $array['xivo/configuration/json/private/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
@@ -67,9 +65,7 @@ $array['xivo/configuration/json/private/network/resolvconf'] = 'xivo/configurati
 $array['xivo/configuration/json/private/network/mail'] = 'xivo/configuration/json.php/private/network/mail/';
 $array['xivo/configuration/json/private/network/dhcp'] = 'xivo/configuration/json.php/private/network/dhcp/';
 $array['xivo/configuration/json/private/network/ha'] = 'xivo/configuration/json.php/private/network/ha/';
-$array['xivo/configuration/json/private/support/xivo'] = 'xivo/configuration/json.php/private/support/xivo/';
-$array['xivo/configuration/json/private/support/alerts'] = 'xivo/configuration/json.php/private/support/alerts/';
-$array['xivo/configuration/json/private/support/limits'] = 'xivo/configuration/json.php/private/support/limits/';
+$array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configuration/json.php/private/support/monitorinh/';
 
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
