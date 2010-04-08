@@ -66,7 +66,7 @@ import sys
 import threading
 import time
 import logging
-from logging.handlers import SysLogHandler
+from logging.handlers import RotatingFileHandler
 import Queue
 from xivo_ctiservers.client_connection import ClientConnection
 
@@ -82,21 +82,24 @@ except:
     DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-XIVO_CONF_FILE            = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
-PIDFILE                 = '/var/run/%s.pid' % DAEMONNAME
-GETOPT_SHORTOPTS        = 'dc:p:'
-GETOPT_LONGOPTS         = ["debug", "config=", "pidfile="]
+XIVO_CONF_FILE   = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
+PIDFILE          = '/var/run/%s.pid' % DAEMONNAME
+LOGFILENAME      = '/var/log/pf-xivo-cti-server/daemon.log'
+GETOPT_SHORTOPTS = 'dc:p:l:'
+GETOPT_LONGOPTS  = ['debug', 'config=', 'pidfile=', 'logfile=']
 debug_mode = False
 
 def parse_command_line():
     global XIVO_CONF_FILE, PIDFILE, debug_mode
     for opt, arg in getopt.getopt( sys.argv[1:], GETOPT_SHORTOPTS, GETOPT_LONGOPTS)[0]:
-        if opt == "-c":
+        if opt == '-c':
             XIVO_CONF_FILE = arg
-        elif opt == "-d":
+        elif opt == '-d':
             debug_mode = True
-        elif opt=="-p":
+        elif opt == '-p':
             PIDFILE = arg
+        elif opt == '-l':
+            LOGFILENAME = arg
 
 parse_command_line()
 
@@ -221,9 +224,6 @@ class manage_connection:
                     daemon.askedtoquit = True
                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                 elif usefulmsg == 'xivo[ctiprofilelist,get]':
-                    print "bloooooooo"
-                    print daemon.commandclass.getprofilelist()
-                    print "bloooooooo"
                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
                     connid.sendall('%s:ID <%s>\n' % (XIVO_CLI_WEBI_HEADER, astid))
                     connid.sendall('%s\n' % daemon.commandclass.getprofilelist())
@@ -817,13 +817,14 @@ class xivo_deamon:
         log = logging.getLogger('main')
         
         try:
-            sysloghandler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)
-            formatter = logging.Formatter('%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s' % LOGDAEMONNAME)
-            sysloghandler.setFormatter(formatter)
-            logging.getLogger('').addHandler(sysloghandler)
+            logfilehandler = RotatingFileHandler(LOGFILENAME)
+            formatter = logging.Formatter('%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
+                                          % LOGDAEMONNAME)
+            logfilehandler.setFormatter(formatter)
+            logging.getLogger('').addHandler(logfilehandler)
         
         except Exception:
-            log.exception('sysloghandler')
+            log.exception('logfilehandler')
         
         if not debug_mode:
             daemonize.daemonize()
@@ -1525,5 +1526,3 @@ class xivo_deamon:
 
 
 main = xivo_deamon()
-
-
