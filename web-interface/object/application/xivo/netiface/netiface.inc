@@ -716,6 +716,14 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			$this->_set_error('netiface','interface method not valid');
 			return(false);
 		}
+		
+		// we can only have 1 voip interface
+		if($arr['networktype'] == 'voip')
+		{
+    		$voip_iface = $this->_netiface->get_voip_iface();
+    		if($voip_iface !== false && $voip_iface['ifname'] != $arr['ifname'])
+    		    $this->_set_error('netiface', 'networktype', 'voip-max');
+    	}
 
 		$this->_set_result('netiface',$normalized);
 

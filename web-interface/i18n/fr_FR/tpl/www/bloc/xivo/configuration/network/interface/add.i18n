@@ -62,3 +62,6 @@ Description :
 
 ; fm_options
 Configuration avancée :
+
+; error(voip-max)
+Une autre interface est déja de type VOIP

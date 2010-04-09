@@ -65,7 +65,9 @@ endif;
 				    'bbf'	=> 'fm_networktype-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['netiface']['networktype']['default'],
-				    'selected'	=> $info['networktype']),
+				    'selected'	=> $info['networktype'],
+				    'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'networktype'))),
 			      $element['netiface']['networktype']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_method'),
