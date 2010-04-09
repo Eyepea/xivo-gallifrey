@@ -537,6 +537,11 @@ class xivo_libdatastorage_abstract extends xivo_libconfig_abstract
 
 		return($this->_dso->delete($where,$disable));
 	}
+	
+	function delete_all()
+	{
+		return($this->_dso->delete_all());
+	}
 
 	function enable($id,$value=false)
 	{

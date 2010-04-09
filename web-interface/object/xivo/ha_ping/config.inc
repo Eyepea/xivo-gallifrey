@@ -21,12 +21,12 @@
 $array = array();
 $array['element'] = array();
 
-$array['element']['ipaddr'] = array();
-$array['element']['ipaddr']['default'] = '';
+$array['element']['ping_ipaddr'] = array();
+$array['element']['ping_ipaddr']['default'] = '';
 
 ### filters ###
 $array['filter'] = array();
-$array['filter']['ipaddr']	        = array('set'		=> false,
+$array['filter']['ping_ipaddr']	        = array(
 				    'chk'		    => 1,
 				    'callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));

@@ -28,6 +28,26 @@ $array['entity'] = array();
 $array['entity']['table'] = 'entity';
 $array['entity']['primary'] = array('id' => '');
 
+$array['ha'] = array();
+$array['ha']['table'] = 'ha';
+$array['ha']['primary'] = array('id' => '');
+
+$array['ha_uname'] = array();
+$array['ha_uname']['table'] = 'ha_uname_node';
+$array['ha_uname']['primary'] = array('id' => '');
+
+$array['ha_ping'] = array();
+$array['ha_ping']['table'] = 'ha_ping_ipaddr';
+$array['ha_ping']['primary'] = array('id' => '');
+
+$array['ha_virtnet'] = array();
+$array['ha_virtnet']['table'] = 'ha_virtual_network';
+$array['ha_virtnet']['primary'] = array('id' => '');
+
+$array['ha_peer'] = array();
+$array['ha_peer']['table'] = 'ha_peer';
+$array['ha_peer']['primary'] = array('id' => '');
+
 $array['iproute'] = array();
 $array['iproute']['table'] = 'iproute';
 $array['iproute']['primary'] = array('id' => '');

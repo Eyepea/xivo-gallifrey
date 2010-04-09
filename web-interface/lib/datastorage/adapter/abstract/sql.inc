@@ -489,6 +489,17 @@ class dwho_datastorage_adapter_abstract_sql extends dwho_datastorage_adapter_abs
 		return(($this->query($query) !== false ? $this->affected_rows() : false));
 	}
 
+	function delete_all($table)
+	{
+		$table = trim($table);
+
+		if($table === '')
+			return(false);
+
+		$query = sprintf('DELETE FROM %s',$this->quote_identifier($table));
+		return(($this->query($query) !== false ? $this->affected_rows() : false));
+	}
+
 	function _insertupdate($proc,$table,&$data,$set=false,$condwhere='',$valwhere='',$usewhere=false,$useorder=false,$uselimit=false)
 	{		
 		$proc = strtolower($proc);

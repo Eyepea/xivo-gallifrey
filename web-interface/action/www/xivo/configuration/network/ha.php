@@ -30,13 +30,15 @@ $commodes   = array('bcast', 'mcast', 'ucast');
 
 if(isset($_QR['fm_send']) === true)
 {
+    $fm_save    = true;
+    
 	if($appHA->set($_QR) === false)
 	{
 		$fm_save = false;
 		$_TPL->set_var('error'        , $appHA->get_error());
     }
     
-    $info = $appHA->get_result();
+    $info = $appHA->get_result("ha");
 }
 else
 { $info       = $appHA->get(); }

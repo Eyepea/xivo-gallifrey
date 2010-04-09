@@ -18,22 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$array = array();
-$array['element'] = array();
+xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
-$array['element']['iface'] = array();
-$array['element']['iface']['default'] = '';
-
-$array['element']['host'] = array();
-$array['element']['host']['default'] = '';
-
-### filters ###
-$array['filter'] = array();
-$array['filter']['iface'] = array('set'		=> false,
-				    'chk'		    => 1);
-$array['filter']['host']	        = array('set'		=> false,
-				    'chk'		    => 1,
-				    'callback'		=> 'dwho_network::valid_host',
-				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+class xivo_object_ha_ping_sql extends xivo_object_abstract_sql
+{
+	var $_disable	= null;
+}
 
 ?>

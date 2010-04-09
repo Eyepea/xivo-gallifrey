@@ -18,22 +18,22 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','abstract.inc'),true);
+$array = array();
+$array['element'] = array();
 
-class xivo_object_ha_virtnet extends xivo_object_abstract
-{
-	var $_dso		= null;
-	var $_name		= 'ha_virtnet';
-    var $_filter    = false;
+$array['element']['iface'] = array();
+$array['element']['iface']['default'] = '';
 
-	function xivo_object_ha_virtnet(&$xobj,&$dso)
-	{
-		$this->xivo_object_abstract(&$xobj);
-        if(is_object($dso) === false)
-            trigger_error('Invalid datastorage in '.__CLASS__,E_USER_ERROR);
+$array['element']['host'] = array();
+$array['element']['host']['default'] = '';
 
-        $this->_dso = &$dso;
-	}
-}
+$array['element']['transfer'] = array();
+$array['element']['transfer']['default'] = false;
+
+### filters ###
+$array['filter'] = array();
+$array['filter']['iface']	        = array('chk'		    => 1);
+$array['filter']['host']	        = array('chk'		    => 1);
+$array['filter']['transfer']	    = array('chk'		    => 1);
 
 ?>

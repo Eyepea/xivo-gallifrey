@@ -77,7 +77,6 @@ function dwho_munin_graphstree($urldir, $domain)
         $tree[$cat][] = $type;
     }
 
-#    var_dump($tree);
     return($tree);
 }
 

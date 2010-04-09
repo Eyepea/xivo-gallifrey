@@ -22,6 +22,7 @@ $form    = &$this->get_module('form');
 $dhtml   = &$this->get_module('dhtml');
 
 $info     = $this->get_var('info');
+$data     = $info['global'];
 $status   = $this->get_var('status');
 $commodes = $this->get_var('commodes');
 
@@ -107,49 +108,49 @@ endif;
 				    'value'	=> 1)),
 
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_apache2'),
-				      'name'		=> 'pf-ha-apache2',
+				      'name'		=> 'apache2',
 				      'labelid'		=> 'ha_apache2',
-				      'checked'		=> $info['pf.ha.apache2'],
+				      'checked'		=> $data['apache2'],
 				      'help'        => $this->bbf('fm_help-ha_apache2'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_asterisk'),
-				      'name'		=> 'pf-ha-asterisk',
+				      'name'		=> 'asterisk',
 				      'labelid'		=> 'ha_asterisk',
-				      'checked'		=> $info['pf.ha.asterisk'],
+				      'checked'		=> $data['asterisk'],
 				      'help'        => $this->bbf('fm_help-ha_asterisk'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_dhcp'),
-				      'name'		=> 'pf-ha-dhcp',
+				      'name'		=> 'dhcp',
 				      'labelid'		=> 'ha_dhcp',
-				      'checked'		=> $info['pf.ha.dhcp'],
+				      'checked'		=> $data['dhcp'],
 				      'help'        => $this->bbf('fm_help-ha_dhcp'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_monit'),
-				      'name'		=> 'pf-ha-monit',
+				      'name'		=> 'monit',
 				      'labelid'		=> 'ha_monit',
-				      'checked'		=> $info['pf.ha.monit'],
+				      'checked'		=> $data['monit'],
 				      'help'        => $this->bbf('fm_help-ha_monit'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_mysql'),
-				      'name'		=> 'pf-ha-mysql',
+				      'name'		=> 'mysql',
 				      'labelid'		=> 'ha_mysql',
-				      'checked'		=> $info['pf.ha.mysql'],
+				      'checked'		=> $data['mysql'],
 				      'help'        => $this->bbf('fm_help-ha_mysql'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_ntp'),
-				      'name'		=> 'pf-ha-ntp',
+				      'name'		=> 'ntp',
 				      'labelid'		=> 'ha_ntp',
-				      'checked'		=> $info['pf.ha.ntp'],
+				      'checked'		=> $data['ntp'],
 				      'help'        => $this->bbf('fm_help-ha_ntp'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_rsync'),
-				      'name'		=> 'pf-ha-rsync',
+				      'name'		=> 'rsync',
 				      'labelid'		=> 'ha_rsync',
-				      'checked'		=> $info['pf.ha.rsync'],
+				      'checked'		=> $data['rsync'],
 				      'help'        => $this->bbf('fm_help-ha_rsync'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_smokeping'),
-				      'name'		=> 'pf-ha-smokeping',
+				      'name'		=> 'smokeping',
 				      'labelid'		=> 'ha_smokeping',
-				      'checked'		=> $info['pf.ha.smokeping'],
+				      'checked'		=> $data['smokeping'],
 				      'help'        => $this->bbf('fm_help-ha_smokeping'))),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_mailto'),
-				      'name'		=> 'pf-ha-mailto',
+				      'name'		=> 'mailto',
 				      'labelid'		=> 'ha_mailto',
-				      'checked'		=> $info['pf.ha.mailto'],
+				      'checked'		=> $data['mailto'],
 				      'help'        => $this->bbf('fm_help-ha_mailto')));
 
 ?>
@@ -176,7 +177,7 @@ endif;
 
     <div>
     <?php
-	    $this->file_include('bloc/xivo/configuration/network/ha/nodes');
+	    $this->file_include('bloc/xivo/configuration/network/ha/peer');
     ?>
     </div>
 </div>
@@ -184,32 +185,32 @@ endif;
 <div id="sb-part-last" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_ha_alert_emails'),
-				  'name'	=> 'pf-ha-alert_emails',
+				  'name'	=> 'alert_emails',
 				  'labelid'	=> 'alert_emails',
 				  'size'	=> 15,
 			      'help'    => $this->bbf('fm_help-ha_alert_emails'),
-				  'value'	=> $this->get_var('info', 'pf.ha.alert_emails'))),
+				  'value'	=> $this->get_var('info', 'global', 'alert_emails'))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ha_serial'),
-				  'name'	=> 'pf-ha-serial',
+				  'name'	=> 'serial',
 				  'labelid'	=> 'serial',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.serial'))),
+				  'value'	=> $this->get_var('info', 'global', 'serial'))),
 				  
 	$form->text(array('desc'	=> $this->bbf('fm_ha_authkeys'),
-				  'name'	=> 'pf-ha-authkeys',
+				  'name'	=> 'authkeys',
 				  'labelid'	=> 'authkeys',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.authkeys'))),
+				  'value'	=> $this->get_var('info', 'global', 'authkeys'))),
 
     // bcast, mcast, ucast
 	$form->select(array(
 	        'desc'      => $this->bbf('fm_ha_com_mode'),
-			'name'		=> 'pf-ha-com_mode',
+			'name'		=> 'com_mode',
 			'id'		=> "it-pf-ha-com_mode",
 			'empty'		=> false,
 			'key'		=> false,
-			'selected'	=> $this->get_var('info', 'pf.ha.com_mode'),
+			'selected'	=> $this->get_var('info', 'global', 'com_mode'),
     		'error'    	=> $this->bbf_args	('error_pf_ha_com_mode', 
 		    $this->get_var('error', 'pf_ha_com_mode'))),
 		$commodes);
@@ -221,16 +222,16 @@ endif;
 <div>
 <?php
     echo $form->text(array('desc'	=> $this->bbf('fm_ha_user'),
-				  'name'	=> 'pf-ha-user',
+				  'name'	=> 'user',
 				  'labelid'	=> 'user',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.user'))),
+				  'value'	=> $this->get_var('info', 'global', 'user'))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_ha_password'),
-				  'name'	=> 'pf-ha-password',
+				  'name'	=> 'password',
 				  'labelid'	=> 'password',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.password')));
+				  'value'	=> $this->get_var('info', 'global', 'password')));
 ?>
 </div>
 </fieldset>
@@ -240,16 +241,16 @@ endif;
 <div>
 <?php
 	echo $form->text(array('desc'	=> $this->bbf('fm_ha_dest_user'),
-				  'name'	=> 'pf-ha-dest_user',
+				  'name'	=> 'dest_user',
 				  'labelid'	=> 'dest_user',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_user'))),
+				  'value'	=> $this->get_var('info', 'global', 'dest_user'))),
 				  
 	$form->text(array('desc'	=> $this->bbf('fm_ha_dest_password'),
-				  'name'	=> 'pf-ha-dest_password',
+				  'name'	=> 'dest_password',
 				  'labelid'	=> 'dest_password',
 				  'size'	=> 15,
-				  'value'	=> $this->get_var('info', 'pf.ha.dest_password')));
+				  'value'	=> $this->get_var('info', 'global', 'dest_password')));
 ?>
 </div>
 </fieldset>

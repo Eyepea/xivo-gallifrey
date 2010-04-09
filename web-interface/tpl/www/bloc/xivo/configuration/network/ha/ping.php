@@ -22,7 +22,7 @@ $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
 $info = $this->get_var('info');
-$data = array_key_exists('pf.ha.ping_ipaddr', $info)?$info['pf.ha.ping_ipaddr']:null;
+$data = $info['ping_ipaddr'];
 
 ?>
 
@@ -60,7 +60,7 @@ $data = array_key_exists('pf.ha.ping_ipaddr', $info)?$info['pf.ha.ping_ipaddr']:
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf-ha-ping_ipaddr[]',
+								   'name'	=> 'ping_ipaddr[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -68,7 +68,7 @@ $data = array_key_exists('pf.ha.ping_ipaddr', $info)?$info['pf.ha.ping_ipaddr']:
 								   'default'	=> '',
 								   'value'	=> $data[$i],
 								   'error'      => $this->bbf_args	('ipaddr', 
-								        $this->get_var('error', "ping_ipaddr[$data[$i]]")))
+								        $this->get_var('error', "pf_ha_ping_ipaddr", $i)))
 			        );
 	 ?>
 				</td>
@@ -101,7 +101,7 @@ $data = array_key_exists('pf.ha.ping_ipaddr', $info)?$info['pf.ha.ping_ipaddr']:
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf-ha-ping_ipaddr[]',
+								   'name'	=> 'ping_ipaddr[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,

@@ -22,7 +22,7 @@ $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
 $info = $this->get_var('info');
-$data = array_key_exists('pf.ha.uname_node', $info)?$info['pf.ha.uname_node']:null;
+$data = $info['uname_node'];
 ?>
 
 <div class="sb-list" id="uname">
@@ -59,12 +59,11 @@ $data = array_key_exists('pf.ha.uname_node', $info)?$info['pf.ha.uname_node']:nu
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf-ha-uname_node[]',
+								   'name'	=> 'uname_node[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
 								   'key'	=> false,
-								   'default'	=> '0',
 								   'value'	=> $data[$i],
 								   'error'      => $this->bbf_args	('error_pf_ha_uname_node', 
 								        $this->get_var('error', 'pf_ha_uname_node', $i)))
@@ -100,7 +99,7 @@ $data = array_key_exists('pf.ha.uname_node', $info)?$info['pf.ha.uname_node']:nu
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf-ha-uname_node[]',
+								   'name'	=> 'uname_node[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,

@@ -22,7 +22,7 @@ $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
 $info = $this->get_var('info');
-$data = array_key_exists('pf.ha.dest', $info)?$info['pf.ha.dest']:null;
+$data = $info['peer'];
 
 $netifaces 	= $this->get_var('netifaces');
 ?>
@@ -63,13 +63,13 @@ $netifaces 	= $this->get_var('netifaces');
 				<td class="td-left">
 	<?php
 					echo	$form->select(array(
-							'name'		=> 'pf.ha.iface[]',
+							'name'		=> 'peer.iface[]',
 							'id'		=> "it-pf-ha-iface[$i]",
 							'empty'		=> true,
 							'key'		=> false,
 							'selected'	=> $data[$i]['iface'],
 							'error'    	=> $this->bbf_args	('iface', 
-							    $this->get_var('error', "nodes[$i]", 'iface'))
+							    $this->get_var('error', "peer", $i, 'iface'))
 						),
 						$netifaces);
 	 ?>
@@ -77,7 +77,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.host[]',
+								   'name'	=> 'peer.host[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -85,19 +85,13 @@ $netifaces 	= $this->get_var('netifaces');
 								   'default'	=> '',
 								   'value'	=> $data[$i]['host'],
 								   'error'      => $this->bbf_args	('host', 
-								       $this->get_var('error', "nodes[$i]", 'host'))));
+								       $this->get_var('error', "peer", $i, 'host'))));
 	 ?>
 				</td>
 				<td>
 	<?php
-/*		            echo $form->checkbox(array('desc' => '&nbsp',
-             				      'name'	=> "pf.ha.xfer[$i]",
-            				      'labelid'	=> 'pf.ha.xfer',
-			            	      'default'	=> false,
-			            	      'checked'	=> $data[$i]['transfer']));
-*/
 					echo	$form->select(array('desc' => '&nbsp;',
-							'name'		=> 'pf.ha.xfer[]',
+							'name'		=> 'peer.xfer[]',
 							'id'		=> "it-pf-ha-xfer[$i]",
 							'empty'		=> false,
 							'key'		=> 'value',
@@ -134,7 +128,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td class="td-left">
 	<?php
 					echo	$form->select(array(
-							'name'		=> 'pf.ha.iface[]',
+							'name'		=> 'peer.iface[]',
 							'id'		=> "it-pf-ha-iface[$i]",
 							'key'		=> false,
 							'empty'		=> true,
@@ -145,7 +139,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.host[]',
+								   'name'	=> 'peer.host[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -163,7 +157,7 @@ $netifaces 	= $this->get_var('netifaces');
 			            	      'checked'	=> false));
 	*/
 					echo	$form->select(array('desc' => '&nbsp',
-							'name'		=> 'pf.ha.xfer[]',
+							'name'		=> 'peer.xfer[]',
 							'id'		=> "it-pf-ha-xfer[$i]",
 							'key'		=> 'value',
 							'empty'		=> false,

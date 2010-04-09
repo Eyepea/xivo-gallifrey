@@ -22,7 +22,7 @@ $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
 $info = $this->get_var('info');
-$data = array_key_exists('pf.ha', $info)?$info['pf.ha']:null;
+$data = $info['virtnet'];
 $netifaces 	= $this->get_var('netifaces');
 
 ?>
@@ -65,7 +65,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.ipaddr[]',
+								   'name'	=> 'virtnet.ipaddr[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -79,7 +79,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.netmask[]',
+								   'name'	=> 'virtnet.netmask[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -92,7 +92,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.broadcast[]',
+								   'name'	=> 'virtnet.broadcast[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -130,7 +130,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td class="td-left">
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.ipaddr[]',
+								   'name'	=> 'virtnet.ipaddr[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -141,7 +141,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.netmask[]',
+								   'name'	=> 'virtnet.netmask[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,
@@ -152,7 +152,7 @@ $netifaces 	= $this->get_var('netifaces');
 				<td>
 	<?php
 					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'pf.ha.broadcast[]',
+								   'name'	=> 'virtnet.broadcast[]',
 								   'id'		=> false,
 								   'label'	=> false,
 								   'size'	=> 15,

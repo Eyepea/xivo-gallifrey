@@ -20,13 +20,13 @@
 
 xivo_object::required(array('abstract','abstract.inc'),true);
 
-class xivo_object_ha_virtnet extends xivo_object_abstract
+class xivo_object_ha extends xivo_object_abstract
 {
 	var $_dso		= null;
-	var $_name		= 'ha_virtnet';
+	var $_name		= 'ha';
     var $_filter    = false;
 
-	function xivo_object_ha_virtnet(&$xobj,&$dso)
+	function xivo_object_ha(&$xobj,&$dso)
 	{
 		$this->xivo_object_abstract(&$xobj);
         if(is_object($dso) === false)

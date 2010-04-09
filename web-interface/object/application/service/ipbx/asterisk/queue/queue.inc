@@ -1566,6 +1566,59 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		return($skr);
 	}
+	
+    /** SKILLRULES - JSON API */
+	function skillrules_json_get($id=null, $filter=null)
+	{
+	    return (array('PLOP'));
+#	    if(!is_null($id))
+#	        return $this->_dso->skillrules_getone($id);
+#	        
+#		return($this->_dso->skillrules_getall($filter));
+	}
+
+#	function skills_json_add()
+#	{
+#		$data = $this->_get_data_from_json();
+#		if($data === false)
+#		    return false;
+#		    
+#		// check fields
+#		// both name and category_name are REQUIRED fields (other are facultative)
+#		if(!array_key_exists('name', $data)
+#		|| !array_key_exists('category_name', $data))
+#		    return false;
+
+#        if($this->_skillcat === false)
+#            $this->load_components();
+
+#        // get or create skills category
+#		$catid = $this->_skillcat->get_list_where(array('name' => $data['category_name']));
+#		if($catid === false)
+#		{
+#			$catid =  $this->_skillcat->add(array('id' => null, 'name' => $data['category_name']));
+#    		if(is_null($catid) || $catid === false)
+#		        return(false);
+#		}
+#		else
+#		{ $catid = $catid[0]; }
+#		
+#		$data['id']     = null;
+#		$data['catid']  = $catid;
+#		unset($data['category_name']);
+#		
+#		// create skill entry
+#		return $this->_skill->add($data);
+#	}
+
+#    function skills_json_delete($id)
+#    {
+#        if($this->_skill === false)
+#            $this->load_components();
+
+#		return $this->_skill->delete($id);
+#    }
+
 
 	/** user skills */
 	/**

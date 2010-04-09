@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2009-2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,18 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-xivo_object::required(array('abstract','abstract.inc'),true);
+xivo_object::required(array('abstract','datastorage','sql.inc'),true);
 
-class xivo_object_ha_nodes extends xivo_object_abstract
+class xivo_object_ha_uname_sql extends xivo_object_abstract_sql
 {
-	var $_dso		= null;
-	var $_name		= 'ha_nodes';
-	var $_filter	= false;
-
-	function xivo_object_ha_nodes(&$xobj,&$dso)
-	{
-		$this->xivo_object_abstract(&$xobj);
-	}
+	var $_disable	= null;
 }
 
 ?>

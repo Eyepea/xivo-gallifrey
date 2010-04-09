@@ -34,14 +34,20 @@ $array['module']['dhcp']['datastorage'] = true;
 $array['module']['entity'] = array();
 $array['module']['entity']['datastorage'] = true;
 
-$array['module']['ha_nodes'] = array();
-$array['module']['ha_nodes']['datastorage'] = false;
+$array['module']['ha'] = array();
+$array['module']['ha']['datastorage'] = true;
+
+$array['module']['ha_uname'] = array();
+$array['module']['ha_uname']['datastorage'] = true;
 
 $array['module']['ha_ping'] = array();
-$array['module']['ha_ping']['datastorage'] = false;
+$array['module']['ha_ping']['datastorage'] = true;
 
 $array['module']['ha_virtnet'] = array();
-$array['module']['ha_virtnet']['datastorage'] = false;
+$array['module']['ha_virtnet']['datastorage'] = true;
+
+$array['module']['ha_peer'] = array();
+$array['module']['ha_peer']['datastorage'] = true;
 
 $array['module']['iproute'] = array();
 $array['module']['iproute']['datastorage'] = true;
