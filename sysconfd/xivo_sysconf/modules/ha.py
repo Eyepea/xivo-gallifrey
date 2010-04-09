@@ -38,7 +38,7 @@ class Ha(jsoncore.JsonCore):
         super(Ha, self).__init__()
         self.log = logging.getLogger('xivo_sysconf.modules.ha')
 
-        http_json_server.register(self.generate , CMD_R , name='ha_generate',
+        http_json_server.register(self.generate , CMD_RW, name='ha_generate',
             safe_init=self.safe_init)
         http_json_server.register(self.status   , CMD_R , name='ha_status')
         
