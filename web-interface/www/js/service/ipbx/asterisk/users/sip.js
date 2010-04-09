@@ -52,4 +52,6 @@ xivo_ast_user_protocol_elt['sip'] = {
 
 	'autoprov-modact': {it: true},
 	'autoprov-vendormodel': {it: true},
-	'autoprov-macaddr': {it: true}};
+	'autoprov-macaddr': {it: true},
+	'protocol-name': {it: 'error'}
+};
