@@ -577,7 +577,25 @@ endif;
 				    'help'		=> $this->bbf('hlp_fm_autokill'),
 				    'selected'	=> $this->get_var('info','autokill','var_val'),
 				    'default'	=> $element['autokill']['default']),
-			      $element['autokill']['value']);
+			      $element['autokill']['value']),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_requiredcalltoken'),
+				      'name'	=> 'requiredcalltoken',
+				      'labelid'	=> 'requiredcalltoken',
+				      'help'	=> $this->bbf('hlp_fm_requiredcalltoken'),
+				      'checked'	=> $this->get_var('info','requiredcalltoken','var_val'),
+				      'default'	=> $element['requiredcalltoken']['default'])),
+
+        $form->text(array('desc'	=> $this->bbf('fm_calltokenoptional'),
+				  'name'	=> 'calltokenoptional',
+				  'labelid'	=> 'calltokenoptional',
+				  'size'	=> 25,
+				  'help'	=> $this->bbf('hlp_fm_calltokenoptional'),
+				  'required'=> false,
+				  'value'	=> $this->get_var('info','calltokenoptional','var_val'),
+				  'default'	=> $element['calltokenoptional']['default'],
+				  'error'	=> $this->bbf_args('error',
+					   $this->get_var('error', 'calltokenoptional')) ));
 ?>
 </div>
 	<?=$form->submit(array('name'	=> 'submit',

@@ -195,6 +195,15 @@ $array['element']['autokill'] = array();
 $array['element']['autokill']['value'] = array('no','yes',500,1000,1500,2000,2500,3000,3500,4000);
 $array['element']['autokill']['default'] = 'yes';
 
+$array['element']['requiredcalltoken'] = array();
+$array['element']['requiredcalltoken']['value'] = array('no','yes');
+$array['element']['requiredcalltoken']['default'] = 'no';
+$array['element']['requiredcalltoken']['set'] = true;
+
+$array['element']['calltokenoptional'] = array();
+$array['element']['calltokenoptional']['default'] = '';
+$array['element']['calltokenoptional']['null'] = true;
+
 
 dwho::load_class('dwho_network');
 
@@ -242,5 +251,8 @@ $array['filter']['pingtime'] = array('cast' => 'uint','between' => array(0,60,5)
 $array['filter']['lagrqtime'] = array('cast' => 'uint','between' => array(0,60,5));
 $array['filter']['nochecksums'] = array('bool' => true);
 $array['filter']['autokill'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
+$array['filter']['requiredcalltoken'] = array('bool' => true);
+
+$array['filter']['calltokenoptional'] = array('set' => false,'chk' => 2);
 
 ?>
