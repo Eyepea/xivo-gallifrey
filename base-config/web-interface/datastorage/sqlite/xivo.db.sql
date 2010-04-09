@@ -174,6 +174,7 @@ DROP TABLE resolvconf;
 CREATE TABLE resolvconf (
  id tinyint(1),
  hostname varchar(63) NOT NULL DEFAULT 'xivo',
+ domain varchar(255) NOT NULL DEFAULT 'proformatique.com',
  nameserver1 varchar(255),
  nameserver2 varchar(255),
  nameserver3 varchar(255),
@@ -244,7 +245,99 @@ CREATE INDEX user__idx__valid ON user(valid);
 CREATE INDEX user__idx__time ON user(time);
 CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
-INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datetime('now','utc')),0,'');
-INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
+
+DROP TABLE dhcp;
+CREATE TABLE dhcp (
+ id integer unsigned,
+ active tinyint(1) NOT NULL DEFAULT 0,
+ pool_start varchar(64) NOT NULL DEFAULT '',
+ pool_end varchar(64) NOT NULL DEFAULT '',
+ extra_ifaces varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+);
+
+INSERT INTO dhcp VALUES (1,0,'','','');
+
+
+DROP TABLE mail;
+CREATE TABLE mail (
+ id integer unsigned,
+ mydomain varchar(255) NOT NULL DEFAULT 0,
+ origin varchar(255) NOT NULL DEFAULT 'xivo-clients.proformatique.com',
+ relayhost varchar(255) NOT NULL DEFAULT '',
+ fallback_relayhost varchar(255) NOT NULL DEFAULT '',
+ canonical varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY(id)
+);
+
+INSERT INTO mail VALUES (1,'', 'xivo-clients.proformatique.com', '', '', '');
+
+
+DROP TABLE monitoring;
+CREATE TABLE monitoring (
+ id integer unsigned,
+ maintenance tinyint(1) NOT NULL DEFAULT 0,
+ alert_emails varchar(4096) DEFAULT NULL,
+ dahdi_monitor_ports varchar(255) DEFAULT NULL,
+ max_call_duration integer DEFAULT NULL,
+ PRIMARY KEY(id)
+);
+
+INSERT INTO monitoring VALUES (1,0,NULL,NULL,NULL);
+
+
+-- HA
+DROP TABLE ha;
+CREATE TABLE ha (
+ id integer unsigned,
+ apache2 tinyint(1) NOT NULL DEFAULT 0,
+ asterisk tinyint(1) NOT NULL DEFAULT 0,
+ dhcp tinyint(1) NOT NULL DEFAULT 0,
+ monit tinyint(1) NOT NULL DEFAULT 0,
+ mysql tinyint(1) NOT NULL DEFAULT 0,
+ ntp tinyint(1) NOT NULL DEFAULT 0,
+ rsync tinyint(1) NOT NULL DEFAULT 0,
+ smokeping tinyint(1) NOT NULL DEFAULT 0,
+ mailto tinyint(1) NOT NULL DEFAULT 0,
+ alert_emails varchar(1024) DEFAULT NULL,
+ serial varchar(16) NOT NULL DEFAULT '',
+ authkeys varchar(128) NOT NULL DEFAULT '',
+ com_mode varchar(8) NOT NULL DEFAULT 'ucast',
+ user varchar(16) NOT NULL DEFAULT 'pf-replication',
+ password varchar(16) NOT NULL DEFAULT 'proformatique',
+ dest_user varchar(16) NOT NULL DEFAULT 'pf-replication',
+ dest_password varchar(16) NOT NULL DEFAULT 'proformatique',
+ PRIMARY KEY(id)
+);
+
+INSERT INTO ha VALUES (1,0,0,0,0,0,0,0,0,0,NULL,'','','ucast','pf-replication','proformatique','pf-replication','proformatique');
+
+DROP TABLE ha_uname_node;
+CREATE TABLE ha_uname_node (
+ uname_node varchar(255) NOT NULL DEFAULT '',
+ PRIMARY KEY (uname_node)
+);
+
+DROP TABLE ha_ping_ipaddr;
+CREATE TABLE ha_ping_ipaddr (
+ ping_ipaddr varchar(39) NOT NULL DEFAULT '',
+ PRIMARY KEY (ping_ipaddr)
+);
+
+DROP TABLE ha_virtual_network;
+CREATE TABLE ha_virtual_network(
+ ipaddr varchar(39) NOT NULL DEFAULT '',
+ netmask varchar(39) NOT NULL DEFAULT '',
+ broadcast varchar(39) NOT NULL DEFAULT '',
+ PRIMARY KEY (ipaddr)
+);
+
+DROP TABLE ha_peer;
+CREATE TABLE ha_peer (
+ iface varchar(64) NOT NULL DEFAULT '',
+ host varchar(128) NOT NULL DEFAULT '',
+ transfer tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY (iface, host)
+);
 
 COMMIT;
