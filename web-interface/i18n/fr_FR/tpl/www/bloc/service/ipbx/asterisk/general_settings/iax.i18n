@@ -900,3 +900,15 @@ A traduire
 
 ; hlp_fm_success-save
 A traduire
+
+; fm_requirecalltoken
+Activer la validation des jetons d'appel : 
+
+; hlp_fm_requirecalltoken
+requirecalltoken
+
+; fm_calltokenoptional
+Adresse IP/sous-réseau validant les jetons d'appel : 
+
+; hlp_fm_calltokenoptional
+calltokenoptional
