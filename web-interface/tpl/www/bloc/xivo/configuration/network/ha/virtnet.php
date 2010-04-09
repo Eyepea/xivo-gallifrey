@@ -59,7 +59,6 @@ $netifaces 	= $this->get_var('netifaces');
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
-
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left">
@@ -73,7 +72,7 @@ $netifaces 	= $this->get_var('netifaces');
 								   'default'	=> '',
 								   'value'	=> $data[$i]['ipaddr'],
 								   'error'      => $this->bbf_args('ipaddr',
-								       $this->get_var('error', "virtnet[$i]", 'ipaddr'))));
+								       $this->get_var('error', "virtnet", $i, 'ipaddr'))));
 	 ?>
 				</td>
 				<td>
@@ -86,7 +85,7 @@ $netifaces 	= $this->get_var('netifaces');
 								   'key'	=> false,
 								   'default'	=> '',
 								   'value'	=> $data[$i]['netmask'],
-								   'error'      => $this->bbf_args	('netmask', $this->get_var('error', "virtnet[$i]", 'netmask'))));
+								   'error'      => $this->bbf_args	('netmask', $this->get_var('error', "virtnet", $i, 'netmask'))));
 	 ?>
 				</td>
 				<td>
@@ -99,7 +98,7 @@ $netifaces 	= $this->get_var('netifaces');
 								   'key'	=> false,
 								   'default'	=> '',
 								   'value'	=> $data[$i]['broadcast'],
-								   'error'      => $this->bbf_args	('broadcast', $this->get_var('error', "virtnet[$i]", 'broadcast'))));
+								   'error'      => $this->bbf_args	('broadcast', $this->get_var('error', "virtnet", $i, 'broadcast'))));
 	 ?>
 				</td>
                 <td class="td-right">

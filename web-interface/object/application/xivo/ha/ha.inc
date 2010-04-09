@@ -88,13 +88,10 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	    return $status;
 	}
 	
-	function set($arr)
+	function _set_format($arr)
 	{
-	    $this->_reset();
 	    $conf = array('global' => array());
 
-        // 1. TEST DATAS
-        // services
         $services = array('apache2', 'asterisk', 'dhcp', 'monit', 'mysql', 
             'ntp', 'rsync', 'smokeping', 'mailto');
         foreach($services as $svc)
@@ -108,29 +105,14 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
         foreach($settings as $setting)
             $conf['global'][$setting] = $arr[$setting];
         
-        if($this->_ha_svc->chk_values($conf['global']) === false)
-            $this->_set_errors($this->_ha_svc->get_filter_error());
-            
         // uname_node array
         $conf['uname_node'] = $arr['uname_node'];
         array_pop($conf['uname_node']);
-        
-        for($i = 0; $i < count($conf['uname_node']); $i++)
-        {
-            if($this->_uname_svc->chk_values(array('uname_node' => $conf['uname_node'][$i])) === false)
-               $this->_set_errors('pf_ha_uname_node', $i, $this->_uname_svc->get_filter_error());
-        }
 
          // ping_ipaddr
         $conf['ping_ipaddr'] = $arr['ping_ipaddr'];
         array_pop($conf['ping_ipaddr']);
         
-        for($i = 0; $i < count($conf['ping_ipaddr']); $i++)
-        {
-            if($this->_ping_svc->chk_values(array('ping_ipaddr' => $conf['ping_ipaddr'][$i])) === false)
-               $this->_set_errors('pf_ha_ping_ipaddr', $i, $this->_ping_svc->get_filter_error());
-        }            
-
         // virtnet
         $conf['virtnet'] = array();
         for($i = 0; $i < count($arr['virtnet_ipaddr']) - 1; $i++)
@@ -141,9 +123,6 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
                 'broadcast'     => $arr['virtnet_broadcast'][$i],
             );
 
-            if($this->_virtnet_svc->chk_values($virtnet) === false)
-                $this->_set_errors("virtnet[$i]", $this->_virtnet_svc->get_filter_error());
-                
             $conf['virtnet'][] = $virtnet;
         }
 
@@ -157,16 +136,49 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
                 'transfer'     => $arr['peer_xfer'][$i],
             );
 
-            if($this->_peer_svc->chk_values($virtnet) === false)
-                $this->_set_errors("peer", $i, $this->_peer_svc->get_filter_error());
-                
             $conf['peer'][] = $virtnet;
         }
 
-        $this->_set_result('ha', $conf);
-        if($this->get_errnb() > 0)
-            return false;
+        return $conf;
+	}
+	
+	function _set_check($conf)
+	{
+        if($this->_ha_svc->chk_values($conf['global']) === false)
+            $this->_set_errors($this->_ha_svc->get_filter_error());
+            
+        // uname_node array
+        for($i = 0; $i < count($conf['uname_node']); $i++)
+        {
+            if($this->_uname_svc->chk_values(array('uname_node' => $conf['uname_node'][$i])) === false)
+               $this->_set_errors('pf_ha_uname_node', $i, $this->_uname_svc->get_filter_error());
+        }
 
+         // ping_ipaddr
+        for($i = 0; $i < count($conf['ping_ipaddr']); $i++)
+        {
+            if($this->_ping_svc->chk_values(array('ping_ipaddr' => $conf['ping_ipaddr'][$i])) === false)
+               $this->_set_errors('pf_ha_ping_ipaddr', $i, $this->_ping_svc->get_filter_error());
+        }            
+
+        // virtnet
+        for($i = 0; $i < count($conf['virtnet']); $i++)
+        {
+            if($this->_virtnet_svc->chk_values($conf['virtnet'][$i]) === false)
+                $this->_set_errors("virtnet", $i, $this->_virtnet_svc->get_filter_error());
+        }
+
+        // peer
+        for($i = 0; $i < count($conf['peer']); $i++)
+        {
+            if($this->_peer_svc->chk_values($conf['peer'][$i]) === false)
+                $this->_set_errors("peer", $i, $this->_peer_svc->get_filter_error());
+        }
+
+        return ($this->get_errnb() == 0);
+	}
+	function _set_save($conf)
+	{
         // IF ALL IT'S OK, SAVE DATAS
         if($this->_ha_svc->edit(1, $conf['global']) === false)
             return false;
@@ -198,6 +210,20 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
             return false;
         
         return $this->generate();
+	}
+	
+	function set($arr)
+	{
+	    $this->_reset();
+	    $conf = $this->_set_format($arr);
+        $this->_set_result('ha', $conf);
+        
+        // 1. TEST DATAS
+        if(!$this->_set_check($conf))
+            return false;
+            
+        // IF ALL IT'S OK, SAVE DATAS
+        $this->_set_save($conf);
     }
     
     function generate()
