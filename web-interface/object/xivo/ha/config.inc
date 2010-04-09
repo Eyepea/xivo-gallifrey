@@ -75,5 +75,6 @@ $array['element']['dest_password']['default'] = '';
 
 ### filters ###
 $array['filter'] = array();
+$array['filter']['com_mode']	        = array('chk'   => 1);
 
 ?>
