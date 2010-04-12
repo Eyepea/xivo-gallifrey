@@ -21,10 +21,11 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, re, logging, subprocess, cjson, traceback
+import os, re, logging, subprocess, cjson, traceback, cStringIO
 from datetime import datetime
 
 from xivo import http_json_server
+from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
 from xivo_sysconf import helpers, jsoncore
 
@@ -41,6 +42,7 @@ class Ha(jsoncore.JsonCore):
         http_json_server.register(self.generate , CMD_RW, name='ha_generate',
             safe_init=self.safe_init)
         http_json_server.register(self.status   , CMD_R , name='ha_status')
+        http_json_server.register(self.apply    , CMD_R , name='ha_apply')
         
     def safe_init(self, options):
         super(Ha, self).safe_init(options)
@@ -65,17 +67,70 @@ class Ha(jsoncore.JsonCore):
     }
     KEYSELECT = 'pf.ha'
 
-    def reload(self, args, options):
-        try:
-            p = subprocess.Popen([self.cmd])
-            ret = p.wait()
-        except OSError:
-            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
-
+    def _exec(self, title, command, output):
+        output.append("* %s" % title)
+        p = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        ret = p.wait()
+        output.append(p.stdout.read())
+        
+        self.log.debug("  . %s: %d" % (command, ret))
         if ret != 0:
-            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
+            raise HttpReqError(500, "\n".join(output))
+            
+    def apply(self, args, options):
+        # We follow the steps described at https://wiki.xivo.fr/index.php/Install_XiVO_HA
+        self.log.debug('** apply HA changes **')
+        out = ["** apply HA changes **"]
+        
+        try:
+            #1. stop heartbeat
+            self._exec('stopping heartbeat', ['/etc/init.d/heartbeat', 'stop'], out)
+                
+            #2. start mysql
+            self._exec('start mysql', ['/etc/init.d/mysql', 'start'], out)
+            
+            #3.  execute update-pf-ha
+            self._exec('executing update-pf-ha', ['/usr/sbin/update-pf-ha'], out)
+                
+            match = re.match(".*CIB file written:\s+(/tmp/cib.xml.[0-9]+).*", out[-1], re.S|re.M)
+            if match is None:
+                out.append("ERROR: no CIB file")
+                raise HttpReqError(500, "\n".join(out))
+                
+            cibfile = match.group(1)
+            if not os.path.isfile(cibfile):
+                out.append("ERROR: CIB file %s not found" % cibfile)
+                raise HttpReqError(500, "\n".join(out))
+                
+            #4. stopping mysql
+            self._exec('stop mysql', ['/etc/init.d/mysql', 'stop'], out)
+            
+            #5. verify CIB file
+            self._exec("verify %s CIB file" % cibfile, 
+                ['/usr/sbin/crm_verify', '-V', "--xml-file=%s" % cibfile], 
+                out
+            )
 
-        return True
+            #6. clean heartbeat state
+            self._exec('clean heartbeat CRM state', 
+                ['/bin/rm', '-Rf', '/var/lib/heartbeat/crm/*'], 
+                out
+            )
+
+            #7. install cib file
+            self._exec("install CIB file", 
+                ['cp', '-a', cibfile, '/var/lib/heartbeat/crm/cib.xml'], 
+                out
+            )
+            
+            #8. start heartbeat
+            self._exec("start heartbeat", ['/etc/init.d/heartbeat', 'start'], out)
+            
+        except OSError, e:
+            traceback.print_exc()
+            raise HttpReqError(500, "can't apply ha changes")
+
+        return "\n".join(out)
         
     def status(self, args, options):
         master = ocf.ha_master_uname()

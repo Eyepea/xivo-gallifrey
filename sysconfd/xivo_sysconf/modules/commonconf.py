@@ -25,8 +25,8 @@ import os, logging, subprocess
 from datetime import datetime
 
 from xivo import http_json_server
+from xivo.http_json_server import HttpReqError
 from xivo.http_json_server import CMD_RW, CMD_R
-
 from xivo_sysconf import helpers, jsoncore
 
 
