@@ -21,7 +21,7 @@ __license__ = """
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA..
 """
 
-import os, logging, subprocess
+import os, logging, subprocess, traceback
 from datetime import datetime
 
 from xivo import http_json_server
@@ -74,15 +74,19 @@ class CommonConf(jsoncore.JsonCore):
     ## /
 
     def apply(self, args, options):
+        ret = -1
         try:
-            p = subprocess.Popen([self.cmd])
+            p = subprocess.Popen([self.cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             ret = p.wait()
+            output = p.stdout.read()
+            self.log.debug("commonconf apply: %d" % ret)
+
+            if ret != 0:
+                raise HttpReqError(500, output)
         except OSError:
-            raise HttpReqError(500, "can't execute '%s'" % self.configexec)
+            traceback.print_exc()
+            raise HttpReqError(500, "can't apply ha changes")
 
-        if ret != 0:
-            raise HttpReqError(500, "'%s' process return error %d" % (self.cmd, ret))
-
-        return True
+        return output
         
 commonconf = CommonConf()
