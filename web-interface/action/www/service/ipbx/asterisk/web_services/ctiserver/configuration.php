@@ -319,7 +319,7 @@ switch($act)
 				$hostname = $list[$v]['name'];
 				$url_scheme = $list[$v]['url']['scheme'];
 				$url_auth_host = $list[$v]['url']['authority']['host'];
-				if($url_auth_host == "127.0.0.1")
+				if((preg_match('/^127\./', $url_auth_host) > 0) || (preg_match('/^localhost/', $url_auth_host) > 0))
 				{
 					$json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/private/';
 				}

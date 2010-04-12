@@ -56,7 +56,7 @@ $array['element']['deletable']['default'] = 1;
 
 
 $array['filter'] = array();
-$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9]+$/i');
+$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['delimiter'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.$/');
 $array['filter']['match_direct'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['match_reverse'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
