@@ -214,6 +214,8 @@ CREATE INDEX `server__idx__disable` ON `server`(`disable`);
 CREATE UNIQUE INDEX `server__uidx__name` ON `server`(`name`);
 CREATE UNIQUE INDEX `server__uidx__host_port` ON `server`(`host`,`port`);
 
+INSERT INTO `server` VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivouser','xivouser');
+
 
 DROP TABLE IF EXISTS `session`;
 CREATE TABLE `session` (

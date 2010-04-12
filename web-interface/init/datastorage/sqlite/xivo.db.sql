@@ -203,6 +203,8 @@ CREATE TABLE server (
  PRIMARY KEY(id)
 );
 
+INSERT INTO server VALUES (1, 'xivo', '127.0.0.1', 443, 1, 0, 1265710632, '127.0.0.1', 5038, 'xivouser', 'xivouser', 'xivo');
+
 CREATE INDEX server__idx__host ON server(host);
 CREATE INDEX server__idx__port ON server(port);
 CREATE INDEX server__idx__disable ON server(disable);
