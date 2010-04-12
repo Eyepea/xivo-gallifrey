@@ -19,11 +19,26 @@
 #
 
 $sysconfd    = &$_XOBJ->get_module('sysconfd');
-$sysconfd->request_get('/commonconf_apply');
+$content     = $sysconfd->request_get('/commonconf_apply');
+$status      = $sysconfd->last_status_code();
 
-if(isset($_SERVER['HTTP_REFERER']) === true)
-	$_QRY->go($_SERVER['HTTP_REFERER'],false);
-else
-	$_QRY->go($_TPL->url('configuration'));
+if($status != 200)
+{
+    preg_match('/<pre>(.*)<\/pre>/mis', $content, $matches);
+    if(count($matches) > 1)
+        $content = $matches[1];
+}
+$_TPL->set_var('status',$sysconfd->last_status_code());
+$_TPL->set_var('info' , $content);
+
+#var_dump($sysconfd->last_status_code());
+#var_dump($content);
+
+$menu = &$_TPL->get_module('menu');
+$menu->set_top('top/user/'.$_USR->get_info('meta'));
+$menu->set_left('left/xivo/configuration');
+$_TPL->set_bloc('main','xivo/configuration/controlsystem/commonconf');
+$_TPL->set_struct('xivo/configuration');
+$_TPL->display('index');
 
 ?>

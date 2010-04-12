@@ -134,10 +134,13 @@ class xivo_object_sysconfd extends xivo_object_abstract
 		$this->_curl->set_option('get',true);
 
 		if(($r = $this->_connect($path,$query)) !== false)
-			$r = dwho_json::decode(rtrim($r),$decode_assoc);
+		{
+			$decoded = dwho_json::decode(rtrim($r),$decode_assoc);
+			if(!is_null($decoded))
+			    $r = $decoded;
+		}
 
 		$this->_status_code = $this->_curl->get_info('http_code');
-
 		$this->_curl->close();
 
 		return($r);

@@ -33,7 +33,8 @@ class dwho_curl
 	var $_url	= null;
 	var $_option	= array(
 				'connecttimeout'	=> 5,
-				'timeout'		=> 30,
+#				'timeout'		    => 30,
+				'timeout'		    => 180,
 				'returntransfer'	=> true);
 	var $_error	= '';
 	var $_errno	= 0;

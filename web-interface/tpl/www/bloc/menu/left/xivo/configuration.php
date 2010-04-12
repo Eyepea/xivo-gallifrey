@@ -122,7 +122,7 @@ $dhtml = &$this->get_module('dhtml');
 				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha'),
 						   'xivo/configuration/controlsystem/ha',
 						   null,
-						   'onclick="return(confirm(\'plop'.
+						   'onclick="return(confirm(\''.
 						       $dhtml->escape($this->bbf('controlsystem_ha_confirm')).
 						       '\'));"'
 			    );?>
