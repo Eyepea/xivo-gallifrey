@@ -29,7 +29,7 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('voicemaillist')
 
 class VoiceMailList(AnyList):
-    def __init__(self, newurls = []):
+    def __init__(self, newurls = [], useless = None):
         self.anylist_properties = {
             'keywords' : ['mailbox', 'context', 'fullname',
                 'password', 'email'],

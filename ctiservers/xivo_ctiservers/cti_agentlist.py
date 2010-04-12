@@ -30,7 +30,7 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('agentlist')
 
 class AgentList(AnyList):
-    def __init__(self, newurls = []):
+    def __init__(self, newurls = [], useless = None):
         self.anylist_properties = {
             'keywords' : ['firstname', 'lastname', 'number', 'password',
                 'context', 'ackcall', 'wrapuptime'],

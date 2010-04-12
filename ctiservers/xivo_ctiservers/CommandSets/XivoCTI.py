@@ -727,26 +727,25 @@ class XivoCTICommand(BaseCommand):
         return
 
     def set_urllist(self, astid, listname, urllist):
-        if listname == 'phones':
-            # XXX
-            hashes_list = [self.uniqueids, self.channels,
-                self.queues_channels_list, self.attended_targetchannels,
-                self.ignore_dtmf, self.parkedcalls, self.origapplication,
-                self.amirequests, self.getvar_requests,
-                self.events_link, self.localchans]
-            for astid_hash in hashes_list:
-                if astid not in astid_hash:
-                    astid_hash[astid] = {}
-        if listname in self.weblistprops:
-            cf = self.weblistprops[listname]['classfile']
-            cn = self.weblistprops[listname]['classname']
-            self.weblist[listname][astid] = getattr(cf, cn)(urllist)
-            self.weblist[listname][astid].setcommandclass(self)
-        if listname == 'phones':
-            # XXX
-            self.weblist['phones'][astid].setdisplayhints(self.display_hints)
-        return
-
+            if listname == 'phones':
+                # XXX
+                for astid_hash in [self.uniqueids, self.channels,
+                                   self.queues_channels_list, self.attended_targetchannels,
+                                   self.ignore_dtmf, self.parkedcalls, self.origapplication,
+                                   self.amirequests, self.getvar_requests,
+                                   self.events_link, self.localchans]:
+                    if astid not in astid_hash:
+                        astid_hash[astid] = {}
+            if listname in self.weblistprops:
+                cf = self.weblistprops[listname]['classfile']
+                cn = self.weblistprops[listname]['classname']
+                self.weblist[listname][astid] = getattr(cf, cn)(urllist, { 'conf': self.lconf })
+                self.weblist[listname][astid].setcommandclass(self)
+            if listname == 'phones':
+                # XXX
+                self.weblist['phones'][astid].setdisplayhints(self.display_hints)
+            return
+    
     def set_contextlist(self, ctxlist):
         self.ctxlist = ctxlist
         return

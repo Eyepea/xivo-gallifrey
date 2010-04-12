@@ -977,8 +977,8 @@ class xivo_deamon:
             log.info('# STARTING XiVO Daemon %s (pid %d) / svn:%s # (0/3) Starting' %
                      (XIVOVERSION, os.getpid(), __revision__))
         else:
-                log.info('# STARTING XiVO Daemon %s (pid %d) / svn:%s # (0/3) Reloading (%d)' %
-                         (XIVOVERSION, os.getpid(), __revision__, self.nreload))
+            log.info('# STARTING XiVO Daemon %s (pid %d) / svn:%s # (0/3) Reloading (%d)' %
+                     (XIVOVERSION, os.getpid(), __revision__, self.nreload))
         self.nreload += 1
         
         # global default definitions

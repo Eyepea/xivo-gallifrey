@@ -30,7 +30,7 @@ from xivo_ctiservers.cti_anylist import AnyList
 log = logging.getLogger('incomingcalllist')
 
 class IncomingCallList(AnyList):
-    def __init__(self, newurls = []):
+    def __init__(self, newurls = [], useless = None):
         self.anylist_properties = {
             'keywords' : ['exten', 'context', 'destidentity', 'action',
                           'userfirstname', 'userlastname',
