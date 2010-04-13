@@ -26,7 +26,7 @@ def parse_cmd_line():
 
     parser.add_option("-u", "--uri", dest="anysql_uri", type="string",
                       help="an anysql uri", metavar="",
-                      default="sqlite3://var/log/asterisk/queuelog.sqlite3")
+                      default="sqlite3://var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db")
 
     parser.add_option("-i", "--ip", dest="ip", type="string",
                       help="monitor AMI ip", metavar="127.0.0.1",
