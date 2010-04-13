@@ -177,7 +177,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
         // queueskills
         $skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
         $this->_info['queueskills'] = $skills === false?array():$skills;
-        
+
 		return($this->_info);
 	}
 
@@ -571,12 +571,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$this->_cnt = 0;
 					return(false);
 			}
-			
+
 			// get userskills
            $skills = $this->_queueskills->get_skills($ref['userfeatures.id']);
            if($skills === false)
             $skills = array();
-            
+
             $r[$userfeatures['id']]['queueskills'] = $skills;
 		}
 
@@ -708,6 +708,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$arr['appdata'][0] = XIVO_SRE_IPBX_AST_USER_MACRO;
 		$arr['appdata'][1] = dwho_ulongint($userfeaturesid);
 		$arr['appdata'][2] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
+		$arr['appdata'][3] = $this->_result['protocol']['language'];
+		var_dump($this->_result['protocol']['language']);
 
 		return($arr);
 	}
@@ -754,7 +756,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if($this->_protocolname === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			$arr['voicemail-option'] = 'none';
-	
+
 		if(isset($arr['voicemail-option']) === true)
 		{
 			switch($arr['voicemail-option'])
@@ -1093,7 +1095,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$info['penalty'] = 0;
 		}
 		if($type == 'queue')
-			$info['skills'] = ''; 
+			$info['skills'] = '';
 
 		for($i = 0;$i < $nb;$i++)
 		{
@@ -1309,14 +1311,14 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
         }
 
         $this->_set_result('queueskills', $skills);
-        
+
 		$appqueue = &$this->_service->get_application('queue');
     	if($appqueue->userskills_setadd($skills) === false)
     	{
     	    $this->_set_error('queueskills', $appqueue->userskills_get_error());
     	    return false;
     	}
-    	
+
         return true;
     }
 
@@ -2239,7 +2241,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$appqueue = &$this->_service->get_application('queue');
 	    $ret = $appqueue->userskills_delete($this->_info['userfeatures']['id']);
 	}
-	
+
 	function _reverse_delete()
 	{
 		if($this->get_errnb() > 0
@@ -2564,7 +2566,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				continue;
 			}
 
-			$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');	
+			$incall['dialaction']['answer']['actionarg1'] = $this->get_return('userfeatures');
 
 			if($appincall->set_add($incall) === false
 			|| $appincall->add() === false)
