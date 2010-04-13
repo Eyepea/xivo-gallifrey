@@ -25,3 +25,6 @@ path = /var/log/asterisk
 
 [sounds]
 path = /var/lib/pf-xivo/sounds
+
+[logaccess]
+file = /var/log/pf-xivo-web-interface/xivo.log
