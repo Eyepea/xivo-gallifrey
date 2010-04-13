@@ -38,7 +38,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	var $_wizsess		= null;
 	var $_ipbx		= null;
 	var $_xivo_dso_loaded	= false;
-	var $_commonconf	= false;	
 
 	function xivo_application_xivo_object_wizard(&$xobj,$param=null,$components=true)
 	{
@@ -1468,11 +1467,14 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_wizsess['commit']['step']['validate'] = true;
 
         // Generate commonconf file
-        if($this->_commonconf = &$this->_xobj->get_module('commonconf') === false)
+        $this->_load_xivo_dso();
+        $this->_load_ipbx_service();
+
+        if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
             return false;
-        if(!$this->_commonconf->generate())
+        if(!$commonconf->generate())
             return false;
-        if(!$this->_commonconf->apply())
+        if(!$commonconf->apply())
             return false;
             
 		return(true);
