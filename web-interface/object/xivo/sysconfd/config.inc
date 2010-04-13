@@ -22,7 +22,7 @@ $array = array();
 
 $array['sysconfd'] = array();
 $array['sysconfd']['host'] = '127.0.0.1';
-$array['sysconfd']['port'] = 8669;
+$array['sysconfd']['port'] = 8668;
 $array['sysconfd']['connect_timeout'] = 180;
 $array['sysconfd']['timeout'] = 90;
 
