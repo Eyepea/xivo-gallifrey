@@ -44,8 +44,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))   === false
-		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)
+		if(($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))   === false)
 			trigger_error('Unable to load sysconfd module',E_USER_ERROR);
 
 		$this->_uri = new dwho_uri();
@@ -1468,6 +1467,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$this->_wizsess['commit']['step']['validate'] = true;
 
+        // Generate commonconf file
+        if($this->_commonconf = &$this->_xobj->get_module('commonconf') === false)
+            return false;
         if(!$this->_commonconf->generate())
             return false;
         if(!$this->_commonconf->apply())
