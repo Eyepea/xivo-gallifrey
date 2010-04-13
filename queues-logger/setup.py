@@ -13,5 +13,8 @@ setup(
       url='http://xivo.fr/',
       packages=['xivo_queuelogger'],
       scripts=['queuelogger.py'],
-      license="GNU General Public License 3"
+      license="GNU General Public License 3",
+      data_files=[
+          ('/usr/share/pf-xivo-queues-logger/sqlite3/', ['db/create.sql'])
+      ]
      )
