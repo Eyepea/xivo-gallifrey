@@ -25,7 +25,7 @@ echo	$form->select(array('desc'	=> $this->bbf('fm_ipbxengine'),
 			    'name'	=> 'ipbxengine',
 			    'labelid'	=> 'ipbxengine',
 			    'key'	=> 'label',
-			    'help'	=> $this->bbf('hlp_fm_ipbxengine'),
+#			    'help'	=> $this->bbf('hlp_fm_ipbxengine'),
 			    'selected'	=> $this->get_var('info','selected'),
 			    'error'	=> $this->bbf_args('error_fm_ipbxengine',$this->get_var('error','ipbxengine'))),
 		      $this->get_var('info','engines'));

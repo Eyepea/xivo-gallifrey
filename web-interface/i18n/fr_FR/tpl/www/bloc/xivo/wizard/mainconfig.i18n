@@ -39,3 +39,25 @@ Serveur primaire :
 
 ; fm_resolvconf_nameserver2
 Serveur secondaire :
+
+; cmt_fm_mainconfig_hostname
+
+; cmt_fm_mainconfig_domain
+
+; cmt_fm_mainconfig_adminpasswd
+Il s'agit du mot de passe administrateur (root) pour se connecter à l'interface XiVO
+
+; cmt_fm_mainconfig_confirmadminpasswd
+
+; cmt_fm_netiface_address
+
+; cmt_fm_netiface_netmask
+
+; cmt_fm_netiface_gateway
+
+; cmt_fm_resolvconf_nameserver1
+
+; cmt_fm_resolvconf_nameserver2
+
+; hlp_fm_netiface_address
+Vérifiez bien que cette adresse n'est pas déjà attribuée

@@ -63,3 +63,32 @@ Nom affiché :
 
 ; fm_context_outcall-displayname-default(to-extern)
 Appels sortants
+
+; cmt_fm_entity_name
+
+; cmt_fm_entity_displayname
+
+; cmt_fm_context_internal-name
+
+; cmt_fm_context_internal-displayname
+
+; cmt_fm_context_internal-numberbeg 
+
+; cmt_fm_context_internal-numberend
+
+; cmt_fm_context_incall-name
+
+; cmt_fm_context_incall-displayname
+
+; cmt_fm_context_incall-numberbeg
+
+; cmt_fm_context_incall-numberend
+
+; cmt_fm_context_incall-didlength
+
+; cmt_fm_context_outcall-name
+
+; cmt_fm_context_outcall-displayname
+
+; hlp_fm_entity_name
+Par exemple le nom de votre société (sans espaces, caractères spéciaux ou accentués)
