@@ -1,4 +1,5 @@
 # XIVO Daemon
+# vim: set fileencoding=utf-8
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -58,6 +59,7 @@ class Config:
                     self.xivoconf.set('general','incoming_tcp_webi',' : '.join(json['main']['incoming_tcp_webi']))
                     self.xivoconf.set('general','incoming_tcp_info',' : '.join(json['main']['incoming_tcp_info']))
                     self.xivoconf.set('general','incoming_udp_announce',' : '.join(json['main']['incoming_udp_announce']))
+                    self.xivoconf.set('general','asterisk_queuestat_db', "sqlite3:/root/erf.db")
                 
                     self.xivoconf.set('general','asterisklist',','.join(json['main']['asterisklist']))
                     self.xivoconf.set('general','sockettimeout',json['main']['sockettimeout'])
@@ -88,16 +90,22 @@ class Config:
                     for profil in json['xivocti']['profils']:
                         self.xivoconf.set('xivocti', profil + "-funcs", ','.join(json['xivocti']['profils'][profil]['funcs']))
                         xletlist = ""
-                        for xlet_nu in json['xivocti']['profils'][profil]['xlets']:
-                            xletlist += '-'.join(xlet_nu) + ","
+                        for xlet_attr in json['xivocti']['profils'][profil]['xlets']:
+                            if 'N/A' in xlet_attr:
+                                xlet_attr.remove('N/A')
+                            if ('tab' or 'tabber') in xlet_attr:
+                                del xlet_attr[2]
+                            xletlist += '-'.join(xlet_attr) + ","
+                        
                         xletlist = xletlist[:-1]
                         self.xivoconf.set('xivocti', profil + "-xlets", xletlist)
                         self.xivoconf.set('xivocti', profil + "-funcs", ','.join(json['xivocti']['profils'][profil]['funcs']))
                         self.xivoconf.set('xivocti', profil + "-appliname",json['xivocti']['profils'][profil]['appliname'] )
                         self.xivoconf.set('xivocti', profil + "-maxgui",json['xivocti']['profils'][profil]['maxgui'] )
+                        self.xivoconf.set('xivocti', profil + "-presence",json['xivocti']['profils'][profil]['presence'] )
 
                     for presence_list_name in json["presences"]:
-                        debug_add_section(self.xivoconf,'presence-presence.' + presence_list_name)
+                        debug_add_section(self.xivoconf,'presences.' + presence_list_name)
                         for presence_name in json["presences"][presence_list_name]:
                             presence = json["presences"][presence_list_name][presence_name]
                             formatted_action = ""
@@ -105,12 +113,33 @@ class Config:
                                 formatted_action += '|'.join([str(action_name), str(action_value)]) + ":"
                             formatted_action = formatted_action[:-1]
                             presence_value = "%s,%s,%s,%s" % ( presence['display'], ':'.join(presence['status']), formatted_action,presence['color']) 
-                            self.xivoconf.set('presence-presence.' + presence_list_name, presence_name, presence_value)
+                            print presence_name, "=",presence_value
+                            self.xivoconf.set('presences.' + presence_list_name, presence_name, presence_value)
 
                     debug_add_section(self.xivoconf, 'phonehints')
                     for phonehint in json["phonehints"]:
                         self.xivoconf.set('phonehints', phonehint, ','.join(json["phonehints"][phonehint]))
 
+                    for context_name in json["contexts"]:
+                        debug_add_section(self.xivoconf, 'contexts.' + context_name)
+                        self.xivoconf.set('contexts.' + context_name, "display", json["contexts"][context_name]['display'])
+                        self.xivoconf.set('contexts.' + context_name, "directories", ','.join(json["contexts"][context_name]['directories']))
+                        self.xivoconf.set('contexts.' + context_name, "contextname", context_name)
+
+                    for display_name in json["displays"]:
+                        debug_add_section(self.xivoconf, display_name)
+                        for k, v in json["displays"][display_name].iteritems():
+                            self.xivoconf.set(display_name, k, '|'.join(v))
+                            print k,'|'.join(v)
+
+                    for directory_name in json["directories"]:
+                        debug_add_section(self.xivoconf,'directories.' + directory_name)
+                        for k, v in json["directories"][directory_name].iteritems():
+                            if type(v) == type(list()):
+                               self.xivoconf.set('directories.' + directory_name, k, ','.join(v))
+                            else:
+                               self.xivoconf.set('directories.' + directory_name, k, v)
+                                
                             
 
 
@@ -147,8 +176,7 @@ class Config:
             try:
                 if sectionname in self.xivoconf.sections():
                     for tk, tv in dict(self.xivoconf.items(sectionname)).iteritems():
-                        print tk,"mooo",tv
-                        v[tk] = tv.decode('utf8')
+                        v[tk] = tv # tv.decode('utf8')
             except Exception, e:
                 log.exception('kind=%s section=%s' % (self.kind, sectionname))
                 print e

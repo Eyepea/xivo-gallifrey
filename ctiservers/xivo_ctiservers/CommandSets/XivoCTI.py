@@ -2630,6 +2630,17 @@ class XivoCTICommand(BaseCommand):
             del self.amirequests[astid][actionid]
         return
 
+    ami_error_responses_list = ['No such channel',
+        'No such agent',
+        'Permission denied',
+        'Member not dynamic',
+        'Extension not specified',
+        'Interface not found',
+        'No active conferences.',
+        'Unable to add interface: Already there',
+        'Unable to remove interface from queue: No such queue',
+        'Unable to remove interface: Not there']
+
     def amiresponse_success(self, astid, event, nocolon):
         msg = event.get('Message')
         actionid = event.get('ActionID')
@@ -2653,16 +2664,6 @@ class XivoCTICommand(BaseCommand):
             'Interface unpaused successfully',
             'Agent logged out',
             'Agent logged in']
-        ami_error_responses_list = ['No such channel',
-            'No such agent',
-            'Permission denied',
-            'Member not dynamic',
-            'Extension not specified',
-            'Interface not found',
-            'No active conferences.',
-            'Unable to add interface: Already there',
-            'Unable to remove interface from queue: No such queue',
-            'Unable to remove interface: Not there']
         if msg is None:
             if actionid is not None:
                 if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
@@ -2724,7 +2725,7 @@ class XivoCTICommand(BaseCommand):
             log.warning('%s AMI : Not allowed to connect to this Manager Interface' % astid)
         elif msg == 'Invalid/unknown command':
             log.warning('%s AMI : Invalid/unknown command : %s' % (astid, event))
-        elif msg in ami_error_responses_list:
+        elif msg in self.ami_error_responses_list:
             if actionid in self.amirequests[astid]:
                 log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.amirequests[astid][actionid]))
             elif actionid == '00':

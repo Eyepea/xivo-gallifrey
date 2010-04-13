@@ -765,7 +765,7 @@ class manage_connection:
     @staticmethod
     def callback_timer_main(*args):
         thisthread = threading.currentThread()
-        daemon = arg[0]
+        daemon = args[0]
         tname = thisthread.getName()
         log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
         thisthread.setName(tname + '-' + '-'.join(args[1]))
