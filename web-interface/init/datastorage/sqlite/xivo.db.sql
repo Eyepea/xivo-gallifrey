@@ -203,7 +203,7 @@ CREATE TABLE server (
  PRIMARY KEY(id)
 );
 
-INSERT INTO server VALUES (1, 'xivo', '127.0.0.1', 443, 1, 0, 1265710632, '127.0.0.1', 5038, 'xivouser', 'xivouser', 'xivo');
+INSERT INTO server VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivouser','xivouser');
 
 CREATE INDEX server__idx__host ON server(host);
 CREATE INDEX server__idx__port ON server(port);
@@ -247,6 +247,8 @@ CREATE INDEX user__idx__valid ON user(valid);
 CREATE INDEX user__idx__time ON user(time);
 CREATE UNIQUE INDEX user__uidx__login_meta ON user(login,meta);
 
+INSERT INTO user VALUES (1,'root','proformatique','root',1,0,strftime('%s',datetime('now','utc')),0,'');
+--INSERT INTO user VALUES (2,'admin','proformatique','admin',1,0,strftime('%s',datetime('now','utc')),0,'');
 
 DROP TABLE dhcp;
 CREATE TABLE dhcp (

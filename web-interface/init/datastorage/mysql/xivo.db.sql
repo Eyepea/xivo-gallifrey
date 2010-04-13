@@ -252,6 +252,9 @@ CREATE INDEX `user__idx__valid` ON `user`(`valid`);
 CREATE INDEX `user__idx__time` ON `user`(`time`);
 CREATE UNIQUE INDEX `user__uidx__login_meta` ON `user`(`login`,`meta`);
 
+INSERT INTO `user` VALUES (1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
+--INSERT INTO `user` VALUES (2,'admin','proformatique','admin',1,0,UNIX_TIMESTAMP(UTC_TIMESTAMP()),0,'');
+
 
 DROP TABLE IF EXISTS `dhcp`;
 CREATE TABLE `dhcp` (
