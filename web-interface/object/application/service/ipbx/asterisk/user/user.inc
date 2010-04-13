@@ -709,7 +709,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$arr['appdata'][1] = dwho_ulongint($userfeaturesid);
 		$arr['appdata'][2] = dwho_has_len($timeout) === true ? dwho_ufloat($timeout) : '';
 		$arr['appdata'][3] = $this->_result['protocol']['language'];
-		var_dump($this->_result['protocol']['language']);
 
 		return($arr);
 	}
