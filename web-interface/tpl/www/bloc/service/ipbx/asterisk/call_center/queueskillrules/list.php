@@ -87,6 +87,10 @@ $page = $url->pager($pager['pages'],
 
 			$ref 	= &$list[$i];
 			$icon = 'enable';
+			
+			list($rule, $trash) = split(';', $ref['rule'], 2);
+			if(strlen($trash) > 0)
+			    $rule .= ", ...";
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -100,7 +104,7 @@ $page = $url->pager($pager['pages'],
 						 'paragraph'	=> false));?>
 		</td>
 		<td><?= $ref['name'] ?></td>
-		<td style="text-align: left"><?= $ref['rule'] ?></td>
+		<td style="text-align: left"><?= $rule ?></td>
 
 		<td class="td-right" colspan="2">
 <?php

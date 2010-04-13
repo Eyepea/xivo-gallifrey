@@ -28,7 +28,6 @@ define("TOK_PARCL" , 4); // )
 define("TOK_SKILL" , 5); // skill name
 define("TOK_WEIGHT", 6); // 0 <= x <= 100
 
-
 class xivo_service_asterisk_queueskillrule extends xivo_service_asterisk_abstract
 {
 	var $_dso		= null;
@@ -56,8 +55,18 @@ class xivo_service_asterisk_queueskillrule extends xivo_service_asterisk_abstrac
 
 	function check_rule($rule)
 	{
-		$tokens = $this->_tokenize($rule);
-		return($this->_validate($tokens));
+	    $elts = split(',', $rule);
+	    if(count($elts) > 2)
+	        return false;
+	        
+	    foreach($elts as $elt)
+	    {
+    		$tokens = $this->_tokenize($elt);
+    		if($this->_validate($tokens) === false)
+    		    return false;
+    	}
+
+        return true;
 	}
 
 	/**
