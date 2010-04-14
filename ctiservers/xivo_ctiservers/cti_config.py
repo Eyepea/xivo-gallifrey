@@ -54,20 +54,12 @@ class Config:
                 
                     self.xivoconf = ConfigParser.ConfigParser()
                     debug_add_section(self.xivoconf,'general')
-                    self.xivoconf.set('general','incoming_tcp_fagi',' : '.join(json['main']['incoming_tcp_fagi']))
-                    self.xivoconf.set('general','incoming_tcp_cti',' : '.join(json['main']['incoming_tcp_cti']))
-                    self.xivoconf.set('general','incoming_tcp_webi',' : '.join(json['main']['incoming_tcp_webi']))
-                    self.xivoconf.set('general','incoming_tcp_info',' : '.join(json['main']['incoming_tcp_info']))
-                    self.xivoconf.set('general','incoming_udp_announce',' : '.join(json['main']['incoming_udp_announce']))
-                    self.xivoconf.set('general','asterisk_queuestat_db', "sqlite3:/root/erf.db")
-                
-                    self.xivoconf.set('general','asterisklist',','.join(json['main']['asterisklist']))
-                    self.xivoconf.set('general','sockettimeout',json['main']['sockettimeout'])
-                    self.xivoconf.set('general','contextlist',','.join(json['main']['contextlist']))
-                    self.xivoconf.set('general','logintimeout',json['main']['logintimeout'])
-                    self.xivoconf.set('general','commandset',json['main']['commandset'])
-                    self.xivoconf.set('general','userlists',','.join(json['main']['userlists']))
 
+                    for k, v in json["main"].iteritems():
+                        if type(v) == type(list()):
+                           self.xivoconf.set('general', k, ' : '.join(v))
+                        else:
+                           self.xivoconf.set('general', k, v)
 
                     for asterisk_server in json['main']['asterisklist']:
                         debug_add_section(self.xivoconf,asterisk_server)
@@ -127,25 +119,21 @@ class Config:
                         self.xivoconf.set('contexts.' + context_name, "contextname", context_name)
 
                     for display_name in json["displays"]:
-                        debug_add_section(self.xivoconf, display_name)
+                        kname = 'displays.' + display_name
+                        debug_add_section(self.xivoconf, kname)
                         for k, v in json["displays"][display_name].iteritems():
-                            self.xivoconf.set(display_name, k, '|'.join(v))
-                            print k,'|'.join(v)
+                            self.xivoconf.set(kname, k, '|'.join(v))
 
                     for directory_name in json["directories"]:
-                        debug_add_section(self.xivoconf,'directories.' + directory_name)
+                        kname = 'directories.' + directory_name
+                        debug_add_section(self.xivoconf, kname)
                         for k, v in json["directories"][directory_name].iteritems():
                             if type(v) == type(list()):
-                               self.xivoconf.set('directories.' + directory_name, k, ','.join(v))
+                               self.xivoconf.set(kname, k, ','.join(v))
                             else:
-                               self.xivoconf.set('directories.' + directory_name, k, v)
-                                
-                            
+                               self.xivoconf.set(kname, k, unicode(v))
 
 
-
-
-                
         elif urilist.find(':') >= 0:
             xconf = urilist.split(':')
             if xconf[0] == 'file':
