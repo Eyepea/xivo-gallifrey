@@ -103,6 +103,7 @@ endif;
 						 'id'		=> 'it-queueskillrule-rule',
 						 'cols'		=> 80,
 						 'rows'		=> 3,
+						 'notag'    => true,
 						 'default'	=> $element['queuekillrule']['rule'][$i],
 					         'error'	=> $this->bbf_args('queueskillrule-rule',
 								   $this->get_var('error',"rule-$i"))),
