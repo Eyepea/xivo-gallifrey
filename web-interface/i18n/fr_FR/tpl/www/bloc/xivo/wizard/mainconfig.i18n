@@ -45,7 +45,7 @@ Serveur secondaire :
 ; cmt_fm_mainconfig_domain
 
 ; cmt_fm_mainconfig_adminpasswd
-Il s'agit du mot de passe administrateur (root) pour se connecter à l'interface XiVO
+mot de passe administrateur (root) pour se connecter à l'interface XiVO
 
 ; cmt_fm_mainconfig_confirmadminpasswd
 

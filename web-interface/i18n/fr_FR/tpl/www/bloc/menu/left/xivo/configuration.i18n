@@ -63,3 +63,10 @@ Appliquer les modifications système
 
 ; mn_left_controlsystem-ha
 Appliquer la configuration HA
+
+; controlsystem_commonconf_confirm
+Êtes-vous sûr de vouloir appliquer les modifications ?
+
+; controlsystem_ha_confirm
+Êtes-vous sûr de vouloir appliquer la configuration HA ?
+

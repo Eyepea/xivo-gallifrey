@@ -876,8 +876,9 @@ class dwho_i18n
 			if(isset($line{0}) === false)
 			{
 				if($key === ''
-				|| $txt === false
-				|| isset($r[$key]) === false)
+				|| $txt === false)
+				// allow empty translations
+				//|| isset($r[$key]) === false)
 				{
 					$txt = false;
 					continue;
