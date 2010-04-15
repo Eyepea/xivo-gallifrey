@@ -249,3 +249,15 @@ Numéro d'acompte :
 
 ; fm_trunkfeatures_description
 Description :
+
+; fm_protocol_requirecalltoken
+Validation des jetons d'appel
+
+; ast_requirecalltoken(auto)
+auto
+
+; ast_requirecalltoken(yes)
+oui
+
+; ast_requirecalltoken(no)
+non

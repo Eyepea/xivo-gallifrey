@@ -520,7 +520,18 @@ endif;
 				  'default'	=> $element['protocol']['accountcode']['default'],
 				  'value'	=> $info['protocol']['accountcode'],
 				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'accountcode')) ));
+						   $this->get_var('error', 'protocol', 'accountcode')) )),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_requirecalltoken'),
+				    'name'	=> 'protocol[requirecalltoken]',
+				    'labelid'	=> 'protocol-requirecalltoken',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'bbf'	=> 'ast_requirecalltoken',
+				    'default'	=> $element['protocol']['requirecalltoken']['default'],
+				    'selected'	=> $info['protocol']['requirecalltoken']),
+			      $element['protocol']['requirecalltoken']['value']);
+
 ?>
 	<div class="fm-paragraph fm-description">
 		<p>
