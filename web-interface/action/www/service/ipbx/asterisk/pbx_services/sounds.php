@@ -249,6 +249,8 @@ switch($act)
 		if(($dirs = $sounds->get_dir($dir,true,$search)) === false)
 			$_QRY->go($_TPL->url('service/ipbx/pbx_services/sounds'),'act=listdir');
 
+var_dump($dirs);
+
 		if(($dirs = $dirs['files']) !== false)
 		{
 			$sort_key = 'name';

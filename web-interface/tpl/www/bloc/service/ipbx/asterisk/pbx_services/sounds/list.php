@@ -73,11 +73,17 @@ $page = $url->pager($pager['pages'],
 								'dir'	=> $dir,
 								'sort_key'	=> 'name',
 								'sort_order'	=> $this->get_var('sort_order')));?></th>
+		<th class="th-center"><?=$url->href_html($this->bbf('col_size'),
+						'service/ipbx/pbx_services/sounds',
+						  array('act'	=> 'list',
+								'dir'	=> $dir,
+								'sort_key'	=> 'size',
+								'sort_order'	=> $this->get_var('sort_order')));?></th>
 		<th class="th-center"><?=$url->href_html($this->bbf('col_date'),
 						'service/ipbx/pbx_services/sounds',
 						  array('act'	=> 'list',
 								'dir'	=> $dir,
-								'sort_key'	=> 'date',
+								'sort_key'	=> 'mtime',
 								'sort_order'	=> $this->get_var('sort_order')));?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -93,6 +99,7 @@ $page = $url->pager($pager['pages'],
 		for($i = $pager['beg'],$j = 0;$i < $pager['end'] && $i < $pager['total'];$i++,$j++):
 
 			$ref = &$list[$i];
+			$size = dwho_size_iec($ref['size']);
 ?>
 	<tr onmouseover="this.tmp = this.className; this.className = 'sb-content l-infos-over';"
 	    onmouseout="this.className = this.tmp;"
@@ -114,6 +121,7 @@ $page = $url->pager($pager['pages'],
 						 'id'	=> $ref['name'],
 						 'page'	=> $pager['page']));?>
 		</td>
+		<td><?=$this->bbf('size_iec_'.$size[1],$size[0]);?></td>
 		<td><?=dwho_i18n::strftime_l($this->bbf('date_format_yymmddhhii'),
 					     null,
 					     $ref['mtime']);?></td>
@@ -147,7 +155,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>
