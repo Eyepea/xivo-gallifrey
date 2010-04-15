@@ -42,7 +42,11 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_directory');?></th>
+		<th class="th-center"><?=$url->href_html($this->bbf('col_directory'),
+						'service/ipbx/pbx_services/sounds',
+						  array('act'	=> 'listdir',
+								'sort_key'	=> 'dirname',
+								'sort_order'	=> $this->get_var('sort_order')));?></th>
 		<th class="th-center"><?=$this->bbf('col_number-files');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -79,17 +83,17 @@ $page = $url->pager($pager['pages'],
 		echo	$url->href_html($url->img_html('img/site/button/edit.gif',
 						       $this->bbf('opt_modify'),
 						       'border="0"'),
-					'service/ipbx/pbx_services/sounds',
-					array('act'	=> 'editdir',
-					      'id'	=> $ref['dirname']),
+								'service/ipbx/pbx_services/sounds',
+								array('act'	=> 'editdir',
+										'id'	=> $ref['dirname']),
 					'id="ah-dirs-'.$i.'"',$this->bbf('opt_modify')),"\n",
-			$url->href_html($url->img_html('img/site/button/delete.gif',
+				$url->href_html($url->img_html('img/site/button/delete.gif',
 						       $this->bbf('opt_delete'),
 						       'border="0"'),
-					'service/ipbx/pbx_services/sounds',
-					array('act'	=> 'deletedir',
-					      'id'	=> $ref['dirname'],
-					      'page'	=> $pager['page']),
+								'service/ipbx/pbx_services/sounds',
+								array('act'	=> 'deletedir',
+										'id'	=> $ref['dirname'],
+										'page'	=> $pager['page']),
 					'onclick="return(confirm(\''.$dhtml->escape($this->bbf('opt_delete_confirm')).'\'));"',
 					$this->bbf('opt_delete'));
 	endif;

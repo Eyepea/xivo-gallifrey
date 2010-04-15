@@ -28,6 +28,9 @@ Create a context
 ; fm_voicemail_tz
 Time zone:
 
+; fm_voicemail_language
+Language :
+
 ; fm_voicemailfeatures_skipcheckpass
 Disable password checking:
 

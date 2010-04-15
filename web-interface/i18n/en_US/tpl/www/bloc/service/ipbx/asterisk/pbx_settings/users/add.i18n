@@ -55,23 +55,38 @@ Static
 ; fm_protocol_protocol
 Protocol:
 
-; fm_protocol_protocol-opt-sip
+; fm_protocol_protocol-opt(sip)
 SIP
 
-; fm_protocol_protocol-opt-iax
+; fm_protocol_protocol-opt(iax)
 IAX
 
-; fm_protocol_protocol-opt-custom
+; fm_protocol_protocol-opt(custom)
 Customized
 
 ; fm_protocol_nat
 NAT:
+
+; fm_protocol_nat-opt(no)
+No
+
+; fm_protocol_nat-opt(yes)
+Yes
+
+; fm_protocol_nat-opt(never)
+Never
+
+; fm_protocol_nat-opt(route)
+Route
 
 ; fm_protocol_context
 Context:
 
 ; create_context
 Create a context
+
+; fm_protocol_language
+Language :
 
 ; fm_protocol_amaflags
 Billing flag:

@@ -251,10 +251,31 @@ switch($act)
 
 		if(($dirs = $dirs['files']) !== false)
 		{
+			$sort_key = 'name';
+			if (isset($_QR['sort_key']) === true)
+				$sort_key = $_QR['sort_key'];
+
 			$total = count($dirs);
 			dwho::load_class('dwho_sort');
-			$sort = new dwho_sort(array('key' => 'name'));
+			$sort = new dwho_sort(array('key' => $sort_key));
 			usort($dirs,array(&$sort,'strnat_usort'));
+
+			$link_sort_order = SORT_ASC;
+
+			if (isset($_QR['sort_order']) === true
+			&& $_QR['sort_order'] == SORT_ASC)
+			{
+				rsort($dirs);
+				$link_sort_order = SORT_DESC;
+			}
+			if (isset($_QR['sort_order']) === true
+			&& $_QR['sort_order'] == SORT_DESC)
+			{
+				sort($dirs);
+				$link_sort_order = SORT_ASC;
+			}
+
+			$_TPL->set_var('sort_order',$link_sort_order);
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,20,$total));
@@ -270,10 +291,32 @@ switch($act)
 
 		if(($dirs = $sounds->get_list_dirs_files()) !== false)
 		{
+			$sort_key = 'dirname';
+			if (isset($_QR['sort_key']) === true)
+				$sort_key = $_QR['sort_key'];
+
 			$total = count($dirs);
 			dwho::load_class('dwho_sort');
-			$sort = new dwho_sort(array('key' => 'dirname'));
-			usort($dirs,array(&$sort,'strnat_usort'));
+			$sort = new dwho_sort(array('key' => $sort_key));
+			usort($dirs,array($sort,'strnat_usort'));
+
+			$link_sort_order = SORT_ASC;
+
+			if (isset($_QR['sort_order']) === true
+			&& $_QR['sort_order'] == SORT_ASC)
+			{
+				rsort($dirs);
+				$link_sort_order = SORT_DESC;
+			}
+			if (isset($_QR['sort_order']) === true
+			&& $_QR['sort_order'] == SORT_DESC)
+			{
+				sort($dirs);
+				$link_sort_order = SORT_ASC;
+			}
+
+			$_TPL->set_var('sort_order',$link_sort_order);
+
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,20,$total));

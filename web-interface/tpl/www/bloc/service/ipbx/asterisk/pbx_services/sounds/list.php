@@ -67,8 +67,18 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_file');?></th>
-		<th class="th-center"><?=$this->bbf('col_date');?></th>
+		<th class="th-center"><?=$url->href_html($this->bbf('col_file'),
+						'service/ipbx/pbx_services/sounds',
+						  array('act'	=> 'list',
+								'dir'	=> $dir,
+								'sort_key'	=> 'name',
+								'sort_order'	=> $this->get_var('sort_order')));?></th>
+		<th class="th-center"><?=$url->href_html($this->bbf('col_date'),
+						'service/ipbx/pbx_services/sounds',
+						  array('act'	=> 'list',
+								'dir'	=> $dir,
+								'sort_key'	=> 'date',
+								'sort_order'	=> $this->get_var('sort_order')));?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
 	</tr>
