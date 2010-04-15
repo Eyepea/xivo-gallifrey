@@ -1571,6 +1571,7 @@ CREATE TABLE useriax (
  protocol char(3) NOT NULL DEFAULT 'iax',
  category varchar(5) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
+ requirecalltoken char(4),
  PRIMARY KEY(id)
 );
 
