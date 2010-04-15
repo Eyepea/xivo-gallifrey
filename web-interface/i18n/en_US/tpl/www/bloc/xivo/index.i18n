@@ -180,3 +180,13 @@ Changed
 
 ; sysinfos_state-opt
 Unmonitored
+
+; sysinfos_no-devstats
+No devices
+
+; sysinfos_col_buffers
+Buffers
+
+; sysinfos_col_cached
+Cached
+

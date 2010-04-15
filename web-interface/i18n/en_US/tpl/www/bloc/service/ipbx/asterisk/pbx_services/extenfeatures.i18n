@@ -233,3 +233,112 @@ Group interception:
 
 ; fm_success-save
 Extensions successfully saved
+
+
+; smenu_calls
+Calls
+
+; smenu_transfers
+Tranfers
+
+; smenu_agent
+Agents
+
+; smenu_groups
+Groups
+
+; smenu_parking
+Parking
+
+; smenu_advanced
+Advanced
+
+; fm_extenfeatures-extension
+Extension :
+
+
+; fm_extenfeatures_enable-callgroup
+Call a group from its id :
+
+; fm_extenfeatures_enable-callqueue
+Call a queue from its id :
+
+; fm_extenfeatures_enable-calluser
+Call a user from its id :
+
+; fm_extenfeatures_enable-callmeetme
+Call meetme room from its id :
+
+; fm_featuremap_atxfer
+Attended transfer :
+
+
+; fm_extenfeatures_enable-enablevmslt
+Enable voicemail for the specified user :
+
+; fm_extenfeatures_enable-enablevmboxslt
+Enable specified voicemail :
+
+; fm_extenfeatures_enable-vmusermsg
+Listening to voicemail for the specified user :
+
+; fm_extenfeatures_enable-vmboxmsgslt
+Listening to specified voicemail :
+
+; fm_extenfeatures_enable-vmuserslt
+Goto voicemail for the specified user :
+
+; fm_extenfeatures_enable-vmboxslt
+Goto specified voicemail :
+
+; fm_extenfeatures_enable-vmuserpurgeslt
+Delete messages from specified user's voicemail :
+
+; fm_extenfeatures_enable-vmboxpurgeslt
+Delete message from specified voicemail :
+
+; fm_extenfeatures_enable-agentstaticlogtoggle
+Connect/Disconnect static agent :
+
+; fm_extenfeatures_enable-grouptogglemember
+Append/Remove group member :
+
+; fm_extenfeatures_enable-groupaddmember
+Append new group member :
+
+; fm_extenfeatures_enable-groupremovemember
+Remove group member :
+
+; fm_extenfeatures_enable-queuetogglemember
+Append/Remove queue member :
+
+; fm_extenfeatures_enable-queueaddmember
+Append new queue member :
+
+; fm_extenfeatures_enable-queueremovemember
+Remove queue member :
+
+; fm_extenfeatures_enable-phoneprogfunckey
+function keys programmation :
+
+; fm_extenfeatures_enable-guestprov
+phone initialization :
+
+
+
+; fm_generalfeatures_parkingtime-opt-seconds
+%s seconds
+
+; fm_generalfeatures_parkingtime-opt-minute
+1 minute
+
+; fm_generalfeatures_parkingtime-opt-minute-seconds
+%s min. %s sec.
+
+; fm_generalfeatures_parkingtime-opt-minutes
+%s minutes
+
+; fm_generalfeatures_parkingtime-opt-minutes-seconds
+%s min. %s sec.
+
+

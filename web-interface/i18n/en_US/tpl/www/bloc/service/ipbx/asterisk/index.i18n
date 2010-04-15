@@ -41,10 +41,10 @@ Conference room
 Voicemail
 
 ; stats_type-sip
-Trunk SIP
+SIP trunk
 
 ;stats_type-iax
-Trunk IAX
+IAX trunk
 
 ; opt_add_agent
 Add a agent
@@ -65,10 +65,10 @@ Add a conference room
 Add a voicemail
 
 ; opt_add_sip
-Add a trunk SIP
+Add a SIP trunk
 
 ; opt_add_iax
-Add a trunk IAX
+Add an IAX trunk
 
 ; stats_status-initialized
 Initialized
