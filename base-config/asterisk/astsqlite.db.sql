@@ -1187,7 +1187,8 @@ INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime',10);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','requirecalltoken','no');
-INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional',NULL);
+-- warning: asterisk crash if set to NULL value
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','');
 
 
 DROP TABLE staticmeetme;
@@ -1571,7 +1572,7 @@ CREATE TABLE useriax (
  protocol char(3) NOT NULL DEFAULT 'iax',
  category varchar(5) NOT NULL,
  commented tinyint(1) NOT NULL DEFAULT 0,
- requirecalltoken char(4),
+ requirecalltoken char(4) NOT NULL DEFAULT '',
  PRIMARY KEY(id)
 );
 

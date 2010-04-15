@@ -1252,7 +1252,7 @@ INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime',10);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','requirecalltoken','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional',NULL);
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','');
 
 DROP TABLE IF EXISTS `staticmeetme`;
 CREATE TABLE `staticmeetme` (
@@ -1644,7 +1644,7 @@ CREATE TABLE `useriax` (
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
- `requirecalltoken` varchar(4), --peer--
+ `requirecalltoken` varchar(4) NOT NULL DEFAULT '', --peer--
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
