@@ -10,6 +10,9 @@ Register
 ; smenu_codecs
 Codecs
 
+; smenu_signalling
+Signalling
+
 ; smenu_advanced
 Advanced
 
@@ -33,6 +36,7 @@ Call limit:
 
 ; fm_protocol_host-type
 IP Addressing type:
+
 
 ; fm_protocol_host-type-opt(dynamic)
 Dynamic
@@ -120,3 +124,153 @@ Forbid transfers:
 
 ; fm_protocol_trunk
 Trunk mode activation:
+
+; fm_protocol_type-opt(peer)
+Peer
+
+; fm_protocol_type-opt(user)
+User
+
+; fm_protocol_type-opt(friend)
+Friend
+
+; fm_protocol_language
+Language:
+
+; fm_protocol_sendani
+Send call name/number presentation : 
+
+; fm_protocol_transfer
+Transfer : 
+
+; fm_protocol_permit
+Authorized IP or subnet : 
+
+; fm_protocol_transfer
+Activate transfer : 
+
+; fm_protocol_mask
+Netmask : 
+
+; fm_protocol_deny
+Forbidden IP or subnet :
+
+; fm_protocol_auth
+Authentication mechanismes : 
+
+; fm_protocol_inkeys
+Public RSA key : 
+
+; fm_protocol_outkey
+Private RSA key : 
+
+; fm_protocol_encryption
+Encryption : 
+
+; fm_protocol_adsi
+Activate ADSI support
+
+; fm_protocol_requirecalltoken
+Calltoken validation : 
+
+; fm_trunkfeatures_description 
+Description : 
+
+; fm_protocol_auth-opt(plaintext)
+Plaintext
+
+; fm_protocol_auth-opt(md5)
+MD5
+
+; fm_protocol_auth-opt(rsa)
+RSA
+
+; fm_protocol_auth-opt(plaintext-md5)
+Plaintext or MD5
+
+; fm_protocol_auth-opt(plaintext-rsa)
+Plaintext or RSA
+
+; fm_protocol_auth-opt(md5-rsa)
+MD5 or RSA
+
+; fm_protocol_auth-opt(plaintext-md5-rsa)
+Plaintext, MD5 or RSA
+
+; ast_requirecalltoken(auto)
+auto
+
+; ast_requirecalltoken(yes)
+yes
+
+; ast_requirecalltoken(no)
+no
+
+; fm_protocol_encryption-opt(aes128)
+AES128
+
+; fm_protocol_encryption-opt(yes)
+yes
+
+; fm_protocol_encryption-opt(no)
+no
+
+; fm_protocol_transfer-opt(mediaonly)
+Media only
+
+; fm_protocol_transfer-opt(yes)
+yes
+
+; fm_protocol_transfer-opt(no)
+no
+
+; fm_protocol_qualifysmoothing
+Quality smoothing : 
+
+; fm_protocol_qualifyfreqok
+Qualify frequency when ok : 
+
+; fm_protocol_qualifyfreqnotok
+Qualify frequency when fail : 
+
+; fm_protocol_jitterbuffer
+Activate jitterbuffer : 
+
+; fm_protocol_forcejitterbuffer
+Force jitterbuffer : 
+
+; fm_protocol_timezone
+Timezone : 
+
+; fm_protocol_qualify-opt(no)
+no
+
+; fm_protocol_qualify-opt(yes)
+yes
+
+; fm_protocol_qualify-opt
+%s milliseconds
+
+; fm_protocol_qualifyfreq-opt-milliseconds
+%s milliseconds
+
+; fm_protocol_qualifyfreq-opt-second
+1 second
+
+; fm_protocol_qualifyfreq-opt-seconds
+%s seconds
+
+; fm_protocol_qualifyfreq-opt-minute
+1 minute
+
+; fm_protocol_qualifyfreq-opt-minute-seconds
+%s min. %s sec.
+
+; fm_protocol_qualifyfreq-opt-minutes
+%s minutes
+
+; fm_protocol_qualifyfreq-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_protocol_codec-disallow-opt(all)
+All

@@ -13,13 +13,13 @@ Number of calls
 ; protocol_host-unknown
 Unknown host
 
-; protocol_type-user
+; protocol_type(user)
 Incoming
 
-; protocol_type-peer
+; protocol_type(peer)
 Outgoing
 
-; protocol_type-friend
+; protocol_type(friend)
 Incoming/Outgoing
 
 ; protocol_call-unlimited
@@ -30,3 +30,5 @@ No SIP trunks found
 
 ; opt_delete_confirm
 Are you sure you want to delete this trunk?
+
+

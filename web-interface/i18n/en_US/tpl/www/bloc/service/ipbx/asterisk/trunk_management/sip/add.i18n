@@ -7,6 +7,9 @@ General
 ; smenu_register
 Register
 
+; smenu_signalling
+Signalling
+
 ; smenu_codecs
 Codecs
 
@@ -55,13 +58,13 @@ DTMF:
 ; fm_protocol_type
 Connection type:
 
-; fm_protocol_type-user
+; fm_protocol_type-opt(user)
 Incoming
 
-; fm_protocol_type-peer
+; fm_protocol_type-opt(peer)
 Outgoing
 
-; fm_protocol_type-friend
+; fm_protocol_type-opt(friend)
 Incoming/Outgoing
 
 ; fm_protocol_nat
@@ -129,3 +132,196 @@ Port:
 
 ; fm_register_contact
 Contact:
+
+; fm_protocol_calllimit-opt(0)
+Unlimited
+
+; fm_protocol_calllimit-opt
+%s
+
+; fm_protocol_host-type-opt(dynamic)
+Dynamic
+
+; fm_protocol_host-type-opt(static)
+Static
+
+; fm_protocol_language
+Language :
+
+; fm_protocol_nat-opt(no)
+No
+
+; fm_protocol_nat-opt(yes)
+Yes
+
+; fm_protocol_nat-opt(never)
+Never
+
+; fm_protocol_nat-opt(route)
+Route
+
+
+
+; fm_protocol_progressinband
+Progress in BAND :
+
+; fm_protocol_progressinband-opt(no)
+No
+
+; fm_protocol_progressinband-opt(yes)
+Yes
+
+; fm_protocol_progressinband-opt(never)
+Never
+
+; fm_protocol_dtmfmode-opt(rfc2833)
+RFC 2833
+
+; fm_protocol_dtmfmode-opt(inband)
+InBand
+
+; fm_protocol_dtmfmode-opt(info)
+INFO
+
+; fm_protocol_dtmfmode-opt(auto)
+Auto
+
+; fm_protocol_rfc2833compensate
+Compensate DTMF RFC 2833 from another IPBX :
+
+; fm_protocol_qualify
+Qualify latency :
+
+; fm_protocol_qualify-opt(no)
+No
+
+; fm_protocol_qualify-opt(yes)
+Yes
+
+; fm_protocol_qualify-opt
+%s milliseconds
+
+; fm_protocol_rtptimeout
+RTP wait timeout :
+
+; fm_protocol_rtptimeout-opt(0)
+Deactivated
+
+; fm_protocol_rtptimeout-opt
+%s seconds
+
+; fm_protocol_rtpholdtimeout
+RTP hold timeout :
+
+; fm_protocol_rtpholdtimeout-opt(0)
+Deactivated
+
+; fm_protocol_rtpholdtimeout-opt
+%s seconds
+
+; fm_protocol_rtpkeepalive
+RTP keepalive :
+
+; fm_protocol_rtpkeepalive-opt(0)
+Deactivated
+
+; fm_protocol_rtpkeepalive-opt
+%s seconds
+
+; fm_protocol_allowtransfer
+Allow transfers :
+
+; fm_protocol_autoframing
+Autoframing :
+
+; fm_protocol_videosupport
+Video support :
+
+; fm_protocol_maxcallbitrate
+Max call bitrate :
+
+; fm_protocol_g726nonstandard
+Activate non-standard G.726 support :
+
+; fm_codec-custom
+Customize codecs :
+
+; fm_protocol_codec-disallow
+Deactivated Codecs :
+
+; fm_protocol_codec-disallow-opt(all)
+All
+
+
+
+; fm_protocol_insecure-opt(no)
+No
+
+; fm_protocol_insecure-opt(port)
+Port
+
+; fm_protocol_insecure-opt(invite)
+Invite
+
+; fm_protocol_insecure-opt(all)
+All
+
+; fm_protocol_permit
+Allowed IP address or subnet :
+
+; fm_protocol_deny
+Denied IP address or subnet :
+
+; fm_protocol_trustrpid
+Trust Remote-Party-ID :
+
+; fm_protocol_sendrpid
+Send Remote-Party-ID :
+
+; fm_protocol_allowsubscribe
+Allow subscriptions :
+
+; fm_protocol_allowoverlap
+Allow overlap :
+
+; fm_protocol_promiscredir
+Support 302 redirections :
+
+; fm_protocol_usereqphone
+Add ";user=phone" in URI :
+
+; fm_protocol_canreinvite
+Invite :
+
+; fm_protocol_canreinvite-opt(no)
+No
+
+; fm_protocol_canreinvite-opt(yes)
+Yes
+
+; fm_protocol_canreinvite-opt(update)
+Update
+
+; fm_protocol_canreinvite-opt(nonat)
+Without NAT
+
+; fm_protocol_canreinvite-opt(update-nonat)
+Update without NAT
+
+; fm_protocol_fromuser
+Rewrite From-User field :
+
+; fm_protocol_fromdomain
+Rewrite From-Domain field :
+
+; fm_protocol_amaflags
+amaflag :
+
+; fm_protocol_accountcode
+Account code :
+
+; fm_protocol_useclientcode
+Client code :
+
+; fm_trunkfeatures_description
+Description :

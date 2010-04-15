@@ -1,0 +1,460 @@
+; title_content_name
+Voice menus > Add
+
+; smenu_general
+General
+
+; smenu_flow
+Flux
+
+; smenu_events
+Events
+
+; fm_voicemenu_name
+Name :
+
+; fm_voicemenu_number
+Number :
+
+; fm_voicemenu_context
+Context :
+
+; create_context
+Create context
+
+; fm_voicemenu_description
+Description :
+
+; bt_up_voicemenu-application
+Bring up application(s)
+
+; bt_down_voicemenu-application
+Bring down application(s)
+
+; bt_delete_voicemenu-application
+Delete application(s)
+
+; fm_dialaction_actiontype
+Action :
+
+; fm_ipbxapplications-optgroup(answer)
+Answer
+
+; fm_ipbxapplications-opt(answer)
+Answer
+
+; fm_ipbxapplications-optgroup(authentication)
+Authenticate
+
+; fm_ipbxapplications-opt(authenticate)
+Authenticate
+
+; fm_ipbxapplications-opt(vmauthenticate)
+VMAuthenticate
+
+; fm_ipbxapplications-optgroup(execute)
+Execute
+
+; fm_ipbxapplications-opt(macro)
+Macro
+
+; fm_ipbxapplications-opt(agi)
+AGI
+
+; fm_ipbxapplications-optgroup(jump)
+Jump
+
+; fm_ipbxapplications-opt(goto)
+Goto
+
+; fm_ipbxapplications-opt(gotoif)
+GotoIf
+
+; fm_ipbxapplications-optgroup(sound)
+Sound
+
+; fm_ipbxapplications-opt(background)
+BackGround
+
+; fm_ipbxapplications-opt(playback)
+Playback
+
+; fm_ipbxapplications-optgroup(recording)
+Recording
+
+; fm_ipbxapplications-opt(mixmonitor)
+MixMonitor
+
+; fm_ipbxapplications-opt(monitor)
+Monitor
+
+; fm_ipbxapplications-opt(record)
+Record
+
+; fm_ipbxapplications-opt(stopmonitor)
+StopMonitor
+
+; fm_ipbxapplications-optgroup(timeout)
+Timeout
+
+; fm_ipbxapplications-opt(absolutetimeout)
+AbsoluteTimeout
+
+; fm_ipbxapplications-opt(digittimeout)
+DigitTimeout
+
+; fm_ipbxapplications-opt(responsetimeout)
+ResponseTimeout
+
+; fm_ipbxapplications-optgroup(variable)
+Variable
+
+; fm_ipbxapplications-opt(read)
+Read
+
+; fm_ipbxapplications-opt(set)
+Set
+
+; fm_ipbxapplications-opt(setcallerid)
+SetCallerID
+
+; fm_ipbxapplications-opt(setcidname)
+SetCIDName
+
+; fm_ipbxapplications-opt(setcidnum)
+SetCIDNum
+
+; fm_ipbxapplications-opt(setlanguage)
+SetLanguage
+
+; fm_ipbxapplications-opt(noop)
+NoOp
+
+; fm_ipbxapplications-optgroup(wait)
+Wait
+
+; fm_ipbxapplications-opt(wait)
+Wait
+
+; fm_ipbxapplications-opt(waitexten)
+WaitExten
+
+; fm_ipbxapplications-opt(waitforring)
+WaitForRing
+
+; fm_ipbxapplications-opt(waitmusiconhold)
+WaitMusicOnHold
+
+; fm_ipbxapplication_answer-delay
+Answer delay (milliseconds) : 
+
+; fm_ipbxapplication_authenticate-password
+Password of password file : 
+
+; fm_ipbxapplication_authenticate-passwordinterpreter
+Passwords locale :
+
+; fm_ipbxapplication_authenticate-passwordinterpreter-opt(astdb)
+ASTDB
+
+; fm_ipbxapplication_authenticate-passwordinterpreter-opt(file)
+File
+
+; fm_ipbxapplication_authenticate-a
+Add password in calls log : 
+
+; fm_ipbxapplication_authenticate-j
+Use n+101 method if authenticate fail :
+
+; fm_ipbxapplication_authenticate-r
+Delete ASTDB entry once authenticated : 
+
+; fm_ipbxapplication_vmauthenticate-mailbox
+Mailbox : 
+
+; fm_ipbxapplication_vmauthenticate-s
+Do not play intro : 
+
+; fm_ipbxapplication_macro-macroname
+Macro name : 
+
+; fm_ipbxapplication_macro-args
+Macro argument(s) :
+
+; fm_ipbxapplication_agi-command
+AGI name : 
+
+; fm_ipbxapplication_agi-args
+AGI argument(s) : 
+
+; fm_ipbxapplication_goto-context
+Context name :
+
+; fm_ipbxapplication_goto-exten
+Extension name : 
+
+; fm_ipbxapplication_goto-priority
+Priority name :
+
+; fm_ipbxapplication_gotoif-condition
+Expression :
+
+; fm_ipbxapplication_gotoif-iftrue
+If true :
+
+; fmipbxapplication_gotoif-iffalse
+If false :
+
+; fm_ipbxapplication_absolutetimeout-timeout
+Time (seconds) :
+
+; fm_ipbxapplication_mixmonitor-filename
+Filename :
+
+; fm_ipbxapplication_mixmonitor-fileformat
+File format :
+
+; fm_ipbxapplication_mixmonitor-a
+Write at the end of file instead of override :
+
+; fm_ipbxapplication_mixmonitor-b
+Record only when channel is bridged :
+
+; fm_ipbxapplication_mixmonitor-v
+Adjust caller sound volume level :
+
+; fm_ipbxapplication_mixmonitor-v-volume
+Sound volume level :
+
+; fm_ipbxapplication_mixmonitor-V
+Adjust called sound volume level :
+
+; fm_ipbxapplication_mixmonitor-V-volume
+Sound volume level :
+
+; fm_ipbxapplication_mixmonitor-W
+Adjust caller and called sound volume level :
+
+; fm_ipbxapplication_mixmonitor-W-volume
+Sound volume level :
+
+; fm_ipbxapplication_monitor-fileformat
+File format :
+
+; fm_ipbxapplication_monitor-basename
+Filename :
+
+; fm_ipbxapplication_monitor-m
+Mix in/ou channels after record :
+
+; fm_ipbxapplication_monitor-b
+Record channel if bridged only :
+
+; fm_ipbxapplication_record-filename
+Filename :
+
+; fm_ipbxapplication_record-fileformat
+File format :
+
+; fm_ipbxapplication_record-silence
+Silence duration detection (seconds) :
+
+; fm_ipbxapplication_record-maxduration
+Max record time (seconds) :
+
+; fm_ipbxapplication_record-a
+Write at the end of file instead of override :
+
+; fm_ipbxapplication_record-n
+Do not answer channel :
+
+; fm_ipbxapplication_record-q
+Do not beep before recording :
+
+; fm_ipbxapplication_record-s
+Record if channell is answered :
+
+; fm_ipbxapplication_record-t
+Use "*" instead of "#" to stop record :
+
+; fm_ipbxapplication_background-filename
+Played soundfile :
+
+; fm_ipbxapplication_background-s
+Play file if channel answered only :
+
+; fm_ipbxapplication_background-n
+Do not answer channel before reading file :
+
+; fm_ipbxapplication_background-m
+Use destination context extension :
+
+; fm_ipbxapplication_background-language
+Language :
+
+; fm_ipbxapplication_background-context
+Output context :
+
+; fm_ipbxapplication_playback-filename
+Filename :
+
+; fm_ipbxapplication_playback-skip
+Play file if channel answered only :
+
+; fm_ipbxapplication_playback-noanswer
+Do not anwer channel before reading file :
+
+; fm_ipbxapplication_playback-j
+Use n+101 method :
+
+; fm_ipbxapplication_digittimeout-timeout
+Digit timeout (seconds) :
+
+; fm_ipbxapplication_responsetimeout-timeout
+Response timeout (seconds) :
+
+; fm_ipbxapplication_read-variable
+Variable name :
+
+; fm_ipbxapplication_read-filename
+Played filename :
+
+; fm_ipbxapplication_read-maxdigits
+Max number of digits :
+
+; fm_ipbxapplication_read-s
+Do nothing if channel is answered :
+
+; fm_ipbxapplication_read-i
+Play file as tonality :
+
+; fm_ipbxapplication_read-n
+Play digits even if channel is answered :
+
+; fm_ipbxapplication_read-attempts
+Attempts max number :
+
+; fm_ipbxapplication_read-timeout
+Wait time (seconds) :
+
+; fm_ipbxapplication_set-name
+Variable name :
+Nom de la variable :
+
+; fm_ipbxapplication_set-value
+Variable value :
+
+; fm_ipbxapplication_set-g
+Global variable :
+
+; fm_ipbxapplication_setcallerid-callerid
+Callerid name :
+
+; fm_ipbxapplication_setcidname-name
+Name :
+
+; fm_ipbxapplication_setcidnum-number
+Number :
+
+; fm_ipbxapplication_setlanguage-language
+Language :
+
+; fm_ipbxapplication_noop-data
+Value :
+
+; fm_ipbxapplication_wait-seconds
+Wait time (seconds) :
+
+; fm_ipbxapplication_waitexten-seconds
+Wait time (seconds) :
+
+; fm_ipbxapplication_waitexten-m
+Activate musiconhold :
+
+; fm_ipbxapplication_waitexten-musiconhold
+Music on hold :
+
+; fm_ipbxapplication_waitforring-timeout
+Wait time (seconds) :
+
+; fm_ipbxapplication_waitmusiconhold-delay
+Wait time (seconds) :
+
+; fm_voicemenuevent-type
+Event :
+
+; col_voicemenu-event
+Event
+
+; col_voicemenu-action
+Action
+
+; voicemenu_event-0
+Key 0
+
+; voicemenu_event-1
+Key 1
+
+; voicemenu_event-2
+Key 2
+
+; voicemenu_event-3
+Key 3
+
+; voicemenu_event-4
+Key 4
+
+; voicemenu_event-5
+Key 5
+
+; voicemenu_event-6
+Key 6
+
+; voicemenu_event-7
+Key 7
+
+; voicemenu_event-8
+Key 8
+
+; voicemenu_event-9
+Key 9
+
+; voicemenu_event-star
+Key *
+
+; voicemenu_event-sharp
+Key #
+
+; voicemenu_event-a
+Cancel call (a)
+
+; voicemenu_event-o
+Connect with operator (o)
+
+; voicemenu_event-t
+Outdated event wait time (t)
+
+; voicemenu_event-T
+Call max duration (T)
+
+; voicemenu_event-i
+Invalid key (i)
+
+; voicemenu_event-h
+Handup (h)
+
+; fm_dialaction_actiontype-opt(queueskill|Asterisk)
+Queue skills
+
+; fm_dialaction_queueskill-skill
+Queue skill : 
+
+; fm_dialaction_queueskill-varname
+Variable name : 
+
+; fm_dialaction_queueskillrule-name
+Rule : 
+
+; fm_dialaction_actiontype-opt(queueskillrule|Asterisk)
+Queue skill rule
+

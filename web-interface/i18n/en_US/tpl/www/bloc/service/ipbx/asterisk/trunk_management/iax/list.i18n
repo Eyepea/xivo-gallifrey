@@ -30,3 +30,9 @@ No IAX trunks found
 
 ; opt_delete_confirm
 Are you sure you want to delete this trunk?
+
+; protocol_type(peer)
+Peer
+
+; protocol_type(user)
+User

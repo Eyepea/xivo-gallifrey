@@ -125,3 +125,16 @@ Add an agent
 
 ; toolbar_fm_group
 -- Group --
+
+; ast_amaflag_name_info(default)
+Default
+
+; ast_amaflag_name_info(omit)
+Omit
+
+; ast_amaflag_name_info(billing)
+Billing
+
+; ast_amaflag_name_info(documentation)
+Documentation
+

@@ -276,3 +276,43 @@ Unique ID:
 
 ; no_cdr-result
 Unable to find any entries matching your search in the log files
+
+; fm_search-format(exact)
+Exact
+
+; fm_search-format(begin)
+Startwith
+
+; fm_search-format(contain)
+Contains
+
+; fm_search-format(end)
+Endswith
+
+; fm_dubegunit-opt(seconds)
+Seconds
+
+; fm_dubegunit-opt(minutes)
+Minutes
+
+; fm_duendunit-opt(seconds)
+Seconds
+
+; fm_duendunit-opt(minutes)
+Minutes
+
+; fm_disposition-opt(ANSWERED)
+Answered
+
+; fm_disposition-opt(NO ANSWER)
+Not answered
+
+; fm_disposition-opt(BUSY)
+Busy
+
+; fm_disposition-opt(FAILED)
+Failed
+
+; fm_disposition-opt(UNKNOWN)
+Unknown
+

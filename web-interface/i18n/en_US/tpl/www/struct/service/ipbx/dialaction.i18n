@@ -1,0 +1,221 @@
+; fld-dialaction-noanswer
+No answer
+
+; fld-dialaction-busy
+Busy
+
+; fld-dialaction-congestion
+Congestion
+
+; fld-dialaction-chanunavail
+Fail
+
+; fm_dialaction_actiontype
+Destination :
+
+; fm_dialaction_actiontype-opt(none)
+None
+
+; fm_dialaction_actiontype-opt(endcall)
+End call
+
+; fm_dialaction_actiontype-opt(user)
+User
+
+; fm_dialaction_user-actionarg1
+Redirect to :
+
+; fm_dialaction_user-actionarg2
+Ring time :
+
+; fm_dialaction_actiontype-opt(group)
+Group
+
+; fm_dialaction_group-actionarg1
+Redirect to :
+
+; fm_dialaction_group-actionarg2
+Ring time :
+
+; fm_dialaction_actiontype-opt(queue)
+Queue
+
+; fm_dialaction_queue-actionarg1
+Redirect to :
+
+; fm_dialaction_queue-actionarg2
+Ring time :
+
+; fm_dialaction_actiontype-opt(meetme)
+Meetme room
+
+; fm_dialaction_meetme-actionarg1
+Redirect to :
+
+; fm_dialaction_actiontype-opt(voicemail)
+Voicemail
+
+; fm_dialaction_voicemail-actionarg1
+Redirect to :
+
+; fm_dialaction_voicemail-actionarg2-b
+Play occupation message :
+
+; fm_dialaction_voicemail-actionarg2-s
+Do not play introduction message :
+
+; fm_dialaction_voicemail-actionarg2-u
+Do not play unavailable message :
+
+; fm_dialaction_voicemail-actionarg2-j
+Use n+101 method :
+
+; fm_dialaction_actiontype-opt(schedule)
+Schedule
+
+; fm_dialaction_schedule-actionarg1
+Redirect to :
+
+; fm_dialaction_actiontype-opt(voicemenu)
+Voicemenu
+
+; fm_dialaction_voicemenu-actionarg1
+Redirect to :
+
+; fm_dialaction_actiontype-opt(extension)
+Extension
+
+; fm_dialaction_extension-actionarg1
+Phone number :
+
+; fm_dialaction_extension-actionarg2
+Context :
+
+; fm_dialaction_actiontype-opt(application)
+Application
+
+; fm_dialaction_actiontype-opt(ipbxapplication|unknown)
+IPBX Application
+
+; fm_dialaction_actiontype-opt(ipbxapplication|$ipbx_label)
+%{ipbx_label}$s Application
+
+; fm_dialaction_actiontype-opt(sound)
+Sound file
+
+; fm_dialaction_actiontype-opt(custom)
+Customized
+
+; fm_dialaction_endcall-action
+Choice :
+
+; fm_dialaction_application-action
+Application :
+
+; fm_dialaction_ipbxapplication-action
+Application :
+
+; fm_dialaction_sound-actionarg1
+Filename :
+
+; fm_dialaction_sound-actionarg2-skip
+Play file is channel is answered :
+
+; fm_dialaction_sound-actionarg2-noanswer
+Do not answer channel before playing file :
+
+; fm_dialaction_sound-actionarg2-j
+Use n+101 method :
+
+; fm_dialaction_custom-actionarg1
+Command :
+
+; fm_dialaction_endcall-action-opt(hangup)
+Hangup
+
+; fm_dialaction_endcall-action-opt(busy)
+Busy
+
+; fm_dialaction_endcall-busy-actionarg1
+Delay before hangup :
+
+; fm_dialaction_endcall-action-opt(congestion)
+Congestion
+
+; fm_dialaction_endcall-congestion-actionarg1
+Delay before hangup :
+
+; fm_dialaction_application-action-opt(callbackdisa)
+CallBackDISA
+
+; fm_dialaction_application-callbackdisa-actionarg1
+PIN :
+
+; fm_dialaction_application-callbackdisa-actionarg2
+Context :
+
+; fm_dialaction_application-action-opt(disa)
+DISA
+
+; fm_dialaction_application-disa-actionarg1
+PIN :
+
+; fm_dialaction_application-disa-actionarg2
+Context :
+
+; fm_dialaction_application-action-opt(directory)
+Directory
+
+; fm_dialaction_application-directory-actionarg1
+Context :
+
+; fm_dialaction_application-action-opt(faxtomail)
+FaxToMail
+
+; fm_dialaction_application-faxtomail-actionarg1
+E-mail :
+
+; fm_dialaction_application-action-opt(voicemailmain)
+Voicemail consulting
+
+; fm_dialaction_application-voicemailmain-actionarg1
+Context :
+
+; dialaction_no-user
+No user
+
+; dialaction_no-group
+No group
+
+; dialaction_no-queue
+No queue
+
+; dialaction_no-schedule
+No schedule
+
+; create_user
+Create user
+
+; create_group
+Create group
+
+; create_queue
+Create queue
+
+; create_meetme
+Create meetme room
+
+; create_voicemail
+Create voicemail
+
+; create_schedule
+Create schedule
+
+; create_voicemenu
+Create voicemenu
+
+; add_playback-sound
+Add sound file
+
+; create_callfilter
+Create callfilter
