@@ -258,22 +258,19 @@ switch($act)
 			$total = count($dirs);
 			dwho::load_class('dwho_sort');
 			$sort = new dwho_sort(array('key' => $sort_key));
-			usort($dirs,array(&$sort,'strnat_usort'));
+			usort($dirs,array($sort,'strnat_usort'));
 
 			$link_sort_order = SORT_ASC;
 
 			if (isset($_QR['sort_order']) === true
 			&& $_QR['sort_order'] == SORT_ASC)
 			{
-				rsort($dirs);
+				krsort($dirs,SORT_NUMERIC);
 				$link_sort_order = SORT_DESC;
 			}
-			if (isset($_QR['sort_order']) === true
-			&& $_QR['sort_order'] == SORT_DESC)
-			{
-				sort($dirs);
-				$link_sort_order = SORT_ASC;
-			}
+
+			$tmp = array();
+			$dirs = array_merge($tmp,$dirs);
 
 			$_TPL->set_var('sort_order',$link_sort_order);
 		}
@@ -305,15 +302,12 @@ switch($act)
 			if (isset($_QR['sort_order']) === true
 			&& $_QR['sort_order'] == SORT_ASC)
 			{
-				rsort($dirs);
+				krsort($dirs,SORT_NUMERIC);
 				$link_sort_order = SORT_DESC;
 			}
-			if (isset($_QR['sort_order']) === true
-			&& $_QR['sort_order'] == SORT_DESC)
-			{
-				sort($dirs);
-				$link_sort_order = SORT_ASC;
-			}
+
+			$tmp = array();
+			$dirs = array_merge($tmp,$dirs);
 
 			$_TPL->set_var('sort_order',$link_sort_order);
 
