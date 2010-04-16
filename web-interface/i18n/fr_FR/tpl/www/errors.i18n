@@ -17,3 +17,5 @@ Contient des caractères invalide
 ; error_before_create_context
 Vous devez dabord créer un contexte
 
+; error(already_exist)
+Ce champ est unique et il est déjà utilisé

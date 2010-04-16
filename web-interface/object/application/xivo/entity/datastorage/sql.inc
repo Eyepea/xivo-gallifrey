@@ -66,6 +66,23 @@ class xivo_application_xivo_object_entity_sql extends xivo_application_abstract_
 
 		return($r);
 	}
+
+	function get_entity_name_already_exist($name)
+	{
+		$this->_cnt = 0;
+
+		if(dwho_has_len($name) === false)
+			return(false);
+
+		$this->_dso->new_select($this->_table['entity']);
+		$this->_dso->where(array('name' => $name));
+
+		$r = true;
+		if(($this->_cnt = $this->_dso->select_count()) > 0)
+			$r = false;
+
+		return($r);
+	}
 }
 
 ?>

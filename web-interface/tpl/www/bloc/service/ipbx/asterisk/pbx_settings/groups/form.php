@@ -28,6 +28,15 @@ $rightcall = $this->get_var('rightcall');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
 
+if(dwho_has_len($user['list']) === true):
+	$user_suggest = $this->get_var('user','fullname');
+else:
+	$user_suggest = null;
+endif;
+
+$dhtml = &$this->get_module('dhtml');
+$dhtml->write_js('var xivo_fm_user_suggest = \''.$dhtml->escape($user_suggest).'\';');
+
 if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
@@ -167,7 +176,7 @@ endif;
 					       'paragraph'	=> false,
 					       'key'		=> 'identity',
 					       'altkey'		=> 'id'),
-					 $user['list']);?>
+								$user['list']);?>
 		</div>
 
 		<div class="inout-list">

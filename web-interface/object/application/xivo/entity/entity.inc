@@ -209,6 +209,12 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 		$this->_status = 'add';
 		$this->_return = array();
 
+		if(($this->_dso->get_entity_name_already_exist($this->_result['entity']['name'])) === false)
+		{
+			$this->_set_error('entity',array('name' => 'already_exist'));
+			return(false);
+		}
+
 		if($this->get_errnb() > 0
 		|| $this->add_entity() === false)
 			$r = false;

@@ -1,2 +1,23 @@
 ; fm_error-save
-error
+An error occurred when saving the form.
+
+; error(empty)
+Required Field
+
+; error(regexp)
+Contient des caractères invalide
+
+; error(callback)
+Contains invalid characters
+
+; error(cast)
+Contains invalid characters
+
+; error(cast|callback)
+Contains invalid characters
+
+; error_before_create_context
+You must create a context intend to argue
+
+; error(already_exist)
+This field is unique and it is already used
