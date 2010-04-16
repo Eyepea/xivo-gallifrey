@@ -60,7 +60,7 @@ class xivo_application_xivo_object_entity_sql extends xivo_application_abstract_
 		$this->_dso->reset_order();
 		$this->_dso->reset_limit();
 
-		if(($this->_cnt = $this->_dso->select_count()) === false
+		if(($this->_cnt = $this->_dso->select_count()) === 0
 		|| isset($r[0]) === false)
 			$r = false;
 
