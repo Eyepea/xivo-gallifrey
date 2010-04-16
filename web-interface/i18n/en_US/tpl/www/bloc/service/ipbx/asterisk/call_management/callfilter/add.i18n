@@ -96,3 +96,41 @@ Create a boss
 
 ; create_user-secretary
 Create a secretary
+
+; fm_callfilter_callfrom-opt(internal)
+Internal
+
+; fm_callfilter_callfrom-opt(external)
+External
+
+; fm_callfilter_callfrom-opt(all)
+All
+
+; fm_callfilter_bosssecretary-opt(bossfirst-serial)
+Boss first then secretaries in serial
+
+; fm_callfilter_bosssecretary-opt(bossfirst-simult)
+Boss first then secretaries simultaneously
+
+; fm_callfilter_bosssecretary-opt(secretary-serial)
+Secretaries in serial
+
+; fm_callfilter_bosssecretary-opt(secretary-simult)
+Secretaries simultaneously
+
+; fm_callfilter_bosssecretary-opt(all)
+Boss and secretaries simultaneously
+
+; fm_callerid_mode
+CallerID mode :
+
+; fm_callerid_mode-opt(prepend)
+Prepend
+
+; fm_callerid_mode-opt(overwrite)
+Overwrite
+
+; fm_callerid_mode-opt(append)
+Append
+
+

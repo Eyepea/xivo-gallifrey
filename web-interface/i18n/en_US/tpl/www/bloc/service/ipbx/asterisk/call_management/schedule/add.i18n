@@ -150,3 +150,30 @@ No schedules found
 
 ; add_playback-sound
 Add an audio file
+
+; col_schedule-time
+Time
+
+; col_schedule-begin
+Start
+
+; col_schedule-end
+End
+
+; schedule_hour
+Hour
+
+; schedule_dayname
+Weekday
+
+; schedule_daynum
+Month day
+
+; schedule_month
+Month
+
+; fld-dialaction-inschedule
+In bounds
+
+; fld-dialaction-outschedule
+Out of bounds

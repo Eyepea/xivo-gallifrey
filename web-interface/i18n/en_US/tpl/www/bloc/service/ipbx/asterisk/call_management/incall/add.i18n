@@ -135,3 +135,40 @@ Add one or more call permissions ->
 
 ; create_rightcall
 Create a call permission
+
+; fm_callerid_mode
+CallerID mode :
+
+; fm_callerid_mode-opt(prepend)
+Prepend
+
+; fm_callerid_mode-opt(overwrite)
+Overwrite
+
+; fm_callerid_mode-opt(append)
+Append
+
+; fm_incall_preprocess-subroutine
+Preprocess subroutine :
+
+; fm_incall_faxdetectenable
+Activate :
+
+; fm_incall_faxdetecttimeout
+Detect timeout :
+
+; fm_incall_faxdetecttimeout-opt(0)
+Unlimited
+
+; fm_incall_faxdetecttimeout-opt(1)
+1 second
+
+; fm_incall_faxdetecttimeout-opt
+%s secondes
+
+; fm_incall_faxdetectemail
+Destination email :
+
+; smenu_faxdetect
+Fax detection
+

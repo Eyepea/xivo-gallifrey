@@ -7,6 +7,21 @@ General
 ; smenu_advanced
 Advanced
 
+; smenu_period
+Period
+
+; smenu_administrator
+Administrator
+
+; smenu_user
+User
+
+; smenu_guest
+Guests
+
+; smenu_email
+E-mail
+
 ; fm_meetmefeatures_name
 Name:
 
@@ -69,3 +84,271 @@ Enable exit context:
 
 ; fm_meetmefeatures_exitcontext
 Exit context:
+
+
+; fm_meetmeroom_confno
+Name :
+
+; fm_meetmefeatures_number
+Number :
+
+; fm_meetmeroom_pin
+PIN :
+
+; fm_meetmefeatures_context
+Context :
+
+; create_context
+Create context
+
+; fm_meetmefeatures_noplaymsgfirstenter
+Don't play announce for first participant :
+
+; fm_meetmefeatures_maxuser
+Max participants :
+
+; fm_meetmefeatures_preprocess-subroutine
+Preprocess subroutine :
+
+; fm_meetmefeatures_description
+Description :
+
+; col_startdate
+Date d'ouverture de la conférence
+
+; meetmefeatures_startdate-mday
+Monthday
+
+; meetmefeatures_startdate-mon
+Month
+
+; meetmefeatures_startdate-year
+Year
+
+; meetmefeatures_startdate-hours
+Yours
+
+; meetmefeatures_startdate-minutes
+Minutes
+
+; fm_meetmefeatures_durationm
+Duration (minutes) :
+
+; fm_meetmefeatures_closeconfdurationexceeded
+Close conference when duration exceeded :
+
+; fm_meetmefeatures_nbuserstartdeductduration
+Participants number before starting duration deduct :
+
+; fm_meetmefeatures_timeannounceclose
+Announce playing delay before conference closure :
+
+; fm_meetmefeatures_timeannounceclose-opt(default)
+Deactivated
+
+; fm_meetmefeatures_timeannounceclose-opt-seconds
+%s seconds
+
+; fm_meetmefeatures_timeannounceclose-opt-minute
+1 minute
+
+; fm_meetmefeatures_timeannounceclose-opt-minute-seconds
+%s min. %s sec.
+
+; fm_meetmefeatures_timeannounceclose-opt-minutes
+%s minutes
+
+; fm_meetmefeatures_timeannounceclose-opt-minutes-seconds
+%s min. %s sec.
+
+
+; fm_meetmefeatures_admin-externalid
+Phone number :
+
+; fm_meetmeroom_pinadmin
+Admin PIN :
+
+; fm_meetmefeatures_admin-identification
+Identification method :
+
+; fm_meetmefeatures_admin-identification-opt(calleridnum)
+Call number
+
+; fm_meetmefeatures_admin-identification-opt(pin)
+PIN
+
+; fm_meetmefeatures_admin-identification-opt(all)
+All
+
+; fm_meetmefeatures_admin-mode
+Mode :
+
+; fm_meetmefeatures_admin-mode-opt(listen)
+Listen
+
+; fm_meetmefeatures_admin-mode-opt(talk)
+Talk
+
+; fm_meetmefeatures_admin-mode-opt(all)
+All
+
+; fm_meetmefeatures_admin-announceusercount
+Announcing participant numbers :
+
+; fm_meetmefeatures_admin-announcejoinleave
+Record name & announce join/leaves :
+
+; fm_meetmefeatures_admin-announcejoinleave-opt(no)
+No
+
+; fm_meetmefeatures_admin-announcejoinleave-opt(yes)
+Yes
+
+; fm_meetmefeatures_admin-announcejoinleave-opt(noreview)
+No review
+
+; fm_meetmefeatures_admin-moderationmode
+Participants moderation :
+
+; fm_meetmefeatures_admin-initiallymuted
+Initially muted :
+
+; fm_meetmefeatures_admin-musiconhold
+Music on hold :
+
+; fm_meetmefeatures_admin-poundexit
+Exit with '#' :
+
+; fm_meetmefeatures_admin-quiet
+No join notification :
+
+; fm_meetmefeatures_admin-starmenu
+Menu access with '*' :
+
+; fm_meetmefeatures_admin-closeconflastmarkedexit
+Close conference on administrator exit :
+
+; fm_meetmefeatures_admin-enableexitcontext
+Activate exit context :
+
+; fm_meetmefeatures_admin-exitcontext
+Exit context :
+
+; fm_meetmefeatures_admin-typefrom
+Administrator :
+
+; fm_meetmefeatures_admin-typefrom-opt(none)
+None
+
+; fm_meetmefeatures_admin-typefrom-opt(internal)
+Intern
+
+; fm_meetmefeatures_admin-typefrom-opt(external)
+Extern
+
+; fm_meetmefeatures_admin-typefrom-opt(undefined)
+Undefined
+
+; fm_meetme_admin-suggest-default
+Search
+
+
+
+
+; fm_meetmefeatures_user-mode
+Mode :
+
+; fm_meetmefeatures_user-mode-opt(listen)
+Listen
+
+; fm_meetmefeatures_user-mode-opt(talk)
+Talk
+
+; fm_meetmefeatures_user-mode-opt(all)
+All
+
+; fm_meetmefeatures_user-announceusercount
+Announce participants number :
+
+; fm_meetmefeatures_user-hiddencalls
+Reject anonymous calls :
+
+; fm_meetmefeatures_user-announcejoinleave
+Record name and announce join/leaves :
+
+; fm_meetmefeatures_user-announcejoinleave-opt(no)
+No
+
+; fm_meetmefeatures_user-announcejoinleave-opt(yes)
+Yes
+
+; fm_meetmefeatures_user-announcejoinleave-opt(noreview)
+No review
+
+; fm_meetmefeatures_user-initiallymuted
+Initially muted
+
+; fm_meetmefeatures_user-musiconhold
+Music on hold
+
+; fm_meetmefeatures_user-poundexit
+Exit with '#' :
+
+; fm_meetmefeatures_user-quiet
+No join notification :
+
+; fm_meetmefeatures_user-starmenu
+Menu access with '*' :
+
+; fm_meetmefeatures_user-enableexitcontext
+Activate exit context :
+
+; fm_meetmefeatures_user-exitcontext
+Exit context :
+
+; col_meetmeguest-fullname
+Fullname
+
+; col_meetmeguest-telephonenumber
+Phone number
+
+; col_meetmeguest-email
+E-mail
+
+; col_meetmeguest-sendemail
+Send e-mail
+
+; col_meetmeguest-add
+Add
+
+; no_meetmeguest
+No guests
+
+; fm_meetmefeatures_emailfrom
+From e-mail :
+
+; fm_meetmefeatures_emailfromname
+Sender :
+
+; fm_meetmefeatures_emailsubject
+Subject :
+
+; meetmefeatures_emailsubject
+[XIVO] Invitation to join a conference room
+
+; fm_meetmefeatures_emailbody
+Body :
+
+; it-meetmefeatures-emailbody
+Hello %{FULLNAME}$s,
+You have been invited to join %{CONFNAME}$s conference room.
+
+* Date : %{CONFDATE}$s
+* Duratopn : %{CONFDURATION}$s minutes
+* Room number : %{CONFNUMBER}$s
+* PIN : %{CONFPIN}$s
+
+Thanks.
+
+-- XIVO Conference Room --
+

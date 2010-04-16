@@ -271,7 +271,7 @@ Sujet :
 ; fm_meetmefeatures_emailbody
 Corps :
 
-; meetmefeatures_emailbody
+; it-meetmefeatures-emailbody
 Bonjour %{FULLNAME}$s,
 Vous avez été invité à rejoindre la chambre de conférence : %{CONFNAME}$s.
 
