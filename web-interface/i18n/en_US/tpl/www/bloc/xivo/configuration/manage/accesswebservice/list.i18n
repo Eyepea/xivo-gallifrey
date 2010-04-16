@@ -1,0 +1,17 @@
+; col_name
+Name
+
+; col_login
+Login
+
+; col_password
+Password
+
+; col_host
+Host
+
+; no_accesswebservice
+No access web service found
+
+; opt_delete_confirm
+Are you sure you want to delete this access web service ?
