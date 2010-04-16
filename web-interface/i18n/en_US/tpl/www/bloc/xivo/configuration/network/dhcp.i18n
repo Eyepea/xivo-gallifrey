@@ -1,0 +1,14 @@
+; title_content_name
+DHCP
+
+; fm_active
+Active:
+
+; fm_pool_start
+Pool start:
+
+; fm_pool_end
+Pool end:
+
+; fm_interfaces
+Interfaces:

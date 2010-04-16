@@ -1,0 +1,44 @@
+; title_content_name
+Resolver
+
+; smenu_general
+General
+
+; smenu_search
+Search
+
+; fm_hostname
+Hostname:
+
+; fm_domain
+Domain:
+
+; fm_nameserver1
+NameServer 1:
+
+; fm_nameserver2
+NameServer 2:
+
+; fm_nameserver3
+NameServer 2:
+
+; fm_description
+Description:
+
+; fm_search1
+Search 1:
+
+; fm_search2
+Search 2:
+
+; fm_search3
+Search 3:
+
+; fm_search4
+Search 4:
+
+; fm_search5
+Search 5:
+
+; fm_search6
+Search 6:

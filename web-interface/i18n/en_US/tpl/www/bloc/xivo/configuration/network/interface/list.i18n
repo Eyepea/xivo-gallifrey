@@ -1,0 +1,41 @@
+; col_name
+Name
+
+; col_ifname
+Interface
+
+; col_hwtype
+Hardware
+
+; col_hwaddress
+Mac address
+
+; col_method
+Method
+
+; col_address
+Address
+
+; col_vlanid
+VLAN ID
+
+; network_arphrd(ether)
+Ether
+
+; network_arphrd(loopback)
+loopback
+
+; network_method(manual)
+Manual
+
+; network_method(loopback)
+Loopback
+
+; network_method(static)
+Static
+
+; no_accesswebservice
+No access web service found
+
+; opt_delete_confirm
+Are you sure you want to delete this access web service ?

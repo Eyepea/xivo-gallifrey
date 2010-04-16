@@ -1,0 +1,20 @@
+; title_content_name
+Mail
+
+; help-mydomain
+If you leave the field blank, the hostname (see Resolver menu) will be used as a domain name for email
+
+; fm_mydomain
+Domain Name messaging:
+
+; fm_origin
+Source address of the server:
+
+; fm_relayhost
+Relay SMTP:
+
+; fm_fallback_relayhost
+FallBack relay SMTP:
+
+; fm_canonical
+Rewriting shipping addresses (canonical):

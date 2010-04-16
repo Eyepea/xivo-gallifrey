@@ -1,0 +1,62 @@
+; title_content_name
+Interfaces > Add
+
+; smenu_general
+General
+
+; smenu_vlan
+VLAN
+
+; smenu_advanced
+Advanced
+
+; fm_name
+Name:
+
+; fm_ifname
+Interface:
+
+; fm_disable
+Disable:
+
+; fm_networktype
+Type:
+
+; fm_networktype-opt(voip)
+VOIP
+
+; fm_networktype-opt(data)
+DATA
+
+; fm_method
+Method:
+
+; network_method(static)
+STATIC
+
+; network_method(dhcp)
+DHCP
+
+; fm_address
+Address:
+
+; fm_netmask
+Netmask:
+
+; fm_broadcast
+Broadcast:
+
+; fm_gateway
+Gateway:
+
+; fm_mtu
+MTU:
+
+; fm_description
+Description:
+
+; no_available_physical_interface
+no available physical interface
+
+; fm_options
+Options

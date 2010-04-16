@@ -1,0 +1,20 @@
+; title_content_name
+Routes > Add
+
+; fm_name
+Name:
+
+; create_interface
+Ceate interface
+
+; fm_destination
+Destination:
+
+; fm_netmask
+Netmask:
+
+; fm_gateway
+Gateway:
+
+; fm_description
+Description:

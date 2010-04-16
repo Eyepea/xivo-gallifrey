@@ -1,0 +1,193 @@
+; title_content_name
+High Availability
+
+; smenu_status
+Status
+
+; smenu_services
+Services
+
+; smenu_network
+Network
+
+; smenu_params
+Params
+
+; fm_ha_status
+HA status:
+
+; ha_status(down)
+Disabled
+
+; ha_status(master)
+Master
+
+; ha_status(slave)
+Slave
+
+; fm_help-ha_status
+Display Heartbeat status
+
+; fm_ha_apache2
+Apache2 :
+
+; fm_ha_asterisk
+Asterisk :
+
+; fm_ha_dhcp
+Dhcp :
+
+; fm_ha_monit
+Monit :
+
+; fm_ha_mysql
+MySQL :
+
+; fm_ha_uname_node
+Heartbeat machine name:
+
+; fm_ha_uname_col
+Name
+
+; no_disp-uname
+no disp found
+
+; fm_ha_ping
+Monitoring lan
+
+; fm_ha_ping_col_ipaddr
+IP address to montinor
+
+; no_disp-ping
+no address ip found
+
+; fm_ha_virtual_network
+Virtual Network
+
+; fm_ha_virtnet_col_ipaddr
+Adress IP
+
+; fm_ha_virtnet_col_netmask
+Netmask
+
+; fm_ha_virtnet_col_bcast
+Broadcast
+
+; no_disp-virtnet
+no virtual network found
+
+; fm_ha_ping_ipaddr0
+Monitor address IP :
+
+; fm_ha_uname_node0
+noeud heartbeat #0 (valeur uname) :
+
+; fm_ha_uname_node1
+noeud heartbeat #1 (valeur uname) :
+
+; fm_ha_ipaddr0
+address ip virtual network :
+
+; fm_ha_netmask0
+netask virtual network :
+
+; fm_ha_broadcast0
+broadcast address virtual network :
+
+; fm_ha_dest_iface0
+Interface réseau noeud #0 :
+
+; fm_ha_dest_host0
+Adresse IP noeud #0 :
+
+; fm_ha_dest_transfer0
+transfert noeud #0 :
+
+; fm_ha_dest_iface1
+Interface réseau noeud #1 :
+
+; fm_ha_dest_host1
+Adresse IP noeud #1 :
+
+; fm_ha_dest_transfer1
+transfert noeud #1 :
+
+; fm_ha_nodes
+Communication links heartbeat
+
+; fm_ha_virtnet_col_iface
+Network Interface
+
+; fm_ha_virtnet_col_peer
+Peer Address IP
+
+; fm_ha_virtnet_col_xfer
+Transfer enabled via this link
+
+; no_disp-nodes
+No Link found
+
+; fm_ha_user_title
+Parameters of this node (MySQL and Rsync)
+
+; fm_ha_dest_user_title
+Settings to connect to other nodes
+
+; fm_ha_alert_emails
+Alert Emails :
+
+; fm_help-ha_alert_emails
+Email address for mailing issues
+
+; fm_ha_serial
+Serial port(s) :
+
+; fm_ha_authkeys
+Auth keys :
+
+; fm_ha_com_mode
+Heartbeat mode :
+
+; fm_ha_user
+User :
+
+; fm_ha_password
+Password :
+
+; fm_ha_dest_user
+User :
+
+; fm_ha_dest_password
+Password :
+
+; fm_ha_ntp
+Ntp :
+
+; fm_ha_rsync
+Rsync :
+
+; fm_ha_smokeping
+Smokeping :
+
+; fm_ha_mailto
+Mailto :
+
+; fm_ha_uname_col
+Nom
+
+; col_add
+Add
+
+; opt_disp-uname-delete
+Delete
+
+; opt_disp-ping-delete
+Delete
+
+; opt_disp-virtnet-delete
+Delete
+
+; opt_disp-nodes-delete
+Delete
+
+
