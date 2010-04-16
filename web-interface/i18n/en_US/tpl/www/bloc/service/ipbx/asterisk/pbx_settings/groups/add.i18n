@@ -13,6 +13,9 @@ Call permissions
 ; smenu_dialaction
 No answer
 
+; smenu_application
+Application
+
 ; fm_groupfeatures_name
 Name:
 
@@ -81,3 +84,55 @@ Add one or more call permission ->
 
 ; create_rightcall
 Create a call permission
+
+; fm_queue_ringinuse
+Call a member already in line:
+
+; fm_callerid_mode
+CallerID name:
+
+; fm_callerid_mode-opt(prepend)
+Prepend
+
+; fm_callerid_mode-opt(overwrite)
+Overwrite
+
+; fm_callerid_mode-opt(append)
+Append
+
+; fm_groupfeatures_preprocess-subroutine
+Preprocess subroutine: 
+
+; fm_queue_strategy
+Ring strategy :
+
+; fm_queue_strategy-opt(leastrecent)
+Least recent
+
+; fm_queue_strategy-opt(fewestcalls)
+Fewest calls
+
+; fm_queue_strategy-opt(roundrobin)
+Round robin
+
+; fm_queue_strategy-opt(rrmemory)
+Memorized round robin
+
+; fm_queue_strategy-opt(random)
+Random
+
+; fm_queue_strategy-opt(ringall)
+All
+
+; fm_groupfeatures_transfer-user
+Allow called one to transfer the caller :
+
+; fm_groupfeatures_transfer-call
+Allow caller to transfer the call :
+
+; fm_groupfeatures_write-caller
+Allow called on to record the call :
+
+; fm_groupfeatures_write-calling
+Allo caller to record the call :
+

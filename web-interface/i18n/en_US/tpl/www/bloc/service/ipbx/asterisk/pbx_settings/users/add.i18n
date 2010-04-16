@@ -13,6 +13,12 @@ No answer
 ; smenu_services
 Services
 
+; smenu_signalling
+Signalling
+
+; smenu_queueskills
+Queueskills
+
 ; smenu_groups
 Groups
 
@@ -429,3 +435,68 @@ Disabled
 
 ; fm_phonefunckey_supervision-opt(1)
 Enabled
+
+; fm_voicemail_option
+Voicemail :
+
+; fm_voicemail_option-opt(none)
+None
+
+; fm_voicemail_option-opt(add)
+Add
+
+; fm_voicemail_option-opt(search)
+Search
+
+; fm_voicemail_suggest
+Search filter
+
+; fm_protocol_subscribemwi
+Verify new messages presence :
+
+; fm_protocol_buggymwi
+Verify new messages presence (RFC non-conformant) :
+
+; fm_userfeatures_loginclient
+Login :
+
+; fm_userfeatures_passwdclient
+Password :
+
+; fm_userfeatures_mobilephonenumber
+Mobile phone number :
+
+; fm_userfeatures_bsfilter-opt(no)
+No
+
+; fm_userfeatures_bsfilter-opt(boss)
+Boss
+
+; fm_userfeatures_bsfilter-opt(secretary)
+Secretary
+
+; create_agent
+Create Agent
+
+; col_1
+Skill
+
+; col_2
+Weight
+
+; no_disp
+No skills
+
+; error_fm_queueskill_skillid(doubloon)
+Same skill can't be affected twice
+
+; error_fm_queueskill_weight(empty)
+You must set a weight (between 0 and 100)
+
+; error_fm_queueskill_weight(notnumeric)
+weight is not an integer
+
+; error_fm_queueskill_weight(unbound)
+weight must be an integer between 0 and 100
+
+
