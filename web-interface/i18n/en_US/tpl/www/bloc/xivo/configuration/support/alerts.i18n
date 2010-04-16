@@ -1,0 +1,17 @@
+; title_content_name
+Alerts Configuration
+
+; fm_emails
+Emails address :
+
+; fm_dahdi_monitor_ports
+DAHDI monitored ports :
+
+; fm_help-alert_emails
+An address per line. <br/> DO NOT ADD Proformatique addresses maintenance, they will automatically if the device is activated Xivo
+
+; fm_help-dahdi_monitor_ports
+List of ports, each separated by a space
+
+; dahdi_monitor_ports(typechecking)
+You must enter a list of port number (integer) separated by a space

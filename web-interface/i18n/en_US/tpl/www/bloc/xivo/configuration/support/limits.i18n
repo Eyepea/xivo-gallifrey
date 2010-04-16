@@ -1,0 +1,11 @@
+; title_content_name
+Limitations
+
+; fm_max_call_duration
+Maximum duration of a call (in minutes) before alert :
+
+; fm_help-max_call_duration
+Sending a warning if a call exceeds the length (leave empty to disable the warning)
+
+; max_call_duration(typechecking)
+You must enter a duration in minutes (integer)
