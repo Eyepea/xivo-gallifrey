@@ -21,14 +21,19 @@ from xivo_agid import objects
 
 def vmbox_get_info(agi, cursor, args):
     vmboxid = agi.get_variable('XIVO_VMBOXID')
+    userid = agi.get_variable('XIVO_USERID')
 
     xlen = len(args)
+
+    try:
+        caller = objects.User(agi, cursor, xid=userid)
+    except (ValueError, LookupError), e:
+        agi.dp_break(str(e))
 
     if xlen > 0 and args[0] != '':
         try:
             if xlen == 1:
-                userid = int(agi.get_variable('XIVO_USERID'))
-                context = objects.User(agi, cursor, xid=userid).context
+                context = caller.context
             else:
                 context = args[1]
 
@@ -47,8 +52,17 @@ def vmbox_get_info(agi, cursor, args):
     else:
         vmmain_options = ""
 
+    if caller and caller.language:
+        mbox_lang = caller.language
+    elif vmbox and vmbox.language:
+        mbox_lang = vmbox.language  
+    else:
+        mbox_lang = ''
+
+
     agi.set_variable('XIVO_VMMAIN_OPTIONS', vmmain_options)
     agi.set_variable('XIVO_MAILBOX', vmbox.mailbox)
     agi.set_variable('XIVO_MAILBOX_CONTEXT', vmbox.context)
+    agi.set_variable('XIVO_MAILBOX_LANGUAGE', mbox_lang)
 
 agid.register(vmbox_get_info)

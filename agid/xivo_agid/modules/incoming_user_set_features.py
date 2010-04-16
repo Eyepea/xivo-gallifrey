@@ -243,5 +243,24 @@ def incoming_user_set_features(agi, cursor, args):
     agi.set_variable('XIVO_CALLRECORDFILE', callrecordfile)
     agi.set_variable('XIVO_USERPREPROCESS_SUBROUTINE', preprocess_subroutine)
     agi.set_variable('XIVO_MOBILEPHONENUMBER', mobilephonenumber)
+    
+    # voicemail lang
+    vmbox = None
+    if len(mailbox) > 0:
+        try:
+            vmbox = objects.VMBox(agi, cursor, mailbox=mailbox, context=mailbox_context)
+        except (ValueError, LookupError), e:
+            agi.dp_break(str(e))
+    
+    mbox_lang = ''
 
+    if zone == 'intern' and caller and caller.language:
+        mbox_lang = caller.language
+    elif vmbox and vmbox.language:
+        mbox_lang = vmbox.language
+    elif user and user.language:
+        mbox_lang = user.language
+
+    agi.set_variable('XIVO_MAILBOX_LANGUAGE', mbox_lang)
+    
 agid.register(incoming_user_set_features)

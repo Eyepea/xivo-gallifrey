@@ -322,7 +322,7 @@ class VMBox:
         self.agi = agi
         self.cursor = cursor
 
-        vm_columns = ('uniqueid', 'mailbox', 'context', 'password', 'email', 'commented')
+        vm_columns = ('uniqueid', 'mailbox', 'context', 'password', 'email', 'commented', 'language')
         vmf_columns = ('skipcheckpass',)
         columns = ["voicemail." + c for c in vm_columns] + ["voicemailfeatures." + c for c in vmf_columns]
 
@@ -363,6 +363,7 @@ class VMBox:
         self.password = res['voicemail.password']
         self.email = res['voicemail.email']
         self.commented = res['voicemail.commented']
+        self.language = res['voicemail.language']
         self.skipcheckpass = res['voicemailfeatures.skipcheckpass']
 
     def toggle_enable(self, enabled=None):
@@ -500,10 +501,17 @@ class User:
 
         self.skills = ''
         if res[0] > 0:
-	    self.skills = xid
+            self.skills = xid
+
         ###
-
-
+        self.language = None
+        if self.protocol in ('sip', 'iax'):
+            cursor.query("SELECT ${columns} FROM user" + self.protocol + \
+                " WHERE id = %s AND category = 'user' AND commented = 0",
+                ('language',), (self.protocolid,))
+            res = cursor.fetchone()
+            if res:
+                self.language = res[0]
 
     def disable_forwards(self):
         self.cursor.query("UPDATE userfeatures "
@@ -1517,3 +1525,4 @@ def protocol_intf_and_suffix(cursor, protocol, category, xid):
         return CHAN_PROTOCOL[protocol].get_intf_and_suffix(cursor, category, xid)
     else:
         raise ValueError("Unknown protocol %r" % protocol)
+        
