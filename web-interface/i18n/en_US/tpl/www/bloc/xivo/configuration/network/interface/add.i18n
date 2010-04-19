@@ -60,3 +60,7 @@ no available physical interface
 
 ; fm_options
 Options
+
+; error(already-defined)
+An interface with the same name already exist or vlan id does not match interface name
+

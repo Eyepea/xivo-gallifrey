@@ -805,6 +805,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		|| $this->commit_sysconfnet() === false)
 		{
 			$r = false;
+			$this->_set_error('netiface', 'ifname', 'already-defined');
 			if($netifacename !== null)
 				$this->_reverse_add();
 		}

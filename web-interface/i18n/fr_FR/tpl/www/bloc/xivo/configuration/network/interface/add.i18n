@@ -65,3 +65,6 @@ Configuration avancée :
 
 ; error(voip-max)
 Une autre interface est déja de type VOIP
+
+; error(already-defined)
+Une interface du même nom existe déjà ou l'id du vlan ne correspond pas au nom de l'interface
