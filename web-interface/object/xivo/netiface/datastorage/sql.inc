@@ -42,9 +42,10 @@ class xivo_object_netiface_sql extends xivo_object_abstract_sql
 	
 	function get_voip_iface()
 	{
-		$this->_dso->new_select($this->_table,array('ifname'));
+		$this->_dso->new_select($this->_table,array('name', 'ifname'));
 	    $this->_dso->where("networktype = \"voip\"");
-
+	    $this->_dso->where("disable = 0");
+	    
 		return($this->_dso->select_single());
 	}
 }

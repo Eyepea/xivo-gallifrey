@@ -721,7 +721,9 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		if($arr['networktype'] == 'voip')
 		{
     		$voip_iface = $this->_netiface->get_voip_iface();
-    		if($voip_iface !== false && $voip_iface['ifname'] != $arr['ifname'])
+    		if($voip_iface !== false 
+    		#&& $voip_iface['ifname'] != $arr['ifname']
+    		&& $voip_iface['name'] != $arr['id'])
     		    $this->_set_error('netiface', 'networktype', 'voip-max');
     	}
 
