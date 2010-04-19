@@ -28,6 +28,9 @@ if($status != 200)
     if(count($matches) > 1)
         $content = $matches[1];
 }
+
+$content = str_replace("\n", "<br/>\n", $content);
+
 $_TPL->set_var('status',$sysconfd->last_status_code());
 $_TPL->set_var('info' , $content);
 
