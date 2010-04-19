@@ -23,16 +23,28 @@ ADSI
 Avancé
 
 ; fm_voicemail-maxmsg
-Nombre maximum de messages :
+Nombre maximum de messages:
+
+; hlp_fm_voicemail-maxmsg
+Config asterisk: voicemail-maxmsg
 
 ; fm_voicemail-silencethreshold
-Sensibilité de détection d'un silence :
+Sensibilité de détection d'un silence:
+
+; hlp_fm_voicemail-silencethreshold
+Config asterisk: voicemail-silencethreshold
 
 ; fm_voicemail-minmessage
-Durée minimun d'un message :
+Durée minimun d'un message:
+
+; hlp_fm_voicemail-minmessage
+Config asterisk: voicemail-minmessage
 
 ; fm_voicemail-maxmessage
-Durée maximum d'un message :
+Durée maximum d'un message:
+
+; hlp_fm_voicemail-maxmessage
+Config asterisk: voicemail-maxmessage
 
 ; fm_voicemail-message-opt(0)
 Désactivée
@@ -56,7 +68,10 @@ Désactivée
 %s min. %s sec.
 
 ; fm_voicemail-maxsilence
-Durée maximum d'un silence :
+Durée maximum d'un silence:
+
+; hlp_fm_voicemail-maxsilence
+Config asterisk: voicemail-maxsilence
 
 ; fm_voicemail-maxsilence-opt(1)
 1 seconde
@@ -65,13 +80,22 @@ Durée maximum d'un silence :
 %s secondes
 
 ; fm_voicemail-review
-Réécouter / réenregistrer un message :
+Réécouter / réenregistrer un message:
+
+; hlp_fm_voicemail-review
+Config asterisk: voicemail-review
 
 ; fm_voicemail-operator
-Mise en relation avec un opérateur :
+Mise en relation avec un opérateur:
+
+; hlp_fm_voicemail-operator
+Config asterisk: voicemail-operator
 
 ; fm_voicemail-format
-Formats d'enregistrement :
+Formats d'enregistrement:
+
+; hlp_voicemail-format
+Config asterisk: voicemail-format
 
 ; bt_informat
 Ajouter un ou plusieurs formats ->
@@ -80,22 +104,40 @@ Ajouter un ou plusieurs formats ->
 <- Enlever un ou plusieurs formats
 
 ; fm_voicemail-maxlogins
-Nombre maximum de tentatives pour s'authentifier :
+Nombre maximum de tentatives pour s'authentifier:
+
+; hlp_fm_voicemail-maxlogins
+Config asterisk: voicemail-maxlogins
 
 ; fm_voicemail-envelope
-Annoncer la date et l'heure :
+Annoncer la date et l'heure:
+
+; hlp_fm_voicemail-envelope
+Config asterisk: voicemail-envelope
 
 ; fm_voicemail-saycid
-Annoncer le nom d'appel :
+Annoncer le nom d'appel:
+
+; hlp_fm_voicemail-saycid
+Config asterisk: voicemail-saycid
 
 ; fm_voicemail-cidinternalcontexts
-Contexte interne :
+Contexte interne:
+
+; hlp_fm_voicemail-cidinternalcontexts
+Config asterisk: voicemail-cidinternalcontexts
 
 ; fm_voicemail-sayduration
-Annoncer la durée :
+Annoncer la durée:
+
+; hlp_fm_voicemail-sayduration
+Config asterisk: voicemail-sayduration
 
 ; fm_voicemail-saydurationm
-Temps minimum pour énoncer la durée :
+Temps minimum pour énoncer la durée:
+
+; hlp_fm_voicemail-saydurationm
+Config asterisk: voicemail-saydurationm
 
 ; fm_voicemail-saydurationm-opt(1)
 1 minute
@@ -104,16 +146,28 @@ Temps minimum pour énoncer la durée :
 %s minutes
 
 ; fm_voicemail-forcename
-Forcer l'enregistrement du nom :
+Forcer l'enregistrement du nom:
+
+; hlp_fm_voicemail-forcename
+Config asterisk: voicemail-forcename
 
 ; fm_voicemail-forcegreetings
-Forcer l'enregistrement du message d'accueil :
+Forcer l'enregistrement du message d'accueil:
+
+; hlp_fm_voicemail-forcegreetings
+Config asterisk: voicemail-forcegreetings
 
 ; fm_voicemail-tempgreetwarn
-Signaler l'activation du message d'accueil temporaire :
+Signaler l'activation du message d'accueil temporaire:
+
+; hlp_fm_voicemail-tempgreetwarn
+Config asterisk: voicemail-tempgreetwarn
 
 ; fm_voicemail-maxgreet
-Durée maximum du message d'accueil :
+Durée maximum du message d'accueil:
+
+; hlp_fm_voicemail-maxgreet
+Config asterisk: voicemail-maxgreet
 
 ; fm_voicemail-maxgreet-opt(0)
 Désactivée
@@ -137,7 +191,10 @@ Désactivée
 %s min. %s sec.
 
 ; fm_voicemail-skipms
-Saut de l'avance rapide et retour rapide :
+Saut de l'avance rapide et retour rapide:
+
+; hlp_fm_voicemail-skipms
+Config asterisk: voicemail-skipms
 
 ; fm_voicemail-skipms-opt-second
 1 seconde
@@ -149,76 +206,148 @@ Saut de l'avance rapide et retour rapide :
 1 minute
 
 ; fm_voicemail-sendvoicemail
-Transférer un message :
+Transférer un message:
+
+; hlp_fm_voicemail-sendvoicemail
+Config asterisk: voicemail-sendvoicemail
 
 ; fm_voicemail-usedirectory
-Utiliser l'annuaire pour transférer ou laisser un message :
+Utiliser l'annuaire pour transférer ou laisser un message:
+
+; hlp_fm_voicemail-usedirectory
+Config asterisk: voicemail-usedirectory
 
 ; fm_voicemail-nextaftercmd
-Lecture automatique du message suivant :
+Lecture automatique du message suivant:
+
+; hlp_fm_voicemail-nextaftercmd
+Config asterisk: voicemail-nextaftercmd
 
 ; fm_voicemail-dialout
-Contexte d'appel :
+Contexte d'appel:
+
+; hlp_fm_voicemail-dialout
+Config asterisk: voicemail-dialout
 
 ; fm_voicemail-callback
-Contexte de rappel :
+Contexte de rappel:
+
+; hlp_fm_voicemail-callback
+Config asterisk: voicemail-callback
 
 ; fm_voicemail-exitcontext
-Contexte de sortie :
+Contexte de sortie:
+
+; hlp_fm_voicemail-exitcontext
+Config asterisk: voicemail-exitcontext
 
 ; fm_voicemail-attach
-Joindre le fichier audio :
+Joindre le fichier audio:
+
+; hlp_fm_voicemail-attach
+Config asterisk: voicemail-attach
 
 ; fm_voicemail-attachformat
-Format du fichier joint :
+Format du fichier joint:
+
+; hlp_fm_voicemail-attachformat
+Config asterisk: voicemail-attachformat
 
 ; fm_voicemail-volgain
-Augmenter/diminuer le volume sonore du fichier joint :
+Augmenter/diminuer le volume sonore du fichier joint:
+
+; hlp_fm_voicemail-volgain
+Config asterisk: voicemail-volgain
 
 ; fm_voicemail-mailcmd
-Programme d'envoi d'e-mail :
+Programme d'envoi d'e-mail:
+
+; hlp_fm_voicemail-mailcmd
+Config asterisk: voicemail-mailcmd
 
 ; fm_voicemail-charset
-Encodage :
+Encodage:
+
+; hlp_fm_voicemail-charset
+Config asterisk: voicemail-charset
 
 ; fm_voicemail-serveremail
-E-mail expéditeur :
+E-mail expéditeur:
+
+; hlp_fm_voicemail-serveremail
+Config asterisk: voicemail-serveremail
 
 ; fm_voicemail-fromstring
-Expéditeur :
+Expéditeur:
+
+; hlp_fm_voicemail-fromstring
+Config asterisk: voicemail-fromstring
 
 ; fm_voicemail-emaildateformat
-Format de la date :
+Format de la date:
+
+; hlp_fm_voicemail-emaildateformat
+Config asterisk: voicemail-emaildateformat
 
 ; fm_voicemail-emaildatelocale
-Localisation de la date :
+Localisation de la date:
+
+; hlp_fm_voicemail-emaildatelocale
+Config asterisk: voicemail-emaildatelocale
 
 ; fm_voicemail-pbxskip
-Enlever "[PBX]:" du sujet :
+Enlever "[PBX]:" du sujet:
+
+; hlp_fm_voicemail-pbxskip
+Config asterisk: voicemail-pbxskip
 
 ; fm_voicemail-emailsubject
-Sujet :
+Sujet:
+
+; hlp_fm_voicemail-emailsubject
+Config asterisk: voicemail-emailsubject
 
 ; fm_voicemail-emailbody
-Corps :
+Corps:
+
+; hlp_fm_voicemail-emailbody
+Config asterisk: voicemail-emailbody
 
 ; fm_voicemail-pagerfromstring
-Expéditeur :
+Expéditeur:
+
+; hlp_fm_voicemail-pagerfromstring
+Config asterisk: voicemail-pagerfromstring
 
 ; fm_voicemail-pagersubject
-Sujet :
+Sujet:
+
+; hlp_fm_voicemail-pagersubject
+Config asterisk: voicemail-pagersubject
 
 ; fm_voicemail-pagerbody
-Corps :
+Corps:
+
+; hlp_fm_voicemail-pagerbody
+Config asterisk: voicemail-pagerbody
 
 ; col_timezone-name
 Nom
 
+; hlp_timezone-name
+Config asterisk: timezone-name
+
 ; col_timezone-timezone
 Fuseau horaire
 
+; hlp_timezone-timezone
+Config asterisk: timezone-timezone
+
 ; col_timezone-options
 Options
+
+; hlp_timezone-options
+Config asterisk: timezone-options
 
 ; col_timezone-add
 Ajouter
@@ -227,31 +356,58 @@ Ajouter
 Aucun fuseau horaire
 
 ; fm_voicemail-adsifdn
-Numéro du descripteur :
+Numéro du descripteur:
+
+; hlp_fm_voicemail-adsifdn
+Config asterisk: voicemail-adsifdn
 
 ; fm_voicemail-adsisec
-Code de sécurité :
+Code de sécurité:
+
+; hlp_fm_voicemail-adsisec
+Config asterisk: voicemail-adsisec
 
 ; fm_voicemail-adsiver
-Version :
+Version:
+
+; hlp_fm_voicemail-adsiver
+Config asterisk: voicemail-adsiver
 
 ; fm_voicemail-searchcontexts
-Recherche des contextes :
+Recherche des contextes:
+
+; hlp_fm_voicemail-searchcontexts
+Config asterisk: voicemail-searchcontexts
 
 ; fm_voicemail-externpass
-Programme externe pour changer le mot de passe :
+Programme externe pour changer le mot de passe:
+
+; hlp_fm_voicemail-externpass
+Config asterisk: voicemail-externpass
 
 ; fm_voicemail-externnotify
-Programme externe pour notifier un nouveau message :
+Programme externe pour notifier un nouveau message:
+
+; hlp_fm_voicemail-externnotify
+Config asterisk: voicemail-externnotify
 
 ; fm_smdiport
-Périphérique SMDI :
+Périphérique SMDI:
+
+; hlp_fm_smdiport
+Config asterisk: smdiport
 
 ; fm_voicemail-odbcstorage
-Système ODBC :
+Système ODBC:
+
+; hlp_fm_voicemail-odbcstorage
+Config asterisk: voicemail-odbcstorage
 
 ; fm_voicemail-odbctable
-Table ODBC :
+Table ODBC:
+
+; hlp_fm_voicemail-odbctable
+Config asterisk: voicemail-odbctable
 
 ; fm_success-save
 Propriétés des messageries vocales sauvegardées avec succès

@@ -570,7 +570,7 @@ endif;
 				  'name'	=> 'voicemail[pagerfromstring]',
 				  'labelid'	=> 'voicemail-pagerfromstring',
 				  'size'	=> 15,
-				  'help'	=> $this->bbf('hlp_'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-pagerfromstring'),
 				  'value'	=> $this->get_var('voicemail','pagerfromstring','var_val'),
 				  'default'	=> $element['voicemail']['pagerfromstring']['default'],
 				  'error'	=> $this->bbf_args('error',
@@ -640,7 +640,7 @@ if($zmsg_nb > 0):
 						     'name'		=> 'zonemessages[name][]',
 						     'id'		=> false,
 						     'label'		=> false,
-						     'help'	=> $this->bbf('hlp_'),
+						     'help'	=> $this->bbf('hlp_timezone-name'),
 						     'value'		=> $val['name'],
 						     'default'		=> $element['zonemessages']['name']['default']));?>
 			</td>
@@ -650,7 +650,7 @@ if($zmsg_nb > 0):
 						       'key'		=> true,
 						       'id'		=> false,
 						       'label'		=> false,
-						       'help'	=> $this->bbf('hlp_zonemessages-timezone'),
+						       'help'	=> $this->bbf('hlp_timezone-timezone'),
 						       'selected'	=> $val['timezone'],
 						       'default'	=> $element['zonemessages']['timezone']['default']),
 						 $this->get_var('timezone_list'));?>
@@ -661,7 +661,7 @@ if($zmsg_nb > 0):
 						     'id'		=> false,
 						     'label'		=> false,
 						     'size'		=> 25,
-						     'help'	=> $this->bbf('hlp_'),
+						     'help'	=> $this->bbf('hlp_timezone-options'),
 						     'value'		=> $val['msg_format'],
 						     'default'		=> $element['zonemessages']['msg_format']['default']));?>
 			</td>
@@ -736,7 +736,7 @@ if($zmsg_nb > 0):
 	echo	$form->text(array('desc'	=> $this->bbf('fm_voicemail-adsifdn'),
 				  'name'	=> 'voicemail[adsifdn]',
 				  'labelid'	=> 'voicemail-adsifdn',
-				  'help'	=> $this->bbf('hlp_'),
+				  'help'	=> $this->bbf('hlp_fm_voicemail-adsifdn'),
 				  'value'	=> $this->get_var('voicemail','adsifdn','var_val'),
 				  'default'	=> $element['voicemail']['adsifdn']['default'])),
 

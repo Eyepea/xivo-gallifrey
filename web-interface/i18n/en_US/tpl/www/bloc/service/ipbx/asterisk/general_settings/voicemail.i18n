@@ -25,151 +25,55 @@ Advanced
 ; fm_voicemail-maxmsg
 Maximum number of messages:
 
+; hlp_fm_voicemail-maxmsg
+Config asterisk: voicemail-maxmsg
+
 ; fm_voicemail-silencethreshold
 Silence detection sensibility:
+
+; hlp_fm_voicemail-silencethreshold
+Config asterisk: voicemail-silencethreshold
 
 ; fm_voicemail-minmessage
 Minimum length of a message:
 
-; fm_voicemail-minmessage-opt0
-Disabled
-
-; fm_voicemail-minmessage-opt1
-1 sec.
-
-; fm_voicemail-minmessage-opt2
-2 sec.
-
-; fm_voicemail-minmessage-opt3
-3 sec.
-
-; fm_voicemail-minmessage-opt4
-4 sec.
-
-; fm_voicemail-minmessage-opt5
-5 sec.
-
-; fm_voicemail-minmessage-opt6
-6 sec.
-
-; fm_voicemail-minmessage-opt7
-7 sec.
-
-; fm_voicemail-minmessage-opt8
-8 sec.
-
-; fm_voicemail-minmessage-opt9
-9 sec.
-
-; fm_voicemail-minmessage-opt10
-10 sec.
-
-; fm_voicemail-minmessage-opt20
-20 sec.
-
-; fm_voicemail-minmessage-opt30
-30 sec.
-
-; fm_voicemail-minmessage-opt40
-40 sec.
-
-; fm_voicemail-minmessage-opt50
-50 sec.
-
-; fm_voicemail-minmessage-opt60
-1 min.
-
-; fm_voicemail-minmessage-opt120
-2 min.
-
-; fm_voicemail-minmessage-opt180
-3 min.
-
-; fm_voicemail-minmessage-opt240
-4 min.
-
-; fm_voicemail-minmessage-opt300
-5 min.
-
-; fm_voicemail-minmessage-opt360
-6 min.
-
-; fm_voicemail-minmessage-opt
-%s min. %s sec.
+; hlp_fm_voicemail-minmessage
+Config asterisk: voicemail-minmessage
 
 ; fm_voicemail-maxmessage
 Maximum length of a message:
 
-; fm_voicemail-maxmessage-opt0
-Disabled
+; hlp_fm_voicemail-maxmessage
+Config asterisk: voicemail-maxmessage
 
-; fm_voicemail-maxmessage-opt1
-1 sec.
+; fm_voicemail-message-opt(0)
+Désactivée
 
-; fm_voicemail-maxmessage-opt2
-2 sec.
+; fm_voicemail-message-opt-second
+1 seconde
 
-; fm_voicemail-maxmessage-opt3
-3 sec.
+; fm_voicemail-message-opt-seconds
+%s secondes
 
-; fm_voicemail-maxmessage-opt4
-4 sec.
+; fm_voicemail-message-opt-minute
+1 minute
 
-; fm_voicemail-maxmessage-opt5
-5 sec.
+; fm_voicemail-message-opt-minute-seconds
+%s min. %s sec.
 
-; fm_voicemail-maxmessage-opt6
-6 sec.
+; fm_voicemail-message-opt-minutes
+%s minutes
 
-; fm_voicemail-maxmessage-opt7
-7 sec.
-
-; fm_voicemail-maxmessage-opt8
-8 sec.
-
-; fm_voicemail-maxmessage-opt9
-9 sec.
-
-; fm_voicemail-maxmessage-opt10
-10 sec.
-
-; fm_voicemail-maxmessage-opt20
-20 sec.
-
-; fm_voicemail-maxmessage-opt30
-30 sec.
-
-; fm_voicemail-maxmessage-opt40
-40 sec.
-
-; fm_voicemail-maxmessage-opt50
-50 sec.
-
-; fm_voicemail-maxmessage-opt60
-1 min.
-
-; fm_voicemail-maxmessage-opt120
-2 min.
-
-; fm_voicemail-maxmessage-opt180
-3 min.
-
-; fm_voicemail-maxmessage-opt240
-4 min.
-
-; fm_voicemail-maxmessage-opt300
-5 min.
-
-; fm_voicemail-maxmessage-opt360
-6 min.
-
-; fm_voicemail-maxmessage-opt
+; fm_voicemail-message-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_voicemail-maxsilence
 Maximum length of a silence:
 
-; fm_voicemail-maxsilence-opt1
+; hlp_fm_voicemail-maxsilence
+Config asterisk: voicemail-maxsilence
+
+; fm_voicemail-maxsilence-opt(1)
 1 second
 
 ; fm_voicemail-maxsilence-opt
@@ -178,11 +82,20 @@ Maximum length of a silence:
 ; fm_voicemail-review
 Review / record again a message:
 
+; hlp_fm_voicemail-review
+Config asterisk: voicemail-review
+
 ; fm_voicemail-operator
 Get transfered to an operator:
 
+; hlp_fm_voicemail-operator
+Config asterisk: voicemail-operator
+
 ; fm_voicemail-format
 Recording formats:
+
+; hlp_voicemail-format
+Config asterisk: voicemail-format
 
 ; bt_informat
 Add one or more formats ->
@@ -193,22 +106,40 @@ Add one or more formats ->
 ; fm_voicemail-maxlogins
 Maximum number of login retries:
 
+; hlp_fm_voicemail-maxlogins
+Config asterisk: voicemail-maxlogins
+
 ; fm_voicemail-envelope
 Announce date and time:
+
+; hlp_fm_voicemail-envelope
+Config asterisk: voicemail-envelope
 
 ; fm_voicemail-saycid
 Announce caller ID:
 
+; hlp_fm_voicemail-saycid
+Config asterisk: voicemail-saycid
+
 ; fm_voicemail-cidinternalcontexts
 Internal context:
+
+; hlp_fm_voicemail-cidinternalcontexts
+Config asterisk: voicemail-cidinternalcontexts
 
 ; fm_voicemail-sayduration
 Announce duration:
 
+; hlp_fm_voicemail-sayduration
+Config asterisk: voicemail-sayduration
+
 ; fm_voicemail-saydurationm
 Minimum time to announce duration:
 
-; fm_voicemail-saydurationm-opt1
+; hlp_fm_voicemail-saydurationm
+Config asterisk: voicemail-saydurationm
+
+; fm_voicemail-saydurationm-opt(1)
 1 minute
 
 ; fm_voicemail-saydurationm-opt
@@ -217,155 +148,206 @@ Minimum time to announce duration:
 ; fm_voicemail-forcename
 Force the recording of name:
 
+; hlp_fm_voicemail-forcename
+Config asterisk: voicemail-forcename
+
 ; fm_voicemail-forcegreetings
 Force the recording of greeting message:
+
+; hlp_fm_voicemail-forcegreetings
+Config asterisk: voicemail-forcegreetings
+
+; fm_voicemail-tempgreetwarn
+Report the activation of temporary greeting:
+
+; hlp_fm_voicemail-tempgreetwarn
+Config asterisk: voicemail-tempgreetwarn
 
 ; fm_voicemail-maxgreet
 Maximum duration of the greeting message:
 
-; fm_voicemail-maxgreet-opt0
+; hlp_fm_voicemail-maxgreet
+Config asterisk: voicemail-maxgreet
+
+; fm_voicemail-maxgreet-opt(0)
 Disabled
 
-; fm_voicemail-maxgreet-opt1
-1 sec.
+; fm_voicemail-maxgreet-opt-second
+1 seconde
 
-; fm_voicemail-maxgreet-opt2
-2 sec.
+; fm_voicemail-maxgreet-opt-seconds
+%s secondes
 
-; fm_voicemail-maxgreet-opt3
-3 sec.
+; fm_voicemail-maxgreet-opt-minute
+1 minute
 
-; fm_voicemail-maxgreet-opt4
-4 sec.
+; fm_voicemail-maxgreet-opt-minute-seconds
+%s min. %s sec.
 
-; fm_voicemail-maxgreet-opt5
-5 sec.
+; fm_voicemail-maxgreet-opt-minutes
+%s minutes
 
-; fm_voicemail-maxgreet-opt6
-6 sec.
-
-; fm_voicemail-maxgreet-opt7
-7 sec.
-
-; fm_voicemail-maxgreet-opt8
-8 sec.
-
-; fm_voicemail-maxgreet-opt9
-9 sec.
-
-; fm_voicemail-maxgreet-opt10
-10 sec.
-
-; fm_voicemail-maxgreet-opt20
-20 sec.
-
-; fm_voicemail-maxgreet-opt30
-30 sec.
-
-; fm_voicemail-maxgreet-opt40
-40 sec.
-
-; fm_voicemail-maxgreet-opt50
-50 sec.
-
-; fm_voicemail-maxgreet-opt60
-1 min.
-
-; fm_voicemail-maxgreet-opt120
-2 min.
-
-; fm_voicemail-maxgreet-opt180
-3 min.
-
-; fm_voicemail-maxgreet-opt240
-4 min.
-
-; fm_voicemail-maxgreet-opt300
-5 min.
-
-; fm_voicemail-maxgreet-opt360
-6 min.
-
-; fm_voicemail-maxgreet-opt
+; fm_voicemail-maxgreet-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_voicemail-skipms
 Fast forward and fast rewind skip time:
 
-; fm_voicemail-skipms-opt1
-1 second
+; hlp_fm_voicemail-skipms
+Config asterisk: voicemail-skipms
 
-; fm_voicemail-skipms-opt
-%s seconds
+; fm_voicemail-skipms-opt-second
+1 seconde
+
+; fm_voicemail-skipms-opt-seconds
+%s secondes
+
+; fm_voicemail-skipms-opt-minute
+1 minute
 
 ; fm_voicemail-sendvoicemail
 Forward a message:
 
+; hlp_fm_voicemail-sendvoicemail
+Config asterisk: voicemail-sendvoicemail
+
 ; fm_voicemail-usedirectory
 Use the directory to transfer or to leave a message:
+
+; hlp_fm_voicemail-usedirectory
+Config asterisk: voicemail-usedirectory
 
 ; fm_voicemail-nextaftercmd
 Automatic playback of the next message:
 
+; hlp_fm_voicemail-nextaftercmd
+Config asterisk: voicemail-nextaftercmd
+
 ; fm_voicemail-dialout
 Call context:
+
+; hlp_fm_voicemail-dialout
+Config asterisk: voicemail-dialout
 
 ; fm_voicemail-callback
 Callback context:
 
+; hlp_fm_voicemail-callback
+Config asterisk: voicemail-callback
+
 ; fm_voicemail-exitcontext
 Exit context:
+
+; hlp_fm_voicemail-exitcontext
+Config asterisk: voicemail-exitcontext
 
 ; fm_voicemail-attach
 Attach the audio file:
 
+; hlp_fm_voicemail-attach
+Config asterisk: voicemail-attach
+
 ; fm_voicemail-attachformat
 Format of the attached file:
+
+; hlp_fm_voicemail-attachformat
+Config asterisk: voicemail-attachformat
+
+; fm_voicemail-volgain
+Increase / decrease the volume of the attached file:
+
+; hlp_fm_voicemail-volgain
+Config asterisk: voicemail-volgain
 
 ; fm_voicemail-mailcmd
 Program to be used to send e-mails:
 
+; hlp_fm_voicemail-mailcmd
+Config asterisk: voicemail-mailcmd
+
 ; fm_voicemail-charset
 Encoding:
+
+; hlp_fm_voicemail-charset
+Config asterisk: voicemail-charset
 
 ; fm_voicemail-serveremail
 Sender e-mail address:
 
+; hlp_fm_voicemail-serveremail
+Config asterisk: voicemail-serveremail
+
 ; fm_voicemail-fromstring
 Sender:
+
+; hlp_fm_voicemail-fromstring
+Config asterisk: voicemail-fromstring
 
 ; fm_voicemail-emaildateformat
 Date format:
 
+; hlp_fm_voicemail-emaildateformat
+Config asterisk: voicemail-emaildateformat
+
 ; fm_voicemail-emaildatelocale
 Date locale:
+
+; hlp_fm_voicemail-emaildatelocale
+Config asterisk: voicemail-emaildatelocale
 
 ; fm_voicemail-pbxskip
 Remove "[PBX]:" from the subject:
 
+; hlp_fm_voicemail-pbxskip
+Config asterisk: voicemail-pbxskip
+
 ; fm_voicemail-emailsubject
 Subject:
+
+; hlp_fm_voicemail-emailsubject
+Config asterisk: voicemail-emailsubject
 
 ; fm_voicemail-emailbody
 Body:
 
+; hlp_fm_voicemail-emailbody
+Config asterisk: voicemail-emailbody
+
 ; fm_voicemail-pagerfromstring
 Sender:
+
+; hlp_fm_voicemail-pagerfromstring
+Config asterisk: voicemail-pagerfromstring
 
 ; fm_voicemail-pagersubject
 Subject:
 
+; hlp_fm_voicemail-pagersubject
+Config asterisk: voicemail-pagersubject
+
 ; fm_voicemail-pagerbody
 Body:
+
+; hlp_fm_voicemail-pagerbody
+Config asterisk: voicemail-pagerbody
 
 ; col_timezone-name
 Name
 
+; hlp_timezone-name
+Config asterisk: timezone-name
+
 ; col_timezone-timezone
 Time zone
 
+; hlp_timezone-timezone
+Config asterisk: timezone-timezone
+
 ; col_timezone-options
 Options
+
+; hlp_timezone-options
+Config asterisk: timezone-options
 
 ; col_timezone-add
 Add
@@ -376,26 +358,56 @@ No time zone
 ; fm_voicemail-adsifdn
 Descriptor number:
 
+; hlp_fm_voicemail-adsifdn
+Config asterisk: voicemail-adsifdn
+
 ; fm_voicemail-adsisec
 Security code:
+
+; hlp_fm_voicemail-adsisec
+Config asterisk: voicemail-adsisec
 
 ; fm_voicemail-adsiver
 Version:
 
+; hlp_fm_voicemail-adsiver
+Config asterisk: voicemail-adsiver
+
 ; fm_voicemail-searchcontexts
 Context search:
+
+; hlp_fm_voicemail-searchcontexts
+Config asterisk: voicemail-searchcontexts
 
 ; fm_voicemail-externpass
 External program used to change the password:
 
+; hlp_fm_voicemail-externpass
+Config asterisk: voicemail-externpass
+
 ; fm_voicemail-externnotify
 External program used to send new messages notifications:
+
+; hlp_fm_voicemail-externnotify
+Config asterisk: voicemail-externnotify
+
+; fm_smdiport
+Device SMDI:
+
+; hlp_fm_smdiport
+Config asterisk: smdiport
 
 ; fm_voicemail-odbcstorage
 ODBC system:
 
+; hlp_fm_voicemail-odbcstorage
+Config asterisk: voicemail-odbcstorage
+
 ; fm_voicemail-odbctable
 ODBC table:
+
+; hlp_fm_voicemail-odbctable
+Config asterisk: voicemail-odbctable
 
 ; fm_success-save
 Voicemails properties successfully saved
