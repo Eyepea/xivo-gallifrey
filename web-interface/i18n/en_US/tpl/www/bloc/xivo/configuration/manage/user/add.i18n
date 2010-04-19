@@ -1,11 +1,11 @@
 ; title_content_name
-Utilisateur > Ajouter
+Users > Add
 
 ; fm_login
-identifiant
+login:
 
 ; fm_password
-mot de passe
+password:
 
 ; error_fm_login(empty)
 login field must be filled

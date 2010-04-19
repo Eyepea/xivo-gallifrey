@@ -2,10 +2,10 @@
 Utilisateur > Ajouter
 
 ; fm_login
-identifiant
+identifiant:
 
 ; fm_password
-mot de passe
+mot de passe:
 
 ; error_fm_login(empty)
 Le login doit être renseigné

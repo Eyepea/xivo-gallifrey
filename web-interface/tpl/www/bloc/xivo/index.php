@@ -22,16 +22,6 @@ $dhtml = &$this->get_module('dhtml');
 $dhtml->write_js('dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,\'services\');
 				xivo_monitoring_get_all();
 				setInterval("xivo_monitoring_get_all()",2000);');
-/*
-$dhtml->write_js('dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,\'services\');
-				xivo_monitoring_get_bloc(\'systems\');
-				xivo_monitoring_get_bloc(\'memstats\');
-				xivo_monitoring_get_bloc(\'services\');
-				setInterval("xivo_monitoring_get_bloc(\'systems\')",2000);
-				setInterval("xivo_monitoring_get_bloc(\'memstats\')",2000);
-				setInterval("xivo_monitoring_get_bloc(\'services\')",2000);');
-*/
-
 
 ?>
 <div id="system-infos" class="b-infos">
@@ -41,9 +31,9 @@ $dhtml->write_js('dwho.dom.set_onload(dwho.dom.set_confirm_uri_onchild,\'service
 		<span class="span-right">&nbsp;</span>
 	</h3>
 	<div class="sb-content sb-list" id="monitoring">
-		<div id="systems"></div>
-		<div id="memstats"></div>
-		<div id="services"></div>
+		<div id="systems"><?php include('monitoring/system.php'); ?></div>
+		<div id="memstats"><?php include('monitoring/memstats.php'); ?></div>
+		<div id="services"><?php include('monitoring/group.php'); ?></div>
 	</div>
 	<div class="sb-foot xspan">
 		<span class="span-left">&nbsp;</span>
