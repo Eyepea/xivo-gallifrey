@@ -23,394 +23,352 @@ Défaut
 Temps réel
 
 ; fm_bindport
-Port :
+Port:
 
 ; cmt_fm_bindport
-A traduire
+Config asterisk: bindport
 
 ; hlp_fm_bindport
-A traduire
+Config asterisk: bindport
 
 ; fm_bindaddr
-Adresse IP :
+Adresse IP:
 
 ; cmt_fm_bindaddr
-A traduire
+Config asterisk: bindaddr
 
 ; hlp_fm_bindaddr
-A traduire
+Config asterisk: bindaddr
 
 ; fm_videosupport
-Support vidéo :
+Support vidéo:
 
 ; cmt_fm_videosupport
-A traduire
+Config asterisk: videosupport
 
 ; hlp_fm_videosupport
-A traduire
+Config asterisk: videosupport
 
 ; fm_autocreatepeer
-Création automatique d'un utilisateur :
+Création automatique d'un utilisateur:
 
 ; cmt_fm_autocreatepeer
-A traduire
+Config asterisk: autocreatepeer
 
 ; hlp_fm_autocreatepeer
-A traduire
+Config asterisk: autocreatepeer
 
 ; fm_allowguest
-Accepter un appel non authentifié :
+Accepter un appel non authentifié:
 
 ; cmt_fm_allowguest
-A traduire
+Config asterisk: allowguest
 
 ; hlp_fm_allowguest
-A traduire
+Config asterisk: allowguest
 
 ; fm_allowsubscribe
-Activer le support des souscriptions :
+Activer le support des souscriptions:
 
 ; cmt_fm_allowsubscribe
-A traduire
+Config asterisk: allowsubscribe
 
 ; hlp_fm_allowsubscribe
-A traduire
+Config asterisk: allowsubscribe
 
 ; fm_allowoverlap
-Activer le chevauchement :
+Activer le chevauchement:
 
 ; cmt_fm_allowoverlap
-A traduire
+Config asterisk: allowoverlap
 
 ; hlp_fm_allowoverlap
-A traduire
+Config asterisk: allowoverlap
 
 ; fm_promiscredir
-Support des redirections 302 :
+Support des redirections 302:
 
 ; cmt_fm_promiscredir
-A traduire
+Config asterisk: promiscredir
 
 ; hlp_fm_promiscredir
-A traduire
+Config asterisk: promiscredir
 
 ; fm_autodomain
-Domaine automatique :
+Domaine automatique:
 
 ; cmt_fm_autodomain
-A traduire
+Config asterisk: autodomain
 
 ; hlp_fm_autodomain
-A traduire
+Config asterisk: autodomain
 
 ; fm_domain
-Domaine :
+Domaine:
 
 ; cmt_fm_domain
-A traduire
+Config asterisk: domain
 
 ; hlp_fm_domain
-A traduire
+Config asterisk: domain
 
 ; fm_allowexternaldomains
-Accepter les domaines externes :
+Accepter les domaines externes:
 
 ; cmt_fm_allowexternaldomains
-A traduire
+Config asterisk: allowexternaldomains
 
 ; hlp_fm_allowexternaldomains
-A traduire
+Config asterisk: allowexternaldomains
 
 ; fm_usereqphone
-Ajouter ";user=phone" dans l'URI :
+Ajouter ";user=phone" dans l'URI:
 
 ; cmt_fm_usereqphone
-A traduire
+Config asterisk: usereqphone
 
 ; hlp_fm_usereqphone
-A traduire
+Config asterisk: usereqphone
 
 ; fm_realm
-Realm :
+Realm:
 
 ; cmt_fm_realm
-A traduire
+Config asterisk: realm
 
 ; hlp_fm_realm
-A traduire
+Config asterisk: realm
 
 ; fm_alwaysauthreject
-Rejeter les invitations et enregistrements :
+Rejeter les invitations et enregistrements:
 
 ; cmt_fm_alwaysauthreject
-A traduire
+Config asterisk: alwaysauthreject
 
 ; hlp_fm_alwaysauthreject
-A traduire
+Config asterisk: alwaysauthreject
 
 ; fm_limitonpeer
-Activer les limitations sur les appels sortants :
+Activer les limitations sur les appels sortants:
 
 ; cmt_fm_limitonpeer
-A traduire
+Config asterisk: limitonpeer
 
 ; hlp_fm_limitonpeer
-A traduire
+Config asterisk: limitonpeer
 
 ; fm_useragent
-User-Agent :
+User-Agent:
 
 ; cmt_fm_useragent
-A traduire
+Config asterisk: useragent
 
 ; hlp_fm_useragent
-A traduire
+Config asterisk: useragent
 
 ; fm_checkmwi
-Vérifier la présence de nouveaux messages :
+Vérifier la présence de nouveaux messages:
 
 ; cmt_fm_checkmwi
-A traduire
+Config asterisk: checkmwi
 
 ; hlp_fm_checkmwi
-A traduire
+Config asterisk: checkmwi
 
 ; fm_checkmwi-opt(0)
 Désactivée
-
-; cmt_fm_checkmwi-opt(0)
-A traduire
-
-; hlp_fm_checkmwi-opt(0)
-A traduire
 
 ; fm_checkmwi-opt
 %s secondes
 
 ; cmt_fm_checkmwi-opt
-A traduire
+Config asterisk: checkmwi
 
 ; hlp_fm_checkmwi-opt
-A traduire
+Config asterisk: checkmwi
 
 ; fm_buggymwi
-Vérification, non conforme à la RFC, de nouveaux messages :
+Vérification, non conforme à la RFC, de nouveaux messages:
 
 ; cmt_fm_buggymwi
-A traduire
+Config asterisk: buggymwi
 
 ; hlp_fm_buggymwi
-A traduire
+Config asterisk: buggymwi
 
 ; fm_regcontext
-Contexte d'enregistrement :
+Contexte d'enregistrement:
 
 ; cmt_fm_regcontext
-A traduire
+Config asterisk: regcontext
 
 ; hlp_fm_regcontext
-A traduire
+Config asterisk: regcontext
 
 ; fm_callerid
-Nom d'appel :
+Nom d'appel:
 
 ; cmt_fm_callerid
-A traduire
+Config asterisk: callerid
 
 ; hlp_fm_callerid
-A traduire
+Config asterisk: callerid
 
 ; fm_fromdomain
-Réécriture du champ From-Domain :
+Réécriture du champ From-Domain:
 
 ; cmt_fm_fromdomain
-A traduire
+Config asterisk: fromdomain
 
 ; hlp_fm_fromdomain
-A traduire
+Config asterisk: fromdomain
 
 ; fm_sipdebug
-Débogage :
+Débogage:
 
 ; cmt_fm_sipdebug
-A traduire
+Config asterisk: sipdebug
 
 ; hlp_fm_sipdebug
-A traduire
+Config asterisk: sipdebug
 
 ; fm_dumphistory
-Sauvegarde de l'historique :
+Sauvegarde de l'historique:
 
 ; cmt_fm_dumphistory
-A traduire
+Config asterisk: dumphistory
 
 ; hlp_fm_dumphistory
-A traduire
+Config asterisk: dumphistory
 
 ; fm_recordhistory
-Enregistrement de l'historique :
+Enregistrement de l'historique:
 
 ; cmt_fm_recordhistory
-A traduire
+Config asterisk: recordhistory
 
 ; hlp_fm_recordhistory
-A traduire
+Config asterisk: recordhistory
 
 ; fm_callevents
-Evénements des appels (AMI) :
+Evénements des appels (AMI):
 
 ; cmt_fm_callevents
-A traduire
+Config asterisk: callevents
 
 ; hlp_fm_callevents
-A traduire
+Config asterisk: callevents
 
 ; fm_tos-sip
-TOS SIP :
+TOS SIP:
 
 ; cmt_fm_tos-sip
-A traduire
+Config asterisk: tos-sip
 
 ; hlp_fm_tos-sip
-A traduire
+Config asterisk: tos-sip
 
 ; fm_tos-audio
-TOS audio :
+TOS audio:
 
 ; cmt_fm_tos-audio
-A traduire
+Config asterisk: tos-audio
 
 ; hlp_fm_tos-audio
-A traduire
+Config asterisk: tos-audio
 
 ; fm_tos-video
-TOS vidéo :
+TOS vidéo:
 
 ; cmt_fm_tos-video
-A traduire
+Config asterisk: tos-video
 
 ; hlp_fm_tos-video
-A traduire
+Config asterisk: tos-video
 
 ; fm_externip
-Adresse IP externe :
+Adresse IP externe:
 
 ; cmt_fm_externip
-A traduire
+Config asterisk: externip
 
 ; hlp_fm_externip
-A traduire
+Config asterisk: externip
 
 ; fm_externhost
-Hôte externe :
+Hôte externe:
 
 ; cmt_fm_externhost
-A traduire
+Config asterisk: externhost
 
 ; hlp_fm_externhost
-A traduire
+Config asterisk: externhost
 
 ; fm_externrefresh
-Temps de rafraîchissement du domaine externe :
+Temps de rafraîchissement du domaine externe:
 
 ; cmt_fm_externrefresh
-A traduire
+Config asterisk: externrefresh
 
 ; hlp_fm_externrefresh
-A traduire
+Config asterisk: externrefresh
 
 ; fm_externrefresh-opt-second
 1 seconde
 
-; cmt_fm_externrefresh-opt-second
-A traduire
-
-; hlp_fm_externrefresh-opt-second
-A traduire
-
 ; fm_externrefresh-opt-seconds
 %s secondes
-
-; cmt_fm_externrefresh-opt-seconds
-A traduire
-
-; hlp_fm_externrefresh-opt-seconds
-A traduire
 
 ; fm_externrefresh-opt-minute
 1 minute
 
-; cmt_fm_externrefresh-opt-minute
-A traduire
-
-; hlp_fm_externrefresh-opt-minute
-A traduire
-
 ; fm_externrefresh-opt-minute-seconds
 %s min. %s sec.
-
-; cmt_fm_externrefresh-opt-minute-seconds
-A traduire
-
-; hlp_fm_externrefresh-opt-minute-seconds
-A traduire
 
 ; fm_externrefresh-opt-minutes
 %s minutes
 
-; cmt_fm_externrefresh-opt-minutes
-A traduire
-
-; hlp_fm_externrefresh-opt-minutes
-A traduire
-
 ; fm_externrefresh-opt-minutes-seconds
 %s min. %s sec.
 
-; cmt_fm_externrefresh-opt-minutes-seconds
-A traduire
-
-; hlp_fm_externrefresh-opt-minutes-seconds
-A traduire
-
 ; fm_matchexterniplocally
-Remplacer l'IP ou l'hôte externe s'il correspond au réseau local :
+Remplacer l'IP ou l'hôte externe s'il correspond au réseau local:
 
 ; cmt_fm_matchexterniplocally
-A traduire
+Config asterisk: matchexterniplocally
 
 ; hlp_fm_matchexterniplocally
-A traduire
+Config asterisk: matchexterniplocally
 
 ; fm_outboundproxy
-Proxy Outbound :
+Proxy Outbound:
 
 ; cmt_fm_outboundproxy
-A traduire
+Config asterisk: outboundproxy
 
 ; hlp_fm_outboundproxy
-A traduire
+Config asterisk: outboundproxy
 
 ; fm_outboundproxyport
-Port du proxy Outbound :
+Port du proxy Outbound:
 
 ; cmt_fm_outboundproxyport
-A traduire
+Config asterisk: outboundproxyport
 
 ; hlp_fm_outboundproxyport
-A traduire
+Config asterisk: outboundproxyport
 
 ; fm_localnet
-Réseau local :
+Réseau local:
 
 ; cmt_fm_localnet
-A traduire
+Config asterisk: localnet
 
 ; hlp_fm_localnet
-A traduire
+Config asterisk: localnet
 
 ; localnet_add
-Ajouter un hôte :
+Ajouter un hôte:
 
 ; bt_add-localnet
 Ajouter un hôte
@@ -419,445 +377,292 @@ Ajouter un hôte
 Supprimer un ou plusieurs hôtes
 
 ; fm_t1min
-Délai minimum de l'aller-retour (RTT) des messages :
+Délai minimum de l'aller-retour (RTT) des messages:
 
 ; cmt_fm_t1min
-A traduire
+Config asterisk: t1min
 
 ; hlp_fm_t1min
-A traduire
-
-; fm_t1min-opt(0)
-0 milliseconde
-
-; cmt_fm_t1min-opt(0)
-A traduire
-
-; hlp_fm_t1min-opt(0)
-A traduire
+Config asterisk: t1min
 
 ; fm_t1min-opt
-%s millisecondes
-
-; cmt_fm_t1min-opt
-A traduire
-
-; hlp_fm_t1min-opt
-A traduire
+%s milliseconde
 
 ; fm_relaxdtmf
-Relax DTMF :
+Relax DTMF:
 
 ; cmt_fm_relaxdtmf
-A traduire
+Config asterisk: relaxdtmf
 
 ; hlp_fm_relaxdtmf
-A traduire
+Config asterisk: relaxdtmf
 
 ; fm_rfc2833compensate
-Compenser les DTMF RFC 2833 provenant d'un autre IPBX :
+Compenser les DTMF RFC 2833 provenant d'un autre IPBX:
 
 ; cmt_fm_rfc2833compensate
-A traduire
+Config asterisk: rfc2833compensate
 
 ; hlp_fm_rfc2833compensate
-A traduire
+Config asterisk: rfc2833compensate
 
 ; fm_compactheaders
-Compacter les en-têtes :
+Compacter les en-têtes:
 
 ; cmt_fm_compactheaders
-A traduire
+Config asterisk: compactheaders
 
 ; hlp_fm_compactheaders
-A traduire
+Config asterisk: compactheaders
 
 ; fm_rtptimeout
-Délai d'attente pour le RTP :
+Délai d'attente pour le RTP:
 
 ; cmt_fm_rtptimeout
-A traduire
+Config asterisk: rtptimeout
 
 ; hlp_fm_rtptimeout
-A traduire
+Config asterisk: rtptimeout
 
 ; fm_rtptimeout-opt(0)
 Désactivé
 
-; cmt_fm_rtptimeout-opt(0)
-A traduire
-
-; hlp_fm_rtptimeout-opt(0)
-A traduire
-
 ; fm_rtptimeout-opt
 %s secondes
 
-; cmt_fm_rtptimeout-opt
-A traduire
-
-; hlp_fm_rtptimeout-opt
-A traduire
-
 ; fm_rtpholdtimeout
-Délai du RTP sur attente :
+Délai du RTP sur attente:
 
 ; cmt_fm_rtpholdtimeout
-A traduire
+Config asterisk: rtpholdtimeout
 
 ; hlp_fm_rtpholdtimeout
-A traduire
+Config asterisk: rtpholdtimeout
 
 ; fm_rtpholdtimeout-opt(0)
 Désactivé
 
-; cmt_fm_rtpholdtimeout-opt(0)
-A traduire
-
-; hlp_fm_rtpholdtimeout-opt(0)
-A traduire
-
 ; fm_rtpholdtimeout-opt
 %s secondes
 
-; cmt_fm_rtpholdtimeout-opt
-A traduire
-
-; hlp_fm_rtpholdtimeout-opt
-A traduire
-
 ; fm_rtpkeepalive
-Présence du RTP :
+Présence du RTP:
 
 ; cmt_fm_rtpkeepalive
-A traduire
+Config asterisk: rtpkeepalive
 
 ; hlp_fm_rtpkeepalive
-A traduire
+Config asterisk: rtpkeepalive
 
 ; fm_rtpkeepalive-opt(0)
 Désactivée
 
-; cmt_fm_rtpkeepalive-opt(0)
-A traduire
-
-; hlp_fm_rtpkeepalive-opt(0)
-A traduire
-
 ; fm_rtpkeepalive-opt
 %s secondes
 
-; cmt_fm_rtpkeepalive-opt
-A traduire
-
-; hlp_fm_rtpkeepalive-opt
-A traduire
-
 ; fm_directrtpsetup
-Activer le RTP direct :
+Activer le RTP direct:
 
 ; cmt_fm_directrtpsetup
-A traduire
+Config asterisk: directrtpsetup
 
 ; hlp_fm_directrtpsetup
-A traduire
+Config asterisk: directrtpsetup
 
 ; fm_notifymimetype
-Notification du type de MIME :
+Notification du type de MIME:
 
 ; cmt_fm_notifymimetype
-A traduire
+Config asterisk: notifymimetype
 
 ; hlp_fm_notifymimetype
-A traduire
+Config asterisk: notifymimetype
 
 ; fm_srvlookup
-Requête DNS :
+Requête DNS:
 
 ; cmt_fm_srvlookup
-A traduire
+Config asterisk: srvlookup
 
 ; hlp_fm_srvlookup
-A traduire
+Config asterisk: srvlookup
 
 ; fm_pedantic
-Conforme aux standards :
+Conforme aux standards:
 
 ; cmt_fm_pedantic
-A traduire
+Config asterisk: pedantic
 
 ; hlp_fm_pedantic
-A traduire
+Config asterisk: pedantic
 
 ; fm_minexpiry
-Durée minimum pour l'enregistrement :
+Durée minimum pour l'enregistrement:
 
 ; cmt_fm_minexpiry
-A traduire
+Config asterisk: minexpiry
 
 ; hlp_fm_minexpiry
-A traduire
+Config asterisk: minexpiry
 
 ; fm_maxexpiry
-Durée maximum pour l'enregistrement :
+Durée maximum pour l'enregistrement:
 
 ; cmt_fm_maxexpiry
-A traduire
+Config asterisk: maxexpiry
 
 ; hlp_fm_maxexpiry
-A traduire
+Config asterisk: maxexpiry
 
 ; fm_defaultexpiry
-Durée par défaut pour l'enregistrement :
+Durée par défaut pour l'enregistrement:
 
 ; cmt_fm_defaultexpiry
-A traduire
+Config asterisk: defaultexpiry
 
 ; hlp_fm_defaultexpiry
-A traduire
+Config asterisk: defaultexpiry
 
 ; fm_expiry-opt-second
 1 seconde
 
-; cmt_fm_expiry-opt-second
-A traduire
-
-; hlp_fm_expiry-opt-second
-A traduire
-
 ; fm_expiry-opt-seconds
 %s secondes
-
-; cmt_fm_expiry-opt-seconds
-A traduire
-
-; hlp_fm_expiry-opt-seconds
-A traduire
 
 ; fm_expiry-opt-minute
 1 minute
 
-; cmt_fm_expiry-opt-minute
-A traduire
-
-; hlp_fm_expiry-opt-minute
-A traduire
-
 ; fm_expiry-opt-minute-seconds
 %s min. %s sec.
-
-; cmt_fm_expiry-opt-minute-seconds
-A traduire
-
-; hlp_fm_expiry-opt-minute-seconds
-A traduire
 
 ; fm_expiry-opt-minutes
 %s minutes
 
-; cmt_fm_expiry-opt-minutes
-A traduire
-
-; hlp_fm_expiry-opt-minutes
-A traduire
-
 ; fm_expiry-opt-minutes-seconds
 %s min. %s sec.
-
-; cmt_fm_expiry-opt-minutes-seconds
-A traduire
-
-; hlp_fm_expiry-opt-minutes-seconds
-A traduire
 
 ; fm_expiry-opt-hour
 1 heure
 
-; cmt_fm_expiry-opt-hour
-A traduire
-
-; hlp_fm_expiry-opt-hour
-A traduire
-
 ; fm_expiry-opt-hour-minutes
 %s heure %s min.
-
-; cmt_fm_expiry-opt-hour-minutes
-A traduire
-
-; hlp_fm_expiry-opt-hour-minutes
-A traduire
 
 ; fm_expiry-opt-hours
 %s heures
 
-; cmt_fm_expiry-opt-hours
-A traduire
-
-; hlp_fm_expiry-opt-hours
-A traduire
-
 ; fm_registertimeout
-Délai d'enregistrement :
+Délai d'enregistrement:
 
 ; cmt_fm_registertimeout
-A traduire
+Config asterisk: registertimeout
 
 ; hlp_fm_registertimeout
-A traduire
+Config asterisk: registertimeout
 
 ; fm_registertimeout-opt-second
 1 seconde
 
-; cmt_fm_registertimeout-opt-second
-A traduire
-
-; hlp_fm_registertimeout-opt-second
-A traduire
-
 ; fm_registertimeout-opt-seconds
 %s secondes
-
-; cmt_fm_registertimeout-opt-seconds
-A traduire
-
-; hlp_fm_registertimeout-opt-seconds
-A traduire
 
 ; fm_registertimeout-opt-minute
 1 minute
 
-; cmt_fm_registertimeout-opt-minute
-A traduire
-
-; hlp_fm_registertimeout-opt-minute
-A traduire
-
 ; fm_registertimeout-opt-minute-seconds
 %s min. %s sec.
-
-; cmt_fm_registertimeout-opt-minute-seconds
-A traduire
-
-; hlp_fm_registertimeout-opt-minute-seconds
-A traduire
 
 ; fm_registertimeout-opt-minutes
 %s minutes
 
-; cmt_fm_registertimeout-opt-minutes
-A traduire
-
-; hlp_fm_registertimeout-opt-minutes
-A traduire
-
 ; fm_registerattempts
-Nombre de tentative d'enregistrement :
+Nombre de tentative d'enregistrement:
 
 ; cmt_fm_registerattempts
-A traduire
+Config asterisk: registerattempts
 
 ; hlp_fm_registerattempts
-A traduire
+Config asterisk: registerattempts
 
 ; fm_registerattempts-opt(0)
 Illimité
 
-; cmt_fm_registerattempts-opt(0)
-A traduire
-
-; hlp_fm_registerattempts-opt(0)
-A traduire
-
 ; fm_registerattempts-opt
 %s
 
-; cmt_fm_registerattempts-opt
-A traduire
-
-; hlp_fm_registerattempts-opt
-A traduire
-
 ; fm_notifyringing
-Notification de sonnerie :
+Notification de sonnerie:
 
 ; cmt_fm_notifyringing
-A traduire
+Config asterisk: notifyringing
 
 ; hlp_fm_notifyringing
-A traduire
+Config asterisk: notifyringing
 
 ; fm_notifyhold
-Notification de la mise en attente :
+Notification de la mise en attente:
 
 ; cmt_fm_notifyhold
-A traduire
+Config asterisk: notifyhold
 
 ; hlp_fm_notifyhold
-A traduire
+Config asterisk: notifyhold
 
 ; fm_allowtransfer
-Autoriser les transferts :
+Autoriser les transferts:
 
 ; cmt_fm_allowtransfer
-A traduire
+Config asterisk: allowtransfer
 
 ; hlp_fm_allowtransfer
-A traduire
+Config asterisk: allowtransfer
 
 ; fm_maxcallbitrate
-Bit rate maximal pour les appels vidéo :
+Bit rate maximal pour les appels vidéo:
 
 ; cmt_fm_maxcallbitrate
-A traduire
+Config asterisk: maxcallbitrate
 
 ; hlp_fm_maxcallbitrate
-A traduire
+Config asterisk: maxcallbitrate
 
 ; fm_autoframing
-Frame automatique :
+Frame automatique:
 
 ; cmt_fm_autoframing
-A traduire
+Config asterisk: autoframing
 
 ; hlp_fm_autoframing
-A traduire
+Config asterisk: autoframing
 
 ; fm_g726nonstandard
-Activer le support du G.726 non standard :
+Activer le support du G.726 non standard:
 
 ; cmt_fm_g726nonstandard
-A traduire
+Config asterisk: g726nonstandard
 
 ; hlp_fm_g726nonstandard
-A traduire
+Config asterisk: g726nonstandard
 
 ; fm_codec-disallow
-Codecs désactivés :
+Codecs désactivés:
 
 ; cmt_fm_codec-disallow
-A traduire
+Config asterisk: odec-disallow
 
 ; hlp_fm_codec-disallow
-A traduire
+Config asterisk: odec-disallow
 
 ; fm_codec-disallow-opt(all)
 Tous
 
-; cmt_fm_codec-disallow-opt(all)
-A traduire
-
-; hlp_fm_codec-disallow-opt(all)
-A traduire
-
 ; fm_codec-allow
-Codecs activés :
+Codecs activés:
 
 ; cmt_fm_codec-allow
-A traduire
+Config asterisk: codec-allow
 
 ; hlp_fm_codec-allow
-A traduire
+Config asterisk: codec-allow
 
 ; bt_upcodec
 Monter un ou plusieurs codecs
@@ -872,623 +677,388 @@ Ajouter un ou plusieurs codecs ->
 <- Enlever un ou plusieurs codecs
 
 ; fm_t38pt-udptl
-Activer le T38 (UDPTL) :
+Activer le T38 (UDPTL):
 
 ; cmt_fm_t38pt-udptl
-A traduire
+Config asterisk: t38pt-udptl
 
 ; hlp_fm_t38pt-udptl
-A traduire
+Config asterisk: t38pt-udptl
 
 ; fm_t38pt-rtp
-Activer le T38 (RTP) :
+Activer le T38 (RTP):
 
 ; cmt_fm_t38pt-rtp
-A traduire
+Config asterisk: t38pt-rtp
 
 ; hlp_fm_t38pt-rtp
-A traduire
+Config asterisk: t38pt-rtp
 
 ; fm_t38pt-tcp
-Activer le T38 (TCP) :
+Activer le T38 (TCP):
 
 ; cmt_fm_t38pt-tcp
-A traduire
+Config asterisk: t38pt-tcp
 
 ; hlp_fm_t38pt-tcp
-A traduire
+Config asterisk: t38pt-tcp
 
 ; fm_t38pt-usertpsource
-Utiliser l'adresse IP source comme destination pour le T38 :
+Utiliser l'adresse IP source comme destination pour le T38:
 
 ; cmt_fm_t38pt-usertpsource
-A traduire
+Config asterisk: t38pt-usertpsource
 
 ; hlp_fm_t38pt-usertpsource
-A traduire
+Config asterisk: t38pt-usertpsource
 
 ; fm_jbenable
-Activer le Jitter Buffer :
+Activer le Jitter Buffer:
 
 ; cmt_fm_jbenable
-A traduire
+Config asterisk: jbenable
 
 ; hlp_fm_jbenable
-A traduire
+Config asterisk: jbenable
 
 ; fm_jbforce
-Forcer le Jitter Buffer :
+Forcer le Jitter Buffer:
 
 ; cmt_fm_jbforce
-A traduire
+Config asterisk: jbforce
 
 ; hlp_fm_jbforce
-A traduire
+Config asterisk: jbforce
 
 ; fm_jbmaxsize
-Taille maximale du Jitter Buffer :
+Taille maximale du Jitter Buffer:
 
 ; cmt_fm_jbmaxsize
-A traduire
+Config asterisk: jbmaxsize
 
 ; hlp_fm_jbmaxsize
-A traduire
+Config asterisk: jbmaxsize
 
 ; fm_jbmaxsize-opt(0)
 Désactivée
 
-; cmt_fm_jbmaxsize-opt(0)
-A traduire
-
-; hlp_fm_jbmaxsize-opt(0)
-A traduire
-
 ; fm_jbmaxsize-opt
 %s millisecondes
 
-; cmt_fm_jbmaxsize-opt
-A traduire
-
-; hlp_fm_jbmaxsize-opt
-A traduire
-
 ; fm_jbresyncthreshold
-Resynchronisation en cas de délai trop important :
+Resynchronisation en cas de délai trop important:
 
 ; cmt_fm_jbresyncthreshold
-A traduire
+Config asterisk: jbresyncthreshold
 
 ; hlp_fm_jbresyncthreshold
-A traduire
+Config asterisk: jbresyncthreshold
 
 ; fm_jbresyncthreshold-opt(-1)
 Désactivée
 
-; cmt_fm_jbresyncthreshold-opt(-1)
-A traduire
-
-; hlp_fm_jbresyncthreshold-opt(-1)
-A traduire
-
 ; fm_jbresyncthreshold-opt(0)
 0 milliseconde
-
-; cmt_fm_jbresyncthreshold-opt(0)
-A traduire
-
-; hlp_fm_jbresyncthreshold-opt(0)
-A traduire
 
 ; fm_jbresyncthreshold-opt
 %s millisecondes
 
-; cmt_fm_jbresyncthreshold-opt
-A traduire
-
-; hlp_fm_jbresyncthreshold-opt
-A traduire
-
 ; fm_jbimpl
-Implémentation :
+Implémentation:
 
 ; cmt_fm_jbimpl
-A traduire
+Config asterisk: jbimpl
 
 ; hlp_fm_jbimpl
-A traduire
+Config asterisk: jbimpl
 
 ; fm_jbimpl-opt(fixed)
 Fixe
 
-; cmt_fm_jbimpl-opt(fixed)
-A traduire
-
-; hlp_fm_jbimpl-opt(fixed)
-A traduire
-
 ; fm_jbimpl-opt(adaptative)
 Adaptative
 
-; cmt_fm_jbimpl-opt(adaptative)
-A traduire
-
-; hlp_fm_jbimpl-opt(adaptative)
-A traduire
-
 ; fm_jblog
-Activer la journalisation des frames :
+Activer la journalisation des frames:
 
 ; cmt_fm_jblog
-A traduire
+Config asterisk: jblog
 
 ; hlp_fm_jblog
-A traduire
+Config asterisk: jblog
 
 ; fm_context
-Contexte :
+Contexte:
 
 ; cmt_fm_context
-A traduire
+Config asterisk: context
 
 ; hlp_fm_context
-A traduire
+Config asterisk: context
 
 ; fm_nat
-NAT :
+NAT:
 
 ; cmt_fm_nat
-A traduire
+Config asterisk: nat
 
 ; hlp_fm_nat
-A traduire
+Config asterisk: nat
 
 ; fm_nat-opt(no)
 Non
 
-; cmt_fm_nat-opt(no)
-A traduire
-
-; hlp_fm_nat-opt(no)
-A traduire
-
 ; fm_nat-opt(yes)
 Oui
-
-; cmt_fm_nat-opt(yes)
-A traduire
-
-; hlp_fm_nat-opt(yes)
-A traduire
 
 ; fm_nat-opt(never)
 Jamais
 
-; cmt_fm_nat-opt(never)
-A traduire
-
-; hlp_fm_nat-opt(never)
-A traduire
-
 ; fm_nat-opt(route)
 Route
 
-; cmt_fm_nat-opt(route)
-A traduire
-
-; hlp_fm_nat-opt(route)
-A traduire
-
 ; fm_dtmfmode
-DTMF :
+DTMF:
 
 ; cmt_fm_dtmfmode
-A traduire
+Config asterisk: dtmfmode
 
 ; hlp_fm_dtmfmode
-A traduire
+Config asterisk: dtmfmode
 
 ; fm_dtmfmode-opt(rfc2833)
 RFC 2833
 
-; cmt_fm_dtmfmode-opt(rfc2833)
-A traduire
-
-; hlp_fm_dtmfmode-opt(rfc2833)
-A traduire
-
 ; fm_dtmfmode-opt(inband)
 InBand
-
-; cmt_fm_dtmfmode-opt(inband)
-A traduire
-
-; hlp_fm_dtmfmode-opt(inband)
-A traduire
 
 ; fm_dtmfmode-opt(info)
 INFO
 
-; cmt_fm_dtmfmode-opt(info)
-A traduire
-
-; hlp_fm_dtmfmode-opt(info)
-A traduire
-
 ; fm_dtmfmode-opt(auto)
 Auto
 
-; cmt_fm_dtmfmode-opt(auto)
-A traduire
-
-; hlp_fm_dtmfmode-opt(auto)
-A traduire
-
 ; fm_qualify
-Supervision de la latence :
+Supervision de la latence:
 
 ; cmt_fm_qualify
-A traduire
+Config asterisk: qualify
 
 ; hlp_fm_qualify
-A traduire
+Config asterisk: qualify
 
 ; fm_qualify-opt(no)
 Non
 
-; cmt_fm_qualify-opt(no)
-A traduire
-
-; hlp_fm_qualify-opt(no)
-A traduire
-
 ; fm_qualify-opt(yes)
 Oui
-
-; cmt_fm_qualify-opt(yes)
-A traduire
-
-; hlp_fm_qualify-opt(yes)
-A traduire
 
 ; fm_qualify-opt
 %s millisecondes
 
-; cmt_fm_qualify-opt
-A traduire
-
-; hlp_fm_qualify-opt
-A traduire
-
 ; fm_useclientcode
-Code client :
+Code client:
 
 ; cmt_fm_useclientcode
-A traduire
+Config asterisk: useclientcode
 
 ; hlp_fm_useclientcode
-A traduire
+Config asterisk: useclientcode
 
 ; fm_progressinband
-Evénement RING dans la bande :
+Evénement RING dans la bande:
 
 ; cmt_fm_progressinband
-A traduire
+Config asterisk: progressinband
 
 ; hlp_fm_progressinband
-A traduire
+Config asterisk: progressinband
 
 ; fm_progressinband-opt(no)
 Non
 
-; cmt_fm_progressinband-opt(no)
-A traduire
-
-; hlp_fm_progressinband-opt(no)
-A traduire
-
 ; fm_progressinband-opt(yes)
 Oui
-
-; cmt_fm_progressinband-opt(yes)
-A traduire
-
-; hlp_fm_progressinband-opt(yes)
-A traduire
 
 ; fm_progressinband-opt(never)
 Jamais
 
-; cmt_fm_progressinband-opt(never)
-A traduire
-
-; hlp_fm_progressinband-opt(never)
-A traduire
-
 ; fm_language
-Langue :
+Langue:
 
 ; cmt_fm_language
-A traduire
+Config asterisk: language
 
 ; hlp_fm_language
-A traduire
+Config asterisk: language
 
 ; fm_mohinterpret
-Musique d'attente :
+Musique d'attente:
 
 ; cmt_fm_mohinterpret
-A traduire
+Config asterisk: mohinterpret
 
 ; hlp_fm_mohinterpret
-A traduire
+Config asterisk: mohinterpret
 
 ; fm_mohsuggest
-Musique d'attente sur un appel sortant :
+Musique d'attente sur un appel sortant:
 
 ; cmt_fm_mohsuggest
-A traduire
+Config asterisk: mohsuggest
 
 ; hlp_fm_mohsuggest
-A traduire
+Config asterisk: mohsuggest
 
 ; fm_vmexten
-Numéro de la messagerie vocale :
+Numéro de la messagerie vocale:
 
 ; cmt_fm_vmexten
-A traduire
+Config asterisk: vmexten
 
 ; hlp_fm_vmexten
-A traduire
+Config asterisk: vmexten
 
 ; fm_trustrpid
-Faire confiance au Remote-Party-ID :
+Faire confiance au Remote-Party-ID:
 
 ; cmt_fm_trustrpid
-A traduire
+Config asterisk: trustrpid
 
 ; hlp_fm_trustrpid
-A traduire
+Config asterisk: trustrpid
 
 ; fm_sendrpid
-Envoyer le Remote-Party-ID :
+Envoyer le Remote-Party-ID:
 
 ; cmt_fm_sendrpid
-A traduire
+Config asterisk: sendrpid
 
 ; hlp_fm_sendrpid
-A traduire
+Config asterisk: sendrpid
 
 ; fm_assertedidentity
-Envoyer le P-Asserted-Identity :
+Envoyer le P-Asserted-Identity:
 
 ; cmt_fm_assertedidentity
-A traduire
+Config asterisk: assertedidentity
 
 ; hlp_fm_assertedidentity
-A traduire
+Config asterisk: assertedidentity
 
 ; fm_canreinvite
-Invite :
+Invite:
 
 ; cmt_fm_canreinvite
-A traduire
+Config asterisk: canreinvite
 
 ; hlp_fm_canreinvite
-A traduire
+Config asterisk: canreinvite
 
 ; fm_canreinvite-opt(no)
 Non
 
-; cmt_fm_canreinvite-opt(no)
-A traduire
-
-; hlp_fm_canreinvite-opt(no)
-A traduire
-
 ; fm_canreinvite-opt(yes)
 Oui
-
-; cmt_fm_canreinvite-opt(yes)
-A traduire
-
-; hlp_fm_canreinvite-opt(yes)
-A traduire
 
 ; fm_canreinvite-opt(update)
 Mise à jour
 
-; cmt_fm_canreinvite-opt(update)
-A traduire
-
-; hlp_fm_canreinvite-opt(update)
-A traduire
-
 ; fm_canreinvite-opt(nonat)
 Sans NAT
-
-; cmt_fm_canreinvite-opt(nonat)
-A traduire
-
-; hlp_fm_canreinvite-opt(nonat)
-A traduire
 
 ; fm_canreinvite-opt(update-nonat)
 Mise à jour sans NAT
 
-; cmt_fm_canreinvite-opt(update-nonat)
-A traduire
-
-; hlp_fm_canreinvite-opt(update-nonat)
-A traduire
-
 ; fm_insecure
-Insécurité :
+Insécurité:
 
 ; cmt_fm_insecure
-A traduire
+Config asterisk: insecure
 
 ; hlp_fm_insecure
-A traduire
+Config asterisk: insecure
 
 ; fm_insecure-opt(no)
 Non
 
-; cmt_fm_insecure-opt(no)
-A traduire
-
-; hlp_fm_insecure-opt(no)
-A traduire
-
 ; fm_insecure-opt(port)
 Port
-
-; cmt_fm_insecure-opt(port)
-A traduire
-
-; hlp_fm_insecure-opt(port)
-A traduire
 
 ; fm_insecure-opt(invite)
 Invite
 
-; cmt_fm_insecure-opt(invite)
-A traduire
-
-; hlp_fm_insecure-opt(invite)
-A traduire
-
 ; fm_insecure-opt(all)
 Tout
 
-; cmt_fm_insecure-opt(all)
-A traduire
-
-; hlp_fm_insecure-opt(all)
-A traduire
-
 ; fm_rtcachefriends
-Mise en cache des comptes :
+Mise en cache des comptes:
 
 ; cmt_fm_rtcachefriends
-A traduire
+Config asterisk: rtcachefriends
 
 ; hlp_fm_rtcachefriends
-A traduire
+Config asterisk: rtcachefriends
 
 ; fm_rtupdate
-Mise à jour du cache :
+Mise à jour du cache:
 
 ; cmt_fm_rtupdate
-A traduire
+Config asterisk: rtupdate
 
 ; hlp_fm_rtupdate
-A traduire
+Config asterisk: rtupdate
 
 ; fm_ignoreregexpire
-Ignorer l'expiration :
+Ignorer l'expiration:
 
 ; cmt_fm_ignoreregexpire
-A traduire
+Config asterisk: ignoreregexpire
 
 ; hlp_fm_ignoreregexpire
-A traduire
+Config asterisk: ignoreregexpire
 
 ; fm_rtsavesysname
-Sauvegarder le nom du système lors d'un enregistrement :
+Sauvegarder le nom du système lors d'un enregistrement:
 
 ; cmt_fm_rtsavesysname
-A traduire
+Config asterisk: rtsavesysname
 
 ; hlp_fm_rtsavesysname
-A traduire
+Config asterisk: rtsavesysname
 
 ; fm_rtautoclear
-Suppression automatique du cache :
+Suppression automatique du cache:
 
 ; cmt_fm_rtautoclear
-A traduire
+Config asterisk: rtautoclear
 
 ; hlp_fm_rtautoclear
-A traduire
+Config asterisk: rtautoclear
 
 ; fm_rtautoclear-opt(no)
 Non
 
-; cmt_fm_rtautoclear-opt(no)
-A traduire
-
-; hlp_fm_rtautoclear-opt(no)
-A traduire
-
 ; fm_rtautoclear-opt(yes)
 Oui
-
-; cmt_fm_rtautoclear-opt(yes)
-A traduire
-
-; hlp_fm_rtautoclear-opt(yes)
-A traduire
 
 ; fm_rtautoclear-opt-second
 1 seconde
 
-; cmt_fm_rtautoclear-opt-second
-A traduire
-
-; hlp_fm_rtautoclear-opt-second
-A traduire
-
 ; fm_rtautoclear-opt-seconds
 %s secondes
-
-; cmt_fm_rtautoclear-opt-seconds
-A traduire
-
-; hlp_fm_rtautoclear-opt-seconds
-A traduire
 
 ; fm_rtautoclear-opt-minute
 1 minute
 
-; cmt_fm_rtautoclear-opt-minute
-A traduire
-
-; hlp_fm_rtautoclear-opt-minute
-A traduire
-
 ; fm_rtautoclear-opt-minute-seconds
 %s min. %s sec.
-
-; cmt_fm_rtautoclear-opt-minute-seconds
-A traduire
-
-; hlp_fm_rtautoclear-opt-minute-seconds
-A traduire
 
 ; fm_rtautoclear-opt-minutes
 %s minutes
 
-; cmt_fm_rtautoclear-opt-minutes
-A traduire
-
-; hlp_fm_rtautoclear-opt-minutes
-A traduire
-
 ; fm_rtautoclear-opt-minutes-seconds
 %s min. %s sec.
 
-; cmt_fm_rtautoclear-opt-minutes-seconds
-A traduire
-
-; hlp_fm_rtautoclear-opt-minutes-seconds
-A traduire
-
 ; fm_success-save
 Propriétés du protocole SIP sauvegardées avec succès
-
-; cmt_fm_success-save
-A traduire
-
-; hlp_fm_success-save
-A traduire
-

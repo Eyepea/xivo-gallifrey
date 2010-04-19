@@ -10,6 +10,12 @@ Network
 ; smenu_signalling
 Signaling
 
+; smenu_t38
+T38
+
+; smenu_jitterbuffer
+Jiterrbuffer
+
 ; smenu_default
 Default
 
@@ -19,17 +25,44 @@ Real time
 ; fm_bindport
 Port:
 
+; hlp_fm_bindport
+Config asterisk: bindport
+
 ; fm_bindaddr
 IP Address:
+
+; hlp_fm_bindaddr
+Config asterisk: bindaddr
 
 ; fm_videosupport
 Video support:
 
+; hlp_fm_videosupport
+Config asterisk: videosupport
+
 ; fm_autocreatepeer
 Automatic user creation:
 
+; hlp_fm_autocreatepeer
+Config asterisk: autocreatepeer
+
 ; fm_allowguest
 Accept unauthentified calls:
+
+; hlp_fm_allowguest
+Config asterisk: allowguest
+
+; fm_allowsubscribe
+Allow subscribe:
+
+; hlp_fm_allowsubscribe
+Config asterisk: allowsubscribe
+
+; fm_allowoverlap
+Allow overlap:
+
+; hlp_fm_allowoverlap
+Config asterisk: allowoverlap
 
 ; fm_allowguest-opt-no
 No
@@ -43,29 +76,62 @@ OSP
 ; fm_promiscredir
 Support 302 redirections:
 
+; hlp_fm_promiscredir
+Config asterisk: promiscredir
+
 ; fm_autodomain
 Automatic domain:
+
+; hlp_fm_autodomain
+Config asterisk: autodomain
 
 ; fm_domain
 Domain:
 
+; hlp_fm_domain
+Config asterisk: domain
+
 ; fm_allowexternaldomains
 Allow external domains:
+
+; hlp_fm_allowexternaldomains
+Config asterisk: allowexternaldomains
 
 ; fm_usereqphone
 Add ";user=phone" in the URI:
 
+; hlp_fm_usereqphone
+Config asterisk: usereqphone
+
 ; fm_realm
 Realm:
+
+; hlp_fm_realm
+Config asterisk: realm
 
 ; fm_alwaysauthreject
 Reject invitations and recordings:
 
+; hlp_fm_alwaysauthreject
+Config asterisk: alwaysauthreject
+
+; fm_limitonpeer
+Limit on peer:
+
+; hlp_fm_limitonpeer
+Config asterisk: limitonpeer
+
 ; fm_useragent
 User-Agent:
 
+; hlp_fm_useragent
+Config asterisk: useragent
+
 ; fm_checkmwi
 Check for the presence of new messages:
+
+; hlp_fm_checkmwi
+Config asterisk: checkmwi
 
 ; fm_checkmwi-opt0
 Disabled
@@ -73,26 +139,71 @@ Disabled
 ; fm_checkmwi-opt
 %s seconds
 
+; fm_buggymwi
+Audit did not conform to RFC new posts:
+
+; hlp_fm_buggymwi
+Config asterisk: buggymwi
+
 ; fm_regcontext
 Recording context:
+
+; hlp_fm_regcontext
+Config asterisk: regcontext
 
 ; fm_callerid
 Caller ID:
 
+; hlp_fm_callerid
+Config asterisk: callerid
+
 ; fm_fromdomain
 From-Domain field rewrite:
+
+; hlp_fm_fromdomain
+Config asterisk: fromdomain
 
 ; fm_sipdebug
 Debugging:
 
+; hlp_fm_sipdebug
+Config asterisk: sipdebug
+
 ; fm_dumphistory
 History save:
+
+; hlp_fm_dumphistory
+Config asterisk: dumphistory
 
 ; fm_recordhistory
 History recording:
 
+; hlp_fm_recordhistory
+Config asterisk: recordhistory
+
 ; fm_callevents
 Call events (AMI):
+
+; hlp_fm_callevents
+Config asterisk: callevents
+
+; fm_tos-sip
+TOS SIP:
+
+; hlp_fm_tos-sip
+Config asterisk: tos-sip
+
+; fm_tos-audio
+TOS audio:
+
+; hlp_fm_tos-audio
+Config asterisk: tos-audio
+
+; fm_tos-video
+TOS video:
+
+; hlp_fm_tos-video
+Config asterisk: tos-video
 
 ; fm_ospauth
 OSP Authentication:
@@ -112,82 +223,139 @@ Exclusive
 ; fm_tos
 TOS:
 
-; fm_localnet
-Local network:
-
 ; fm_externip
 External IP address:
+
+; hlp_fm_externip
+Config asterisk: externip
 
 ; fm_externhost
 External domain:
 
+; hlp_fm_externhost
+Config asterisk: externhost
+
 ; fm_externrefresh
 External domain refresh time:
 
-; fm_externrefresh-opt1
-1 sec.
+; hlp_fm_externrefresh
+Config asterisk: externrefresh
 
-; fm_externrefresh-opt10
-10 sec.
+; fm_externrefresh-opt-second
+1 seconde
 
-; fm_externrefresh-opt20
-20 sec.
+; fm_externrefresh-opt-seconds
+%s secondes
 
-; fm_externrefresh-opt30
-30 sec.
+; fm_externrefresh-opt-minute
+1 minute
 
-; fm_externrefresh-opt40
-40 sec.
+; fm_externrefresh-opt-minute-seconds
+%s min. %s sec.
 
-; fm_externrefresh-opt50
-50 sec.
+; fm_externrefresh-opt-minutes
+%s minutes
 
-; fm_externrefresh-opt60
-1 min.
-
-; fm_externrefresh-opt120
-2 min.
-
-; fm_externrefresh-opt180
-3 min.
-
-; fm_externrefresh-opt240
-4 min.
-
-; fm_externrefresh-opt300
-5 min.
-
-; fm_externrefresh-opt600
-10 min.
-
-; fm_externrefresh-opt900
-15 min.
-
-; fm_externrefresh-opt1200
-20 min.
-
-; fm_externrefresh-opt1800
-30 min.
+; fm_externrefresh-opt-minutes-seconds
+%s min. %s sec.
 
 ; fm_externrefresh-opt
 %s min. %s sec.
 
+; fm_matchexterniplocally
+Replace the IP or if it matches the external host LAN:
+
+; cmt_fm_matchexterniplocally
+Config asterisk: matchexterniplocally
+
+; hlp_fm_matchexterniplocally
+Config asterisk: matchexterniplocally
+
 ; fm_outboundproxy
 Outbound proxy:
+
+; cmt_fm_outboundproxy
+Config asterisk: outboundproxy
+
+; hlp_fm_outboundproxy
+Config asterisk: outboundproxy
 
 ; fm_outboundproxyport
 Outbound proxy port:
 
+; cmt_fm_outboundproxyport
+Config asterisk: outboundproxyport
+
+; hlp_fm_outboundproxyport
+Config asterisk: outboundproxyport
+
+; fm_localnet
+Local network:
+
+; cmt_fm_localnet
+Config asterisk: localnet
+
+; hlp_fm_localnet
+Config asterisk: localnet
+
+; localnet_add
+Add host:
+
+; bt_add-localnet
+Add host
+
+; bt_delete-localnet
+Delete host
+
+; fm_t1min
+Minimum time of the round trip (RTT) messages:
+
+; cmt_fm_t1min
+Config asterisk: t1min
+
+; hlp_fm_t1min
+Config asterisk: t1min
+
+; fm_t1min-opt
+%s milliseconde
+
 ; fm_relaxdtmf
 Relax DTMF:
+
+; cmt_fm_relaxdtmf
+Config asterisk: relaxdtmf
+
+; hlp_fm_relaxdtmf
+Config asterisk: relaxdtmf
+
+; fm_rfc2833compensate
+Compensating for RFC 2833 DTMF from another IP PBX:
+
+; cmt_fm_rfc2833compensate
+Config asterisk: rfc2833compensate
+
+; hlp_fm_rfc2833compensate
+Config asterisk: rfc2833compensate
 
 ; fm_compactheaders
 Compact headers:
 
+; cmt_fm_compactheaders
+Config asterisk: compactheaders
+
+; hlp_fm_compactheaders
+Config asterisk: compactheaders
+
 ; fm_rtptimeout
 RTP Timeout:
 
-; fm_rtptimeout-opt0
+; cmt_fm_rtptimeout
+Config asterisk: rtptimeout
+
+; hlp_fm_rtptimeout
+Config asterisk: rtptimeout
+
+; fm_rtptimeout-opt(0)
 Disabled
 
 ; fm_rtptimeout-opt
@@ -196,7 +364,13 @@ Disabled
 ; fm_rtpholdtimeout
 RTP hold timeout:
 
-; fm_rtpholdtimeout-opt0
+; cmt_fm_rtpholdtimeout
+Config asterisk: rtpholdtimeout
+
+; hlp_fm_rtpholdtimeout
+Config asterisk: rtpholdtimeout
+
+; fm_rtpholdtimeout-opt(0)
 Disabled
 
 ; fm_rtpholdtimeout-opt
@@ -205,191 +379,224 @@ Disabled
 ; fm_rtpkeepalive
 RTP Keepalive:
 
-; fm_rtpkeepalive-opt0
+; cmt_fm_rtpkeepalive
+Config asterisk: rtpkeepalive
+
+; hlp_fm_rtpkeepalive
+Config asterisk: rtpkeepalive
+
+; fm_rtpkeepalive-opt(0)
 Disabled
 
 ; fm_rtpkeepalive-opt
 %s seconds
 
+; fm_directrtpsetup
+Enable RTP Direct:
+
+; cmt_fm_directrtpsetup
+Config asterisk: directrtpsetup
+
+; hlp_fm_directrtpsetup
+Config asterisk: directrtpsetup
+
 ; fm_notifymimetype
 MIME type notification:
+
+; cmt_fm_notifymimetype
+Config asterisk: notifymimetype
+
+; hlp_fm_notifymimetype
+Config asterisk: notifymimetype
 
 ; fm_srvlookup
 DNS request:
 
+; cmt_fm_srvlookup
+Config asterisk: srvlookup
+
+; hlp_fm_srvlookup
+Config asterisk: srvlookup
+
 ; fm_pedantic
 Conform to standards:
+
+; cmt_fm_pedantic
+Config asterisk: pedantic
+
+; hlp_fm_pedantic
+Config asterisk: pedantic
+
+; fm_minexpiry
+Minimum expiry:
+
+; cmt_fm_minexpiry
+Config asterisk: minexpiry
+
+; hlp_fm_minexpiry
+Config asterisk: minexpiry
 
 ; fm_maxexpiry
 Maximum expiry:
 
-; fm_maxexpiry-opt1
-1 sec.
+; cmt_fm_maxexpiry
+Config asterisk: maxexpiry
 
-; fm_maxexpiry-opt900
-15 min.
-
-; fm_maxexpiry-opt1800
-30 min.
-
-; fm_maxexpiry-opt2700
-45 min.
-
-; fm_maxexpiry-opt3600
-1 hour
-
-; fm_maxexpiry-opt7200
-2 hours
-
-; fm_maxexpiry-opt
-%s hour %s min.
+; hlp_fm_maxexpiry
+Config asterisk: maxexpiry
 
 ; fm_defaultexpiry
 Default expiry time:
 
-; fm_defaultexpiry-opt1
-1 sec.
+; cmt_fm_defaultexpiry
+Config asterisk: defaultexpiry
 
-; fm_defaultexpiry-opt10
-10 sec.
+; hlp_fm_defaultexpiry
+Config asterisk: defaultexpiry
 
-; fm_defaultexpiry-opt20
-20 sec.
+; fm_expiry-opt-second
+1 seconde
 
-; fm_defaultexpiry-opt30
-30 sec.
+; fm_expiry-opt-seconds
+%s secondes
 
-; fm_defaultexpiry-opt40
-40 sec.
+; fm_expiry-opt-minute
+1 minute
 
-; fm_defaultexpiry-opt50
-50 sec.
-
-; fm_defaultexpiry-opt60
-1 min.
-
-; fm_defaultexpiry-opt120
-2 min.
-
-; fm_defaultexpiry-opt180
-3 min.
-
-; fm_defaultexpiry-opt240
-4 min.
-
-; fm_defaultexpiry-opt300
-5 min.
-
-; fm_defaultexpiry-opt600
-10 min.
-
-; fm_defaultexpiry-opt900
-15 min.
-
-; fm_defaultexpiry-opt1200
-20 min.
-
-; fm_defaultexpiry-opt1800
-30 min.
-
-; fm_defaultexpiry-opt2400
-40 min.
-
-; fm_defaultexpiry-opt2700
-45 min.
-
-; fm_defaultexpiry-opt3000
-50 min.
-
-; fm_defaultexpiry-opt
+; fm_expiry-opt-minute-seconds
 %s min. %s sec.
 
-; fm_defaultexpiry-opt3600
-1 hour
+; fm_expiry-opt-minutes
+%s minutes
 
-; fm_defaultexpiry-opt4500
-1 hour 15 min.
+; fm_expiry-opt-minutes-seconds
+%s min. %s sec.
 
-; fm_defaultexpiry-opt5400
-1 hour 30 min.
+; fm_expiry-opt-hour
+1 heure
 
-; fm_defaultexpiry-opt6300
-1 hour 45 min.
+; fm_expiry-opt-hour-minutes
+%s heure %s min.
 
-; fm_defaultexpiry-opt7200
-2 hours
+; fm_expiry-opt-hours
+%s heures
 
 ; fm_registertimeout
 Registering timeout:
 
-; fm_registertimeout-opt1
-1 sec.
+; cmt_fm_registertimeout
+Config asterisk: registertimeout
 
-; fm_registertimeout-opt10
-10 sec.
+; hlp_fm_registertimeout
+Config asterisk: registertimeout
 
-; fm_registertimeout-opt20
-20 sec.
+; fm_registertimeout-opt-second
+1 seconde
 
-; fm_registertimeout-opt30
-30 sec.
+; fm_registertimeout-opt-seconds
+%s secondes
 
-; fm_registertimeout-opt40
-40 sec.
+; fm_registertimeout-opt-minute
+1 minute
 
-; fm_registertimeout-opt50
-50 sec.
+; fm_registertimeout-opt-minute-seconds
+%s min. %s sec.
 
-; fm_registertimeout-opt60
-1 min.
-
-; fm_registertimeout-opt120
-2 min.
+; fm_registertimeout-opt-minutes
+%s minutes
 
 ; fm_registertimeout-opt
 %s min. %s sec.
 
 ; fm_registerattempts
-Register attemps:
+Number of attempted registration:
 
-; fm_registerattempts-opt0
+; cmt_fm_registerattempts
+Config asterisk: registerattempts
+
+; hlp_fm_registerattempts
+Config asterisk: registerattempts
+
+; fm_registerattempts-opt(0)
 Unlimited
 
-; fm_registerattempts-opt10
-10 sec.
-
-; fm_registerattempts-opt20
-20 sec.
-
-; fm_registerattempts-opt30
-30 sec.
-
-; fm_registerattempts-opt40
-40 sec.
-
-; fm_registerattempts-opt50
-50 sec.
-
-; fm_registerattempts-opt60
-1 min.
-
-; fm_registerattempts-opt120
-2 min.
-
 ; fm_registerattempts-opt
-%s min. %s sec.
+%s
 
 ; fm_notifyringing
 Ringing notification:
 
+; cmt_fm_notifyringing
+Config asterisk: notifyringing
+
+; hlp_fm_notifyringing
+Config asterisk: notifyringing
+
+; fm_notifyhold
+Notification queuing:
+
+; cmt_fm_notifyhold
+Config asterisk: notifyhold
+
+; hlp_fm_notifyhold
+Config asterisk: notifyhold
+
+; fm_allowtransfer
+Allow transfer:
+
+; cmt_fm_allowtransfer
+Config asterisk: allowtransfer
+
+; hlp_fm_allowtransfer
+Config asterisk: allowtransfer
+
+; fm_maxcallbitrate
+Maximum bit rate for video calls:
+
+; cmt_fm_maxcallbitrate
+Config asterisk: maxcallbitrate
+
+; hlp_fm_maxcallbitrate
+Config asterisk: maxcallbitrate
+
+; fm_autoframing
+Automatic frame:
+
+; cmt_fm_autoframing
+Config asterisk: autoframing
+
+; hlp_fm_autoframing
+Config asterisk: autoframing
+
+; fm_g726nonstandard
+Enable support of non-standard G.726:
+
+; cmt_fm_g726nonstandard
+Config asterisk: g726nonstandard
+
+; hlp_fm_g726nonstandard
+Config asterisk: g726nonstandard
+
 ; fm_codec-disallow
 Disabled codecs:
 
-; fm_codec-disallow-opt-all
+; cmt_fm_codec-disallow
+Config asterisk: odec-disallow
+
+; hlp_fm_codec-disallow
+Config asterisk: odec-disallow
+
+; fm_codec-disallow-opt(all)
 All
 
 ; fm_codec-allow
 Enabled codecs:
+
+; cmt_fm_codec-allow
+Config asterisk: codec-allow
+
+; hlp_fm_codec-allow
+Config asterisk: codec-allow
 
 ; bt_upcodec
 Up one or more codecs
@@ -403,11 +610,146 @@ Add one or more codecs ->
 ; bt_outcodec
 <- Remove one or more codecs
 
+; fm_t38pt-udptl
+Activate T38 (UDPTL) :
+
+; cmt_fm_t38pt-udptl
+Config asterisk: t38pt-udptl
+
+; hlp_fm_t38pt-udptl
+Config asterisk: t38pt-udptl
+
+; fm_t38pt-rtp
+Activate T38 (RTP) :
+
+; cmt_fm_t38pt-rtp
+Config asterisk: t38pt-rtp
+
+; hlp_fm_t38pt-rtp
+Config asterisk: t38pt-rtp
+
+; fm_t38pt-tcp
+Activate T38 (TCP) :
+
+; cmt_fm_t38pt-tcp
+Config asterisk: t38pt-tcp
+
+; hlp_fm_t38pt-tcp
+Config asterisk: t38pt-tcp
+
+; fm_t38pt-usertpsource
+Use the source IP address as the destination for the T38:
+
+; cmt_fm_t38pt-usertpsource
+Config asterisk: t38pt-usertpsource
+
+; hlp_fm_t38pt-usertpsource
+Config asterisk: t38pt-usertpsource
+
+; fm_jbenable
+Activate Jitter Buffer :
+
+; cmt_fm_jbenable
+Config asterisk: jbenable
+
+; hlp_fm_jbenable
+Config asterisk: jbenable
+
+; fm_jbforce
+Force Jitter Buffer :
+
+; cmt_fm_jbforce
+Config asterisk: jbforce
+
+; hlp_fm_jbforce
+Config asterisk: jbforce
+
+; fm_jbmaxsize
+Max size of Jitter Buffer :
+
+; cmt_fm_jbmaxsize
+Config asterisk: jbmaxsize
+
+; hlp_fm_jbmaxsize
+Config asterisk: jbmaxsize
+
+; fm_jbmaxsize-opt(0)
+Disabled
+
+; fm_jbmaxsize-opt
+%s millisecondes
+
+; fm_jbresyncthreshold
+Resynchronization in case of excessive delay:
+
+; cmt_fm_jbresyncthreshold
+Config asterisk: jbresyncthreshold
+
+; hlp_fm_jbresyncthreshold
+Config asterisk: jbresyncthreshold
+
+; fm_jbresyncthreshold-opt(-1)
+Disabled
+
+; fm_jbresyncthreshold-opt(0)
+0 milliseconde
+
+; fm_jbresyncthreshold-opt
+%s millisecondes
+
+; fm_jbimpl
+Implementation:
+
+; cmt_fm_jbimpl
+Config asterisk: jbimpl
+
+; hlp_fm_jbimpl
+Config asterisk: jbimpl
+
+; fm_jbimpl-opt(fixed)
+Fix
+
+; fm_jbimpl-opt(adaptative)
+Adaptive
+
+; fm_jblog
+Enable logging Frames:
+
+; cmt_fm_jblog
+Config asterisk: jblog
+
+; hlp_fm_jblog
+Config asterisk: jblog
+
 ; fm_context
 Context:
 
+; cmt_fm_context
+Config asterisk: context
+
+; hlp_fm_context
+Config asterisk: context
+
 ; fm_nat
 NAT:
+
+; cmt_fm_nat
+Config asterisk: nat
+
+; hlp_fm_nat
+Config asterisk: nat
+
+; fm_nat-opt(no)
+No
+
+; fm_nat-opt(yes)
+Yes
+
+; fm_nat-opt(never)
+Never
+
+; fm_nat-opt(route)
+Route
 
 ; fm_nat-opt-no
 No
@@ -424,13 +766,37 @@ Route
 ; fm_dtmfmode
 DTMF:
 
+; cmt_fm_dtmfmode
+Config asterisk: dtmfmode
+
+; hlp_fm_dtmfmode
+Config asterisk: dtmfmode
+
+; fm_dtmfmode-opt(rfc2833)
+RFC 2833
+
+; fm_dtmfmode-opt(inband)
+InBand
+
+; fm_dtmfmode-opt(info)
+INFO
+
+; fm_dtmfmode-opt(auto)
+Auto
+
 ; fm_qualify
 Monitoring:
 
-; fm_qualify-optno
+; cmt_fm_qualify
+Config asterisk: qualify
+
+; hlp_fm_qualify
+Config asterisk: qualify
+
+; fm_qualify-opt(no)
 No
 
-; fm_qualify-optyes
+; fm_qualify-opt(yes)
 Yes
 
 ; fm_qualify-opt
@@ -439,109 +805,205 @@ Yes
 ; fm_useclientcode
 Client code:
 
+; cmt_fm_useclientcode
+Config asterisk: useclientcode
+
+; hlp_fm_useclientcode
+Config asterisk: useclientcode
+
 ; fm_progressinband
 Inband RING event:
 
-; fm_progressinband-opt-no
+; cmt_fm_progressinband
+Config asterisk: progressinband
+
+; hlp_fm_progressinband
+Config asterisk: progressinband
+
+; fm_progressinband-opt(no)
 No
 
-; fm_progressinband-opt-yes
+; fm_progressinband-opt(yes)
 Yes
 
-; fm_progressinband-opt-never
+; fm_progressinband-opt(never)
 Never
 
 ; fm_language
 Languages:
 
+; cmt_fm_language
+Config asterisk: language
+
+; hlp_fm_language
+Config asterisk: language
+
 ; fm_mohinterpret
 On-Hold Music:
+
+; cmt_fm_mohinterpret
+Config asterisk: mohinterpret
+
+; hlp_fm_mohinterpret
+Config asterisk: mohinterpret
+
+; fm_mohsuggest
+Music waiting on an outgoing call:
+
+; cmt_fm_mohsuggest
+Config asterisk: mohsuggest
+
+; hlp_fm_mohsuggest
+Config asterisk: mohsuggest
 
 ; fm_vmexten
 Voicemail extension:
 
+; cmt_fm_vmexten
+Config asterisk: vmexten
+
+; hlp_fm_vmexten
+Config asterisk: vmexten
+
 ; fm_trustrpid
 Trust the Remote-Party-ID:
+
+; cmt_fm_trustrpid
+Config asterisk: trustrpid
+
+; hlp_fm_trustrpid
+Config asterisk: trustrpid
 
 ; fm_sendrpid
 Send the Remote-Party-ID:
 
+; cmt_fm_sendrpid
+Config asterisk: sendrpid
+
+; hlp_fm_sendrpid
+Config asterisk: sendrpid
+
+; fm_assertedidentity
+Send P-Asserted-Identity:
+
+; cmt_fm_assertedidentity
+Config asterisk: assertedidentity
+
+; hlp_fm_assertedidentity
+Config asterisk: assertedidentity
+
 ; fm_canreinvite
 Invite:
 
-; fm_canreinvite-opt-no
+; cmt_fm_canreinvite
+Config asterisk: canreinvite
+
+; hlp_fm_canreinvite
+Config asterisk: canreinvite
+
+; fm_canreinvite-opt(no)
 No
 
-; fm_canreinvite-opt-yes
+; fm_canreinvite-opt(yes)
 Yes
 
-; fm_canreinvite-opt-update
+; fm_canreinvite-opt(update)
 Update
+
+; fm_canreinvite-opt(nonat)
+Without NAT
+
+; fm_canreinvite-opt(update-nonat)
+Update without NAT
 
 ; fm_insecure
 Insecure:
 
-; fm_insecure-opt-no
+; cmt_fm_insecure
+Config asterisk: insecure
+
+; hlp_fm_insecure
+Config asterisk: insecure
+
+; fm_insecure-opt(no)
 No
 
-; fm_insecure-opt-port
+; fm_insecure-opt(port)
 Port
 
-; fm_insecure-opt-invite
+; fm_insecure-opt(invite)
 Invite
 
-; fm_insecure-opt-all
+; fm_insecure-opt(all)
 All
 
 ; fm_rtcachefriends
 Cache accounts:
 
+; cmt_fm_rtcachefriends
+Config asterisk: rtcachefriends
+
+; hlp_fm_rtcachefriends
+Config asterisk: rtcachefriends
+
 ; fm_rtupdate
 Cache update:
+
+; cmt_fm_rtupdate
+Config asterisk: rtupdate
+
+; hlp_fm_rtupdate
+Config asterisk: rtupdate
 
 ; fm_ignoreregexpire
 Ignore registration expiration:
 
+; cmt_fm_ignoreregexpire
+Config asterisk: ignoreregexpire
+
+; hlp_fm_ignoreregexpire
+Config asterisk: ignoreregexpire
+
+; fm_rtsavesysname
+Save the system name when recording:
+
+; cmt_fm_rtsavesysname
+Config asterisk: rtsavesysname
+
+; hlp_fm_rtsavesysname
+Config asterisk: rtsavesysname
+
 ; fm_rtautoclear
 Automatic cache clearing:
 
-; fm_rtautoclear-optno
+; cmt_fm_rtautoclear
+Config asterisk: rtautoclear
+
+; hlp_fm_rtautoclear
+Config asterisk: rtautoclear
+
+; fm_rtautoclear-opt(no)
 No
 
-; fm_rtautoclear-optyes
+; fm_rtautoclear-opt(yes)
 Yes
 
-; fm_rtautoclear-opt1
-1 sec.
+; fm_rtautoclear-opt-second
+1 seconde
 
-; fm_rtautoclear-opt10
-10 sec.
+; fm_rtautoclear-opt-seconds
+%s secondes
 
-; fm_rtautoclear-opt20
-20 sec.
+; fm_rtautoclear-opt-minute
+1 minute
 
-; fm_rtautoclear-opt30
-30 sec.
+; fm_rtautoclear-opt-minute-seconds
+%s min. %s sec.
 
-; fm_rtautoclear-opt40
-40 sec.
+; fm_rtautoclear-opt-minutes
+%s minutes
 
-; fm_rtautoclear-opt50
-50 sec.
-
-; fm_rtautoclear-opt60
-1 min.
-
-; fm_rtautoclear-opt120
-2 min.
-
-; fm_rtautoclear-opt180
-3 min.
-
-; fm_rtautoclear-opt240
-4 min.
-
-; fm_rtautoclear-opt
+; fm_rtautoclear-opt-minutes-seconds
 %s min. %s sec.
 
 ; fm_success-save
