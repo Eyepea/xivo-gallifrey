@@ -35,12 +35,12 @@ NameVirtualHost *:80
 <VirtualHost *:80>
 	RewriteEngine On
 
-	RewriteCond %{HTTP_USER_AGENT} !^Aastra((67)?5[1357]|673[01])i
+	RewriteCond %{HTTP_USER_AGENT} !^Aastra((67)?5[1357]|673[019])i
 	RewriteRule ^/provisioning/Aastra/ - [L,R=403]
 
-	RewriteCond %{HTTP_USER_AGENT} ^Aastra((67)?5[1357]|673[01])i
+	RewriteCond %{HTTP_USER_AGENT} ^Aastra((67)?5[1357]|673[019])i
 	# Used for Aastra phones first provisioning
-	RewriteRule ^/((?:67)?5[1357]|673[01])i\.st$ /provisioning/Aastra/$1i.st [PT,L]
+	RewriteRule ^/((?:67)?5[1357]|673[019])i\.st$ /provisioning/Aastra/$1i.st [PT,L]
 	# Used for Aastra phones provisioning
 	RewriteRule ^/provisioning/Aastra/ %{REQUEST_URI} [PT,L]
 
