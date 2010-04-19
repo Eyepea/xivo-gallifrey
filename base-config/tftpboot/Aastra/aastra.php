@@ -28,7 +28,7 @@ $modelstandardize = array('51i'		=> '6751i',
 			  '57i CT'	=> '6757i CT');
 
 if(isset($_SERVER['HTTP_USER_AGENT']) === false
-|| preg_match('/^Aastra((?:(?:67)?5[1357]|673[01])i(?: CT)?) /',
+|| preg_match('/^Aastra((?:(?:67)?5[1357]|673[019])i(?: CT)?) /',
 	      $_SERVER['HTTP_USER_AGENT'],
 	      $match) !== 1)
 	die();
