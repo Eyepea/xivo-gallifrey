@@ -1,0 +1,38 @@
+; fm_directories_name
+Name:
+
+; fm_directories_uri
+URI:
+
+; fm_directories_delimiter
+Delimiter:
+
+; fm_directories_match_direct
+Direct match:
+
+; fm_directories_match_reverse
+Match reverse directories:
+
+; fm_directories_field_phone
+Field 'phone':
+
+; fm_directories_field_fullname
+Field 'fullname':
+
+; fm_directories_field_company
+Field 'company':
+
+; fm_directories_field_mail
+Field 'mail':
+
+; fm_directories_display_reverse
+Display Field comparison of reverse:
+
+; fm_directories_field_lastname
+Field 'lastname':
+
+; fm_directories_field_firstname
+Champ 'firstname':
+
+; fm_description
+Description

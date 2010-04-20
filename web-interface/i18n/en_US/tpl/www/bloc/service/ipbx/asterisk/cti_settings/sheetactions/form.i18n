@@ -1,0 +1,41 @@
+; fm_sheetactions_name
+Name :
+
+; fm_sheetactions_whom
+Recipient:
+
+; fm_sheetactions_focus
+Focus:
+
+; fm_sheetactions_qtui
+Qt interface:
+
+; cti-sheetactions-context
+Context
+
+; cti-sheetactions-capaids
+Xivo Client pofils
+
+; col_1
+Field posted
+
+; col_2
+Field type
+
+; col_3
+Default values
+
+; col_4
+Display Format
+
+; no_screens
+No screens
+
+; no_systrays
+No systrays
+
+; no_informations
+No information
+
+; fm_description
+Description

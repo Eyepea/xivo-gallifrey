@@ -1,53 +1,53 @@
 ; title_content_name
-Configuration CTI
+CTI Configuration
 
 ; smenu_cti_general
-Options générales
+General Settings
 
 ; fm_bt-save
-Enregistrer
-
-; fm_cti_list_ip
-Adresses IP
-
-; fm_cti_list_port
-Ports réseau
+Save
 
 ; fm_cti_commandset
-Jeu de commandes:
+Command set:
 
 ; hlp_fm_cti_commandset
-aide jeu de commandes
+Command set help
 
 ; cti-servers
-Serveurs CTI
+CTI server
+
+; fm_cti_list_ip
+IP address
+
+; fm_cti_list_port
+List ports
 
 ; fm_cti_fagi_ip
 Fast AGI:
 
 ; hlp_fm_cti_fagi_ip
-aide fast agi
+fast agi help
 
 ; fm_cti_fagi_port
 -
 
 ; hlp_fm_cti_fagi_port
-aide port fast agi
+port fast agi help
 
 ; fm_cti_cti_ip
 CTI:
 
 ; hlp_fm_cti_cti_ip
-aide IP cti
+IP cti help
 
 ; fm_cti_cti_port
 -
 
 ; hlp_fm_cti_cti_port
-aide port cti
+port cti help
 
 ; fm_cti_webi_ip
-Interface Web:
+Web Interface:
 
 ; hlp_fm_cti_webi_ip
 aide adresse webint
@@ -56,31 +56,31 @@ aide adresse webint
 -
 
 ; hlp_fm_cti_webi_port
-aide port webint
+port webint help
 
 ; fm_cti_info_ip
-Serveur d'information:
+Info server:
 
 ; hlp_fm_cti_info_ip
-aide adresse info
+address info help
 
 ; fm_cti_info_port
 -
 
 ; hlp_fm_cti_info_port
-aide port info
+port info help
 
 ; fm_cti_announce_ip
-Serveur d'annonces:
+Announce server:
 
 ; hlp_fm_cti_announce_ip
-aide adresse annonce
+Announce server help
 
 ; fm_cti_annouce_port
 -
 
 ; hlp_fm_cti_announce_port
-aide port annonce
+Announce server help
 
 ; fm_cti_asterisklist
 Choix du serveur Asterisk:
@@ -89,37 +89,37 @@ Choix du serveur Asterisk:
 aide choix serveur asterisk
 
 ; cti-intervals
-Intervalles
+Intervals
 
 ; cti-xivo_servers
-Serveurs XIVO
+XIVO server
 
 ; fm_cti_updates_period
-Intervalle de mise à jour:
+Update period:
 
 ; hlp_fm_cti_updates_period
-aide intervalle màj
+Update period help
 
 ; fm_cti_socket_timeout
-Délai d'expiration du socket:
+Socket timeout:
 
 ; hlp_fm_cti_socket_timeout
-aide délai exp socket
+Socket timeout help
 
 ; fm_cti_login_timeout
-Délai d'expiration à la connexion:
+Login timeout:
 
 ; hlp_fm_cti_login_timeout
-aide délai exp login
+Login timeout help
 
 ; fm_cti_parting_astid_context
-Séparation par contexte:
+Separation context:
 
 ; fm_cti_parting_astid_ipbx
-Séparation par IPBX:
+Separation IPBX:
 
 ; bt_inxivoserver
-Ajouter
+Add
 
 ; bt_outxivoserver
-Enlever
+Remove

@@ -1,0 +1,14 @@
+; col_presence
+Manager Name attendance
+
+; col_description
+Description
+
+; col_action
+Action
+
+; no_presence
+No presence
+
+; opt_delete_confirm
+Are you sure you want to delete this item?

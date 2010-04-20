@@ -52,7 +52,7 @@ if(isset($error_js[0]) === true)
 <div class="sb-content">
 <form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-xivoserver');">
 <?php
-	echo	
+	echo
 		$form->hidden(array('name'	=> DWHO_SESS_NAME,
 				    'value'	=> DWHO_SESS_ID)),
 		$form->hidden(array('name'	=> 'fm_send',
@@ -68,7 +68,7 @@ if(isset($error_js[0]) === true)
 				    'help'	=> $this->bbf('hlp_fm_cti_commandset'),
 				    'selected'	=> $this->get_var('ctimain','commandset','var_val')),
 			      $element['ctimain']['commandset']['value']);
-	?>			  
+	?>
 	<fieldset id="cti-servers">
 		<legend><?=$this->bbf('cti-servers');?></legend>
 		<div class="sb-list">
@@ -111,7 +111,7 @@ if(isset($error_js[0]) === true)
 					'regexp'	=> '[[:ipv4:]]',
 					'default'	=> $element['ctimain']['cti_ip']['default'] //,
 					/* 'help'		=> $this->bbf('hlp_fm_cti_cti_ip') */ ))
-				?>	
+				?>
 				</td>
 				<td class="td-right">
 				<?=$form->text(array(#'desc'	=> $this->bbf('fm_cti_cti_port'),
@@ -242,7 +242,7 @@ if(isset($error_js[0]) === true)
 							'name' => 'cti[parting_astid_context]',
 							'labelid' => 'cti_parting_astid_context',
 							'checked' => in_array('context', $parting))),
-			
+
 			$form->checkbox(array('desc' => $this->bbf('fm_cti_parting_astid_ipbx'),
 							'name' => 'cti[parting_astid_ipbx]',
 							'labelid' => 'cti_parting_astid_ipbx',
@@ -260,7 +260,6 @@ if(isset($error_js[0]) === true)
 					    'id'	=> 'it-xivoserverlist',
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id',
-					    'help'	=> $this->bbf('hlp_xivoserverlist'),
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'paragraph'	=> false),
@@ -291,7 +290,6 @@ if(isset($error_js[0]) === true)
 					    'id'	=> 'it-xivoserver',
 					    'key'	=> 'identity',
 					    'altkey'	=> 'id',
-					    'help'	=> $this->bbf('hlp_xivoserver'),
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'paragraph'	=> false),

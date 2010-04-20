@@ -1,0 +1,23 @@
+; fm_displays_name
+Name :
+
+; col_1
+Champ affiché
+
+; col_2
+Field posted
+
+; col_3
+Default values
+
+; col_4
+Display Format
+
+; fm_description
+Description
+
+; list-avail-formats
+<i>Display formats available :&nbsp;</i>
+
+; no_disp
+No display
