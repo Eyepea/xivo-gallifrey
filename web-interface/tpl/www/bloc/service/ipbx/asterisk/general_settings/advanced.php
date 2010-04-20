@@ -114,7 +114,7 @@ if(isset($error_js[0]) === true)
 	<?=$form->checkbox(array('desc'		=> $this->bbf('fm_userinternal_guest'),
 				 'name'		=> 'userinternal[guest]',
 				 'labelid'	=> 'userinternal-guest',
-				 'help'	=> $this->bbf('hlp_fm_userinternal_guest'),
+// 				 'help'	=> $this->bbf('hlp_fm_userinternal_guest'),
 				 'checked'	=> ($this->get_var('userinternal',
 								     array('guest','userfeatures','commented')) === false)));?>
 </div>
@@ -125,14 +125,14 @@ if(isset($error_js[0]) === true)
 				      'name'	=> 'generalagents[persistentagents]',
 				      'labelid'	=> 'generalagents-persistentagents',
 				      'default'	=> $element['generalagents']['persistentagents']['default'],
-				      'help'	=> $this->bbf('hlp_fm_generalagents_persistentagents'),
+// 				      'help'	=> $this->bbf('hlp_fm_generalagents_persistentagents'),
 				      'checked'	=> $this->get_var('generalagents','persistentagents','var_val'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_multiplelogin'),
 				      'name'	=> 'generalagents[multiplelogin]',
 				      'labelid'	=> 'generalagents-multiplelogin',
 				      'default'	=> $element['generalagents']['multiplelogin']['default'],
-				      'help'	=> $this->bbf('hlp_fm_generalagents_multiplelogin'),
+// 				      'help'	=> $this->bbf('hlp_fm_generalagents_multiplelogin'),
 				      'checked'	=> $this->get_var('generalagents','multiplelogin','var_val')));
 ?>
 </div>
@@ -143,21 +143,21 @@ if(isset($error_js[0]) === true)
 				      'name'	=> 'generalqueues[persistentmembers]',
 				      'labelid'	=> 'generalqueues-persistentmembers',
 				      'default'	=> $element['generalqueues']['persistentmembers']['default'],
-				      'help'	=> $this->bbf('hlp_fm_generalqueues_persistentmembers'),
+// 				      'help'	=> $this->bbf('hlp_fm_generalqueues_persistentmembers'),
 				      'checked'	=> $this->get_var('generalqueues','persistentmembers','var_val'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_autofill'),
 				      'name'	=> 'generalqueues[autofill]',
 				      'labelid'	=> 'generalqueues-autofill',
 				      'default'	=> $element['generalqueues']['autofill']['default'],
-				      'help'	=> $this->bbf('hlp_fm_generalqueues_autofill'),
+// 				      'help'	=> $this->bbf('hlp_fm_generalqueues_autofill'),
 				      'checked'	=> $this->get_var('generalqueues','autofill','var_val'))),
 
 		$form->checkbox(array('desc'	=> $this->bbf('fm_generalqueues_monitor-type'),
 				      'name'	=> 'generalqueues[monitor-type]',
 				      'labelid'	=> 'generalqueues-monitor-type',
 				      'default'	=> $element['generalqueues']['monitor-type']['default'],
-				      'help'	=> $this->bbf('hlp_fm_generalqueues_monitor-type'),
+// 				      'help'	=> $this->bbf('hlp_fm_generalqueues_monitor-type'),
 				      'checked'	=> $this->get_var('generalqueues','monitor-type','var_val')));
 ?>
 </div>
@@ -169,7 +169,7 @@ if(isset($error_js[0]) === true)
 				    'labelid'	=> 'generalmeetme-audiobuffers',
 				    'key'	=> false,
 				    'default'	=> $element['generalmeetme']['audiobuffers']['default'],
-				    'help'	=> $this->bbf('hlp_fm_generalmeetme_audiobuffers'),
+// 				    'help'	=> $this->bbf('hlp_fm_generalmeetme_audiobuffers'),
 				    'selected'	=> $this->get_var('generalmeetme','audiobuffers','var_val')),
 			      $element['generalmeetme']['audiobuffers']['value']);
 ?>
