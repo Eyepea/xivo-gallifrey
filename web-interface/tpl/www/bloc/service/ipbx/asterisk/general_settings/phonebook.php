@@ -96,7 +96,7 @@ endif;
 					    'id'	=> 'it-access',
 					    'key'	=> true,
 					    'altkey'	=> 'host',
-// 					    'help'	=> $this->bbf('hlp_accessfeatures'),
+					    'help'	=> $this->bbf('hlp_accessfeatures'),
 					    'multiple'	=> true,
 					    'size'	=> 5,
 					    'paragraph'	=> false),
