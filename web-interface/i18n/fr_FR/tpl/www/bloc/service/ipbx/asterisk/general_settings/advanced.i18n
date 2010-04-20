@@ -17,13 +17,13 @@ Chambres de conférence
 Invité :
 
 ; hlp_fm_userinternal_guest
-Config asterisk: userinternal_guest
+Config asterisk: guest
 
 ; fm_generalagents_persistentagents
 Agents persistants :
 
 ; hlp_fm_generalagents_persistentagents
-Config asterisk: generalagents_persistentagents
+Config asterisk: persistentagents
 
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
@@ -31,8 +31,8 @@ Permettre à une extension d'avoir plusieurs agents :
 ; fm_generalqueues_persistentmembers
 Membres persistants :
 
-; hlp_fm_generalqueue_persistentmembers
-Config asterisk: generalqueue_persistentmembers
+; hlp_fm_generalqueues_persistentmembers
+Config asterisk: persistentmembers
 
 ; fm_generalqueues_autofill
 Activer le nouveau système de distribution des appels :
@@ -44,7 +44,16 @@ Enregistrement :
 Taille des tampons audio par canal :
 
 ; hlp_fm_generalmeetme_audiobuffers
-Config asterisk: generalmeetme_audiobuffers
+Config asterisk: audiobuffers
 
 ; fm_success-save
 Paramètres globaux avancés sauvegardées avec succès
+
+; hlp_fm_generalagents_multiplelogin
+Config asterisk: multiplelogin
+
+; hlp_fm_generalqueues_autofill
+Config asterisk: autofill
+
+; hlp_fm_generalqueues_monitor-type
+Config asterisk: monitortype = MixMonitor

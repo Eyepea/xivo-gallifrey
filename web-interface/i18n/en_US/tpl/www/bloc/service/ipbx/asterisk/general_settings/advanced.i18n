@@ -17,25 +17,34 @@ Conference rooms
 Guest:
 
 ; hlp_fm_userinternal_guest
-Config asterisk: userinternal_guest
+Asterisk config: guest
 
 ; fm_generalagents_persistentagents
 Persistent agents:
 
 ; hlp_fm_generalagents_persistentagents
-Config asterisk: generalagents_persistentagents
+Asterisk config: persistentagents
 
 ; fm_generalqueue_persistentmembers
 Persistent members:
 
-; hlp_fm_generalqueue_persistentmembers
-Config asterisk: generalqueue_persistentmembers
+; hlp_fm_generalqueues_persistentmembers
+Config asterisk: persistentmembers
 
 ; fm_generalmeetme_audiobuffers
 Audio buffers size per channel:
 
 ; hlp_fm_generalmeetme_audiobuffers
-Config asterisk: generalmeetme_audiobuffers
+Asterisk config: audiobuffers
 
 ; fm_success-save
 Global advanced parameters successfully saved
+
+; hlp_fm_generalagents_multiplelogin
+Asterisk config: multiplelogin
+
+; hlp_fm_generalqueues_autofill
+Asterisk Config: autofill
+
+; hlp_fm_generalqueues_monitor-type
+Asterisk config: monitortype = MixMonitor

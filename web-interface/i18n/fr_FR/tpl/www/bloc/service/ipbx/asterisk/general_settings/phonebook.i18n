@@ -14,7 +14,7 @@ Filtres LDAP
 Ajouter un hôte :
 
 ; hlp_accessfeatures
-Config asterisk: accessfeatures
+Adresses IP ou sous-réseaux qui sont autorisés à accéder au carnet d'adresse XiVO
 
 ; bt_addaccess
 Ajouter un hôte

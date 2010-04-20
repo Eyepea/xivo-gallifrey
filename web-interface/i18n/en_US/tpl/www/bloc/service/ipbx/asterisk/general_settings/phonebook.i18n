@@ -14,7 +14,7 @@ LDAP filters
 Add an host:
 
 ; hlp_accessfeatures
-Config asterisk: accessfeatures
+IP adresses or subnets authorized to access XiVO phonebook
 
 ; bt_addaccess
 Add an host
