@@ -22,8 +22,9 @@ class dwho_tpl_xmlphone_abstract
 {
 	var $_argseparator	= '&amp;';
 	var $_cdata		= false;
-	var $_escape		= true;
+	var $_escape	= true;
 	var $_utf8		= true;
+	var $_noaccents	= false;
 	var $_nbbypage		= 16;
 	var $_tags		= array('directory'	=> null,
 					'menu'		=> null,
@@ -75,6 +76,12 @@ class dwho_tpl_xmlphone_abstract
 		else if($this->has_escape() === true || (bool) $force === true)
 			$str = dwho_htmlsc($str,ENT_NOQUOTES);
 
+		if($this->_noaccents)
+	    $str = str_replace(
+	        array('à','á','â','ã','ä', 'ç', 'è','é','ê','ë', 'ì','í','î','ï', 'ñ', 'ò','ó','ô','õ','ö', 'ù','ú','û','ü', 'ý','ÿ', 'À','Á','Â','Ã','Ä', 'Ç', 'È','É','Ê','Ë', 'Ì','Í','Î','Ï', 'Ñ', 'Ò','Ó','Ô','Õ','Ö', 'Ù','Ú','Û','Ü', 'Ý'), 
+	        array('a','a','a','a','a', 'c', 'e','e','e','e', 'i','i','i','i', 'n', 'o','o','o','o','o', 'u','u','u','u', 'y','y', 'A','A','A','A','A', 'C', 'E','E','E','E', 'I','I','I','I', 'N', 'O','O','O','O','O', 'U','U','U','U', 'Y'), 
+	        $str); 
+	        
 		if($this->has_utf8() === false)
 			$str = utf8_decode($str);
 

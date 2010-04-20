@@ -28,6 +28,7 @@ class dwho_tpl_xmlphone_cisco extends dwho_tpl_xmlphone_abstract
 	var $_cdata		    = false;
 	var $_escape		= false;
 	var $_utf8		    = true;
+	var $_noaccents		= true;
 	var $_tags		= array('directory'	=> 'CiscoIPPhoneDirectory',
 					'menu'		=> 'CiscoIPPhoneMenu',
 					'input'		=> 'CiscoIPPhoneInput');
