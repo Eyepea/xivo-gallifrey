@@ -1,0 +1,21 @@
+; welcome_description
+Welcome in XiVO installer.
+
+Thanks for choosing XiVO. This installer will help you to configure a full functionnal XiVO.
+
+Let you guide and don't forget to note the informations you will set (i.e root password for xivo administration  interface login).
+
+You can also get online help at <a href="https://wiki.xivo.fr">https://wiki.xivo.fr</a>.
+
+Have fun !
+
+Step 1: Choose your language >>>
+
+; fm_language
+Language :
+
+; error_fm_language(missing)
+No language
+
+; error_fm_language(invalid)
+Invalide language

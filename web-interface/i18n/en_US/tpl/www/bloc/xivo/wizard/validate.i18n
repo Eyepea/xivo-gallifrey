@@ -1,0 +1,130 @@
+; load [global] util/language
+
+; ipbximportuser_view_error(1)
+See users import error.
+
+; ipbximportuser_view_error
+See users import errors.
+
+; ipbximportuser_lines_status
+Line status
+
+; ipbximportuser_lines_status($line|error)
+- Line %{line}$s : Error
+
+; ipbximportuser_lines_status($line|success)
+- Line %{line}$s : Success
+
+; validate_instruction
+Check following informations then click on "validate" to end installation.
+
+; fld-general-information
+General informations
+
+; info_language
+Language :
+
+; info_ipbxengine
+IPBX engine :
+
+; info_dbbackend
+Database type :
+
+; error_dbconfig_backends(save)
+Possible errors :
+1. Database server cannot be joined
+2. Impossible configuration server
+3. A problem occured when generating configuration files
+
+; fld-server-information
+Server informations
+
+; info_servername
+Name :
+
+; error_mainconfig_hosts(save)
+Possible errors :
+1. Invalid server name
+2. Invalid domain name
+3. Impossible configuration server
+4. A problem occured when generating configuration files
+
+; info_serverdomain
+Server domain :
+
+; info_adminpasswd
+Root password :
+
+; error_mainconfig_adminpasswd(save)
+Possible errors :
+1. Invalid password
+2. Databases cannot be joined
+
+; info_netiface_address
+IP address :
+
+; info_netiface_netmask
+Netmask :
+
+; info_netiface_gateway
+Default gateway :
+
+; error_netiface(save)
+Possible errors :
+1. Invalid network configuration
+2. Impossible configuration server
+3. A problem occured when generating configuration files
+
+; info_resolvconf_nameserver1
+primary DNS server :
+
+; info_resolvconf_nameserver2
+Secondary DNS server :
+
+; error_resolvconf_nameservers(save)
+Possible errors :
+1. Invalid DNS configuration
+2. Impossible configuration server
+3. A problem occured when generating configuration files
+
+; fld-entity
+Entity
+
+; info_entity_name
+Name :
+
+; info_entity_displayname
+Printed name :
+
+; error_entity(save)
+Possible errors :
+1. Impossible configuration server
+2. A problem occured when generating configuration files
+
+; fld-context
+Contexts
+
+; info_context_internal
+Internal calls :
+
+; error_context_internal(save)
+Possible errors :
+1. Impossible configuration server
+2. A problem occured when generating configuration files
+
+; info_context_incall
+Incalls :
+
+; error_context_incall(save)
+Possible errors :
+1. Impossible configuration server
+2. A problem occured when generating configuration files
+
+; info_context_outcall
+Outcalls :
+
+; error_context_outcall(save)
+Possible errors :
+1. Impossible configuration server
+2. A problem occured when generating configuration files
+

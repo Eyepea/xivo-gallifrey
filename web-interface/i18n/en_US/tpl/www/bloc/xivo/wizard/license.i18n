@@ -1,0 +1,8 @@
+; fm_license
+Licence :
+
+; fm_license-agree
+I accept the terms of this licence :
+
+; error_fm_license(disagree)
+You must accept the terms of this licence to continue installation

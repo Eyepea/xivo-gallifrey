@@ -1,0 +1,32 @@
+; mn_left_name
+XIVO Instalation
+
+; mn_left_ti_wizard
+Steps
+
+; mn_left_wizard-welcome
+Welcome
+
+; mn_left_wizard-license
+Licence
+
+; mn_left_wizard-ipbxengine
+IPBX engine
+
+; mn_left_wizard-dbconfig
+Database
+
+; mn_left_wizard-checkcomponents
+Components check
+
+; mn_left_wizard-mainconfig
+Configuration
+
+; mn_left_wizard-entitycontext
+Entities and contexts
+
+; mn_left_wizard-ipbximportuser
+Users import
+
+; mn_left_wizard-validate
+Validation

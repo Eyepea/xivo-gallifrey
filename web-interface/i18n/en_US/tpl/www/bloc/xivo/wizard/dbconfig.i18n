@@ -1,0 +1,68 @@
+; fm_dbconfig_backend
+Database type :
+
+; error_dbconfig_xivo(invalid)
+Invalid connexion parameters
+
+; error_dbconfig_xivo(connection)
+Cannot connect to the database !
+
+; error_dbconfig_ipbx(invalid)
+Invalid connexion parameters
+
+; error_dbconfig_ipbx(connection)
+Cannot connect to the database !
+
+; fm_dbconfig_sqlite-xivodb
+XiVO database :
+
+; fm_dbconfig_sqlite-ipbxdb
+IPBX database :
+
+; fm_dbconfig_mysql-host
+Host :
+
+; fm_dbconfig_mysql-port
+Port :
+
+; fm_dbconfig_mysql-xivodbname
+XiVO database - name :
+
+; fm_dbconfig_mysql-xivouser
+XiVO database - username : :
+
+; fm_dbconfig_mysql-xivopass
+XiVO database - password :
+
+; fm_dbconfig_mysql-ipbxdbname
+IPBX database - name :
+
+; fm_dbconfig_mysql-ipbxuser
+IPBX database - username :
+
+; fm_dbconfig_mysql-ipbxpass
+IPBX database - password :
+
+; cmt_fm_dbconfig_sqlite-xivodb
+
+; cmt_fm_dbconfig_sqlite-ipbxdb
+
+; hlp_fm_dbconfig_backend
+SQLite perfectly fit for a single server, MySQL is required when using HA
+
+; cmt_fm_dbconfig_mysql-host
+
+; cmt_fm_dbconfig_mysql-port
+
+; cmt_fm_dbconfig_mysql-xivodbname
+
+; cmt_fm_dbconfig_mysql-xivouser
+
+; cmt_fm_dbconfig_mysql-xivopass
+
+; cmt_fm_dbconfig_mysql-ipbxdbname
+
+; cmt_fm_dbconfig_mysql-ipbxuser
+
+; cmt_fm_dbconfig_mysql-ipbxpass
+

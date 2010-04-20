@@ -1,0 +1,83 @@
+; load bloc/xivo/memstats
+
+; sysinfos_network
+Network
+
+; network_iface
+Interface
+
+; network_vendor
+Vendor
+
+; network_driver
+Driver
+
+; network_driver_info($driver)
+%{driver}$s
+
+; network_driver_info($driver|$driverversion)
+%{driver}$s version %{driverversion}$s
+
+; network_macaddress
+MAC address
+
+; network_ipaddress
+IP address
+
+; network_speed
+Network speed
+
+; network_autonegotiation
+Autonegociate
+
+; network_autonegotiation_info(on)
+Activated
+
+; network_autonegotiation_info(off)
+Deactivates
+
+; network_autonegotiation_info
+%s
+
+; package_level(depends)
+Depends
+
+; package_level(recommends)
+Recommends
+
+; package_col_name
+Name
+
+; package_col_installedversion
+Version
+
+; package_col_status
+Statut
+
+; package_category(ipbx)
+IPBX
+
+; package_category(db)
+Database
+
+; package_category(xivo)
+XiVO
+
+; package_status(installed)
+Installed
+
+; package_status(notinstalled)
+Not installed
+
+; package_status(notexists)
+Not found
+
+; package_status
+Unknown
+
+; no_package(depends)
+No depends
+
+; no_package(recommends)
+No recommands
+

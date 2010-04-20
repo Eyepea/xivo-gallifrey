@@ -1,0 +1,62 @@
+; fld-mainconfig-hostname
+Hostname
+
+; fm_mainconfig_hostname
+Hostname :
+
+; fld-mainconfig-domain
+Domain name
+
+; fm_mainconfig_domain
+Domain name :
+
+; fld-mainconfig-adminpasswd
+WebInterface root password
+
+; fm_mainconfig_adminpasswd
+Password :
+
+; fm_mainconfig_confirmadminpasswd
+Re-enter password :
+
+; fld-mainconfig-netiface
+Network interface
+
+; fm_netiface_address
+Adress :
+
+; fm_netiface_netmask
+Netmask :
+
+; fm_netiface_gateway
+Default gateway :
+
+; fld-mainconfig-resolvconf
+DNS servers
+
+; fm_resolvconf_nameserver1
+primary :
+
+; fm_resolvconf_nameserver2
+secondary :
+
+; cmt_fm_mainconfig_hostname
+
+; cmt_fm_mainconfig_domain
+
+; cmt_fm_mainconfig_adminpasswd
+
+; cmt_fm_mainconfig_confirmadminpasswd
+
+; cmt_fm_netiface_address
+
+; cmt_fm_netiface_netmask
+
+; cmt_fm_netiface_gateway
+
+; cmt_fm_resolvconf_nameserver1
+
+; cmt_fm_resolvconf_nameserver2
+
+; hlp_fm_netiface_address
+Please check address is not already set to another device !

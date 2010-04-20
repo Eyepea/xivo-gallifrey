@@ -1,0 +1,95 @@
+; fld-entity
+Entity
+
+; fm_entity_name
+Name :
+
+; fm_entity_displayname
+Printed name :
+
+; error_fm_context_internal_numberend
+Invalid interval
+
+; error_fm_context_incall_numberend
+Invalid interval
+Intervalle invalide
+
+; fld-context-internal
+Internal calls context
+
+; fm_context_internal-name
+Name :
+
+; fm_context_internal-displayname
+Printed name :
+
+; fm_context_internal-displayname-default(default)
+Default
+
+; fm_context_internal-numberbeg
+Numbers interval start :
+
+; fm_context_internal-numberend
+Numbers interval end :
+
+; fld-context-incall
+Incalls context
+
+; fm_context_incall-name
+Name :
+
+; fm_context_incall-displayname
+Printed name :
+
+; fm_context_incall-displayname-default(from-extern)
+Outcalls
+
+; fm_context_incall-numberbeg
+Numbers interval start  :
+
+; fm_context_incall-numberend
+Numbers interval end :
+
+; fm_context_incall-didlength
+DID length :
+
+; fld-context-outcall
+Outcalls context
+
+; fm_context_outcall-name
+Name :
+
+; fm_context_outcall-displayname
+Printed name :
+
+; fm_context_outcall-displayname-default(to-extern)
+Outcalls
+
+; cmt_fm_entity_name
+
+; cmt_fm_entity_displayname
+
+; cmt_fm_context_internal-name
+
+; cmt_fm_context_internal-displayname
+
+; cmt_fm_context_internal-numberbeg 
+
+; cmt_fm_context_internal-numberend
+
+; cmt_fm_context_incall-name
+
+; cmt_fm_context_incall-displayname
+
+; cmt_fm_context_incall-numberbeg
+
+; cmt_fm_context_incall-numberend
+
+; cmt_fm_context_incall-didlength
+
+; cmt_fm_context_outcall-name
+
+; cmt_fm_context_outcall-displayname
+
+; hlp_fm_entity_name
+Your firm name for example (no space or special characters)

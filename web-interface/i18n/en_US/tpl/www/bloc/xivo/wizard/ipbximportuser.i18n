@@ -1,0 +1,35 @@
+; ipbximportuser_instruction
+Import file must be in CSV format with following columns: :
+"firstname"|"lastname"|"username"|"password"|"phonenumber"|"incallexten"
+
+; fm_example
+Example :
+
+; fm_example-content
+"firstname"|"lastname"|"username"|"password"|"phonenumber"|"incallexten"
+"John"|"Doe"|"johndoe"|"1234"|"4000"|"9998"
+"Jane"|"Doe"|"janedoe"|"5678"|"4001"|"9999"
+
+; ipbximportuser_view_error(1)
+See import error
+
+; ipbximportuser_view_error
+See import errors
+
+; ipbximportuser_lines_status
+Lines status
+
+; ipbximportuser_lines_status($line|error)
+- Line %{line}$s : Error
+
+; ipbximportuser_lines_status($line|success)
+- Line %{line}$s : Success
+
+; fm_import
+File import :
+
+; error_fm_import(invalid_name)
+Invalide filename
+
+; error_fm_import(invalid_content)
+Invalid file content
