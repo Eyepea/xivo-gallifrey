@@ -16,14 +16,26 @@ Conference rooms
 ; fm_userinternal_guest
 Guest:
 
+; hlp_fm_userinternal_guest
+Config asterisk: userinternal_guest
+
 ; fm_generalagents_persistentagents
 Persistent agents:
+
+; hlp_fm_generalagents_persistentagents
+Config asterisk: generalagents_persistentagents
 
 ; fm_generalqueue_persistentmembers
 Persistent members:
 
+; hlp_fm_generalqueue_persistentmembers
+Config asterisk: generalqueue_persistentmembers
+
 ; fm_generalmeetme_audiobuffers
 Audio buffers size per channel:
+
+; hlp_fm_generalmeetme_audiobuffers
+Config asterisk: generalmeetme_audiobuffers
 
 ; fm_success-save
 Global advanced parameters successfully saved

@@ -13,6 +13,9 @@ Filtres LDAP
 ; accessfeatures_add
 Ajouter un hôte :
 
+; hlp_accessfeatures
+Config asterisk: accessfeatures
+
 ; bt_addaccess
 Ajouter un hôte
 

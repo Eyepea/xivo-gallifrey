@@ -13,6 +13,9 @@ LDAP filters
 ; accessfeatures_add
 Add an host:
 
+; hlp_accessfeatures
+Config asterisk: accessfeatures
+
 ; bt_addaccess
 Add an host
 

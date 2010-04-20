@@ -16,14 +16,23 @@ Chambres de conférence
 ; fm_userinternal_guest
 Invité :
 
+; hlp_fm_userinternal_guest
+Config asterisk: userinternal_guest
+
 ; fm_generalagents_persistentagents
 Agents persistants :
+
+; hlp_fm_generalagents_persistentagents
+Config asterisk: generalagents_persistentagents
 
 ; fm_generalagents_multiplelogin
 Permettre à une extension d'avoir plusieurs agents :
 
 ; fm_generalqueues_persistentmembers
 Membres persistants :
+
+; hlp_fm_generalqueue_persistentmembers
+Config asterisk: generalqueue_persistentmembers
 
 ; fm_generalqueues_autofill
 Activer le nouveau système de distribution des appels :
@@ -33,6 +42,9 @@ Enregistrement :
 
 ; fm_generalmeetme_audiobuffers
 Taille des tampons audio par canal :
+
+; hlp_fm_generalmeetme_audiobuffers
+Config asterisk: generalmeetme_audiobuffers
 
 ; fm_success-save
 Paramètres globaux avancés sauvegardées avec succès
