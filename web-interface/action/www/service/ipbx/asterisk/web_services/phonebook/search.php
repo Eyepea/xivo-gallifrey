@@ -47,11 +47,17 @@ else
 $_TPL->set_var('path',$path);
 $_TPL->set_var('vendor',$vendor);
 
+/* special CISCO rule
+   by default, cisco put 'SEP' + mac adress as name parameter value
+*/
+if($vendor == 'cisco' and isset($_QR['name']) and strncmp($_QR['name'], 'SEP', 3) === 0)
+    unset($_QR['name']);
+
 if(isset($_QR['name']) === false || dwho_has_len($_QR['name']) === false)
 {
 	if($is_xmlphonebook === true && $xmlvendor->has_tag_input() === true)
 		$_TPL->set_var('act','input');
-	else if($vendor === 'polycom')
+	else if($vendor === 'polycom' || $vendor === 'cisco')
 		$_TPL->set_var('act','input');
 	else
 		$_TPL->set_var('act','directory');
