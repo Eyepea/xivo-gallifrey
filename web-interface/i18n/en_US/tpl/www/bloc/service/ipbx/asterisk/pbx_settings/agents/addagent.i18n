@@ -204,3 +204,10 @@ Défault
 
 ; fm_agentfeatures_description
 Description:
+
+; bt_inuser
+Add user(s) ->
+
+; bt_outuser
+<- Remove user(s)
+
