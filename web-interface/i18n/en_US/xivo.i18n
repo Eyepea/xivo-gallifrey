@@ -6,6 +6,8 @@
 
 ; load util/size
 
+; load util/error
+
 ; load tpl/tpl
 
 ; xivo_service_label(ipbx)
