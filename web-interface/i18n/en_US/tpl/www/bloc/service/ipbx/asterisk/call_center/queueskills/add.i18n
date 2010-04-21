@@ -1,0 +1,38 @@
+; title_content_name
+Skills > Add
+
+; fm_queueskill_name
+Category:
+
+; fm_queueskill_items
+Values:
+
+; col_1
+Name
+
+; col_2
+Description
+
+; col_3
+Display Screen
+
+; no_disp
+No information
+
+; queueskill-name(empty)
+You must enter a category name
+
+; queueskill-name(regexp)
+The category name contains invalid characters
+
+; queueskill-value-name(empty)
+You must enter a name for the skill
+
+; queueskill-value-name(regexp)
+the name of the jurisdiction contains invalid characters
+
+; queueskill-value-printscr(maximumlength)
+the display screen should be at most 5 characters
+
+; queueskill-value-printscr(regexp)
+the display screen contains invalid characters

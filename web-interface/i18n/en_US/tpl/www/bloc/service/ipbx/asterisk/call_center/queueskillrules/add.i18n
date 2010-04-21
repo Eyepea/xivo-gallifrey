@@ -1,0 +1,29 @@
+; title_content_name
+Rules of expertise> Add
+
+; fm_queueskillrule_name
+Name:
+
+; fm_queueskillrule_rule
+Rule:
+
+; col_1
+Rules
+
+; no_disp
+No rules
+
+; queueskillrule-name(empty)
+You must specify a name for the rule
+
+; queueskillrule-name(alreadyset)
+The name specified is already assigned to another rule
+
+; queueskillrule-rule(empty)
+You must specify a rule
+
+; queueskillrule-rule(syntaxincorrect)
+The syntax of the rule is incorrect
+
+; queueskillrule-allrules(norule)
+You must specify at least one rule
