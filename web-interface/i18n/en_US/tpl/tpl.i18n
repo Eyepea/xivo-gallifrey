@@ -66,3 +66,17 @@ Select
 
 ; number_percent
 %.2f %%
+
+; fm_bt-previous
+< Previous
+
+; fm_bt-next
+Next >
+
+; fm_bt-validate
+Validate
+
+; fm_bt-verify
+Verify
+
+

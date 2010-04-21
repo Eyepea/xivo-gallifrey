@@ -7,3 +7,15 @@
 ; load util/size
 
 ; load tpl/tpl
+
+; xivo_service_label(ipbx)
+IPBX
+
+; xivo_service_ipbx_engine_label(asterisk)
+Asterisk
+
+; xivo_service_label(monitoring)
+Monitoring
+
+; xivo_service_monitoring_engine_label(monit)
+Monit

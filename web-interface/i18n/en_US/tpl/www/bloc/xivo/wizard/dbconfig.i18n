@@ -29,7 +29,7 @@ Port :
 XiVO database - name :
 
 ; fm_dbconfig_mysql-xivouser
-XiVO database - username : :
+XiVO database - username :
 
 ; fm_dbconfig_mysql-xivopass
 XiVO database - password :

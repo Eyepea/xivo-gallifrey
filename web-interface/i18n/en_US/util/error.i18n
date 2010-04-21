@@ -1,41 +1,41 @@
 ; error_generic(invalidvalue)
-Valeur invalide
+Invalid value
 
 ; error_generic(notempty)
-Valeur non vide
+Non empty value
 
 ; error_generic(empty)
-Valeur vide
+Empty value
 
 ; error_generic(cast)
-Type invalide
+Invalid Type invalide
 
 ; error_generic(minimumlength)
-Taille minimale non atteinte
+Value too short
 
 ; error_generic(maximumlength)
-Taille maximale atteinte
+Value too long
 
 ; error_generic(between)
-Intervalle invalide
+Invalid interval
 
 ; error_generic(callback)
-Valeur invalide
+Invalid value
 
 ; error_generic(regexp)
-Valeur invalide
+Invalid value
 
 ; error_generic(undefined)
-Valeur non défini
+Undefined value
 
 ; error_generic(notegal)
-Valeurs différentes
+Values not equal
 
 ; error_generic(invalid)
-Valeur invalide
+Invalid value
 
 ; error_generic(missing)
-Valeur manquante
+Missing value
 
 ; error_generic(cast)
-Type de la valeur incorrect
+Invalid type

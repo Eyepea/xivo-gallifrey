@@ -23,7 +23,7 @@ Re-enter password :
 Network interface
 
 ; fm_netiface_address
-Adress :
+Address :
 
 ; fm_netiface_netmask
 Netmask :
@@ -35,10 +35,10 @@ Default gateway :
 DNS servers
 
 ; fm_resolvconf_nameserver1
-primary :
+Primary :
 
 ; fm_resolvconf_nameserver2
-secondary :
+Secondary :
 
 ; cmt_fm_mainconfig_hostname
 
