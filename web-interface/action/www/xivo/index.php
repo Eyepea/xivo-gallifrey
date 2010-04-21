@@ -49,6 +49,33 @@ if(isset($_QR['service'],$_QR['action']) === true)
 	}
 }
 
+$mon_telephony = $monitoring->get_group('telephony');
+$mon_grpundef = $monitoring->get_group_undefined();
+$devstats = $monitoring->get_device();
+
+$_SYSINFO = new dwho_sysinfo();
+
+dwho::load_class('dwho_sort');
+$sort = new dwho_sort(array('key' => 'name'));
+
+if(is_array($mon_telephony) === true)
+	usort($mon_telephony,array(&$sort,'strnat_usort'));
+
+if(is_array($mon_grpundef) === true)
+	usort($mon_grpundef,array(&$sort,'strnat_usort'));
+
+if(is_array($devstats) === true)
+	usort($devstats,array(&$sort,'strnat_usort'));
+
+$_TPL->set_var('sysinfo',$monitoring->get_system());
+$_TPL->set_var('uptime',$_SYSINFO->uptime());
+$_TPL->set_var('cpustats',$_SYSINFO->cpustats());
+$_TPL->set_var('devstats',$devstats);
+$_TPL->set_var('memstats',$_SYSINFO->memstats(true));
+$_TPL->set_var('netstats',$_SYSINFO->netstats());
+$_TPL->set_var('mon_telephony',$mon_telephony);
+$_TPL->set_var('mon_grpundef',$mon_grpundef);
+
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');
 $dhtml->set_js('js/dwho/http.js');

@@ -17,9 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
+/*
 $this->file_include('xivo/monitoring/systems');
 $this->file_include('xivo/monitoring/memstats');
 $this->file_include('xivo/monitoring/services');
+*/
 
 ?>
+
+<div id="systems"><?php $this->file_include('xivo/monitoring/systems'); ?></div>
+<div id="memstats"><?php $this->file_include('xivo/monitoring/memstats'); ?></div>
+<div id="services"><?php $this->file_include('xivo/monitoring/services'); ?></div>
