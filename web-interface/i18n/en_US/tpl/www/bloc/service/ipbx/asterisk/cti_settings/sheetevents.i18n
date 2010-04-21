@@ -1,26 +1,26 @@
 ; title_content_name
-Fiches: Événements
+Sheet Events
 
 ; fm_sheetevents_agentlinked
-Agent se connecte:
+Agent connects:
 
 ; fm_sheetevents_agentunlinked
-Agent se déconnecte:
+Agent deconnects:
 
 ; fm_sheetevents_faxreceived
-Réception fax:
+Fax reception:
 
 ; fm_sheetevents_incomingqueue
-File d'attente entrante:
+Incoming queue:
 
 ; fm_sheetevents_incominggroup
-Groupe entrant:
+Incoming Group:
 
 ; fm_sheetevents_incomingdid
-(incoming did)
+(Incoming DID)
 
 ; fm_sheetevents_dial
-Numérotation:
+Numbering:
 
 ; fm_sheetevents_link
 (link)
@@ -29,10 +29,10 @@ Numérotation:
 (unlink)
 
 ; col_1
-Événement personnalisé
+Custom Event
 
 ; col_2
 Action
 
 ; no_custom
-Aucun évènement personnalisé
+No custom event
