@@ -73,40 +73,40 @@ Create a context
 ; fm_queue_strategy
 Ring strategy:
 
-; fm_queue_strategy-opt-leastrecent
+; fm_queue_strategy-opt(leastrecent)
 Least recent
 
-; fm_queue_strategy-opt-fewestcalls
+; fm_queue_strategy-opt(fewestcalls)
 Fewest calls
 
-; fm_queue_strategy-opt-roundrobin
+; fm_queue_strategy-opt(roundrobin)
 Round robin
 
-; fm_queue_strategy-opt-rrmemory
+; fm_queue_strategy-opt(rrmemory)
 Round robin memory
 
-; fm_queue_strategy-opt-random
+; fm_queue_strategy-opt(random)
 Random
 
-; fm_queue_strategy-opt-ringall
+; fm_queue_strategy-opt(ringall)
 Ring all
 
 ; fm_queuefeatures_timeout
 Ringing time:
 
-; fm_queuefeatures_timeout-opt0
+; fm_queuefeatures_timeout-opt(0)
 Unlimited
 
-; fm_queuefeatures_timeout-opt30
-30 seconds
+; fm_queuefeatures_timeout-opt-seconds
+%s seconds
 
-; fm_queuefeatures_timeout-opt60
+; fm_queuefeatures_timeout-opt-minute
 1 minute
 
-; fm_queuefeatures_timeout-opt90
-1 min. 30 sec.
+; fm_queuefeatures_timeout-opt-minute-seconds
+%s min. %s sec.
 
-; fm_queuefeatures_timeout-opt
+; fm_queuefeatures_timeout-opt-minutes
 %s minutes
 
 ; fm_queuefeatures_data-quality
@@ -142,6 +142,39 @@ On-Hold Music:
 ; fm_queue_announce
 Announce when a member picks up the call:
 
+; fm_queue_announce-frequency-opt(0)
+Disabled
+
+; fm_queue_announce-frequency-opt-seconds
+%s seconds
+
+; fm_queue_announce-frequency-opt-minute
+1 minute
+
+; fm_queue_announce-frequency-opt-minute-seconds
+%s min. %s sec.
+
+; fm_queue_announce-frequency-opt-minutes
+%s minutes
+
+; fm_queue_announce-frequency-opt-minutes-seconds
+%s min. %s sec.
+
+; fm_callerid_mode
+Customize the name of the caller:
+
+; fm_callerid_mode-opt(prepend)
+Préfix
+
+; fm_callerid_mode-opt(overwrite)
+Overwrite
+
+; fm_callerid_mode-opt(append)
+Append
+
+; fm_queuefeatures_preprocess-subroutine
+Subroutine pretreatment:
+
 ; fm_queue_context
 Exit context:
 
@@ -154,7 +187,7 @@ Weight:
 ; fm_queue_timeout
 Member reachability timeout:
 
-; fm_queue_timeout-opt0
+; fm_queue_timeout-opt(0)
 Disabled
 
 ; fm_queue_timeout-opt
@@ -163,7 +196,7 @@ Disabled
 ; fm_queue_retry
 Time before retrying a call to a member:
 
-; fm_queue_retry-opt1
+; fm_queue_retry-opt(1)
 1 second
 
 ; fm_queue_retry-opt
@@ -172,7 +205,7 @@ Time before retrying a call to a member:
 ; fm_queue_wrapuptime
 Delay before reassigning a call:
 
-; fm_queue_wrapuptime-opt0
+; fm_queue_wrapuptime-opt(0)
 Disabled
 
 ; fm_queue_wrapuptime-opt
@@ -265,19 +298,19 @@ Disabled
 ; fm_queue_announce-holdtime
 Announce hold time:
 
-; fm_queue_announce-holdtime-opt-no
+; fm_queue_announce-holdtime-opt(no)
 No
 
-; fm_queue_announce-holdtime-opt-yes
+; fm_queue_announce-holdtime-opt(yes)
 Yes
 
-; fm_queue_announce-holdtime-opt-once
+; fm_queue_announce-holdtime-opt(once)
 Just once
 
 ; fm_queue_announce-round-seconds
 Round up the hold time:
 
-; fm_queue_announce-round-seconds-opt0
+; fm_queue_announce-round-seconds-opt(0)
 Disabled
 
 ; fm_queue_announce-round-seconds-opt
@@ -289,28 +322,37 @@ Recording format:
 ; fm_queue_monitor-type
 Recording:
 
+; fm_queue_monitor-type-opt(no)
+No
+
+; fm_queue_monitor-type-opt(mixmonitor)
+MixMonitor
+
 ; fm_queue_joinempty
 Join an empty queue:
 
-; fm_queue_joinempty-opt-no
+; fm_queue_joinempty-opt(no)
 No
 
-; fm_queue_joinempty-opt-yes
+; fm_queue_joinempty-opt(yes)
 Yes
 
-; fm_queue_joinempty-opt-strict
+; fm_queue_joinempty-opt(strict)
 Strict
+
+; fm_queue_ringinuse
+Call a member already on:
 
 ; fm_queue_leavewhenempty
 Remove callers if there are no agents:
 
-; fm_queue_leavewhenempty-opt-no
+; fm_queue_leavewhenempty-opt(no)
 No
 
-; fm_queue_leavewhenempty-opt-yes
+; fm_queue_leavewhenempty-opt(yes)
 Yes
 
-; fm_queue_leavewhenempty-opt-strict
+; fm_queue_leavewhenempty-opt(strict)
 Strict
 
 ; fm_queue_eventwhencalled
@@ -325,7 +367,7 @@ Enable caller hold time reporting:
 ; fm_queue_memberdelay
 Delay before passing the call:
 
-; fm_queue_memberdelay-opt0
+; fm_queue_memberdelay-opt(0)
 Disabled
 
 ; fm_queue_memberdelay-opt
@@ -337,55 +379,55 @@ Delay before resetting a member response time:
 ; fm_queue_queue-youarenext
 You are next:
 
-; fm_queue_queue-youarenext-opt-default
+; fm_queue_queue-youarenext-opt(default)
 Default
 
 ; fm_queue_queue-thereare
 There are:
 
-; fm_queue_queue-thereare-opt-default
+; fm_queue_queue-thereare-opt(default)
 Default
 
 ; fm_queue_queue-callswaiting
 Calls waiting:
 
-; fm_queue_queue-callswaiting-opt-default
+; fm_queue_queue-callswaiting-opt(default)
 Default
 
 ; fm_queue_queue-holdtime
 Hold time is:
 
-; fm_queue_queue-holdtime-opt-default
+; fm_queue_queue-holdtime-opt(default)
 Default
 
 ; fm_queue_queue-minutes
 Minutes:
 
-; fm_queue_queue-minutes-opt-default
+; fm_queue_queue-minutes-opt(default)
 Default
 
 ; fm_queue_queue-seconds
 Seconds:
 
-; fm_queue_queue-seconds-opt-default
+; fm_queue_queue-seconds-opt(default)
 Default
 
 ; fm_queue_queue-thankyou
 Thank you for your patience:
 
-; fm_queue_queue-thankyou-opt-default
+; fm_queue_queue-thankyou-opt(default)
 Default
 
 ; fm_queue_queue-lessthan
 Less than:
 
-; fm_queue_queue-lessthan-opt-default
+; fm_queue_queue-lessthan-opt(default)
 Default
 
 ; fm_queue_queue-reporthold
 The Hold time of a caller:
 
-; fm_queue_queue-reporthold-opt-default
+; fm_queue_queue-reporthold-opt(default)
 Default
 
 ; fm_queue_periodic-announce
@@ -403,7 +445,7 @@ Add one or more announces ->
 ; bt_outpannounce
 <- Remove one or more announces
 
-; fm_queue_periodic-announce-opt-default
+; fm_queue_periodic-announce-opt(default)
 Default
 
 ; fm_queue_periodic-announce-frequency

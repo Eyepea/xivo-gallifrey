@@ -19,6 +19,9 @@ Add one or more agents ->
 ; bt_outagent
 <- Remove one or more agents
 
+; fm_agentgroup_description
+Description:
+
 ; bt_upagent
 Up one or more agents
 

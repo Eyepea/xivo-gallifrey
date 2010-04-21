@@ -8,10 +8,10 @@ Général
 Files d'attente
 
 ; fm_agentgroup_name
-Nom :
+Nom:
 
 ; fm_agents
-Agents :
+Agents:
 
 ; bt_inagent
 Ajouter un ou plusieurs agents ->
@@ -20,7 +20,7 @@ Ajouter un ou plusieurs agents ->
 <- Enlever un ou plusieurs agents
 
 ; fm_agentgroup_description
-Description :
+Description:
 
 ; bt_inqueue
 Ajouter une ou plusieurs files d'attente ->

@@ -26,19 +26,19 @@ Numéro :
 Mot de passe :
 
 ; fm_agentfeatures_context
-Contexte :
+Contexte:
 
 ; create_context
 Créer un contexte
 
 ; fm_agentfeatures_language
-Langue :
+Langue:
 
 ; fm_agentfeatures_numgroup
-Groupe :
+Groupe:
 
 ; fm_agentoptions_musiconhold
-Musique d'attente :
+Musique d'attente:
 
 ; bt_inuser
 Ajouter un ou plusieurs utilisateurs ->

@@ -38,7 +38,7 @@ Ajouter un ou plusieurs utilisateurs ->
 Créer un groupe d'agent
 
 ; fm_agentgroup
-Groupes :
+Groupes:
 
 ; bt_inagentgroup
 Ajouter un ou plusieurs groupes d'agents ->
@@ -50,7 +50,7 @@ Ajouter un ou plusieurs groupes d'agents ->
 Créer un agent
 
 ; fm_agent
-Agents :
+Agents:
 
 ; bt_inagent
 Ajouter un ou plusieurs agents ->
@@ -59,13 +59,13 @@ Ajouter un ou plusieurs agents ->
 <- Enlever un ou plusieurs agents
 
 ; fm_queuefeatures_name
-Nom :
+Nom:
 
 ; fm_queuefeatures_number
-Numéro :
+Numéro:
 
 ; fm_queue_strategy
-Stratégie de sonnerie :
+Stratégie de sonnerie:
 
 ; fm_queue_strategy-opt(leastrecent)
 Le moins récent
@@ -86,16 +86,16 @@ Aléatoire
 Tous
 
 ; fm_queuefeatures_context
-Contexte :
+Contexte:
 
 ; create_context
 Créer un contexte
 
 ; fm_queue_musiconhold
-Musique d'attente :
+Musique d'attente:
 
 ; fm_callerid_mode
-Personnaliser le nom de l'appelant :
+Personnaliser le nom de l'appelant:
 
 ; fm_callerid_mode-opt(prepend)
 Préfixer
@@ -107,10 +107,10 @@ Remplacer
 Suffixer
 
 ; fm_queuefeatures_preprocess-subroutine
-Sous-routine de prétraitement :
+Sous-routine de prétraitement:
 
 ; fm_queuefeatures_timeout
-Temps de sonnerie :
+Temps de sonnerie:
 
 ; fm_queuefeatures_timeout-opt(0)
 Illimité
@@ -128,46 +128,46 @@ Illimité
 %s minutes
 
 ; fm_queuefeatures_data-quality
-Qualité des données :
+Qualité des données:
 
 ; fm_queuefeatures_hitting-callee
-Autorise l'appelant à sortir avec "*" :
+Autorise l'appelant à sortir avec "*":
 
 ; fm_queuefeatures_hitting-caller
-Autorise l'appelé à sortir avec "*" :
+Autorise l'appelé à sortir avec "*":
 
 ; fm_queuefeatures_retries
-Aucun rappel pour le temps dépassé :
+Aucun rappel pour le temps dépassé:
 
 ; fm_queuefeatures_ring
-Sonnerie au lieu de musique d'attente :
+Sonnerie au lieu de musique d'attente:
 
 ; fm_queuefeatures_transfer-user
-Autorise l'appelé à transférer l'appelant :
+Autorise l'appelé à transférer l'appelant:
 
 ; fm_queuefeatures_transfer-call
-Autorise l'appelant à transférer l'appel :
+Autorise l'appelant à transférer l'appel:
 
 ; fm_queuefeatures_write-caller
-Autorise l'appelé à enregistrer l'appel :
+Autorise l'appelé à enregistrer l'appel:
 
 ; fm_queuefeatures_write-calling
-Autorise l'appelant à enregistrer l'appel :
+Autorise l'appelant à enregistrer l'appel:
 
 ; fm_queue_announce
-Annonce au décrochage du membre :
+Annonce au décrochage du membre:
 
 ; fm_queue_context
-Contexte de sortie :
+Contexte de sortie:
 
 ; fm_queue_servicelevel
-Niveau de service :
+Niveau de service:
 
 ; fm_queue_weight
-Poids :
+Poids:
 
 ; fm_queue_timeout
-Délai d'attente pour joindre un membre :
+Délai d'attente pour joindre un membre:
 
 ; fm_queue_timeout-opt(0)
 Désactivé
@@ -176,7 +176,7 @@ Désactivé
 %s secondes
 
 ; fm_queue_retry
-Délai d'attente avant rappel des membres :
+Délai d'attente avant rappel des membres:
 
 ; fm_queue_retry-opt(1)
 1 seconde
@@ -185,7 +185,7 @@ Délai d'attente avant rappel des membres :
 %s secondes
 
 ; fm_queue_wrapuptime
-Délai de réattribution d'appel :
+Délai de réattribution d'appel:
 
 ; fm_queue_wrapuptime-opt(0)
 Désactivé
@@ -194,10 +194,10 @@ Désactivé
 %s secondes
 
 ; fm_queue_maxlen
-Nombre de personnes autorisées à attendre :
+Nombre de personnes autorisées à attendre:
 
 ; fm_queue_announce-frequency
-Fréquence d'annonce de position :
+Fréquence d'annonce de position:
 
 ; fm_queue_announce-frequency-opt(0)
 Désactivée
@@ -218,7 +218,7 @@ Désactivée
 %s min. %s sec.
 
 ; fm_queue_announce-holdtime
-Annoncer le temps d'attente :
+Annoncer le temps d'attente:
 
 ; fm_queue_announce-holdtime-opt(no)
 Non
@@ -230,7 +230,7 @@ Oui
 Une fois
 
 ; fm_queue_announce-round-seconds
-Arrondi du temps d'attente :
+Arrondi du temps d'attente:
 
 ; fm_queue_announce-round-seconds-opt(0)
 Désactivé
@@ -239,10 +239,10 @@ Désactivé
 %s secondes
 
 ; fm_queue_monitor-format
-Format d'enregistrement :
+Format d'enregistrement:
 
 ; fm_queue_monitor-type
-Enregistrement :
+Enregistrement:
 
 ; fm_queue_monitor-type-opt(no)
 Non
@@ -251,7 +251,7 @@ Non
 MixMonitor
 
 ; fm_queue_joinempty
-Joindre une file d'attente vide :
+Joindre une file d'attente vide:
 
 ; fm_queue_joinempty-opt(no)
 Non
@@ -263,7 +263,7 @@ Oui
 Strict
 
 ; fm_queue_leavewhenempty
-Vider la file d'attente :
+Vider la file d'attente:
 
 ; fm_queue_leavewhenempty-opt(no)
 Non
@@ -275,19 +275,19 @@ Oui
 Strict
 
 ; fm_queue_ringinuse
-Appeler un membre déjà en communication :
+Appeler un membre déjà en communication:
 
 ; fm_queue_eventwhencalled
-Activer les événements (AMI) :
+Activer les événements (AMI):
 
 ; fm_queue_eventmemberstatus
-Activer les événements des membres (AMI) :
+Activer les événements des membres (AMI):
 
 ; fm_queue_reportholdtime
-Activer le rapport d'attente d'un appelant :
+Activer le rapport d'attente d'un appelant:
 
 ; fm_queue_memberdelay
-Délai d'attente avant de passer l'appel :
+Délai d'attente avant de passer l'appel:
 
 ; fm_queue_memberdelay-opt(0)
 Désactivé
@@ -296,64 +296,64 @@ Désactivé
 %s secondes
 
 ; fm_queue_timeoutrestart
-Délai de réinitialisation du temps de réponse d'un membre :
+Délai de réinitialisation du temps de réponse d'un membre:
 
 ; fm_queue_queue-youarenext
-Vous serez le prochain :
+Vous serez le prochain:
 
 ; fm_queue_queue-youarenext-opt(default)
 Défaut
 
 ; fm_queue_queue-thereare
-Il y a :
+Il y a:
 
 ; fm_queue_queue-thereare-opt(default)
 Défaut
 
 ; fm_queue_queue-callswaiting
-Appel en attente :
+Appel en attente:
 
 ; fm_queue_queue-callswaiting-opt(default)
 Défaut
 
 ; fm_queue_queue-holdtime
-Durée d'attente est de :
+Durée d'attente est de:
 
 ; fm_queue_queue-holdtime-opt(default)
 Défaut
 
 ; fm_queue_queue-minutes
-Minutes :
+Minutes:
 
 ; fm_queue_queue-minutes-opt(default)
 Défaut
 
 ; fm_queue_queue-seconds
-Secondes :
+Secondes:
 
 ; fm_queue_queue-seconds-opt(default)
 Défaut
 
 ; fm_queue_queue-thankyou
-Merci de votre patience :
+Merci de votre patience:
 
 ; fm_queue_queue-thankyou-opt(default)
 Défaut
 
 ; fm_queue_queue-lessthan
-Reste plus que :
+Reste plus que:
 
 ; fm_queue_queue-lessthan-opt(default)
 Défaut
 
 ; fm_queue_queue-reporthold
-Durée d'attente d'un appelant :
+Durée d'attente d'un appelant:
 
 ; fm_queue_queue-reporthold-opt(default)
 Défaut
 
 ; fm_queue_periodic-announce
-Annonces périodiques :
+Annonces périodiques:
 
 ; bt_uppannounce
 Monter une ou plusieurs annonces
@@ -371,4 +371,4 @@ Ajouter une ou plusieurs annonces ->
 Défaut
 
 ; fm_queue_periodic-announce-frequency
-Fréquence des annonces périodiques :
+Fréquence des annonces périodiques:

@@ -4,6 +4,9 @@ Agents > Add an agent
 ; smenu_general
 General
 
+; smenu_users
+Users
+
 ; smenu_queues
 Queues
 
@@ -21,6 +24,21 @@ Number:
 
 ; fm_agentfeatures_passwd
 Password:
+
+; fm_agentfeatures_context
+Context:
+
+; create_context
+Add a context
+
+; fm_agentfeatures_language
+Language:
+
+; fm_agentfeatures_numgroup
+Group:
+
+; fm_agentoptions_musiconhold
+Music on hold:
 
 ; fm_agentfeatures_silent
 Disable connection announce:
@@ -114,3 +132,75 @@ No queues
 
 ; create_queue
 Create a queue
+
+; fm_agentoptions_ackcall
+Press "#" before taking a call:
+
+; fm_agentoptions_ackcall-opt(no)
+No
+
+; fm_agentoptions_ackcall-opt(yes)
+Yes
+
+; fm_agentoptions_ackcall-opt(always)
+Always
+
+; fm_agentoptions_endcall
+Enable the ability to hang with "*":
+
+; fm_agentoptions_autologoff
+Ring time before disconnection:
+
+; fm_agentoptions_autologoff-opt(0)
+Unlimited
+
+; fm_agentoptions_autologoff-opt
+%s seconds
+
+; fm_agentoptions_autologoffunavail
+Automatic logout if the channel is unavailable:
+
+; fm_agentoptions_wrapuptime
+Deadline for reallocation of Appeal:
+
+; fm_agentoptions_wrapuptime-opt(0)
+Disabled
+
+; fm_agentoptions_wrapuptime-opt-seconds
+%s seconds
+
+; fm_agentoptions_maxlogintries
+Number of logins:
+
+; fm_agentoptions_maxlogintries-opt(0)
+Unlimited
+
+; fm_agentoptions_maxlogintries-opt
+%s
+
+; fm_agentoptions_updatecdr
+Recording in the Call Logs:
+
+; fm_agentoptions_recordagentcalls
+Call Recording:
+
+; fm_agentoptions_recordformat
+Recording Format:
+
+; fm_agentoptions_urlprefix
+URL access to records:
+
+; fm_agentoptions_custom_beep
+File sound beeps:
+
+; fm_agentoptions_custom-beep-opt(default)
+Défault
+
+; fm_agentoptions_goodbye
+Sound file end a call:
+
+; fm_agentoptions_goodbye-opt(default)
+Défault
+
+; fm_agentfeatures_description
+Description:
