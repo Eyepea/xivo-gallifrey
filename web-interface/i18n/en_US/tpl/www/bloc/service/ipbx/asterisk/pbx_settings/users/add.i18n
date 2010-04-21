@@ -115,11 +115,74 @@ Invite:
 ; fm_protocol_accountcode
 Account number:
 
-; fm_protocol_qualify
-Monitoring:
+; fm_protocol_progressinband
+Events in the band RING:
+
+; fm_protocol_progressinband-opt(no)
+No
+
+; fm_protocol_progressinband-opt(yes)
+Yes
+
+; fm_protocol_progressinband-opt(never)
+Never
 
 ; fm_protocol_dtmfmode
 DTMF:
+
+; fm_protocol_dtmfmode-opt(rfc2833)
+RFC 2833
+
+; fm_protocol_dtmfmode-opt(inband)
+InBand
+
+; fm_protocol_dtmfmode-opt(info)
+INFO
+
+; fm_protocol_dtmfmode-opt(auto)
+Auto
+
+; fm_protocol_rfc2833compensate
+Compensating for RFC 2833 DTMF from another IP PBX:
+
+; fm_protocol_qualify
+Monitoring:
+
+; fm_protocol_qualify-opt(no)
+Non
+
+; fm_protocol_qualify-opt(yes)
+Oui
+
+; fm_protocol_qualify-opt
+%s millisecondes
+
+; fm_protocol_rtptimeout
+RTP timeout:
+
+; fm_protocol_rtptimeout-opt(0)
+Disabled
+
+; fm_protocol_rtptimeout-opt
+%s seconds
+
+; fm_protocol_rtpholdtimeout
+RTP hold timeout:
+
+; fm_protocol_rtpholdtimeout-opt(0)
+Disabled
+
+; fm_protocol_rtpholdtimeout-opt
+%s seconds
+
+; fm_protocol_rtpkeepalive
+RTP presence:
+
+; fm_protocol_rtpkeepalive-opt(0)
+Disabled
+
+; fm_protocol_rtpkeepalive-opt
+%s seconds
 
 ; fm_userfeatures_number
 Phone number:
@@ -132,6 +195,27 @@ Unlimited
 
 ; fm_userfeatures_ringseconds-opt
 %s seconds
+
+; fm_protocol_allowtransfer
+Allow transfer:
+
+; fm_protocol_autoframing
+Auto framing:
+
+; fm_protocol_videosupport
+Video support:
+
+; fm_protocol_maxcallbitrate
+Max call bitrate video:
+
+; fm_protocol_codec-disallow
+Codecs disallow :
+
+; fm_protocol_codec-disallow-opt(all)
+All
+
+; fm_protocol_g726nonstandard
+Activate G726 no standard:
 
 ; fm_userfeatures_simultcalls
 Simultaneous calls:
@@ -310,22 +394,88 @@ Caller ID:
 ; fm_userfeatures_outcallerid
 Outgoing Caller ID:
 
-; fm_userfeatures_outcallerid-opt-default
+; fm_userfeatures_outcallerid-opt(default)
 Default
 
-; fm_userfeatures_outcallerid-opt-anonymous
+; fm_userfeatures_outcallerid-opt(anonymous)
 Anonymous
 
-; fm_userfeatures_outcallerid-opt-custom
+; fm_userfeatures_outcallerid-opt(custom)
 Customize
+
+; fm_userfeatures_preprocess-subroutine
+Subroutine preprocess:
+
+; fm_protocol_insecure
+Insecure:
+
+; fm_protocol_insecure-opt(no)
+No
+
+; fm_protocol_insecure-opt(port)
+Port
+
+; fm_protocol_insecure-opt(invite)
+Invite
+
+; fm_protocol_insecure-opt(all)
+All
+
+; fm_protocol_permit
+IP address or subnet mask allowed:
+
+; fm_protocol_deny
+IP address or subnet mask denied:
+
+; fm_protocol_trustrpid
+Trusting the Remote-Party-ID:
+
+; fm_protocol_sendrpid
+Send the Remote-Party-ID:
+
+; fm_protocol_allowsubscribe
+Enable support subscriptions:
+
+; fm_protocol_allowoverlap
+Enable overlap:
+
+; fm_protocol_promiscredir
+Support for 302 redirects:
+
+; fm_protocol_usereqphone
+Add "user=phone" in the URI:
+
+; fm_protocol_fromuser
+Rewriting the From field-User:
+
+; fm_protocol_fromdomain
+Rewriting the From field-Domain:
+
+; fm_protocol_canreinvite-opt(no)
+No
+
+; fm_protocol_canreinvite-opt(yes)
+Yes
+
+; fm_protocol_canreinvite-opt(update)
+Update
+
+; fm_protocol_canreinvite-opt(nonat)
+Without NAT
+
+; fm_protocol_canreinvite-opt(update-nonat)
+Update without NAT
+
+; fm_protocol_useclientcode
+Client code:
 
 ; fm_autoprov_modact
 Mode:
 
-; fm_autoprov_modact-guest
+; fm_autoprov_modact-opt(guest)
 Initialize
 
-; fm_autoprov_modact-prov
+; fm_autoprov_modact-opt(prov)
 Provisioning
 
 ; fm_autoprov_vendormodel
@@ -343,6 +493,9 @@ Type
 ; col_phonefunckey-typeval
 Destination
 
+; col_phonefunckey-label
+Label
+
 ; col_phonefunckey-supervision
 Supervision
 
@@ -355,80 +508,146 @@ Delete
 ; no_phonefunckey
 No function key
 
-; fm_phonefunckey_type-opt-user
+; fm_phonefunckey_type-opt(user)
 User
 
-; fm_phonefunckey_type-opt-group
+; fm_phonefunckey_type-opt(group)
 Group
 
-; fm_phonefunckey_type-opt-queue
+; fm_phonefunckey_type-opt(queue)
 Queue
 
-; fm_phonefunckey_type-opt-meetme
+; fm_phonefunckey_type-opt(meetme)
 Conference room
 
-; fm_phonefunckey_type-opt-extension
+; fm_phonefunckey_type-opt(extension)
 Extension
 
-; fm_phonefunckey_type-opt-bosssecretary
+; fm_phonefunckey_type-opt(bosssecretary)
 Filter Boss - Secretary
 
-; fm_phonefunckey_type-opt-custom
+; fm_phonefunckey_type-opt(custom)
 Customized
 
-; fm_phonefunckey_extension-typeval-opt-generalfeatures-parkext
-Parking
+; fm_phonefunckey_type-optgroup(extension-general)
+General
 
-; fm_phonefunckey_extension-typeval-opt-generalfeatures-pickupexten
+; fm_phonefunckey_type-opt(generalfeatures-pickupexten)
 Group interception
 
-; fm_phonefunckey_extension-typeval-opt-featuremap-blindxfer
-Blind transfer
+; fm_phonefunckey_type-opt(extenfeatures-pickup)
+Call interception
 
-; fm_phonefunckey_extension-typeval-opt-featuremap-atxfer
-Indirect transfer
-
-; fm_phonefunckey_extension-typeval-opt-featuremap-automon
+; fm_phonefunckey_type-opt(featuremap-automon)
 Online call recording
 
-; fm_phonefunckey_extension-typeval-opt-featuremap-disconnect
-Hangup
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmusermsg
-Reach the voicemail
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-fwdundoall
-Disable all forwarding
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-recsnd
+; fm_phonefunckey_type-opt(extenfeatures-recsnd)
 Sound recording
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-phonestatus
+; fm_phonefunckey_type-opt(extenfeatures-phonestatus)
 Phone status
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablevm
-Enable voicemail
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-enablednd
+; fm_phonefunckey_type-opt(extenfeatures-enablednd)
 Do not disturb
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-callrecord
+; fm_phonefunckey_type-opt(extenfeatures-callrecord)
 Call recording
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-incallfilter
+; fm_phonefunckey_type-opt(extenfeatures-incallfilter)
 Incoming call filtering
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-agentdynamiclogin
-Connect a dynamic agent
-
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-calllistening
+; fm_phonefunckey_type-opt(extenfeatures-calllistening)
 Listen to online calls
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-vmuserpurge
+; fm_phonefunckey_type-opt(extenfeatures-directoryaccess)
+Directory access
+
+; fm_phonefunckey_type-opt(extenfeatures-bsfilter)
+Filtering Boss - Secretary
+
+; fm_phonefunckey_type-optgroup(extension-transfers)
+Transfers
+
+; fm_phonefunckey_type-opt(featuremap-blindxfer)
+Blind transfer
+
+; fm_phonefunckey_type-opt(featuremap-atxfer)
+Indirect transfer
+
+; fm_phonefunckey_type-opt(featuremap-disconnect)
+Hangup
+
+; fm_phonefunckey_type-optgroup(extension-forwards)
+Forwards
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdundoall)
+Disable all forwarding
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdrna)
+Enable / Disable forwarding on no answer
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdbusy)
+Enable / Disable forwarding on busy
+
+; fm_phonefunckey_type-opt(extenfeatures-fwdunc)
+Enable / Disable forwarding unconditional
+
+; fm_phonefunckey_type-optgroup(extension-voicemail)
+Voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-enablevm)
+Enable voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-enablevmbox)
+Activate voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-vmusermsg)
+Reach the voicemail
+
+; fm_phonefunckey_type-opt(extenfeatures-vmuserpurge)
 Delete messages from voicemail
 
-; fm_phonefunckey_extension-typeval-opt-extenfeatures-directoryaccess
-Directory access
+; fm_phonefunckey_type-optgroup(extension-agent)
+Agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogtoggle)
+Disconnect a static agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogin)
+Connect a static agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentstaticlogoff)
+Disconnect a dynamic agent
+
+; fm_phonefunckey_type-opt(extenfeatures-agentdynamiclogin)
+Connect a dynamic agent
+
+; fm_phonefunckey_type-optgroup(extension-groups)
+Groupes
+
+; fm_phonefunckey_type-opt(extenfeatures-grouptogglemember)
+Ajoute/enlève un membre d'un groupe
+
+; fm_phonefunckey_type-opt(extenfeatures-groupaddmember)
+Ajoute un membre dans un groupe
+
+; fm_phonefunckey_type-opt(extenfeatures-groupremovemember)
+Removes a member of a group
+
+; fm_phonefunckey_type-opt(extenfeatures-queuetogglemember)
+Add / remove a member of a queue
+
+; fm_phonefunckey_type-opt(extenfeatures-queueaddmember)
+Adds a member in a queue
+
+; fm_phonefunckey_type-opt(extenfeatures-queueremovemember)
+Removes a member of a queue
+
+; fm_phonefunckey_type-optgroup(extension-parking)
+Parking
+
+; fm_phonefunckey_type-opt(generalfeatures-parkext)
+Parking
 
 ; fm_phonefunckey_supervision-opt(0)
 Disabled
@@ -478,8 +697,29 @@ Secretary
 ; create_agent
 Create Agent
 
+; fm_protocol_t38pt-udptl
+Activate T38 (UDPTL) :
+
+; fm_protocol_t38pt-rtp
+Activate T38 (RTP) :
+
+; fm_protocol_t38pt-tcp
+Activate T38 (TCP) :
+
+; fm_protocol_t38pt-usertpsource
+Use the source IP address as the destination for the T38:
+
 ; col_1
 Skill
+
+; smenu_t38
+T38
+
+; fm_userfeatures_profileclient
+Profil:
+
+; fm_userfeatures_agentid
+Agent:
 
 ; col_2
 Weight
