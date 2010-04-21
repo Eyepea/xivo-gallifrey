@@ -341,4 +341,6 @@ phone initialization :
 ; fm_generalfeatures_parkingtime-opt-minutes-seconds
 %s min. %s sec.
 
+; fm_extenfeatures_enable-enablevmbox
+Enable voicemail:
 

@@ -114,3 +114,16 @@ No number range
 
 ; fm_context_context-include 
 Include sub-contexts
+
+; bt_upcontext
+Move up context(s)
+
+; bt_downcontext
+Move down context(s)
+
+; bt_incontext
+Add context(s) ->
+
+; bt_outcontext
+<- Remove context(s)
+

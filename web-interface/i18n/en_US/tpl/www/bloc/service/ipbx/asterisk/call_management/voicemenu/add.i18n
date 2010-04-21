@@ -1,3 +1,5 @@
+; load struct/service/ipbx/asterisk/dialaction
+
 ; title_content_name
 Voice menus > Add
 
@@ -5,7 +7,7 @@ Voice menus > Add
 General
 
 ; smenu_flow
-Flux
+Flow
 
 ; smenu_events
 Events

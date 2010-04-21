@@ -205,7 +205,7 @@ Yes
 RTP wait timeout :
 
 ; fm_protocol_rtptimeout-opt(0)
-Deactivated
+Disabled
 
 ; fm_protocol_rtptimeout-opt
 %s seconds
@@ -214,7 +214,7 @@ Deactivated
 RTP hold timeout :
 
 ; fm_protocol_rtpholdtimeout-opt(0)
-Deactivated
+Disabled
 
 ; fm_protocol_rtpholdtimeout-opt
 %s seconds
@@ -223,7 +223,7 @@ Deactivated
 RTP keepalive :
 
 ; fm_protocol_rtpkeepalive-opt(0)
-Deactivated
+Disabled
 
 ; fm_protocol_rtpkeepalive-opt
 %s seconds
@@ -247,7 +247,7 @@ Activate non-standard G.726 support :
 Customize codecs :
 
 ; fm_protocol_codec-disallow
-Deactivated Codecs :
+Disabled Codecs :
 
 ; fm_protocol_codec-disallow-opt(all)
 All

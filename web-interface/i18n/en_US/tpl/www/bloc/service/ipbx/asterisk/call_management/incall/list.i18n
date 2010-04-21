@@ -57,3 +57,61 @@ No incoming calls found
 
 ; opt_delete_confirm
 Are you sure you want to delete this incoming call?
+
+; incall_destination-none
+None
+
+; incall_destination-endcall-hangup
+Hangup
+
+; incall_destination-endcall-busy
+Busy
+
+; incall_destination-endcall-congestion
+Congestion
+
+; incall_destination-user
+User
+
+; incall_destination-group
+Group
+
+; incall_destination-queue
+Queue
+
+; incall_destination-meetme
+Conference room
+
+; incall_destination-voicemail
+Voicemail
+
+; incall_destination-schedule
+Schedule
+
+; incall_destination-voicemenu
+Voicemenu
+
+; incall_destination-extension
+Extension
+
+; incall_destination-application-callbackdisa
+CallBackDISA
+
+; incall_destination-application-disa
+DISA
+
+; incall_destination-application-directory
+Directory
+
+; incall_destination-application-faxtomail
+FaxToMail
+
+; incall_destination-application-voicemailmain
+Voicemail consultation
+
+; incall_destination-sound
+Sound file
+
+; incall_destination-custom
+Custom
+
