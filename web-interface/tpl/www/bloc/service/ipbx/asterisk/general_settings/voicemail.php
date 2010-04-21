@@ -238,7 +238,7 @@ endif;
 		<?=$form->select(array('name'		=> 'voicemail[formatlist]',
 				       'label'		=> false,
 				       'id'		=> 'it-voicemail-formatlist',
-				       'help'	=> $this->bbf('hlp_voicemail-formatlist'),
+#				       'help'	=> $this->bbf('hlp_voicemail-formatlist'),
 				       'multiple'	=> true,
 				       'size'		=> 5,
 				       'paragraph'	=> false,

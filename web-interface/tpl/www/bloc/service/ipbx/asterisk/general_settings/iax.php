@@ -402,7 +402,7 @@ endif;
 				    'key'		=> false,
 				    'bbf'		=> 'fm_maxauthreq-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
-				    'help'		=> $this->bbf('hlp_fm_.language'),
+				    'help'		=> $this->bbf('hlp_fm_maxauthreq'),
 				    'selected'	=> $this->get_var('info','maxauthreq','var_val'),
 				    'default'	=> $element['maxauthreq']['default']),
 			      $element['maxauthreq']['value']),

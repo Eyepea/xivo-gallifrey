@@ -29,7 +29,7 @@ Asterisk config: persistentagents
 Persistent members:
 
 ; hlp_fm_generalqueues_persistentmembers
-Config asterisk: persistentmembers
+Asterisk config: persistentmembers
 
 ; fm_generalmeetme_audiobuffers
 Audio buffers size per channel:
@@ -40,6 +40,9 @@ Asterisk config: audiobuffers
 ; fm_success-save
 Global advanced parameters successfully saved
 
+; fm_generalagents_multiplelogin
+Possibly multiple agents for one extension :
+
 ; hlp_fm_generalagents_multiplelogin
 Asterisk config: multiplelogin
 
@@ -48,3 +51,13 @@ Asterisk Config: autofill
 
 ; hlp_fm_generalqueues_monitor-type
 Asterisk config: monitortype = MixMonitor
+
+; fm_generalqueues_persistentmembers
+Persistent members :
+
+; fm_generalqueues_autofill
+Autofill system :
+
+; fm_generalqueues_monitor-type
+Record :
+

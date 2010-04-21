@@ -20,37 +20,37 @@ Advanced
 Port:
 
 ; cmt_fm_bindport
-Config asterisk: bindport
+Asterisk config: bindport
 
 ; hlp_fm_bindport
-Config asterisk: bindport
+Asterisk config: bindport
 
 ; fm_bindaddr
 IP Address:
 
 ; cmt_fm_bindaddr
-Config asterisk: bindaddr
+Asterisk config: bindaddr
 
 ; hlp_fm_bindaddr
-Config asterisk: bindaddr
+Asterisk config: bindaddr
 
 ; fm_iaxthreadcount
 Number of threads:
 
 ; cmt_fm_iaxthreadcount
-Config asterisk: iaxthreadcount
+Asterisk config: iaxthreadcount
 
 ; hlp_fm_iaxthreadcount
-Config asterisk: iaxthreadcount
+Asterisk config: iaxthreadcount
 
 ; fm_iaxmaxthreadcount
 Maximum number of threads:
 
 ; cmt_fm_iaxmaxthreadcount
-Config asterisk:iaxmaxthreadcount
+Asterisk config:iaxmaxthreadcount
 
 ; hlp_fm_iaxmaxthreadcount
-Config asterisk: iaxmaxthreadcount
+Asterisk config: iaxmaxthreadcount
 
 ; fm_iaxmaxthreadcount-opt(0)
 Disabled
@@ -62,37 +62,37 @@ Disabled
 IAX Compatibility:
 
 ; cmt_fm_iaxcompat
-Config asterisk: iaxcompat
+Asterisk config: iaxcompat
 
 ; hlp_fm_iaxcompat
-Config asterisk: iaxcompat
+Asterisk config: iaxcompat
 
 ; fm_authdebug
 Authentication debugging:
 
 ; cmt_fm_authdebug
-Config asterisk: authdebug
+Asterisk config: authdebug
 
 ; hlp_fm_authdebug
-Config asterisk: authdebug
+Asterisk config: authdebug
 
 ; fm_delayreject
 Reject delay:
 
 ; cmt_fm_delayreject
-Config asterisk: delayreject
+Asterisk config: delayreject
 
 ; hlp_fm_delayreject
-Config asterisk: delayreject
+Asterisk config: delayreject
 
 ; fm_trunkfreq
 Trunking frequency:
 
 ; cmt_fm_trunkfreq
-Config asterisk: trunkfreq
+Asterisk config: trunkfreq
 
 ; hlp_fm_trunkfreq
-Config asterisk: trunkfreq
+Asterisk config: trunkfreq
 
 ; fm_trunkfreq-opt
 %s milliseconds
@@ -101,46 +101,46 @@ Config asterisk: trunkfreq
 Add an individual timestamp:
 
 ; cmt_fm_trunktimestamps
-Config asterisk: trunktimestamps
+Asterisk config: trunktimestamps
 
 ; hlp_fm_trunktimestamps
-Config asterisk: trunktimestamps
+Asterisk config: trunktimestamps
 
 ; fm_regcontext
 Recording context:
 
 ; cmt_fm_regcontext
-Config asterisk: regcontext
+Asterisk config: regcontext
 
 ; hlp_fm_regcontext
-Config asterisk: regcontext
+Asterisk config: regcontext
 
 ; fm_minregexpire
 Minimum registration expiration time:
 
 ; cmt_fm_minregexpire
-Config asterisk: minregexpire
+Asterisk config: minregexpire
 
 ; hlp_fm_minregexpire
-Config asterisk: minregexpire
+Asterisk config: minregexpire
 
 ; fm_maxregexpire
 Maximum registration expiration time:
 
 ; cmt_fm_maxregexpire
-Config asterisk: maxregexpire
+Asterisk config: maxregexpire
 
 ; hlp_fm_maxregexpire
-Config asterisk: maxregexpire
+Asterisk config: maxregexpire
 
 ; fm_regexpire-opt(0)
-Désactivé
+Disabled
 
 ; fm_regexpire-opt-second
-1 seconde
+1 second
 
 ; fm_regexpire-opt-seconds
-%s secondes
+%s seconds
 
 ; fm_regexpire-opt-minute
 1 minute
@@ -155,10 +155,10 @@ Désactivé
 Bandwidth:
 
 ; cmt_fm_bandwidth
-Config asterisk: bandwidth
+Asterisk config: bandwidth
 
 ; hlp_fm_bandwidth
-Config asterisk: bandwidth
+Asterisk config: bandwidth
 
 ; fm_bandwidth-opt(low)
 Low
@@ -173,28 +173,28 @@ High
 TOS:
 
 ; cmt_fm_tos
-Config asterisk: tos
+Asterisk config: tos
 
 ; hlp_fm_tos
-Config asterisk: tos
+Asterisk config: tos
 
 ; fm_jitterbuffer
 Jitter buffer:
 
 ; cmt_fm_jitterbuffer
-Config asterisk: jitterbuffer
+Asterisk config: jitterbuffer
 
 ; hlp_fm_jitterbuffer
-Config asterisk: jitterbuffer
+Asterisk config: jitterbuffer
 
 ; fm_forcejitterbuffer
 Force Jitter buffer:
 
 ; cmt_fm_forcejitterbuffer
-Config asterisk: forcejitterbuffer
+Asterisk config: forcejitterbuffer
 
 ; hlp_fm_forcejitterbuffer
-Config asterisk: forcejitterbuffer
+Asterisk config: forcejitterbuffer
 
 ; fm_dropcount
 Drop count:
@@ -203,10 +203,10 @@ Drop count:
 Maximum Jitter buffer:
 
 ; cmt_fm_maxjitterbuffer
-Config asterisk: maxjitterbuffer
+Asterisk config: maxjitterbuffer
 
 ; hlp_fm_maxjitterbuffer
-Config asterisk: maxjitterbuffer
+Asterisk config: maxjitterbuffer
 
 ; fm_maxjitterbuffer-opt(0)
 Disabled
@@ -218,10 +218,10 @@ Disabled
 Maximum number of frames interpolation:
 
 ; cmt_fm_maxjitterinterps
-Config asterisk: maxjitterinterps
+Asterisk config: maxjitterinterps
 
 ; hlp_fm_maxjitterinterps
-Config asterisk: maxjitterinterps
+Asterisk config: maxjitterinterps
 
 ; fm_maxjitterinterps-opt(0)
 Disabled
@@ -233,10 +233,10 @@ Disabled
 Resynchronization on high delay:
 
 ; cmt_fm_resyncthreshold
-Config asterisk: resyncthreshold
+Asterisk config: resyncthreshold
 
 ; hlp_fm_resyncthreshold
-Config asterisk: resyncthreshold
+Asterisk config: resyncthreshold
 
 ; fm_resyncthreshold-opt(-1)
 Disabled
@@ -251,19 +251,19 @@ Disabled
 Account numbers:
 
 ; cmt_fm_accountcode
-Config asterisk: accountcode
+Asterisk config: accountcode
 
 ; hlp_fm_accountcode
-Config asterisk: accountcode
+Asterisk config: accountcode
 
 ; fm_amaflags
 Billing flags:
 
 ; cmt_fm_amaflags
-Config asterisk: amaflags
+Asterisk config: amaflags
 
 ; hlp_fm_amaflags
-Config asterisk: amaflags
+Asterisk config: amaflags
 
 ; fm_amaflags-opt-default
 Default
@@ -275,19 +275,19 @@ Billing
 Activate ADSI support:
 
 ; cmt_fm_adsi
-Config asterisk: adsi
+Asterisk config: adsi
 
 ; hlp_fm_adsi
-Config asterisk: adsi
+Asterisk config: adsi
 
 ; fm_transfer
 Activate transfers:
 
 ; cmt_fm_transfer
-Config asterisk: transfer
+Asterisk config: transfer
 
 ; hlp_fm_transfer
-Config asterisk: transfer
+Asterisk config: transfer
 
 ; fm_transfer-opt(yes)
 Yes
@@ -302,28 +302,31 @@ only voice
 Languages:
 
 ; cmt_fm_language
-Config asterisk: language
+Asterisk config: language
 
 ; hlp_fm_language
-Config asterisk: language
+Asterisk config: language
 
 ; fm_mohinterpret
 Music on Hold:
 
 ; cmt_fm_mohinterpret
-Config asterisk: mohinterpret
+Asterisk config: mohinterpret
 
 ; hlp_fm_mohinterpret
-Config asterisk: mohinterpret
+Asterisk config: mohinterpret
 
 ; fm_mohsuggest
 Music waiting on an outgoing call:
 
 ; cmt_fm_mohsuggest
-Config asterisk: mohsuggest
+Asterisk config: mohsuggest
 
 ; hlp_fm_mohsuggest
-Config asterisk: mohsuggest
+Asterisk config: mohsuggest
+
+; hlp_fm_encryption
+Asterisk config: encryption
 
 ; fm_encryption
 Encryption:
@@ -341,10 +344,10 @@ AES 128
 Maximum AUTHREQ allowed:
 
 ; cmt_fm_maxauthreq
-Config asterisk: maxauthreq
+Asterisk config: maxauthreq
 
 ; hlp_fm_maxauthreq
-Config asterisk: maxauthreq
+Asterisk config: maxauthreq
 
 ; fm_maxauthreq-opt(0)
 Disabled
@@ -356,10 +359,10 @@ Disabled
 Codecs priority:
 
 ; cmt_fm_codecpriority
-Config asterisk: codecpriority
+Asterisk config: codecpriority
 
 ; hlp_fm_codecpriority
-Config asterisk: codecpriority
+Asterisk config: codecpriority
 
 ; fm_codecpriority-opt(caller)
 Caller
@@ -377,10 +380,10 @@ Host
 Disallowed codecs:
 
 ; cmt_fm_codec-disallow
-Config asterisk: codec-disallow
+Asterisk config: codec-disallow
 
 ; hlp_fm_codec-disallow
-Config asterisk: codec-disallow
+Asterisk config: codec-disallow
 
 ; fm_codec-disallow-opt(all)
 All
@@ -389,10 +392,10 @@ All
 Enabled codecs:
 
 ; cmt_fm_codec-allow
-Config asterisk: codec-allow
+Asterisk config: codec-allow
 
 ; hlp_fm_codec-allow
-Config asterisk: codec-allow
+Asterisk config: codec-allow
 
 ; bt_upcodec
 Up one or more codecs
@@ -410,37 +413,37 @@ Add one or more codecs ->
 Cache accounts:
 
 ; cmt_fm_rtcachefriends
-Config asterisk: rtcachefriends
+Asterisk config: rtcachefriends
 
 ; hlp_fm_rtcachefriends
-Config asterisk: rtcachefriends
+Asterisk config: rtcachefriends
 
 ; fm_rtupdate
 Cache update:
 
 ; cmt_fm_rtupdate
-Config asterisk: rtupdate
+Asterisk config: rtupdate
 
 ; hlp_fm_rtupdate
-Config asterisk: rtupdate
+Asterisk config: rtupdate
 
 ; fm_rtignoreregexpire
 Ignore registration expiration:
 
 ; cmt_fm_rtignoreregexpire
-Config asterisk: rtignoreregexpire
+Asterisk config: rtignoreregexpire
 
 ; hlp_fm_rtignoreregexpire
-Config asterisk: rtignoreregexpire
+Asterisk config: rtignoreregexpire
 
 ; fm_rtautoclear
 Automatic cache clearing:
 
 ; cmt_fm_rtautoclear
-Config asterisk: rtautoclear
+Asterisk config: rtautoclear
 
 ; hlp_fm_rtautoclear
-Config asterisk: rtautoclear
+Asterisk config: rtautoclear
 
 ; fm_rtautoclear-opt(no)
 No
@@ -449,10 +452,10 @@ No
 Yes
 
 ; fm_rtautoclear-opt-second
-1 seconde
+1 second
 
 ; fm_rtautoclear-opt-seconds
-%s secondes
+%s seconds
 
 ; fm_rtautoclear-opt-minute
 1 minute
@@ -470,10 +473,10 @@ Yes
 Ping time:
 
 ; cmt_fm_pingtime
-Config asterisk: pingtime
+Asterisk config: pingtime
 
 ; hlp_fm_pingtime
-Config asterisk: pingtime
+Asterisk config: pingtime
 
 ; fm_pingtime-opt(0)
 0 second
@@ -485,10 +488,10 @@ Config asterisk: pingtime
 Latency RQ time:
 
 ; cmt_fm_lagrqtime
-Config asterisk: lagrqtime
+Asterisk config: lagrqtime
 
 ; hlp_fm_lagrqtime
-Config asterisk: lagrqtime
+Asterisk config: lagrqtime
 
 ; fm_lagrqtime-opt0
 0 second
@@ -500,19 +503,19 @@ Config asterisk: lagrqtime
 Disable UDP checksums:
 
 ; cmt_fm_nochecksums
-Config asterisk: nochecksums
+Asterisk config: nochecksums
 
 ; hlp_fm_nochecksums
-Config asterisk: nochecksums
+Asterisk config: nochecksums
 
 ; fm_autokill
 Autokill:
 
 ; cmt_fm_autokill
-Config asterisk: autokill
+Asterisk config: autokill
 
 ; hlp_fm_autokill
-Config asterisk: autokill
+Asterisk config: autokill
 
 ; fm_autokill-opt(no)
 No
@@ -524,16 +527,29 @@ Yes
 %s milliseconds
 
 ; fm_requirecalltoken
-Enable validation of tokens Appeal:
+Enable validation of calltokens:
 
 ; hlp_fm_requirecalltoken
-Config asterisk: requirecalltoken
+Asterisk config: requirecalltoken
 
 ; fm_calltokenoptional
-IP Address / subnet validating tokens of Appeal:
+IP Address / subnet validating calltokens:
 
 ; hlp_fm_calltokenoptional
-Config asterisk: alltokenoptional
+Asterisk config: alltokenoptional
 
 ; fm_success-save
 IAX Protocol properties successfully saved
+
+; fm_iaxmaxthreadcount-opt(0)
+Disabled
+
+; fm_iaxmaxthreadcount-opt(0)
+Disabled
+
+; fm_iaxmaxthreadcount-opt(0)
+Disabled
+
+; hlp_fm_language
+Asterisk config: language
+

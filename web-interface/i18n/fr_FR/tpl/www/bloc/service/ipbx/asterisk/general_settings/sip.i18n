@@ -386,7 +386,7 @@ Config asterisk: t1min
 Config asterisk: t1min
 
 ; fm_t1min-opt
-%s milliseconde
+%s millisecondes
 
 ; fm_relaxdtmf
 Relax DTMF:
