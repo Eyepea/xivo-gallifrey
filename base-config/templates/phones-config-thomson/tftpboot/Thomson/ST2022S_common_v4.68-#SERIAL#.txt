@@ -56,8 +56,8 @@ WanModFlag=1
 [sip]
 ACD=0
 AuthMessageServer=#XIVO_NET4_IP#
-KeppAliveDest=0.0.0.0
-KeepAliveTimer=0
+NatKeepAliveDest=0.0.0.0
+NatKeepAliveTimer=0
 AuthNotifyCheckSync=#XIVO_NET4_IP#
 CallBlockType=0
 CF_Address1=
@@ -260,6 +260,7 @@ sw_tr_vmail_address2=
 sw_tr_vmail_address3=
 sw_tr_vmail_address4=
 sw_tr_vmail_flag=0
+sw_park_srv_addr0=700@#XIVO_NET4_IP#
 sip_instance_id=0
 SFOnSC=
 SFOffSC=
@@ -330,6 +331,7 @@ UnRegister_priorFlgBK4=1
 use_PrivateNumber=0
 UseContactInSubscribe=0
 VoiceMailAddr=#XIVO_NET4_IP#
+VoiceMailTelNum=*98
 VoiceMailPort=5060
 
 

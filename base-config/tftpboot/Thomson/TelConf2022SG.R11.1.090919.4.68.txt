@@ -866,5 +866,5 @@ set tcid 0 tone_table_flags window mix_voice
 ; default codec using l16pcm_256
 ;sip set codec_pri 0 0 0 0 0 0 1
 
-activate
-commit
+;activate
+;commit

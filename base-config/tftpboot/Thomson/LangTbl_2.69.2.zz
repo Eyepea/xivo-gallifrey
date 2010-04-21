@@ -652,6 +652,7 @@
         <SK_PickUp>PickUp</SK_PickUp>
         <SK_Play>Play</SK_Play>
         <SK_Reject>Reject</SK_Reject>
+        <SK_Release>Releas</SK_Release>
         <SK_Remove>Remove</SK_Remove>
         <SK_Resume>Resume</SK_Resume>
         <SK_Retrieve>Retriv</SK_Retrieve>
@@ -661,10 +662,34 @@
         <SK_Search>Search</SK_Search>
         <SK_Select>Select</SK_Select>
         <SK_Stop>Stop</SK_Stop>
+        <SK_Switch>Switch</SK_Switch>
         <SK_Transfer>Transf</SK_Transfer>
         <SK_Transfer2MailServer>TrMail</SK_Transfer2MailServer>
         <SK_UnHold>UnHold</SK_UnHold>
         <SK_Up>Up</SK_Up>
         <SK_View>View</SK_View>
     </ThomsonSoftKey>
+
+    <EditModeInputKey>
+        <Key0>0 @%()[]&lt;&gt;</Key0>
+        <Key1>1.,=+-&amp;^|</Key1>
+        <Key2L>abc2אבגדהוַ</Key2L>
+        <Key2U>ABC2ֳִֵֶ</Key2U>
+        <Key3L>def3טיךכ</Key3L>
+        <Key3U>DEF3ֹ</Key3U>
+        <Key4L>ghi4לםמן</Key4L>
+        <Key4U>GHI4</Key4U>
+        <Key5L>jkl5</Key5L>
+        <Key5U>JKL5</Key5U>
+        <Key6L>mno6סעףפױײר</Key6L>
+        <Key6U>MNO6ׁ״</Key6U>
+        <Key7L>pqrs7</Key7L>
+        <Key7U>PQRS7</Key7U>
+        <Key8L>tuv8שתû</Key8L>
+        <Key8U>TUV8Ü</Key8U>
+        <Key9L>wxyz9ÿ</Key9L>
+        <Key9U>WXYZ9</Key9U>
+        <KeyStar>*#?!:;&apos;&quot;_/</KeyStar>
+        <KeyPound>#</KeyPound>
+    </EditModeInputKey>
 </ThomsonLanguageTable>

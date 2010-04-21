@@ -521,18 +521,25 @@ size: 7885268
 md5sum: 0c4a8312bbc7feb066ce1249a0b72595
 sha1sum: ac4ac77b82905af195e2c7e045131abdc524afd8
 
-# Thomson ST2030 2.68
-[thst2030_268]
+# Thomson ST2030 2.69
+[thst2030_269]
 brand: Thomson
 model: ST2030
-version: 2.68
-files: ST2030_SG_v2.68_Release_package.zip
+version: 2.69
+files: ST2030_SG_v2.69_SED_Release_packag.zip
 
-[ST2030_SG_v2.68_Release_package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6711
-size: 7921829
-md5sum: 2b5360a39fdd551eabf250d1c2a1239c
-sha1sum: f43e3d32895c9f5c340d9c6025372c591f31a731
+[ST2030_SG_v2.69_SED_Release_packag.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6781
+size: 11100346
+md5sum: 49ab9162f4ce5f91abdc65341cb261a1
+sha1sum: ae06f9c7f94616b2093c3f76137b6b2c223d405c
+
+# Thomson TB30 x.xx
+[thtb30_xxx]
+brand: Thomson
+model: TB30
+version: x.xx
+files: 
 
 # Yealink T20
 [yealinkt20_943]
