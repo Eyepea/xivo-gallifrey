@@ -52,6 +52,12 @@ Gateway:
 ; fm_mtu
 MTU:
 
+; fm_vlanrawdevice
+Physical Interface of VLAN :
+
+; fm_vlanid
+ID of VLAN :
+
 ; fm_description
 Description:
 
@@ -63,4 +69,3 @@ Options
 
 ; error(already-defined)
 An interface with the same name already exist or vlan id does not match interface name
-
