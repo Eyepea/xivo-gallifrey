@@ -56,8 +56,6 @@ WanModFlag=1
 [sip]
 ACD=0
 AuthMessageServer=#XIVO_NET4_IP#
-KeepAliveDest=0.0.0.0
-KeepAliveTimer=0
 AuthNotifyCheckSync=#XIVO_NET4_IP#
 CallBlockType=0
 CF_Address1=
