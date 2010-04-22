@@ -989,7 +989,6 @@ CREATE TABLE queuefeatures (
  announceoverride varchar(128) NOT NULL DEFAULT '',
  timeout smallint unsigned NOT NULL DEFAULT 0,
  preprocess_subroutine varchar(39),
- state_interface varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(id)
 );
 
@@ -1011,6 +1010,7 @@ CREATE TABLE queuemember (
  channel varchar(25) NOT NULL,
  category char(5) NOT NULL,
  skills char(64) NOT NULL DEFAULT '',
+ state_interface varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(queue_name,interface)
 );
 
