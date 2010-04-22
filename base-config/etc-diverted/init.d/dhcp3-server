@@ -92,9 +92,13 @@ case "$1" in
 		fi
 		;;
 	stop)
-		log_daemon_msg "Stopping $DESC" "$NAME"
-		start-stop-daemon --stop --quiet --pidfile $DHCPDPID
-		log_end_msg $?
+		if check_status; then
+			log_daemon_msg "Stopping $DESC" "$NAME"
+			start-stop-daemon --stop --quiet --pidfile $DHCPDPID
+			log_end_msg $?
+		else
+			echo "$DESC is not running."
+		fi
 		rm -f "$DHCPDPID"
 		;;
 	restart | force-reload)
