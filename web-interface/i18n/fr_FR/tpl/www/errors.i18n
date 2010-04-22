@@ -19,3 +19,9 @@ Vous devez dabord créer un contexte
 
 ; error(already_exist)
 Ce champ est unique et il est déjà utilisé
+
+; error(minimumlength)
+Valeur du champ trop courte
+
+; error(maximumlength)
+Valeur du champ trop longue

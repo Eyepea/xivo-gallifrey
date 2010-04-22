@@ -24,3 +24,9 @@ You must create a context intend to argue
 
 ; error(already_exist)
 This field is unique and it is already used
+
+; error(minimumlength)
+Value too short
+
+; error(maximumlength)
+Value too long
