@@ -44,8 +44,10 @@ if [ -n "${XIVO_NAMESERVERS}" ]; then
 #  exit 1
 fi
 
-XIVO_DHCP_IFACES="none"
+XIVO_DHCP_START="no"
+XIVO_DHCP_IFACES=""
 if [ "${XIVO_DHCP_ACTIVE}" = "1" ]; then
+    XIVO_DHCP_START="yes"
     XIVO_DHCP_IFACES="${XIVO_VOIP_IFACES} ${XIVO_DHCP_EXTRA_IFACES}"
 fi
 

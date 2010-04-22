@@ -6,6 +6,11 @@
 # This is a POSIX shell fragment
 #
 
+# * Xivo specific *
+# dhcp server start is optional
+# possible values are "yes" or "no"
+RUN_DAEMON="#XIVO_DHCP_START#"
+
 # On what interfaces should the DHCP server (dhcpd) serve DHCP requests?
 #	Separate multiple interfaces with spaces, e.g. "eth0 eth1".
 INTERFACES="#XIVO_DHCP_IFACES#"
