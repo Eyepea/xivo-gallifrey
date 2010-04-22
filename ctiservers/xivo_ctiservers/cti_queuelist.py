@@ -92,7 +92,7 @@ class QueueStats:
               queue_name = "%s"
         ''' 
         self.cur.query(sql,None, (queuename, param['window'], param['window'], param['xqos'], queuename))
-        return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
+        return self.__cache(queuename, cachekey, self.__format_result("%.02f %%"))
 
     def __get_queue_holdtime(self, queuename, param):
         cachekey = "ht%d" % (param['window'])
@@ -102,6 +102,22 @@ class QueueStats:
 
         sql = '''
         SELECT avg(hold_time)
+        FROM queue_info
+        WHERE call_picker IS NOT NULL and
+              call_time_t > %d and
+              queue_name = "%s"
+        ''' 
+        self.cur.query(sql,None, (param['window'], queuename))
+        return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
+
+    def __get_queue_holdtime_max(self, queuename, param):
+        cachekey = "htm%d" % (param['window'])
+        cache = self.__get_cache(queuename, cachekey)
+        if cache != None:
+            return cache
+
+        sql = '''
+        SELECT max(hold_time)
         FROM queue_info
         WHERE call_picker IS NOT NULL and
               call_time_t > %d and
@@ -124,7 +140,7 @@ class QueueStats:
               queue_name = "%s"
         ''' 
         self.cur.query(sql,None, (param['window'], queuename))
-        return self.__cache(queuename, cachekey, self.__format_result("%.01f"))
+        return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
     def __get_queue_lost(self, queuename, param):
         cachekey = "ls%d" % (param['window'])
@@ -185,7 +201,8 @@ class QueueStats:
 
         queue_stats = {
                        'Qos': self.__get_queue_qos(queuename, param),
-                       'Holdtime': self.__get_queue_holdtime(queuename, param),
+                       'Holdtime-moy': self.__get_queue_holdtime(queuename, param),
+                       'Holdtime-max': self.__get_queue_holdtime_max(queuename, param),
                        'Xivo-Chat': self.__get_queue_talktime(queuename, param),
                        'Xivo-Lost': self.__get_queue_lost(queuename, param),
                        'Xivo-Join': self.__get_queue_join(queuename, param),
@@ -195,7 +212,7 @@ class QueueStats:
         if float(queue_stats['Xivo-Join']) == 0:
             queue_stats['Xivo-Rate'] = "na"
         else:
-            queue_stats['Xivo-Rate'] = "%02.01f" % ( float(queue_stats['Xivo-Link']) * 100 / float(queue_stats['Xivo-Join']))
+            queue_stats['Xivo-Rate'] = "%02.01f %%" % ( float(queue_stats['Xivo-Link']) * 100 / float(queue_stats['Xivo-Join']))
 
         return queue_stats
 
