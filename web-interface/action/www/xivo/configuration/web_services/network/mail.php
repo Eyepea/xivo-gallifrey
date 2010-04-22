@@ -34,7 +34,6 @@ switch($act)
 	    foreach($data['canonical'] as $rule)
 	        $canonical .= $rule['pattern'] . ' ' . $rule['result'] . "\n";
 	    $data['canonical'] = $canonical;
-	    var_dump($data);
 	    
 		$status = $app->set($data) === true ? 200 : 400;
 

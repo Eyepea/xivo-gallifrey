@@ -21,7 +21,6 @@
 $sysconfd    = &$_XOBJ->get_module('sysconfd');
 $content     = $sysconfd->request_get('/ha_apply');
 $status      = $sysconfd->last_status_code();
-var_dump($content);
 
 if($status != 200)
 {
