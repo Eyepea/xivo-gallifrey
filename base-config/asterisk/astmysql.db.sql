@@ -1003,6 +1003,7 @@ CREATE TABLE `queue` (
  `timeoutrestart` tinyint(1) NOT NULL DEFAULT 0,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `category` enum('group','queue') NOT NULL,
+ `autopause` tinyint(1) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
@@ -1050,6 +1051,8 @@ CREATE TABLE `queuemember` (
  `channel` varchar(25) NOT NULL,
  `category` enum('group','queue') NOT NULL,
  `skills` varchar(64) NOT NULL DEFAULT '',
+ `state_interface` varchar(128) NOT NULL DEFAULT '',
+ `setinterfacevar` tinyint(1) unsigned NOT NULL DEFAULT 0,
  PRIMARY KEY(`queue_name`,`interface`)
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 

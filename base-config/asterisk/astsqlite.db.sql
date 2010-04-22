@@ -961,6 +961,8 @@ CREATE TABLE queue (
  timeoutrestart tinyint(1) NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
  category char(5) NOT NULL,
+ autopause tinyint(1) NOT NULL DEFAULT 0,
+ setinterfacevar tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(name)
 );
 
@@ -987,6 +989,7 @@ CREATE TABLE queuefeatures (
  announceoverride varchar(128) NOT NULL DEFAULT '',
  timeout smallint unsigned NOT NULL DEFAULT 0,
  preprocess_subroutine varchar(39),
+ state_interface varchar(128) NOT NULL DEFAULT '',
  PRIMARY KEY(id)
 );
 
