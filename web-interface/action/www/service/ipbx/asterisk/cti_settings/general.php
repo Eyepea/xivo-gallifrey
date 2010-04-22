@@ -54,13 +54,13 @@ if(isset($_QR['fm_send']) === true)
 
 	if(($rs = $ctimain->chk_values($_QR['cti'])) === false)
 	{
-		die('error');
+		$ret = 0;
+	} else {
+		if($ctimain->exists(null,null,1) === true)
+			$ret = $ctimain->edit(1, $rs);
+		else
+			$ret = $ctimain->add($rs);
 	}
-
-	if($ctimain->exists(null,null,1) === true)
-		$ret = $ctimain->edit(1, $rs);
-	else
-		$ret = $ctimain->add($rs);
 
 	if($ret == 1)
 		$fm_save = true;

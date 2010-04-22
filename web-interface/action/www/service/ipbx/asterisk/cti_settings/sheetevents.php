@@ -60,12 +60,14 @@ if(isset($_QR['fm_send']) === true)
 	$_QR['ctisheetevents']['custom'] = $str;
 	if(($rs = $sheetevents->chk_values($_QR['ctisheetevents'])) === false)
 	{
-		die('error');
+		$ret = 0;
+	} else {
+		if($sheetevents->exists(null,null,1) === true)
+			$ret = $sheetevents->edit(1, $rs);
+		else
+			$ret = $sheetevents->add($rs);
 	}
-	if($sheetevents->exists(null,null,1) === true)
-		$ret = $sheetevents->edit(1, $rs);
-	else
-		$ret = $sheetevents->add($rs);
+	
 	if($ret == 1)
 		$fm_save = true;
 }

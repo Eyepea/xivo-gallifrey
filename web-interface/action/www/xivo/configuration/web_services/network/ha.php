@@ -53,7 +53,6 @@ switch($act)
 	    || $app->_set_save($data)  === false)
 	    {
 	        $status = 400;
-	        var_dump($app->get_error());
 	    }
 
 		$http_response->set_status_line($status);
