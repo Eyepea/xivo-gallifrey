@@ -56,7 +56,7 @@ no disp found
 Monitoring lan
 
 ; fm_ha_ping_col_ipaddr
-IP address to montinor
+IP address to monitor
 
 ; no_disp-ping
 no address ip found
@@ -65,7 +65,7 @@ no address ip found
 Virtual Network
 
 ; fm_ha_virtnet_col_ipaddr
-Adress IP
+IP address
 
 ; fm_ha_virtnet_col_netmask
 Netmask
@@ -76,41 +76,6 @@ Broadcast
 ; no_disp-virtnet
 no virtual network found
 
-; fm_ha_ping_ipaddr0
-Monitor address IP :
-
-; fm_ha_uname_node0
-noeud heartbeat #0 (valeur uname) :
-
-; fm_ha_uname_node1
-noeud heartbeat #1 (valeur uname) :
-
-; fm_ha_ipaddr0
-address ip virtual network :
-
-; fm_ha_netmask0
-netask virtual network :
-
-; fm_ha_broadcast0
-broadcast address virtual network :
-
-; fm_ha_dest_iface0
-Interface réseau noeud #0 :
-
-; fm_ha_dest_host0
-Adresse IP noeud #0 :
-
-; fm_ha_dest_transfer0
-transfert noeud #0 :
-
-; fm_ha_dest_iface1
-Interface réseau noeud #1 :
-
-; fm_ha_dest_host1
-Adresse IP noeud #1 :
-
-; fm_ha_dest_transfer1
-transfert noeud #1 :
 
 ; fm_ha_nodes
 Communication links heartbeat
@@ -190,4 +155,33 @@ Delete
 ; opt_disp-nodes-delete
 Delete
 
+; no disp found
+No machine name found
+
+; ipaddr(empty)
+You must fill this field
+
+; ipaddr(callback)
+Invalid IP address
+
+; netmask(empty)
+You must fill this field
+
+; netmask(callback)
+Invalid netmask
+
+; broadcast(empty)
+You must fill this field
+
+; broadcast(callback)
+Invalid broadcast address
+
+; iface(empty)
+Invalid interface
+
+; host(empty)
+You must fill this field
+
+; host(callback)
+Invalid hostname
 

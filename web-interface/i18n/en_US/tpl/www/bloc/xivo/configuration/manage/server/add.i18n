@@ -15,3 +15,17 @@ SSL:
 
 ; fm_description
 Description:
+
+; fm_webi_addr
+Web interface host: 
+
+; fm_ami_port
+AMI port:
+
+; fm_ami_login
+AMI login:
+
+; fm_ami_pass
+AMI password:
+
+

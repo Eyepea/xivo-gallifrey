@@ -1,0 +1,197 @@
+; network_arphrd(netrom)
+NET/ROM
+
+; network_arphrd(ether)
+Ethernet
+
+; network_arphrd(eether)
+Ethernet experimental
+
+; network_arphrd(ax25)
+AX.25
+
+; network_arphrd(pronet)
+PROnet
+
+; network_arphrd(chaos)
+Chaos
+
+; network_arphrd(ieee802)
+IEEE 802.2
+
+; network_arphrd(arcnet)
+ARCnet
+
+; network_arphrd(appletlk)
+APPLEtalk
+
+; network_arphrd(dlci)
+Relai de trame DLCI
+
+; network_arphrd(atm)
+ATM
+
+; network_arphrd(metricom)
+Metricom STRIP
+
+; network_arphrd(ieee1394)
+IEEE 1394
+
+; network_arphrd(eui64)
+EUI-64
+
+; network_arphrd(infiniband)
+InfiniBand
+
+; network_arphrd(slip)
+SLIP
+
+; network_arphrd(cslip)
+CSLIP
+
+; network_arphrd(slip6)
+SLIP6
+
+; network_arphrd(cslip6)
+CSLIP6
+
+; network_arphrd(rsrvd)
+Notional KISS
+
+; network_arphrd(adapt)
+Serial adaptative IP
+
+; network_arphrd(rose)
+Rose
+
+; network_arphrd(x25)
+CCITT X.25
+
+; network_arphrd(hwx25)
+Boards with X.25
+
+; network_arphrd(can)
+CAN
+
+; network_arphrd(ppp)
+PPP
+
+; network_arphrd(cisco)
+(Cisco) HDLC
+
+; network_arphrd(hldc)
+(Cisco) HDLC
+
+; network_arphrd(LAPB)
+LAPB
+
+; network_arphrd(ddcmp)
+DDCMP
+
+; network_arphrd(rawhdlc)
+Raw HDLC
+
+; network_arphrd(tunnel)
+IPIP tunnel
+
+; network_arphrd(tunnel6)
+IP6IP6 tunnel
+
+; network_arphrd(frad)
+Frame relai access device
+
+; network_arphrd(skip)
+SKIP vif.
+
+; network_arphrd(loopback)
+Loopback
+
+; network_arphrd(localtlk)
+Localtalk
+
+; network_arphrd(fddi)
+Fiber Distributed Data Interface
+
+; network_arphrd(bif)
+AP1000 BIF
+
+; network_arphrd(sit)
+IPv6-in-IPv4
+
+; network_arphrd(ipddp)
+IP-in-DDP tunnel
+
+; network_arphrd(ipgre)
+IP GRE
+
+; network_arphrd(pimreg)
+PIM-SM
+
+; network_arphrd(hippi)
+High performance parallel interface
+
+; network_arphrd(ash)
+ASH
+
+; network_arphrd(econet)
+Acorn Econet
+
+; network_arphrd(irda)
+IrLap
+
+; network_arphrd(fcpp)
+Point to point fiber channel
+
+; network_arphrd(fcal)
+Loopback fiber channel
+
+; network_arphrd(fcpl)
+Public loopback fiber channel
+
+; network_arphrd(fcfabric)
+Commuted fiber channel
+
+; network_arphrd(ieee802_tr)
+IEEE 802.5
+
+; network_arphrd(ieee80211)
+IEEE 802.11
+
+; network_arphrd(ieee80211_prism)
+IEEE 802.11 Prism2
+
+; network_arphrd(ieee80211_radiotap)
+IEEE 802.11 Radiotap
+
+; network_arphrd(void)
+Unknown
+
+; network_arphrd(none)
+None
+
+; network_method(bootp)
+Bootstrap Protocol
+
+; network_method(dhcp)
+DHCP
+
+; network_method(dynamic)
+Dynamic
+
+; network_method(loopback)
+Loopback
+
+; network_method(manual)
+Manual
+
+; network_method(ppp)
+PPP
+
+; network_method(static)
+Static
+
+; network_method(v4tunnel)
+IPv6-in-IPv4
+
+; network_method(wvdial)
+WvDial

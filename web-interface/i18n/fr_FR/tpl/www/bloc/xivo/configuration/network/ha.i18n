@@ -219,3 +219,6 @@ Vous devez saisir le nom d'une noeud HA
 
 ; error_pf_ha_uname_node(regexp)
 Le nom comprend des caractères invalides
+
+; no disp found
+Aucune machine définie

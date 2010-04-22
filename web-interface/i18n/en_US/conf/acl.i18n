@@ -83,7 +83,7 @@ SIP Protocol
 IAX Protocol
 
 ; acl(service-ipbx-trunk_management-custom)
-Customized
+Custom
 
 ; acl(service-ipbx-pbx_services)
 IPBX services
@@ -153,3 +153,160 @@ Enable monitoring
 
 ; acl(service-monitoring-control_system-unmonitor)
 Disable monitoring
+
+; acl(xivo-configuration)
+Configuration
+
+; acl(xivo-configuration-manage)
+Management
+
+; acl(xivo-configuration-manage-entity)
+Entities
+
+; acl(xivo-configuration-manage-server)
+XIVO servers
+
+; acl(xivo-configuration-manage-ldapserver)
+LDAP servers
+
+; acl(xivo-configuration-manage-accesswebservice)
+Web services
+
+; acl(xivo-configuration-network)
+Network
+
+; acl(xivo-configuration-network-interface)
+Interfaces
+
+; acl(xivo-configuration-network-iproute)
+Static IP routes
+
+; acl(xivo-configuration-network-resolvconf)
+DNS resolving
+
+; acl(service-ipbx)
+IPBX
+
+; acl(service-ipbx-general_settings)
+Paramètres globaux
+
+; acl(service-ipbx-general_settings-sip)
+Protocole SIP
+
+; acl(service-ipbx-general_settings-iax)
+Protocole IAX
+
+; acl(service-ipbx-general_settings-voicemail)
+Messageries vocales
+
+; acl(service-ipbx-general_settings-phonebook)
+Carnet d'adresses
+
+; acl(service-ipbx-general_settings-advanced)
+Avancés
+
+; acl(service-ipbx-ctiserver)
+CTI server
+
+; acl(service-ipbx-ctiserver-configuration)
+Configuration
+
+; acl(service-ipbx-cti_settings)
+CTI servers
+
+; acl(service-ipbx-cti_settings-general)
+General
+
+; acl(service-ipbx-cti_settings-presences)
+Presences
+
+; acl(service-ipbx-cti_settings-phonehints)
+Phone hints
+
+; acl(service-ipbx-cti_settings-profiles)
+Profiles
+
+; acl(service-ipbx-cti_settings-directories)
+Directories
+
+; acl(service-ipbx-cti_settings-reversedirectories)
+Reverse directories
+
+; acl(service-ipbx-cti_settings-displays)
+Display filters
+
+; acl(service-ipbx-cti_settings-contexts)
+Contexts
+
+; acl(service-ipbx-cti_settings-sheetactions)
+Sheets : Actions
+
+; acl(service-ipbx-cti_settings-sheetevents)
+Sheets : Events
+
+; acl(service-ipbx-pbx_settings)
+IPBX settings
+
+; acl(service-ipbx-pbx_settings-agents)
+Agents
+
+; acl(service-ipbx-pbx_settings-users)
+Users
+
+; acl(service-ipbx-pbx_settings-groups)
+Groups
+
+; acl(service-ipbx-pbx_settings-queues)
+Queues
+
+; acl(service-ipbx-pbx_settings-meetme)
+Conference rooms
+
+; acl(service-ipbx-pbx_settings-voicemail)
+Voicemails
+
+; acl(xivo-configuration-support)
+Monitoring
+
+; acl(xivo-configuration-network-mail)
+Mail
+
+; acl(xivo-configuration-network-dhcp)
+DHCP server
+
+; acl(xivo-configuration-network-ha)
+HA
+
+; acl(xivo-configuration-support-monitoring)
+Monitoring
+
+
+
+; acl(service-ipbx-call_center)
+Call center
+
+; acl(service-ipbx-call_center-agents)
+Agents
+
+; acl(service-ipbx-call_center-queues)
+Queues
+
+; acl(service-ipbx-call_center-queueskills)
+Queueskills
+
+; acl(service-ipbx-call_center-queueskillrules)
+Queueskill rules
+
+; acl(service-ipbx-system_management-backupfiles)
+Backup files
+
+; acl(service-ipbx-control_system-logfiles)
+Log files
+
+; acl(service-graphs)
+Graphs
+
+; acl(service-graphs-munin)
+Munin graphs
+
+

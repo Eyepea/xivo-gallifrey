@@ -12,3 +12,9 @@ Pool end:
 
 ; fm_interfaces
 Interfaces:
+
+; ipaddr(callback)
+Invalid IP address
+
+; ipaddr(empty)
+You must fill IP address
