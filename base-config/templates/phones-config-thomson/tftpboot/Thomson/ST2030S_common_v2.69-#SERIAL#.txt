@@ -5,7 +5,7 @@ Autocall=0
 AutocallNumber=
 AutoRejectTimer=0
 AutoStopTimer=0
-AutoHangUpTimer=0
+AutoHangUpTimer=3
 CaLogPrefix=
 DateFlag=2
 Check_phonebook_domain_name=1
@@ -355,14 +355,14 @@ TrapLevel=0
 
 [sys]
 2833_volume=0
-AEC=0
+AEC=1
 BLFType=0
 BLFListSipUri=L/<sip:>
 CountryCode=FR
 Current_Max_Multiline=5
 CodecPriority=g711a(1)g711mu(2)g729(3)g723(4)
 CodecJitterBufMult=g711a(1/2/4)g711mu(1/2/4)g729(1/2/4)g723(1/2/4)gsmwbamr(1/2/4)g722(1/2/4)l16(1/2/4)ilbc(1/2/4)ilbc133(1/2/4)
-CodecPktime=g711a(10)g711mu(10)g729(10)g723(30)gsmwbamr(20)g722(10)l16(10)ilbc(20)ilbc133(30)
+CodecPktime=g711a(20)g711mu(20)g729(20)g723(30)gsmwbamr(20)g722(10)l16(10)ilbc(20)ilbc133(30)
 CodecAdaptivePlayout=g711a(1)g711mu(1)g729(1)g723(1)gsmwbamr(1)g722(1)l16(1)ilbc(1)ilbc133(1)
 DisableCWtone=0
 Dialednum_timeout=4
@@ -612,6 +612,7 @@ TelnetPWD=superpass
 UserID=user
 UserPWD=568745
 VOIPDialPlan=x.T
+VAD=0
 WebPWD=784518
 
 
