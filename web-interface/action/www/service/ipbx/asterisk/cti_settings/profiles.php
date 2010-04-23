@@ -97,6 +97,7 @@ $element['ctiprofiles'] = $ctiprofiles->get_element();
 switch($act)
 {
 	case 'add':
+	    var_dump($_QR);
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
