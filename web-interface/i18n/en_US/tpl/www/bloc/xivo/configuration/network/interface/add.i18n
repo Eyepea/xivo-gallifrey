@@ -23,16 +23,16 @@ Disable:
 Type:
 
 ; fm_networktype-opt(voip)
-VOIP
+VoIP
 
 ; fm_networktype-opt(data)
-DATA
+Data
 
 ; fm_method
 Method:
 
 ; network_method(static)
-STATIC
+Static
 
 ; network_method(dhcp)
 DHCP

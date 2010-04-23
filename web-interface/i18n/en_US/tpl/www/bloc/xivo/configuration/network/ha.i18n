@@ -185,3 +185,9 @@ You must fill this field
 ; host(callback)
 Invalid hostname
 
+; error_pf_ha_uname_node(empty)
+you must set a value
+
+; error_pf_ha_uname_node(regexp)
+contains invalid characters
+

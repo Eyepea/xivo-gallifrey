@@ -111,47 +111,56 @@ endif;
 				      'name'		=> 'apache2',
 				      'labelid'		=> 'ha_apache2',
 				      'checked'		=> $data['apache2'],
-				      'help'        => $this->bbf('fm_help-ha_apache2'))),
+#				      'help'        => $this->bbf('fm_help-ha_apache2')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_asterisk'),
 				      'name'		=> 'asterisk',
 				      'labelid'		=> 'ha_asterisk',
 				      'checked'		=> $data['asterisk'],
-				      'help'        => $this->bbf('fm_help-ha_asterisk'))),
+#				      'help'        => $this->bbf('fm_help-ha_asterisk')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_dhcp'),
 				      'name'		=> 'dhcp',
 				      'labelid'		=> 'ha_dhcp',
 				      'checked'		=> $data['dhcp'],
-				      'help'        => $this->bbf('fm_help-ha_dhcp'))),
+#				      'help'        => $this->bbf('fm_help-ha_dhcp')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_monit'),
 				      'name'		=> 'monit',
 				      'labelid'		=> 'ha_monit',
 				      'checked'		=> $data['monit'],
-				      'help'        => $this->bbf('fm_help-ha_monit'))),
+#				      'help'        => $this->bbf('fm_help-ha_monit')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_mysql'),
 				      'name'		=> 'mysql',
 				      'labelid'		=> 'ha_mysql',
 				      'checked'		=> $data['mysql'],
-				      'help'        => $this->bbf('fm_help-ha_mysql'))),
+#				      'help'        => $this->bbf('fm_help-ha_mysql')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_ntp'),
 				      'name'		=> 'ntp',
 				      'labelid'		=> 'ha_ntp',
 				      'checked'		=> $data['ntp'],
-				      'help'        => $this->bbf('fm_help-ha_ntp'))),
+#				      'help'        => $this->bbf('fm_help-ha_ntp')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_rsync'),
 				      'name'		=> 'rsync',
 				      'labelid'		=> 'ha_rsync',
 				      'checked'		=> $data['rsync'],
-				      'help'        => $this->bbf('fm_help-ha_rsync'))),
+#				      'help'        => $this->bbf('fm_help-ha_rsync')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_smokeping'),
 				      'name'		=> 'smokeping',
 				      'labelid'		=> 'ha_smokeping',
 				      'checked'		=> $data['smokeping'],
-				      'help'        => $this->bbf('fm_help-ha_smokeping'))),
+#				      'help'        => $this->bbf('fm_help-ha_smokeping')
+				      )),
 		$form->checkbox(array('desc'		=> $this->bbf('fm_ha_mailto'),
 				      'name'		=> 'mailto',
 				      'labelid'		=> 'ha_mailto',
 				      'checked'		=> $data['mailto'],
-				      'help'        => $this->bbf('fm_help-ha_mailto')));
+#				      'help'        => $this->bbf('fm_help-ha_mailto')
+				      ));
 
 ?>
 </div>

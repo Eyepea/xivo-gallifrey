@@ -34,6 +34,9 @@ Loopback
 ; network_method(static)
 Static
 
+; network_method(dhcp)
+DHCP
+
 ; no_accesswebservice
 No access web service found
 
