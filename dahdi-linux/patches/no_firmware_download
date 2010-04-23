@@ -1,0 +1,21 @@
+The firmware downloaders are extra kernel objects that are now required for
+the Hardware echo canceller support in some Digium cards (wctdm24xxp,
+wcte12xp). They are downloaded at build time. The makefile will build 
+with support for them if they were indeed downloaded.
+
+This patch removes this downloading and thus keeps those modules 
+DFSG-compliant. Unlike the Digium firmwares, this is a compile-time 
+decision and hence cannot be reverted once a dahdi-modules package is
+built.
+
+--- a/Makefile
++++ b/Makefile
+@@ -88,7 +88,7 @@ include/dahdi/version.h: FORCE
+ 	fi
+ 	@rm -f $@.tmp
+ 
+-prereq: include/dahdi/version.h firmware-loaders
++prereq: include/dahdi/version.h
+ 
+ stackcheck: $(CHECKSTACK) modules
+ 	objdump -d drivers/dahdi/*.ko drivers/dahdi/*/*.ko | $(CHECKSTACK)
