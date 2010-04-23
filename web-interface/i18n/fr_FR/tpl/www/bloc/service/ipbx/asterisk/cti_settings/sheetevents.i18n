@@ -17,16 +17,16 @@ File d'attente entrante:
 Groupe entrant:
 
 ; fm_sheetevents_incomingdid
-(incoming did)
+Appel entrant:
 
 ; fm_sheetevents_dial
 Numérotation:
 
 ; fm_sheetevents_link
-(link)
+Mise en relation:
 
 ; fm_sheetevents_unlink
-(unlink)
+Fin de mise en relation:
 
 ; col_1
 Événement personnalisé
@@ -36,3 +36,4 @@ Action
 
 ; no_custom
 Aucun évènement personnalisé
+

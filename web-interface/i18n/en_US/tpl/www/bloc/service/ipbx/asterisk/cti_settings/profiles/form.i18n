@@ -8,10 +8,10 @@ Yes
 No
 
 ; bt_inaccess_profiles
-Ajouter
+Add »
 
 ; bt_outaccess_profiles
-Enlever
+« Remove
 
 ; fm_profiles_name
 Name:
@@ -71,7 +71,8 @@ Add
 No Xlet
 
 ; cmt_profiles_appliname
-A more understandable name
+a more explicit name
 
 ; cmt_profiles_maxgui
 Put -1 for no limit
+

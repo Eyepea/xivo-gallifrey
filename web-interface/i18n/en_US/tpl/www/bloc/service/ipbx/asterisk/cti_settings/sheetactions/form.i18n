@@ -14,7 +14,7 @@ Qt interface:
 Context
 
 ; cti-sheetactions-capaids
-Xivo Client pofils
+Xivo Client profils
 
 ; col_1
 Field posted
@@ -39,3 +39,9 @@ No information
 
 ; fm_description
 Description
+
+; bt_inaccess_sheetactions
+Add »
+
+; bt_outaccess_sheetactions
+« Remove

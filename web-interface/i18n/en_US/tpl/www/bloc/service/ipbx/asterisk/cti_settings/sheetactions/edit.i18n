@@ -1,14 +1,6 @@
+; load ./add
+
 ; title_content_name
-Mise à jour d'une action
+Update action
 
-; smenu_general
- Options générales
 
-; smenu_screens
- Fiches
-
-; smenu_systrays
- Miniatures
-
-; smenu_infos 
-Informations

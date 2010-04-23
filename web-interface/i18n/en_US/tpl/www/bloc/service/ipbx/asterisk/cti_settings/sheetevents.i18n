@@ -2,10 +2,10 @@
 Sheet Events
 
 ; fm_sheetevents_agentlinked
-Agent connects:
+Agent linked:
 
 ; fm_sheetevents_agentunlinked
-Agent deconnects:
+Agent unlinked:
 
 ; fm_sheetevents_faxreceived
 Fax reception:
@@ -17,16 +17,16 @@ Incoming queue:
 Incoming Group:
 
 ; fm_sheetevents_incomingdid
-(Incoming DID)
+Incoming DID:
 
 ; fm_sheetevents_dial
 Numbering:
 
 ; fm_sheetevents_link
-(link)
+Link:
 
 ; fm_sheetevents_unlink
-(unlink)
+Unlink:
 
 ; col_1
 Custom Event

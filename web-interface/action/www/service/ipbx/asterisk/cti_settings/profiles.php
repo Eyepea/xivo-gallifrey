@@ -24,13 +24,66 @@ $act = isset($_QR['act']) === true ? $_QR['act'] : '';
 $idprofiles = isset($_QR['idprofiles']) === true ? dwho_uint($_QR['idprofiles'],1) : 1;
 $page = isset($_QR['page']) === true ? dwho_uint($_QR['page'],1) : 1;
 
-$servicesavail = array('enablevm', 'incallrec');
-$preferencesavail = array('logagent', 'pauseagent', 'blinktime', 'fontsize', 'fontname', 'iconsize', 'supervisor', 'queues-showqueuenames', 'queues-showqueues');
-$funcsavail = array('agents', 'presence', 'switchboard', 'customerinfo', 'search', 'dial', 'chitchat');
+# for ce loading translation file
+$_TPL->load_i18n_file('tpl/www/bloc/service/ipbx/asterisk/cti_settings/profiles/list-values.i18n', 'global');
+
+/** list values */
+$servicesavail = array(
+    'enablevm'      => $_TPL->bbf('enablevm'),
+    'callrecord'    => $_TPL->bbf('callrecord'),
+    'incallrec'     => $_TPL->bbf('incallrec'),
+    'incallfilter'  => $_TPL->bbf('incallfilter'),
+    'enablednd'     => $_TPL->bbf('enablednd'),
+    'fwdunc'        => $_TPL->bbf('fwdunc'),
+    'fwdbusy'       => $_TPL->bbf('fwdbusy'),
+    'fwdrna'        => $_TPL->bbf('fwdrna'),
+);
+
+$preferencesavail = array(
+    'logagent' => $_TPL->bbf('pref-logagent'), 
+    'pauseagent' => $_TPL->bbf('pref-pauseagent'), 
+    'blinktime' => $_TPL->bbf('pref-blinktime'), 
+    'fontsize' => $_TPL->bbf('pref-fontsize'), 
+    'fontname' => $_TPL->bbf('pref-fontname'), 
+    'iconsize' => $_TPL->bbf('pref-iconsize'), 
+    'supervisor' => $_TPL->bbf('pref-supervisor'), 
+    'queues-showqueuenames' => $_TPL->bbf('pref-queues-showqueuenames'), 
+    'queues-showqueues' => $_TPL->bbf('pref-queues-showqueues'),
+    'queues-statscolumns' => $_TPL->bbf('pref-queues-statscolumns'),
+    'queues-shortlegends' => $_TPL->bbf('pref-queues-shortlegends'),
+    'conference-allowrecord' => $_TPL->bbf('pref-conference-allowrecord'),
+    'noqueueaction' => $_TPL->bbf('pref-noqueueaction'),
+    'autochangestate' => $_TPL->bbf('pref-autochangestate')
+);
+
+$funcsavail = array(
+    'agents' => $_TPL->bbf('agents'), 
+    'presence' => $_TPL->bbf('presence'), 
+    'switchboard' => $_TPL->bbf('switchboard'), 
+    'customerinfo' => $_TPL->bbf('customerinfo'), 
+    'search' => $_TPL->bbf('search'), 
+    'dial' => $_TPL->bbf('dial'), 
+    'chitchat' => $_TPL->bbf('chitchat'),
+    'conference' => $_TPL->bbf('conference'),
+    'directory' => $_TPL->bbf('directory'),
+    'fax' => $_TPL->bbf('fax'),
+    'features' => $_TPL->bbf('features'),
+    'history' => $_TPL->bbf('history'),
+    'database' => $_TPL->bbf('database'),
+);
+
+$ctixlets = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
 
 $xletsavail = array();
-$xletsavail = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));
-$xletslocavail = array('dock', 'grid', 'tab');
+foreach ($ctixlets as $xlet)
+{ $xletsavail[$xlet] = $_TPL->bbf("xlet-$xlet"); }
+
+$xletslocavail = array(
+    'dock',
+    'grid',
+    'tab'
+);
+
 
 $param = array();
 $param['act'] = 'list';

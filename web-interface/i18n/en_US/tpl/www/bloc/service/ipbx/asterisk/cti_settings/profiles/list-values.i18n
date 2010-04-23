@@ -1,0 +1,193 @@
+; enablevm
+Enable voicemail
+
+; callrecord
+Call record
+
+; incallrec
+Incall record
+
+; incallfilter
+Call filter
+
+; enablednd
+Enable DND
+
+; fwdunc
+Unconditional transfer to a number
+
+; fwdbusy
+Transfer on busy
+
+; fwdrna
+Transfert on no-answer
+
+; presence 
+Presence permission
+
+; switchboard 
+Switchboard
+
+; customerinfo 
+Customer info permission
+
+; agents
+Agents
+
+; search 
+Search
+
+; dial 
+Dialing permission
+
+; chitchat
+Instant messaging
+
+; conference
+Conference room permission
+
+; directory
+Directory
+
+; fax
+Fax permission
+
+; features
+Features permission
+
+; history
+History permission
+
+; database
+Database write permission
+
+
+
+; pref-logagent
+Agents (Dis)connection from "Identity" xlet
+
+; pref-pauseagent
+Agents pause/unpause from "Identity" xlet
+
+; pref-fontsize
+Xlets font size
+
+; pref-fontname
+Xlets font
+
+; pref-iconsize
+Xlets icon size
+
+; pref-queues-statscolumns
+Displayed columns
+
+; pref-noqueueaction
+Login & pause actions ("Agents detail" xlet)
+
+; pref-autochangestate
+Automatic states transitions
+
+; pref-blinktime
+Blinktime
+
+; pref-supervisor
+Supervisor
+
+; pref-queues-showqueuenames
+Show queues name
+
+; pref-queues-showqueues
+Show queues
+
+; pref-queues-shortlegends
+Show queues legend
+
+; pref-conference-allowrecord
+Allow conference room record
+
+
+
+
+; xlet-agents
+Agents (list)
+
+; xlet-agentsnext
+Agents (list, next)
+
+; xlet-agentdetails
+Agents (detail)
+
+; xlet-queues
+Queues (list)
+
+; xlet-queuedetails
+Queues (detail)
+
+; xlet-queueentrydetails
+Queues (entries detail)
+
+; xlet-calls
+Calls
+
+; xlet-parking
+Parking
+
+; xlet-switchboard
+Switchboard
+
+; xlet-customerinfo
+Customer info
+
+; xlet-datetime
+Datetime
+
+; xlet-dial
+Dialer
+
+; xlet-directory
+Directory
+
+; xlet-outlook
+Outlook
+
+; xlet-fax
+Fax
+
+; xlet-features
+Features
+
+; xlet-history
+History
+
+; xlet-identity
+Identity
+
+; xlet-search
+Search
+
+; xlet-conference
+Conference rooms
+
+; xlet-operator
+Operator
+
+; xlet-mylocaldir
+MyDirectory
+
+; xlet-callcampaign
+Call campaign
+
+; xlet-tabber
+Tabber
+
+; xlet-xletweb
+Web
+
+; xlet-xletproto
+Prototype
+
+; xlet-messages
+Messages
+
+; xlet-video
+Video

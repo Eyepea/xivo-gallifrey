@@ -65,7 +65,7 @@ if(isset($error_js[0]) === true)
 				    'labelid'	=> 'cti_commandset',
 				    'key'	=> false,
 				    'default'	=> $element['ctimain']['commandset']['default'],
-				    'help'	=> $this->bbf('hlp_fm_cti_commandset'),
+#				    'help'	=> $this->bbf('hlp_fm_cti_commandset'),
 				    'selected'	=> $this->get_var('ctimain','commandset','var_val')),
 			      $element['ctimain']['commandset']['value']);
 	?>
@@ -97,7 +97,8 @@ if(isset($error_js[0]) === true)
 					'required'	=> 1,
 					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['fagi_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_fagi_port')))
+#					'help'		=> $this->bbf('hlp_fm_cti_fagi_port')
+					))
 				?>
 				</td>
 			</tr>
@@ -121,7 +122,8 @@ if(isset($error_js[0]) === true)
 					'required'	=> 1,
 					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['cti_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_cti_port')))
+#					'help'		=> $this->bbf('hlp_fm_cti_cti_port')
+					))
 				?>
 				</td>
 			</tr>
@@ -146,7 +148,8 @@ if(isset($error_js[0]) === true)
 					'required'	=> 1,
 					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['webi_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_webi_port')))
+#					'help'		=> $this->bbf('hlp_fm_cti_webi_port')
+					))
 				?>
 				</td>
 			</tr>
@@ -171,7 +174,8 @@ if(isset($error_js[0]) === true)
 					'required'	=> 1,
 					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['info_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_info_port')))
+#					'help'		=> $this->bbf('hlp_fm_cti_info_port')
+					))
 				?>
 				</td>
 			</tr>
@@ -196,7 +200,8 @@ if(isset($error_js[0]) === true)
 					'required'	=> 1,
 					'regexp'	=> '[[:port:]]',
 					'default'	=> $element['ctimain']['announce_port']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_announce_port')))
+#					'help'		=> $this->bbf('hlp_fm_cti_announce_port')
+					))
 				?>
 				</td>
 			</tr>
@@ -213,7 +218,8 @@ if(isset($error_js[0]) === true)
 					'value'		=> $info['ctimain']['updates_period'],
 					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['updates_period']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_updates_period'))),
+#					'help'		=> $this->bbf('hlp_fm_cti_updates_period')
+					)),
 
 			$form->text(array('desc'	=> $this->bbf('fm_cti_socket_timeout'),
 					'name'		=> 'cti[socket_timeout]',
@@ -221,7 +227,8 @@ if(isset($error_js[0]) === true)
 					'value'		=> $info['ctimain']['socket_timeout'],
 					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['socket_timeout']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_socket_timeout'))),
+#					'help'		=> $this->bbf('hlp_fm_cti_socket_timeout')
+					)),
 
 			$form->text(array('desc'	=> $this->bbf('fm_cti_login_timeout'),
 					'name'		=> 'cti[login_timeout]',
@@ -229,7 +236,8 @@ if(isset($error_js[0]) === true)
 					'value'		=> $info['ctimain']['login_timeout'],
 					'regexp'	=> '[[:int:]]',
 					'default'	=> $element['ctimain']['login_timeout']['default'],
-					'help'		=> $this->bbf('hlp_fm_cti_login_timeout')));
+#					'help'		=> $this->bbf('hlp_fm_cti_login_timeout')
+					));
 ?>
 	</fieldset>
 <?php

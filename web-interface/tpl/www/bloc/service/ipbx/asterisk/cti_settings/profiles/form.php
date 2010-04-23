@@ -209,11 +209,22 @@ endif;
 			<tr class="fm-paragraph<?=$errdisplay?>">
 				<td class="td-left txt-center">
 	<?php
+	
+#								'label' => false,
+#							'id'    => 'it-funcslist',
+#							'key'   => 'name',
+#							'altkey'    => 'id',
+#							'multiple'  => true,
+#							'size'  => 5,
+#							'paragraph' => false),
+	
 					echo $form->select(array('paragraph'	=> false,
 								   'name'		=> 'preferenceslist[]',
 								   'id'		=> false,
 								   'label'		=> false,
-								   'key'		=> false,
+#								   'key'		=> false,
+							        'key'   => 'name',
+							        'altkey'    => 'id',
 								   'selected'	=> $match[1],
 								   'invalid'	=> true,
 							 ),
@@ -259,7 +270,9 @@ endif;
 								   'name'		=> 'preferenceslist[]',
 								   'id'		=> false,
 								   'label'		=> false,
-								   'key'		=> false,
+#								   'key'		=> false,
+							        'key'   => 'name',
+							        'altkey'    => 'id',
 								   'invalid'	=> true
 							 ),
 							 $info['preferences']['avail']);?>
@@ -329,7 +342,9 @@ endif;
 								   'name'		=> 'xletslist[]',
 								   'id'		=> false,
 								   'label'		=> false,
-								   'key'		=> false,
+#								   'key'		=> false,
+							        'key'   => 'name',
+							        'altkey'    => 'id',
 								   'selected'	=> $info['xlets']['slt'][$i][0]
 							 ),
 							 $info['xlets']['list']['xlets']);?>
@@ -423,7 +438,9 @@ endif;
 								   'id'			=> false,
 								   'label'		=> false,
 								   'invalid'	=> true,
-								   'key'		=> false
+#								   'key'		=> false
+							        'key'   => 'name',
+							        'altkey'    => 'id',
 							 ),
 							 $info['xlets']['list']['xlets']);?>
 				</td>

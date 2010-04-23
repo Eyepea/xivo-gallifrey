@@ -20,7 +20,7 @@ CTI server
 IP address
 
 ; fm_cti_list_port
-List ports
+Port
 
 ; fm_cti_fagi_ip
 Fast AGI:
@@ -123,3 +123,5 @@ Add
 
 ; bt_outxivoserver
 Remove
+
+
