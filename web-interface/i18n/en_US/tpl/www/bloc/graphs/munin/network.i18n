@@ -1,0 +1,17 @@
+; title_content_name
+Network
+
+; if_err_eth0
+Eth0 errors
+
+; if_eth0
+Eth0 trafic
+
+; if_err_eth1
+Eth1 errors
+
+; if_eth1
+Eth1 trafic
+
+; netstat
+Netstat

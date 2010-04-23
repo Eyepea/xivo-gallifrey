@@ -1,0 +1,20 @@
+; title_content_name
+Disks
+
+; df
+Usage (percents)
+
+; df_inode
+Used inodes (percents)
+
+; iostat
+IO statistics
+
+; hddtemp_smartctl
+Disks temporature
+
+; smart_twe0_0
+SMART statistics (Disk #0)
+
+; smart_twe0_1
+SMART statistics (Disk #1)

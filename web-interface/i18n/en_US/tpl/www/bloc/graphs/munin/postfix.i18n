@@ -1,0 +1,11 @@
+; title_content_name
+Postfix
+
+; postfix_mailqueue
+Mails in queue
+
+; postfix_mailstats
+Mails stats
+
+; postfix_mailvolume
+Mails volume

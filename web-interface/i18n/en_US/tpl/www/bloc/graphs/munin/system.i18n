@@ -1,0 +1,29 @@
+; title_content_name
+System
+
+; cpu
+CPU
+
+; entropy
+Entropy
+
+; interrupts
+Interruptions
+
+; irqstats
+IRQ stats
+
+; load
+System load
+
+; memory
+Memory usage
+
+; open_files
+Open files
+
+; open_inodes
+Open inodes
+
+; swap
+Swap usage

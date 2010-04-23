@@ -1,0 +1,8 @@
+; title_content_name
+NTP
+
+; ntp_offset
+Time offset
+
+; ntp_states
+Servers state

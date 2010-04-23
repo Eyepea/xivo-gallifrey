@@ -1,0 +1,20 @@
+; title_content_name
+Others
+
+; dhcpd3
+Served DHCP addresses
+
+; uptime
+Uptime
+
+; acpi
+CPU temperature
+
+; sensors_fan
+Fans rotation speed
+
+; sensors_temp
+System temperature
+
+; sensors_volt
+Motherboard voltage
