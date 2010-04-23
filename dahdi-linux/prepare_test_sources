@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. sources.pkg
+. ./sources.pkg
 
 VER=$(cat SOURCE-VERSION)
 
