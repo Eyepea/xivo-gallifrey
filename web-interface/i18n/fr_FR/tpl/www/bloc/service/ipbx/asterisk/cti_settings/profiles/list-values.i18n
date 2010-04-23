@@ -1,0 +1,193 @@
+; enablevm
+Activer la messagerie vocale
+
+; callrecord
+Enregister les appels
+
+; incallrec
+Enregistrer les appels entrants
+
+; incallfilter
+Filtres sur les appels
+
+; enablednd
+Mode "Ne Pas Déranger"
+
+; fwdunc
+Transfert inconditionnel vers un numéro
+
+; fwdbusy
+Transfert sur occupation
+
+; fwdrna
+Transfert sur non-réponse
+
+; presence 
+Autoriser l'information de présence
+
+; switchboard 
+Mise en relation extérieure des téléphones
+
+; customerinfo 
+Autoriser les fiches client
+
+; agents
+Agents
+
+; search 
+Contacts
+
+; dial 
+Composer
+
+; chitchat
+Messagerie instantanée
+
+; conference
+Autoriser les chambres de conférence
+
+; directory
+Répertoire
+
+; fax
+Autoriser l'accés au fax
+
+; features
+Autoriser les services
+
+; history
+Autoriser l'historique
+
+; database
+Autoriser l'écriture dans la base de données
+
+
+
+; pref-logagent
+(Dé)connexion des agents depuis la xlet "Identité"
+
+; pref-pauseagent
+Pause/Unpause des agents depuis la xlet "Identité"
+
+; pref-fontsize
+Taille de la police dans les Xlets
+
+; pref-fontname
+Police des Xlets
+
+; pref-iconsize
+Taille des icônes dans les Xlets
+
+; pref-queues-statscolumns
+Colonnes affichées
+
+; pref-noqueueaction
+Actions de connexion et pause dans la xlet "Détail agents"
+
+; pref-autochangestate
+Transitions automatiques entre les états
+
+; pref-blinktime
+Durée de clignotement
+
+; pref-supervisor
+Superviseur
+
+; pref-queues-showqueuenames
+Afficher le nom des files d'attentes
+
+; pref-queues-showqueues
+Afficher les files d'attentes
+
+; pref-queues-shortlegends
+Afficher la légende des files d'attente
+
+; pref-conference-allowrecord
+Autoriser l'enregistrement des chambres de conférence
+
+
+
+
+; xlet-agents
+Agents (liste)
+
+; xlet-agentsnext
+Agents (liste, next)
+
+; xlet-agentdetails
+Agents (detail)
+
+; xlet-queues
+Queues (liste)
+
+; xlet-queuedetails
+Queues (detail)
+
+; xlet-queueentrydetails
+Queues (détail des entrées)
+
+; xlet-calls
+Appels
+
+; xlet-parking
+Parking
+
+; xlet-switchboard
+Switchboard
+
+; xlet-customerinfo
+Fiches clients
+
+; xlet-datetime
+Date et heure
+
+; xlet-dial
+Numéroteur
+
+; xlet-directory
+Répertoire
+
+; xlet-outlook
+Outlook
+
+; xlet-fax
+Envoi de fax
+
+; xlet-features
+Services
+
+; xlet-history
+Historique
+
+; xlet-identity
+Identité
+
+; xlet-search
+Contacts
+
+; xlet-conference
+Chambres de conférence
+
+; xlet-operator
+Operateur
+
+; xlet-mylocaldir
+Mon répertoire local
+
+; xlet-callcampaign
+Campagnes d'appel
+
+; xlet-tabber
+Tabber
+
+; xlet-xletweb
+Web
+
+; xlet-xletproto
+Prototype
+
+; xlet-messages
+Messages
+
+; xlet-video
+Video
