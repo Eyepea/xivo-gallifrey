@@ -97,7 +97,6 @@ $element['ctiprofiles'] = $ctiprofiles->get_element();
 switch($act)
 {
 	case 'add':
-	    var_dump($_QR);
 		$app = &$ipbx->get_application('ctiprofiles');
 		$apppres = &$ipbx->get_application('ctipresences');
 
@@ -146,28 +145,18 @@ switch($act)
 
 			if(array_key_exists('services', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['services'] as $v)
-				{
-					$arr[] = $servicesavail[$v];
-				}
-				$_QR['profiles']['services'] = implode(',', $arr);
+				$_QR['profiles']['services'] = implode(',', $_QR['services']);
 			}
 			else
 				$_QR['profiles']['services'] = '';
 
-
 			if(array_key_exists('funcs', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['funcs'] as $v)
-				{
-					$arr[] = $funcsavail[$v];
-				}
-				$_QR['profiles']['funcs'] = implode(',', $arr);
+				$_QR['profiles']['funcs'] = implode(',', $_QR['funcs']);
 			}
 			else
 				$_QR['profiles']['funcs'] = '';
+
 
 			if(array_key_exists('preferencesargs', $_QR))
 			{
@@ -232,10 +221,10 @@ switch($act)
 
 		$result = $fm_save = null;
 		$return = &$info;
-
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('profiles',$_QR) === true)
 		{
+
 			$_QR['profiles']['deletable'] = 1;
 			$_QR['profiles']['presence'] = $_QR['presence'];
 
@@ -268,12 +257,7 @@ switch($act)
 
 			if(array_key_exists('services', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['services'] as $v)
-				{
-					$arr[] = $servicesavail[$v];
-				}
-				$_QR['profiles']['services'] = implode(',', $arr);
+				$_QR['profiles']['services'] = implode(',', $_QR['services']);
 			}
 			else
 				$_QR['profiles']['services'] = '';
@@ -281,16 +265,10 @@ switch($act)
 
 			if(array_key_exists('funcs', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['funcs'] as $v)
-				{
-					$arr[] = $funcsavail[$v];
-				}
-				$_QR['profiles']['funcs'] = implode(',', $arr);
+				$_QR['profiles']['funcs'] = implode(',', $_QR['funcs']);
 			}
 			else
 				$_QR['profiles']['funcs'] = '';
-
 			if(array_key_exists('preferencesargs', $_QR))
 			{
 				$arr = array();
@@ -310,26 +288,47 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
+
+				$info['ctiprofiles'] = $result['profiles'];
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/cti_settings/profiles'),$param);
 		}
 
+
+
+        // we go here ONLY IF:
+        //  . 1st time editing the profile
+        //  . error after saving changes
 		$info['services']['slt'] = array();
         $info['services']['list'] = $servicesavail;
 
 		if(isset($info['ctiprofiles']['services']) && dwho_has_len($info['ctiprofiles']['services']))
 		{
-			$sel = explode(',', $info['ctiprofiles']['services']);
-			$info['services']['slt'] =
-				array_intersect(
-					$sel,
-					$info['services']['list']);
-			$info['services']['list'] =
-				dwho_array_diff_key(
-					$info['services']['list'],
-					$info['services']['slt']);
+			$svcs = explode(',', $info['ctiprofiles']['services']);
+
+			$info['services']['slt'] = array();
+			foreach($svcs as $svc)
+			{
+				$info['services']['slt'][$svc] = $info['services']['list'][$svc];
+				unset($info['services']['list'][$svc]);
+			}
 		}
+
+		$info['funcs']['list'] = $funcsavail;
+		$info['funcs']['slt'] = array();
+		if(isset($info['ctiprofiles']['funcs']) && dwho_has_len($info['ctiprofiles']['funcs']))
+		{
+			$fncs = explode(',', $info['ctiprofiles']['funcs']);
+
+			$info['funcs']['slt'] = array();
+			foreach($fncs as $fnc)
+			{
+				$info['funcs']['slt'][$fnc] = $info['funcs']['list'][$fnc];
+				unset($info['funcs']['list'][$fnc]);
+			}
+		}
+#var_dump($info);
 
 		$info['preferences']['slt'] = array();
 		$info['preferences']['avail'] = $preferencesavail;
@@ -337,21 +336,6 @@ switch($act)
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
 			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);
-		}
-
-		$info['funcs']['list'] = $funcsavail;
-		$info['funcs']['slt'] = array();
-		if(isset($info['ctiprofiles']['funcs']) && dwho_has_len($info['ctiprofiles']['funcs']))
-		{
-			$sel = explode(',', $info['ctiprofiles']['funcs']);
-			$info['funcs']['slt'] =
-				array_intersect(
-					$sel,
-					$info['funcs']['list']);
-			$info['funcs']['list'] =
-				dwho_array_diff_key(
-					$info['funcs']['list'],
-					$info['funcs']['slt']);
 		}
 
 		$info['xlets']['list']['xlets'] = $xletsavail;
