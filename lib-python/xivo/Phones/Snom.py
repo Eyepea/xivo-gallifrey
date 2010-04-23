@@ -62,7 +62,7 @@ class Snom(PhoneVendorMixin):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
         cls.SNOM_SPEC_DIR = os.path.join(cls.TFTPROOT, "Snom/")
-        cls.SNOM_SPEC_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "snom-template.htm")
+        cls.SNOM_SPEC_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "snom-template.xml")
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
@@ -127,9 +127,9 @@ class Snom(PhoneVendorMixin):
         model = self.phone['model']
         macaddr = self.phone['macaddr'].replace(":", "").upper()
 
-        htm_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm")
+        xml_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml")
         try:
-            os.unlink(htm_filename)
+            os.unlink(xml_filename)
         except OSError:
             pass
 
@@ -146,7 +146,7 @@ class Snom(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            template_common_path = os.path.join(self.SNOM_SPEC_DIR, "templates", "snom-template.htm")
+            template_common_path = os.path.join(self.SNOM_SPEC_DIR, "templates", "snom-template.xml")
 
             if not os.access(template_common_path, os.R_OK):
                 template_common_path = self.SNOM_SPEC_TEMPLATE
@@ -160,8 +160,8 @@ class Snom(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm.tmp")
-        htm_filename = tmp_filename[:-4]
+        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml.tmp")
+        xml_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
@@ -175,13 +175,13 @@ class Snom(PhoneVendorMixin):
                       'function_keys':      function_keys_config_lines,
                     },
                     format_extension=clean_extension),
-                htm_filename,
+                xml_filename,
                 'utf8')
 
         tmp_file = open(tmp_filename, 'w')
         tmp_file.writelines(txt)
         tmp_file.close()
-        os.rename(tmp_filename, htm_filename)
+        os.rename(tmp_filename, xml_filename)
 
     # Introspection entry points
 

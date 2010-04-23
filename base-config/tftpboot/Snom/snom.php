@@ -26,7 +26,8 @@ else
 	$macaddr = '';
 
 if(isset($_SERVER['HTTP_USER_AGENT']) === true
-&& preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1)
+&& preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match)
+&& preg_match('/(snom8[27]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1)
 	$type = $match[1];
 else
 {
@@ -37,14 +38,14 @@ else
 
 echo    '<html>',"\n",'<pre>',"\n";
 
-$filename = $type.'.htm';
+$filename = $type.'.xml';
 
 if(is_file($filename) === true)
 	include($filename);
 
 if(isset($macaddr{0}) === true)
 {
-	$filename = $type.'-'.$macaddr.'.htm';
+	$filename = $type.'-'.$macaddr.'.xml';
 
 	if(is_file($filename) === true)
 		include($filename);
