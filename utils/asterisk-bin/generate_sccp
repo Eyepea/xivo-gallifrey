@@ -1,0 +1,68 @@
+#!/usr/bin/python
+__version__ = "$Revision$ $Date$"
+__author__  = "Guillaume Bour <gbour@proformatique.com>"
+__license__ = """
+    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import sys
+from xivo import OrderedConf
+from xivo import xivo_helpers
+
+cursor = xivo_helpers.db_connect().cursor()
+
+cursor.query("SELECT ${columns} FROM generalsccp WHERE commented = 0", ('key', 'value'))
+
+print "[general]"
+for r in cursor.fetchall():
+    print "%s = %s" % (r['key'], r['value'])
+
+
+cursor.query("SELECT ${columns} FROM sccpdevice WHERE commented = 0", ('id', 'name', 'description', 'devicetype', 'tzoffset', 'dtmfmode', 'mwilamp', 'mwioncall', 'pickupexten', 'pickupmodeanswer', 'privacy'))
+for r in cursor.fetchall():
+    print "\n[%s]" % r['name']
+    print "type = device"
+    for k, v in r.iteritems():
+        if k in ['id', 'name'] or v is None or len(str(v)) == 0:
+            continue
+
+        print "%s = %s" % (k, v)
+  
+    cursor.query("SELECT ${columns} FROM buttonconfig WHERE device_id = %d ORDER BY position" % r['id'], \
+        ('type', 'options'))
+    for r2 in cursor.fetchall():
+        print "button =",
+ 
+        if r2['type'] is None or len(r2['type']) == 0:
+            print ''
+            continue
+        print "%s," % r2['type'],
+
+        if r2['options'] is None:
+            print ''
+            continue
+        print "%s" % r2['options']
+
+
+cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 'name', 'pin', 'label'))
+for r in cursor.fetchall():
+    print "\n[%s]" % r['name']
+    print "type = line"
+
+    for k, v in r.iteritems():
+        if k in ['id', 'name'] or v is None or len(str(v)) == 0:
+            continue
+        print "%s = %s" % (k, v)

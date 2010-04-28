@@ -1790,4 +1790,132 @@ CREATE TABLE userqueueskill
 
 CREATE INDEX userqueueskill__idx__userid ON userqueueskill(userid);
 
+
+-- http://chan-sccp-b.sourceforge.net/doc/chan__sccp_8h_source.html#l00795
+DROP TABLE generalsccp;
+CREATE TABLE generalsccp (
+ id integer unsigned,
+ key varchar(64) NOT NULL,
+ value varchar(128) NOT NULL,
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+CREATE INDEX generalsccp__idx__key ON generalsccp(key);
+
+INSERT INTO generalsccp VALUES (NULL, 'servername'            , 'Asterisk', 0);
+INSERT INTO generalsccp VALUES (NULL, 'keepalive'             , '60', 0);
+INSERT INTO generalsccp VALUES (NULL, 'debug'                 , 'core,event,device,channel', 0);
+INSERT INTO generalsccp VALUES (NULL, 'context'               , 'sccp', 0);
+INSERT INTO generalsccp VALUES (NULL, 'dateFormat'            , 'D.M.Y', 0);
+INSERT INTO generalsccp VALUES (NULL, 'bindaddr'              , '0.0.0.0', 0);
+INSERT INTO generalsccp VALUES (NULL, 'port'                  , '2000', 0);
+INSERT INTO generalsccp VALUES (NULL, 'disallow'              , 'all', 0);
+INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'alaw', 0);
+INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'ulaw', 0);
+INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'g729', 0);
+INSERT INTO generalsccp VALUES (NULL, 'firstdigittimeout'     , '16', 0);
+INSERT INTO generalsccp VALUES (NULL, 'digittimeout'          , '8', 0);
+INSERT INTO generalsccp VALUES (NULL, 'autoanswer_ring_time'  , '1', 0);
+INSERT INTO generalsccp VALUES (NULL, 'autoanswer_tone'       , '0x32', 0);
+INSERT INTO generalsccp VALUES (NULL, 'remotehangup_tone'     , '0x32', 0);
+INSERT INTO generalsccp VALUES (NULL, 'transfer_tone'         , '0', 0);
+INSERT INTO generalsccp VALUES (NULL, 'callwaiting_tone'      , '0x2d', 0);
+INSERT INTO generalsccp VALUES (NULL, 'musicclass'            , 'default', 0);
+INSERT INTO generalsccp VALUES (NULL, 'language'              , 'en', 0);
+INSERT INTO generalsccp VALUES (NULL, 'dnd'                   , 'on', 0);
+INSERT INTO generalsccp VALUES (NULL, 'sccp_tos'              , '0x68', 0);
+INSERT INTO generalsccp VALUES (NULL, 'sccp_cos'              , '4', 0);
+INSERT INTO generalsccp VALUES (NULL, 'audio_tos'             , '0xB8', 0);
+INSERT INTO generalsccp VALUES (NULL, 'audio_cos'             , '6', 0);
+INSERT INTO generalsccp VALUES (NULL, 'video_tos'             , '0x88', 0);
+INSERT INTO generalsccp VALUES (NULL, 'video_cos'             , '5', 0);
+INSERT INTO generalsccp VALUES (NULL, 'echocancel'            , 'on', 0);
+INSERT INTO generalsccp VALUES (NULL, 'silencesuppression'    , 'off', 0);
+INSERT INTO generalsccp VALUES (NULL, 'trustphoneip'          , 'no', 0);
+INSERT INTO generalsccp VALUES (NULL, 'private'               , 'on', 0);
+INSERT INTO generalsccp VALUES (NULL, 'callanswerorder'       , 'oldestfirst', 0);
+INSERT INTO generalsccp VALUES (NULL, 'protocol'              , '11', 0);
+
+-- http://chan-sccp-b.sourceforge.net/doc/structsccp__device.html
+DROP TABLE sccpdevice;
+CREATE TABLE sccpdevice
+(
+ id integer unsigned,
+ name varchar(128),
+ description text,
+ devicetype varchar(64),             -- phone model, ie 7960
+ tzoffset integer,                   -- ie: +1 == Europe/Paris
+ dtmfmode varchar(16),                -- outofband, inband
+ mwilamp varchar(3),                 -- on, off
+ mwioncall varchar(3),               -- on, off
+ pickupexten varchar(3),             -- on, off
+ pickupmodeanswer varchar(3),        -- on, off
+ privacy varchar(16),                -- full
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+INSERT INTO sccpdevice VALUES (NULL, 'SEP00164766A428', 'plop', '7960', '2', 'inband', 'on', 'on', 'on', 'on', '', 0)
+
+-- http://chan-sccp-b.sourceforge.net/doc/structsccp__line.html
+DROP TABLE sccpline;
+CREATE TABLE sccpline
+(
+ id integer unsigned,
+ name varchar(80) NOT NULL,
+ pin varchar(8) NOT NULL DEFAULT '',
+ label varchar(128),
+ description text,
+ context varchar(64),
+ incominglimit integer unsigned,
+ transfer varchar(3) NOT NULL DEFAULT 'on',            -- on, off
+ mailbox varchar(64) NOT NULL DEFAULT '',
+ vmnum varchar(64) NOT NULL DEFAULT '',
+ cid_name varchar(64) NOT NULL DEFAULT '',
+ cid_num varchar(64) NOT NULL DEFAULT '',
+ trnsfvm varchar(64) NOT NULL DEFAULT '',
+ secondary_dialtone_digits varchar(10),
+ secondary_dialtone_tone integer unsigned,
+ musicclass varchar(32) NOT NULL DEFAULT 'default',
+ language varchar(32) NOT NULL DEFAULT '',             -- en, fr
+ accountcode varchar(32) NOT NULL DEFAULT '',
+ audio_tos integer unsigned,
+ audio_cos integer unsigned,
+ video_tos integer unsigned,
+ video_cos integer unsigned,
+ echocancel varchar(3) NOT NULL DEFAULT 'on',          -- on, off
+ silencesuppression varchar(3) NOT NULL DEFAULT 'on',  -- on, off
+ callgroup varchar(64) NOT NULL DEFAULT '',            -- i.e: 1,4-9
+ pickupgroup varchar(64) NOT NULL DEFAULT '',          -- i.e: 1,3-9
+ amaflags varchar(16) NOT NULL DEFAULT '',             -- default, omit, billing, documentation
+ setvar varchar(512) NOT NULL DEFAULT '',
+ commented tinyint(1) NOT NULL DEFAULT 0,
+ PRIMARY KEY(id)
+);
+
+CREATE UNIQUE INDEX sccpline__uidx__name ON sccpline(name);
+
+INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
+s
+
+-- http://chan-sccp-b.sourceforge.net/doc/structsccp__buttonconfig.html
+DROP TABLE buttonconfig;
+CREATE TABLE buttonconfig
+(
+ id integer unsigned,
+ device_id integer unsigned NOT NULL,
+ position integer unsigned,
+ type varchar(16),                            -- line, speeddial, feature, empty
+ options varchar(512),
+ PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX buttonconfig__uidx__name   ON buttonconfig(device_id, position);
+
+INSERT INTO buttonconfig VALUES (NULL, 1, 1, 'line', '160');
+INSERT INTO buttonconfig VALUES (NULL, 1, 2, NULL, NULL);
+INSERT INTO buttonconfig VALUES (NULL, 1, 3, 'speeddial', '112,*8112,112@default');
+
+
 COMMIT;
