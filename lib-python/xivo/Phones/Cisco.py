@@ -114,7 +114,11 @@ class Cisco(PhoneVendorMixin):
             template_common_path = os.path.join(self.CISCO_COMMON_DIR, "templates", "cisco-" + model + ".cfg")
 
             if not os.access(template_common_path, os.R_OK):
-                template_common_path = os.path.join(self.TEMPLATES_DIR, "cisco-" + model + ".cfg")
+                prefix = ''
+                if provinfo['proto'] != 'sip':
+                    prefix = provinfo['proto'] + '-'
+                    
+                template_common_path = os.path.join(self.TEMPLATES_DIR, prefix + "cisco-" + model + ".cfg")
 
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       template_specific_path,
@@ -125,23 +129,28 @@ class Cisco(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-	if model not in ('cp7960g', 'cp7940g'):
+
+        if provinfo['proto'] == 'sccp':
             tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml.tmp")
             cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml")
-	else:
+
+            exten_pickup_prefix        = ''
+            function_keys_config_lines = ''
+        else:
             tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SIP" + macaddr + ".cnf.tmp")
             cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SIP" + macaddr + ".cnf")
+
+            exten_pickup_prefix = \
+                clean_extension(provinfo['extensions']['pickupexten']) + "#"
+
+            function_keys_config_lines = \
+                self.__format_function_keys(provinfo['funckey'], model, provinfo)
 
         if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
 
-        exten_pickup_prefix = \
-                clean_extension(provinfo['extensions']['pickupexten']) + "#"
-
-        function_keys_config_lines = \
-                self.__format_function_keys(provinfo['funckey'], model, provinfo)
 
         txt = xivo_config.txtsubst(
                 template_lines,
