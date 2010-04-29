@@ -65,6 +65,7 @@ from xivo import all_phones # pylint: disable-msg=W0611
 
 from xivo import agi
 from xivo import agitb
+from xivo import network
 
 sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
 sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
@@ -101,16 +102,36 @@ def main():
     sip_uri = sys.argv[1]
     code = sys.argv[2]
     ua = sys.argv[3]
+    proto   = 'sip'
+    macaddr = None
+    if len(sys.argv) > 4:
+        proto = sys.argv[4]
+    if len(sys.argv) > 5:
+        macaddr = sys.argv[5]
+
     isinalan = "1"
 
     # Get Sip User, IPv4 and Mac Address
-    user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
-    if not user_ipv4:
-        return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
-    sip_user, ipv4 = user_ipv4 # pylint: disable-msg=W0612
-    macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi_session.verbose)
-    if not macaddr:
-        return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
+    if proto == 'sip':
+        user_ipv4 = user_ipv4_from_sip_uri(sip_uri)
+        if not user_ipv4:
+            return_exit("Could not parse Sip URI \"%s\"" % sip_uri)
+        sip_user, ipv4 = user_ipv4 # pylint: disable-msg=W0612
+        macaddr = xivo_config.macaddr_from_ipv4(ipv4) # XXX, agi_session.verbose)
+
+        if not macaddr:
+            return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
+    else:
+        # SCCP phone
+        if not macaddr:
+            return_exit("You must defined Mac Address (5th argument)")
+
+#        macaddr = network.normalize_mac_address(macaddr[3:])
+        ipv4 = sip_uri
+        # ua is in the form "Cisco 7960", and xivo-config lib require ua like
+        # "Cisco-7960/8.0"
+        ua   = ua.replace(' ', '-') + '/8.0'
+
 
     # Get Phone description (if we are able to handle this vendor...)
     phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
@@ -129,7 +150,7 @@ def main():
               ["mode=authoritative",
                "from=ipbx",
                "actions=yes",
-               "proto=sip",
+               "proto=%s"           % proto,
                "provcode=%s"        % code,
                "vendor=%s"          % phone_vendor,
                "model=%s"           % phone_model,
@@ -159,5 +180,5 @@ def main():
 if __name__ == '__main__':
     xivo_config.LoadConfig(CONFIG_FILE)
     xivo_config.phone_classes_setup()
-    
+
     main()
