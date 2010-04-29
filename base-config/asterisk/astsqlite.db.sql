@@ -1852,6 +1852,8 @@ CREATE TABLE sccpdevice
  pickupexten varchar(3),             -- on, off
  pickupmodeanswer varchar(3),        -- on, off
  privacy varchar(16),                -- full
+ permit varchar(64),                 -- 192.168.0.0/255.255.255.0
+ deny varchar(64),                   -- 0.0.0.0/0.0.0.0
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
@@ -1870,16 +1872,16 @@ CREATE TABLE sccpline
  context varchar(64),
  incominglimit integer unsigned,
  transfer varchar(3) NOT NULL DEFAULT 'on',            -- on, off
- mailbox varchar(64) NOT NULL DEFAULT '',
- vmnum varchar(64) NOT NULL DEFAULT '',
- cid_name varchar(64) NOT NULL DEFAULT '',
- cid_num varchar(64) NOT NULL DEFAULT '',
- trnsfvm varchar(64) NOT NULL DEFAULT '',
+ mailbox varchar(64),
+ vmnum varchar(64),
+ cid_name varchar(64),
+ cid_num varchar(64),
+ trnsfvm varchar(64),
  secondary_dialtone_digits varchar(10),
  secondary_dialtone_tone integer unsigned,
  musicclass varchar(32) NOT NULL DEFAULT 'default',
  language varchar(32) NOT NULL DEFAULT '',             -- en, fr
- accountcode varchar(32) NOT NULL DEFAULT '',
+ accountcode varchar(32),
  audio_tos integer unsigned,
  audio_cos integer unsigned,
  video_tos integer unsigned,
