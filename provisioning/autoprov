@@ -29,6 +29,7 @@ SIP_TABLE           = 'usersip'
 FK_TABLE            = 'phonefunckey'
 XNUM_TABLE          = 'extenumbers'
 TECH_SIP            = 'sip' # only allowed tech right now
+TECH_SCCP           = 'sccp'
 
 SYSLOG_NAME         = 'autoprovisioning'
 
@@ -242,6 +243,9 @@ class SQLBackEnd:
 
         Right now proto must evaluate to 'sip'
         """
+        if proto == TECH_SCCP:
+            return {'proto': proto, 'extensions': {}}
+
         if proto != TECH_SIP:
             raise ValueError, "proto must be 'sip' for now"
         mapping = {
@@ -545,7 +549,7 @@ def __save_phone(ctx, phone, config):
 def __provisioning(mode, ctx, phone):
     "Provisioning high level logic for the described phone"
     # I only allow "sip" right now
-    if phone["proto"] != TECH_SIP:
+    if phone["proto"] != TECH_SIP and phone["proto"] != TECH_SCCP:
         log.error("__provisioning(): the only protocol supported "
                   "right now is SIP, but I got %s", phone["proto"])
         raise BadRequest, "Unknown protocol '%s' != 'sip'" % phone["proto"]
