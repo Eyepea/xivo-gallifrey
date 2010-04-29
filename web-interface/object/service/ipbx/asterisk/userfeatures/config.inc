@@ -38,6 +38,7 @@ $array['element']['name']['default'] = '';
 $array['element']['protocol'] = array();
 $array['element']['protocol']['value'] = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 					       XIVO_SRE_IPBX_AST_PROTO_IAX,
+					       XIVO_SRE_IPBX_AST_PROTO_SCCP,
 					       XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 
@@ -196,6 +197,7 @@ $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['protocol'] = array('key' => array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 						    XIVO_SRE_IPBX_AST_PROTO_IAX,
+						    XIVO_SRE_IPBX_AST_PROTO_SCCP,
 						    XIVO_SRE_IPBX_AST_PROTO_CUSTOM));
 $array['filter']['protocolid'] = array('cast' => 'ulongint');
 $array['filter']['firstname'] = array('set' => false,'chk' => 2,'cast' => 'sgraph','maxlen' => 128);

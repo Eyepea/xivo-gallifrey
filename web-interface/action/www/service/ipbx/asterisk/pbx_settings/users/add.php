@@ -52,6 +52,8 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 
 $queueskills = array();
 
+
+
 if(isset($_QR['fm_send']) === true
 && dwho_issa('protocol',$_QR) === true
 && dwho_issa('userfeatures',$_QR) === true
@@ -59,6 +61,7 @@ if(isset($_QR['fm_send']) === true
 && dwho_issa('queueskill-weight',$_QR) === true
 && isset($_QR['protocol']['protocol']) === true)
 {
+
 	$appqueue = &$ipbx->get_application('queue');
 	$queueskills = array();
 
@@ -96,6 +99,8 @@ if(isset($_QR['fm_send']) === true
 
 		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/users'),$param);
 	}
+
+
 }
 
 dwho::load_class('dwho_sort');
@@ -224,6 +229,7 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sccp.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');
 $dhtml->set_js('js/dwho/submenu.js');
 $dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');

@@ -47,6 +47,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 	var $_param		= array('internal'	=> false);
 	var $_destination	= null;
 	var $_queueskills   = null;
+#	var $_sccp   = null;
 
 	function xivo_application_service_asterisk_user(&$service,&$dso,$param=array(),$components=true)
 	{
@@ -59,6 +60,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		if(($this->_userfeatures = &$this->_service->get_module('userfeatures')) === false
 		|| ($this->_queueskills = &$this->_service->get_module('userqueueskill')) === false
+#		|| ($this->_sccp = &$this->_service->get_application('sccp')) === false
 		|| $this->load_init($param) === false)
 			return(false);
 		else if((bool) $components === true)
@@ -737,8 +739,13 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_protocolname = $protocolname;
 
+
 		if(isset($arr['protocol']['callerid']) === true)
 			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
+
+		//TODO: test SIP/IAX2 compatibility
+		$arr['protocol']['name'] = $arr['userfeatures']['number'];
+
 		$this->set_protocol($arr['protocol'],$protocolname);
 
 		$arr['userfeatures']['protocol'] = $protocolname;
@@ -896,7 +903,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_protocolname = $r = false;
 		else
 			$r = true;
-
+			
 		return($r);
 	}
 

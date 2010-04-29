@@ -380,7 +380,6 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function get_protocol_module_name($name)
 	{
 		$r = false;
-
 		if($this->chk_protocol($name) === true)
 			$r = dwho_ak('module',$this->_conf['protocol'][$name],true);
 
@@ -391,8 +390,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 	{
 		$r = false;
 
-		if(($module = $this->get_protocol_module_name($name)) !== false)
-			$r = &$this->get_module($module);
+		// SCCP protocol: we do not return a module, but an application instead
+		if($name == 'sccp')
+		{
+			$r = &$this->get_application($name);
+		} 
+		else if(($module = $this->get_protocol_module_name($name)) !== false)
+		{ $r = &$this->get_module($module); }
 
 		return(($ref = &$r));
 	}

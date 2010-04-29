@@ -66,7 +66,7 @@ $array['filter']['from'] = array('set' => false);
 $array['filter']['macaddr'] = array('minlen' => 11,'maxlen' => 17,'regexp' => '/^(?:[A-F0-9]{2}:){5}(?:[A-F0-9]{2})$/');
 $array['filter']['vendor'] = array('maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/');
 $array['filter']['model'] = array('maxlen' => 16,'regexp' => '/^[a-z0-9\-_]+$/');
-$array['filter']['proto'] = array('key' => array('sip'));
+$array['filter']['proto'] = array('key' => array('sip', 'sccp'));
 $array['filter']['iduserfeatures'] = array('cast' => 'ulongint');
 
 ?>

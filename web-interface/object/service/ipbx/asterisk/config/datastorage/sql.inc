@@ -300,4 +300,16 @@ $array['voicemenu'] = array();
 $array['voicemenu']['table'] = 'voicemenu';
 $array['voicemenu']['primary'] = array('id' => '');
 
+$array['sccpdevice'] = array();
+$array['sccpdevice']['table'] = 'sccpdevice';
+$array['sccpdevice']['primary'] = array('id' => '');
+
+$array['sccpline'] = array();
+$array['sccpline']['table'] = 'sccpline';
+$array['sccpline']['primary'] = array('id' => '');
+
+$array['sccpbuttonconfig'] = array();
+$array['sccpbuttonconfig']['table'] = 'sccpbuttonconfig';
+$array['sccpbuttonconfig']['primary'] = array('id' => '');
+
 ?>

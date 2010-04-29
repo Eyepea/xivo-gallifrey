@@ -33,6 +33,7 @@ define('XIVO_SRE_IPBX_AST_CHAN_UNKNOWN','**Unknown**');
 
 define('XIVO_SRE_IPBX_AST_PROTO_SIP','sip');
 define('XIVO_SRE_IPBX_AST_PROTO_IAX','iax');
+define('XIVO_SRE_IPBX_AST_PROTO_SCCP','sccp');
 define('XIVO_SRE_IPBX_AST_PROTO_CUSTOM','custom');
 
 define('XIVO_SRE_IPBX_AST_CODEC_AUDIO_G723','g723');
