@@ -21,6 +21,8 @@ __license__ = """
 import sys
 from xivo import OrderedConf
 from xivo import xivo_helpers
+from xivo import xivo_config
+from xivo import all_phones
 
 cursor = xivo_helpers.db_connect().cursor()
 
@@ -30,18 +32,41 @@ print "[general]"
 for r in cursor.fetchall():
     print "%s = %s" % (r['key'], r['value'])
 
+#
+# Generate devices sections
+#
+# minimum required fields per device:
+#  type = device, devicetype
 
-cursor.query("SELECT ${columns} FROM sccpdevice WHERE commented = 0", ('id', 'name', 'description', 'devicetype', 'tzoffset', 'dtmfmode', 'mwilamp', 'mwioncall', 'pickupexten', 'pickupmodeanswer', 'privacy'))
+cursor.query("SELECT ${columns} FROM sccpdevice s, userfeatures u, phone p " +
+  "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol == 'sccp' AND u.id = p.iduserfeatures",
+  ('s.id', 'p.macaddr', 'p.model', 'p.vendor', 's.description', 's.devicetype', 
+   's.tzoffset', 's.dtmfmode', 's.mwilamp', 's.mwioncall', 's.pickupexten', 
+   's.pickupmodeanswer', 's.privacy'))
 for r in cursor.fetchall():
-    print "\n[%s]" % r['name']
+    name  = 'SEP' + r['p.macaddr'].replace(':', '')
+    phone_class = xivo_config.phone_factory({'vendor': r['p.vendor'], 'model': r['p.model']})
+    if not phone_class:
+        continue
+        
+    devicetype = phone_class.get_sccp_devicetype(r['p.model'])
+    if not devicetype:
+        continue
+#    phone = xivo_config.phone_desc_by_ua(ua)
+    
+    print "\n[%s]" % name
     print "type = device"
+    print "devicetype = %s" % devicetype
+    print "addon = 7914"
+    
     for k, v in r.iteritems():
-        if k in ['id', 'name'] or v is None or len(str(v)) == 0:
+        k = k.split('.')[1]
+        if k in ['id', 'macaddr', 'vendor', 'model'] or v is None or len(str(v)) == 0:
             continue
 
         print "%s = %s" % (k, v)
-  
-    cursor.query("SELECT ${columns} FROM buttonconfig WHERE device_id = %d ORDER BY position" % r['id'], \
+
+    cursor.query("SELECT ${columns} FROM sccpbuttonconfig WHERE device_id = %d ORDER BY position" % r['s.id'],
         ('type', 'options'))
     for r2 in cursor.fetchall():
         print "button =",
@@ -56,13 +81,26 @@ for r in cursor.fetchall():
             continue
         print "%s" % r2['options']
 
-
-cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 'name', 'pin', 'label'))
+#
+# Generate line sections
+# minimum required fields (per line):
+#   label, pin, cid_name, cid_num
+cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 'name', 'pin', 'label', 'cid_name', 'cid_num'))
 for r in cursor.fetchall():
+    label = r['label']
+    if not label or len(label) == 0:
+        label = r['name']
+
+    
     print "\n[%s]" % r['name']
     print "type = line"
-
+    print "id = %s" % r['name']
+    print "label = %s" % label
+    print "pin = %s" % r['pin']
+    print "cid_name = %s" % r['cid_name']
+    print "cid_num = %s" % r['cid_num']
+    
     for k, v in r.iteritems():
-        if k in ['id', 'name'] or v is None or len(str(v)) == 0:
+        if k in ['id', 'name', 'label', 'cid_name', 'cid_num'] or v is None or len(str(v)) == 0:
             continue
         print "%s = %s" % (k, v)
