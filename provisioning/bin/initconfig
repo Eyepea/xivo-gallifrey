@@ -2,6 +2,7 @@
 """Provisioning AGI for XIVO
 """
 # TODO WARNING: can be used only if the caller is of a SIP tech
+# UPDATE: now also support SCCP protocol
 
 __version__ = "$Revision$ $Date$"
 __license__ = """
@@ -123,22 +124,27 @@ def main():
             return_exit("Could not find Mac Address from IPv4 \"%s\"" % ipv4)
     else:
         # SCCP phone
-        if not macaddr:
+        if not macaddr or len(macaddr) != 15 or not macaddr.startswith('SEP'):
             return_exit("You must defined Mac Address (5th argument)")
 
-#        macaddr = network.normalize_mac_address(macaddr[3:])
+        # we've got mac address in the following form: SEP001122334455
+        # we want                                    : 00:11:22:33:44:55
+        macaddr = "%s:%s:%s:%s:%s:%s" % \
+            (macaddr[3:5], macaddr[5:7], macaddr[7:9], macaddr[9:11], macaddr[11:13], macaddr[13:15])
+        macaddr = network.normalize_mac_address(macaddr)
+
         ipv4 = sip_uri
-        # ua is in the form "Cisco 7960", and xivo-config lib require ua like
-        # "Cisco-7960/8.0"
-        ua   = ua.replace(' ', '-') + '/8.0'
+        # ua is set by sccp asterisk channel in the form "Cisco 7960", and 
+        # xivo-config lib requires it like "Cisco-cp7960g/8.0"
+        ua   = ua.replace(' ', '-cp') + 'g/8.0'
 
 
     # Get Phone description (if we are able to handle this vendor...)
     phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
     if not phone_desc:
         return_exit("Unknown UA %r" % (ua,))
-    phone_vendor = phone_desc[0]
-    phone_model = phone_desc[1]
+    phone_vendor   = phone_desc[0]
+    phone_model    = phone_desc[1]
     phone_firmware = phone_desc[2]
 
     if code == 'init':

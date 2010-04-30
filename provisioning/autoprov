@@ -241,13 +241,32 @@ class SQLBackEnd:
                  .supervise is True if & only if supervision is
                   activated on this function key
 
-        Right now proto must evaluate to 'sip'
+        NOTE: when configuring SCCP protocol, we need much less values:
+            'proto'         : protocol == sccp
+            'extensions'    : empty dict (for compatibility, no real use)
+            'iduserfeatures': user id in userfeatures table
+
+        Right now proto must evaluate to 'sip' or 'sccp'
         """
         if proto == TECH_SCCP:
-            return {'proto': proto, 'extensions': {}}
+            confdico = self.sql_select_one(
+                ("SELECT ${columns} FROM %s WHERE %s.protocol = %s AND %s.%s = %s")
+                % (UF_TABLE, UF_TABLE, '%s', UF_TABLE, something_column, '%s'), 
+                ('id',),
+                (proto, something_content),
+            )
+
+            if not confdico:
+                return {'proto': proto, 'extensions': {}}
+
+            confdico.update({'proto': proto, 'extensions': {}})
+            confdico['iduserfeatures'] = confdico['id']
+
+            return confdico
 
         if proto != TECH_SIP:
-            raise ValueError, "proto must be 'sip' for now"
+            raise ValueError, "proto must be 'sip' or 'sccp' for now"
+
         mapping = {
             UF_TABLE+".firstname":       'firstname',
             UF_TABLE+".lastname":        'lastname',
@@ -386,7 +405,7 @@ class SQLBackEnd:
         Lookup the configuration information of the phone in the
         database, by ID of the 'userfeatures' table, and protocol.
 
-        Right now proto must evaluate to 'sip'
+        Right now proto must evaluate to 'sip' or 'sccp'
         """
         return self.config_by_something_proto(
                     'id', iduserfeatures, proto)
@@ -396,7 +415,7 @@ class SQLBackEnd:
         Lookup the configuration information of the phone in the
         database, by provisioning code and protocol.
 
-        Right now proto must evaluate to 'sip'
+        Right now proto must evaluate to 'sip' or 'sccp'
         """
         return self.config_by_something_proto(
                     'provisioningid', provcode, proto)
@@ -406,7 +425,7 @@ class SQLBackEnd:
         Lookup the configuration information on the phone in the
         database, by protocol name and protocol.
 
-        Right now proto must evaluate to 'sip'
+        Right now proto must evaluate to 'sip' or 'sccp'
         """
         return self.config_by_something_proto(
                     'name', name, proto)
@@ -548,11 +567,11 @@ def __save_phone(ctx, phone, config):
 
 def __provisioning(mode, ctx, phone):
     "Provisioning high level logic for the described phone"
-    # I only allow "sip" right now
+    # I only allow "sip" or "sccp" right now
     if phone["proto"] != TECH_SIP and phone["proto"] != TECH_SCCP:
-        log.error("__provisioning(): the only protocol supported "
-                  "right now is SIP, but I got %s", phone["proto"])
-        raise BadRequest, "Unknown protocol '%s' != 'sip'" % phone["proto"]
+        log.error("__provisioning(): the only supported protocols "
+                  "right now are SIP and SCCP, but I got %s", phone["proto"])
+        raise BadRequest, "Unknown protocol '%s' != 'sip' or 'sccp'" % phone["proto"]
 
     log.info("__provisioning(): handling phone %r - mode %r", phone, mode)
 

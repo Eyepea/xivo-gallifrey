@@ -28,6 +28,7 @@ import os
 import logging
 import subprocess
 import math
+import socket
 
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
@@ -39,10 +40,10 @@ log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
 class Cisco(PhoneVendorMixin):
 
     CISCO_MODELS = (('cp7912g', '7912'),
-		      ('cp7940g', '7940'),
-                      ('cp7960g', '7960'),
-                      ('cp7941g', '7941GE'),
-                      ('cp7961g', '7961GE'))
+                    ('cp7940g', '7940'),
+                    ('cp7960g', '7960'),
+                    ('cp7941g', '7941GE'),
+                    ('cp7961g', '7961GE'))
 
     CISCO_COMMON_HTTP_USER = "admin"
     CISCO_COMMON_HTTP_PASS = ""
@@ -61,6 +62,24 @@ class Cisco(PhoneVendorMixin):
             raise ValueError, "Unknown Cisco model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
+        if self.phone['proto'] == 'sccp' and command == 'REBOOT':
+            # a phone is reconfigured by reloading chan_sccp configuration
+            # send to commands to asterisk through CTI server remote protocol
+
+            # WARNING: reloading sccp channel disconnect all SCCP phones 
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
+                s.connect(('127.0.0.1', 5004))
+                s.send('module unload chan_sccp.so')
+                s.close()
+
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
+                s.connect(('127.0.0.1', 5004))
+                s.send('module load chan_sccp.so')
+                s.close()
+            except Exception:
+                log.exception("error when trying to reload chan_sccp")
+        
         cnx_to = max_to = max(1, self.CURL_TO_S / 2)
         try: # XXX: also check return values?
 
@@ -252,3 +271,15 @@ class Cisco(PhoneVendorMixin):
     @classmethod
     def get_dhcp_pool_lines(cls):
         return
+
+    @classmethod
+    def get_sccp_devicetype(cls, model):
+        """Used to get devicetype (see sccp.conf asterisk configuration file)
+           from cisco phone model
+        """
+        model = filter(lambda x: x[0] == model, cls.CISCO_MODELS)
+        if len(model) == 0:
+            return None
+
+        return model[0][1]
+
