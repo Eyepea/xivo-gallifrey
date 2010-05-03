@@ -739,12 +739,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 
 		$this->_protocolname = $protocolname;
 
-
 		if(isset($arr['protocol']['callerid']) === true)
 			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
 
-		//TODO: test SIP/IAX2 compatibility
-		$arr['protocol']['name'] = $arr['userfeatures']['number'];
+		if($arr['protocol']['protocol'] == 'sccp')
+			$arr['protocol']['name'] = $arr['userfeatures']['number'];
 
 		$this->set_protocol($arr['protocol'],$protocolname);
 
@@ -903,7 +902,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_protocolname = $r = false;
 		else
 			$r = true;
-			
+		
 		return($r);
 	}
 
