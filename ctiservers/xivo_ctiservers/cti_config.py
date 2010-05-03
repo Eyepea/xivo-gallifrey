@@ -164,7 +164,7 @@ class Config:
             try:
                 if sectionname in self.xivoconf.sections():
                     for tk, tv in dict(self.xivoconf.items(sectionname)).iteritems():
-                        v[tk] = tv # tv.decode('utf8')
+                        v[tk] = tv.decode('utf8')
             except Exception, e:
                 log.exception('kind=%s section=%s' % (self.kind, sectionname))
                 print e
