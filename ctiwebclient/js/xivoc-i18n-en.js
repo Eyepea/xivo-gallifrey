@@ -51,5 +51,11 @@ xivoc_i18n = {
   'received': "Received",
   'unconditional forward': "Unconditional forward",
   'your login': "Login",
-  'your password': "Password [•]"
+  'your password': "Password [•]",
+  'sec.': " sec.",
+  'min.': " min. ",
+  'hou.': " heu. ",
+  'Invalid login/password pair': "Invalid login/password pair.",
+  'Invalid user': "Invalid login.",
+  'Sigh: ': "Sigh: "
 };

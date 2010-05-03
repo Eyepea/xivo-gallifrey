@@ -22,26 +22,36 @@ function XiVOHelper() {}
 var XiVOH = new XiVOHelper();
 
 
+// @public method
+// @argument ev: event
+// @argument fnc: function
+// @argument on: elem on wich we add the event listener
+XiVOHelper.prototype.addEventListener = function (ev,fnc,on) {
+  if (typeof window.addEventListener !== "undefined") {
+    on.addEventListener(ev,fnc,false);
+  } else if (typeof window.attachEvent !== "undefined") {
+    on.attachEvent("on" + ev,fnc);
+  } else {
+    return 1;
+  }
+
+  return 0;
+};
 
 // @public method
 // @argument fnc: function
 // chunck found there http://www.tek-tips.com/faqs.cfm?fid=4862
 XiVOHelper.prototype.addOnloadEvent = function (fnc) {
-  if (typeof window.addEventListener !== "undefined")
-    window.addEventListener("load",fnc,false);
-  else if (typeof window.attachEvent !== "undefined") {
-    window.attachEvent("onload",fnc);
-  }
-  else {
-    if (window.onload != null) {
+  if (XiVOH.addEventListener("load",fnc,window)) {
+    if (window.onload !== undefined) {
       var oldOnload = window.onload;
       window.onload = function (e) {
         oldOnload(e);
         window[fnc]();
       };
-    }
-    else
+    } else {
       window.onload = fnc;
+    }
   }
 };
 
@@ -53,10 +63,13 @@ XiVOHelper.prototype.addOnloadEvent = function (fnc) {
 // create a dom element from 
 XiVOHelper.prototype.build = function (elem,attr,text) {
   var e = document.createElement(elem);
+  var i;
 
   if (attr !== undefined) {
-    for (var i in attr) {
-      e.setAttribute(i,attr[i]);
+    for (i in attr) {
+      if (attr.hasOwnProperty(i)) {
+        e.setAttribute(i,attr[i]);
+      }
     }
   }
 
@@ -85,11 +98,14 @@ XiVOHelper.prototype.delClass = function (on,className) {
 
 // @public method
 XiVOHelper.prototype.load_script = function (uri,func) {
+  var script;
   if (func !== undefined) {
-    var script = XiVOH.build("script",{ src: uri, type: "text/javascript", charset: "utf-8"});
-    script.addEventListener("load",func,false);
-  } else
-    var script = XiVOH.build("script",{ src: uri, type: "text/javascript", charset: "utf-8" });
+    script = XiVOH.build("script",{ src: uri, type: "text/javascript", charset: "utf-8"});
+
+    XiVOH.addEventListener("load",func,script);
+  } else {
+    script = XiVOH.build("script",{ src: uri, type: "text/javascript", charset: "utf-8" });
+  }
 
   document.getElementsByTagName("head")[0].appendChild(script);
 };
@@ -99,16 +115,23 @@ XiVOHelper.prototype.load_script = function (uri,func) {
 // create a dom element from an array
 XiVOHelper.prototype.build_from_array = function (ob) {
   var elem;
+  var on;
 
   for (elem in ob) {
-    break;
+    if (ob.hasOwnProperty(elem)) {
+      break;
+    }
   }
 
-  var wid = this.build(elem,ob[elem].attr?ob[elem].attr:{},ob[elem].text?ob[elem].text:undefined);
+  var wid = XiVOH.build(elem,
+                        (ob[elem].attr)?ob[elem].attr:{},
+                        (ob[elem].text)?ob[elem].text:undefined);
   
   if (typeof ob[elem].ev === "object") {
-    for (var on in ob[elem].ev) {
-      wid.addEventListener(on,ob[elem].ev[on],false);
+    for (on in ob[elem].ev) {
+      if (ob[elem].ev.hasOwnProperty(on)) {
+        XiVOH.addEventListener(on,ob[elem].ev[on],wid);
+      }
     }
   }
 
@@ -133,9 +156,6 @@ XiVOHelper.prototype.call_me_asap = function (test,fun,time) {
     },(time !== undefined)?time:1000);
   }
 };
-
-var Orbited = undefined;
-var TCPSocket = undefined;
 
 // @class
 function XiVOClient()
@@ -188,9 +208,12 @@ XiVOClient.prototype._base_command = function() {
 // render a flat array to json
 XiVOClient.prototype._render_command= function(cmd) {
   var buff = "{";
+  var i;
 
-  for (var i in cmd) {
-    buff +=  '"' + i + '": "' + cmd[i] + '",';
+  for (i in cmd) {
+    if (cmd.hasOwnProperty(i)) {
+      buff +=  '"' + i + '": "' + cmd[i] + '",';
+    }
   }
 
   return buff.substr(0,buff.length-1) + "}\n";
@@ -213,8 +236,9 @@ XiVOClient.prototype.init_lib = function (config) {
   if (head === null) {
     head = XiVOH.build('head',{});
     document.getElementsByTagName("html")[0].appendChild(head,document.getElementsByTagName("html")[0].firstChild);
-  } else
+  } else {
     head = head[0];
+  }
 
   XiVOH.load_script(config.orbited.proto + '://' + config.orbited.host + ':' + config.orbited.port + "/orbited/static/Orbited.js" + nocache);
   XiVOH.load_script("js/sha1.js" + nocache);
@@ -313,8 +337,9 @@ XiVOClient.prototype.request_phone_list = function (nocache,c) {
  
     this.conn.send(this._render_command(get_phone_command));
     this.c = c;
-  } else 
+  } else {
     c(this);
+  }
 };
 
 // @public method
@@ -331,8 +356,9 @@ XiVOClient.prototype.request_queue_list = function (nocache,c) {
  
     this.conn.send(this._render_command(get_queue_command));
     this.c = c;
-  } else 
+  } else {
     c(this);
+  }
 };
 
 // @public method
@@ -389,18 +415,22 @@ XiVOClient.prototype.request_history = function (nocache,mode,c,user_id,size) {
 XiVOClient.prototype.request_featuresput = function (crap,nocache,c) {
   //if ((this.queue_list === undefined) || (nocache)) {
     var featureput_command = this._base_command();
+    var i;
 
     featureput_command["class"] = 'featuresput';
 
-    for (var i in crap) {
-      featureput_command[i]= crap[i];
+    for (i in crap) {
+      if (crap.hasOwnProperty(i)) {
+        featureput_command[i]= crap[i];
+      }
     }
  
     this.conn.send(this._render_command(featureput_command));
     //this.c = c;
   //} else 
-    if (typeof c === "function")
+    if (typeof c === "function") {
       c(this);
+    }
 };
 
 // @public method
@@ -418,8 +448,9 @@ XiVOClient.prototype.request_user_list = function (nocache,c) {
  
     this.conn.send(this._render_command(get_user_command));
     this.c = c;
-  } else 
+  } else {
     c(this);
+  }
 };
 
 // @public method
@@ -438,8 +469,9 @@ XiVOClient.prototype.request_directory_search = function (pattern,nocache,c) {
     this.conn.send(this._render_command(directory_search_command));
     this.last_directory_search = pattern;
     this.c = c;
-  } else 
+  } else {
     c(this);
+  }
 };
 
 // @public method
@@ -497,8 +529,9 @@ XiVOClient.prototype.change_state = function (state,c) {
  
     this.c = c;
     this.conn.send(this._render_command(availstate_command));
-  } else
+  } else {
     this._async_call();
+  }
 };
 
 // @public method
@@ -522,9 +555,13 @@ XiVOClient.prototype.get_user_id = function () { return this.user_id; };
 XiVOClient.prototype.get_user_detail = function () { 
   var user_list = this.get_user_list();
   var our_id = this.get_user_id();
-  for(var user in user_list) {
-    if (user_list[user].xivo_userid === our_id)
-      return user_list[user];
+  var user;
+  for( user in user_list) {
+    if (user_list.hasOwnProperty(user)) {
+      if (user_list[user].xivo_userid === our_id) {
+        return user_list[user];
+      }
+    }
   }
 };
 // @public method
@@ -563,8 +600,14 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
   }
   
   var sp = s.split("\n");
+  var si; /* var to be used as an iterator inside the switch */
+  var se; /* '' */
+  var i;
 
-  for(var i in sp) {
+  for(i in sp) {
+    if (!sp.hasOwnProperty(i)) {
+      continue;
+    }
 
     s = sp[i];
 
@@ -607,16 +650,20 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
           us._async_call();
         }
 
-        for (var i in us.user_list) {
-          if (us.user_list[i].xivo_userid ===  a.xivo_userid ) {
-            us.user_list[i].statedetails = a.capapresence.state;
-            break;
+        for (si in us.user_list) {
+          if (us.user_list.hasOwnProperty(si)) {
+            if (us.user_list[si].xivo_userid ===  a.xivo_userid ) {
+              us.user_list[si].statedetails = a.capapresence.state;
+              break;
+            }
           }
         }
         break;
       case 'disconn':
-        if (us.keep_alive)
+        if (us.keep_alive) {
           clearInterval(us.keep_alive);
+        }
+
         if (typeof us.ondc === "function") {
           us.ondc(us,-1);
         }
@@ -628,8 +675,9 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
           us.queue_list = a.payload;
         break;
       case 'sheet':
-        if (typeof us.on_sheet === "function")
+        if (typeof us.on_sheet === "function") {
           us.on_sheet(us);
+        }
         break;
       case 'phones':
         if (a["function"] === 'sendlist') {
@@ -643,18 +691,19 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
       case 'directory':
         us.directory_search[us.last_directory_search] = { headers: a.headers };
         us.directory_search[us.last_directory_search]['list'] = [];
-        var i,e;
-        for (i=0,e=a.resultlist.length;i<e;i++) {
-          us.directory_search[us.last_directory_search]['list'][i] = a.resultlist[i].split(';');
+        for (si=0,se=a.resultlist.length;si<se;si++) {
+          us.directory_search[us.last_directory_search]['list'][si] = a.resultlist[si].split(';');
         }
         us._async_call();
         break;
       case 'users':
         if ((typeof a.subclass === "string") && (a.subclass === "mwi")) {
-          for (var i in us.user_list) {
-            if (us.user_list[i].xivo_userid ===  a.user[1] ) {
-              us.user_list[i].mwi = a.payload;
-              break;
+          for (si in us.user_list) {
+            if (us.user_list.hasOwnProperty(si)) {
+              if (us.user_list[si].xivo_userid ===  a.user[1] ) {
+                us.user_list[si].mwi = a.payload;
+                break;
+              }
             }
           }
           break;
@@ -663,8 +712,11 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
         us._async_call();
         break;
       case 'features':
-        for (var i in a.payload)
-          us.feature_list[us._features_mapname(i)] = a.payload[i];
+        for (si in a.payload) {
+          if (a.payload.hasOwnProperty(si)) {
+            us.feature_list[us._features_mapname(si)] = a.payload[si];
+          }
+        }
         break;
       case 'history':
         us.history[us.last_history_request] = a.payload;
@@ -672,7 +724,7 @@ XiVOClient.prototype._parse_incoming_message = function (us,s,full_line) {
         break;
       default:
         break;
-    };
+    }
   }
 };
 
@@ -726,13 +778,15 @@ XiVOClient.prototype.try_login = function (info,c) {
   this.pass = info.pass;
   if (info.state !== undefined) {
     this.c = function (us,connected) {
-      if (connected)
+      if (connected) {
         us.send_login_capas(info.state,function (us) { c(us,connected); });
-      else
+      } else {
         c(us,connected);
-    }
-  } else
+      }
+    };
+  } else {
     this.c = c;
+  }
 
   this.state = '"state not available"';
   this.keep_alive = (info.keep_alive !== undefined) ? info.keep_alive : false;
@@ -740,9 +794,17 @@ XiVOClient.prototype.try_login = function (info,c) {
   var call_me_when_Orbited_loaded = function () {
     us.conn = new TCPSocket();
 
-    us.conn.onopen = function () { us._send_login(us); };
-    us.conn.onread = function (s) { us._parse_incoming_message(us,s); };
-    us.conn.onclose = function (code) { if (typeof us.ondc === "function") us.ondc(code,us); }
+    us.conn.onopen = function () {
+      us._send_login(us);
+    };
+    us.conn.onread = function (s) {
+      us._parse_incoming_message(us,s);
+    };
+    us.conn.onclose = function (code) {
+      if (typeof us.ondc === "function") {
+        us.ondc(code,us);
+      }
+    };
 
     us.conn.open(us.xivo_cti_ip,us.xivo_cti_port);
   };
@@ -764,26 +826,33 @@ XiVOH.addOnloadEvent(function () {
      if the XiVO_client_used_config var hasn't be defined */
   if (typeof XiVO_client_config === "undefined") {
     script_list = document.getElementsByTagName("script");
-    var re = new RegExp('(http[s]?)://([^:/]+)(:[0-9]+)?.*/js/(xivoclient).js$');
+    var re = new RegExp('(http[s]?)://([^:/]*)(:[0-9]*)?.*/js/(xivoclient).js$');
     var i = 0, e = script_list.length;
     for (; i < e ; i++) {
       var arr = re.exec(script_list[i].src);
       if ((arr !== null) && (arr[4] === "xivoclient")) {
         var on_port;
-        if (typeof arr[3] !== "undefined")
+        if (typeof arr[3] !== "undefined") {
           on_port = arr[3].substr(1);
-        else {
-          if (arr[1] === "http")
-            on_port = String(80);
-          else
-            on_port = String(443);
+        } else {
+          if (arr[1] === "http") {
+            on_port = "80";
+          } else {
+            on_port = "443";
+          }
         }
         XiVO_client_used_config = { orbited: { proto: arr[1], host: arr[2], port: on_port },
                                     XiVO_CTI_Server: { ip: "127.0.0.1", port: "5003" }};
       }
     }
+
   } else {
     XiVO_client_used_config = XiVO_client_config;
+  }
+
+  if (XiVO_client_used_config === null) {
+    XiVO_client_used_config = { orbited: { proto: "https", host: window.location.host, port: "443" },
+                                XiVO_CTI_Server: { ip: "127.0.0.1", port: "5003" }};
   }
 
   XiVOC.init_lib(XiVO_client_used_config);

@@ -17,14 +17,21 @@
 //
 
 var xivoc_i18n = {};
-function _xivoc_i18n(text) { if (xivoc_i18n[text] !== undefined) return xivoc_i18n[text]; else return "'" + text + "`nt"; }
+function _xivoc_i18n(text)
+{
+  if (xivoc_i18n[text] !== undefined) {
+    return xivoc_i18n[text];
+  } else {
+    return "'" + text + "`nt"; 
+  }
+}
 
 var xivoc_i18n_lang = 'fr';
 var xivoc_i18n_lang_possible = { fr: "french", en: "english" };
 
 
 
-if (typeof Array.prototype.reduce !== "function")
+if (typeof Array.prototype.reduce !== "function") {
   Array.prototype.reduce = function (fun,s) {
     var i=0,e=0;
     var a=s;
@@ -35,18 +42,21 @@ if (typeof Array.prototype.reduce !== "function")
 
     return a;
   };
+}
 
 // @private method
 // @argument text: string
 // extract the number from a string
 XiVOHelper.prototype.parse_num = function (text) {
-    var i,e,s = "";
-
-    for (i=0,e=text.length;i < e;i++) 
-      if ((text[i] <= '9') && (text[i] >= '0'))
-        s += text[i];
-
-    return s;
+  var i,e,s = "";
+  
+  for (i=0,e=text.length;i < e;i++) {
+    if ((text[i] <= '9') && (text[i] >= '0')) {
+      s += text[i];
+    }
+  }
+  
+  return s;
 };
 
 
@@ -54,20 +64,27 @@ XiVOHelper.prototype.parse_num = function (text) {
 // @return DOM-element that self update
 XiVOClient.prototype.spawn_widget = function (kind,decorator,hidout) {
 
-  if (this.widget === undefined)
+  if (this.widget === undefined) {
     this.widget = {};
+  }
 
   decorator = (decorator !== undefined ) ? decorator : function (c) { return c; };
   this.decorator = decorator; // a decorator is a function that make apear a widget in a window or ...
   this.hidout = hidout;
   var widget = new XiVOCWidget(this,kind,decorator,hideout);
-  if (widget.have_decoration())
-    widget.win = decorator(widget.get_dom(),widget.get_title(),widget.get_size(),widget.get_resizable(),widget.get_closable());
+  if (widget.have_decoration()) {
+    widget.win = decorator(widget.get_dom(),
+                           widget.get_title(),
+                           widget.get_size(),
+                           widget.get_resizable(),
+                           widget.get_closable());
+  }
 
   this.widget[kind] = widget;
 
-  if (this.widget.respawner !== undefined )
+  if (this.widget.respawner !== undefined ) {
     this.widget.respawner.spawned_widget_list.push([widget,kind]);
+  }
 
   return widget;
 };
@@ -88,13 +105,14 @@ function XiVOCWidget(xivoclient_instance,kind_of_widget,decorator,hideout) {
   this.size = { width: "440px", height: "200px" };
   this.limit = 1; // we must spawn only one instance of each kind of widget..
 
-  if (typeof this.widget[kind_of_widget] === "object")
+  if (typeof this.widget[kind_of_widget] === "object") {
     this.widget[kind_of_widget].start(this);
-  else
+  } else {
     alert("sigh, you tryed to spawn a widget that doesn't exist.. (" + kind_of_widget + ")");
+  }
 
   XiVOCWidget.prototype.unid = this.unid + 1;
-};
+}
 
 XiVOCWidget.prototype.have_decoration = function () {
   return this.decoration;
@@ -170,24 +188,36 @@ XiVOCWidget.prototype.widget.login.on_connect = function (us,connected) {
       spawner.widget_list = widget_list;
       spawner.spawned_widget_list = widget_list; // @bug, it should be cloned!!
 
-      us.widget["login"].hideout(us.widget["login"].win,true);
-      delete us.widget["login"];
+      us.widget.login.hideout(us.widget.login.win,true);
+      delete us.widget.login;
     });
-  } else
-    alert('something has failed somewhere');
+  } else {
+    var reason = us.last_packet.errorstring;
+    if (reason === "user_not_found") {
+      alert(_xivoc_i18n("Invalid user"));
+    } else if (reason === "login_password") {
+      alert(_xivoc_i18n("Invalid login/password pair"));
+    } else {
+      alert(_xivoc_i18n("Sigh: ") + reason);
+    }
+  }
 };
 
 // @private method
 XiVOCWidget.prototype.widget.login.rebuild = function (us) {
+  var widget_name;
   // gentle cleaning
-  for (var widget_name in us.to_watch.widget) {
-    if (widget_name !== 'footer')
-    us.to_watch.widget[widget_name].hideout(us.to_watch.widget[widget_name].win);
-    if (typeof us.to_watch.widget[widget_name].interval !== "undefined") {
-      clearInterval(us.to_watch.widget[widget_name].interval);
+  for (widget_name in us.to_watch.widget) {
+    if (us.to_watch.widget.hasOwnProperty(widget_name)) {
+      if (widget_name !== 'footer') {
+        us.to_watch.widget[widget_name].hideout(us.to_watch.widget[widget_name].win);
+      }
+      if (typeof us.to_watch.widget[widget_name].interval !== "undefined") {
+        clearInterval(us.to_watch.widget[widget_name].interval);
+      }
+      delete us.to_watch.widget[widget_name];
     }
-    delete us.to_watch.widget[widget_name];
-  };
+  }
   us.to_watch.spawn_widget("login",us.to_watch.decorator,us.to_watch.hideout);
 };
 
@@ -200,8 +230,9 @@ XiVOCWidget.prototype.widget.login.build = function (us) {
                                        'class': "login-widget-login" + " widget-field" + " widget-field-blured" },
                                ev: { focus: function () {
                                  XiVOH.delClass(this,"widget-field-blured");
-                                 if (this.value === _xivoc_i18n("your login"))
+                                 if (this.value === _xivoc_i18n("your login")) {
                                    this.value = "";
+                                 }
                                }, blur: function () {
                                  XiVOH.addClass(this,"widget-field-blured");
                                  if (this.value === "") {
@@ -216,8 +247,9 @@ XiVOCWidget.prototype.widget.login.build = function (us) {
                                ev: { focus: function () {
                                  XiVOH.delClass(this,"widget-field-blured");
                                  this.setAttribute("type","password");
-                                 if (this.value === _xivoc_i18n("your password"))
+                                 if (this.value === _xivoc_i18n("your password")) {
                                    this.value = "";
+                                 }
                                }, blur: function () {
                                  XiVOH.addClass(this,"widget-field-blured");
                                  if (this.value === "") {
@@ -248,7 +280,7 @@ XiVOCWidget.prototype.widget.login.build = function (us) {
                                     us.widget.login.rebuild(us);
                                   },100);
                                 }}, attr: { 'class': "login-widget-language" + " widget-field" }, child: [
-                    ]}},
+                    ]}}
                   ]}},
                   { input: { ev: { click: function () {
                                      XiVOH.addClass(document.getElementById("login-widget-loading-" + us.uid),
@@ -323,7 +355,7 @@ XiVOCWidget.prototype.widget.common_info.build = function (us) {
                                  },    focus: function () {
                                        us.refresh = false;
                                  }}, child: [
-                     ]}}
+                     ]}};
 
   var awidget = { div: { attr: { id: us.id, 'class': "common-info-widget" }, child: [
                   { ul: { child: [
@@ -342,13 +374,13 @@ XiVOCWidget.prototype.widget.common_info.build = function (us) {
                     { li: { child: [
                       { div: { attr: { 'class': "common-info-widget-phonestatus" },
                                text: phone_list.xivo[user_detail.techlist[0]].hintstatus.longname }}
-                    ]}},
+                    ]}}
                   ]}}
                 ]}};
 
 
   if (user_detail.voicemailnum !== "") {
-    var ifnew = (parseInt(user_detail.mwi[2])> 0 ) ? "-new" : "" ;
+    var ifnew = (parseInt(user_detail.mwi[2],10)> 0 ) ? "-new" : "" ;
     var li_icon = { li: { child: [
                     { div: { attr: { 'class': "common-info-widget-voicemail-icon" + ifnew }}}
                   ]}};
@@ -360,24 +392,26 @@ XiVOCWidget.prototype.widget.common_info.build = function (us) {
                     { div: { attr: { 'class': "common-info-widget-newmessage" },
                              text: _xivoc_i18n("new message") + user_detail.mwi[2] }},
                     { div: { attr: { 'class': "common-info-widget-oldmessage" },
-                             text: _xivoc_i18n("old message") + user_detail.mwi[1] }},
-                  ]}}
+                             text: _xivoc_i18n("old message") + user_detail.mwi[1] }}
+                  ]}};
     awidget.div.child[0].ul.child.push(li_info);
-  } else
+  } else {
     us.size = { width: "350px", height: "100px" };
+  }
 
 
 
   for (var state_name in s.allowed) {
-    if (state_name == client.get_state())
+    if (state_name == client.get_state()) {
       select_state.select.child.push(
         { option: { attr: { value: state_name, style: "background-color:" + s.names[state_name].color,
           selected: 'selected' },
           text: s.names[state_name].longname }});
-    else
+    } else {
       select_state.select.child.push(
         { option: { attr: { value: state_name, style: "background-color:" + s.names[state_name].color },
           text: s.names[state_name].longname }});
+    }
   }
 
   return XiVOH.build_from_array(awidget);
@@ -412,7 +446,7 @@ XiVOCWidget.prototype.widget.user_around.rebuild = function (us) {
 
       old.parentNode.replaceChild(recent,old);
 
-      if (!((user_list[i].fullname + user_list[i].phonenum).toLowerCase().indexOf(us.match) !== -1 )) {
+      if ( !(((user_list[i].fullname + user_list[i].phonenum).toLowerCase().indexOf(us.match)) !== -1 )) {
         recent.setAttribute("class","user-around-widget-user-unmatched");
       }
     }
@@ -429,15 +463,16 @@ XiVOCWidget.prototype.widget.user_around.build_user = function (us,i,user_list,p
                 { ul: { attr: { 'class': "user-around-widget-status-list" }, child: [] }}
               ]}};
   
-  if (user_list[i].user !== "") 
+  if (user_list[i].user !== "") {
     user.li.child[1].ul.child.push({ li: { attr: { 'class': "user-around-widget-icons" + " user-around-widget-state",
                                                     style: "background-color:" + user_list[i].statedetails.color,
                                                     title: user_list[i].statedetails.longname }}});
+  }
   
   
   if ((typeof user_list[i].techlist[0] === "string") &&
       (typeof phone_list.xivo[user_list[i].techlist[0]] === "object") &&
-      (typeof phone_list.xivo[user_list[i].techlist[0]].hintstatus === "object"))
+      (typeof phone_list.xivo[user_list[i].techlist[0]].hintstatus === "object")) {
     user.li.child[1].ul.child.push({ li: { attr: { 'class': "user-around-widget-icons" + " user-around-widget-phone-status",
                                                    xivo_uid: user_list[i].xivo_userid,
                                                    style: "background-color:" + phone_list.xivo[user_list[i].techlist[0]].hintstatus.color,
@@ -445,14 +480,16 @@ XiVOCWidget.prototype.widget.user_around.build_user = function (us,i,user_list,p
                                            ev: { click: function () { client.make_call('user:xivo/' + this.getAttribute("xivo_uid")); }}
                                                    
                                                    }});
-  else 
+  } else {
     user.li.attr.style = "display:none"; // don't display user without phone.
+  }
   
-  if ((typeof user_list[i].mobilenum === "string") && (user_list[i].mobilenum !== "")) 
+  if ((typeof user_list[i].mobilenum === "string") && (user_list[i].mobilenum !== "")) {
     user.li.child[1].ul.child.push({ li: { attr: { 'class': "user-around-widget-icons" + " user-around-widget-mobilephone",
                                                     num: user_list[i].mobilenum, title: "call " + user_list[i].mobilenum }, 
                                            ev: { click: function () { client.make_call('ext:' + this.getAttribute("num")); }}
                                    }});
+  }
 
   return user;
   
@@ -464,7 +501,7 @@ XiVOCWidget.prototype.widget.user_around.build = function (us) {
   var user_list = client.get_user_list();
   var phone_list = client.get_phone_list();
 
-  var ulist = { ul: { attr: { 'class': "user-around-widget-userlist" }, child: [] }}
+  var ulist = { ul: { attr: { 'class': "user-around-widget-userlist" }, child: [] }};
 
   var ulist_filter = 
                 { table: { child: [
@@ -481,7 +518,7 @@ XiVOCWidget.prototype.widget.user_around.build = function (us) {
                                   }, keyup: function () {
                                     us.match = document.getElementById(this.getAttribute("id")).value.toLowerCase();
                                   }}
-                       }},
+                       }}
                     ]}}
                   ]}}
                 ]}};
@@ -503,7 +540,7 @@ XiVOCWidget.prototype.widget.user_around.build = function (us) {
 };
 
 
-XiVOCWidget.prototype.widget.respawner = {}
+XiVOCWidget.prototype.widget.respawner = {};
 
 // @private method
 XiVOCWidget.prototype.widget.respawner.start = function (us) {
@@ -531,40 +568,45 @@ XiVOCWidget.prototype.widget.respawner.make_widget_list = function (us) {
   var widget_list = { ul: { attr: { id: "respawner-widget-list-" + us.uid }, child: [
                     ]}};
 
+  var respawn_widget_on_click = function () {
+                                  var i,e,widget_name=this.getAttribute("widget"),dontspawn=false;
+                                  //@weird if we stop to use boxy we will have to rewrite this part
+                                  for (i=0,e=us.spawned_widget_list.length;i<e;i++) {
+                                    if ((us.spawned_widget_list[i] !== undefined ) &&
+                                        (us.spawned_widget_list[i][0].win.visible === true) &&
+                                        (us.spawned_widget_list[i][1] === widget_name) &&
+                                        (us.spawned_widget_list[i][0].limit !== undefined)) {
+                                      dontspawn = true;
+                                      break;
+                                    } else if ((us.spawned_widget_list[i] !== undefined) &&
+                                               (us.spawned_widget_list[i][0].win.visible === false)) {
+                                      delete us.spawned_widget_list[i];
+                                    }
+                                  }
+                                  
+                                  // to keep the array size small
+                                  us.spawned_widget_list = us.spawned_widget_list.reduce( function (a,b,c) {
+                                                                                            if (b !== undefined) {
+                                                                                              return a.concat([b]);
+                                                                                            } else {
+                                                                                              return a;
+                                                                                            }
+                                                                                          },[]);
+                                  
+                                  
+                                  if (!dontspawn) {
+                                    us.to_watch.spawn_widget(widget_name,
+                                                             us.to_watch.decorator,
+                                                             us.to_watch.hideout);
+                                  }
+                                };
   var i,e;
   for (i=0,e=us.widget_list.length;i<e;i++) {
       var widget_name = us.widget_list[i][1];
       widget_list.ul.child.push({ li: { attr: { 'class': "respawner-widget-spawn"}, child: [
                                   { a: { attr: { href: "#", widget: widget_name }, 
                                          text: _xivoc_i18n(widget_name),
-                                         ev: { click: function () {
-                                          var i,e,widget_name=this.getAttribute("widget"),dontspawn=false;
-                                          //@weird if we stop to use boxy we will have to rewrite this part
-                                          for (i=0,e=us.spawned_widget_list.length;i<e;i++) {
-                                            if ((us.spawned_widget_list[i] !== undefined ) &&
-                                                (us.spawned_widget_list[i][0].win.visible === true) &&
-                                                (us.spawned_widget_list[i][1] === widget_name) &&
-                                                (us.spawned_widget_list[i][0].limit !== undefined)) {
-                                              dontspawn = true;
-                                              break;
-                                            } else if ((us.spawned_widget_list[i] !== undefined) &&
-                                                       (us.spawned_widget_list[i][0].win.visible === false))
-                                              delete us.spawned_widget_list[i];
-
-                                          }
-                                          
-                                          // to keep the array size small
-                                          us.spawned_widget_list = us.spawned_widget_list.reduce( function (a,b,c) {
-                                                                                                    if (b !== undefined) {
-                                                                                                      return a.concat([b]);
-                                                                                                    } else
-                                                                                                      return a;
-                                                                                                  },[]);
-
-
-                                          if (!dontspawn)
-                                            us.to_watch.spawn_widget(widget_name, us.to_watch.decorator,us.to_watch.hideout);
-                                        }}
+                                         ev: { click: respawn_widget_on_click }
                                   }}
                                 ]}});
   }
@@ -590,11 +632,11 @@ XiVOCWidget.prototype.widget.respawner.build = function (us) {
                         { ul: { attr: { 'class': "respawner-widget-root-menu" }, child: [
                           { li: { attr: { 'class': "respawner-widget-menu-spawn" }, child: [
                             { a: { attr: { href: "#"}, text: _xivoc_i18n("existing widget") }},
-                            widget_list,
+                            widget_list
                           ]}},
                           { li: { attr: { 'class': "respawner-widget-menu-separator" }}},
                           { li: { attr: { 'class': "respawner-widget-menu-label" },
-                                  text: us.to_watch.get_user_detail().fullname }},
+                                  text: us.to_watch.get_user_detail().fullname }}
                         ]}},
                         { a: { attr: { 'class': "respawner-widget-logout", href: "#" },
                                ev: { click: function () { window.location.reload(); } }}}
@@ -646,19 +688,25 @@ XiVOCWidget.prototype.widget.directory.render_result = function (id,pattern,clie
     awidget.table.child[0].thead.child[0].tr.child.push({ td: { text: _xivoc_i18n(headers[i]) }});
   }
 
+  var call_num_on_click = function () { client.make_call('ext:' + this.getAttribute("num")); };
+
   for (i=0, e=list.length;i < e;i++) {
     var row;
 
-    if (i%2)
+    if (i%2) {
       row = { tr: { attr: { 'class': "widget-odd-row" }, child: [] }};
-    else
+    } else {
       row = { tr: { child: [] }};
+    }
+
+
+
 
     for (i2=0, e2=headers.length;i2 < e2;i2++) {
       if ((list[i][i2].length !== 0) && (headers[i2] === "Numéro")) {
         row.tr.child.push({ td: { child: [
                 { a: { attr: { href: "#", num: XiVOH.parse_num(list[i][i2]), 'class': "click-to-phone-name" }, text: "",
-                       ev: { click: function () { client.make_call('ext:' + this.getAttribute("num")); } }}},
+                       ev: { click: call_num_on_click }}},
                 { span: { attr: { 'class': "phone-name" }, text: list[i][i2] }}
                 ]}});
       } else if ((list[i][i2].length !== 0) && (headers[i2] === "E-mail")) {
@@ -675,10 +723,11 @@ XiVOCWidget.prototype.widget.directory.render_result = function (id,pattern,clie
   var result_rendered = XiVOH.build_from_array(awidget);
 
   var render_on = document.getElementById('directory-search-widget-renderon-' + id);
-  if ( render_on.firstChild  !== null )
+  if ( render_on.firstChild  !== null ) {
     render_on.replaceChild(result_rendered,render_on.firstChild);
-  else 
+  } else {
     document.getElementById('directory-search-widget-renderon-' + id).appendChild(result_rendered);
+  }
 };
 
 // @private method
@@ -699,7 +748,7 @@ XiVOCWidget.prototype.widget.directory.build = function (us) {
                                                                        });
                                      }
                                    }
-                        }}},
+                        }}}
                       ]}},
                       { td: { attr: { style: "width: 80px;padding-left: 10px" }, child: [
                         { input: { attr: { 'class': "directory-search-widget-button" + " widget-button", type: "button", value: _xivoc_i18n("search") },
@@ -742,7 +791,7 @@ XiVOCWidget.prototype.widget.service.start = function (us) {
   XiVOH.call_me_asap(function () { return document.getElementById(us.id); },
                      function () {
                        us.widget.service.update(us);
-                       us.interval = setInterval(function () { if (us.refresh) us.widget.service.update(us); },250);
+                       us.interval = setInterval(function () { if (us.refresh) { us.widget.service.update(us); }},250);
                      },500);
 };
 
@@ -755,21 +804,24 @@ XiVOCWidget.prototype.widget.service.update = function (us) {
   document.getElementById("service-widget-do-not-disturb-" + us.uid).checked = client.get_feature('enablednd').enabled;
 
   document.getElementById("service-widget-transfert-when-no-reply-" + us.uid).checked = client.get_feature('enablerna').enabled;
-  document.getElementById("service-widget-transfert-when-no-reply-field-" + us.uid).value = client.get_feature('enablerna')['number'];
-  if (document.getElementById("service-widget-transfert-when-no-reply-field-" + us.uid).value !== "") 
+  document.getElementById("service-widget-transfert-when-no-reply-field-" + us.uid).value = client.get_feature('enablerna').number;
+  if (document.getElementById("service-widget-transfert-when-no-reply-field-" + us.uid).value !== "") {
     document.getElementById("service-widget-transfert-when-no-reply-" + us.uid).removeAttribute('disabled');
+  }
     
 
   document.getElementById("service-widget-transfert-on-busy-" + us.uid).checked = client.get_feature('enablebusy').enabled;
-  document.getElementById("service-widget-transfert-on-busy-field-" + us.uid).value = client.get_feature('enablebusy')['number'];
-  if (document.getElementById("service-widget-transfert-on-busy-field-" + us.uid).value !== "")
+  document.getElementById("service-widget-transfert-on-busy-field-" + us.uid).value = client.get_feature('enablebusy').number;
+  if (document.getElementById("service-widget-transfert-on-busy-field-" + us.uid).value !== "") {
     document.getElementById("service-widget-transfert-on-busy-" + us.uid).removeAttribute('disabled');
+  }
 
 
   document.getElementById("service-widget-transfert-unconditional-" + us.uid).checked = client.get_feature('enableunc').enabled;
-  document.getElementById("service-widget-transfert-unconditional-field-" + us.uid).value = client.get_feature('enableunc')['number'];
-  if (document.getElementById("service-widget-transfert-unconditional-field-" + us.uid).value !== "")
+  document.getElementById("service-widget-transfert-unconditional-field-" + us.uid).value = client.get_feature('enableunc').number;
+  if (document.getElementById("service-widget-transfert-unconditional-field-" + us.uid).value !== "") {
     document.getElementById("service-widget-transfert-unconditional-" + us.uid).removeAttribute('disabled');
+  }
 };
 
 XiVOCWidget.prototype.widget.service.build = function (us) {
@@ -827,8 +879,8 @@ XiVOCWidget.prototype.widget.service.build = function (us) {
                                   }},
                       { label: { attr: {'for': "service-widget-do-not-disturb-" + us.uid },
                                  text: _xivoc_i18n("do not disturb") }}
-                    ]}},
-                  ]}},
+                    ]}}
+                  ]}}
                 ]}};
 
   var forward_on_no_reply = { ul: { 'class': "service-widget-transfert-when-no-reply" ,child: [
@@ -854,10 +906,11 @@ XiVOCWidget.prototype.widget.service.build = function (us) {
                          var servicet = document.getElementById("service-widget-transfert-when-no-reply-" + us.uid);
                          var service = document.getElementById("service-widget-transfert-when-no-reply-field-" + us.uid);
 
-                         if (service.value === "")
+                         if (service.value === "") {
                            servicet.setAttribute('disabled','disabled');
-                         else
+                         } else {
                            servicet.removeAttribute('disabled');
+                         }
 
                          }, change: function () {
                          document.getElementById("service-widget-transfert-when-no-reply-" + us.uid).checked = false;
@@ -891,10 +944,11 @@ XiVOCWidget.prototype.widget.service.build = function (us) {
                          var servicet = document.getElementById("service-widget-transfert-on-busy-" + us.uid);
                          var service = document.getElementById("service-widget-transfert-on-busy-field-" + us.uid);
 
-                         if (service.value === "")
+                         if (service.value === "") {
                            servicet.setAttribute('disabled','disabled');
-                         else
+                         } else {
                            servicet.removeAttribute('disabled');
+                         }
 
                          }, change: function () {
                          document.getElementById("service-widget-transfert-on-busy-" + us.uid).checked = false;
@@ -928,10 +982,11 @@ XiVOCWidget.prototype.widget.service.build = function (us) {
                          var servicet = document.getElementById("service-widget-transfert-unconditional-" + us.uid);
                          var service = document.getElementById("service-widget-transfert-unconditional-field-" + us.uid);
                          
-                         if (service.value === "")
+                         if (service.value === "") {
                            servicet.setAttribute('disabled','disabled');
-                         else 
+                         } else {
                            servicet.removeAttribute('disabled');
+                         }
 
                          }, change: function () {
                          document.getElementById("service-widget-transfert-unconditional-" + us.uid).checked = false;
@@ -945,7 +1000,7 @@ XiVOCWidget.prototype.widget.service.build = function (us) {
   return XiVOH.build_from_array(awidget);
 };
 
-XiVOCWidget.prototype.widget.dial = {}
+XiVOCWidget.prototype.widget.dial = {};
 
 XiVOCWidget.prototype.widget.dial.start = function (us) {
   us.size = { width: "270px", height: "55px" };
@@ -975,7 +1030,7 @@ XiVOCWidget.prototype.widget.dial.build = function (us) {
   return XiVOH.build_from_array(awidget);
 };
 
-XiVOCWidget.prototype.widget.history = {}
+XiVOCWidget.prototype.widget.history = {};
 
 XiVOCWidget.prototype.widget.history.start = function (us) {
   us.size = { width: "420px", height: "55px" };
@@ -992,11 +1047,11 @@ XiVOCWidget.prototype.widget.history.format_call_length = function (sec) {
   var h = ( sec - ( m  * 60 ) - s  ) / ( 60 * 60 ) ;
 
   var t = "";
-  if ( h != 0) t += h + _xivoc_i18n("hou.");
-  if ( m != 0) t += m + _xivoc_i18n("min.");
-  if ( s != 0) t += s + _xivoc_i18n("sec.");
+  if ( h !== 0) { t += h + _xivoc_i18n("hou."); }
+  if ( m !== 0) { t += m + _xivoc_i18n("min."); }
+  if ( s !== 0) { t += s + _xivoc_i18n("sec."); }
 
-  if (t === "") t = '-';
+  if (t === "") { t = '-'; }
 
   return t;
 };
@@ -1013,33 +1068,36 @@ XiVOCWidget.prototype.widget.history.render = function (mode,us) {
                    { tr: { child: [
                      { td: { text: _xivoc_i18n('timestamp') }},
                      { td: { text: _xivoc_i18n('caller') }},
-                     { td: { text: _xivoc_i18n('length of call') }},
+                     { td: { text: _xivoc_i18n('length of call') }}
                    ]}}
                  ]}},
                  { tbody: { child: [
                  ]}}
                ]}};
 
+  var call_num_on_click = function () { client.make_call('ext:' + this.getAttribute("num")); };
+
   for (i=0,e=call_list.length;i<e;i++) {
     var row;
 
-    if (i%2)
+    if (i%2) {
       row = { tr: { attr: { 'class': "widget-odd-row" }, child: [] }};
-    else
+    } else {
       row = { tr: { child: [] }};
+    }
 
-    if ( XiVOH.parse_num(call_list[i].fullname) !== "" )
+    if ( XiVOH.parse_num(call_list[i].fullname) !== "" ) {
       row.tr.child.push({ td: { attr: {'class': "history-widget-ts" },
                                 text: call_list[i].ts }},
                         { td: { attr: {'class': "history-widget-fullname" }, child: [
                           { a: { attr: { href: "#", num: XiVOH.parse_num(call_list[i].fullname),
                                         'class': "click-to-phone-name" },
-                            ev: { click: function () { client.make_call('ext:' + this.getAttribute("num")); } }}},
+                            ev: { click: call_num_on_click }}},
                           { span: { attr: { 'class': "phone-name" }, text: call_list[i].fullname }}
                         ]}},
                         { td: { attr: { 'class': "history-widget-duration" },
                                 text: us.widget.history.format_call_length(call_list[i].duration) }});
-    else
+    } else {
       row.tr.child.push({ td: { attr: {'class': "history-widget-ts" },
                                 text: call_list[i].ts }},
                         { td: { attr: {'class': "history-widget-fullname" }, child: [
@@ -1047,14 +1105,16 @@ XiVOCWidget.prototype.widget.history.render = function (mode,us) {
                         ]}},
                         { td: { attr: { 'class': "history-widget-duration" },
                                 text: us.widget.history.format_call_length(call_list[i].duration) }});
+    }
 
     render.table.child[1].tbody.child.push(row);
   }
 
-  if (render_on.firstChild !== null )
+  if (render_on.firstChild !== null ) {
     render_on.replaceChild(XiVOH.build_from_array(render),render_on.firstChild);
-  else
+  } else {
     render_on.appendChild(XiVOH.build_from_array(render));
+  }
 
 };
 
@@ -1112,19 +1172,19 @@ XiVOCWidget.prototype.widget.history.build = function (us) {
                                              title: _xivoc_i18n("missed"),
                                              'class': "history-widget-radiobutton-missed-label" },
                                      text: _xivoc_i18n("missed") }}
-                        ]}},
-                      ]}},
+                        ]}}
+                      ]}}
                     ]}},
                     { li: { attr: { id: 'history-widget-renderon-' + us.uid,
                             'class': 'history-widget-renderon' }, child: [
-                    ]}},
-                  ]}},
+                    ]}}
+                  ]}}
                 ]}};
 
   return XiVOH.build_from_array(awidget);
-}
+};
 
-XiVOCWidget.prototype.widget.footer = {}
+XiVOCWidget.prototype.widget.footer = {};
 
 XiVOCWidget.prototype.widget.footer.start = function (us) {
   us.resizable = false;
@@ -1137,8 +1197,9 @@ XiVOCWidget.prototype.widget.footer.start = function (us) {
 
   if (old !== null) {
     old.parentNode.replaceChild(us.widget_dom,old);
-  } else
+  } else {
     (document.getElementsByTagName("body"))[0].appendChild(us.widget_dom);
+  }
 };
 
 XiVOCWidget.prototype.widget.footer.build = function (us) {

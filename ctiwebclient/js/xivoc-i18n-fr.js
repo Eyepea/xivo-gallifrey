@@ -55,4 +55,7 @@ xivoc_i18n = {
   'sec.': " sec.",
   'min.': " min. ",
   'hou.': " heu. ",
+  'Invalid login/password pair': "Mot de passe invalide.",
+  'Invalid user': "Identifiant incorrect.",
+  'Sigh: ': "Sigh: "
 };

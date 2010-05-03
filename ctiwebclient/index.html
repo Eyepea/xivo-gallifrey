@@ -9,7 +9,7 @@
   <link href="css/xivo.css" rel="stylesheet" type="text/css">
   <link href="css/xivo_client.css" rel="stylesheet" type="text/css">
 
-  <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="js/jquery.boxy.js"></script>
   <script type="text/javascript" charset="utf-8">
   /*
@@ -22,28 +22,36 @@
   <script type="text/javascript" charset="utf-8">
 
   function createCookie(name,value,days) {
-		if (days) {
-			var date = new Date();
-			date.setTime(date.getTime()+(days*24*60*60*1000));
-			var expires = "; expires="+date.toGMTString();
-		}
-		else var expires = "";
-		document.cookie = name+"="+value+expires+"; path=/";
+    var expires;
+    if (days) {
+      var date = new Date();
+      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+      expires = "; expires=" + date.toGMTString();
+    } else {
+      expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
   }
 
   function readCookie(name) {
-  	var nameEQ = name + "=";
-  	var ca = document.cookie.split(';');
-  	for(var i=0;i < ca.length;i++) {
-  		var c = ca[i];
-  		while (c.charAt(0)==' ') c = c.substring(1,c.length);
-  		if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-  	}
-  	return null;
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    var c, i;
+
+    for(i=0;i<ca.length;i++) {
+      c = ca[i];
+      while (c.charAt(0)===' ') {
+        c = c.substring(1,c.length);
+      }
+      if (c.indexOf(nameEQ) === 0) {
+        return c.substring(nameEQ.length,c.length);
+      }
+    }
+    return null;
   }
   
   function eraseCookie(name) {
-  	createCookie(name,"",-1);
+    createCookie(name,"",-1);
   }
 
 
@@ -76,8 +84,9 @@
       if (width_list[i][2]===false) {
         var fill = x + width_list[i][0];
         var ymax = win_list[width_list[i][1]].boxy.height();
-        if (y+ymax>$(document).height())
+        if (y+ymax>$(document).height()) {
           y = 25;
+        }
         win_list[width_list[i][1]].moveTo(x,y);
         width_list[i][2] = true;
         for(i2=e-s;i2>i;i2--) {
@@ -88,8 +97,9 @@
             win_list[width_list[i2][1]].moveTo(fill-width_list[i2][0],y+(ymax-lwin_height)/2);
             width_list[i2][2] = true;
             s += 1;
-          } else
+          } else {
             break;
+          }
         }
         y += ymax;
       }
@@ -98,7 +108,7 @@
 
   function decorator(widget,win_title,size,is_resizable,is_closable)
   {
-    var win = new Boxy(undefined,{title: win_title, closeable: (is_closable!=0), fixed: false,
+    var win = new Boxy(undefined,{title: win_title, closeable: (is_closable!==0), fixed: false,
                                   resizable: is_resizable, closeText: is_closable,
                                   moveRestriction: { top: 25 }});
     win.setContent(widget);
@@ -112,8 +122,8 @@
     win.centerY();
 
     if (is_closable) {
-      var x = ( Math.random() * 100000 % ( win_width - parseInt(size.width) )) ;
-      var y = ( Math.random() * 100000 % ( win_height - (parseInt(size.height) -30) )) + 30;
+      var x = ( Math.random() * 100000 % ( win_width - parseInt(size.width, 10) )) ;
+      var y = ( Math.random() * 100000 % ( win_height - (parseInt(size.height, 10) -30) )) + 30;
       win.moveTo(x,y);
     }
 
@@ -126,7 +136,9 @@
   function hideout(win,hint_redispose)
   {
     win.hideAndUnload();
-    if (hint_redispose) naive_redispose();
+    if (hint_redispose) {
+      naive_redispose();
+    }
   }
 
   function login_win() {
@@ -154,18 +166,13 @@
                         );
       });
 
-    XiVOH.call_me_asap(function () { return XiVOC.get_user() !== undefined; },function () {
-      createCookie("username",XiVOC.get_user(),1);
-      createCookie("password",XiVOC.get_pass(),1);
-    });
+      XiVOH.call_me_asap(function () { return XiVOC.get_user() !== undefined; },function () {
+        createCookie("username",XiVOC.get_user(),1);
+        createCookie("password",XiVOC.get_pass(),1);
+      });
 
-  },100);
-
-
-
+    },100);
   }
-
-
 
   </script>
 </head>
