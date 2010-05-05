@@ -38,11 +38,11 @@ for r in cursor.fetchall():
 # minimum required fields per device:
 #  type = device, devicetype
 
-cursor.query("SELECT ${columns} FROM sccpdevice s, userfeatures u, phone p " +
+cursor.query("SELECT ${columns} FROM usersccp s, userfeatures u, phone p " +
   "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol == 'sccp' AND u.id = p.iduserfeatures",
-  ('s.id', 'p.macaddr', 'p.model', 'p.vendor', 's.description', 's.devicetype', 
+  ('s.id', 'p.macaddr', 'p.model', 'p.vendor', 'u.description', 's.devicetype', 
    's.tzoffset', 's.dtmfmode', 's.mwilamp', 's.mwioncall', 's.pickupexten', 
-   's.pickupmodeanswer', 's.privacy'))
+   's.pickupmodeanswer', 's.privacy', 's.defaultline'))
 for r in cursor.fetchall():
     name  = 'SEP' + r['p.macaddr'].replace(':', '')
     phone_class = xivo_config.phone_factory({'vendor': r['p.vendor'], 'model': r['p.model']})
@@ -61,11 +61,19 @@ for r in cursor.fetchall():
     
     for k, v in r.iteritems():
         k = k.split('.')[1]
-        if k in ['id', 'macaddr', 'vendor', 'model'] or v is None or len(str(v)) == 0:
+        if k in ['id', 'macaddr', 'vendor', 'model','defaultline'] or v is None or len(str(v)) == 0:
             continue
 
         print "%s = %s" % (k, v)
 
+    # default line (map to 1st button)
+    cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0 AND id = %d" % r['s.defaultline'], 
+        ('name',))
+    r2 = cursor.fetchone()
+    if r2:
+        print "button = line, %s" % r2['name']
+
+    # buttons
     cursor.query("SELECT ${columns} FROM sccpbuttonconfig WHERE device_id = %d ORDER BY position" % r['s.id'],
         ('type', 'options'))
     for r2 in cursor.fetchall():
