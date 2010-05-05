@@ -176,9 +176,9 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(dwho_ak('autoprov',$nocomponents,true) === false)
 			$this->_get_autoprov();
 
-        // queueskills
-        $skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
-        $this->_info['queueskills'] = $skills === false?array():$skills;
+		// queueskills
+		$skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
+		$this->_info['queueskills'] = $skills === false?array():$skills;
 
 		return($this->_info);
 	}
@@ -564,6 +564,11 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$iax['initialized'] = true;
 					$r[$userfeatures['id']] = array_merge($iax,$userfeatures);
 					break;
+				case XIVO_SRE_IPBX_AST_PROTO_SCCP:
+					$sccp = dwho_array_startswith_key($ref,'sccpdevice.',true);
+					$sccp['initialized'] = true;
+					$r[$userfeatures['id']] = array_merge($sccp,$userfeatures);
+					break;
 				case XIVO_SRE_IPBX_AST_PROTO_CUSTOM:
 					$custom = dwho_array_startswith_key($ref,'usercustom.',true);
 					$custom['initialized'] = true;
@@ -573,6 +578,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					$this->_cnt = 0;
 					return(false);
 			}
+
 
 			// get userskills
            $skills = $this->_queueskills->get_skills($ref['userfeatures.id']);
@@ -829,7 +835,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->set_contextnummember($context,$number);
 
 		$numhaslen = dwho_has_len($number);
-
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			if(($rsusermacro = $this->chk_macro('usermacro',
@@ -902,7 +907,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$this->_protocolname = $r = false;
 		else
 			$r = true;
-		
+
 		return($r);
 	}
 
@@ -1381,7 +1386,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			return(false);
 
 		$rs['protocolid'] = $protocolid;
-
 		return(($this->_return['userfeatures'] = $this->_userfeatures->add($rs)));
 	}
 
@@ -1405,7 +1409,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(($rs = $this->_set_usermacro('add',$userfeaturesid)) !== true)
 			return($rs);
 
-		return(parent::add_macro('usermacro'));
+		$ret = parent::add_macro('usermacro');
+		return($ret);
 	}
 
 	function add_hints()
@@ -1808,7 +1813,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(($rs = $this->_set_usermacro('edit',$userfeaturesid)) !== true)
 			return($rs);
 
-		return(parent::edit_macro('usermacro'));
+		$ret = parent::edit_macro('usermacro');
+		return $ret;
 	}
 
 	function edit_hints()

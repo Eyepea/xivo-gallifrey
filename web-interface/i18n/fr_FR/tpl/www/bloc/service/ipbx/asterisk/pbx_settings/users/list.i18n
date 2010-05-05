@@ -19,6 +19,9 @@ SIP
 ; user_protocol-iax
 IAX
 
+; user_protocol-sccp
+SCCP
+
 ; user_protocol-custom
 Personnalisé
 

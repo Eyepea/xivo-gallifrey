@@ -24,7 +24,7 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_abstract
 {
 	var $_dso		= null;
-	var $_sccpdevice   = false;
+	var $_usersccp     = false;
 	var $_sccpline     = false;
 	var $_sccpbutton   = false;
 
@@ -37,7 +37,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$this->_dso = &$dso;
 
-		if(($this->_sccpdevice = &$this->_service->get_module('sccpdevice'))       === false
+		if(($this->_usersccp   = &$this->_service->get_module('usersccp'))       === false
 		|| ($this->_sccpline   = &$this->_service->get_module('sccpline'))         === false
 		|| ($this->_sccpbutton = &$this->_service->get_module('sccpbuttonconfig')) === false)
 			return(false);
@@ -51,13 +51,15 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	{
 		$res = array();
 		
-		$res['device'] = array_intersect_key($arr, $this->_sccpdevice->get_element());
-		$res['device']['description'] = $arr['callerid'];
+		$res['device'] = array_intersect_key($arr, $this->_usersccp->get_element());
+#		$res['device']['description'] = $arr['callerid'];
 		unset($res['device']['name']);
 
 		$res['line'] = array_intersect_key($arr, $this->_sccpline->get_element());
-		$res['line']['cid_name'] = $arr['callerid'];
-		$res['line']['cid_num']  = $arr['name'];
+		if(isset($arr['callerid']))
+			$res['line']['cid_name'] = $arr['callerid'];
+		if(isset($arr['name']))
+			$res['line']['cid_num']  = $arr['name'];
 
 		return $res;
 	}
@@ -66,7 +68,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	{
 		$values = $this->_explode_input_array($arr);
 
-		if($this->_sccpdevice->chk_values($values['device']) === false
+		if($this->_usersccp->chk_values($values['device']) === false
 		|| $this->_sccpline->chk_values($values['line'])     === false)
 		{
 		}
@@ -77,23 +79,63 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	function add($arr)
 	{
 		$values = $this->_explode_input_array($arr);
-
-		if(($devid  = $this->_sccpdevice->add($values['device'])) === false
-		|| ($lineid = $this->_sccpline->add($values['line'])) === false)
+		if(($lineid = $this->_sccpline->add($values['line'])) === false)
 			return false;
 
-		// create default button: device -> line
-		$button = array(
-			'device_id'  => $devid, 
-			'position'   => 0, 
-			'type'       => 'line', 
-			'options'    => $values['line']['name']
-		);
+		$values['device']['defaultline'] = $lineid;
+		if(($devid  = $this->_usersccp->add($values['device'])) === false)
+			return false;
 
-		if($this->_sccpbutton->add($button) === false)
+		return $devid;
+	}
+
+	function edit($id, $arr)
+	{
+		$values = $this->_explode_input_array($arr);
+		if(count($values['line']) > 0)
+		{
+			if(($user = $this->_usersccp->get($id)) === false)
+				return false;
+
+			if($this->_sccpline->edit($user['defaultline'], $values['line']) === false)
+				return false;
+		}
+
+		if(count($values['device']) > 0
+		&& $this->_usersccp->edit($id, $values['device']) === false)
 			return false;
 
 		return true;
+	}
+
+	function get($id, $disable)
+	{
+		if(($arr = $this->_usersccp->get($id, $disable)) === false)
+			return false;
+
+		if($arr['defaultline'])
+			$line  = $this->_sccpline->get($arr['defaultline']);
+
+		$arr = array_merge($arr, $line);
+		return $arr;
+	}
+
+	/*
+		NOTE: we consider a line is use by ONE DEVICE ONLY
+	*/
+	function delete($id)
+	{
+		$arr = $this->_sccpbutton->get_all_where(array('device_id' => $id, 'type' => 'line'));
+		foreach($arr as $btn)
+			$this->_sccpline->delete_where(array('name' => $btn['options']));
+
+		$user = $this->_usersccp->get($id);
+		$this->_sccpline->delete($user['defaultline']);
+
+		$this->_sccpbutton->delete_where(array('device_id' => $id));
+		$ret = $this->_usersccp->delete($id);
+
+		return($ret);
 	}
 }
 
