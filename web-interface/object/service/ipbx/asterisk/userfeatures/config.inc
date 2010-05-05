@@ -30,6 +30,10 @@ $array['provisioning_id']['iax'] = array();
 $array['provisioning_id']['iax']['prefix'] = 2;
 $array['provisioning_id']['iax']['range'] = 100000;
 
+$array['provisioning_id']['sccp'] = array();
+$array['provisioning_id']['sccp']['prefix'] = 3;
+$array['provisioning_id']['sccp']['range']  = 100000;
+
 $array['element'] = array();
 
 $array['element']['name'] = array();
@@ -38,7 +42,7 @@ $array['element']['name']['default'] = '';
 $array['element']['protocol'] = array();
 $array['element']['protocol']['value'] = array(XIVO_SRE_IPBX_AST_PROTO_SIP,
 					       XIVO_SRE_IPBX_AST_PROTO_IAX,
-#					       XIVO_SRE_IPBX_AST_PROTO_SCCP,
+					       XIVO_SRE_IPBX_AST_PROTO_SCCP,
 					       XIVO_SRE_IPBX_AST_PROTO_CUSTOM);
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SIP;
 
