@@ -260,8 +260,8 @@ $array['module']['voicemailfeatures']['datastorage'] = true;
 $array['module']['voicemenu'] = array();
 $array['module']['voicemenu']['datastorage'] = true;
 
-$array['module']['sccpdevice'] = array();
-$array['module']['sccpdevice']['datastorage'] = true;
+$array['module']['usersccp'] = array();
+$array['module']['usersccp']['datastorage'] = true;
 
 $array['module']['sccpline'] = array();
 $array['module']['sccpline']['datastorage'] = true;

@@ -300,9 +300,9 @@ $array['voicemenu'] = array();
 $array['voicemenu']['table'] = 'voicemenu';
 $array['voicemenu']['primary'] = array('id' => '');
 
-$array['sccpdevice'] = array();
-$array['sccpdevice']['table'] = 'sccpdevice';
-$array['sccpdevice']['primary'] = array('id' => '');
+$array['usersccp'] = array();
+$array['usersccp']['table'] = 'usersccp';
+$array['usersccp']['primary'] = array('id' => '');
 
 $array['sccpline'] = array();
 $array['sccpline']['table'] = 'sccpline';

@@ -233,6 +233,7 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 
 	function get_exten($exten,$context,$app='',$arr=null)
 	{
+var_dump("GETEXTEN $exten $context $app");
 		if(is_array($arr) === false)
 			$arr = array();
 

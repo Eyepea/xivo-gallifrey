@@ -25,8 +25,8 @@ $array['element'] = array();
 $array['element']['name'] = array();
 $array['element']['name']['default'] = '*none*';
 
-$array['element']['description'] = array();
-$array['element']['description']['default'] = '';
+#$array['element']['description'] = array();
+#$array['element']['description']['default'] = '';
 
 $array['element']['devicetype'] = array();
 $array['element']['devicetype']['default'] = '';
@@ -65,9 +65,17 @@ $array['element']['permit']['default'] = '';
 $array['element']['deny'] = array();
 $array['element']['deny']['default'] = '';
 
+$array['element']['protocol'] = array();
+$array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SCCP;
+$array['element']['protocol']['forcedef'] = true;
+
+$array['element']['defaultline'] = array();
+$array['element']['defaultline']['default'] = '';
+
+
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => false, 'chk'	=> 2);
-$array['filter']['description'] = array('set' => false, 'chk'	=> 2);
+#$array['filter']['description'] = array('set' => false, 'chk'	=> 2);
 $array['filter']['devicetype'] = array('set' => false, 'chk'	=> 2);
 $array['filter']['tzoffset'] = array('set' => false, 'chk'	=> 2);
 $array['filter']['dtmfmode'] = array('set' => false, 'chk'	=> 2);
@@ -78,4 +86,6 @@ $array['filter']['pickupmodeanswer'] = array('set' => false, 'chk'	=> 2);
 $array['filter']['privacy'] = array('set' => false, 'chk'	=> 2);
 $array['filter']['permit'] = array('set' => false, 'chk'	=> 2);
 $array['filter']['deny'] = array('set' => false, 'chk'	=> 2);
+$array['filter']['defaultline'] = array('set' => false, 'chk'	=> 2);
+$array['filter']['protocol'] = array('set' => false);
 

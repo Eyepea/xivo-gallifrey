@@ -20,7 +20,7 @@
 
 xivo_service_asterisk::required(array('abstract','datastorage','abstract','sql.inc'),true);
 
-class xivo_service_asterisk_sccpdevice_sql extends xivo_service_asterisk_abstract_sql
+class xivo_service_asterisk_usersccp_sql extends xivo_service_asterisk_abstract_sql
 {
 #	var $_forcecolumn	= array('type'		=> 'friend',
 #					'protocol'	=> XIVO_SRE_IPBX_AST_PROTO_SIP,
