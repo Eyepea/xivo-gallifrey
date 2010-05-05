@@ -1838,12 +1838,11 @@ INSERT INTO generalsccp VALUES (NULL, 'callanswerorder'       , 'oldestfirst', 0
 INSERT INTO generalsccp VALUES (NULL, 'protocol'              , '11', 0);
 
 -- http://chan-sccp-b.sourceforge.net/doc/structsccp__device.html
-DROP TABLE sccpdevice;
-CREATE TABLE sccpdevice
+DROP TABLE usersccp;
+CREATE TABLE usersccp
 (
  id integer unsigned,
  name varchar(128),
- description text,
  devicetype varchar(64),             -- phone model, ie 7960
  tzoffset integer,                   -- ie: +1 == Europe/Paris
  dtmfmode varchar(16),                -- outofband, inband
@@ -1854,11 +1853,13 @@ CREATE TABLE sccpdevice
  privacy varchar(16),                -- full
  permit varchar(64),                 -- 192.168.0.0/255.255.255.0
  deny varchar(64),                   -- 0.0.0.0/0.0.0.0
+ protocol char(3) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
+ defaultline integer unsigned,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
-INSERT INTO sccpdevice VALUES (NULL, 'SEP00164766A428', 'plop', '7960', '2', 'inband', 'on', 'on', 'on', 'on', '', 0)
+--INSERT INTO usersccp VALUES (NULL, 'SEP00164766A428', '7960', '2', 'inband', 'on', 'on', 'on', 'on', '', 0)
 
 -- http://chan-sccp-b.sourceforge.net/doc/structsccp__line.html
 DROP TABLE sccpline;
@@ -1867,20 +1868,20 @@ CREATE TABLE sccpline
  id integer unsigned,
  name varchar(80) NOT NULL,
  pin varchar(8) NOT NULL DEFAULT '',
- label varchar(128),
+ label varchar(128) NOT NULL DEFAULT '',
  description text,
  context varchar(64),
  incominglimit integer unsigned,
  transfer varchar(3) NOT NULL DEFAULT 'on',            -- on, off
  mailbox varchar(64),
  vmnum varchar(64),
- cid_name varchar(64),
- cid_num varchar(64),
+ cid_name varchar(64) NOT NULL DEFAULT '',
+ cid_num varchar(64) NOT NULL DEFAULT '',
  trnsfvm varchar(64),
  secondary_dialtone_digits varchar(10),
  secondary_dialtone_tone integer unsigned,
- musicclass varchar(32) NOT NULL DEFAULT 'default',
- language varchar(32) NOT NULL DEFAULT '',             -- en, fr
+ musicclass varchar(32),
+ language varchar(32),                                 -- en, fr
  accountcode varchar(32),
  audio_tos integer unsigned,
  audio_cos integer unsigned,
@@ -1898,12 +1899,12 @@ CREATE TABLE sccpline
 
 CREATE UNIQUE INDEX sccpline__uidx__name ON sccpline(name);
 
-INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
+-- INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
 s
 
 -- http://chan-sccp-b.sourceforge.net/doc/structsccp__buttonconfig.html
-DROP TABLE buttonconfig;
-CREATE TABLE buttonconfig
+DROP TABLE sccpbuttonconfig;
+CREATE TABLE sccpbuttonconfig
 (
  id integer unsigned,
  device_id integer unsigned NOT NULL,
@@ -1913,11 +1914,11 @@ CREATE TABLE buttonconfig
  PRIMARY KEY (id)
 );
 
-CREATE UNIQUE INDEX buttonconfig__uidx__name   ON buttonconfig(device_id, position);
+CREATE UNIQUE INDEX sccpbuttonconfig__uidx__name   ON sccpbuttonconfig(device_id, position);
 
-INSERT INTO buttonconfig VALUES (NULL, 1, 1, 'line', '160');
-INSERT INTO buttonconfig VALUES (NULL, 1, 2, NULL, NULL);
-INSERT INTO buttonconfig VALUES (NULL, 1, 3, 'speeddial', '112,*8112,112@default');
+-- INSERT INTO sccpbuttonconfig VALUES (NULL, 1, 1, 'line', '160');
+-- INSERT INTO sccpbuttonconfig VALUES (NULL, 1, 2, NULL, NULL);
+-- INSERT INTO sccpbuttonconfig VALUES (NULL, 1, 3, 'speeddial', '112,*8112,112@default');
 
 
 COMMIT;
