@@ -43,27 +43,33 @@ cursor.query("SELECT ${columns} FROM usersccp s, userfeatures u, phone p " +
   "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol == 'sccp' AND u.id = p.iduserfeatures",
   ('s.id', 'p.macaddr', 'p.model', 'p.vendor', 'u.description', 's.devicetype', 
    's.tzoffset', 's.dtmfmode', 's.mwilamp', 's.mwioncall', 's.pickupexten', 
-   's.pickupmodeanswer', 's.privacy', 's.defaultline', 'u.id', 'u.number'))
+   's.pickupmodeanswer', 's.privacy', 's.defaultline', 'u.id', 'u.number', 's.addons'))
 for r in cursor.fetchall():
     name  = 'SEP' + r['p.macaddr'].replace(':', '')
     phone_class = xivo_config.phone_factory({'vendor': r['p.vendor'], 'model': r['p.model']})
     if not phone_class:
         continue
-        
-    devicetype = phone_class.get_sccp_devicetype(r['p.model'])
-    if not devicetype:
-        continue
+
+    addons = []
+    if r['s.addons'] and len(r['s.addons']) > 0:
+        addons = r['s.addons'].split(',')
+        devicetype = addons[0]
+    else:
+        devicetype = phone_class.get_sccp_devicetype(r['p.model'])
+        if not devicetype:
+            continue
 #    phone = xivo_config.phone_desc_by_ua(ua)
     
     print "\n[%s]" % name
     print "type = device"
     print "devicetype = %s" % devicetype
-#    print "devicetype = 7914"
-#    print "addon = 7914"
+    for addon in addons:
+        print "addon = %s" % addon
     
     for k, v in r.iteritems():
         k = k.split('.')[1]
-        if k in ['id', 'macaddr', 'vendor', 'model','defaultline'] or v is None or len(str(v)) == 0:
+        if k in ['id', 'macaddr', 'vendor', 'model','defaultline', 'addons'] \
+        or v is None or len(str(v)) == 0:
             continue
 
         print "%s = %s" % (k, v)
@@ -78,7 +84,7 @@ for r in cursor.fetchall():
     # map buttons
     fknum = 2
     funckeys = get_funckeys(cursor, r['u.id'], r['u.number'])
-    import pprint; pprint.pprint(funckeys)
+#    import pprint; pprint.pprint(funckeys)
     ids = funckeys.keys()
     ids.sort()
     
@@ -112,7 +118,7 @@ for r in cursor.fetchall():
 # Generate line sections
 # minimum required fields (per line):
 #   label, pin, cid_name, cid_num
-cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 'name', 'pin', 'label', 'cid_name', 'cid_num'))
+cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 'name', 'pin', 'label', 'cid_name', 'cid_num', 'context', 'setvar'))
 for r in cursor.fetchall():
     label = r['label']
     if not label or len(label) == 0:

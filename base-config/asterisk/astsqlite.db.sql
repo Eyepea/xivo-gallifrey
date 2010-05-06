@@ -1815,7 +1815,7 @@ INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'alaw', 0);
 INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'ulaw', 0);
 INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'g729', 0);
 INSERT INTO generalsccp VALUES (NULL, 'firstdigittimeout'     , '16', 0);
-INSERT INTO generalsccp VALUES (NULL, 'digittimeout'          , '8', 0);
+INSERT INTO generalsccp VALUES (NULL, 'digittimeout'          , '1', 0);
 INSERT INTO generalsccp VALUES (NULL, 'autoanswer_ring_time'  , '1', 0);
 INSERT INTO generalsccp VALUES (NULL, 'autoanswer_tone'       , '0x32', 0);
 INSERT INTO generalsccp VALUES (NULL, 'remotehangup_tone'     , '0x32', 0);
@@ -1823,7 +1823,7 @@ INSERT INTO generalsccp VALUES (NULL, 'transfer_tone'         , '0', 0);
 INSERT INTO generalsccp VALUES (NULL, 'callwaiting_tone'      , '0x2d', 0);
 INSERT INTO generalsccp VALUES (NULL, 'musicclass'            , 'default', 0);
 INSERT INTO generalsccp VALUES (NULL, 'language'              , 'en', 0);
-INSERT INTO generalsccp VALUES (NULL, 'dnd'                   , 'on', 0);
+INSERT INTO generalsccp VALUES (NULL, 'dnd'                   , 'off', 0);
 INSERT INTO generalsccp VALUES (NULL, 'sccp_tos'              , '0x68', 0);
 INSERT INTO generalsccp VALUES (NULL, 'sccp_cos'              , '4', 0);
 INSERT INTO generalsccp VALUES (NULL, 'audio_tos'             , '0xB8', 0);
@@ -1855,6 +1855,7 @@ CREATE TABLE usersccp
  deny varchar(64),                   -- 0.0.0.0/0.0.0.0
  protocol char(3) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
  defaultline integer unsigned,
+ addons varchar(24),                 -- comma separated addons list. i.e 7914,7914
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );

@@ -72,6 +72,9 @@ $array['element']['protocol']['forcedef'] = true;
 $array['element']['defaultline'] = array();
 $array['element']['defaultline']['default'] = '';
 
+$array['element']['addons'] = array();
+$array['element']['addons']['default'] = '';
+
 
 $array['filter'] = array();
 $array['filter']['name'] = array('set' => false, 'chk'	=> 2);

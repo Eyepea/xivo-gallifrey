@@ -781,4 +781,11 @@ Le poids saisi n'est pas un nombre entier
 ; error_fm_queueskill_weight(unbound)
 Le poids doit être un nombre entier compris entre 0 et 100
 
+; column_addon
+Modules d'extension
 
+; smenu_sccp
+Paramètres SCCP
+
+; addon_description
+Ajoutez ici les modules d'extension connectés au téléphone, dans l'ordre de gauche à droite.

@@ -61,6 +61,9 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 		if(isset($arr['name']))
 			$res['line']['cid_num']  = $arr['name'];
 
+		if(is_array($res['device']['addons']))
+			$res['device']['addons'] = implode(',', $res['device']['addons']);
+
 		return $res;
 	}
 	
@@ -117,6 +120,11 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 			$line  = $this->_sccpline->get($arr['defaultline']);
 
 		$arr = array_merge($arr, $line);
+		if(strlen($arr['addons']) > 0)
+			$arr['addons'] = preg_split('/,/', $arr['addons']);
+		else
+			$arr['addons'] = array();
+
 		return $arr;
 	}
 

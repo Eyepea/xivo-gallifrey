@@ -739,4 +739,12 @@ weight is not an integer
 ; error_fm_queueskill_weight(unbound)
 weight must be an integer between 0 and 100
 
+; column_addon
+Expansion modules
+
+; smenu_sccp
+SCCP parameters
+
+; addon_description
+Add here expansion modules connected to the phone, from left to right.
 

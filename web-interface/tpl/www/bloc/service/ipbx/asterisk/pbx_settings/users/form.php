@@ -1007,6 +1007,13 @@ endif;
 ?>
 </div>
 
+
+<div id="sb-part-sccp" class="b-nodisplay">
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp');
+?>
+</div>
+
 <div id="sb-part-advanced" class="b-nodisplay">
 <?php
 	echo	$form->text(array('desc'	=> $this->bbf('fm_protocol_callerid'),

@@ -52,6 +52,7 @@ $rightcall['list'] = $apprightcall->get_rightcalls_list(null,
 
 $queueskills = array();
 
+$sccp_addons = array('7914', '7915', '7916');
 
 
 if(isset($_QR['fm_send']) === true
@@ -74,9 +75,13 @@ if(isset($_QR['fm_send']) === true
 			'weight'	=> $_QR['queueskill-weight'][$i],
 		);
 	}
+	$_QR['queueskills'] = $queueskills;
 
-    $_QR['queueskills'] = $queueskills;
-
+	// sccp addons
+	if(count($_QR['sccp_addons']) > 0)
+		unset($_QR['sccp_addons'][count($_QR['sccp_addons'])-1]);
+	$_QR['protocol']['addons'] = $_QR['sccp_addons'];
+	
 	if($appuser->set_add($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->add() === false)
 	{
@@ -219,6 +224,7 @@ $_TPL->set_var('autoprov_list',$appuser->get_autoprov_list());
 $_TPL->set_var('fkidentity_list',$appuser->get_phonefunckey_identity());
 $_TPL->set_var('fktype_list',$appuser->get_phonefunckey_type());
 $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
+$_TPL->set_var('sccp_addons',$sccp_addons);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');

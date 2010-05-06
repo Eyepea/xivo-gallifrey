@@ -21,20 +21,15 @@
 $form = &$this->get_module('form');
 $url  = &$this->get_module('url');
 
-$info 		= $this->get_var('info');
-
-// queueskill category name
-$element 	= $this->get_var('element');
-
-// queueskill values (if edit mode or redisplay view after error)
-$data 		= $this->get_var('queueskills');
-
+$addons  = $this->get_var('sccp_addons');
+$info    = $this->get_var('info');
 ?>
 
+<?= $this->bbf('addon_description');?>
 <div id="sb-list">
 <?php
-	$type = 'disp';
-	$count = $data?count($data):0;
+	$type = 'disp2';
+	$count = count($info['protocol']['addons']); #$element?count($data):0;
 	$errdisplay = '';
 ?>
 	<p>&nbsp;</p>
@@ -43,20 +38,19 @@ $data 		= $this->get_var('queueskills');
 			<thead>
 			<tr class="sb-top">
 
-				<th class="th-left"><?=$this->bbf('col_1');?></th>
-				<th class="th-center"><?=$this->bbf('col_2');?></th>
+				<th class="th-left"><?=$this->bbf('column_addon');?></th>
 				<th class="th-right th-rule">
 					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
 									  $this->bbf('col_add'),
 									  'border="0"'),
 							   '#',
 							   null,
-							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+							   'onclick="dwho.dom.make_table_list(\'disp2\',this); return(dwho.dom.free_focus());"',
 							   $this->bbf('col_add'));?>
 				</th>
 			</tr>
 			</thead>
-			<tbody id="disp">
+			<tbody id="disp2">
 		<?php
 		if($count > 0):
 			for($i = 0;$i < $count;$i++):
@@ -66,32 +60,13 @@ $data 		= $this->get_var('queueskills');
 				<td class="td-left">
 	<?php
 					echo	$form->select(array(
-							'name'		=> 'queueskill-skill[]',
-							'id'		=> "it-queueskill-skill[$i]",
-							'key'		=> 'name',
-							'altkey'	=> 'id',
-							'empty'		=> true,
-							'optgroup'	=> array(
-								'key'		=> 'category', 
-								'unique' 	=> true,
-							),
-							'selected'	=> $data[$i]['skillid'],
-							'error'      	=> $this->bbf_args	('error_fm_queueskill_skillid', $this->get_var('error', 'queueskills', $i, 'skillid'))
+							'name'		=> 'sccp_addons[]',
+							'id'			=> "it-sccp_addons[$i]",
+							'key'			=> false,
+							'empty'		=> false,
+							'selected'	=> $info['protocol']['addons'][$i]
 						),
-						$element['queueskills']);
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'queueskill-weight[]',
-								   'id'		=> false,
-								   'label'	=> false,
-								   'size'	=> 15,
-								   'key'	=> false,
-								   'default'	=> '0',
-								   'value'	=> $data[$i]['weight'],
-								   'error'      => $this->bbf_args	('error_fm_queueskill_weight', $this->get_var('error', 'queueskills', $i, 'weight'))));
+						$addons);
 	 ?>
 				</td>
 				<td class="td-right">
@@ -122,29 +97,12 @@ $data 		= $this->get_var('queueskills');
 				<td class="td-left">
 	<?php
 					echo	$form->select(array(
-							'name'		=> 'queueskill-skill[]',
-							'id'		=> "it-queueskill-skill[]",
-							'key'		=> 'name',
-							'altkey'	=> 'id',
-							'label'     => false,
-							'empty'		=> true,
-							'optgroup'	=> array(
-								'key'		=> 'category', 
-								'unique' 	=> true,
-							),
+							'name'		=> 'sccp_addons[]',
+							'id'			=> "it-sccp_addons[$i]",
+							'key'			=> false,
+							'empty'		=> false
 						),
-						$element['queueskills']);
-	 ?>
-				</td>
-				<td>
-	<?php
-					echo $form->text(array('paragraph'	=> false,
-								   'name'	=> 'queueskill-weight[]',
-								   'id'		=> false,
-								   'label'	=> false,
-								   'size'	=> 3,
-								   'key'	=> false,
-								   'default'	=> '0'));
+						$addons);
 	 ?>
 				</td>
 
