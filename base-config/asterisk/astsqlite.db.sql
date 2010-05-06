@@ -1846,7 +1846,7 @@ CREATE TABLE usersccp
  devicetype varchar(64),             -- phone model, ie 7960
  tzoffset integer,                   -- ie: +1 == Europe/Paris
  dtmfmode varchar(16),                -- outofband, inband
- mwilamp varchar(3),                 -- on, off
+ mwilamp varchar(3),                 -- on, offpho
  mwioncall varchar(3),               -- on, off
  pickupexten varchar(3),             -- on, off
  pickupmodeanswer varchar(3),        -- on, off
@@ -1901,24 +1901,6 @@ CREATE UNIQUE INDEX sccpline__uidx__name ON sccpline(name);
 
 -- INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
 s
-
--- http://chan-sccp-b.sourceforge.net/doc/structsccp__buttonconfig.html
-DROP TABLE sccpbuttonconfig;
-CREATE TABLE sccpbuttonconfig
-(
- id integer unsigned,
- device_id integer unsigned NOT NULL,
- position integer unsigned,
- type varchar(16),                            -- line, speeddial, feature, empty
- options varchar(512),
- PRIMARY KEY (id)
-);
-
-CREATE UNIQUE INDEX sccpbuttonconfig__uidx__name   ON sccpbuttonconfig(device_id, position);
-
--- INSERT INTO sccpbuttonconfig VALUES (NULL, 1, 1, 'line', '160');
--- INSERT INTO sccpbuttonconfig VALUES (NULL, 1, 2, NULL, NULL);
--- INSERT INTO sccpbuttonconfig VALUES (NULL, 1, 3, 'speeddial', '112,*8112,112@default');
 
 
 COMMIT;
