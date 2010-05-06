@@ -20,11 +20,12 @@ __license__ = """
 
 import sys
 from xivo import OrderedConf
-from xivo import xivo_helpers
 from xivo import xivo_config
 from xivo import all_phones
+from xivo.xivo_helpers import db_connect, speed_dial_key_extension, fkey_extension
+from xivo.provisioning import get_funckeys
 
-cursor = xivo_helpers.db_connect().cursor()
+cursor = db_connect().cursor()
 
 cursor.query("SELECT ${columns} FROM generalsccp WHERE commented = 0", ('key', 'value'))
 
@@ -42,7 +43,7 @@ cursor.query("SELECT ${columns} FROM usersccp s, userfeatures u, phone p " +
   "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol == 'sccp' AND u.id = p.iduserfeatures",
   ('s.id', 'p.macaddr', 'p.model', 'p.vendor', 'u.description', 's.devicetype', 
    's.tzoffset', 's.dtmfmode', 's.mwilamp', 's.mwioncall', 's.pickupexten', 
-   's.pickupmodeanswer', 's.privacy', 's.defaultline'))
+   's.pickupmodeanswer', 's.privacy', 's.defaultline', 'u.id', 'u.number'))
 for r in cursor.fetchall():
     name  = 'SEP' + r['p.macaddr'].replace(':', '')
     phone_class = xivo_config.phone_factory({'vendor': r['p.vendor'], 'model': r['p.model']})
@@ -57,7 +58,8 @@ for r in cursor.fetchall():
     print "\n[%s]" % name
     print "type = device"
     print "devicetype = %s" % devicetype
-    print "addon = 7914"
+#    print "devicetype = 7914"
+#    print "addon = 7914"
     
     for k, v in r.iteritems():
         k = k.split('.')[1]
@@ -69,25 +71,42 @@ for r in cursor.fetchall():
     # default line (map to 1st button)
     cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0 AND id = %d" % r['s.defaultline'], 
         ('name',))
-    r2 = cursor.fetchone()
-    if r2:
-        print "button = line, %s" % r2['name']
+    dftline = cursor.fetchone()
+    if dftline:
+        print "button = line, %s" % dftline['name']
 
-    # buttons
-    cursor.query("SELECT ${columns} FROM sccpbuttonconfig WHERE device_id = %d ORDER BY position" % r['s.id'],
-        ('type', 'options'))
-    for r2 in cursor.fetchall():
-        print "button =",
- 
-        if r2['type'] is None or len(r2['type']) == 0:
-            print ''
+    # map buttons
+    fknum = 2
+    funckeys = get_funckeys(cursor, r['u.id'], r['u.number'])
+    import pprint; pprint.pprint(funckeys)
+    ids = funckeys.keys()
+    ids.sort()
+    
+    for num in ids:
+#        print btn
+        # button #1 is reserved for phone default line
+        if num == 1:
             continue
-        print "%s," % r2['type'],
 
-        if r2['options'] is None:
-            print ''
-            continue
-        print "%s" % r2['options']
+        # fill empty buttons
+#        print fknum,  btn['fknum']
+        for i in xrange(fknum, num):
+            print "button = empty"
+        fknum = num
+
+        btn = funckeys[num]
+        label = btn['label']
+        if label is None:
+            label = btn.get('altlabel')
+
+        print "button = speeddial, %s, %s," % (label, btn['exten']),
+        if btn['supervision']:
+            print "%s@hints" % btn['exten']
+        else:
+            print
+
+        fknum += 1
+
 
 #
 # Generate line sections
