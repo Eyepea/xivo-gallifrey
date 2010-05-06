@@ -10,7 +10,7 @@ DEB_PKG = "asterisk-app-conference"
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
 TARBALL_NAME = "asterisk-app-conference_$(SRCVER).orig.tar.gz"
-UPSTREAM_VER = $(SRCVER)+pf.$(MAINREV)~svn$(SVNREV)
+UPSTREAM_VER = $(SRCVER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
 default:

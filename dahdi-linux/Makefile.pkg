@@ -12,7 +12,7 @@ TARBALL_DIR := $(shell mktemp -d)
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
 TARBALL_NAME = "dahdi-linux_$(SRCVER)+dfsg.orig.tar.gz"
-UPSTREAM_VER = $(SRCVER)+dfsg+pf.$(MAINREV)~svn$(SVNREV)
+UPSTREAM_VER = $(SRCVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
 default:
