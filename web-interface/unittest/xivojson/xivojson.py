@@ -72,7 +72,7 @@ class JSONClient(object):
         
     def list(self, obj):
         if obj not in self.objects:
-            raise 'Unknown %s object' % obj
+            raise Exception('Unknown %s object' % obj)
          
         params = self.objects[obj]
         return self.request('GET', 
@@ -81,7 +81,7 @@ class JSONClient(object):
         
     def add(self, obj, content):
         if obj not in self.objects:
-            raise 'Unknown %s object' % obj
+            raise Exception('Unknown %s object' % obj)
          
         params = self.objects[obj]
         return self.request('POST', 
@@ -91,7 +91,7 @@ class JSONClient(object):
 
     def edit(self, obj, content):
         if obj not in self.objects:
-            raise 'Unknown %s object' % obj
+            raise Exception('Unknown %s object' % obj)
          
         params = self.objects[obj]
         return self.request('POST', 
@@ -101,7 +101,7 @@ class JSONClient(object):
 
     def view(self, obj, id):
         if obj not in self.objects:
-            raise 'Unknown %s object' % obj
+            raise Exception('Unknown %s object' % obj)
          
         params = self.objects[obj]
         return self.request('GET', 
@@ -111,7 +111,7 @@ class JSONClient(object):
         
     def delete(self, obj, id):
         if obj not in self.objects:
-            raise 'Unknown %s object' % obj
+            raise Exception('Unknown %s object' % obj)
          
         params = self.objects[obj]
         return self.request('GET', 
