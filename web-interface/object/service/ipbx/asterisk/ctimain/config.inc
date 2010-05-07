@@ -25,7 +25,7 @@ $array['element']['host'] = array();
 $array['element']['host']['default'] = '';
 
 $array['element']['commandset'] = array();
-$array['element']['commandset']['value'] = array('xivocti','callbooster');
+$array['element']['commandset']['value'] = array('xivocti');
 $array['element']['commandset']['default'] = 'xivocti';
 
 $array['element']['fagi_ip'] = array();
@@ -69,7 +69,7 @@ $array['element']['login_timeout']['default'] = 5;
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
-$array['filter']['commandset'] 		= array('key' => array('xivocti','callbooster'));
+$array['filter']['commandset'] 		= array('key' => array('xivocti'));
 $array['filter']['fagi_ip'] 		= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
 $array['filter']['fagi_port'] 		= array('set' => false, 'chk' => 2, 'cast' => 'uint', 'between' => array(1,65535));
 $array['filter']['cti_ip'] 			= array('callback' => 'dwho_network::valid_host_subnet_ipv4');
