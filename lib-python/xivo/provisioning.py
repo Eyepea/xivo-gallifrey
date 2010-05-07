@@ -97,7 +97,7 @@ def get_funckeys(cursor, iduserfeatures, number):
         + ['extenumleft.exten', 'extenumright.exten',
            'extenumleft.type', 'extenumleft.typeval',
            'extenumright.type', 'extenumright.typeval']
-        + [UF_TABLE+x for x in ('.firstname', '.lastname', '.id')],
+        + [UF_TABLE+x for x in ('.firstname', '.lastname', '.id', '.context')],
         (iduserfeatures,))
 
     funckey = {}
@@ -109,7 +109,8 @@ def get_funckeys(cursor, iduserfeatures, number):
 
         fkey = {'exten':        None,
                 'label':        label,
-                'supervision':  bool(int(fk[FK_TABLE+'.supervision']))}
+                'supervision':  bool(int(fk[FK_TABLE+'.supervision'])),
+                'context': fk[UF_TABLE+'.context']}
 
         # SPECIAL CASES:
         if fk['extenumleft.type'] is None:

@@ -107,7 +107,7 @@ for r in cursor.fetchall():
 
         print "button = speeddial, %s, %s," % (label, btn['exten']),
         if btn['supervision']:
-            print "%s@hints" % btn['exten']
+            print "%s@%s" % (btn['exten'], btn['context'])
         else:
             print
 
