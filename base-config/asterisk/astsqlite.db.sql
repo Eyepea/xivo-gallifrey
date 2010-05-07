@@ -1901,7 +1901,7 @@ CREATE TABLE sccpline
 CREATE UNIQUE INDEX sccpline__uidx__name ON sccpline(name);
 
 -- INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
-s
+
 
 
 COMMIT;
