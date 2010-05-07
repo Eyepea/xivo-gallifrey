@@ -28,6 +28,9 @@ $node = $this->get_var('node');
 $tagmenu = $xmlvendor->tag_menu();
 $argseparator = $xmlvendor->arg_separator();
 
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
+
+
 if(is_array($list) === false || ($nb = count($list)) === 0):
 	$tagdirectory = $xmlvendor->tag_directory();
 
@@ -94,11 +97,11 @@ else:
 				 $xmlvendor->escape(' > ',false),
 				 $xmlvendor->escape(dwho_trunc($name2,8,'.','',true)),
 			'</Name>',"\n",
-			'<URL>',$url->href('service/ipbx/web_services/phonebook/search',
+			'<URL>',htmlentities($url->href('service/ipbx/web_services/phonebook/search',
 				$param,
 				true,
 				$argseparator,
-				false),
+				false)),
 			'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endfor;

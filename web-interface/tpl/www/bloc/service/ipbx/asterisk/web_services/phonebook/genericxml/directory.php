@@ -28,6 +28,7 @@ $prevpos = $this->get_var('prevpos');
 
 $tagdirectory = $xmlvendor->tag_directory();
 
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n";
 echo '<',$tagdirectory,'>',"\n";
 
 if($xmlvendor->get_vendor() === 'thomson' && $prevpos > 0):

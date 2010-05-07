@@ -2,7 +2,7 @@
 
 #
 # XiVO Web-Interface
-# Copyright (C) 2006-2010  Proformatique <technique@proformatique.com>
+# Copyright (C) 2010  Proformatique <technique@proformatique.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,22 +18,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$xmlphone = &$this->get_module('xmlphone');
+$xmlphone  = &$this->get_module('xmlphone');
 $xmlvendor = $xmlphone->factory($this->get_var('vendor'));
-$taginput = $xmlvendor->tag_input();
+$tagmenu   = $xmlvendor->tag_menu();
 
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
-²?>
+?>
 
-<<?=$taginput?>>
+<<?=$tagmenu?>>
+	<MenuItem> 
+		<Name><?=$xmlvendor->escape($this->bbf('phone_mainmenu-title'));?></Name> 
+		<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true);?></URL> 
+	</MenuItem> 
+</<?=$tagmenu?>>
 
-	<Title><?=$xmlvendor->escape($this->bbf('phone_search-title'));?></Title>
-	<Prompt><?=$xmlvendor->escape($this->bbf('phone_search-prompt'));?></Prompt>
-	<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true);?></URL>
-	<InputItem>
-		<DisplayName><?=$xmlvendor->escape($this->bbf('phone_search-prompt'));?></DisplayName>
-		<QueryStringParam>name</QueryStringParam>
-		<DefaultValue />
-		<InputFlags>A</InputFlags>
-	</InputItem>
-</<?=$taginput?>>
