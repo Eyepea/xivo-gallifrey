@@ -82,7 +82,8 @@ except:
     DAEMONNAME = 'xivo_daemon'
 
 # XIVO lib-python modules initialization
-XIVO_CONF_FILE   = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
+#XIVO_CONF_FILE   = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
+XIVO_CONF_FILE   = "https://localhost/service/ipbx/json.php/private/ctiserver/configuration"
 PIDFILE          = '/var/run/%s.pid' % DAEMONNAME
 LOGFILENAME      = '/var/log/pf-xivo-cti-server/daemon.log'
 GETOPT_SHORTOPTS = 'dc:p:l:'

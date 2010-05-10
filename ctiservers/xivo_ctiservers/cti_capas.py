@@ -30,28 +30,15 @@ import urllib
 log = logging.getLogger('capas')
 
 class Capabilities:
-    allowed_funcs = ['agents',
+    allowed_funcs = ['agents', 'conference', 'customerinfo', 'dial',
+                     'directory', 'fax', 'features', 'history',
+                     'messages', 'chitchat', 'presence', 'database',
+                     'switchboard']
 
-        'conference',
-        'customerinfo',
-        'dial',
-        'directory',
-        'fax',
-        'features',
-        'history',
-        'messages',
-
-        'chitchat',
-
-        'presence',
-        'database',
-        'switchboard']
-
-    allowed_xlets_base = {'void' : {}}
 
     def __init__(self, allowed_xlets):
         self.capafuncs = []
-        self.capadisps = ['void-grid-0']
+        self.capadisps = []
         self.appliname = 'Client'
         self.guisettings = {}
         self.conngui = 0
@@ -60,7 +47,6 @@ class Capabilities:
         self.watchedpresenceid = 'none'
         self.guiurl = None
         self.allowed_xlets = allowed_xlets
-        self.allowed_xlets.update(self.allowed_xlets_base)
         return
 
     def setfuncs(self, capalist):
@@ -72,8 +58,6 @@ class Capabilities:
     def setxlets(self, capalist):
         for capa in capalist:
             detail = capa.split('-')
-            if len(detail) > 2 and detail[1] == 'grid' and detail[2] == '0' and 'void-grid-0' in self.capadisps:
-                self.capadisps.remove('void-grid-0')
             if detail[0] in self.allowed_xlets.keys():
                 if capa not in self.capadisps:
                     self.capadisps.append(capa)
