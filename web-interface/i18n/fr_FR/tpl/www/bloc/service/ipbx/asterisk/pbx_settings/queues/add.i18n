@@ -263,7 +263,7 @@ Oui
 Strict
 
 ; fm_queue_leavewhenempty
-Vider la file d'attente:
+Sortir d'une file d'attente vide:
 
 ; fm_queue_leavewhenempty-opt(no)
 Non
