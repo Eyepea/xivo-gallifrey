@@ -28,13 +28,13 @@ IP address
 Network speed
 
 ; network_autonegotiation
-Autonegociate
+Autonegotiate
 
 ; network_autonegotiation_info(on)
 Activated
 
 ; network_autonegotiation_info(off)
-Deactivates
+Deactivated
 
 ; network_autonegotiation_info
 %s
@@ -79,5 +79,5 @@ Unknown
 No depends
 
 ; no_package(recommends)
-No recommands
+No recommends
 

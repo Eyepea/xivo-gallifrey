@@ -3,16 +3,16 @@
 Champ obligatoire
 
 ; error(regexp)
-Contient des caractères invalide
+Contient des caractères invalides
 
 ; error(callback)
-Contient des caractères invalide
+Contient des caractères invalides
 
 ; error(cast)
-Contient des caractères invalide
+Contient des caractères invalides
 
 ; error(cast|callback)
-Contient des caractères invalide
+Contient des caractères invalides
 
 ; error_before_create_context
 Vous devez dabord créer un contexte

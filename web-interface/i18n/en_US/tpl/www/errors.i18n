@@ -8,7 +8,7 @@ An error occurred when saving the form.
 Required Field
 
 ; error(regexp)
-Contient des caractères invalide
+Contains invalid characters
 
 ; error(callback)
 Contains invalid characters

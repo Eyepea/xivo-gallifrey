@@ -27,7 +27,7 @@ class xivo_service_asterisk_queueskillcat extends xivo_service_asterisk_abstract
 
 	var $_filter		= false;
 	
-	// datas - raw version
+	// data - raw version
 	var $_origin		= false;
 	var $_identity	= false;
 

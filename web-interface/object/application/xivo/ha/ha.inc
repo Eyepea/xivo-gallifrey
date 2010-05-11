@@ -179,7 +179,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	}
 	function _set_save($conf)
 	{
-        // IF ALL IT'S OK, SAVE DATAS
+        // IF ALL IT'S OK, SAVE DATA
         if($this->_ha_svc->edit(1, $conf['global']) === false)
             return false;
         
@@ -218,11 +218,11 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
 	    $conf = $this->_set_format($arr);
         $this->_set_result('ha', $conf);
         
-        // 1. TEST DATAS
+        // 1. TEST DATA
         if(!$this->_set_check($conf))
             return false;
             
-        // IF ALL IT'S OK, SAVE DATAS
+        // IF ALL IT'S OK, SAVE DATA
         $this->_set_save($conf);
     }
     

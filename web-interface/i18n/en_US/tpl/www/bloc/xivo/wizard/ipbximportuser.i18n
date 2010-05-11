@@ -29,7 +29,7 @@ Lines status
 File import :
 
 ; error_fm_import(invalid_name)
-Invalide filename
+Invalid file name
 
 ; error_fm_import(invalid_content)
 Invalid file content

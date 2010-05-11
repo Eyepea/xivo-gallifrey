@@ -2,13 +2,13 @@
 Database type :
 
 ; error_dbconfig_xivo(invalid)
-Invalid connexion parameters
+Invalid connection parameters
 
 ; error_dbconfig_xivo(connection)
 Cannot connect to the database !
 
 ; error_dbconfig_ipbx(invalid)
-Invalid connexion parameters
+Invalid connection parameters
 
 ; error_dbconfig_ipbx(connection)
 Cannot connect to the database !

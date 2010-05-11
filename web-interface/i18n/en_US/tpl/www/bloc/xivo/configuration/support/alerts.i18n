@@ -14,4 +14,4 @@ An address per line. <br/> DO NOT ADD Proformatique addresses maintenance, they 
 List of ports, each separated by a space
 
 ; dahdi_monitor_ports(typechecking)
-You must enter a list of port number (integer) separated by a space
+You must enter a list of port numbers (integers) separated by a space

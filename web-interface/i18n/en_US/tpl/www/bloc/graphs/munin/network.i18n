@@ -5,13 +5,13 @@ Network
 Eth0 errors
 
 ; if_eth0
-Eth0 trafic
+Eth0 traffic
 
 ; if_err_eth1
 Eth1 errors
 
 ; if_eth1
-Eth1 trafic
+Eth1 traffic
 
 ; netstat
 Netstat

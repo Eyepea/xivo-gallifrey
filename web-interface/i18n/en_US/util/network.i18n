@@ -98,7 +98,7 @@ IPIP tunnel
 IP6IP6 tunnel
 
 ; network_arphrd(frad)
-Frame relai access device
+Frame relay access device
 
 ; network_arphrd(skip)
 SKIP vif.
