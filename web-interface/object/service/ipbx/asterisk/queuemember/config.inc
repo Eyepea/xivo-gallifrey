@@ -84,6 +84,6 @@ $array['filter']['channel'] = array('key' => array(
 							XIVO_SRE_IPBX_AST_CHAN_AGENT,
 							XIVO_SRE_IPBX_AST_CHAN_UNKNOWN));
 $array['filter']['category'] = array('key' => array('queue','group'));
-$array['filter']['skills']   = array('set' => false, chk' => 2, 'maxlen' => 64);
+$array['filter']['skills']   = array('set' => false, 'chk' => 2, 'maxlen' => 64);
 
 ?>
