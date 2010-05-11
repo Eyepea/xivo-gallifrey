@@ -14,13 +14,13 @@ Identité
 Aucune
 
 ; incall_destination-endcall-hangup
-Raccrocher
+Raccroché
 
 ; incall_destination-endcall-busy
-Occuper
+Occupé
 
 ; incall_destination-endcall-congestion
-Saturer
+Saturé
 
 ; incall_destination-user
 Utilisateur
