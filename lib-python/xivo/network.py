@@ -64,6 +64,7 @@ IFPLUGD_START = ["/usr/sbin/invoke-rc.d", "ifplugd", "start"]
 
 IFDOWN = "/sbin/ifdown"
 
+ROUTE  = '/bin/ip'
 
 # CODE
 
@@ -678,6 +679,40 @@ def ifplugd_start():
         raise NetworkOpError(errmsg)
     if status:
         raise NetworkOpError("failure of: " + ' '.join(IFPLUGD_START))
+
+
+def route_set(address, netmask, gateway, iface):
+    cmd = [ROUTE, '-s', '-s', 'route', 'add', 'table', 'xivo', 
+        '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
+    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    ret = p.wait()
+
+    stdout = p.stdout.read()
+    p.stdout.close()
+    
+    return (ret, stdout)
+
+
+def route_flush():
+    cmd = [ROUTE, 'route', 'flush', 'table', 'xivo']
+    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    ret = p.wait()
+
+    stdout = p.stdout.read()
+    p.stdout.close()
+    
+    return (ret, stdout)
+
+
+def route_flush_cache():
+    cmd = [ROUTE, 'route', 'flush', 'cache', 'table', 'xivo']
+    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    ret = p.wait()
+
+    stdout = p.stdout.read()
+    p.stdout.close()
+    
+    return (ret, stdout)
 
 
 if __name__ == "__main__":

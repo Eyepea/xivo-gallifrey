@@ -1,0 +1,36 @@
+#!/usr/bin/python
+
+import os
+import sys
+import traceback
+import ConfigParser
+
+from xivo import network
+
+CFGFILE = '/etc/pf-xivo/routes'
+
+if __name__ == '__main__':
+    iface = os.environ['IFACE']
+    mode  = os.environ['METHOD']  # start/stop
+
+    cfg = ConfigParser.ConfigParser()
+    cfg.read(CFGFILE)
+
+    if mode != 'up':
+        sys.exit(0)
+
+    if not cfg.has_section(iface):
+        sys.exit(0)
+
+    for name, rule  in cfg.items(iface):
+        print name, rule
+        rule = rule.split(';')
+        if len(rule) != 3:
+            continue
+
+        rule.append(iface)
+        try:
+            (ret, verbose) = network.route_set(*rule)
+        except Exception, e:
+            traceback.print_exc()
+
