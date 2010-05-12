@@ -1191,7 +1191,7 @@ INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no'
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','requirecalltoken','no');
 -- warning: asterisk crash if set to NULL value
-INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','');
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','0.0.0.0');
 
 
 DROP TABLE staticmeetme;

@@ -1255,7 +1255,7 @@ INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime',10);
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
 INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','requirecalltoken','no');
-INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','');
+INSERT INTO `staticiax` VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','0.0.0.0');
 
 DROP TABLE IF EXISTS `staticmeetme`;
 CREATE TABLE `staticmeetme` (
