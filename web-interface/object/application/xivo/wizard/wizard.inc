@@ -230,9 +230,17 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			case 'dbconfig':
 				return($this->_conf['element'][$step]);
 			case 'mainconfig':
+				// read system dns
+				$resolvconf = $this->_conf['element']['resolvconf']
+				if(($dns = $this->_sysconfd->request_get('/dns')) != false)
+				{
+					$resolvconf['nameserver1']['default'] = $dns['nameservers'][0];
+					$resolvconf['nameserver2']['default'] = $dns['nameservers'][1];
+				}
+				
 				return(array('mainconfig'	=> $this->_conf['element']['mainconfig'],
 					     'netiface'		=> $this->_conf['element']['netiface'],
-					     'resolvconf'	=> $this->_conf['element']['resolvconf']));
+					     'resolvconf'	=> $resolvconf));
 			case 'entitycontext':
 				return(array('entity'	=> $this->_conf['element']['entity'],
 					     'context'	=> $this->_conf['element']['context']));
