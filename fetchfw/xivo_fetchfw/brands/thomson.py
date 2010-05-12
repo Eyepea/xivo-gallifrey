@@ -29,6 +29,9 @@ FW_PATHS = {
     'ST2030': {
         '2.69': os.path.join("ST2030_SG_v2[2].69_SED_Release_packag","Binary")
     }
+    'TB30': {
+        '1.70': os.path.join("TB30_SG_V1[1].70_Release_Package_20100421","Binary")
+    }
 }
 
 
@@ -49,8 +52,12 @@ def thomson_install(firmware):
         pass # XXX: catching every OSError is not appropriate
 
     modelnum = firmware.model[2:]
-    pre_dsp_file = "v%s_dsp_" % modelnum
-    pre_fw_file = "v%sSG." % modelnum
+    if modelnum == TB30:
+        pre_dsp_file = "%sS_V" % modelnum 
+        pre_fw_file = "%sS." % modelnum
+    else:
+        pre_dsp_file = "v%s_dsp_" % modelnum
+        pre_fw_file = "v%sSG." % modelnum
 
     for fw_file in os.listdir(fw_zip_path):
         if fw_file.startswith(pre_dsp_file) or fw_file.startswith(pre_fw_file):
