@@ -53,7 +53,7 @@ def thomson_install(firmware):
         pass # XXX: catching every OSError is not appropriate
 
     modelnum = firmware.model[2:]
-    if modelnum == TB30:
+    if modelnum == 'TB30':
         pre_dsp_file = "%sS_V" % modelnum 
         pre_fw_file = "%sS." % modelnum
     else:
