@@ -67,6 +67,9 @@ SIP
 ; fm_protocol_protocol-opt(iax)
 IAX
 
+; fm_protocol_protocol-opt(sccp)
+SCCP
+
 ; fm_protocol_protocol-opt(custom)
 Customized
 
