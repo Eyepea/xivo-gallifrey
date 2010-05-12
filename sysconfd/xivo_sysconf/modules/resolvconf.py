@@ -1,3 +1,4 @@
+from __future__ import with_statement
 """resolvconf module
 
 Copyright (C) 2010  Proformatique
@@ -32,7 +33,7 @@ from shutil import copy2
 
 from xivo import http_json_server
 from xivo.http_json_server import HttpReqError
-from xivo.http_json_server import CMD_RW
+from xivo.http_json_server import CMD_R, CMD_RW
 from xivo.moresynchro import RWLock
 from xivo.xivo_config import txtsubst
 from xivo import xys
@@ -235,5 +236,21 @@ def safe_init(options):
         Rcc["%s_backup_path" % optname] = os.path.join(backup_path,
                                                        Rcc["%s_path" % optname].lstrip(os.path.sep))
 
+def GetDns(args, options):
+    """Read system DNS configuration
+    """
+    dns = {'search': [], 'nameservers': []}
+    with open('/etc/resolv.conf') as f:
+        for line in f.xreadlines():
+            line = line[:-1].split(' ')
+            
+            if line[0]   == 'nameserver':
+                dns['nameservers'].append(line[1])
+            elif line[0] == 'search':
+                dns['search'].append(line[1])
+        
+    return dns
+
 http_json_server.register(Hosts, CMD_RW, safe_init=safe_init, name='hosts')
 http_json_server.register(ResolvConf, CMD_RW, name='resolv_conf')
+http_json_server.register(GetDns, CMD_R, name='dns')
