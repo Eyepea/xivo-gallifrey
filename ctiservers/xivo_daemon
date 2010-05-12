@@ -19,8 +19,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__   = '$Revision: 7384 $'
-__date__      = '$Date: 2010-01-07 18:52:28 +0100 (Thu, 07 Jan 2010) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2007-2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
@@ -238,7 +238,7 @@ class manage_connection:
                             daemon.commandclass.pre_reload()
                     except Exception:
                         log.exception('(pre reloads (%s))' % stripped_usefulmsg)
-                            
+
                     closemenow = False
 
                     try:
@@ -819,7 +819,7 @@ class xivo_deamon:
         
         try:
             logfilehandler = RotatingFileHandler(LOGFILENAME)
-            formatter = logging.Formatter('%s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
+            formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
                                           % LOGDAEMONNAME)
             logfilehandler.setFormatter(formatter)
             logging.getLogger('').addHandler(logfilehandler)
