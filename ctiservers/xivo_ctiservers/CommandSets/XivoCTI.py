@@ -145,24 +145,24 @@ class XivoCTICommand(BaseCommand):
         self.ulist_ng = cti_userlist.UserList()
         self.ulist_ng.setcommandclass(self)
         self.weblist = { 'agents' : {},
-            'queues' : {},
-            'groups' : {},
-            'phones' : {},
-            'trunks' : {},
-            'meetme' : {},
-            'incomingcalls' : {},
-            'voicemail' : {},
-            'phonebook' : {} }
+                         'queues' : {},
+                         'groups' : {},
+                         'phones' : {},
+                         'trunks' : {},
+                         'meetme' : {},
+                         'incomingcalls' : {},
+                         'voicemail' : {},
+                         'phonebook' : {} }
         self.weblistprops = {'agents' : {'classfile' : cti_agentlist, 'classname' : 'AgentList'},
-            'queues' : {'classfile' : cti_queuelist, 'classname' : 'QueueList'},
-            'groups' : {'classfile' : cti_grouplist, 'classname' : 'GroupList'},
-            'phones' : {'classfile' : cti_phonelist, 'classname' : 'PhoneList'},
-            'trunks' : {'classfile' : cti_trunklist, 'classname' : 'TrunkList'},
-            'meetme' : {'classfile' : cti_meetmelist, 'classname' : 'MeetmeList'},
-            'incomingcalls' : {'classfile' : cti_incomingcalllist, 'classname' : 'IncomingCallList'},
-            'voicemail' : {'classfile' : cti_voicemaillist, 'classname' : 'VoiceMailList'},
-            'phonebook' : {'classfile' : cti_phonebook, 'classname' : 'PhoneBook'}
-            }
+                             'queues' : {'classfile' : cti_queuelist, 'classname' : 'QueueList'},
+                             'groups' : {'classfile' : cti_grouplist, 'classname' : 'GroupList'},
+                             'phones' : {'classfile' : cti_phonelist, 'classname' : 'PhoneList'},
+                             'trunks' : {'classfile' : cti_trunklist, 'classname' : 'TrunkList'},
+                             'meetme' : {'classfile' : cti_meetmelist, 'classname' : 'MeetmeList'},
+                             'incomingcalls' : {'classfile' : cti_incomingcalllist, 'classname' : 'IncomingCallList'},
+                             'voicemail' : {'classfile' : cti_voicemaillist, 'classname' : 'VoiceMailList'},
+                             'phonebook' : {'classfile' : cti_phonebook, 'classname' : 'PhoneBook'}
+                             }
         # self.plist_ng = cti_phonelist.PhoneList()
         # self.plist_ng.setcommandclass(self)
         self.transfers_buf = {}
@@ -256,7 +256,7 @@ class XivoCTICommand(BaseCommand):
             self.__fill_ctilog__('daemon stop', mode)
         else:
             tosend = { 'class' : 'serverdown',
-                'mode' : mode }
+                       'mode' : mode }
             conn.sendall(self.__cjson_encode__(tosend) + '\n')
         return
 
@@ -276,15 +276,15 @@ class XivoCTICommand(BaseCommand):
             self.transfers_ref[requester] = fileid
             self.transfers_buf[requester] = []
             tosend = { 'class' : 'fileref',
-                'fileid' : fileid }
+                       'fileid' : fileid }
             connid.sendall(self.__cjson_encode__(tosend) + '\n')
         else:
             if fileid in self.filestodownload:
                 fname = self.filestodownload[fileid]
                 data = urllib.urlopen('file:%s' % fname).read()
                 tosend = { 'class' : 'fileref',
-                    'filename' : fname,
-                    'payload' : base64.b64encode(data) }
+                           'filename' : fname,
+                           'payload' : base64.b64encode(data) }
                 connid.sendall(self.__cjson_encode__(tosend) + '\n')
                 del self.filestodownload[fileid]
             else:
@@ -293,18 +293,18 @@ class XivoCTICommand(BaseCommand):
 
     def transfer_endbuf(self, req):
         log.info('full buffer received for %s : len=%d %s'
-            % (req, len(''.join(self.transfers_buf[req])), self.transfers_ref))
+                 % (req, len(''.join(self.transfers_buf[req])), self.transfers_ref))
         if req in self.transfers_ref:
             ref = self.transfers_ref[req]
             if ref in self.faxes:
                 uinfo = self.faxes[ref].uinfo
                 astid = uinfo.get('astid')
                 reply = self.faxes[ref].sendfax(''.join(self.transfers_buf[req]),
-                    self.configs[astid].faxcallerid,
-                    self.amilist.ami[astid])
+                                                self.configs[astid].faxcallerid,
+                                                self.amilist.ami[astid])
                 tosend = { 'class' : 'faxprogress',
-                    'status' : reply.split(';')[0],
-                    'reason' : reply.split(';')[1] }
+                           'status' : reply.split(';')[0],
+                           'reason' : reply.split(';')[1] }
                 self.__send_msg_to_cti_client__(uinfo, self.__cjson_encode__(tosend))
                 del self.transfers_ref[req]
                 del self.transfers_buf[req]
@@ -320,7 +320,7 @@ class XivoCTICommand(BaseCommand):
             if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
                 if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
                     log.warning('lastlogout stopper=%s datetime=%s'
-                        % (loginparams['lastlogout-stopper'], loginparams['lastlogout-datetime']))
+                                % (loginparams['lastlogout-stopper'], loginparams['lastlogout-datetime']))
             for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
                 if argum not in loginparams:
                     missings.append(argum)
@@ -351,8 +351,8 @@ class XivoCTICommand(BaseCommand):
             if userinfo == None:
                 return 'user_not_found'
             userinfo['prelogin'] = {'cticlientos' : whatsmyos,
-                'version' : svnversion,
-                'sessionid' : ''.join(random.sample(__alphanums__, 10))}
+                                    'version' : svnversion,
+                                    'sessionid' : ''.join(random.sample(__alphanums__, 10))}
 
         elif phase == xivo_commandsets.CMD_LOGIN_PASS:
             # user authentication
@@ -409,7 +409,7 @@ class XivoCTICommand(BaseCommand):
 
     def manage_logout(self, userinfo, when):
         log.info('logout (%s) user:%s/%s'
-            % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
+                 % (when, userinfo.get('astid'), userinfo.get('xivo_userid')))
         userinfo['last-logouttimestamp'] = time.time()
         # XXX one could not always logout here + optionnally logout from the client side
         self.__logout_agent__(userinfo.get('astid'), userinfo.get('agentid'))
@@ -422,7 +422,7 @@ class XivoCTICommand(BaseCommand):
         if userinfo.has_key('login') and userinfo['login'].has_key('sessiontimestamp'):
             dt = time.time() - userinfo['login']['sessiontimestamp']
             log.warning('user %s already connected from %s (%.1f s)'
-                % (userinfo['user'], userinfo['login']['connection'].getpeername(), dt))
+                        % (userinfo['user'], userinfo['login']['connection'].getpeername(), dt))
             # TODO : make it configurable.
             lastconnectedwins = True
             #lastconnectedwins = False
@@ -512,7 +512,7 @@ class XivoCTICommand(BaseCommand):
             self.timerthreads_login_timeout[connid].cancel()
             del self.timerthreads_login_timeout[connid]
         tosend = { 'class' : 'loginko',
-            'errorstring' : errorstring }
+                   'errorstring' : errorstring }
         connid.sendall('%s\n' % self.__cjson_encode__(tosend))
         return
 
@@ -524,13 +524,13 @@ class XivoCTICommand(BaseCommand):
     def loginok(self, loginparams, userinfo, connid, phase):
         if phase == xivo_commandsets.CMD_LOGIN_ID:
             tosend = { 'class' : 'login_id_ok',
-                'xivoversion' : XIVOVERSION_NUM,
-                'version' : __revision__,
-                'sessionid' : userinfo['prelogin']['sessionid'] }
+                       'xivoversion' : XIVOVERSION_NUM,
+                       'version' : __revision__,
+                       'sessionid' : userinfo['prelogin']['sessionid'] }
             repstr = self.__cjson_encode__(tosend)
         elif phase == xivo_commandsets.CMD_LOGIN_PASS:
             tosend = { 'class' : 'login_pass_ok',
-                'capalist' : userinfo.get('capaids') }
+                       'capalist' : userinfo.get('capaids') }
             repstr = self.__cjson_encode__(tosend)
         elif phase == xivo_commandsets.CMD_LOGIN_CAPAS:
             astid = userinfo.get('astid')
@@ -553,17 +553,17 @@ class XivoCTICommand(BaseCommand):
                 cstatus = {}
 
             tosend = { 'class' : 'login_capas_ok',
-                'astid' : astid,
-                'xivo_userid' : userinfo.get('xivo_userid'),
-                'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
-                'capaxlets' : self.capas[capaid].capadisps,
-                'appliname' : self.capas[capaid].appliname,
-                'guisettings' : self.capas[capaid].getguisettings(),
-                'capapresence' : { 'names'   : details,
-                    'state'   : statedetails,
-                    'allowed' : allowed },
-                'presencecounter' : cstatus
-                }
+                       'astid' : astid,
+                       'xivo_userid' : userinfo.get('xivo_userid'),
+                       'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
+                       'capaxlets' : self.capas[capaid].capadisps,
+                       'appliname' : self.capas[capaid].appliname,
+                       'guisettings' : self.capas[capaid].getguisettings(),
+                       'capapresence' : { 'names'   : details,
+                                          'state'   : statedetails,
+                                          'allowed' : allowed },
+                       'presencecounter' : cstatus
+                       }
             repstr = self.__cjson_encode__(tosend)
             # if 'features' in capa_user:
             # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
@@ -571,13 +571,13 @@ class XivoCTICommand(BaseCommand):
                 self.timerthreads_login_timeout[connid].cancel()
                 del self.timerthreads_login_timeout[connid]
             self.__fill_user_ctilog__(userinfo, 'cti_login',
-                'ip=%s,port=%d,version=%s,os=%s,capaid=%s'
-                % (connid.getpeername()[0],
-                    connid.getpeername()[1],
-                    userinfo.get('login').get('version'),
-                    userinfo.get('login').get('cticlientos'),
-                    userinfo.get('capaid')
-                    ))
+                                      'ip=%s,port=%d,version=%s,os=%s,capaid=%s'
+                                      % (connid.getpeername()[0],
+                                         connid.getpeername()[1],
+                                         userinfo.get('login').get('version'),
+                                         userinfo.get('login').get('cticlientos'),
+                                         userinfo.get('capaid')
+                                         ))
         connid.sendall(repstr + '\n')
 
         if phase == xivo_commandsets.CMD_LOGIN_CAPAS:
@@ -634,9 +634,9 @@ class XivoCTICommand(BaseCommand):
                 datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
                 columns = ('eventdate', 'loginclient', 'company', 'status', 'action', 'arguments', 'callduration')
                 self.ctilog_cursor.query("INSERT INTO ctilog (${columns}) "
-                    "VALUES (%s, NULL, NULL, NULL, %s, %s, NULL)",
-                    columns,
-                    (datetime, what, options))
+                                         "VALUES (%s, NULL, NULL, NULL, %s, %s, NULL)",
+                                         columns,
+                                         (datetime, what, options))
             except Exception:
                 log.exception('(__fill_ctilog__)')
             self.ctilog_conn.commit()
@@ -1484,12 +1484,12 @@ class XivoCTICommand(BaseCommand):
             xmlstring = xmlustring.encode('utf8')
             # build the json message
             tosend = { 'class' : 'sheet',
-                'whom' : whoms,
-                'function' : 'displaysheet',
-                'channel' : channel,
-                'astid' : astid,
-                'compressed' : dozip
-                }
+                       'whom' : whoms,
+                       'function' : 'displaysheet',
+                       'channel' : channel,
+                       'astid' : astid,
+                       'compressed' : dozip
+                       }
             if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                 tosend['entries'] = [ entry.todict() for entry in self.sheetmanager[astid].get_sheet(channel).entries ]
             if dozip:
@@ -3896,11 +3896,11 @@ class XivoCTICommand(BaseCommand):
             for v, vv in self.weblist['incomingcalls'][astid].keeplist.iteritems():
                 if vv['exten'] == didnumber:
                     context_list = ['usercontext',
-                        'groupcontext',
-                        'queuecontext',
-                        'meetmecontext',
-                        'voicemailcontext',
-                        'voicemenucontext']
+                                    'groupcontext',
+                                    'queuecontext',
+                                    'meetmecontext',
+                                    'voicemailcontext',
+                                    'voicemenucontext']
                     for ctxpart in context_list:
                         if vv.get(ctxpart):
                             context = vv.get(ctxpart)
@@ -4391,9 +4391,9 @@ class XivoCTICommand(BaseCommand):
             return
 
         tolog_applinames_list = ['BackGround',
-            'VoiceMail', 'VoiceMailMain',
-            'AgentLogin', 'Transferred Call',
-            'RetryDial']
+                                 'VoiceMail', 'VoiceMailMain',
+                                 'AgentLogin', 'Transferred Call',
+                                 'RetryDial']
         if appliname in ['Parked Call']:
             # these cases should be properly handled by the ParkedCalls requests
             return
@@ -4681,7 +4681,7 @@ class XivoCTICommand(BaseCommand):
         # for new sheet management
         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(newname) and newtrunkid is not None:
             for _uid, t in self.weblist['trunks'][astid].keeplist[newtrunkid]['comms'].iteritems():
-                if t['thischannel']==newname:
+                if t['thischannel'] == newname:
                     phoneid = self.__phoneid_from_channel__(astid, t['peerchannel'])
                     if phoneid:
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
@@ -4917,23 +4917,23 @@ class XivoCTICommand(BaseCommand):
                         argums = icommand.struct.get('command')
                         if argums[0] == 'fetchlist':
                             tosend = { 'class' : 'callcampaign',
-                                'payload' : { 'command' : 'fetchlist',
-                                    'list' : [ '101', '102', '103' ] } }
+                                       'payload' : { 'command' : 'fetchlist',
+                                                     'list' : [ '101', '102', '103' ] } }
                             repstr = self.__cjson_encode__(tosend)
                         elif argums[0] == 'startcall':
                             exten = argums[1]
                             self.__originate_or_transfer__(AMI_ORIGINATE,
-                                userinfo,
-                                'user:special:me',
-                                'ext:%s' % exten)
+                                                           userinfo,
+                                                           'user:special:me',
+                                                           'ext:%s' % exten)
                             tosend = { 'class' : 'callcampaign',
-                                'payload' : { 'command' : 'callstarted',
-                                    'number' : exten } }
+                                       'payload' : { 'command' : 'callstarted',
+                                                     'number' : exten } }
                             repstr = self.__cjson_encode__(tosend)
                         elif argums[0] == 'stopcall':
                             tosend = { 'class' : 'callcampaign',
-                                'payload' : { 'command' : 'callstopped',
-                                    'number' : argums[1] } }
+                                       'payload' : { 'command' : 'callstopped',
+                                                     'number' : argums[1] } }
                             repstr = self.__cjson_encode__(tosend)
                             # self.__send_msg_to_cti_client__(userinfo,
                             # '{'class':"callcampaign","command":"callnext","list":["%s"]}' % icommand.args[1])
@@ -4941,9 +4941,9 @@ class XivoCTICommand(BaseCommand):
                     elif classcomm in ['originate', 'transfer', 'atxfer']:
                         if self.capas[capaid].match_funcs(ucapa, 'dial'):
                             repstr = self.__originate_or_transfer__(classcomm,
-                                userinfo,
-                                icommand.struct.get('source'),
-                                icommand.struct.get('destination'))
+                                                                    userinfo,
+                                                                    icommand.struct.get('source'),
+                                                                    icommand.struct.get('destination'))
 
                     elif classcomm == 'ipbxcommand':
                         repstr = self.__ipbxaction__(userinfo,
@@ -6332,11 +6332,11 @@ class XivoCTICommand(BaseCommand):
                 data = command.get('text')
             self.sheetmanager[astid].addentry(chan, type, data)
             tosend = { 'class': 'sheet',
-                'function': 'entryadded',
-                'astid': astid,
-                'channel': chan,
-                'entry': self.sheetmanager[astid].get_sheet(chan).entries[-1].todict()
-                }
+                       'function': 'entryadded',
+                       'astid': astid,
+                       'channel': chan,
+                       'entry': self.sheetmanager[astid].get_sheet(chan).entries[-1].todict()
+                       }
             # send the entry to all users watching the sheet
             for user in self.sheetmanager[astid].get_sheet(chan).viewingusers:
                 self.__send_msg_to_cti_client__(self.ulist_ng.keeplist[user], self.__cjson_encode__(tosend))
@@ -6346,7 +6346,7 @@ class XivoCTICommand(BaseCommand):
         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
             newuser = '%s/%s' % (newuinfo.get('astid'), newuinfo.get('xivo_userid'))
             log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)'
-                % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo.get('fullname')))
+                      % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo.get('fullname')))
             if self.sheetmanager[astid].get_sheet(channel).currentuser == newuser:
                 # nothing to update !
                 return
@@ -6355,40 +6355,40 @@ class XivoCTICommand(BaseCommand):
                 olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
                 #log.debug('%s __update_sheet_user__ olduinfo=%s' % (astid, olduinfo))
                 tosend = { 'class': 'sheet',
-                    'function': 'loseownership',
-                    'astid': astid,
-                    'channel': channel,
-                    }
+                           'function': 'loseownership',
+                           'astid': astid,
+                           'channel': channel,
+                           }
                 self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
             # faut-il tout d'abord envoyer la fiche a l'utilisateur ???
             if newuser not in self.sheetmanager[astid].get_sheet(channel).viewingusers:
                 log.debug('%s __update_sheet_user_ forwarding sheet to new user : %s' % (astid, self.sheetmanager[astid].get_sheet(channel).sheet))
                 tosend = { 'class' : 'sheet',
-                    #'whom' : whoms,
-                    'function' : 'displaysheet',
-                    'astid': astid,
-                    'channel' : channel,
-                    'payload' : base64.b64encode(self.sheetmanager[astid].get_sheet(channel).sheet.encode('utf8'))
-                    }
+                           #'whom' : whoms,
+                           'function' : 'displaysheet',
+                           'astid': astid,
+                           'channel' : channel,
+                           'payload' : base64.b64encode(self.sheetmanager[astid].get_sheet(channel).sheet.encode('utf8'))
+                           }
                 jsonmsg = self.__cjson_encode__(tosend)
                 self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
             # update current user
             self.sheetmanager[astid].update_currentuser(channel, newuser)
             # on informe le nouveau user qu'il a la propriete de la fiche
             tosend = { 'class': 'sheet',
-                'function': 'getownership',
-                'astid': astid,
-                'channel': channel,
-                }
+                       'function': 'getownership',
+                       'astid': astid,
+                       'channel': channel,
+                       }
             self.__send_msg_to_cti_client__(newuinfo, self.__cjson_encode__(tosend))
             # afficher les stuff
             for entry in self.sheetmanager[astid].get_sheet(channel).entries:
                 tosend = { 'class': 'sheet',
-                    'function': 'entryadded',
-                    'astid': astid,
-                    'channel': channel,
-                    'entry': entry.todict()
-                    }
+                           'function': 'entryadded',
+                           'astid': astid,
+                           'channel': channel,
+                           'entry': entry.todict()
+                           }
                 self.__send_msg_to_cti_client__(newuser, self.__cjson_encode__(tosend))
 
     def __sheet_disconnect__(self, astid, channel):
