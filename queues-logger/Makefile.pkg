@@ -1,8 +1,8 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 #
-# $Revision: 5179 $
-# $Date: 2009-01-22 16:00:12 +0100 (Thu, 22 Jan 2009) $
+# $Revision$
+# $Date$
 
 include $(NONO_MK)/autobuild.mk
 include $(NONO_MK)/autobuild-classic.mk

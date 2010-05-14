@@ -1,5 +1,5 @@
 #!/usr/bin/python
-#__version__ = "$Revision: 5525 $ $Date: 2009-03-03 12:30:31 +0100 (Tue, 03 Mar 2009) $"
+
 __license__ = """
     Copyright (C) 2010  Proformatique <technique@proformatique.com>
 
