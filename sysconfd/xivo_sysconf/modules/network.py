@@ -142,6 +142,8 @@ def modify_network_config(args):
         NETLOCK.release()
 
 def routes(args, options):
+    ret = True
+
     args.sort(lambda x, y: cmp(x['iface'], y['iface']))
     iface = None
 
@@ -163,13 +165,14 @@ def routes(args, options):
                 (route['name'], route['destination'], route['netmask'], route['gateway']))
 
             try:
-                network.route_set(route['destination'], route['netmask'], route['gateway'], iface)
+                (eid, verbose) = network.route_set(route['destination'], route['netmask'], route['gateway'], iface)
+                if eid != 0 and route['current']:
+                    ret = False
             except Exception, e:
-                print 'E=', e
-                pass
+                raise HttpReqError(500, 'Cannot apply route')
 
     network.route_flush_cache()
-    return True
+    return ret
 
 
 http_json_server.register(network_config, CMD_R)

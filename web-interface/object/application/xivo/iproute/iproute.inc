@@ -26,6 +26,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 {
 	var $_iproute	= false;
 	var $_netiface	= false;
+	var $_sysconfd	= false;
 
 	function xivo_application_xivo_object_iproute(&$xobj,&$dso)
 	{
@@ -37,6 +38,7 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_dso = &$dso;
 
 		if(($this->_iproute = &$this->_xobj->get_module('iproute')) === false
+		|| ($this->_sysconfd = &$this->_xobj->get_module('sysconfd')) === false
 		|| ($this->_netiface = &$this->_xobj->get_module('netiface')) === false)
 			return(false);
 
@@ -232,7 +234,8 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->add_iproute() === false)
+		|| $this->add_iproute() === false
+		|| $this->commit_sysconfnet('add') === false)
 			$r = false;
 
 		$this->_status = '';
@@ -262,7 +265,8 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->edit_iproute() === false)
+		|| $this->edit_iproute() === false
+		|| $this->commit_sysconfnet('edit') === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -326,7 +330,8 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_status = 'delete';
 		$this->_return = array();
 
-		if($this->delete_iproute() === false)
+		if($this->delete_iproute() === false
+		|| $this->commit_sysconfnet('del') === false)
 			$r = false;
 
 		$this->_status = '';
@@ -354,7 +359,8 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_status = 'enable';
 		$this->_return = array();
 
-		if($this->enable_iproute() === false)
+		if($this->enable_iproute() === false
+		|| $this->commit_sysconfnet('del') === false)
 			$r = false;
 
 		$this->_status = '';
@@ -369,7 +375,8 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		$this->_status = 'disable';
 		$this->_return = array();
 
-		if($this->disable_iproute() === false)
+		if($this->disable_iproute() === false
+		|| $this->commit_sysconfnet('del') === false)
 			$r = false;
 
 		$this->_status = '';
@@ -385,6 +392,20 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 	function disable_iproute()
 	{
 		return($this->_enable_disable_iproute(true));
+	}
+
+	function commit_sysconfnet($mode)
+	{
+		if(($list = $this->get_iproutes_list(null,$order,$limit)) === false)
+			$list = array();
+		
+		$curroute = $this->_info['iproute'];
+		foreach($list as &$route)
+			$route['current'] = ($route['id'] == $curroute['id']);
+
+
+		$ret = (bool) $this->_sysconfd->request_post('/routes', $list);
+		return(($this->_return['sysconfnet'] = $ret));
 	}
 
 	function _enable_disable_iproute($disable=false)
