@@ -36,3 +36,38 @@ Remove
 
 ; no_actions
 No action
+
+
+; action-queueadd
+Add in queue
+
+; action-queueremove
+Remove from queue
+
+; action-queuepause
+Queue pause
+
+; action-queueunpause
+Queue unpause
+
+; action-enablevoicemail
+Activate voicemail
+
+; action-callrecord
+Record calls
+
+; action-incallfilter
+Filter incoming calls
+
+; action-enablednd
+Activate DND mode
+
+; action-enableunc
+Activate unconditional transfer
+
+; action-enablebusy
+Activate transfer on busy
+
+; action-enablerna
+Activate transfer on non-answer
+

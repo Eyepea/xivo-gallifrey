@@ -24,7 +24,20 @@ $url = &$this->get_module('url');
 $element = $this->get_var('element');
 $info = $this->get_var('info');
 $actionslist = $this->get_var('actionslist');
-$actionsavail = array('enablednd', 'queueunpause');
+
+$actionsavail = array(
+	'queueadd'        => $this->bbf('action-queueadd'), 
+	'queueremove'     => $this->bbf('action-queueremove'), 
+	'queuepause'      => $this->bbf('action-queuepause'), 
+	'queueunpause'    => $this->bbf('action-queueunpause'),
+	'enablevoicemail' => $this->bbf('action-enablevoicemail'), 
+	'callrecord'      => $this->bbf('action-callrecord'), 
+	'incallfilter'    => $this->bbf('action-incallfilter'), 
+	'enablednd'       => $this->bbf('action-enablednd'), 
+	'enableunc'       => $this->bbf('action-enableunc'), 
+	'enablebusy'      => $this->bbf('action-enablebusy'), 
+	'enablerna'       => $this->bbf('action-enablerna'),
+);
 
 $status = $this->get_var('status');
 
@@ -74,7 +87,7 @@ endif;
 				echo    $form->select(array('name'  => 'access_statuslist',
 							'label' => false,
 							'id'    => 'it-access_statuslist',
-							'key'   => 'name',
+							'key'   => 'display_name',
 							'altkey'    => 'id',
 							'multiple'  => true,
 							'size'  => 5,
@@ -104,7 +117,7 @@ endif;
 				echo    $form->select(array('name'  => 'access_status[]',
 						'label' => false,
 						'id'    => 'it-access_status',
-						'key'	=> 'name',
+						'key'	=> 'display_name',
 						'altkey'    => 'id',
 						'multiple'  => true,
 						'size'  => 5,
@@ -149,7 +162,9 @@ endif;
 								   'name'		=> 'actionslist[]',
 								   'id'		=> false,
 								   'label'		=> false,
-								   'key'		=> false,
+#								   'key'		=> false,
+#								   'key'      => 'name',
+#								   'altkey'   => 'id',
 								   'selected'	=> $match[1],
 								   'invalid'	=> true,
 							 ),

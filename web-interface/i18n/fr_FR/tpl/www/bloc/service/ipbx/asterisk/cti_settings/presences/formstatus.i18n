@@ -27,3 +27,37 @@ Paramètre
 
 ; no_actions
 Aucune action
+
+; action-queueadd
+Ajouter dans la file d'attente
+
+; action-queueremove
+Supprimer de la file d'attente
+
+; action-queuepause
+Mettre en pause (file d'attente)
+
+; action-queueunpause
+Sortir de pause (file d'attente)
+
+; action-enablevoicemail
+Activer la messagerie vocale
+
+; action-callrecord
+Enregistrer les appels
+
+; action-incallfilter
+Filtrer les appels entrants
+
+; action-enablednd
+Activer le mode NPD
+
+; action-enableunc
+Activer le transfert inconditionnel
+
+; action-enablebusy
+Activer le transfert sur occupation
+
+; action-enablerna
+Activer le transfert sur non réponse
+
