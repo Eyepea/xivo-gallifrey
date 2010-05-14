@@ -2,6 +2,8 @@
 
 import os
 import sys
+import logging
+import logging.handlers
 import traceback
 import ConfigParser
 
@@ -9,20 +11,27 @@ from xivo import network
 
 CFGFILE = '/etc/pf-xivo/routes'
 
+logger = logging.getLogger('xivo-routes')
+logger.addHandler(logging.handlers.SysLogHandler())
+logger.setLevel(logging.INFO)
+
 if __name__ == '__main__':
     iface = os.environ['IFACE']
-    mode  = os.environ['METHOD']  # start/stop
+    mode  = os.environ['MODE']  # start/stop
+
+    logger.info("XiVO custom routes on %s interface (mode=%s)" % (iface, mode))
+
+    if mode != 'start':
+        sys.exit(0)
 
     cfg = ConfigParser.ConfigParser()
     cfg.read(CFGFILE)
-
-    if mode != 'up':
-        sys.exit(0)
 
     if not cfg.has_section(iface):
         sys.exit(0)
 
     for name, rule  in cfg.items(iface):
+        logger.info("  . applying *%s* rule" % name)
         print name, rule
         rule = rule.split(';')
         if len(rule) != 3:
