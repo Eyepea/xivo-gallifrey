@@ -25,7 +25,7 @@ xivoc_i18n = {
   'VoiceMailBox': "VoiceMailBox: ",
   'new message': "New message: ",
   'old message': "Old message: ",
-  'fr': "French",
+  'fr': "Français",
   'en': "English",
   'language: ': "Language: ",
   'your status': "Your status",
