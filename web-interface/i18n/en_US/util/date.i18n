@@ -231,3 +231,81 @@ December
 
 ; date_Month(dec)
 December
+
+
+; fm_tzoffset(-12)
+-12
+
+; fm_tzoffset(-11)
+-11
+
+; fm_tzoffset(-10)
+-10
+
+; fm_tzoffset(-9)
+-9
+
+; fm_tzoffset(-8)
+-8
+
+; fm_tzoffset(-7)
+-7
+
+; fm_tzoffset(-6)
+-6
+
+; fm_tzoffset(-5)
+-5
+
+; fm_tzoffset(-4)
+-4
+
+; fm_tzoffset(-3)
+-3
+
+; fm_tzoffset(-2)
+-2
+
+; fm_tzoffset(-1)
+-1
+
+; fm_tzoffset(0)
+0
+
+; fm_tzoffset(+1)
++1
+
+; fm_tzoffset(+2)
++2
+
+; fm_tzoffset(+3)
++3
+
+; fm_tzoffset(+4)
++4
+
+; fm_tzoffset(+5)
++5
+
+; fm_tzoffset(+6)
++6
+
+; fm_tzoffset(+7)
++7
+
+; fm_tzoffset(+8)
++8
+
+; fm_tzoffset(+9)
++9
+
+; fm_tzoffset(+10)
++10
+
+; fm_tzoffset(+11)
++11
+
+; fm_tzoffset(+12)
++12
+
+

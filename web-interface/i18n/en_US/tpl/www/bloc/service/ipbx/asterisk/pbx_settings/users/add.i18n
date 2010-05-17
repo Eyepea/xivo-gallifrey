@@ -139,6 +139,9 @@ RFC 2833
 ; fm_protocol_dtmfmode-opt(inband)
 InBand
 
+; fm_protocol_dtmfmode-opt(outofband)
+Outofband
+
 ; fm_protocol_dtmfmode-opt(info)
 INFO
 
@@ -751,3 +754,122 @@ SCCP parameters
 ; addon_description
 Add here expansion modules connected to the phone, from left to right.
 
+; fm_protocol_adhocnumber
+Adhoc number: 
+
+; fm_protocol_video_cos
+Video COS: 
+
+; fm_protocol_video_tos
+Video TOS: 
+
+; fm_protocol_audio_cos
+Audio COS: 
+
+; fm_protocol_audio_tos
+Audio TOS: 
+
+; fm_protocol_secondary_dialtone_tone
+Secondary dialtone tone: 
+
+; fm_protocol_secondary_dialtone_digits
+Secondary dialtone digits: 
+
+; fm_protocol_trustphoneip
+Trust phone IP: 
+
+; fm_protocol_imageversion
+Firmware image version: 
+
+; fm_protocol_tzoffset
+Timezone offset: 
+
+; fm_protocol_incominglimit
+Incoming calls limit: 
+
+; fm_protocol_silencesuppression
+Silence suppression: 
+
+; fm_protocol_echocancel
+Echo canceller: 
+
+; fm_protocol_mwioncall
+MWI on call: 
+
+; fm_protocol_mwilamp
+MWI lamp style: 
+
+; fm_protocol_privacy
+Privacy: 
+
+; fm_protocol_private
+Private softkey: 
+
+; fm_protocol_earlyrtp
+Early RTP: 
+
+; fm_protocol_directrtp
+Direct RTP: 
+
+; fm_protocol_dnd
+DND softkey: 
+
+; fm_protocol_pickupmodeanswer
+Call answered when pickup: 
+
+; fm_protocol_pickupcontext
+Direct pickup context: 
+
+; fm_protocol_pickupexten
+Direct pickup: 
+
+; fm_protocol_cfwdnoanswer
+Call forwarding on non-answer: 
+
+; fm_protocol_cfwdbusy
+Call forwarding on busy: 
+
+; fm_protocol_cfwdall
+Unconditional call forwarding: 
+
+; fm_protocol_park
+Park calls: 
+
+; fm_earlyrtp(none)
+None
+
+; fm_earlyrtp(offhook)
+Offhook
+
+; fm_earlyrtp(dial)
+Dial
+
+; fm_earlyrtp(ringout)
+Ringout
+
+; fm_mwilamp(on)
+On
+
+; fm_mwilamp(off)
+Off
+
+; fm_mwilamp(wink)
+Wink
+
+; fm_mwilamp(flash)
+Flash
+
+; fm_mwilamp(blink)
+Blink
+
+; fm_protocol_keepalive
+Keepalive: 
+
+; fm_privacy(on)
+Activated
+
+; fm_privacy(off)
+Depends on «private» softkey
+
+; fm_privacy(full)
+Deactivated

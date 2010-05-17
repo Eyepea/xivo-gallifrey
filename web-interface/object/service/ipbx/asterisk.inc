@@ -426,6 +426,15 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return($r);
 	}
 
+	function get_application_element($appname)
+	{
+		if(($app = &$this->get_application($appname)) === false
+		|| ($list = $app->get_element()) === false)
+			return false;
+
+		return(array($list));
+	}
+	
 	function get_protocol_element($protocols=array(),$module=false)
 	{
 		$protocols = (array) $protocols;
@@ -441,10 +450,18 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 		foreach($protocols as $k => $v)
 		{
-			if(isset($v['module']) === false
-			|| ($element = $this->get_element($v['module'])) === false)
+			if(isset($v['module']))
+				$element = $this->get_element($v['module']);
+			else if(isset($v['application']))
+				$element = $this->get_application_element($v['application']);
+
+			if($element === false)
 				continue;
-			else if($module === true)
+
+#			if(isset($v['module']) === false
+#			|| ($element = $this->get_element($v['module'])) === false)
+#				continue;
+			if($module === true)
 				$r[$k] = $element;
 			else if(is_array($element) === true)
 			{

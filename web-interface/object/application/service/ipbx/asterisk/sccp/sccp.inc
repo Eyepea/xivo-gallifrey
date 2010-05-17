@@ -145,6 +145,11 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		return($ret);
 	}
+
+	function get_element()
+	{
+		return array_merge($this->_sccpline->get_element(), $this->_usersccp->get_element());
+	}
 }
 
 ?>

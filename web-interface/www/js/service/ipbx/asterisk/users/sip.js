@@ -19,7 +19,7 @@
 xivo_ast_user_protocol_elt['sip'] = {
 	'protocol-nat': {it: true, fd: true},
 	'protocol-progressinband': {it: true, fd: true},
-	'protocol-dtmfmode': {it: true, fd: true},
+	'sip-protocol-dtmfmode': {it: true, fd: true},
 	'protocol-rfc2833compensate': {it: true, fd: true},
 	'sip-protocol-qualify': {it: true, fd: true},
 	'protocol-rtptimeout': {it: true, fd: true},

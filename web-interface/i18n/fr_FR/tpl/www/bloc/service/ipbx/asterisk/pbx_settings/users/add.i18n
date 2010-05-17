@@ -250,6 +250,9 @@ RFC 2833
 ; fm_protocol_dtmfmode-opt(inband)
 InBand
 
+; fm_protocol_dtmfmode-opt(outofband)
+Outofband
+
 ; fm_protocol_dtmfmode-opt(info)
 INFO
 
@@ -792,3 +795,123 @@ Paramètres SCCP
 
 ; addon_description
 Ajoutez ici les modules d'extension connectés au téléphone, dans l'ordre de gauche à droite.
+
+; fm_protocol_adhocnumber
+Numéro adhoc: 
+
+; fm_protocol_video_cos
+COS vidéo: 
+
+; fm_protocol_video_tos
+TOS vidéo: 
+
+; fm_protocol_audio_cos
+COS audio: 
+
+; fm_protocol_audio_tos
+TOS audio: 
+
+; fm_protocol_secondary_dialtone_tone
+tonalité d'appel secondaire: 
+
+; fm_protocol_secondary_dialtone_digits
+Nombre de chiffres de la tonalité secondaire: 
+
+; fm_protocol_trustphoneip
+Faire confiance à l'IP du téléphone: 
+
+; fm_protocol_imageversion
+Version du firmware: 
+
+; fm_protocol_tzoffset
+Décalage par rapport au fuseau horaire: 
+
+; fm_protocol_incominglimit
+Limitation des appels entrants: 
+
+; fm_protocol_silencesuppression
+Suppression des silences: 
+
+; fm_protocol_echocancel
+Suppression de l'echo: 
+
+; fm_protocol_mwioncall
+MWI sur appel entrant: 
+
+; fm_protocol_mwilamp
+style MWI: 
+
+; fm_protocol_privacy
+Notification de la présence téléphonique: 
+
+; fm_protocol_private
+touche «notification de présence»: 
+
+; fm_protocol_earlyrtp
+RTP en avance: 
+
+; fm_protocol_directrtp
+RTP direct: 
+
+; fm_protocol_dnd
+Touche NPD: 
+
+; fm_protocol_pickupmodeanswer
+Décrocher l'appel avant interception: 
+
+; fm_protocol_pickupcontext
+Contexte d'interception directe: 
+
+; fm_protocol_pickupexten
+Interception directe: 
+
+; fm_protocol_cfwdnoanswer
+Transfert d'appel sur non réponse: 
+
+; fm_protocol_cfwdbusy
+Transfert d'appel sur occupation: 
+
+; fm_protocol_cfwdall
+Transfert d'appel inconditionnel: 
+
+; fm_protocol_park
+Parking des appels: 
+
+; fm_earlyrtp(none)
+Aucun
+
+; fm_earlyrtp(offhook)
+Décroché
+
+; fm_earlyrtp(dial)
+Appel
+
+; fm_earlyrtp(ringout)
+Sonnerie
+
+; fm_mwilamp(on)
+Allumé
+
+; fm_mwilamp(off)
+Éteint
+
+; fm_mwilamp(wink)
+Clignotant (wink)
+
+; fm_mwilamp(flash)
+Flash
+
+; fm_mwilamp(blink)
+Clignotant (blink)
+
+; fm_protocol_keepalive
+Vérification de présence: 
+
+; fm_privacy(on)
+Activée
+
+; fm_privacy(off)
+Dépend du status de la touche
+
+; fm_privacy(full)
+Désactivée

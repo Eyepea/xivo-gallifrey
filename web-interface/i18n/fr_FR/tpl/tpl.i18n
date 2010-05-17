@@ -111,3 +111,40 @@ par année
 
 ; next
 suivant »
+
+
+; fm_bool-opt(on)
+Activé
+
+; fm_bool-opt(off)
+Désactivé
+
+
+; fm_digit(1)
+1
+
+; fm_digit(2)
+2
+
+; fm_digit(3)
+3
+
+; fm_digit(4)
+4
+
+; fm_digit(5)
+5
+
+; fm_digit(6)
+6
+
+; fm_digit(7)
+7
+
+; fm_digit(8)
+8
+
+; fm_digit(9)
+9
+
+
