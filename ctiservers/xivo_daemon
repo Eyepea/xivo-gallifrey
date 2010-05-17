@@ -468,7 +468,7 @@ class manage_connection:
                                         del daemon.fdlist_established[cid]
                                         cid.close()
                                         daemon.commandclass.manage_logout(uinfo, 'admin')
-                                        del deamon.userinfo_by_requester[cid]
+                                        del daemon.userinfo_by_requester[cid]
                                         connid.sendall('kicked %s\n' % kickuser)
                                     else:
                                         connid.sendall('did not kick %s (socket id not in daemon refs)\n' % kickuser)
@@ -804,7 +804,7 @@ class manage_connection:
 
 
 
-class xivo_deamon:
+class xivo_daemon:
     # ==============================================================================
     # Main Code starts here
     # ==============================================================================
@@ -1044,17 +1044,17 @@ class xivo_deamon:
         self.amilist = xivo_ami.AMIList()
         if self.commandset in xivo_commandsets.CommandClasses:
             self.commandclass = xivo_commandsets.CommandClasses[self.commandset](self.amilist,
-                                                                       incoming_tcp_ports,
-                                                                       self.pipe_queued_threads_commandclass)
+                                                                                 incoming_tcp_ports,
+                                                                                 self.pipe_queued_threads_commandclass)
         else:
             self.commandclass = xivo_commandsets.BaseCommand()
             log.warning('# STARTING %s : no such commandset <%s>' % (xdname, self.commandset))
-
+            
         self.xdname = self.commandclass.xdname
-
-    
+        
+        
         log.info('# STARTING %s / svn:%s / %d' % (self.xdname, self.commandclass.version(), self.nreload))
-    
+        
         self.update_readconf()
         self.commandclass.set_userlist_urls(userlists)
         self.commandclass.set_contextlist(self.directorylist)
@@ -1074,7 +1074,7 @@ class xivo_deamon:
             self.commandclass.read_internatprefixes(prefixfile)
         if parting_astid_context:
             self.commandclass.set_partings(parting_astid_context)
-                
+            
         for ctx in contextlist:
             xivoconf_context = self.cconf.read_section('context', ctx)
             if len(xivoconf_context) > 0:
@@ -1086,19 +1086,21 @@ class xivo_deamon:
                 if 'directories' in xivoconf_context:
                     directories = xivoconf_context['directories'].split(',')
                     for dr in directories:
-                        xivoconf_dir = self.cconf.read_section('directory', dr)
-                        self.directorylist.update(contextname, dr, xivoconf_dir)
-                                        
+                        try:
+                            xivoconf_dir = self.cconf.read_section('directory', dr)
+                            self.directorylist.update(contextname, dr, xivoconf_dir)
+                        except Exception:
+                            log.exception('unable to read directory config for %s' % dr)
         self.save_for_next_packet_events = {}
         self.ip_reverse_webi = {}
         self.ip_reverse_sht = {}
-
+        
         
         self.load_asterisk_conf()
-                        
-    
+        
+        
         self.outsock = self.commandclass.extrasock(self.extraconn)
-    
+        
         self.fdlist_established = {}
         self.fdlist_listen_cti = {}
         self.fdlist_udp_cti = {}
@@ -1117,12 +1119,12 @@ class xivo_deamon:
             except Exception:
                 log.exception('%s : failed while setting lists and sockets' % astid)
         # }
-    
+        
         try:
             self.commandclass.updates() # users' update, ...
         except Exception:
             log.exception('commandclass.updates()')
-                
+            
         log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
         for portkind in incoming_tcp_ports:
@@ -1142,7 +1144,7 @@ class xivo_deamon:
             UIsock.bind((bind, int(port)))
             UIsock.listen(10)
             self.fdlist_listen_cti[UIsock] = '%s:%s' % (kind, nmax)
-                
+            
         for portkind in incoming_udp_ports:
             pk = portkind.split(':')
             port = pk[0]
@@ -1159,7 +1161,7 @@ class xivo_deamon:
             UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             UIsock.bind((bind, int(port)))
             self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, nmax)
-                
+            
         # Main select() loop - Receive messages
         while not self.askedtoquit:
             self.select_step()
@@ -1526,4 +1528,4 @@ class xivo_deamon:
     # }
 
 
-main = xivo_deamon()
+main = xivo_daemon()
