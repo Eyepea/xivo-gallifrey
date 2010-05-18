@@ -32,8 +32,9 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
 
-		if(is_object($dso) === false)
-			trigger_error('Invalid Datastorage object',E_USER_ERROR);
+# SHOULD NOT BE REQUIRED
+#		if(is_object($dso) === false)
+#			trigger_error('Invalid Datastorage object',E_USER_ERROR);
 
 		$this->_dso = &$dso;
 
