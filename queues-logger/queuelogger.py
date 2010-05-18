@@ -5,9 +5,12 @@ import sys
 import time
 from optparse import OptionParser
 
+from xivo import daemonize
 from xivo_queuelogger.ami_conn import *
 from xivo_queuelogger.ami_logger import *
 
+DAEMONNAME = 'queues-logger'
+PIDFILE = '/var/run/%s.pid' % DAEMONNAME
 
 usage = \
 '''
@@ -43,6 +46,10 @@ def parse_cmd_line():
                       help="AMI user password", metavar="xivouser",
                       default="xivouser")
 
+    parser.add_option("-d", "--debug", dest="debug", type="int",
+                      help="debug mode", metavar="0",
+                      default=0)
+
     #parser.add_option("-c", "--config", dest="config_file", type="string",
     #                  help="specify a config file'", metavar="FILE", default=None)
 
@@ -55,10 +62,15 @@ def parse_cmd_line():
 def main():
 # (
     options = parse_cmd_line()
+    
+    if options.debug == 0:
+        daemonize.daemonize()
+    daemonize.lock_pidfile_or_die(PIDFILE)
+    
     try:
         ami_conn(options)
     except socket.error, msg:
-        sys.stderr.write("Opps, Couldn t connect to AMI check,"\
+        sys.stderr.write("Oops, Couldn t connect to AMI check,"\
                          "ami ip/port (%s)\n" % msg)
         return 1
 
@@ -85,6 +97,8 @@ def main():
                              "in %d sec.\n" %\
                              (options.ip, options.port, time_before_retry))
 
+    daemonize.unlock_pidfile(PIDFILE)
+    
     return 4
 # }
 
