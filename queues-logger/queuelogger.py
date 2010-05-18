@@ -46,9 +46,11 @@ def parse_cmd_line():
                       help="AMI user password", metavar="xivouser",
                       default="xivouser")
 
-    parser.add_option("-d", "--debug", dest="debug", type="int",
-                      help="debug mode", metavar="0",
-                      default=0)
+    parser.add_option("-d", "--debug",
+                      dest = "debug",
+                      action = "store_true",
+                      help = "debug mode",
+                      default = False)
 
     #parser.add_option("-c", "--config", dest="config_file", type="string",
     #                  help="specify a config file'", metavar="FILE", default=None)
@@ -62,8 +64,8 @@ def parse_cmd_line():
 def main():
 # (
     options = parse_cmd_line()
-    
-    if options.debug == 0:
+
+    if not options.debug:
         daemonize.daemonize()
     daemonize.lock_pidfile_or_die(PIDFILE)
     
