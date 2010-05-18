@@ -1843,23 +1843,38 @@ CREATE TABLE usersccp
 (
  id integer unsigned,
  name varchar(128),
- devicetype varchar(64),             -- phone model, ie 7960
- tzoffset integer,                   -- ie: +1 == Europe/Paris
- dtmfmode varchar(16),                -- outofband, inband
- mwilamp varchar(3),                 -- on, offpho
- mwioncall varchar(3),               -- on, off
- pickupexten varchar(3),             -- on, off
- pickupmodeanswer varchar(3),        -- on, off
- privacy varchar(16),                -- full
- permit varchar(64),                 -- 192.168.0.0/255.255.255.0
- deny varchar(64),                   -- 0.0.0.0/0.0.0.0
+ devicetype varchar(64),            -- phone model, ie 7960
+ keepalive tinyint unsigned,        -- i.e 60
+ tzoffset varchar(3),               -- ie: +1 == Europe/Paris
+ dtmfmode varchar(16),               -- outofband, inband
+ transfer varchar(3),                -- on, off, NULL
+ park varchar(3),                    -- on, off, NULL
+ cfwdall varchar(3),                 -- on, off, NULL
+ cfwdbusy varchar(3),                -- on, off, NULL
+ cfwdnoanswer varchar(3),            -- on, off, NULL
+ mwilamp varchar(3),                 -- on, off, NULL
+ mwioncall varchar(3),               -- on, off, NULL
+ dnd varchar(3),                     -- on, off, NULL
+ pickupexten varchar(3),             -- on, off, NULL
+ pickupcontext varchar(64),          -- pickup context name
+ pickupmodeanswer varchar(3),        -- on, off, NULL
+ permit varchar(31),                 -- 192.168.0.0/255.255.255.0
+ deny varchar(31),                   -- 0.0.0.0/0.0.0.0
+ addons varchar(24),                 -- comma separated addons list. i.e 7914,7914
+ imageversion varchar(64),           -- i.e P00405000700
+ trustphoneip varchar(3),            -- yes, no, NULL
+ nat varchar(3),                     -- on, off, NULL
+ directrtp varchar(3),               -- on, off, NULL
+ earlyrtp varchar(3),                -- on, off, NULL
+ private varchar(3),                 -- on, off, NULL
+ privacy varchar(4),                 -- on, off, full, NULL
  protocol char(3) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
  defaultline integer unsigned,
- addons varchar(24),                 -- comma separated addons list. i.e 7914,7914
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
 
+CREATE UNIQUE INDEX usersccp__uidx__name ON usersccp(name);
 --INSERT INTO usersccp VALUES (NULL, 'SEP00164766A428', '7960', '2', 'inband', 'on', 'on', 'on', 'on', '', 0)
 
 -- http://chan-sccp-b.sourceforge.net/doc/structsccp__line.html
@@ -1872,28 +1887,30 @@ CREATE TABLE sccpline
  label varchar(128) NOT NULL DEFAULT '',
  description text,
  context varchar(64),
- incominglimit integer unsigned,
- transfer varchar(3) NOT NULL DEFAULT 'on',            -- on, off
- mailbox varchar(64),
- vmnum varchar(64),
+ incominglimit tinyint unsigned,
+ transfer varchar(3) DEFAULT 'on',                    -- on, off, NULL
+ mailbox varchar(64) DEFAULT NULL,
+ vmnum varchar(64) DEFAULT NULL,
+ meetmenum varchar(64) DEFAULT NULL,
  cid_name varchar(64) NOT NULL DEFAULT '',
  cid_num varchar(64) NOT NULL DEFAULT '',
  trnsfvm varchar(64),
  secondary_dialtone_digits varchar(10),
  secondary_dialtone_tone integer unsigned,
  musicclass varchar(32),
- language varchar(32),                                 -- en, fr
+ language varchar(32),                                 -- en, fr, ...
  accountcode varchar(32),
- audio_tos integer unsigned,
+ audio_tos varchar(8),
  audio_cos integer unsigned,
- video_tos integer unsigned,
+ video_tos varchar(8),
  video_cos integer unsigned,
- echocancel varchar(3) NOT NULL DEFAULT 'on',          -- on, off
- silencesuppression varchar(3) NOT NULL DEFAULT 'on',  -- on, off
- callgroup varchar(64) NOT NULL DEFAULT '',            -- i.e: 1,4-9
- pickupgroup varchar(64) NOT NULL DEFAULT '',          -- i.e: 1,3-9
- amaflags varchar(16) NOT NULL DEFAULT '',             -- default, omit, billing, documentation
- setvar varchar(512) NOT NULL DEFAULT '',
+ echocancel varchar(3) DEFAULT 'on',                   -- on, off, NULL
+ silencesuppression varchar(3) DEFAULT 'on',           -- on, off, NULL
+ callgroup varchar(64) DEFAULT '',                     -- i.e: 1,4-9
+ pickupgroup varchar(64) DEFAULT '',                   -- i.e: 1,3-9
+ amaflags varchar(16) DEFAULT '',                      -- default, omit, billing, documentation
+ adhocnumber varchar(64),
+ setvar varchar(512) DEFAULT '',
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
