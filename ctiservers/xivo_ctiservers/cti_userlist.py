@@ -55,6 +55,12 @@ class UserList(AnyList):
                 if userinfo['user'] == userid and userinfo['company'] == company:
                     uinfo = userinfo
                     break
+            if uinfo == None:
+                for userinfo in self.keeplist.itervalues():
+                    if userinfo['user'] == userid:
+                        uinfo = userinfo
+                        break
+
             return uinfo
         else:
             if userid in self.keeplist:
