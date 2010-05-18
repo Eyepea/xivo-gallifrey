@@ -28,7 +28,6 @@ from xivo.provisioning import get_funckeys
 cursor = db_connect().cursor()
 
 cursor.query("SELECT ${columns} FROM generalsccp WHERE commented = 0", ('key', 'value'))
-
 print "[general]"
 for r in cursor.fetchall():
     print "%s = %s" % (r['key'], r['value'])
@@ -41,9 +40,34 @@ for r in cursor.fetchall():
 
 cursor.query("SELECT ${columns} FROM usersccp s, userfeatures u, phone p " +
   "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol == 'sccp' AND u.id = p.iduserfeatures",
-  ('s.id', 'p.macaddr', 'p.model', 'p.vendor', 'u.description', 's.devicetype', 
-   's.tzoffset', 's.dtmfmode', 's.mwilamp', 's.mwioncall', 's.pickupexten', 
-   's.pickupmodeanswer', 's.privacy', 's.defaultline', 'u.id', 'u.number', 's.addons'))
+  ('s.id', 's.devicetype', 'p.macaddr', 'p.model', 'p.vendor', 'u.description', 
+   'u.id', 'u.number',
+   's.keepalive',
+   's.tzoffset',
+   's.dtmfmode',
+   's.transfer',
+   's.park',
+   's.cfwdall',
+   's.cfwdbusy',
+   's.cfwdnoanswer',
+   's.mwilamp',
+   's.mwioncall',
+   's.dnd',
+   's.pickupexten',
+   's.pickupcontext',
+   's.pickupmodeanswer',
+   's.permit',
+   's.deny',
+   's.addons',
+   's.imageversion',
+   's.trustphoneip',
+   's.nat',
+   's.directrtp',
+   's.earlyrtp',
+   's.private',
+   's.privacy',
+   's.defaultline',
+  ))
 for r in cursor.fetchall():
     name  = 'SEP' + r['p.macaddr'].replace(':', '')
     phone_class = xivo_config.phone_factory({'vendor': r['p.vendor'], 'model': r['p.model']})
@@ -118,7 +142,31 @@ for r in cursor.fetchall():
 # Generate line sections
 # minimum required fields (per line):
 #   label, pin, cid_name, cid_num
-cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 'name', 'pin', 'label', 'cid_name', 'cid_num', 'context', 'setvar'))
+cursor.query("SELECT ${columns} FROM sccpline WHERE commented = 0", ('id', 
+  'name', 'pin', 'label', 'cid_name', 'cid_num', 'context', 'setvar',
+  'description',
+  'incominglimit',
+  'transfer',
+  'mailbox',
+  'vmnum',
+  'meetmenum',
+  'trnsfvm',
+  'secondary_dialtone_digits',
+  'secondary_dialtone_tone',
+  'musicclass',
+  'language',
+  'accountcode',
+  'audio_tos',
+  'audio_cos',
+  'video_tos',
+  'video_cos',
+  'echocancel',
+  'silencesuppression',
+  'callgroup',
+  'pickupgroup',
+  'amaflags',
+  'adhocnumber',
+ ))
 for r in cursor.fetchall():
     label = r['label']
     if not label or len(label) == 0:
