@@ -1,6 +1,9 @@
 #!/usr/bin/python
 # vim: set expandtab ts=4 sw=4 sts=4 fileencoding=utf-8:
 
+__version__   = '$Revision$'
+__date__      = '$Date$'
+
 import sys
 import time
 from optparse import OptionParser
@@ -74,7 +77,6 @@ def main():
     except socket.error, msg:
         sys.stderr.write("Oops, Couldn t connect to AMI check,"\
                          "ami ip/port (%s)\n" % msg)
-        return 1
 
     time_before_retry = 1
 
