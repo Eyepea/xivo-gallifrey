@@ -54,13 +54,23 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 		$res['device'] = array_intersect_key($arr, $this->_usersccp->get_element());
 #		$res['device']['description'] = $arr['callerid'];
 		unset($res['device']['name']);
+		if(isset($arr['allowtransfer']))
+			$res['device']['transfer'] = $arr['allowtransfer'];
 
 		$res['line'] = array_intersect_key($arr, $this->_sccpline->get_element());
 		if(isset($arr['callerid']))
 			$res['line']['cid_name'] = $arr['callerid'];
-		if(isset($arr['name']))
-			$res['line']['cid_num']  = $arr['name'];
-
+		if(isset($arr['number']))
+			$res['line']['cid_num']  = $arr['number'];
+		if(isset($arr['secret']))
+			$res['line']['pin']  = $arr['secret'];
+		if(isset($arr['allowtransfer']))
+		{
+			$map = array('0' => 'off', '1' => 'on', '' => null);
+			$res['device']['transfer'] = $map[$arr['allowtransfer']];
+			$res['line']['transfer']   = $map[$arr['allowtransfer']];
+		}
+		
 		if(is_array($res['device']['addons']))
 			$res['device']['addons'] = implode(',', $res['device']['addons']);
 
@@ -124,6 +134,13 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 			$arr['addons'] = preg_split('/,/', $arr['addons']);
 		else
 			$arr['addons'] = array();
+
+		$map = array('off' => 0, 'on' => 1, '' => '');
+		$arr['allowtransfer'] = $map[$arr['transfer']];
+		
+		$arr['callerid']      = $arr['cid_name'];
+		$arr['number']        = $arr['cid_num'];
+		$arr['secret']        = $arr['pin'];
 
 		return $arr;
 	}

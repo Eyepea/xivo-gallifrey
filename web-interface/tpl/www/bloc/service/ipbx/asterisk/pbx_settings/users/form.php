@@ -201,14 +201,25 @@ endif;
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_nat'),
 				    'name'	=> 'protocol[nat]',
-				    'labelid'	=> 'protocol-nat',
+				    'labelid'	=> 'sip-protocol-nat',
 				    'empty'	=> true,
 				    'key'	=> false,
 				    'bbf'	=> 'fm_protocol_nat-opt',
 				    'bbfopt'	=> array('argmode' => 'paramvalue'),
 				    'default'	=> $element['protocol']['sip']['nat']['default'],
 				    'selected'	=> $this->get_var('info','protocol','nat')),
-			      $element['protocol']['sip']['nat']['value']);
+			      $element['protocol']['sip']['nat']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_nat'),
+				    'name'	=> 'protocol[nat]',
+				    'labelid'	=> 'sccp-protocol-nat',
+				    'empty'	=> true,
+				    'key'	=> false,
+				    'bbf'	=> 'fm_bool-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['protocol']['sccp']['nat']['default'],
+				    'selected'	=> $this->get_var('info','protocol','nat')),
+			      $element['protocol']['sccp']['nat']['value']);
 ?>
 </div>
 
@@ -748,11 +759,11 @@ endif;
 			      $element['protocol']['sccp']['pickupexten']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_pickupcontext'),
-				  'name'	=> 'procotol[pickupcontext]',
+				  'name'	=> 'protocol[pickupcontext]',
 				  'labelid'	=> 'protocol-pickupcontext',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['sccp']['pickupcontext'],
-				  'value'	=> $info['procotol']['pickupcontext'],
+				  'value'	=> $info['protocol']['pickupcontext'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'pickupcontext')) )),
 
@@ -867,11 +878,11 @@ endif;
 			      $element['protocol']['sccp']['silencesuppression']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_incominglimit'),
-				  'name'	=> 'procotol[incominglimit]',
+				  'name'	=> 'protocol[incominglimit]',
 				  'labelid'	=> 'protocol-incominglimit',
 				  'size'	=> 15,
 				  'default'	=> $element['protocol']['sccp']['incominglimit'],
-				  'value'	=> $info['procotol']['incominglimit'],
+				  'value'	=> $info['protocol']['incominglimit'],
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'incominglimit')) )),
 

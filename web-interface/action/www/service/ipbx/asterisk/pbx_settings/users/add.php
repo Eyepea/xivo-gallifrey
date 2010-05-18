@@ -62,7 +62,6 @@ if(isset($_QR['fm_send']) === true
 && dwho_issa('queueskill-weight',$_QR) === true
 && isset($_QR['protocol']['protocol']) === true)
 {
-
 	$appqueue = &$ipbx->get_application('queue');
 	$queueskills = array();
 

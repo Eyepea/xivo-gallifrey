@@ -246,6 +246,7 @@ $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/phonefunckey.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sip.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/iax.js');
+$dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/sccp.js');
 $dhtml->set_js('js/service/ipbx/'.$ipbx->get_name().'/users/custom.js');
 $dhtml->set_js('js/dwho/submenu.js');
 $dhtml->add_js('/bloc/service/ipbx/'.$ipbx->get_name().'/pbx_settings/users/phonefunckey/phonefunckey.js.php');

@@ -749,7 +749,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			$arr['protocol']['callerid'] = $this->_service->mk_callerid($arr['protocol']['callerid']);
 
 		if($arr['protocol']['protocol'] == 'sccp')
-			$arr['protocol']['name'] = $arr['userfeatures']['number'];
+		{
+			$arr['protocol']['number']     = $arr['userfeatures']['number'];
+			$arr['protocol']['musicclass'] = $arr['userfeatures']['musiconhold'];
+		}
 
 		$this->set_protocol($arr['protocol'],$protocolname);
 
