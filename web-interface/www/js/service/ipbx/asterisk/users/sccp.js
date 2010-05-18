@@ -34,7 +34,7 @@ xivo_ast_user_protocol_elt['sccp'] = {
 	'protocol-cfwdbusy': {it: true, fd: true},
 	'protocol-cfwdnoanswer': {it: true, fd: true},
 	'protocol-pickupexten': {it: true, fd: true},
-	'protocol-pickupcontext': {it: true, fd: true},
+	'protocol-pickupcontext': {it: true}, //, fd: true},
 	'protocol-pickupmodeanswer': {it: true, fd: true},
 	'protocol-dnd': {it: true, fd: true},
 	'protocol-directrtp': {it: true, fd: true},

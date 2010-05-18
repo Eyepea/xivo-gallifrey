@@ -23,10 +23,11 @@ $url  = &$this->get_module('url');
 
 $addons  = $this->get_var('sccp_addons');
 $info    = $this->get_var('info');
+
+/*<?= $this->bbf('addon_description');?>*/
 ?>
 
-<?= $this->bbf('addon_description');?>
-<div id="sb-list">
+<div id="sb-list-addons">
 <?php
 	$type = 'disp2';
 	$count = count($info['protocol']['addons']); #$element?count($data):0;
@@ -57,7 +58,7 @@ $info    = $this->get_var('info');
 
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
-				<td class="td-left">
+				<td class="td-center">
 	<?php
 					echo	$form->select(array(
 							'name'		=> 'sccp_addons[]',
@@ -94,7 +95,7 @@ $info    = $this->get_var('info');
 		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
 			<tbody id="ex-<?=$type?>">
 			<tr class="fm-paragraph">
-				<td class="td-left">
+				<td class="td-center">
 	<?php
 					echo	$form->select(array(
 							'name'		=> 'sccp_addons[]',

@@ -873,3 +873,6 @@ Depends on «private» softkey
 
 ; fm_privacy(full)
 Deactivated
+
+; no_disp2
+No expansion module

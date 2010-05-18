@@ -915,3 +915,6 @@ Dépend du status de la touche
 
 ; fm_privacy(full)
 Désactivée
+
+; no_disp2
+Aucun module d'extension

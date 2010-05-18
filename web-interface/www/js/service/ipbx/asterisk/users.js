@@ -161,6 +161,16 @@ var xivo_ast_users_elt_default = {
 	'rightcalllist': {it: true},
 	'rightcall': {it: true}};
 
+var xivo_ast_fm_user_pickupcontext = {
+	'fd-protocol-pickupcontext':
+		{style: [{display: 'none'}, {display: 'block'}],
+		 link: 'it-protocol-pickupcontext'},
+	'it-protocol-pickupcontext':
+		{property: [{disabled: true}, {disabled: false}]}};
+
+xivo_attrib_register('ast_fm_user_pickupcontext',xivo_ast_fm_user_pickupcontext);
+
+
 var xivo_ast_fm_user_enableclient = {
 	'it-userfeatures-loginclient':
 		{property: [{readOnly: true, className: 'it-readonly'},
@@ -624,6 +634,19 @@ function xivo_ast_user_chg_protocol(protocol)
 		xivo_chg_attrib('ast_fm_user_codec',
 				'it-protocol-disallow',
 				Number(codec_active.checked === false));
+
+dwho_eid('sb-list-addons').style.visibility = 'collapse';
+
+	if(xivo_ast_user_protocol === 'sccp')
+	{
+		pickupexten = dwho_eid('it-protocol-pickupexten');
+		xivo_chg_attrib('ast_fm_user_pickupcontext',
+			'fd-protocol-pickupcontext',
+			Number(pickupexten.value === 'on')
+		);
+
+		dwho_eid('sb-list-addons').style.visibility = 'visible';
+	}
 }
 
 function xivo_ast_user_ingroup()
@@ -877,6 +900,19 @@ function xivo_ast_user_onload()
 		dwho.dom.add_event('change',outcallerid_type,outcallerid_type_fn);
 	}
 
+	if((pickupexten = dwho_eid('it-protocol-pickupexten')) !== false)
+	{
+		var pickupexten_fn = function()
+					  {
+						xivo_chg_attrib('ast_fm_user_pickupcontext',
+								'fd-protocol-pickupcontext',
+								Number(pickupexten.value === 'on'));
+					  };
+
+		pickupexten_fn();
+		dwho.dom.add_event('change', pickupexten, pickupexten_fn);
+	}
+
 	dwho.dom.add_event('change',
 			   dwho_eid('it-userfeatures-enableclient'),
 			   xivo_ast_user_chg_enableclient);
@@ -892,6 +928,7 @@ function xivo_ast_user_onload()
 	dwho.dom.add_event('change',
 			   dwho_eid('it-userfeatures-enableunc'),
 			   xivo_ast_user_chg_enableunc);
+
 
 	xivo_ast_build_dialaction_array('noanswer');
 	xivo_ast_build_dialaction_array('busy');

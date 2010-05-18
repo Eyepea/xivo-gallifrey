@@ -33,6 +33,7 @@ $context_list = $this->get_var('context_list');
 $profileclient_list = $this->get_var('profileclient_list');
 $rightcall = $this->get_var('rightcall');
 
+
 if(empty($info['userfeatures']['voicemailid']) === true):
 	$voicemail_identity = false;
 elseif(($voicemail_identity = (string) $this->get_var('voicemail','identity')) === ''):
@@ -758,14 +759,13 @@ endif;
 				    'selected'	=> $this->get_var('info','protocol','pickupexten')),
 			      $element['protocol']['sccp']['pickupexten']['value']),
 
-		$form->text(array('desc'	=> $this->bbf('fm_protocol_pickupcontext'),
-				  'name'	=> 'protocol[pickupcontext]',
-				  'labelid'	=> 'protocol-pickupcontext',
-				  'size'	=> 15,
-				  'default'	=> $element['protocol']['sccp']['pickupcontext'],
-				  'value'	=> $info['protocol']['pickupcontext'],
-				  'error'	=> $this->bbf_args('error',
-						   $this->get_var('error', 'protocol', 'pickupcontext')) )),
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupcontext'),
+					    'name'	=> 'protocol[pickupcontext]',
+					    'labelid'	=> 'protocol-pickupcontext',
+					    'key'	=> 'identity',
+					    'altkey'	=> 'name',
+					    'selected'	=> $info['protocol']['pickupcontext']),
+				      $context_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupmodeanswer'),
 				    'name'	=> 'protocol[pickupmodeanswer]',
@@ -1104,6 +1104,8 @@ endif;
 			'</p>';
 	endif;
 
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp');
+
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
 ?>
 </div>
@@ -1211,13 +1213,6 @@ endif;
 				    'default'	=> $element['protocol']['sip']['t38pt_usertpsource']['default'],
 				    'selected'	=> $this->get_var('info','protocol','t38pt_usertpsource')),
 			      $element['protocol']['sip']['t38pt_usertpsource']['value']);
-?>
-</div>
-
-
-<div id="sb-part-sccp" class="b-nodisplay">
-<?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp');
 ?>
 </div>
 

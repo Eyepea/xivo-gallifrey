@@ -96,9 +96,6 @@
 					<li><a href="#"
 					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-t38',1);
 							return(false);"><?=$this->bbf('smenu_t38');?></a></li>
-					<li><a href="#"
-					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-5'),'sb-part-sccp',1);
-							return(false);"><?=$this->bbf('smenu_sccp');?></a></li>
 				</ul>
 			</div>
 		</li>
