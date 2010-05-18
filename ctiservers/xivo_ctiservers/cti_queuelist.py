@@ -201,7 +201,7 @@ class QueueStats:
 
         queue_stats = {
                        'Qos': self.__get_queue_qos(queuename, param),
-                       'Holdtime-moy': self.__get_queue_holdtime(queuename, param),
+                       'Holdtime-avg': self.__get_queue_holdtime(queuename, param),
                        'Holdtime-max': self.__get_queue_holdtime_max(queuename, param),
                        'Xivo-Chat': self.__get_queue_talktime(queuename, param),
                        'Xivo-Lost': self.__get_queue_lost(queuename, param),

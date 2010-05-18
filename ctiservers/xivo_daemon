@@ -835,7 +835,7 @@ class xivo_daemon:
         signal.signal(signal.SIGINT, self.sighandler)
         signal.signal(signal.SIGTERM, self.sighandler)
         signal.signal(signal.SIGHUP, self.sighandler_reload)
-    
+        
         self.nreload = 0
         self.directorylist = xivo_contexts.Contexts()
         self.configs = {}
@@ -1222,7 +1222,7 @@ class xivo_daemon:
                     os.close(s)
                 else:
                     s.close()
-                            
+                    
             if self.askedtoquit:
                 self.commandclass.reset('stop')
                 time_uptime = int(time.time() - time.mktime(self.time_start))
