@@ -11,6 +11,9 @@ Protocole SIP
 ; mn_left_generalsettings-iax
 Protocole IAX
 
+; mn_left_generalsettings-sccp
+Protocole SCCP
+
 ; mn_left_generalsettings-voicemail
 Messageries vocales
 

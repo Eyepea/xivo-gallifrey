@@ -27,6 +27,7 @@ $array['tree']['service']['ipbx'] = array();
 $array['tree']['service']['ipbx']['general_settings'] = array();
 $array['tree']['service']['ipbx']['general_settings']['sip'] = true;
 $array['tree']['service']['ipbx']['general_settings']['iax'] = true;
+$array['tree']['service']['ipbx']['general_settings']['sccp'] = true;
 //$array['tree']['service']['ipbx']['general_settings']['cti'] = false; //	 TO BE REMOVED
 $array['tree']['service']['ipbx']['general_settings']['voicemail'] = true;
 $array['tree']['service']['ipbx']['general_settings']['phonebook'] = true;

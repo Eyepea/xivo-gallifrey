@@ -28,6 +28,7 @@ class xivo_user_acl extends xivo_acl_abstract
 
 	function xivo_user_acl(&$dso,$factory=true)
 	{
+
 		if(defined('XIVO_USER_ACL_FILE') === true)
 			$path = XIVO_USER_ACL_FILE;
 		else

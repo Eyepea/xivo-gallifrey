@@ -35,7 +35,6 @@ class xivo_object
 	function _chk_exists_cfg($type,$name,$ret=false)
 	{
 		$r = false;
-
 		$type = (string) $type;
 		$name = (string) $name;
 

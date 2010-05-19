@@ -248,6 +248,10 @@ $array['staticsip'] = array();
 $array['staticsip']['table'] = 'staticsip';
 $array['staticsip']['primary'] = array('id' => '');
 
+$array['staticsccp'] = array();
+$array['staticsccp']['table'] = 'staticsccp';
+$array['staticsccp']['primary'] = array('id' => '');
+
 $array['staticvoicemail'] = array();
 $array['staticvoicemail']['table'] = 'staticvoicemail';
 $array['staticvoicemail']['primary'] = array('id' => '');
@@ -311,5 +315,9 @@ $array['sccpline']['primary'] = array('id' => '');
 $array['sccpbuttonconfig'] = array();
 $array['sccpbuttonconfig']['table'] = 'sccpbuttonconfig';
 $array['sccpbuttonconfig']['primary'] = array('id' => '');
+
+$array['generalsccp'] = array();
+$array['generalsccp']['table'] = 'generalsccp';
+$array['generalsccp']['primary'] = array('id' => '');
 
 ?>

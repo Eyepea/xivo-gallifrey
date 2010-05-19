@@ -47,6 +47,13 @@ $dhtml = &$this->get_module('dhtml');
 				'</dd>';
 		endif;
 
+		if(xivo_user::chk_acl('general_settings','sccp') === true):
+			echo	'<dd id="mn-general-settings--sccp">',
+				$url->href_html($this->bbf('mn_left_generalsettings-sccp'),
+						'service/ipbx/general_settings/sccp'),
+				'</dd>';
+		endif;
+
 		if(xivo_user::chk_acl('general_settings','voicemail') === true):
 			echo	'<dd id="mn-general-settings--voicemail">',
 				$url->href_html($this->bbf('mn_left_generalsettings-voicemail'),

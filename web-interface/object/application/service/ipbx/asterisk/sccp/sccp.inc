@@ -38,9 +38,9 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$this->_dso = &$dso;
 
-		if(($this->_usersccp   = &$this->_service->get_module('usersccp'))       === false
-		|| ($this->_sccpline   = &$this->_service->get_module('sccpline'))         === false
-		|| ($this->_sccpbutton = &$this->_service->get_module('sccpbuttonconfig')) === false)
+		if(($this->_usersccp   	= &$this->_service->get_module('usersccp'))			=== false
+		|| ($this->_sccpline   	= &$this->_service->get_module('sccpline'))			=== false
+		|| ($this->_sccpbutton 	= &$this->_service->get_module('sccpbuttonconfig'))	=== false)
 			return(false);
 
 		$this->_load_config(dirname(__FILE__));
@@ -51,7 +51,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	function _explode_input_array($arr)
 	{
 		$res = array();
-		
+
 		$res['device'] = array_intersect_key($arr, $this->_usersccp->get_element());
 #		$res['device']['description'] = $arr['callerid'];
 		unset($res['device']['name']);
@@ -77,7 +77,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		return $res;
 	}
-	
+
 	function chk_values($arr)
 	{
 		$values = $this->_explode_input_array($arr);

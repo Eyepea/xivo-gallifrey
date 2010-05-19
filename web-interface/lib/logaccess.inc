@@ -30,7 +30,7 @@ else
 
 $str_log = substr($action_path, (strrpos($action_path,'www')+4), -4);
 
-if (XIVO_LOG_TYPE === 'json') 
+if (XIVO_LOG_TYPE === 'json')
 {
 	if (isset($_QR['act']) === true) {
 		switch ($_QR['act']) {

@@ -47,6 +47,9 @@ $array['realstatic']['staticqueue']['datastorage'] = true;
 $array['realstatic']['staticsip'] = array();
 $array['realstatic']['staticsip']['datastorage'] = true;
 
+$array['realstatic']['staticsccp'] = array();
+$array['realstatic']['staticsccp']['datastorage'] = true;
+
 $array['realstatic']['staticvoicemail'] = array();
 $array['realstatic']['staticvoicemail']['datastorage'] = true;
 
@@ -268,6 +271,9 @@ $array['module']['sccpline']['datastorage'] = true;
 
 $array['module']['sccpbuttonconfig'] = array();
 $array['module']['sccpbuttonconfig']['datastorage'] = true;
+
+$array['module']['generalsccp'] = array();
+$array['module']['generalsccp']['datastorage'] = true;
 
 
 $array['protocol'] = array();

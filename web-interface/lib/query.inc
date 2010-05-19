@@ -256,7 +256,7 @@ class dwho_query
 		return($this->input);
 	}
 
-	function &request_meth_raw()
+	function request_meth_raw()
 	{
 		return(($ref = $this->query_string('request',DWHO_QUERY_MODE_RAW)));
 	}
@@ -266,7 +266,7 @@ class dwho_query
 		return($this->build_query_str($this->request_meth_raw(),true,$sep));
 	}
 
-	function &request_meth_uraw()
+	function request_meth_uraw()
 	{
 		return(($ref = &$this->query_string('request',DWHO_QUERY_MODE_URAW)));
 	}

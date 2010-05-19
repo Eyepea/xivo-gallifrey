@@ -443,7 +443,6 @@ class xivo_service_abstract
 
 			return(true);
 		}
-
 		if($custom === false && $gendatastorage === false)
 			trigger_error('Missing general datastorage in '.$this->_type.' init file',E_USER_ERROR);
 
@@ -489,7 +488,6 @@ class xivo_service_abstract
 		}
 
 		$dso = $this->_load_dso_class($name,$type,$dir,$custom,$datastorage,$datastorage,$meta,$dso);
-
 		if(is_object($dso) === true)
 			return($dso);
 
@@ -500,13 +498,13 @@ class xivo_service_abstract
 
 	function _load_dso_class($name,$type,$dir,$custom,$datastorage,$datastoragemod,$meta=false,$param=false)
 	{
+
 		if($meta === false)
 			$metatype = $type;
 		else
 			$metatype = $meta;
 
 		$class = 'xivo_service_'.$this->_name.'_'.$name.'_'.$metatype;
-
 		if(empty($param) === true
 		&& ($param = $this->get_dso_config_by_name($metatype,$name)) === false)
 			$param = array();
@@ -515,7 +513,6 @@ class xivo_service_abstract
 			$paramod = array_merge($datastoragemod,$param);
 		else
 			$paramod = $param;
-
 		if(xivo::load_class($class,$dir,$metatype,false) === false)
 			return($param);
 		else if($custom === false)

@@ -66,6 +66,7 @@ class dwho_tpl_url extends dwho_tpl_module
 	function href($url=null,$query=null,$absolute=false,$sep=null,$sid=true,$internal=true,$encode=true)
 	{
 		$url = $this->url($url,$absolute,$internal);
+
 		$sep = $this->get_separator($sep);
 
 		if(substr($url,0,1) !== '#')

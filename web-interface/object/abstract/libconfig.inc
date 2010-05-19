@@ -37,7 +37,6 @@ class xivo_libconfig_abstract
 	function _chk_exists_cfg($type,$name,$ret=false)
 	{
 		$r = false;
-
 		$type = (string) $type;
 		$name = (string) $name;
 

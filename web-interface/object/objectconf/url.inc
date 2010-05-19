@@ -70,6 +70,7 @@ $array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configurati
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';
 $array['service/ipbx/general_settings/iax'] = 'service/ipbx/index.php/general_settings/iax/';
+$array['service/ipbx/general_settings/sccp'] = 'service/ipbx/index.php/general_settings/sccp/';
 #$array['service/ipbx/general_settings/cti'] = 'service/ipbx/index.php/general_settings/cti/'; // TO BE REMOVED
 $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/general_settings/voicemail/';
 $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';

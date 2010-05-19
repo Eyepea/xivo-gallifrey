@@ -105,7 +105,7 @@ input.fm-error, textarea.fm-error, select.fm-error, option.fm-error {background-
 .fm-desc-inline .fm-desc {display: inline;float: none;width: auto;}
 .fm-paragraph p {padding-bottom: 2px;}
 .fm-description {text-align: center;width: 100%;}
-.fm-comment {display: block;}
+.fm-comment {display: block;color: #666;}
 
 .dwho-msg-error-icon, .fm-error-icon {padding: 2px 6px;background-image: url(../img/site/button/mini/red/bo-error.gif); background-repeat: no-repeat;background-position: center center;}
 .dwho-msg-help-icon, .fm-help-icon {padding: 2px 6px;background-image: url(../img/site/button/mini/blue/bo-help.gif); background-repeat: no-repeat;background-position: center center;}

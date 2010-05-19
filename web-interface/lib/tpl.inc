@@ -372,7 +372,7 @@ class dwho_tpl
 
 	function display($page,$preload_i18n=false,$ext='')
 	{
-	
+
 		if(dwho_has_len($page) === false)
 			return(false);
 
@@ -435,7 +435,7 @@ class dwho_tpl
 			DWHO_SEP_DIR.
 			$file.
 			$this->get_file_extension($ext);
-			
+
 		if(($path = dwho_file::is_f_r($path)) === false)
 			return(false);
 
