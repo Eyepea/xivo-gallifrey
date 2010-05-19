@@ -1424,6 +1424,7 @@ INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','odbcs
 INSERT INTO staticvoicemail VALUES (NULL,0,0,1,'voicemail.conf','general','odbctable',NULL);
 INSERT INTO staticvoicemail VALUES (NULL,1,0,0,'voicemail.conf','zonemessages','eu-fr','Europe/Paris|''vm-received'' q ''digits/at'' kM');
 
+-- http://chan-sccp-b.sourceforge.net/doc/chan__sccp_8h_source.html#l00795
 DROP TABLE staticsccp;
 CREATE TABLE staticsccp (
  id integer unsigned,
@@ -1441,39 +1442,6 @@ CREATE INDEX staticsccp__idx__commented ON staticsccp(commented);
 CREATE INDEX staticsccp__idx__filename ON staticsccp(filename);
 CREATE INDEX staticsccp__idx__var_name ON staticsccp(var_name);
 
-INSERT INTO staticsccp VALUES(1,0,0,0,'sip.conf','general','servername','Asterisk');
-INSERT INTO staticsccp VALUES(2,0,0,0,'sip.conf','general','keepalive',60);
-INSERT INTO staticsccp VALUES(3,0,0,0,'sip.conf','general','debug','core,event,device,channel');
-INSERT INTO staticsccp VALUES(4,0,0,0,'sip.conf','general','context','sccp');
-INSERT INTO staticsccp VALUES(5,0,0,0,'sip.conf','general','dateFormat','D.M.Y');
-INSERT INTO staticsccp VALUES(6,0,0,0,'sip.conf','general','bindaddr','0.0.0.0');
-INSERT INTO staticsccp VALUES(7,0,0,0,'sip.conf','general','port',2000);
-INSERT INTO staticsccp VALUES(8,0,0,0,'sip.conf','general','disallow','all');
-INSERT INTO staticsccp VALUES(9,0,0,0,'sip.conf','general','allow','alaw');
-INSERT INTO staticsccp VALUES(10,0,0,0,'sip.conf','general','allow','ulaw');
-INSERT INTO staticsccp VALUES(11,0,0,0,'sip.conf','general','allow','g729');
-INSERT INTO staticsccp VALUES(12,0,0,0,'sip.conf','general','firstdigittimeout',16);
-INSERT INTO staticsccp VALUES(13,0,0,0,'sip.conf','general','digittimeout',1);
-INSERT INTO staticsccp VALUES(14,0,0,0,'sip.conf','general','autoanswer_ring_time',1);
-INSERT INTO staticsccp VALUES(15,0,0,0,'sip.conf','general','autoanswer_tone','0x32');
-INSERT INTO staticsccp VALUES(16,0,0,0,'sip.conf','general','remotehangup_tone','0x32');
-INSERT INTO staticsccp VALUES(17,0,0,0,'sip.conf','general','transfer_tone',0);
-INSERT INTO staticsccp VALUES(18,0,0,0,'sip.conf','general','callwaiting_tone','0x2d');
-INSERT INTO staticsccp VALUES(19,0,0,0,'sip.conf','general','musicclass','default');
-INSERT INTO staticsccp VALUES(20,0,0,0,'sip.conf','general','language','en');
-INSERT INTO staticsccp VALUES(21,0,0,0,'sip.conf','general','dnd','off');
-INSERT INTO staticsccp VALUES(22,0,0,0,'sip.conf','general','sccp_tos','0x68');
-INSERT INTO staticsccp VALUES(23,0,0,0,'sip.conf','general','sccp_cos',4);
-INSERT INTO staticsccp VALUES(24,0,0,0,'sip.conf','general','audio_tos','0xB8');
-INSERT INTO staticsccp VALUES(25,0,0,0,'sip.conf','general','audio_cos',6);
-INSERT INTO staticsccp VALUES(26,0,0,0,'sip.conf','general','video_tos','0x88');
-INSERT INTO staticsccp VALUES(27,0,0,0,'sip.conf','general','video_cos',5);
-INSERT INTO staticsccp VALUES(28,0,0,0,'sip.conf','general','echocancel','on');
-INSERT INTO staticsccp VALUES(29,0,0,0,'sip.conf','general','silencesuppression','off');
-INSERT INTO staticsccp VALUES(30,0,0,0,'sip.conf','general','trustphoneip','no');
-INSERT INTO staticsccp VALUES(31,0,0,0,'sip.conf','general','private','on');
-INSERT INTO staticsccp VALUES(32,0,0,0,'sip.conf','general','callanswerorder','oldestfirst');
-INSERT INTO staticsccp VALUES(33,0,0,0,'sip.conf','general','protocol',11);
 INSERT INTO staticsccp VALUES(34,0,0,0,'sccp.conf','general','servername','Asterisk');
 INSERT INTO staticsccp VALUES(35,0,0,0,'sccp.conf','general','keepalive',60);
 INSERT INTO staticsccp VALUES(36,0,0,0,'sccp.conf','general','debug','core');
@@ -1906,52 +1874,6 @@ CREATE TABLE userqueueskill
 CREATE INDEX userqueueskill__idx__userid ON userqueueskill(userid);
 
 
--- http://chan-sccp-b.sourceforge.net/doc/chan__sccp_8h_source.html#l00795
-DROP TABLE generalsccp;
-CREATE TABLE generalsccp (
- id integer unsigned,
- key varchar(64) NOT NULL,
- value varchar(128) NOT NULL,
- commented tinyint(1) NOT NULL DEFAULT 0,
- PRIMARY KEY(id)
-);
-
-CREATE INDEX generalsccp__idx__key ON generalsccp(key);
-
-INSERT INTO generalsccp VALUES (NULL, 'servername'            , 'Asterisk', 0);
-INSERT INTO generalsccp VALUES (NULL, 'keepalive'             , '60', 0);
-INSERT INTO generalsccp VALUES (NULL, 'debug'                 , 'core,event,device,channel', 0);
-INSERT INTO generalsccp VALUES (NULL, 'context'               , 'sccp', 0);
-INSERT INTO generalsccp VALUES (NULL, 'dateFormat'            , 'D.M.Y', 0);
-INSERT INTO generalsccp VALUES (NULL, 'bindaddr'              , '0.0.0.0', 0);
-INSERT INTO generalsccp VALUES (NULL, 'port'                  , '2000', 0);
-INSERT INTO generalsccp VALUES (NULL, 'disallow'              , 'all', 0);
-INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'alaw', 0);
-INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'ulaw', 0);
-INSERT INTO generalsccp VALUES (NULL, 'allow'                 , 'g729', 0);
-INSERT INTO generalsccp VALUES (NULL, 'firstdigittimeout'     , '16', 0);
-INSERT INTO generalsccp VALUES (NULL, 'digittimeout'          , '1', 0);
-INSERT INTO generalsccp VALUES (NULL, 'autoanswer_ring_time'  , '1', 0);
-INSERT INTO generalsccp VALUES (NULL, 'autoanswer_tone'       , '0x32', 0);
-INSERT INTO generalsccp VALUES (NULL, 'remotehangup_tone'     , '0x32', 0);
-INSERT INTO generalsccp VALUES (NULL, 'transfer_tone'         , '0', 0);
-INSERT INTO generalsccp VALUES (NULL, 'callwaiting_tone'      , '0x2d', 0);
-INSERT INTO generalsccp VALUES (NULL, 'musicclass'            , 'default', 0);
-INSERT INTO generalsccp VALUES (NULL, 'language'              , 'en', 0);
-INSERT INTO generalsccp VALUES (NULL, 'dnd'                   , 'off', 0);
-INSERT INTO generalsccp VALUES (NULL, 'sccp_tos'              , '0x68', 0);
-INSERT INTO generalsccp VALUES (NULL, 'sccp_cos'              , '4', 0);
-INSERT INTO generalsccp VALUES (NULL, 'audio_tos'             , '0xB8', 0);
-INSERT INTO generalsccp VALUES (NULL, 'audio_cos'             , '6', 0);
-INSERT INTO generalsccp VALUES (NULL, 'video_tos'             , '0x88', 0);
-INSERT INTO generalsccp VALUES (NULL, 'video_cos'             , '5', 0);
-INSERT INTO generalsccp VALUES (NULL, 'echocancel'            , 'on', 0);
-INSERT INTO generalsccp VALUES (NULL, 'silencesuppression'    , 'off', 0);
-INSERT INTO generalsccp VALUES (NULL, 'trustphoneip'          , 'no', 0);
-INSERT INTO generalsccp VALUES (NULL, 'private'               , 'on', 0);
-INSERT INTO generalsccp VALUES (NULL, 'callanswerorder'       , 'oldestfirst', 0);
-INSERT INTO generalsccp VALUES (NULL, 'protocol'              , '11', 0);
-
 -- http://chan-sccp-b.sourceforge.net/doc/structsccp__device.html
 DROP TABLE usersccp;
 CREATE TABLE usersccp
@@ -1969,7 +1891,7 @@ CREATE TABLE usersccp
  cfwdnoanswer varchar(3),            -- on, off, NULL
  mwilamp varchar(3),                 -- on, off, NULL
  mwioncall varchar(3),               -- on, off, NULL
- dnd varchar(3),                     -- on, off, NULL
+ dnd varchar(6),                     -- on, off, NULL
  pickupexten varchar(3),             -- on, off, NULL
  pickupcontext varchar(64),          -- pickup context name
  pickupmodeanswer varchar(3),        -- on, off, NULL
