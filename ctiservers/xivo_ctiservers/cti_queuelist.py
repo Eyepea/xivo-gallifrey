@@ -200,15 +200,15 @@ class QueueStats:
         param['xqos'] = int(param['xqos'])
 
         queue_stats = {
-                       'Qos': self.__get_queue_qos(queuename, param),
-                       'Holdtime-avg': self.__get_queue_holdtime(queuename, param),
-                       'Holdtime-max': self.__get_queue_holdtime_max(queuename, param),
-                       'Xivo-Chat': self.__get_queue_talktime(queuename, param),
+                       'Xivo-Qos': self.__get_queue_qos(queuename, param),
+                       'Xivo-Holdtime-avg': self.__get_queue_holdtime(queuename, param),
+                       'Xivo-Holdtime-max': self.__get_queue_holdtime_max(queuename, param),
+                       'Xivo-TalkingTime': self.__get_queue_talktime(queuename, param),
                        'Xivo-Lost': self.__get_queue_lost(queuename, param),
                        'Xivo-Join': self.__get_queue_join(queuename, param),
                        'Xivo-Link': self.__get_queue_link(queuename, param)
                        }
-
+        
         if float(queue_stats['Xivo-Join']) == 0:
             queue_stats['Xivo-Rate'] = "na"
         else:
@@ -235,7 +235,7 @@ class QueueList(AnyList):
     queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
                           'Xivo-QueueMember-StateTime']
     queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
-                  'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-Chat', 'Xivo-Rate',
+                  'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-TalkingTime', 'Xivo-Rate',
                   'Calls']
     
     def update(self):

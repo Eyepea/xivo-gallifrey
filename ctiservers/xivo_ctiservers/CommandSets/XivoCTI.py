@@ -793,7 +793,7 @@ class XivoCTICommand(BaseCommand):
                             qq['queuestats']['Xivo-Link'] = 0
                             qq['queuestats']['Xivo-Lost'] = 0
                             qq['queuestats']['Xivo-Rate'] = -1
-                            qq['queuestats']['Xivo-Chat'] = 0
+                            qq['queuestats']['Xivo-TalkingTime'] = 0
                             qq['queuestats']['Xivo-Wait'] = 0
                             self.__update_queue_stats__(astid, qid, itemname)
                 except Exception:
@@ -2341,8 +2341,8 @@ class XivoCTICommand(BaseCommand):
                 queueid = uid1info['join'].get('queueid')
                 queueorgroup = uid1info['join'].get('queueorgroup')
                 clength = {'Xivo-Wait' : uid1info['time-link'] - uid1info['time-newchannel'],
-                    'Xivo-Chat' : uid1info['time-unlink'] - uid1info['time-link']
-                    }
+                           'Xivo-TalkingTime' : uid1info['time-unlink'] - uid1info['time-link']
+                           }
                 log.info('%s STAT UNLINK %s %s' % (astid, queuename, clength))
                 if astid in self.stats_queues:
                     if queuename not in self.stats_queues[astid]:
@@ -2350,7 +2350,7 @@ class XivoCTICommand(BaseCommand):
                     time_now = int(time.time())
                     time_1ha = time_now - 3600
 
-                    for field in ['Xivo-Wait', 'Xivo-Chat']:
+                    for field in ['Xivo-Wait', 'Xivo-TalkingTime']:
                         if field not in self.stats_queues[astid][queuename]:
                             self.stats_queues[astid][queuename].update({field : {}})
                         self.stats_queues[astid][queuename][field][time_now] = clength[field]
@@ -5001,16 +5001,16 @@ class XivoCTICommand(BaseCommand):
                     to_userinfo = self.ulist_ng.keeplist[to_userid]
                     message = icommand.struct.get('text')
                     tosend = { 'class' : 'chitchat',
-                        'from' : userid,
-                        'text' : message }
-
+                               'from' : userid,
+                               'text' : message }
+                    
                     self.__send_msg_to_cti_client__(to_userinfo, self.__cjson_encode__(tosend))
                 elif classcomm == "getqueuesstats":
                     on = icommand.struct.get('on')
-
+                    
                     tosend = { 'class' : 'queuestats',
-                        'function': 'update',
-                        'stats': self.weblist['queues'][astid].get_queuesstats(on) }
+                               'function': 'update',
+                               'stats': self.weblist['queues'][astid].get_queuesstats(on) }
                     repstr = self.__cjson_encode__(tosend)
                 else:
                     log.warning('unallowed json event %s' % icommand.struct)
