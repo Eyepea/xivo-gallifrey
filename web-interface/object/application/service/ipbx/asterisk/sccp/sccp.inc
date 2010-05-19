@@ -27,7 +27,9 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 	var $_usersccp     = false;
 	var $_sccpline     = false;
 	var $_sccpbutton   = false;
-
+	var $_filter_error  = null;
+	var $_filter_result  = null;
+	
 	function xivo_application_service_asterisk_sccp(&$service,&$dso,$param=array(),$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
@@ -80,16 +82,41 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 	function chk_values($arr)
 	{
+		$this->_filter_error = array();
 		$values = $this->_explode_input_array($arr);
 
-		if($this->_usersccp->chk_values($values['device']) === false
-		|| $this->_sccpline->chk_values($values['line'])     === false)
+		$chkuser = $this->_usersccp->chk_values($values['device']);
+		$chkline = $this->_sccpline->chk_values($values['line']);
+		
+		if($chkuser === false
+		|| $chkline === false)
 		{
+			$this->_filter_error = array();
+			if(is_array($this->_usersccp->get_filter_error()))
+				$this->_filter_error = array_merge($this->_filter_error, $this->_usersccp->get_filter_error());
+			if(is_array($this->_sccpline->get_filter_error()))
+				$this->_filter_error = array_merge($this->_filter_error, $this->_sccpline->get_filter_error());
+
+			if(array_key_exists('pin', $this->_filter_error))
+				$this->_filter_error['secret'] = $this->_filter_error['pin'];
+
+			$this->_filter_result = $arr;
+			return false;
 		}
 
 		return $arr;
 	}
 
+	function get_filter_error()
+	{
+		return $this->_filter_error;
+	}
+
+	function get_filter_result()
+	{
+		return $this->_filter_result;
+	}
+	
 	function add($arr)
 	{
 		$values = $this->_explode_input_array($arr);

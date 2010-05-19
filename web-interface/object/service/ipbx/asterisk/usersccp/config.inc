@@ -85,9 +85,11 @@ $array['element']['pickupmodeanswer']['value'] = array('on', 'off');
 
 $array['element']['permit'] = array();
 $array['element']['permit']['default'] = '';
+$array['element']['permit']['null'] = true;
 
 $array['element']['deny'] = array();
 $array['element']['deny']['default'] = '';
+$array['element']['deny']['null'] = true;
 
 $array['element']['addons'] = array();
 $array['element']['addons']['default'] = '';
@@ -127,34 +129,63 @@ $array['element']['defaultline'] = array();
 $array['element']['defaultline']['default'] = '';
 
 
+dwho::load_class('dwho_network');
 
 $array['filter'] = array();
-$array['filter']['name']             = array('set' => false, 'chk'	=> 2);
-$array['filter']['devicetype']       = array('set' => false, 'chk'	=> 2);
-$array['filter']['keepalive']        = array('set' => false, 'chk'	=> 2);
-$array['filter']['tzoffset']         = array('set' => false, 'chk'	=> 2);
-$array['filter']['dtmfmode']         = array('set' => false, 'chk'	=> 2);
-$array['filter']['transfer']         = array('set' => false, 'chk'	=> 2);
-$array['filter']['park']             = array('set' => false, 'chk'	=> 2);
-$array['filter']['cfwdall']          = array('set' => false, 'chk'	=> 2);
-$array['filter']['cfwdbusy']         = array('set' => false, 'chk'	=> 2);
-$array['filter']['cfwdbnoanswer']    = array('set' => false, 'chk'	=> 2);
-$array['filter']['mwilamp']          = array('set' => false, 'chk'	=> 2);
-$array['filter']['mwioncall']        = array('set' => false, 'chk'	=> 2);
-$array['filter']['dnd']              = array('set' => false, 'chk'	=> 2);
-$array['filter']['pickupexten']      = array('set' => false, 'chk'	=> 2);
-$array['filter']['pickupcontext']    = array('set' => false, 'chk'	=> 2);
-$array['filter']['pickupmodeanswer'] = array('set' => false, 'chk'	=> 2);
-$array['filter']['permit']           = array('set' => false, 'chk'	=> 2);
-$array['filter']['deny']             = array('set' => false, 'chk'	=> 2);
-$array['filter']['addons']           = array('set' => false, 'chk'	=> 2);
-$array['filter']['imageversion']     = array('set' => false, 'chk'	=> 2);
-$array['filter']['trustphoneip']     = array('set' => false, 'chk'	=> 2);
-$array['filter']['nat']              = array('set' => false, 'chk'	=> 2);
-$array['filter']['directrtp']        = array('set' => false, 'chk'	=> 2);
-$array['filter']['earlyrtp']         = array('set' => false, 'chk'	=> 2);
-$array['filter']['private']          = array('set' => false, 'chk'	=> 2);
-$array['filter']['privacy']          = array('set' => false, 'chk'	=> 2);
-$array['filter']['protocol']         = array('set' => false, 'chk'	=> 2);
-$array['filter']['defaultline']      = array('set' => false, 'chk'	=> 2);
+$array['filter']['name']             = array('set' => false, 'chk' => 2,
+	'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 128);
+$array['filter']['devicetype']       = array('set' => false, 'chk'	=> 2,
+	'key' => array('12', '30', '7902', '7905', '7906', '7910', '7911', '7912', '7935', '7936', '7937', '7920', '7921', '7931', '7940', '7941', '7942', '7945', '7960', '7961', '7962', '7965', '7970', '7971', '7975', '7985', 'ata', 'kirk', 'cipc', 'nokia-icc'));
+$array['filter']['keepalive']        = array('set' => false, 'chk'	=> 2,
+	'cast' => 'uint','between' => array(0,999));
+$array['filter']['tzoffset']         = array('set' => false, 'chk'	=> 2,
+	'key' => array('-12', '-11', '-10', '-9', '-8', '-7', '-6', '-5', '-4', '-3', '-2', '-1', '0', '+1', '+2', '+3', '+4', '+5', '+6', '+7', '+8', '+9', '+10', '+11', '+12'));
+$array['filter']['dtmfmode']         = array('set' => false, 'chk'	=> 2,
+	'key' => array('outofband', 'inband'));
+$array['filter']['transfer']         = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['park']             = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['cfwdall']          = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['cfwdbusy']         = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['cfwdbnoanswer']    = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['mwilamp']          = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off', 'wink', 'flash', 'blink'));
+$array['filter']['mwioncall']        = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['dnd']              = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['pickupexten']      = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['pickupcontext']    = array('set' => false, 'chk'	=> 2,
+	'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['pickupmodeanswer'] = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['permit']           = array('set' => false, 'chk'	=> 2,
+	'callback'		=> 'dwho_network::valid_subnet_ipv4',
+	'callbackarg'		=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
+$array['filter']['deny']             = array('set' => false, 'chk'	=> 2,
+	'callback'		=> 'dwho_network::valid_subnet_ipv4',
+	'callbackarg'		=> array(null,DWHO_NETWORK_MASK_IPV4_DOTDEC));
+$array['filter']['addons']           = array('set' => false, 'chk'	=> 2,
+	'maxlen' => 25);
+$array['filter']['imageversion']     = array('set' => false, 'chk'	=> 2,
+	'maxlength' => 20);
+$array['filter']['trustphoneip']     = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['nat']              = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['directrtp']        = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['earlyrtp']         = array('set' => false, 'chk'	=> 2,
+	'key' => array('none', 'offhook', 'dial', 'ringout'));
+$array['filter']['private']          = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['privacy']          = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off', 'full'));
+$array['filter']['protocol']         = array('set' => false);
+$array['filter']['defaultline']      = array('set' => false);
 

@@ -39,3 +39,6 @@ Missing value
 
 ; error_generic(cast)
 Invalid type
+
+; error(between)
+Value not in interval

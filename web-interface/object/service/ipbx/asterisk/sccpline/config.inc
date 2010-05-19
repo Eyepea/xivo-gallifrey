@@ -121,33 +121,56 @@ $array['element']['setvar']['default'] = '';
 
 //
 $array['filter'] = array();
-$array['filter']['name']                         = array('set' => false, 'chk'	=> 2);
-$array['filter']['pin']                          = array('set' => false, 'chk'	=> 2);
-$array['filter']['label']                        = array('set' => false, 'chk'	=> 2);
-$array['filter']['description']                  = array('set' => false, 'chk'	=> 2);
-$array['filter']['context']                      = array('set' => false, 'chk'	=> 2);
-$array['filter']['incominglimit']                = array('set' => false, 'chk'	=> 2);
-$array['filter']['transfer']                     = array('set' => false, 'chk'	=> 2);
-$array['filter']['mailbox']                      = array('set' => false, 'chk'	=> 2);
+$array['filter']['name']                         = array(
+	'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i','minlen' => 1,'maxlen' => 80);
+$array['filter']['pin']                          = array('set' => false, 'chk'	=> 2,
+	'cast'	=> 'sgraph',
+	'minlen'	=> 1,
+	'maxlen'	=> 8);
+$array['filter']['label']                        = array('set' => false, 'chk'	=> 2,
+	'maxlen' => 128);
+$array['filter']['description']                  = array('set' => false, 'chk'	=> 2,
+	'maxlen' => 512);
+$array['filter']['context']                      = array('set' => false, 'chk'	=> 2,
+	'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['incominglimit']                = array('set' => false, 'chk'	=> 2,
+	'cast' => 'uint','between' => array(0,20));
+$array['filter']['transfer']                     = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['mailbox']                      = array('set' => false, 'chk'	=> 2,
+	'regexp' => '/^[0-9#\*]{1,40}(?:@[a-z0-9@_\-]{1,39})?$/','maxlen' => 64);
 $array['filter']['vmnum']                        = array('set' => false, 'chk'	=> 2);
 $array['filter']['meetmenum']                    = array('set' => false, 'chk'	=> 2);
 $array['filter']['cid_name']                     = array('set' => false, 'chk'	=> 2);
-$array['filter']['cid_num']                      = array('set' => false, 'chk'	=> 2);
+$array['filter']['cid_num']                      = array('set' => false, 'chk'	=> 0);
 $array['filter']['trnsfvm']                      = array('set' => false, 'chk'	=> 2);
-$array['filter']['secondary_dialtone_digits']    = array('set' => false, 'chk'	=> 2);
-$array['filter']['secondary_dialtone_tone']      = array('set' => false, 'chk'	=> 2);
-$array['filter']['musicclass']                   = array('set' => false, 'chk'	=> 2);
-$array['filter']['language']                     = array('set' => false, 'chk'	=> 2);
-$array['filter']['accountcode']                  = array('set' => false, 'chk'	=> 2);
-$array['filter']['audio_tos']                    = array('set' => false, 'chk'	=> 2);
-$array['filter']['audio_cos']                    = array('set' => false, 'chk'	=> 2);
-$array['filter']['video_tos']                    = array('set' => false, 'chk'	=> 2);
-$array['filter']['video_cos']                    = array('set' => false, 'chk'	=> 2);
-$array['filter']['echocancel']                   = array('set' => false, 'chk'	=> 2);
-$array['filter']['silencesuppression']           = array('set' => false, 'chk'	=> 2);
+$array['filter']['secondary_dialtone_digits']    = array('set' => false, 'chk'	=> 2,
+	'cast' => 'uint','between' => array(0,9));
+$array['filter']['secondary_dialtone_tone']      = array('set' => false, 'chk'	=> 2,
+	'maxlen' => 10);
+$array['filter']['musicclass']                   = array('set' => false, 'chk'	=> 2,
+	'cast' => 'sgraph','maxlen' => 20);
+$array['filter']['language']                     = array('set' => false, 'chk'	=> 2,
+	'minlen' => 2,'maxlen' => 2,'key' => array('en','fr'));
+$array['filter']['accountcode']                  = array('set' => false, 'chk'	=> 2,
+	'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 32);
+$array['filter']['audio_tos']                    = array('set' => false, 'chk'	=> 2,
+	'cast' => 'sgraph','maxlen' => 8);
+$array['filter']['audio_cos']                    = array('set' => false, 'chk'	=> 2,
+	'cast' => 'uint','between' => array(0,99));
+$array['filter']['video_tos']                    = array('set' => false, 'chk'	=> 2,
+	'cast' => 'sgraph','maxlen' => 8);
+$array['filter']['video_cos']                    = array('set' => false, 'chk'	=> 2,
+	'cast' => 'uint','between' => array(0,99));
+$array['filter']['echocancel']                   = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
+$array['filter']['silencesuppression']           = array('set' => false, 'chk'	=> 2,
+	'key' => array('on', 'off'));
 $array['filter']['callgroup']                    = array('set' => false, 'chk'	=> 2);
 $array['filter']['pickupgroup']                  = array('set' => false, 'chk'	=> 2);
-$array['filter']['amaflags']                     = array('set' => false, 'chk'	=> 2);
-$array['filter']['adhocnumber']                  = array('set' => false, 'chk'	=> 2);
+$array['filter']['amaflags']                     = array('set' => false, 'chk'	=> 2,
+	'key'	=> xivo_service_asterisk::get_amaflags_list());
+$array['filter']['adhocnumber']                  = array('set' => false, 'chk'	=> 2,
+	'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 64);
 $array['filter']['setvar']                       = array('set' => false, 'chk'	=> 2);
 
