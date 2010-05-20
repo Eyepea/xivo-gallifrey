@@ -40,7 +40,8 @@ if($_QRY->get('step') === $appwizard->get_current_step())
 		$previous = true;
 		$appwizard->set_previous_step();
 	}
-	else if((bool) $_QRY->get('fm_send') === true && $verify === false)
+	else if((bool) $_QRY->get('fm_send') === true
+	&& $verify === false)
 	{
 		$trysave = true;
 		$ressave = $appwizard->save($_QR);
@@ -89,7 +90,6 @@ switch($step)
 
 		$_SYSINFO = new dwho_sysinfo();
 		$_TPL->set_var('memstats',$_SYSINFO->memstats(true));
-
 		$_TPL->set_var('network',$info['hardware']['network']);
 		$_TPL->set_var('packages',$info['packages']);
 		break;
@@ -148,6 +148,7 @@ switch($step)
 		$_TPL->set_var('info',$appwizard->step_validate());
 		$_TPL->set_var('ipbxengine',$appwizard->step_ipbxengine());
 		$_TPL->set_var('dbbackend',dwho_gat::get('datastorage'));
+
 		break;
 	case 'welcome':
 	default:

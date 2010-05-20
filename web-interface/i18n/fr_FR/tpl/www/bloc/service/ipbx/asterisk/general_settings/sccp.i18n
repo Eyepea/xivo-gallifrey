@@ -1,20 +1,20 @@
 ; title_content_name
-SCCP Protocol properties
+Propriétés du protocole SCCP
 
 ; smenu_general
-General
+Général
 
 ; smenu_network
-Network
+Réseau
 
 ; smenu_signalling
-Signaling
+Signalisation
 
 ; smenu_jitterbuffer
 Jitter Buffer
 
 ; smenu_default
-Default
+Défaut
 
 ; smenu_hotline
 Hotline
@@ -26,22 +26,22 @@ Hotline
 Nom du serveur:
 
 ; hlp_fm_servername
-show this name on the device registration
+Voir ce nom pour l'enregistrement des téléphones
 
 ; cmt_fm_servername
-Asterisk config: servername
+Config asterisk: servername
 
 ; fm_keepalive
-Keepalive:
+Vérifier la présence de nouveaux messages:
 
 ; fm_keepalive-opt(0)
 0
 
 ; fm_keepalive-opt-second
-1 second
+1 seconde
 
 ; fm_keepalive-opt-seconds
-%s seconds
+%s secondes
 
 ; fm_keepalive-opt-minute
 1 minute
@@ -59,56 +59,55 @@ Keepalive:
 %s min. %s sec.
 
 ; hlp_fm_keepalive
-phone keep alive message every 60 secs. Used to check the voicemail
+Vérifier la présence de nouveaux messages. (defaut 60sec.)
 
 ; cmt_fm_keepalive
-Asterisk config: keepalive
+Config asterisk: keepalive
 
 ; fm_debug
-Debug:
+Niveau de debug:
 
 ; hlp_fm_debug
 console debug level or categories / examples: debug = 11 | debug = mwi,event,core | debug = all | debug = none or 0 /
 possible categories: core, sccp, hint, rtp, device, line, action, channel, cli, config, feature, feature_button, softkey, indicate, pbx, socket, mwi, event, adv_feature, conference, buttontemplate, speeddial, codec, realtime, lock, newcode, high, all, none
 
 ; cmt_fm_debug
-Asterisk config: debug
+Config asterisk: debug
 
 ; fm_context
-Context:
+Contexte:
 
 ; hlp_fm_context
 
 ; cmt_fm_context
-Asterisk config: context
-
+Config asterisk: context
 
 ; fm_dateFormat
-Date Format:
+Format de la date:
 
 ; hlp_fm_dateFormat
-M-D-Y in any order. Use M/D/YA (for 12h format)
+M-D-Y dans l'ordre. Utilisez M/D/YA (pour format 12h)
 
 ; cmt_fm_dateFormat
-Asterisk config: dateFormat
+Config asterisk: dateFormat
 
 ; fm_bindaddr
-Bind address:
+Adresse du serveur:
 
 ; hlp_fm_bindaddr
-replace with the ip address of the asterisk server (RTP important param)
+remplacer par l'adresse IP du serveur Asterisk (paramètre RTP important)
 
 ; cmt_fm_bindaddr
-Asterisk config: bindaddr
+Config asterisk: bindaddr
 
 ; fm_port
 Port:
 
 ; hlp_fm_port
-listen on port 2000 (Skinny, default)
+écoute le port 2000 (Skinny, defaut)
 
 ; cmt_fm_port
-Asterisk config: port
+Config asterisk: port
 
 ; fm_firstdigittimeout
 First digit timeout:
@@ -117,7 +116,7 @@ First digit timeout:
 dialing timeout for the 1st digit
 
 ; cmt_fm_firstdigittimeout
-Asterisk config: firstdigittimeout
+Config asterisk: firstdigittimeout
 
 ; fm_digittimeout
 Digit timeout:
@@ -126,7 +125,7 @@ Digit timeout:
 more digits
 
 ; cmt_fm_digittimeout
-Asterisk config: digittimeout
+Config asterisk: digittimeout
 
 ; fm_digittimeoutchar
 Digit timeout char:
@@ -135,16 +134,16 @@ Digit timeout char:
 you can force the channel to dial with this char in the dialing state
 
 ; cmt_fm_digittimeoutchar
-Asterisk config: digittimeoutchar
+Config asterisk: digittimeoutchar
 
 ; fm_musicclass
-Music on hold:
+Musique d'attente:
 
 ; hlp_fm_musicclass
 Sets the default music on hold class
 
 ; cmt_fm_musicclass
-Asterisk config: musicclass
+Config asterisk: musicclass
 
 ; fm_language
 Language:
@@ -153,28 +152,28 @@ Language:
 Default language setting
 
 ; cmt_fm_language
-Asterisk config: language
+Config asterisk: language
 
 ############################################################################
 # NETWORK PART
 
 ; fm_address-deny
-Address deny:
+Adresse IP refusée:
 
 ; hlp_fm_address-deny
 Deny every address except for the only one allowed
 
 ; cmt_fm_address-deny
-Asterisk config: deny
+Config asterisk: deny
 
 ; fm_address-permit
-Address permit:
+Adresse IP autorisée:
 
 ; hlp_fm_address-permit
 Accept class C 192.168.1.0	; You may have multiple rules for masking traffic. Rules are processed from the first to the last. This General rule is valid for all incoming connections. It's the 1st filter.
 
 ; cmt_fm_address-permit
-Asterisk config: permit
+Config asterisk: permit
 
 ; fm_address-localnet
 Address localnet:
@@ -183,28 +182,28 @@ Address localnet:
 All RFC 1918 addresses are local networks
 
 ; cmt_fm_address-localnet
-Asterisk config: localnet
+Config asterisk: localnet
 
 ; fm_address-externip
-Address externip:
+Adresse IP externe:
 
 ; hlp_fm_address-externip
 IP Address that we're going to notify in RTP media stream
 
 ; cmt_fm_address-externip
-Asterisk config: externip
+Config asterisk: externip
 
 ; fm_address-externhost
-Address externhost:
+Hôte externe:
 
 ; hlp_fm_address-externhost
 Hostname (if dynamic) that we're going to notify in RTP media stream
 
 ; cmt_fm_address-externhost
-Asterisk config: externhost
+Config asterisk: externhost
 
 ; fm_externrefresh
-External domain refresh time:
+Temps de rafraîchissement du domaine externe:
 
 ; fm_externrefresh-opt-second
 1 second
@@ -231,16 +230,16 @@ External domain refresh time:
 expire time in seconds for the hostname (dns resolution)
 
 ; cmt_fm_externrefresh
-Asterisk config: externrefresh
+Config asterisk: externrefresh
 
 ; fm_nat
 NAT:
 
 ; hlp_fm_nat
-Global NAT support (default Off)
+Global NAT support (default Désactivé)
 
 ; cmt_fm_nat
-Asterisk config: nat
+Config asterisk: nat
 
 ; fm_sccp_tos
 TOS SCCP:
@@ -250,7 +249,7 @@ Sets the default sccp signaling packets Type of Service (TOS)  (defaults to 0x68
 Others possible values : [CS?, AF??, EF], [0x??], [lowdelay, throughput, reliability, mincost(solaris)], none
 
 ; cmt_fm_sccp_tos
-Asterisk config: sccp_tos
+Config asterisk: sccp_tos
 
 ; fm_sccp_cos
 COS SCCP:
@@ -259,7 +258,7 @@ COS SCCP:
 sets the default sccp signaling packets Class of Service (COS) (defaults to 4)
 
 ; cmt_fm_sccp_cos
-Asterisk config: audio_cos
+Config asterisk: audio_cos
 
 ; fm_audio_tos
 TOS AUDIO:
@@ -268,7 +267,7 @@ TOS AUDIO:
 sets the default audio/rtp packets Type of Service (TOS) (defaults to 0xb8 = 10111000 = 184 = DSCP:101110 = EF)
 
 ; cmt_fm_audio_tos
-Asterisk config: audio_tos
+Config asterisk: audio_tos
 
 ; fm_audio_cos
 COS AUDIO:
@@ -277,7 +276,7 @@ COS AUDIO:
 sets the default audio/rtp packets Class of Service (COS) (defaults to 6)
 
 ; cmt_fm_audio_cos
-Asterisk config: audio_cos
+Config asterisk: audio_cos
 
 ; fm_video_tos
 TOS VIDEO:
@@ -286,7 +285,7 @@ TOS VIDEO:
 sets the default video/rtp packets Type of Service (TOS) (defaults to 0x88 = 10001000 = 136 = DSCP:100010 = AF41)
 
 ; cmt_fm_video_tos
-Asterisk config: video_tos
+Config asterisk: video_tos
 
 ; fm_video_cos
 COS VIDEO:
@@ -295,7 +294,7 @@ COS VIDEO:
 sets the default video/rtp packets Class of Service (COS) (defaults to 5)
 
 ; cmt_fm_video_cos
-Asterisk config: video_cos
+Config asterisk: video_cos
 
 ############################################################################
 # SIGNALING PART
@@ -304,10 +303,10 @@ Asterisk config: video_cos
 DND:
 
 ; fm_dnd-opt(on)
-On
+Activé
 
 ; fm_dnd-opt(off)
-Off
+Désactivé
 
 ; fm_dnd-opt(reject)
 Reject
@@ -319,7 +318,7 @@ Silent
 turn on the dnd softkey for all devices. Valid values are "off", "on" (busy signal), "reject" (busy signal), "silent" (ringer = silent)
 
 ; cmt_fm_dnd
-Asterisk config: dnd
+Config asterisk: dnd
 
 ; fm_echocancel
 Phone echocancel:
@@ -328,7 +327,7 @@ Phone echocancel:
 sets the phone echocancel for all devices
 
 ; cmt_fm_echocancel
-Asterisk config: echocancel
+Config asterisk: echocancel
 
 ; fm_silencesuppression
 Silence suppression:
@@ -337,7 +336,7 @@ Silence suppression:
 sets the silence suppression for all devices
 
 ; cmt_fm_silencesuppression
-Asterisk config: silencesuppression
+Config asterisk: silencesuppression
 
 ; fm_autoanswer_ring_time
 Autoanswer ring time:
@@ -370,7 +369,7 @@ Autoanswer ring time:
 ringing time in seconds for the autoanswer, the default is 0
 
 ; cmt_fm_autoanswer_ring_time
-Asterisk config: autoanswer_ring_time
+Config asterisk: autoanswer_ring_time
 
 ; fm_autoanswer_tone
 Autoanswer tone:
@@ -379,7 +378,7 @@ Autoanswer tone:
 autoanswer confirmation tone. For a complete list of tones: grep SKINNY_TONE sccp_protocol.h
 
 ; cmt_fm_autoanswer_tone
-Asterisk config: autoanswer_tone
+Config asterisk: autoanswer_tone
 
 ; fm_remotehangup_tone
 Remotehangup tone:
@@ -388,7 +387,7 @@ Remotehangup tone:
 passive hangup notification. 0 for none
 
 ; cmt_fm_remotehangup_tone
-Asterisk config: remotehangup_tone
+Config asterisk: remotehangup_tone
 
 ; fm_transfer_tone
 Transfer tone:
@@ -397,7 +396,7 @@ Transfer tone:
 confirmation tone on transfer. Works only between SCCP devices
 
 ; cmt_fm_transfer_tone
-Asterisk config: transfer_tone
+Config asterisk: transfer_tone
 
 ; fm_callwaiting_tone
 Call waiting tone:
@@ -406,16 +405,16 @@ Call waiting tone:
 sets to 0 to disable the callwaiting tone
 
 ; cmt_fm_callwaiting_tone
-Asterisk config: callwaiting_tone
+Config asterisk: callwaiting_tone
 
 ; fm_directrtp
 Direct RTP:
 
 ; hlp_fm_directrtp
-This option allow devices to do direct RTP sessions (default Off)
+This option allow devices to do direct RTP sessions (default Désactivé)
 
 ; cmt_fm_directrtp
-Asterisk config: directrtp
+Config asterisk: directrtp
 
 ; fm_allowoverlap
 Allow overlap:
@@ -424,7 +423,7 @@ Allow overlap:
 Enable overlap dialing support. (Default is off)
 
 ; cmt_fm_allowoverlap
-Asterisk config: allowoverlap
+Config asterisk: allowoverlap
 
 ; fm_callanswerorder
 Call answer order:
@@ -439,7 +438,7 @@ Lastestfirst
 oldestfirst or lastestfirstjbimpl
 
 ; cmt_fm_callanswerorder
-Asterisk config: callanswerorder
+Config asterisk: callanswerorder
 
 ; fm_codec-disallow
 Codec disallow:
@@ -451,7 +450,7 @@ All
 First disallow all codecs
 
 ; cmt_fm_codec-disallow
-Asterisk config: disallow
+Config asterisk: disallow
 
 ; fm_codec-allow
 Codec allow:
@@ -460,7 +459,7 @@ Codec allow:
 Allow codecs in order of preference
 
 ; cmt_fm_codec-allow
-Asterisk config: allow
+Config asterisk: allow
 
 ############################################################################
 # JITTER BUFFER PART
@@ -472,7 +471,7 @@ Activate Jitter Buffer:
 Enables the use of a jitterbuffer on the receiving side of a sccp channel. Defaults to "no". An enabled jitterbuffer will be used only if the sending side can create and the receiving side can not accept jitter. The sccp channel can accept jitter, thus a jitterbuffer on the receive sccp side will be used only if it is forced and enabled.
 
 ; cmt_fm_jbenable
-Asterisk config: jbenable
+Config asterisk: jbenable
 
 ; fm_jbforce
 Force Jitter Buffer:
@@ -481,7 +480,7 @@ Force Jitter Buffer:
 Forces the use of a jitterbuffer on the receive side of a sccp channel. Defaults to "no".
 
 ; cmt_fm_jbforce
-Asterisk config: jbforce
+Config asterisk: jbforce
 
 ; fm_jbmaxsize
 Max size of Jitter Buffer :
@@ -490,7 +489,7 @@ Max size of Jitter Buffer :
 Max length of the jitterbuffer in milliseconds.
 
 ; cmt_fm_jbmaxsize
-Asterisk config: jbmaxsize
+Config asterisk: jbmaxsize
 
 ; fm_jbmaxsize-opt(0)
 Disabled
@@ -505,7 +504,7 @@ Resynchronization in case of excessive delay:
 Jump in the frame timestamps over which the jitterbuffer is resynchronized. Useful to improve the quality of the voice, with big jumps in/broken timestamps, usually sent from exotic devices and programs. Defaults to 1000.
 
 ; cmt_fm_jbresyncthreshold
-Asterisk config: jbresyncthreshold
+Config asterisk: jbresyncthreshold
 
 ; fm_jbresyncthreshold-opt(-1)
 Disabled
@@ -523,7 +522,7 @@ Implementation:
 Jitterbuffer implementation, used on the receiving side of a sccp channel. Two implementations are currently available - "fixed" (with size always equals to jbmaxsize) - "adaptive" (with variable size, actually the new jb of IAX2). Defaults to fixed.
 
 ; cmt_fm_jbimpl
-Asterisk config: jbimpl
+Config asterisk: jbimpl
 
 ; fm_jbimpl-opt(fixed)
 Fixed
@@ -538,7 +537,7 @@ Enable logging Frames:
 Enables jitterbuffer frame logging. Defaults to "no".
 
 ; cmt_fm_jblog
-Asterisk config: jblog
+Config asterisk: jblog
 
 ############################################################################
 # DEFAULT PART
@@ -550,7 +549,7 @@ Call events:
 generate manager events when phone performs events (e.g. hold)
 
 ; cmt_fm_callevents
-Asterisk config: callevents
+Config asterisk: callevents
 
 ; fm_accountcode
 Account code:
@@ -559,7 +558,7 @@ Account code:
 accountcode to ease billing
 
 ; cmt_fm_accountcode
-Asterisk config: accountcode
+Config asterisk: accountcode
 
 ; fm_callgroup
 Call group:
@@ -568,7 +567,7 @@ Call group:
 We are in caller groups 1,3,4. Valid for all lines
 
 ; cmt_fm_callgroup
-Asterisk config: callgroup
+Config asterisk: callgroup
 
 ; fm_pickupgroup
 Pickup group:
@@ -577,7 +576,7 @@ Pickup group:
 We can do call pick-p for call group 1,3,4,5. Valid for all lines
 
 ; cmt_fm_pickupgroup
-Asterisk config: callgroup
+Config asterisk: callgroup
 
 ; fm_amaflags
 Amaflags:
@@ -586,7 +585,7 @@ Amaflags:
 Sets the default AMA flag code stored in the CDR record
 
 ; cmt_fm_amaflags
-Asterisk config: amaflags
+Config asterisk: amaflags
 
 ; fm_trustphoneip
 Enable trustphoneip:
@@ -595,7 +594,7 @@ Enable trustphoneip:
 The phone has a ip address. It could be private, so if the phone is behind NAT, we don't have to trust the phone ip address, but the ip address of the connection
 
 ; cmt_fm_trustphoneip
-Asterisk config: trustphoneip
+Config asterisk: trustphoneip
 
 ; fm_earlyrtp
 RTP early:
@@ -604,7 +603,7 @@ RTP early:
 valid options: none, offhook, dial, ringout. default is none. The audio strem will be open in the progress and connected state.
 
 ; cmt_fm_earlyrtp
-Asterisk config: earlyrtp
+Config asterisk: earlyrtp
 
 ; fm_private
 Private function softkey:
@@ -613,7 +612,7 @@ Private function softkey:
 permit the private function softkey
 
 ; cmt_fm_private
-Asterisk config: private
+Config asterisk: private
 
 ; fm_mwilamp
 MWI lamp:
@@ -622,7 +621,7 @@ MWI lamp:
 Set the MWI lamp style when MWI active to on, off, wink, flash or blink
 
 ; cmt_fm_mwilamp
-Asterisk config: mwilamp
+Config asterisk: mwilamp
 
 ; fm_mwioncall
 MWI on call:
@@ -631,7 +630,7 @@ MWI on call:
 Set the MWI on call.
 
 ; cmt_fm_mwioncall
-Asterisk config: mwioncall
+Config asterisk: mwioncall
 
 ; fm_blindtransferindication
 Blind transfer indication:
@@ -640,7 +639,7 @@ Blind transfer indication:
 moh or ring. the blind transfer should ring the caller or just play music on hold
 
 ; cmt_fm_blindtransferindication
-Asterisk config: blindtransferindication
+Config asterisk: blindtransferindication
 
 ; fm_protocolversion
 Protocol version:
@@ -649,7 +648,7 @@ Protocol version:
 skinny version protocol. Just for testing. 0 to 17 (excluding 12-14)
 
 ; cmt_fm_protocolversion
-Asterisk config: protocolversion
+Config asterisk: protocolversion
 
 ; fm_cfwdall
 ALL callforward:
@@ -658,7 +657,7 @@ ALL callforward:
 Activate the callforward ALL stuff and softkeys
 
 ; cmt_fm_cfwdall
-Asterisk config: cfwdall
+Config asterisk: cfwdall
 
 ; fm_cfwdbusy
 BUSY callforward:
@@ -667,7 +666,7 @@ BUSY callforward:
 Activate the callforward BUSY stuff and softkeys
 
 ; cmt_fm_cfwdbusy
-Asterisk config: cfwdbusy
+Config asterisk: cfwdbusy
 
 ; fm_cfwdnoanswer
 NOANSWER callforward:
@@ -676,7 +675,7 @@ NOANSWER callforward:
 Activate the callforward NOANSWER stuff and softkeys
 
 ; cmt_fm_cfwdnoanswer
-Asterisk config: cfwdnoanswer
+Config asterisk: cfwdnoanswer
 
 ; fm_devicetable
 Datebasetable for devices:
@@ -685,7 +684,7 @@ Datebasetable for devices:
 datebasetable for devices
 
 ; cmt_fm_devicetable
-Asterisk config: devicetable
+Config asterisk: devicetable
 
 ; fm_linetable
 Datebasetable for lines:
@@ -694,7 +693,7 @@ Datebasetable for lines:
 Datebasetable for lines
 
 ; cmt_fm_linetable
-Asterisk config: devicetable
+Config asterisk: devicetable
 
 ############################################################################
 # HOTLINE PART
@@ -715,7 +714,7 @@ Enable hotline:
 
 
 ; cmt_fm_hotline_enabled
-Asterisk config: hotline_enabled
+Config asterisk: hotline_enabled
 
 ; fm_hotline_context
 Context hotline:
@@ -724,7 +723,7 @@ Context hotline:
 
 
 ; cmt_fm_hotline_context
-Asterisk config: hotline_context
+Config asterisk: hotline_context
 
 ; fm_hotline_extension
 Extension hotline:
@@ -733,8 +732,7 @@ Extension hotline:
 
 
 ; cmt_fm_hotline_extension
-Asterisk config: hotline_extension
-
+Config asterisk: hotline_extension
 
 ; fm_success-save
-SCCP Protocol properties successfully saved
+Propriétés du protocole SCCP sauvegardées avec succès

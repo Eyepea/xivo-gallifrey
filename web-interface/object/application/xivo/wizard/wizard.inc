@@ -237,7 +237,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 					$resolvconf['nameserver1'] = $dns['nameservers'][0];
 					$resolvconf['nameserver2'] = $dns['nameservers'][1];
 				}
-				
+
 				return(array('mainconfig'	=> $this->_conf['element']['mainconfig'],
 					     'netiface'		=> $this->_conf['element']['netiface'],
 					     'resolvconf'	=> $resolvconf));
@@ -1397,8 +1397,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(isset($this->_wizsess['commit']['step']) === false)
 			$this->_wizsess['commit']['step'] = array();
 
-		$ref_components = &$this->_wizsess['commit']['components'];
-
+		$ref_components = $this->_wizsess['commit']['components'];
 		if(array_key_exists('adminpasswd',$ref_components) === false
 		|| $ref_components['adminpasswd'] === false)
 			$ref_components['adminpasswd'] = $this->_commit_adminpasswd();
@@ -1479,12 +1478,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
         $this->_load_ipbx_service();
 
         if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
-            return false;
-        if(!$commonconf->generate())
-            return false;
-        if(!$commonconf->apply())
-            return false;
-            
+            return(false);
+        if($commonconf->generate() === false)
+            return(false);
+        if($commonconf->apply() === false)
+            return(false);
+
 		return(true);
 	}
 
