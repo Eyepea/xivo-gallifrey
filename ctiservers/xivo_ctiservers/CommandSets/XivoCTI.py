@@ -562,6 +562,7 @@ class XivoCTICommand(BaseCommand):
                        'capapresence' : { 'names'   : details,
                                           'state'   : statedetails,
                                           'allowed' : allowed },
+                       'capaservices' : self.capas[capaid].capaservices,
                        'presencecounter' : cstatus
                        }
             repstr = self.__cjson_encode__(tosend)
@@ -703,6 +704,8 @@ class XivoCTICommand(BaseCommand):
                     self.capas[name].setappliname(val)
                 elif prop == 'guisettings':
                     self.capas[name].setguisettings(val)
+                elif prop == 'services':
+                    self.capas[name].setservices(val)
                 elif prop == 'presence':
                     self.capas[name].setpresenceid(val)
                     if val not in self.presence_sections:
@@ -2453,7 +2456,7 @@ class XivoCTICommand(BaseCommand):
             for paction in presenceactions:
                 params = paction.split('|')
                 services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
-                    'enableunc', 'enablebusy', 'enablerna']
+                                         'enableunc', 'enablebusy', 'enablerna']
                 if params[0] == 'queueadd' and len(params) > 2 and anum:
                     self.__ami_execute__(astid, params[0], params[1], agent_channel, params[2])
                 elif params[0] == 'queueremove' and len(params) > 1 and anum:

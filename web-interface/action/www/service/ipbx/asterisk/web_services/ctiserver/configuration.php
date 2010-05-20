@@ -299,7 +299,7 @@ switch($act)
 					$prefout[$match[1]] = $match[2];
 				}
 				$out['xivocti']['required_client_version'] = CLIENT_VERSION;
-				$out['xivocti']['profils'][$pfid] = array(
+				$out['xivocti']['profiles'][$pfid] = array(
 					'xlets' => dwho_json::decode($pf['xlets'], true),
 					'funcs' => explode(',', $pf['funcs']),
 					'maxgui' => $pf['maxgui'],
