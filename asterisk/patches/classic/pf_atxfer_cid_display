@@ -6,11 +6,11 @@
 
     Fix some callerid displaying during ATXFER.
 
-Index: asterisk-1.4.30/res/res_features.c
+Index: asterisk-1.4.31/res/res_features.c
 ===================================================================
---- asterisk-1.4.30.orig/res/res_features.c	2010-03-16 12:07:54.000000000 +0100
-+++ asterisk-1.4.30/res/res_features.c	2010-03-16 12:10:09.000000000 +0100
-@@ -993,8 +993,9 @@
+--- asterisk-1.4.31.orig/res/res_features.c	2010-05-20 16:17:58.000000000 +0200
++++ asterisk-1.4.31/res/res_features.c	2010-05-20 16:24:09.000000000 +0200
+@@ -994,8 +994,9 @@
  		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
  	}
  
@@ -21,7 +21,7 @@ Index: asterisk-1.4.30/res/res_features.c
  	newchan = ast_feature_request_and_dial(transferer, "Local", ast_best_codec(transferer->nativeformats),
  		xferto, atxfernoanswertimeout, &outstate, transferer->cid.cid_num, transferer->cid.cid_name, transferer->language);
  	ast_indicate(transferer, -1);
-@@ -1017,6 +1018,7 @@
+@@ -1018,6 +1019,7 @@
  		ast_set_flag(&(bconfig.features_caller), AST_FEATURE_DISCONNECT);
  		ast_set_flag(&(bconfig.features_callee), AST_FEATURE_DISCONNECT);
  		res = ast_bridge_call(transferer, newchan, &bconfig);
@@ -29,7 +29,7 @@ Index: asterisk-1.4.30/res/res_features.c
  		if (newchan->_softhangup || !transferer->_softhangup) {
  			ast_hangup(newchan);
  			if (ast_stream_and_wait(transferer, xfersound, transferer->language, ""))
-@@ -1133,9 +1135,24 @@
+@@ -1134,9 +1136,24 @@
  		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
  	}
  
@@ -54,7 +54,7 @@ Index: asterisk-1.4.30/res/res_features.c
  	return -1;	/* XXX meaning the channel is bridged ? */
  }
  
-@@ -1498,12 +1515,19 @@
+@@ -1499,12 +1516,19 @@
  	struct ast_channel *active_channel;
  	int res = 0, ready = 0;
  	
@@ -74,7 +74,7 @@ Index: asterisk-1.4.30/res/res_features.c
  		if (!ast_call(chan, data, timeout)) {
  			struct timeval started;
  			int x, len = 0;
-@@ -1652,6 +1676,9 @@
+@@ -1653,6 +1677,9 @@
  	if (outstate)
  		*outstate = state;
  

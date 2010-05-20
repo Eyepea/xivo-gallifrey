@@ -2,11 +2,11 @@ Backport of asterisk 1.6 feature that Bridges together two channels already in t
 
  -- Jon Webster <jon@elephantoutlook.com>
 
-Index: asterisk-1.4.30/res/res_features.c
+Index: asterisk-1.4.31/res/res_features.c
 ===================================================================
---- asterisk-1.4.30.orig/res/res_features.c	2010-03-16 12:10:27.000000000 +0100
-+++ asterisk-1.4.30/res/res_features.c	2010-03-16 12:10:37.000000000 +0100
-@@ -220,6 +220,7 @@
+--- asterisk-1.4.31.orig/res/res_features.c	2010-05-20 16:24:18.000000000 +0200
++++ asterisk-1.4.31/res/res_features.c	2010-05-20 16:24:28.000000000 +0200
+@@ -221,6 +221,7 @@
  	struct ast_bridge_config bconfig;
  	struct ast_channel *chan;
  	struct ast_channel *peer;
@@ -14,7 +14,7 @@ Index: asterisk-1.4.30/res/res_features.c
  };
  
  /*! \brief store context, priority and extension */
-@@ -271,17 +272,37 @@
+@@ -272,17 +273,37 @@
  static void *ast_bridge_call_thread(void *data)
  {
  	struct ast_bridge_thread_obj *tobj = data;
@@ -59,7 +59,7 @@ Index: asterisk-1.4.30/res/res_features.c
  	return NULL;
  }
  
-@@ -2824,6 +2845,125 @@
+@@ -2823,6 +2844,125 @@
  	return RESULT_SUCCESS;
  }
  
@@ -185,7 +185,7 @@ Index: asterisk-1.4.30/res/res_features.c
  static char showfeatures_help[] =
  "Usage: feature list\n"
  "       Lists currently configured features.\n";
-@@ -3276,6 +3416,154 @@
+@@ -3275,6 +3415,154 @@
  
  }
  
@@ -340,7 +340,7 @@ Index: asterisk-1.4.30/res/res_features.c
  static int reload(void)
  {
  	return load_config();
-@@ -3285,6 +3573,8 @@
+@@ -3284,6 +3572,8 @@
  {
  	int res;
  	
@@ -349,7 +349,7 @@ Index: asterisk-1.4.30/res/res_features.c
  	memset(parking_ext, 0, sizeof(parking_ext));
  	memset(parking_con, 0, sizeof(parking_con));
  
-@@ -3299,6 +3589,7 @@
+@@ -3298,6 +3588,7 @@
  		ast_manager_register("ParkedCalls", 0, manager_parking_status, "List parked calls" );
  		ast_manager_register2("Park", EVENT_FLAG_CALL, manager_park,
  			"Park a channel", mandescr_park); 
@@ -357,7 +357,7 @@ Index: asterisk-1.4.30/res/res_features.c
  	}
  
  	res |= ast_devstate_prov_add("Park", metermaidstate);
-@@ -3312,9 +3603,11 @@
+@@ -3311,9 +3602,11 @@
  	ast_module_user_hangup_all();
  
  	ast_manager_unregister("ParkedCalls");

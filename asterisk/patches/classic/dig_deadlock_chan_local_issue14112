@@ -9,11 +9,11 @@
 
 	Fixed deadlock in local channel.
 
-Index: asterisk-1.4.30/channels/chan_local.c
+Index: asterisk-1.4.31/channels/chan_local.c
 ===================================================================
---- asterisk-1.4.30.orig/channels/chan_local.c	2010-03-16 12:07:54.000000000 +0100
-+++ asterisk-1.4.30/channels/chan_local.c	2010-03-16 12:08:02.000000000 +0100
-@@ -384,7 +384,9 @@
+--- asterisk-1.4.31.orig/channels/chan_local.c	2010-05-20 16:17:58.000000000 +0200
++++ asterisk-1.4.31/channels/chan_local.c	2010-05-20 16:24:03.000000000 +0200
+@@ -368,7 +368,9 @@
  		ast_moh_stop(ast);
  	} else {
  		/* Queue up a frame representing the indication as a control frame */
