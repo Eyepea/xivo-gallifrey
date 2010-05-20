@@ -354,15 +354,14 @@ endif;
 					'default'	=> $element['sccp_tos']['default'],
 					'error'		=> $this->bbf_args('error',$this->get_var('error', 'sccp_tos')) )),
 
-		$form->text(array('desc'	=> $this->bbf('fm_sccp_cos'),
-					'size'		=> '4',
+		$form->select(array('desc'	=> $this->bbf('fm_sccp_cos'),
 					'name'		=> 'sccp_cos',
 					'labelid'	=> 'sccp_cos',
-					'value'		=> $this->get_var('info','sccp_cos','var_val'),
+				    'key'		=> false,
 					'help'		=> $this->bbf('hlp_fm_sccp_cos'),
 					'comment'	=> $this->bbf('cmt_fm_sccp_cos'),
-					'default'	=> $element['sccp_cos']['default'],
-					'error'		=> $this->bbf_args('error',$this->get_var('error', 'sccp_cos')) )),
+					'selected'	=> $this->get_var('info','sccp_cos','var_val'),
+					'default'	=> $element['sccp_cos']['default']),$element['sccp_cos']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_audio_tos'),
 					'size'		=> '4',
@@ -374,15 +373,14 @@ endif;
 					'default'	=> $element['audio_tos']['default'],
 					'error'		=> $this->bbf_args('error',$this->get_var('error', 'audio_tos')) )),
 
-		$form->text(array('desc'	=> $this->bbf('fm_audio_cos'),
-					'size'		=> '4',
+		$form->select(array('desc'	=> $this->bbf('fm_audio_cos'),
 					'name'		=> 'audio_cos',
 					'labelid'	=> 'audio_cos',
-					'value'		=> $this->get_var('info','audio_cos','var_val'),
+				    'key'		=> false,
 					'help'		=> $this->bbf('hlp_fm_audio_cos'),
 					'comment'	=> $this->bbf('cmt_fm_audio_cos'),
-					'default'	=> $element['audio_cos']['default'],
-					'error'		=> $this->bbf_args('error',$this->get_var('error', 'audio_cos')) )),
+					'selected'	=> $this->get_var('info','audio_cos','var_val'),
+					'default'	=> $element['audio_cos']['default']),$element['audio_cos']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_video_tos'),
 					'size'		=> '4',
@@ -394,15 +392,14 @@ endif;
 					'default'	=> $element['video_tos']['default'],
 					'error'		=> $this->bbf_args('error',$this->get_var('error', 'video_tos')) )),
 
-		$form->text(array('desc'	=> $this->bbf('fm_video_cos'),
-					'size'		=> '4',
+		$form->select(array('desc'	=> $this->bbf('fm_video_cos'),
 					'name'		=> 'video_cos',
 					'labelid'	=> 'video_cos',
-					'value'		=> $this->get_var('info','video_cos','var_val'),
+				    'key'		=> false,
 					'help'		=> $this->bbf('hlp_fm_video_cos'),
 					'comment'	=> $this->bbf('cmt_fm_video_cos'),
-					'default'	=> $element['video_cos']['default'],
-					'error'		=> $this->bbf_args('error',$this->get_var('error', 'video_cos')) ));
+					'selected'	=> $this->get_var('info','video_cos','var_val'),
+					'default'	=> $element['video_cos']['default']),$element['video_cos']['value']);
 
 ?>
 </div>
@@ -881,6 +878,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_hotline_enabled'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_enabled'),
 					'required'	=> false,
+					'readonly'	=> true,
 					'checked'	=> $this->get_var('info','hotline_enabled','var_val'),
 					'default'	=> $element['hotline_enabled']['default']));
 
@@ -889,11 +887,12 @@ if($context_list !== false):
 				    'name'		=> 'hotline_context',
 				    'labelid'	=> 'hotline_context',
 				    'empty'		=> true,
-				    'key'		=> 'hotline_context',
+				    'key'		=> 'identity',
 				    'altkey'	=> 'name',
 					'help'		=> $this->bbf('hlp_fm_hotline_context'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_context'),
 					'required'	=> false,
+					'readonly'	=> true,
 				    'default'	=> $element['hotline_context']['default'],
 				    'selected'	=> $this->get_var('info','hotline_context','var_val')),$context_list);
 endif;
@@ -904,6 +903,7 @@ endif;
 					'value'		=> $this->get_var('info','hotline_extension','var_val'),
 					'help'		=> $this->bbf('hlp_fm_hotline_extension'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_extension'),
+					'readonly'	=> true,
 					'default'	=> $element['hotline_extension']['default'],
 					'error'		=> $this->bbf_args('error',$this->get_var('error', 'hotline_extension')) ));
 ?>

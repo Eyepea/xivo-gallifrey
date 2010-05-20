@@ -173,18 +173,21 @@ $array['element']['sccp_tos']['default'] = '0x68';
 
 $array['element']['sccp_cos'] = array();
 $array['element']['sccp_cos']['default'] = 4;
+$array['element']['sccp_cos']['value'] = array(1,2,3,4,5,6,7);
 
 $array['element']['audio_tos'] = array();
 $array['element']['audio_tos']['default'] = '0xB8';
 
 $array['element']['audio_cos'] = array();
 $array['element']['audio_cos']['default'] = 6;
+$array['element']['audio_cos']['value'] = array(1,2,3,4,5,6,7);
 
 $array['element']['video_tos'] = array();
 $array['element']['video_tos']['default'] = '0x88';
 
 $array['element']['video_cos'] = array();
 $array['element']['video_cos']['default'] = 5;
+$array['element']['video_cos']['value'] = array(1,2,3,4,5,6,7);
 
 $array['element']['echocancel'] = array();
 $array['element']['echocancel']['default'] = 'on';
