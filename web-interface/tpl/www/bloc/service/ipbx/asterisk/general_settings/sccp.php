@@ -172,9 +172,8 @@ if($context_list !== false):
 				    'altkey'	=> 'name',
 					'help'		=> $this->bbf('hlp_fm_context'),
 					'comment'	=> $this->bbf('cmt_fm_context'),
-					'required'	=> false,
-				    'default'	=> $element['context']['default'],
-				    'selected'	=> $this->get_var('info','context','var_val')),$context_list);
+				    'selected'	=> $this->get_var('info','context','var_val'),
+				    'default'	=> $element['context']['default']),$context_list);
 endif;
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_dateFormat'),
@@ -877,7 +876,7 @@ endif;
 					'labelid'	=> 'hotline_enabled',
 					'help'		=> $this->bbf('hlp_fm_hotline_enabled'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_enabled'),
-					'required'	=> false,
+					'required'	=> true,
 					'readonly'	=> true,
 					'checked'	=> $this->get_var('info','hotline_enabled','var_val'),
 					'default'	=> $element['hotline_enabled']['default']));
@@ -886,12 +885,12 @@ if($context_list !== false):
 	echo	$form->select(array('desc'	=> $this->bbf('fm_hotline_context'),
 				    'name'		=> 'hotline_context',
 				    'labelid'	=> 'hotline_context',
-				    'empty'		=> true,
+				    'empty'		=> false,
 				    'key'		=> 'identity',
 				    'altkey'	=> 'name',
 					'help'		=> $this->bbf('hlp_fm_hotline_context'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_context'),
-					'required'	=> false,
+					'required'	=> true,
 					'readonly'	=> true,
 				    'default'	=> $element['hotline_context']['default'],
 				    'selected'	=> $this->get_var('info','hotline_context','var_val')),$context_list);
@@ -903,6 +902,7 @@ endif;
 					'value'		=> $this->get_var('info','hotline_extension','var_val'),
 					'help'		=> $this->bbf('hlp_fm_hotline_extension'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_extension'),
+					'required'	=> true,
 					'readonly'	=> true,
 					'default'	=> $element['hotline_extension']['default'],
 					'error'		=> $this->bbf_args('error',$this->get_var('error', 'hotline_extension')) ));

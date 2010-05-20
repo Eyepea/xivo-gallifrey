@@ -36,7 +36,8 @@ $array['element']['debug'] = array();
 $array['element']['debug']['default'] = 'core';
 
 $array['element']['context'] = array();
-$array['element']['context']['default'] = 'sccp';
+$array['element']['context']['default'] = '';
+$array['element']['context']['null'] = true;
 
 $array['element']['dateFormat'] = array();
 $array['element']['dateFormat']['default'] = 'D.M.Y';
@@ -310,6 +311,9 @@ $array['filter'] = array();
 
 $array['filter']['servername'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 80);
 $array['filter']['keepalive'] = array('key' => array(0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200));
+$array['filter']['context'] = array('set' => false,'chk' => 2,
+				    'callback' => 'xivo_service_asterisk::chk_context',
+				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
 $array['filter']['dateFormat'] = array('set' => false,'chk' => 5,'regexp' => '/^[-DMYA\/\.]+$/','maxlen' => 6);
 $array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
 				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)),
@@ -383,8 +387,12 @@ $array['filter']['allow'] = array('set' => false,'chk' => 2,'uvalue' => array(
 ##############################################################
 # JITTER BUFFER PART
 
-
-
+$array['filter']['jbenable'] = array('key' => array('yes','no'));
+$array['filter']['jbforce'] = array('key' => array('yes','no'));
+$array['filter']['jbmaxsize'] = array('key' => array(0,100,150,200,250,500,750,1000,1250,1500,1750,2000));
+$array['filter']['jbresyncthreshold'] = array('key' => array(-1,0,250,500,750,1000,1250,1500,1750,2000));
+$array['filter']['jbimpl'] = array('key' => array('fixed','adaptative'));
+$array['filter']['jblog'] = array('key' => array('yes','no'));
 
 ##############################################################
 # DEFAULT PART
@@ -432,12 +440,6 @@ $array['filter']['notifyhold'] = array('bool' => true);
 $array['filter']['allowtransfer'] = array('bool' => true);
 $array['filter']['maxcallbitrate'] = array('cast' => 'uint','between' => array(1,1860));
 $array['filter']['autoframing'] = array('bool' => true);
-$array['filter']['jbenable'] = array('bool' => true);
-$array['filter']['jbforce'] = array('bool' => true);
-$array['filter']['jbmaxsize'] = array('key' => array(0,100,150,200,250,500,750,1000,1250,1500,1750,2000));
-$array['filter']['jbresyncthreshold'] = array('key' => array(-1,0,250,500,750,1000,1250,1500,1750,2000));
-$array['filter']['jbimpl'] = array('key' => array('fixed','adaptative'));
-$array['filter']['jblog'] = array('bool' => true);
 $array['filter']['context'] = array('set' => false,'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));

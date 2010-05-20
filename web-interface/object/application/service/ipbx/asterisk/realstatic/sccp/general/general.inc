@@ -79,42 +79,6 @@ class xivo_application_service_asterisk_realstatic_sccp_general extends xivo_app
 
 				$this->_set_result($this->_name,array_values($result));
 				break;
-			case 'context':
-				$this->_get_contextmember(null,'context');
-
-				$res = array();
-				$res['generalsccp-context'] = array();
-				$res['generalsccp-context']['context'] = $rs['var_val'];
-				$res['generalsccp-context']['varname'] = 'context';
-
-				if($this->set_contextmember($res) === false
-				|| $this->edit_contextmember() === false)
-					return(false);
-				break;
-			case 'regcontext':
-				$this->_get_contextmember(null,'regcontext');
-
-				$res = array();
-				$res['generalsccp-regcontext'] = array();
-				$res['generalsccp-regcontext']['context'] = $rs['var_val'];
-				$res['generalsccp-regcontext']['varname'] = 'regcontext';
-
-				if($this->set_contextmember($res) === false
-				|| $this->edit_contextmember() === false)
-					return(false);
-				break;
-			case 'vmexten':
-				if(($appextenfeatures = &$this->_service->get_application('extenfeatures')) === false)
-					return(false);
-
-				$vmusermsg = array();
-				$vmusermsg['name'] = 'vmusermsg';
-				$vmusermsg['exten'] = $rs['var_val'];
-
-				if($appextenfeatures->set($vmusermsg) === false
-				|| $appextenfeatures->save() === false)
-					return(false);
-				break;
 			case 'allow':
 				if(is_array($rs['var_val']) === true)
 				{
@@ -131,15 +95,6 @@ class xivo_application_service_asterisk_realstatic_sccp_general extends xivo_app
 	{
 		if(is_array($arr) === false)
 			return(false);
-
-		$this->get_musiconhold();
-
-		if(isset($arr['mohinterpret'],$this->_musiconhold[$arr['mohinterpret']]) === false)
-			$arr['mohinterpret'] = '';
-
-		if(isset($arr['mohsuggest']) === true
-		&& isset($this->_musiconhold[$arr['mohsuggest']]) === false)
-			$arr['mohsuggest'] = '';
 
 		return(parent::set_save_all($arr,$disable));
 

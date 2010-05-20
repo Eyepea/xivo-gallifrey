@@ -23,7 +23,7 @@ $appgeneralsccp = &$appsccp->get_module('general');
 
 $fm_save = $error = $info = null;
 
-$info = $appgeneralsccp->get_all(false);
+$info = $appgeneralsccp->get_all_val_by_category(false);
 
 if(isset($_QR['fm_send']) === true)
 {
@@ -39,7 +39,7 @@ if(isset($_QR['fm_send']) === true)
 
 $element = $appgeneralsccp->get_element();
 
-$dhtml = &$_TPL->get_module('dhtml');
+$dhtml = $_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
 
 $_TPL->set_var('fm_save',$fm_save);
@@ -49,7 +49,7 @@ $_TPL->set_var('element',$element);
 $_TPL->set_var('moh_list',$appgeneralsccp->get_musiconhold());
 $_TPL->set_var('context_list',$appgeneralsccp->get_context_list());
 
-$menu = &$_TPL->get_module('menu');
+$menu = $_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
 
