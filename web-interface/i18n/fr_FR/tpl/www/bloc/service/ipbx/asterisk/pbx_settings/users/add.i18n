@@ -918,3 +918,100 @@ Désactivée
 
 ; no_disp2
 Aucun module d'extension
+
+
+; hlp_fm_park
+Autorise le parcage des appels
+
+; hlp_fm_cfwdall
+
+Activate callforward key
+
+; hlp_fm_cfwdbusy
+
+; hlp_fm_cfwdnoanswer
+
+; hlp_fm_pickupexten
+Autorise la fonction Pickup à intercepter une extension
+
+; hlp_fm_pickupcontext
+Contexte dans lequel la fonction Pickup recherchera les extensions. Ignoré si non défini
+
+; hlp_fm_pickupmodeanswer
+en mode *Asterisk*, l'appel est décroché avant l'interception.<br/>En mode *Call manager*, le téléphone intercepté continue à sonner
+
+; hlp_fm_dnd
+Active la touche NPD sur le téléphone (activé = rejet == émission du signal occupé, silence == aucun signal)
+
+; hlp_fm_directrtp
+Autorise le téléphone à ouvrir une session RTP directe (désactivé par défaut)
+
+; hlp_fm_earlyrtp
+Si activé, le flux audio est ouvert dans les états *progress* et *connected*. Désactivé par défaut
+
+; hlp_fm_private
+Active la touche de fonction *privée*
+
+; hlp_fm_privacy
+
+; hlp_fm_mwilamp
+Style de la loupiote MWI
+
+; hlp_fm_mwioncall
+Active MWI pour une appel
+
+; hlp_fm_echocancel
+Active la suppression d'echo
+
+; hlp_fm_silencesuppression
+Active la suppression des silences
+
+; hlp_fm_incominglimit
+Si déja en ligne, les appels suivants sont mis en attente
+
+; hlp_fm_keepalive
+mettre la valeur *0* pour désactiver la vérification de présence
+
+; hlp_fm_tzoffset
+
+; hlp_fm_imageversion
+Utile pour mettre à jours les vieux firmware (ceux qui ne téléchargent pas le fichier xml depuis le serveur tftp)
+
+; hlp_fm_trustphoneip
+Utile pour les téléphones derrière un NAT (où l'adresse IP du téléphone est différente de l'adresse de connexion)
+
+; hlp_fm_dialtone_digits
+Chiffre de la tonalité secondaire (9 max)
+
+; hlp_fm_dialtone_tone
+tonalité de sortie
+
+; hlp_fm_audio_tos
+Valeur «Type of Service» des paquets audio/RTP (par défaut 0xb8, soit 184).<br/>
+Les valeurs possibles sont 0x??, lowdelay, throughput, reliability, mincost (sur solaris uniquement), none
+
+; hlp_fm_audio_cos
+Valeur «Class of Service» des paquets audio/RTP (par défaut 6)
+
+; hlp_fm_video_tos
+Valeur «Type of Service» des paquets vidéo/RTP (par défaut 0x88, soit 136)
+
+; hlp_fm_video_cos
+Valeur «Class of Service» des paquets vidéo/RTP (par défaut 5)
+
+; hlp_fm_sccp_amaflags
+Drapeau de facturation enregistré dans la table CDR
+
+; hlp_fm_adhocnumber
+Numéro Adhoc ou «Private-line automatic ringdown» (PLAR). Les lignes Adhoc/PLAR sont statiques et ne nécéssite pas la saisie d'un numéro de la part de l'utilisateur:<br/>
+<ul>
+<li>Le numéro adhoc est automatiquement composé dès que le téléphone est décroché ou que l'utilisateur appuie sur le bouton «nouvelle appel»</li>
+<li>Par contre, l'utilisateur pourra toujours composer un numéro après avoir sélectionné une ligne</li>
+</ul>
+
+; fm_pickupmodeanswer-opt(on)
+Asterisk
+
+; fm_pickupmodeanswer-opt(off)
+Callmanager
+

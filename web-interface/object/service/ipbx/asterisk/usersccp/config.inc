@@ -70,7 +70,7 @@ $array['element']['mwioncall']['value'] = array('on', 'off');
 
 $array['element']['dnd'] = array();
 $array['element']['dnd']['default'] = '';
-$array['element']['dnd']['value'] = array('on', 'off');
+$array['element']['dnd']['value'] = array('on', 'off', 'reject', 'silent');
 
 $array['element']['pickupexten'] = array();
 $array['element']['pickupexten']['default'] = '';
@@ -157,7 +157,7 @@ $array['filter']['mwilamp']          = array('set' => false, 'chk'	=> 2,
 $array['filter']['mwioncall']        = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off'));
 $array['filter']['dnd']              = array('set' => false, 'chk'	=> 2,
-	'key' => array('on', 'off'));
+	'key' => array('on', 'off', 'reject', 'silent'));
 $array['filter']['pickupexten']      = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off'));
 $array['filter']['pickupcontext']    = array('set' => false, 'chk'	=> 2,

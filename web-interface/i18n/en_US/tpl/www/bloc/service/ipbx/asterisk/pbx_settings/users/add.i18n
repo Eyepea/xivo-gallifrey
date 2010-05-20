@@ -876,3 +876,97 @@ Deactivated
 
 ; no_disp2
 No expansion module
+
+
+; hlp_fm_park
+Enable calls parking
+
+; hlp_fm_cfwdall
+Activate callforward key
+
+; hlp_fm_cfwdbusy
+
+; hlp_fm_cfwdnoanswer
+
+; hlp_fm_pickupexten
+Enable Pickup function to direct pickup an extension
+
+; hlp_fm_pickupcontext
+Context where direct pickup search for extensions. If not set will be ignored
+
+; hlp_fm_pickupmodeanswer
+If <b>asterisk mode</b>, the call has been answered when picked up.<br/>If <b>call manager mode</b>, the phone who picked up the call rings the call
+
+; hlp_fm_dnd
+Turn on the dnd key on the device. on = reject = busy signal; silent = no signal
+
+; hlp_fm_directrtp
+Allow device to do direct RTP sessions (default off)
+
+; hlp_fm_earlyrtp
+The audio stream will be opened in the progess and connected state. default is none
+
+; hlp_fm_private
+Turn on the private softkey on the device
+
+; hlp_fm_privacy
+
+; hlp_fm_mwilamp
+Set the MWI lamp style
+
+; hlp_fm_mwioncall
+Set the MWI on call
+
+; hlp_fm_echocancel
+Set the phone echocancel
+
+; hlp_fm_silencesuppression
+Set the silence suppression
+
+; hlp_fm_incominglimit
+more than 1 incoming call = call waiting
+
+; hlp_fm_keepalive
+Set 0 to disable keepalive check
+
+; hlp_fm_tzoffset
+
+; hlp_fm_imageversion
+Useful to upgrade old firmwares (the ones that do not load xml from the tftp server)
+
+; hlp_fm_trustphoneip
+Used if the phone is behind a NAT (so we must trust ip address connection, not phone ones)
+
+; hlp_fm_dialtone_digits
+Digits for the secondary dialtone (max 9 digits)
+
+; hlp_fm_dialtone_tone
+Outside dialtone
+
+; hlp_fm_audio_tos
+Default audio/RTP packets Type of Service (default is 0xb8 == 184). Possible values are 0x??, lowdelay, throughput, reliability, mincost (solaris only), none
+
+; hlp_fm_audio_cos
+Default audio/RTP packets Class of Service (defaults is 6)
+
+; hlp_fm_video_tos
+Default video/RTP packets Type of Service (default is 0x88 == 136)
+
+; hlp_fm_video_cos
+Default video/RTP packets Class of Service (default is 5)
+
+; hlp_fm_sccp_amaflags
+Default AMA flag code stored in the CDR record
+
+; hlp_fm_adhocnumber
+Adhoc number or Private-line automatic ringdown (PLAR). Adhoc/PLAR circuits are statically configured endpoints and do not required the user dialing to connect calls:<br/>
+<ul>
+<li>the adhocNumber is dialed as soon as the phone is taken off-hook or when the new-call button is pressed</li>
+<li>the number will not be dialed when choosing a line; so when you choose a line you can enter a number manually</li>
+</ul>
+
+; fm_pickupmodeanswer-opt(on)
+Asterisk mode
+
+; fm_pickupmodeanswer-opt(off)
+Callmanager mode
