@@ -1870,7 +1870,7 @@ CREATE TABLE usersccp
  earlyrtp varchar(3),                -- on, off, NULL
  private varchar(3),                 -- on, off, NULL
  privacy varchar(4),                 -- on, off, full, NULL
- protocol char(3) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
+ protocol varchar(4) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
 
  -- softkeys
  softkey_onhook      varchar(1024),
