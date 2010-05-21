@@ -2203,7 +2203,7 @@ Index: asterisk-1.4.31/include/asterisk/frame.h
  	AST_CONTROL_ATXFERCMD = 19,	/*!< AMI triggered attended transfer */
  	AST_CONTROL_SRCUPDATE = 20,     /*!< Indicate source of media has changed */
  	AST_CONTROL_SRCCHANGE = 21,     /*!< Media has changed and requires a new RTP SSRC */
-++	AST_CONTROL_CONNECTEDLINE = 22, /*!< Indicate connected line has changed */
++	AST_CONTROL_CONNECTEDLINE = 22, /*!< Indicate connected line has changed */
  };
  
  #define AST_SMOOTHER_FLAG_G729		(1 << 0)
