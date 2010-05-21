@@ -40,7 +40,7 @@ for r in cursor.fetchall():
 #  type = device, devicetype
 
 cursor.query("SELECT ${columns} FROM usersccp s, userfeatures u, phone p " +
-  "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol == 'sccp' AND u.id = p.iduserfeatures",
+  "WHERE s.commented = 0 AND s.id = u.protocolid AND u.protocol = 'sccp' AND u.id = p.iduserfeatures",
   ('s.id', 's.devicetype', 'p.macaddr', 'p.model', 'p.vendor', 'u.description', 
    'u.id', 'u.number',
    's.keepalive',
