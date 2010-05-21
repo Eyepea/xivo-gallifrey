@@ -146,19 +146,24 @@ $array['element']['accountcode'] = array();
 $array['element']['accountcode']['default'] = 'skinny';
 
 $array['element']['deny'] = array();
-$array['element']['deny']['default'] = '0.0.0.0/0.0.0.0';
+$array['element']['deny']['default'] = '';
+$array['element']['deny']['null'] = true;
 
 $array['element']['permit'] = array();
-$array['element']['permit']['default'] = '0.0.0.0/255.255.255.0';
+$array['element']['permit']['default'] = '';
+$array['element']['permit']['null'] = true;
 
 $array['element']['localnet'] = array();
-$array['element']['localnet']['default'] = '192.168.1.0/255.255.255.0';
+$array['element']['localnet']['default'] = '';
+$array['element']['localnet']['null'] = true;
 
 $array['element']['externip'] = array();
-$array['element']['externip']['default'] = '1.2.3.4';
+$array['element']['externip']['default'] = '';
+$array['element']['externip']['null'] = true;
 
 $array['element']['externhost'] = array();
-$array['element']['externhost']['default'] = 'mydomain.dyndns.org';
+$array['element']['externhost']['default'] = '';
+$array['element']['externhost']['null'] = true;
 
 $array['element']['externrefresh'] = array();
 $array['element']['externrefresh']['default'] = 60;

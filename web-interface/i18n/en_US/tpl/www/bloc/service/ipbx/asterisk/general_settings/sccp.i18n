@@ -162,7 +162,7 @@ Asterisk config: language
 Address deny:
 
 ; hlp_fm_address-deny
-Deny every address except for the only one allowed
+Deny every address except for the only one allowed (192.168.0.0/255.255.255.0)
 
 ; cmt_fm_address-deny
 Asterisk config: deny
@@ -171,7 +171,7 @@ Asterisk config: deny
 Address permit:
 
 ; hlp_fm_address-permit
-Accept class C 192.168.1.0	; You may have multiple rules for masking traffic. Rules are processed from the first to the last. This General rule is valid for all incoming connections. It's the 1st filter.
+Accept class C 192.168.1.0	; You may have multiple rules for masking traffic. Rules are processed from the first to the last. This General rule is valid for all incoming connections. It's the 1st filter. (192.168.0.0/255.255.255.0)
 
 ; cmt_fm_address-permit
 Asterisk config: permit
@@ -180,7 +180,7 @@ Asterisk config: permit
 Address localnet:
 
 ; hlp_fm_address-localnet
-All RFC 1918 addresses are local networks
+All RFC 1918 addresses are local networks (192.168.0.0/255.255.255.0)
 
 ; cmt_fm_address-localnet
 Asterisk config: localnet
@@ -189,7 +189,7 @@ Asterisk config: localnet
 Address externip:
 
 ; hlp_fm_address-externip
-IP Address that we're going to notify in RTP media stream
+IP Address that we're going to notify in RTP media stream (192.168.0.10)
 
 ; cmt_fm_address-externip
 Asterisk config: externip
@@ -198,7 +198,7 @@ Asterisk config: externip
 Address externhost:
 
 ; hlp_fm_address-externhost
-Hostname (if dynamic) that we're going to notify in RTP media stream
+Hostname (if dynamic) that we're going to notify in RTP media stream (mydomain.dyndns.org)
 
 ; cmt_fm_address-externhost
 Asterisk config: externhost
