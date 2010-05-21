@@ -90,11 +90,12 @@ if(isset($_QR['fm_send']) === true
 #		// sort values
 		unset($positions[count($positions)-1]);
 		$idxs = array_keys($positions);
-		$res = usort(&$idxs, 
-			function($x, $y) {
+
+		function pos_sort($x, $y) {
 				global $positions;
 				return $positions[$x] - $positions[$y];
-			});
+		}
+		$res = usort(&$idxs, "pos_sort");
 
 		foreach($idxs as $idx)
 			$cursoftkey[] = $values[$idx];
