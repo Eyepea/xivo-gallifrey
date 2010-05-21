@@ -1443,7 +1443,7 @@ CREATE INDEX staticsccp__idx__var_name ON staticsccp(var_name);
 
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','servername','Asterisk');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','keepalive',60);
-INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','debug','core');
+INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','debug','');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','dateFormat','D.M.Y');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','port',2000);
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','firstdigittimeout',16);
@@ -1454,7 +1454,7 @@ INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','remotehangup_ton
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','transfer_tone',0);
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','callwaiting_tone','0x2d');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','musicclass','default');
-INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','dnd','off');
+INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','dnd','on');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','sccp_tos','0x68');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','sccp_cos',4);
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','audio_tos','0xB8');
@@ -1466,11 +1466,11 @@ INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','silencesuppressi
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','trustphoneip','no');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','private','on');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','protocolversion',11);
-INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_enabled','yes');
-INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_context','initconfig');
-INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_extension','sccp');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','disallow','all');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','language','fr');
+INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_enabled','yes');
+INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_context','xivo-initconfig');
+INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_extension','sccp');
 
 
 DROP TABLE trunkfeatures;
@@ -1871,6 +1871,20 @@ CREATE TABLE usersccp
  private varchar(3),                 -- on, off, NULL
  privacy varchar(4),                 -- on, off, full, NULL
  protocol char(3) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
+
+ -- softkeys
+ softkey_onhook      varchar(1024),
+ softkey_connected   varchar(1024),
+ softkey_onhold      varchar(1024),
+ softkey_ringin      varchar(1024),
+ softkey_offhook     varchar(1024),
+ softkey_conntrans   varchar(1024),
+ softkey_digitsfoll  varchar(1024),
+ softkey_connconf    varchar(1024),
+ softkey_ringout     varchar(1024),
+ softkey_offhookfeat varchar(1024),
+ softkey_onhint      varchar(1024),
+           
  defaultline integer unsigned,
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)

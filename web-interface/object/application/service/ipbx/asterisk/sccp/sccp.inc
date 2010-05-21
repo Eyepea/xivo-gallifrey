@@ -77,6 +77,16 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 		if(is_array($res['device']['addons']))
 			$res['device']['addons'] = implode(',', $res['device']['addons']);
 
+		/* softkeys
+			we receive softkeys as arrays (one per softkey)
+			we must transform it to a unique string (values separated by commas)
+		*/
+		if(is_array($arr['softkeys']))
+		{
+			foreach($arr['softkeys'] as $name => $values)
+				$res['device']["softkey_$name"] = implode(',', $values);
+		}
+
 		return $res;
 	}
 
@@ -125,7 +135,7 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$values['device']['defaultline'] = $lineid;
 		if(($devid  = $this->_usersccp->add($values['device'])) === false)
-			return false;
+		{ $this->_sccpline->delete($lineid);	return false; }
 
 		return $devid;
 	}
@@ -170,6 +180,23 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 		$arr['number']        = $arr['cid_num'];
 		$arr['secret']        = $arr['pin'];
 
+		// softkeys formatting: flatstring to array
+		$softkeys = array();
+		foreach(array_keys($arr) as $key)
+		{
+			if(strstr($key, 'softkey_') === false)
+				continue;
+
+			if(strlen($arr[$key]) == 0)
+				$values = array();
+			else
+				$values = explode(',', $arr[$key]);
+			$key = substr($key, 8);
+
+			$softkeys[$key] = $values;
+		}
+		$arr['softkeys'] = $softkeys;
+
 		return $arr;
 	}
 
@@ -184,8 +211,6 @@ class xivo_application_service_asterisk_sccp extends xivo_application_asterisk_a
 
 		$user = $this->_usersccp->get($id);
 		$this->_sccpline->delete($user['defaultline']);
-
-		$this->_sccpbutton->delete_where(array('device_id' => $id));
 		$ret = $this->_usersccp->delete($id);
 
 		return($ret);

@@ -125,6 +125,39 @@ $array['element']['protocol'] = array();
 $array['element']['protocol']['default'] = XIVO_SRE_IPBX_AST_PROTO_SCCP;
 $array['element']['protocol']['forcedef'] = true;
 
+$array['element']['softkey_onhook'] = array();
+$array['element']['softkey_onhook']['default'] = '';
+
+$array['element']['softkey_connected'] = array();
+$array['element']['softkey_connected']['default'] = '';
+
+$array['element']['softkey_onhold'] = array();
+$array['element']['softkey_onhold']['default'] = '';
+
+$array['element']['softkey_ringin'] = array();
+$array['element']['softkey_ringin']['default'] = '';
+
+$array['element']['softkey_offhook'] = array();
+$array['element']['softkey_offhook']['default'] = '';
+
+$array['element']['softkey_conntrans'] = array();
+$array['element']['softkey_conntrans']['default'] = '';
+
+$array['element']['softkey_digitsfoll'] = array();
+$array['element']['softkey_digitsfoll']['default'] = '';
+
+$array['element']['softkey_connconf'] = array();
+$array['element']['softkey_connconf']['default'] = '';
+
+$array['element']['softkey_ringout'] = array();
+$array['element']['softkey_ringout']['default'] = '';
+
+$array['element']['softkey_offhookfeat'] = array();
+$array['element']['softkey_offhookfeat']['default'] = '';
+
+$array['element']['softkey_onhint'] = array();
+$array['element']['softkey_onhint']['default'] = '';
+
 $array['element']['defaultline'] = array();
 $array['element']['defaultline']['default'] = '';
 
@@ -187,5 +220,16 @@ $array['filter']['private']          = array('set' => false, 'chk'	=> 2,
 $array['filter']['privacy']          = array('set' => false, 'chk'	=> 2,
 	'key' => array('on', 'off', 'full'));
 $array['filter']['protocol']         = array('set' => false);
+$array['filter']['softkey_onhook']        = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_connected']     = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_onhold']        = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_ringin']        = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_offhook']       = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_conntrans']     = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_digitsfoll']    = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_connconf']      = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_ringout']       = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_offhookfeat']   = array('set' => false, 'chk' => 2);
+$array['filter']['softkey_onhint']        = array('set' => false, 'chk' => 2);
 $array['filter']['defaultline']      = array('set' => false);
 

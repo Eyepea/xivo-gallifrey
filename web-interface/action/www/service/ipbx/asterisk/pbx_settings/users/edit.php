@@ -62,6 +62,7 @@ $_TPL->set_var('queueskills', $appqueue->userskills_get($_QR['id']));
 
 $sccp_addons = array('7914', '7915', '7916');
 
+
 if(isset($_QR['fm_send']) === true
 && dwho_issa('protocol',$_QR) === true
 && dwho_issa('userfeatures',$_QR) === true
@@ -86,6 +87,28 @@ if(isset($_QR['fm_send']) === true
 	if(count($_QR['sccp_addons']) > 0)
 		unset($_QR['sccp_addons'][count($_QR['sccp_addons'])-1]);
 	$_QR['protocol']['addons'] = $_QR['sccp_addons'];
+
+	$softkeys = array();
+	foreach($_QR['softkeys_order'] as $name => $positions)
+	{
+		$values     = $_QR['softkeys_key'][$name];
+		$cursoftkey = array();
+
+#		// sort values
+		unset($positions[count($positions)-1]);
+		$idxs = array_keys($positions);
+		$res = usort(&$idxs, 
+			function($x, $y) {
+				global $positions;
+				return $positions[$x] - $positions[$y];
+			});
+
+		foreach($idxs as $idx)
+			$cursoftkey[] = $values[$idx];
+
+		$softkeys[$name] = $cursoftkey;
+	}
+	$_QR['protocol']['softkeys'] = $softkeys;
 	
 	if($appuser->set_edit($_QR,$_QR['protocol']['protocol']) === false
 	|| $skillerr === false
@@ -210,6 +233,38 @@ if(empty($return) === false)
 else
 	$return = null;
 
+$_TPL->load_i18n_file('tpl/www/bloc/service/ipbx/asterisk/pbx_settings/users/edit.i18n', 'global');
+
+$order_list    = range(1, 20);
+$softkeys_list = array(
+	'redial'        => $_TPL->bbf('softkey_redial'),
+	'newcall'       => $_TPL->bbf('softkey_newcall'),
+	'cfwdall'       => $_TPL->bbf('softkey_cfwdall'),
+	'cfwdbusy'      => $_TPL->bbf('softkey_cfwdbusy'),
+	'cfwdnoanswer'  => $_TPL->bbf('softkey_cfwdnoanswer'),
+	'pickup'        => $_TPL->bbf('softkey_pickup'),
+	'gpickup'       => $_TPL->bbf('softkey_gpickup'),
+	'conflist'      => $_TPL->bbf('softkey_conflist'),
+	'dnd'           => $_TPL->bbf('softkey_dnd'),
+	'hold'          => $_TPL->bbf('softkey_hold'),
+	'endcall'       => $_TPL->bbf('softkey_endcall'),
+	'park'          => $_TPL->bbf('softkey_park'),
+	'select'        => $_TPL->bbf('softkey_select'),
+	'idivert'       => $_TPL->bbf('softkey_idivert'),
+	'resume'        => $_TPL->bbf('softkey_resume'),
+	'transfer'      => $_TPL->bbf('softkey_transfer'),
+	'dirtrfr'       => $_TPL->bbf('softkey_dirtrfr'),
+	'answer'        => $_TPL->bbf('softkey_answer'),
+	'transvm'       => $_TPL->bbf('softkey_transvm'),
+	'private'       => $_TPL->bbf('softkey_private'),
+	'meetme'        => $_TPL->bbf('softkey_meetme'),
+	'barge'         => $_TPL->bbf('softkey_barge'),
+	'cbarge'        => $_TPL->bbf('softkey_cbarge'),
+	'conf'          => $_TPL->bbf('softkey_conf'),
+	'backjoin'      => $_TPL->bbf('softkey_backjoin'),
+);
+
+
 $element['queueskills'] =  $appqueue->skills_gettree();
 
 $_TPL->set_var('id',$info['userfeatures']['id']);
@@ -236,6 +291,8 @@ $_TPL->set_var('fkidentity_list',$appuser->get_phonefunckey_identity());
 $_TPL->set_var('fktype_list',$appuser->get_phonefunckey_type());
 $_TPL->set_var('profileclient_list',$appuser->get_profileclient_list());
 $_TPL->set_var('sccp_addons',$sccp_addons);
+$_TPL->set_var('order_list', $order_list);
+$_TPL->set_var('softkeys_list', $softkeys_list);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/uri.js');

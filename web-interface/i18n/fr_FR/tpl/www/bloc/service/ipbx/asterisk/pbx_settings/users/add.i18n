@@ -1015,3 +1015,94 @@ Asterisk
 ; fm_pickupmodeanswer-opt(off)
 Callmanager
 
+; fld-softkeys
+Touches contextuelles
+
+; softkey_order
+Ordre
+
+; softkey_key
+Action
+
+; no_softkeys
+Aucunes actions associées
+
+; softkey_event(onhook)
+En ligne
+
+; softkey_event(connected)
+; softkey_event(onhold)
+En attente
+
+; softkey_event(ringin)
+Sonnerie
+
+; softkey_event(offhook)
+Raccroché
+
+; softkey_event(conntrans)
+; softkey_event(digitsfoll)
+; softkey_event(connconf)
+; softkey_event(ringout)
+Appel sortant
+
+; softkey_event(offhookfeat)
+; softkey_event(onhint)
+; softkey_redial
+Rappel
+
+; softkey_newcall
+Nouvel appel
+
+; softkey_cfwdall
+Transfert inconditionnel
+
+; softkey_cfwdbusy
+Transfert sur occupation
+
+; softkey_cfwdnoanswer
+Transfert sur non réponse
+
+; softkey_pickup
+Interception
+
+; softkey_gpickup
+; softkey_conflist
+; softkey_dnd
+NPD
+
+; softkey_hold
+Mettre en attente
+
+; softkey_endcall
+Raccrocher
+
+; softkey_park
+Parquer l'appel
+
+; softkey_select
+; softkey_idivert
+; softkey_resume
+Reprendre en appel en attente
+
+; softkey_transfer
+Transfert attendu
+
+; softkey_dirtrfr
+Transfert direct
+
+; softkey_answer
+Répondre
+
+; softkey_transvm
+; softkey_private
+Mode privé
+
+; softkey_meetme
+Conférence
+
+; softkey_barge
+; softkey_cbarge
+; softkey_conf
+; softkey_backjoin
+

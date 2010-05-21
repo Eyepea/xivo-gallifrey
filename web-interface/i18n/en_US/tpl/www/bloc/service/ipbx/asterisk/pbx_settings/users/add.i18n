@@ -970,3 +970,98 @@ Asterisk mode
 
 ; fm_pickupmodeanswer-opt(off)
 Callmanager mode
+
+
+; fld-softkeys
+Softkeys
+
+; softkey_order
+Order
+
+; softkey_key
+Key
+
+; no_softkeys
+No softkeys
+
+
+
+; softkey_event(onhook)
+On hook
+
+; softkey_event(connected)
+; softkey_event(onhold)
+On hold
+
+; softkey_event(ringin)
+Ringing
+
+; softkey_event(offhook)
+Off hook
+
+; softkey_event(conntrans)
+; softkey_event(digitsfoll)
+; softkey_event(connconf)
+; softkey_event(ringout)
+Outgoing call
+
+; softkey_event(offhookfeat)
+; softkey_event(onhint)
+; softkey_redial
+Redial
+
+; softkey_newcall
+New call
+
+; softkey_cfwdall
+Unconditional transfer
+
+; softkey_cfwdbusy
+Transfer on busy
+
+; softkey_cfwdnoanswer
+Transfer on no answer
+
+; softkey_pickup
+Interception
+
+; softkey_gpickup
+; softkey_conflist
+; softkey_dnd
+DND
+
+; softkey_hold
+Put on hold
+
+; softkey_endcall
+Hangup
+
+; softkey_park
+Park call
+
+; softkey_select
+; softkey_idivert
+; softkey_resume
+Resume onhold-call
+
+; softkey_transfer
+Attended transfer
+
+; softkey_dirtrfr
+Direct transfer
+
+; softkey_answer
+Answer
+
+; softkey_transvm
+; softkey_private
+Private mode
+
+; softkey_meetme
+Conference room
+
+; softkey_barge
+; softkey_cbarge
+; softkey_conf
+; softkey_backjoin
+

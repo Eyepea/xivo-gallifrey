@@ -27,7 +27,8 @@ from xivo.provisioning import get_funckeys
 
 cursor = db_connect().cursor()
 
-cursor.query("SELECT ${columns} FROM staticsccp WHERE commented = 0 ORDER BY var_name", ('var_name', 'var_val'))
+cursor.query("SELECT ${columns} FROM staticsccp WHERE commented = 0 AND var_val IS NOT NULL ORDER BY var_name",
+    ('var_name', 'var_val'))
 print "[general]"
 for r in cursor.fetchall():
     print "%s = %s" % (r['var_name'], r['var_val'])
@@ -67,6 +68,17 @@ cursor.query("SELECT ${columns} FROM usersccp s, userfeatures u, phone p " +
    's.private',
    's.privacy',
    's.defaultline',
+   's.softkey_onhook',
+   's.softkey_connected',
+   's.softkey_onhold',
+   's.softkey_ringin',
+   's.softkey_offhook',
+   's.softkey_conntrans',
+   's.softkey_digitsfoll',
+   's.softkey_connconf',
+   's.softkey_ringout',
+   's.softkey_offhookfeat',
+   's.softkey_onhint',
   ))
 for r in cursor.fetchall():
     name  = 'SEP' + r['p.macaddr'].replace(':', '')
@@ -89,11 +101,16 @@ for r in cursor.fetchall():
     print "devicetype = %s" % devicetype
     for addon in addons:
         print "addon = %s" % addon
-    
+
+    softkeys = {}
     for k, v in r.iteritems():
         k = k.split('.')[1]
-        if k in ['id', 'macaddr', 'vendor', 'model','defaultline', 'addons'] \
+        if k in ['id', 'macaddr', 'vendor', 'model','defaultline', 'addons', 'number'] \
         or v is None or len(str(v)) == 0:
+            continue
+
+        if k.startswith('softkey_'):
+            softkeys[k[8:]] = v
             continue
 
         print "%s = %s" % (k, v)
@@ -136,6 +153,17 @@ for r in cursor.fetchall():
             print
 
         fknum += 1
+
+    # soft keys
+    if len(softkeys) > 0:
+        print "softkeyset = keyset_%s" % name
+
+        ## END OF DEVICE / START OF SOFTKEY
+        print "\n[keyset_%s]" % name
+        print "type = softkeyset"
+        
+        for k, v in softkeys.iteritems():
+            print "%s = %s" % (k, v)
 
 
 #

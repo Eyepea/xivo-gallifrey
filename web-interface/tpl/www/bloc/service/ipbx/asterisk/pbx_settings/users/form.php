@@ -1121,10 +1121,26 @@ endif;
 			'</p>';
 	endif;
 
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp');
-
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp_addons');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
+
+	// softkeys
 ?>
+	<br/>
+	<div id="div-softkeys">
+	<fieldset id="fld-softkeys">
+	<legend><?=$this->bbf('fld-softkeys');?></legend>
+
+<?php
+	$softkeys = array('onhook', 'connected', 'onhold', 'ringin', 'offhook', 'conntrans', 'digitsfoll', 			'connconf', 'ringout', 'offhookfeat', 'onhint');
+	foreach($softkeys as $softkey)
+	{
+		$this->set_var('softkey', $softkey);
+		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp_softkeys');
+	}
+?>
+	</fieldset>
+	</div>
 </div>
 
 <div id="sb-part-rightcall" class="b-nodisplay">

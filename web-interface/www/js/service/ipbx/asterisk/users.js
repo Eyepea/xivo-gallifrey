@@ -635,7 +635,10 @@ function xivo_ast_user_chg_protocol(protocol)
 				'it-protocol-disallow',
 				Number(codec_active.checked === false));
 
-dwho_eid('sb-list-addons').style.visibility = 'collapse';
+	dwho_eid('sb-list-addons').style.visibility = 'collapse';
+//	dwho_eid('sb-list-softkeys').style.visibility = 'collapse';
+	dwho_eid('fld-softkeys').style.visibility   = 'hidden';
+//	dwho_eid('div-softkeys').style.visibility   = 'hidden';
 
 	if(xivo_ast_user_protocol === 'sccp')
 	{
@@ -646,6 +649,7 @@ dwho_eid('sb-list-addons').style.visibility = 'collapse';
 		);
 
 		dwho_eid('sb-list-addons').style.visibility = 'visible';
+		dwho_eid('fld-softkeys').style.visibility   = 'visible';
 	}
 }
 

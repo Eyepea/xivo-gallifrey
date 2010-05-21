@@ -142,7 +142,7 @@ $array['filter']['mailbox']                      = array('set' => false, 'chk'	=
 $array['filter']['vmnum']                        = array('set' => false, 'chk'	=> 2);
 $array['filter']['meetmenum']                    = array('set' => false, 'chk'	=> 2);
 $array['filter']['cid_name']                     = array('set' => false, 'chk'	=> 2);
-$array['filter']['cid_num']                      = array('set' => false, 'chk'	=> 0);
+$array['filter']['cid_num']                      = array('set' => false, 'chk'	=> 2);
 $array['filter']['trnsfvm']                      = array('set' => false, 'chk'	=> 2);
 $array['filter']['secondary_dialtone_digits']    = array('set' => false, 'chk'	=> 2,
 	'cast' => 'uint','between' => array(0,9));
