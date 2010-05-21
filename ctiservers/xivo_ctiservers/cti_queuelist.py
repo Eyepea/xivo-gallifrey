@@ -90,7 +90,7 @@ class QueueStats:
               call_time_t > %d and
               hold_time < %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (queuename, param['window'], param['window'], param['xqos'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f %%"))
 
@@ -106,7 +106,7 @@ class QueueStats:
         WHERE call_picker IS NOT NULL and
               call_time_t > %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
@@ -122,7 +122,7 @@ class QueueStats:
         WHERE call_picker IS NOT NULL and
               call_time_t > %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
@@ -138,7 +138,7 @@ class QueueStats:
         WHERE call_picker IS NOT NULL and
               call_time_t > %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
@@ -155,7 +155,7 @@ class QueueStats:
               hold_time IS NOT NULL and
               call_time_t > %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
@@ -172,7 +172,7 @@ class QueueStats:
               hold_time IS NOT NULL and
               call_time_t > %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
@@ -185,10 +185,9 @@ class QueueStats:
         sql = '''
         SELECT count(*)
         FROM queue_info
-        WHERE hold_time IS NOT NULL and
-              call_time_t > %d and
+        WHERE call_time_t > %d and
               queue_name = "%s"
-        ''' 
+        '''
         self.cur.query(sql,None, (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
