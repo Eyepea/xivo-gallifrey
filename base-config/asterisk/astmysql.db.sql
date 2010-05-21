@@ -1917,7 +1917,7 @@ CREATE INDEX `userqueueskill__idx__userid` ON `userqueueskill`(`userid`);
 DROP TABLE IF EXISTS `usersccp`;
 CREATE TABLE `usersccp`
 (
- `id` int(10) unsigned,
+ `id` int(10) unsigned auto_increment,
  `name` varchar(128),
  `devicetype` varchar(64),            -- phone model, ie 7960
  `keepalive` int(3) unsigned,        -- i.e 60
@@ -1970,7 +1970,7 @@ CREATE UNIQUE INDEX `usersccp__uidx__name` ON `usersccp`(`name`);
 DROP TABLE IF EXISTS `sccpline`;
 CREATE TABLE `sccpline`
 (
- `id` int(10) unsigned,
+ `id` int(10) unsigned auto_increment,
  `name` varchar(80) NOT NULL,
  `pin` varchar(8) NOT NULL DEFAULT '',
  `label` varchar(128) NOT NULL DEFAULT '',
