@@ -114,7 +114,7 @@ Preprocess subroutine :
 Description :
 
 ; col_startdate
-Date d'ouverture de la conférence
+Conference starting date
 
 ; meetmefeatures_startdate-mday
 Monthday

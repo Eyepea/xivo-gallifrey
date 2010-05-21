@@ -629,25 +629,25 @@ Disconnect a dynamic agent
 Connect a dynamic agent
 
 ; fm_phonefunckey_type-optgroup(extension-groups)
-Groupes
+Groups
 
 ; fm_phonefunckey_type-opt(extenfeatures-grouptogglemember)
-Ajoute/enlève un membre d'un groupe
+Add/remove a member into/from a group
 
 ; fm_phonefunckey_type-opt(extenfeatures-groupaddmember)
-Ajoute un membre dans un groupe
+Add a member into a group
 
 ; fm_phonefunckey_type-opt(extenfeatures-groupremovemember)
-Removes a member of a group
+Remove a member from a group
 
 ; fm_phonefunckey_type-opt(extenfeatures-queuetogglemember)
-Add / remove a member of a queue
+Add/remove a member into/from a queue
 
 ; fm_phonefunckey_type-opt(extenfeatures-queueaddmember)
-Adds a member in a queue
+Add a member into a queue
 
 ; fm_phonefunckey_type-opt(extenfeatures-queueremovemember)
-Removes a member of a queue
+Remove a member from a queue
 
 ; fm_phonefunckey_type-optgroup(extension-parking)
 Parking

@@ -164,7 +164,7 @@ Disabled
 Customize the name of the caller:
 
 ; fm_callerid_mode-opt(prepend)
-Préfix
+Prefix
 
 ; fm_callerid_mode-opt(overwrite)
 Overwrite

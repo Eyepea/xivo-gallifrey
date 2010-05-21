@@ -194,13 +194,13 @@ URL access to records:
 File sound beeps:
 
 ; fm_agentoptions_custom-beep-opt(default)
-Défault
+Default
 
 ; fm_agentoptions_goodbye
 Sound file end a call:
 
 ; fm_agentoptions_goodbye-opt(default)
-Défault
+Default
 
 ; fm_agentfeatures_description
 Description:
