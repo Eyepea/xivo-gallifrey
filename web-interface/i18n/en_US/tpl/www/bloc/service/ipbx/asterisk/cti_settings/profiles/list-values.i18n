@@ -20,7 +20,7 @@ Unconditional transfer to a number
 Transfer on busy
 
 ; fwdrna
-Transfert on no-answer
+Transfer on no-answer
 
 ; presence 
 Presence permission
