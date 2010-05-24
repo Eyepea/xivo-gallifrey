@@ -48,8 +48,6 @@ $tree = $this->get_var('tree');
 
 	$ref = &$tree['xivo'];
 
-var_dump($tree['xivo']);
-
 	if(dwho_issa('child',$ref) === true && empty($ref['child']) === false):
 		foreach($ref['child'] as $v):
 			echo	'<tr><th>',
