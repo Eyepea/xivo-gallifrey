@@ -187,7 +187,7 @@ class Cisco(PhoneVendorMixin):
             
         ## sccp:: addons
         addons = ['\n']
-        if 'addons' in provinfo and len(provinfo['addons'] > 0):
+        if 'addons' in provinfo and len(provinfo['addons']) > 0:
             log.debug("addons= %s", provinfo['addons'])
             addons_tpl_path = os.path.join(self.TEMPLATES_DIR, "sccp-cisco-addons.cfg")
             if not os.access(addons_tpl_path, os.R_OK):
