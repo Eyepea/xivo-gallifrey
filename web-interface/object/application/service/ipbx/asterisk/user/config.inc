@@ -56,5 +56,6 @@ $array['import']['field']['incallexten'] = array('incall','exten');
 $array['import']['field']['incallcontext'] = array('incall','context');
 $array['import']['field']['incallringseconds'] = array('incall','ringseconds');
 $array['import']['field']['accountcode'] = array('protocol','accountcode');
+$array['import']['field']['amaflags'] = array('protocol','amaflags');
 
 ?>
