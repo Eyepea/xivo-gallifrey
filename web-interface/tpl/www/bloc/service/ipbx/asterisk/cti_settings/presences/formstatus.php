@@ -159,14 +159,14 @@ endif;
 				<td class="td-left txt-center">
 	<?php
 					echo $form->select(array('paragraph'	=> false,
-								   'name'		=> 'actionslist[]',
-								   'id'		=> false,
-								   'label'		=> false,
+								   'name'     => 'actionslist[]',
+								   'id'       => false,
+								   'label'    => false,
 #								   'key'		=> false,
-#								   'key'      => 'name',
-#								   'altkey'   => 'id',
-								   'selected'	=> $match[1],
-								   'invalid'	=> true,
+								   'key'      => 'name',
+								   'altkey'   => 'id',
+								   'selected' => $match[1],
+								   'invalid'  => true,
 							 ),
 							 $actionsavail);?>
 				</td>
@@ -207,11 +207,13 @@ endif;
 				<td class="td-left txt-center">
 	<?php
 					echo $form->select(array('paragraph'	=> false,
-								   'name'		=> 'actionslist[]',
-								   'id'		=> false,
+								   'name'     => 'actionslist[]',
+								   'id'       => false,
 								   'label'		=> false,
-								   'key'		=> false,
-								   'invalid'	=> true
+#								   'key'		=> false,
+								   'key'      => 'name',
+								   'altkey'   => 'id',
+								   'invalid'  => true
 							 ),
 							 $actionsavail);?>
 				</td>
