@@ -252,13 +252,20 @@ class SQLBackEnd:
             confdico = self.sql_select_one(
                 ("SELECT ${columns} FROM %s WHERE %s.protocol = %s AND %s.%s = %s")
                 % (UF_TABLE, UF_TABLE, '%s', UF_TABLE, something_column, '%s'), 
-                ('id',),
+                ('id', 'protocolid'),
                 (proto, something_content),
             )
 
             if not confdico:
                 return {'proto': proto, 'extensions': {}}
 
+            extrainfos = self.sql_select_one(
+                "SELECT ${columns} FROM usersccp, sccpline WHERE usersccp.defaultline = sccpline.id AND usersccp.id = %s",
+                ('addons', 'language'),
+                (confdico['protocolid'],)
+            )
+
+            confdico.update(extrainfos)
             confdico.update({'proto': proto, 'extensions': {}})
             confdico['iduserfeatures'] = confdico['id']
 

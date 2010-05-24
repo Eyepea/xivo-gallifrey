@@ -49,6 +49,21 @@ class Cisco(PhoneVendorMixin):
     CISCO_COMMON_HTTP_PASS = ""
 
     CISCO_COMMON_DIR = None
+    
+    CISCO_LOCALES = {
+        'en': {
+            # name of locales directory (/tftpboot/Cisco/XXX)
+            'name'         : 'English_United_States',
+            'langCode'     : 'en',
+            # dial tones
+            'networkLocale': 'United_States',
+        },
+        'fr': {
+            'name'         : 'French_France',
+            'langCode'     : 'fr',
+            'networkLocale': 'France',
+        },
+    }
 
     @classmethod
     def setup(cls, config):
@@ -169,6 +184,39 @@ class Cisco(PhoneVendorMixin):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
+            
+        ## sccp:: addons
+        addons = ['\n']
+        if 'addons' in provinfo and len(provinfo['addons'] > 0):
+            log.debug("addons= %s", provinfo['addons'])
+            addons_tpl_path = os.path.join(self.TEMPLATES_DIR, "sccp-cisco-addons.cfg")
+            if not os.access(addons_tpl_path, os.R_OK):
+                log.debug("Could not open cisco addons template %r (errno: %r, errstr: %r).",
+                    addons_tpl_path, errno, errstr)
+
+            addons_tpl_file = open(addons_tpl_path)
+            addons_tpl      = addons_tpl_file.readlines()
+            addons_tpl_file.close()
+            log.debug(addons_tpl)
+
+            _addons = provinfo['addons'].split(',')
+            for i in xrange(len(_addons)):
+                addons.extend(xivo_config.txtsubst(addons_tpl, 
+                    {'index': str(i), 'firmware': ''}, None, 'utf8'))
+
+        addons = ''.join(addons)
+
+        ## sccp:: language
+        language = 'en'
+        if 'language' in provinfo and provinfo['language'] in self.CISCO_LOCALES:
+            language = provinfo['language']
+        language = """
+ <userLocale>
+  <name>%(name)s</name>
+  <langCode>%(langCode)s</langCode>
+ </userLocale>
+ <networkLocale>%(networkLocale)s</networkLocale>
+""" % self.CISCO_LOCALES[language]
 
 
         txt = xivo_config.txtsubst(
@@ -177,7 +225,9 @@ class Cisco(PhoneVendorMixin):
                     provinfo,
                     { 'user_vmail_addr':        provinfo['vmailaddr'],
                       'exten_pickup_prefix':    exten_pickup_prefix,
-                      'function_keys':          function_keys_config_lines
+                      'function_keys':          function_keys_config_lines,
+                      'addons':                 addons,
+                      'language':               language,
                     },
                     clean_extension),
                 cfg_filename,
