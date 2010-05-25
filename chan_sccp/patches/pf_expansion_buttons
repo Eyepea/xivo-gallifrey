@@ -1,0 +1,18 @@
+Index: asterisk-chan-sccp-0~svn1521/src/sccp_actions.c
+===================================================================
+--- asterisk-chan-sccp-0~svn1521.orig/src/sccp_actions.c	2010-05-11 13:20:52.000000000 +0200
++++ asterisk-chan-sccp-0~svn1521/src/sccp_actions.c	2010-05-25 17:27:36.000000000 +0200
+@@ -599,6 +599,13 @@
+ 		  
+ 		}
+ 		SCCP_LIST_UNLOCK(&d->buttonconfig);
++
++		// all non defined buttons are set to UNUSED
++		for (i = 0; i < StationMaxButtonTemplateSize ; i++) {
++			if(btn[i].type == SCCP_BUTTONTYPE_MULTI)
++			{ btn[i].type = SKINNY_BUTTONTYPE_UNUSED; }
++		}
++		
+ 	}else{
+ 		/* reserve one line as hotline */
+ 		btn[i].type = SKINNY_BUTTONTYPE_LINE;

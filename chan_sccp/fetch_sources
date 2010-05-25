@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -e
+
+. sources.pkg
+
+##########################################################################
+
+usage()
+{
+	echo "Usage: $0 <revision>"
+}
+
+SVN_OPTS="-q"
+
+REVISION=$1
+if [ -z "${REVISION}" ]; then
+	REVISION=$(svn info ${SVN_URL} | awk '/^Revision:/ {print $2}')
+fi
+
+SVN_OPTS="${SVN_OPTS} -r ${REVISION}"
+
+if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
+	VERSION="0~svn${REVISION}+dfsg"
+else
+	VERSION="0~svn${REVISION}"
+fi
+FILENAME="${PKG_NAME}_${VERSION}.orig.tar.gz"
+
+mkdir -p ${DEST_PATH}
+
+if [ -e "${DEST_PATH}/${FILENAME}" ]; then
+	echo "A tarball already exist for this version ; remove it if you want to regenerate."
+	exit 0
+fi
+
+DIRNAME="${PKG_NAME}-${VERSION}"
+
+TMPDIR=$(mktemp -d)
+APPDIR="${TMPDIR}/${DIRNAME}"
+
+svn export ${SVN_OPTS} ${SVN_URL} ${APPDIR}
+
+if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
+	echo "Removing non DFSG-free content..."
+	cd ${APPDIR}
+	rm -rf ${DFSG_EXCLUDE_PATTERNS}
+fi
+
+echo "Creating '${FILENAME}'"
+tar -C ${TMPDIR} -czf ${DEST_PATH}/${FILENAME} ${DIRNAME}
+
+rm -rf ${TMPDIR}
+
+echo "Done !"
+
