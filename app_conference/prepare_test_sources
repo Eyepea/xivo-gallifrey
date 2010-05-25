@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. sources.pkg
+. ./sources.pkg
 
 VER=$(cat SOURCE-VERSION)
 
@@ -10,6 +10,11 @@ if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
 	FILENAME="${PKG_NAME}_${VER}+dfsg.orig.tar.gz"
 else
 	FILENAME="${PKG_NAME}_${VER}.orig.tar.gz"
+fi
+
+if [ ! -e ${DEST_PATH}/${FILENAME} ]; then
+	echo "The corresponding tarball is missing (${FILENAME})" >&2
+	exit 1
 fi
 
 rm -rf tmp
