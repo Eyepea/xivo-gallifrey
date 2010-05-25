@@ -362,8 +362,8 @@ class dwho_filter
 		else if($value_is_number === false)
 			return(false);
 		else if($value % $mod === 0
-		|| $beg === $value
-		|| $end === $value)
+		|| $beg == $value
+		|| $end == $value)
 			return(true);
 
 		return(false);
