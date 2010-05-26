@@ -1,7 +1,7 @@
 Index: asterisk-1.4.30/apps/app_queue.c
 ===================================================================
 --- asterisk-1.4.30.orig/apps/app_queue.c	2010-05-17 10:28:58.000000000 +0200
-+++ asterisk-1.4.30/apps/app_queue.c	2010-05-26 14:48:06.000000000 +0200
++++ asterisk-1.4.30/apps/app_queue.c	2010-05-26 15:29:12.000000000 +0200
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -1154,7 +1154,7 @@ Index: asterisk-1.4.30/apps/app_queue.c
 +				ao2_ref(member, -1);
 +			}
 +			ao2_iterator_destroy(&mem_iter);
-+			if (rule->dcond && !operator_eval_dynamics(rule->dcond, variables, qe)) {
++			if (!ao2_container_count(qe->mem_selection) || (rule->dcond && !operator_eval_dynamics(rule->dcond, variables, qe))) {
 +				/* CLEAR to retry. */
 +				ast_log(LOG_NOTICE, "Too Bad, but we need to ENLARGE\n");
 +				ao2_ref(qe->mem_selection, -1);
