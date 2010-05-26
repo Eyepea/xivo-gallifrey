@@ -1,7 +1,7 @@
 Index: asterisk-1.4.30/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.30.orig/apps/app_queue.c	2010-03-30 16:48:31.000000000 +0200
-+++ asterisk-1.4.30/apps/app_queue.c	2010-05-06 12:17:10.000000000 +0200
+--- asterisk-1.4.30.orig/apps/app_queue.c	2010-05-17 10:28:58.000000000 +0200
++++ asterisk-1.4.30/apps/app_queue.c	2010-05-26 14:48:06.000000000 +0200
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -724,7 +724,7 @@ Index: asterisk-1.4.30/apps/app_queue.c
 +	int value = 0;
 +	struct skill* skill;
 +	struct ao2_iterator iter = ao2_iterator_init(skills->skills, 0);
-+	while ((skill = ao2_iterator_next(&iter)) && strcmp(skill->name, key))
++	while ((skill = ao2_iterator_next(&iter)) && strcasecmp(skill->name, key))
 +		ao2_ref(skill, -1);
 +
 +	if (!skill)
@@ -802,7 +802,7 @@ Index: asterisk-1.4.30/apps/app_queue.c
 +	size_t i;
 +	int value = 0;
 +
-+	for (i = 0; i < sizeof(static_vars) / sizeof(*static_vars) && strcmp(static_vars[i].name, key); ++i)
++	for (i = 0; i < sizeof(static_vars) / sizeof(*static_vars) && strcasecmp(static_vars[i].name, key); ++i)
 +		;
 +
 +	if (i < (sizeof(static_vars) / sizeof(*static_vars)))
@@ -816,8 +816,8 @@ Index: asterisk-1.4.30/apps/app_queue.c
 +                                              const char *right_name, int right_value, void* data)
 +{
 +	struct queue_ent* qe = data;
-+	int left_wt = left_name && !strcmp(left_name, "WT");
-+	int right_wt = right_name && !strcmp(right_name, "WT");
++	int left_wt = left_name && !strcasecmp(left_name, "WT");
++	int right_wt = right_name && !strcasecmp(right_name, "WT");
 +	int new_check = 0;
 +
 +	if (left_wt && right_wt) {
@@ -2039,7 +2039,7 @@ Index: asterisk-1.4.30/apps/app_queue.c
 Index: asterisk-1.4.30/configs/queueskillrules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.30/configs/queueskillrules.conf.sample	2010-04-02 15:12:47.000000000 +0200
++++ asterisk-1.4.30/configs/queueskillrules.conf.sample	2010-05-17 10:28:58.000000000 +0200
 @@ -0,0 +1,68 @@
 +; This file describes skill routing rules. The Queue() application can get the
 +; 'skill_ruleset' argument which is the name of one skill routing ruleset. If
@@ -2112,7 +2112,7 @@ Index: asterisk-1.4.30/configs/queueskillrules.conf.sample
 Index: asterisk-1.4.30/configs/queueskills.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.30/configs/queueskills.conf.sample	2010-03-30 16:48:31.000000000 +0200
++++ asterisk-1.4.30/configs/queueskills.conf.sample	2010-05-17 10:28:58.000000000 +0200
 @@ -0,0 +1,47 @@
 +; Describe skills groups here to assign them to queue members. You can set
 +; weight to each skills. It'll be used by skill rules to know if a queue member
