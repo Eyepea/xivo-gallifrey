@@ -57,9 +57,14 @@ class Config:
 
                     for k, v in json["main"].iteritems():
                         if type(v) == type(list()):
-                           self.xivoconf.set('general', k, ' : '.join(v))
+                            if k in ['incoming_tcp_fagi', 'incoming_tcp_cti',
+                                     'incoming_tcp_info', 'incoming_tcp_webi',
+                                     'incoming_udp_announce']:
+                                self.xivoconf.set('general', k, ' : '.join(v))
+                            else:
+                                self.xivoconf.set('general', k, ','.join(v))
                         else:
-                           self.xivoconf.set('general', k, v)
+                            self.xivoconf.set('general', k, v)
 
                     for asterisk_server in json['main']['asterisklist']:
                         debug_add_section(self.xivoconf, asterisk_server)
