@@ -275,6 +275,9 @@ $array['module']['sccpbuttonconfig']['datastorage'] = true;
 $array['module']['generalsccp'] = array();
 $array['module']['generalsccp']['datastorage'] = true;
 
+$array['module']['agentqueueskill'] = array();
+$array['module']['agentqueueskill']['datastorage'] = true;
+
 
 $array['protocol'] = array();
 $array['protocol'][XIVO_SRE_IPBX_AST_PROTO_SIP]    = array('module' => 'usersip');

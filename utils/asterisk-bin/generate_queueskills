@@ -22,17 +22,27 @@ from xivo import OrderedConf
 from xivo import xivo_helpers
 
 cursor = xivo_helpers.db_connect().cursor()
+section = None
 
 cursor.query("SELECT ${columns} FROM userqueueskill u, userfeatures uf, queueskill s WHERE u.userid = uf.id AND u.skillid = s.id", ('uf.id', 's.name', 'u.weight'))
 res = cursor.fetchall()
-
-section = None
 for r in res:
 	nsection = "%d" % r['uf.id']
 
 	if nsection != section:		
-		print "\n[%s]" % nsection
+		print "\n[user-%s]" % nsection
 		section = nsection
 
 	print "%s = %s" % (r['s.name'], r['u.weight'])
+
+cursor.query("SELECT ${columns} FROM agentqueueskill a, agentfeatures af, queueskill s WHERE a.agentid = af.id AND a.skillid = s.id", ('af.id', 's.name', 'a.weight'))
+res = cursor.fetchall()
+for r in res:
+	nsection = "%d" % r['af.id']
+
+	if nsection != section:		
+		print "\n[agent-%s]" % nsection
+		section = nsection
+
+	print "%s = %s" % (r['s.name'], r['a.weight'])
 

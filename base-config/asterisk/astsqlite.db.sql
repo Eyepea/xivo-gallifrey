@@ -75,6 +75,19 @@ CREATE INDEX agentgroup__idx__deleted ON agentgroup(deleted);
 INSERT INTO agentgroup VALUES (1,3,'default','',0,0,'');
 
 
+-- agent queueskills
+DROP TABLE agentqueueskill;
+CREATE TABLE agentqueueskill
+(
+ agentid integer unsigned,
+ skillid integer unsigned,
+ weight integer unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(agentid, skillid)
+);
+
+CREATE INDEX agentqueueskill__idx__agentid ON agentqueueskill(agentid);
+
+
 DROP TABLE callerid;
 CREATE TABLE callerid (
  mode varchar(9),

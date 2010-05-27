@@ -58,8 +58,8 @@ switch($act)
 
 		$result = $fm_save = $error = null;
 
-		if(isset($_QR['fm_send']) === true
-		&& dwho_issa('agentgroup',$_QR) === true)
+		if(isset($_QR['fm_send'])              === true
+		&& dwho_issa('agentgroup',$_QR)        === true)
 		{
 			if($appagentgroup->set_add($_QR) === false
 			|| $appagentgroup->add() === false)
@@ -147,7 +147,6 @@ switch($act)
 								    'context'	=> SORT_ASC),
 							      null,
 							      true);
-
 		$appqueue = &$ipbx->get_application('queue',null,false);
 
 		if(($queues = $appqueue->get_queues_list(null,
@@ -313,7 +312,7 @@ switch($act)
 							    null,
 							    true);
 
-		$appqueue = &$ipbx->get_application('queue',null,false);
+		$appqueue = &$ipbx->get_application('queue',null);
 
 		if(($queues = $appqueue->get_queues_list(null,
 							 array('name'	=> SORT_ASC),
@@ -324,16 +323,32 @@ switch($act)
 		$appagent = &$ipbx->get_application('agent');
 
 		$result = $fm_save = $error = null;
+		$queueskills = array();
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('agentfeatures',$_QR) === true
-		&& dwho_issa('agentoptions',$_QR) === true)
+		&& dwho_issa('agentoptions',$_QR) === true
+		&& dwho_issa('queueskill-skill',$_QR)  === true
+		&& dwho_issa('queueskill-weight',$_QR) === true)
 		{
+			// skipping the last one (empty entry)
+			$count = count($_QR['queueskill-skill']) - 1;
+			for($i = 0; $i < $count; $i++)
+			{
+				$queueskills[] = array(
+					'id'    	=> $_QR['queueskill-skill'][$i],
+					'weight'	=> $_QR['queueskill-weight'][$i],
+				);
+			}
+			$_QR['queueskills'] = $queueskills;
+
 			if($appagent->set_add($_QR) === false
 			|| $appagent->add() === false)
 			{
 				$fm_save = false;
 				$result = $appagent->get_result();
+				$queueskills = $result['queueskills'];
+
 				$error = $appagent->get_error();
 			}
 			else
@@ -384,10 +399,15 @@ switch($act)
 			}
 		}
 
+		$element = $appagent->get_elements();
+		$element['queueskills'] = $appqueue->skills_gettree();
+		$_TPL->set_var('element', $element);
+
+		$_TPL->set_var('queueskills', $queueskills);
+
 		$_TPL->set_var('info',$result);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
-		$_TPL->set_var('element',$appagent->get_elements());
 		$_TPL->set_var('umember',$umember);
 		$_TPL->set_var('queues',$queues);
 		$_TPL->set_var('qmember',$qmember);
@@ -426,13 +446,15 @@ switch($act)
 							    null,
 							    true);
 
-		$appqueue = &$ipbx->get_application('queue',null,false);
+		$appqueue = &$ipbx->get_application('queue',null);
 
 		if(($queues = $appqueue->get_queues_list(null,
 							 array('name'	=> SORT_ASC),
 							 null,
 							 true)) !== false)
 			$qmember['list'] = $queues;
+
+		$_TPL->set_var('queueskills', $appqueue->agentskills_get($_QR['id']));
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
@@ -442,6 +464,19 @@ switch($act)
 		&& dwho_issa('agentoptions',$_QR) === true)
 		{
 			$return = &$result;
+			$queueskills = array();
+
+			// skipping the last one (empty entry)
+			$count = count($_QR['queueskill-skill']) - 1;
+			for($i = 0; $i < $count; $i++)
+			{
+				$queueskills[] = array(
+					'agentid'	=> $_QR['id'],
+					'skillid'	=> $_QR['queueskill-skill'][$i],
+					'weight'	=> $_QR['queueskill-weight'][$i],
+				);
+			}
+			$skillerr = $appqueue->agentskills_setedit($queueskills);
 
 			if($appagent->set_edit($_QR) === false
 			|| $appagent->edit() === false)
@@ -449,9 +484,15 @@ switch($act)
 				$fm_save = false;
 				$result = $appagent->get_result();
 				$error = $appagent->get_error();
+				$error['queueskills'] = $appqueue->agentskills_get_error();
+
+				$_TPL->set_var('queueskills', $queueskills);
 			}
 			else
 			{
+				// updating skills
+				$appqueue->agentskills_edit($_QR['id'], $queueskills);
+
 				$ipbx->discuss('module reload chan_agent.so');
 				$ipbx->discuss('xivo[agentlist,update]');
 
@@ -503,11 +544,14 @@ switch($act)
 		$agentgroup_list = $appagentgroup->get_agentgroups_list(null,
 									array('name' => SORT_ASC));
 
+		$element = $appagent->get_elements();
+		$element['queueskills'] =  $appqueue->skills_gettree();
+		$_TPL->set_var('element', $element);
+
 		$_TPL->set_var('id',$info['agentfeatures']['id']);
 		$_TPL->set_var('info',$return);
 		$_TPL->set_var('error',$error);
 		$_TPL->set_var('fm_save',$fm_save);
-		$_TPL->set_var('element',$appagent->get_elements());
 		$_TPL->set_var('umember',$umember);
 		$_TPL->set_var('queues',$queues);
 		$_TPL->set_var('qmember',$qmember);

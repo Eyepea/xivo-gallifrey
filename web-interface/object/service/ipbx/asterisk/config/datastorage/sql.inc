@@ -320,4 +320,8 @@ $array['generalsccp'] = array();
 $array['generalsccp']['table'] = 'generalsccp';
 $array['generalsccp']['primary'] = array('id' => '');
 
+$array['agentqueueskill'] = array();
+$array['agentqueueskill']['table'] = 'agentqueueskill';
+$array['agentqueueskill']['primary'] = array('agentid' => '', 'skillid' => '');
+
 ?>

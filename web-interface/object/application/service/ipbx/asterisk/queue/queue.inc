@@ -40,6 +40,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	var $_skillcat		= false;
 	var $_skillrule 	= false;
 	var $_userskill 	= false;
+	var $_agentskill 	= false;
 
 	var $_errors		= array();
 
@@ -70,6 +71,7 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 		|| ($this->_skillcat = &$this->_service->get_module('queueskillcat')) === false
 		|| ($this->_skillrule = &$this->_service->get_module('queueskillrule')) === false
 		|| ($this->_userskill = &$this->_service->get_module('userqueueskill')) === false
+		|| ($this->_agentskill = &$this->_service->get_module('agentqueueskill')) === false
 		|| ($this->_extenumbers = $this->get_abstract('extenumbers',array('type' => 'queue'))) === false
 		|| ($this->_dialaction = $this->get_abstract('dialaction',array('category' => 'queue'))) === false
 		|| ($this->_contextnummember = $this->get_abstract('contextnummember',array('type' => 'queue'))) === false
@@ -605,8 +607,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 			$info['queue_name'] = $name;
 			$info['skills']	    = '';
 			// set user queueskill 
-			if($this->_userskill->exists(array('userid' => $uinfo['id'])) !== false)
-				$info['skills'] = $uinfo['id'];
+			if($type === 'agent'      && $this->_agentskill->exists(array('agentid' => $uinfo['id'])) !== false
+			|| $type !== 'agentgroup' && $this->_userskill->exists(array('userid' => $uinfo['id'])) !== false)
+				$info['skills'] = $type . '-' . $uinfo['id'];
 
 			if(($rs = $this->_queuemember->chk_values($info)) === false
 			|| isset($tmp[$uinfo['id']]) === true)
@@ -1684,6 +1687,69 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function userskills_get($userid)
 	{ return $this->_userskill->get_all_where(array('userid' => $userid)); }
+	
+	
+	/** agent skills */
+	function agentskills_setadd($agentskills)
+	{
+		$this->_errors = array();
+		$skillids      = array();
+		$err           = true;
+
+		for($i = count($agentskills) - 1; $i >= 0; $i--)
+		{	
+			$this->_errors[$i] = array();
+
+			if(strlen($agentskills[$i]['weight']) == 0)
+			{ $err = false; $this->_errors[$i]['weight'] = 'empty'; }
+			else if(!(is_int($agentskills[$i]['weight']) || ctype_digit($agentskills[$i]['weight'])))
+			{ $err = false; $this->_errors[$i]['weight'] = 'notnumeric'; }
+			else if(((int)$agentskills[$i]['weight']) < 0 
+			|| ((int)$agentskills[$i]['weight']) > 100)
+			{ $err = false; $this->_errors[$i]['weight'] = 'unbound'; } 
+
+			if(strlen($agentskills[$i]['skillid']) == 0)
+			{ $err = false; $this->_errors[$i]['skillid'] = 'empty'; }
+			if(array_key_exists($agentskills[$i]['skillid'], $skillids))
+			{ 
+				$err = false;
+				$this->_errors[$i]['skillid'] = 'doubloon'; 
+				$this->_errors[$skillids[$agentskills[$i]['skillid']]]['skillid'] = 'doubloon';
+			} 
+			else 
+			{ $skillids[$agentskills[$i]['skillid']] = $i; }
+	
+		}
+
+		return($err);
+	}
+
+	function agentskills_get_error()
+	{ return $this->_errors; }
+
+	function agentskills_add($agentskills)
+	{
+		$count = count($agentskills); 
+		for($i =  0; $i < $count; $i++)
+			$this->_agentskill->add($agentskills[$i]);
+
+		return true;
+	}
+
+	function agentskills_setedit($agentskills)
+	{ return $this->agentskills_setadd($agentskills); }
+
+	function agentskills_edit($userid, $agentskills)
+	{ 
+		$this->agentskills_delete($userid);
+		return $this->agentskills_add($agentskills);
+	}
+
+	function agentskills_delete($agentid)
+	{ return $this->_agentskill->delete_where(array('agentid' => $agentid)); }
+
+	function agentskills_get($agentid)
+	{ return $this->_agentskill->get_all_where(array('agentid' => $agentid)); }
 }
 
 ?>

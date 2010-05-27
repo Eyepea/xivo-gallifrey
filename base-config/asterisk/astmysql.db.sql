@@ -79,6 +79,17 @@ CREATE INDEX `agentgroup__idx__deleted` ON `agentgroup`(`deleted`);
 
 INSERT INTO `agentgroup` VALUES (1,3,'default','',0,0,'');
 
+-- agent queueskills
+DROP TABLE IF EXISTS `agentqueueskill`;
+CREATE TABLE `agentqueueskill` (
+ `agentid` int(10) unsigned,
+ `skillid` int(10) unsigned,
+ `weight` int(3) unsigned NOT NULL DEFAULT 0,
+ PRIMARY KEY(`agentid`, `skillid`)
+);
+
+CREATE INDEX `agentqueueskill__idx__agentid` ON `agentqueueskill`(`agentid`);
+
 
 DROP TABLE IF EXISTS `callerid`;
 CREATE TABLE `callerid` (

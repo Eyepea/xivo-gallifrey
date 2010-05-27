@@ -30,6 +30,7 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 	var $_contextmember	= false;
 	var $_userfeatures	= null;
 	var $_queuemember	= null;
+	var $_queueskills   = null;
 	var $_contextlist	= array();
 	var $_musiconhold	= array();
 
@@ -41,7 +42,8 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		|| ($this->_agentgroup = &$this->_service->get_module('agentgroup')) === false
 		|| ($this->_appagents = &$this->_service->get_apprealstatic('agents')) === false
 		|| ($this->_agent = &$this->_appagents->get_module('agent')) === false
-		|| ($this->_agentoptions = &$this->_appagents->get_module('agentoptions')) === false)
+		|| ($this->_agentoptions = &$this->_appagents->get_module('agentoptions')) === false
+		|| ($this->_queueskills = &$this->_service->get_module('agentqueueskill')) === false)
 			return(false);
 		else if((bool) $components === true)
 			$this->load_components();
@@ -91,6 +93,10 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 
 		if(dwho_ak('queuemember',$nocomponents,true) === false)
 			$this->_get_queuemember();
+
+		// queueskills
+		$skills = $this->_queueskills->get_skills($this->_info['agentfeatures']['id']);
+		$this->_info['queueskills'] = $skills === false?array():$skills;
 
 		return($this->_info);
 	}
@@ -231,6 +237,13 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 			&& ($info['agentoptions'] = $this->_agentoptions->get_agentoptions(
 							($info['agent']['var_metric']-1))) !== false)
 				$r[$info['agentfeatures']['id']] = $info;
+
+			// get skills
+			$skills = $this->_queueskills->get_skills($info['agentfeatures']['id']);
+			if($skills === false)
+				$skills = array();
+
+			$r[$info['agentfeatures']['id']]['queueskills'] = $skills;
 		}
 
 		if(empty($r) === true)
@@ -281,6 +294,10 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 
 		if(dwho_issa('queue',$arr) === true && dwho_issa('queue-select',$arr) === true)
 			$this->set_queuemember($arr['queue'],$arr['queue-select'],$arr['agent']['number']);
+
+		// QUEUESKILLS
+		if(dwho_issa('queueskills',$arr) === true)
+			$this->set_queueskills($action, $arr['queueskills']);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -458,6 +475,34 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 
 		return(($error === false));
 	}
+	
+	function set_queueskills($action, $arr)
+	{
+		if($action !== 'add'
+		|| is_array($arr) === false)
+			return(false);
+
+		$skills = array();
+		foreach($arr as $skill)
+		{
+			$skills[] = array(
+				'agentid'    => null,
+				'skillid'   => $skill['id'],
+				'weight'    => intval($skill['weight'])
+			);
+		}
+
+		$this->_set_result('queueskills', $skills);
+
+		$appqueue = &$this->_service->get_application('queue');
+		if($appqueue->agentskills_setadd($skills) === false)
+		{
+				$this->_set_error('queueskills', $appqueue->agentskills_get_error());
+				return false;
+		}
+
+		return true;
+	}
 
 	function add()
 	{
@@ -473,7 +518,8 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		|| $this->add_agentoptions($agentres['var_metric']) === false
 		|| $this->add_contextmember($agentfeaturesid) === false
 		|| $this->add_usermember($agentfeaturesid) === false
-		|| $this->add_queuemember($agentfeaturesid) === false)
+		|| $this->add_queuemember($agentfeaturesid) === false
+		|| $this->add_queueskills($agentfeaturesid) === false)
 		{
 			$r = false;
 			if($agentres !== null)
@@ -578,6 +624,24 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 			$this->_return['queuemember'] = false;
 
 		return(true);
+	}
+
+	function add_queueskills($agentfeaturesid)
+	{
+		$rs = false;
+
+		if(($agentfeaturesid = dwho_ulongint($agentfeaturesid)) === 0
+		|| ($rs = $this->get_result('queueskills')) === null
+		|| $rs === false)
+			return($rs);
+
+		foreach($rs as &$skill)
+		{ $skill['agentid'] = $agentfeaturesid; }
+
+		$appqueue = &$this->_service->get_application('queue');
+		$ret      = $appqueue->agentskills_add($rs);
+
+		return $ret;
 	}
 
 	function _reverse_add()
@@ -856,7 +920,8 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 		|| $this->delete_agentoptions() === false
 		|| $this->delete_contextmember() === false
 		|| $this->delete_usermember() === false
-		|| $this->delete_queuemember() === false)
+		|| $this->delete_queuemember() === false
+		|| $this->delete_queueskill() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -948,6 +1013,12 @@ class xivo_application_service_asterisk_agent extends xivo_application_asterisk_
 			$this->_return['queuemember'] = $r;
 
 		return($r);
+	}
+
+	function delete_queueskill()
+	{
+		$appqueue = &$this->_service->get_application('queue');
+		return $appqueue->agentskills_delete($this->_info['agentfeatures']['id']);
 	}
 
 	function _reverse_delete()
