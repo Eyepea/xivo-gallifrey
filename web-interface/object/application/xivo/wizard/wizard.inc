@@ -1428,13 +1428,14 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$data = array(
 			'name'        => $name,
 			'ifname'      => $name,
-			'hwtypeid'    => 65534,
+			'hwtypeid'    => 1,
 			'networktype' => 'voip',
 			'type'        => 'iface',
 			'method'      => 'static',
 			'address'     => $netiface['address'],
 			'netmask'     => $netiface['netmask'],
 			'gateway'     => $netiface['gateway'],
+			'mtu'         => 1500,
 			'description' => 'wizard configuration'
 	);
 
