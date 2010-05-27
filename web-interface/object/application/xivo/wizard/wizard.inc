@@ -1258,6 +1258,24 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 		}
 
+		// save to database
+		$this->_load_xivo_dso();
+		$this->_load_ipbx_service();
+		$module = &$this->_xobj->get_module('resolvconf');
+
+		$data = array(
+			'hostname'    => $this->_wizsess['mainconfig']['hostname'],
+			'domain'      => $this->_wizsess['mainconfig']['domain'],
+			'nameserver1' => $resolvconf['nameservers'][0],
+			'nameserver2' => $resolvconf['nameservers'][1],
+			'nameserver3' => '',
+			'search'      => $resolvconf['search'],
+			'description' => 'wizard configuration'
+		);
+
+		if($module->save($data) === false)
+			return false;
+
 		return(true);
 	}
 
@@ -1270,6 +1288,10 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_load_ipbx_service();
 
 		$appentity = &$this->_xobj->get_application('entity');
+
+		// allow to reexecute the process several times
+		if($appentity->get(1) !== false)
+			$appentity->delete_entity();
 
 		if($appentity->set_add($this->_wizsess['entity']) === false
 		|| $appentity->add() === false)
@@ -1297,6 +1319,20 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$context_outcall = true;
 
 		$appcontext = &$this->_ipbx->get_application('context');
+
+		// allow to reexecute the process several times
+		foreach($appcontext->get_contexts_list() as $context)
+		{
+			if($appcontext->get($context['context']['name']) !== false)
+			{
+				$appcontext->_info['deletable']       = true;
+				$appcontext->_info['deletablenumber'] = true;
+				$appcontext->_info['deletablemember'] = true;
+
+				$appcontext->delete();
+			}
+		}
+
 
 		if($appcontext->set_add($this->_wizsess['context']['internal']) === false
 		|| $appcontext->add() === false)
@@ -1383,7 +1419,32 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 		}
 
-		return(true);
+		// save to database
+		$this->_load_xivo_dso();
+		
+		$this->_load_ipbx_service();
+		$module = &$this->_xobj->get_module('netiface');
+
+		$data = array(
+			'name'        => $name,
+			'ifname'      => $name,
+			'hwtypeid'    => 65534,
+			'networktype' => 'voip',
+			'type'        => 'iface',
+			'method'      => 'static',
+			'address'     => $netiface['address'],
+			'netmask'     => $netiface['netmask'],
+			'gateway'     => $netiface['gateway'],
+			'description' => 'wizard configuration'
+	);
+
+	if(($data = $module->chk_values($data)) === false)
+		return false;
+
+	if($module->save($data) === false)
+		return false;
+
+	return(true);
 	}
 
 	function save_step_validate()

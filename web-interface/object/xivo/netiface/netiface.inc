@@ -92,6 +92,13 @@ class xivo_object_netiface extends xivo_object_abstract
 	{ 
 	    return($this->_dso->get_voip_iface());
 	}
-}
+	
+	function save($arr)
+	{
+		if($this->exists(null,null,1) === false)
+			return($this->add($arr));
+
+		return($this->edit(1,$arr));
+	}
 
 ?>
