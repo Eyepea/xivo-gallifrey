@@ -100,5 +100,6 @@ class xivo_object_netiface extends xivo_object_abstract
 
 		return($this->edit(1,$arr));
 	}
+}
 
 ?>
