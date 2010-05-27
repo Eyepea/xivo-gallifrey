@@ -122,6 +122,12 @@ endif;
 ?>
 </div>
 
+<div id="sb-part-queueskills" class="b-nodisplay">
+<?php
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/queueskills');
+?>
+</div>
+
 <div id="sb-part-user" class="b-nodisplay">
 <?php
 	if($umember['list'] !== false):

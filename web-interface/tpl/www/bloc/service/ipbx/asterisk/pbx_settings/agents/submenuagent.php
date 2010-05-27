@@ -23,12 +23,20 @@
 	<ul>
 		<li id="dwsm-tab-1"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-first');"
 		    onmouseout="dwho_submenu.blur(this);" onmouseover="dwho_submenu.focus(this);">
+			<div onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-first');">
 				<div class="tab">
 					<span class="span-center"><a href="#" onclick="return(false);"><?=$this->bbf('smenu_general');?></a></span>
 				</div>
 				<span class="span-right">&nbsp;</span>
+			</div>
+			<div class="stab">
+				<ul>
+					<li><a href="#"
+					       onclick="dwho_submenu.select(dwho_eid('dwsm-tab-1'),'sb-part-queueskills');
+							return(false);"><?=$this->bbf('smenu_queueskills');?></a></li>
+				</ul>
+			</div>
 		</li>
 		<li id="dwsm-tab-2"
 		    class="dwsm-blur"
