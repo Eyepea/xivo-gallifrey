@@ -257,7 +257,7 @@ INSERT INTO `user` VALUES (1,'root','proformatique','root',1,0,UNIX_TIMESTAMP(UT
 
 DROP TABLE IF EXISTS `dhcp`;
 CREATE TABLE `dhcp` (
- `id` int(10 unsigned auto_increment,
+ `id` int(10) unsigned auto_increment,
  `active` int(1) unsigned NOT NULL DEFAULT 0,
  `pool_start` varchar(64) NOT NULL DEFAULT '',
  `pool_end` varchar(64) NOT NULL DEFAULT '',
