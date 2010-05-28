@@ -136,8 +136,11 @@ def main():
         ipv4 = sip_uri
         # ua is set by sccp asterisk channel in the form "Cisco 7960", and 
         # xivo-config lib requires it like "Cisco-cp7960g/8.0"
-        ua   = ua.replace(' ', '-cp') + 'g/8.0'
-
+	# added special fixe for cisco sccp softphone
+        if ua == 'Cisco IP Communicator':
+                ua = 'Cisco-CIPC/8.0'
+        else:
+                ua   = ua.replace(' ', '-cp') + 'g/8.0'
 
     # Get Phone description (if we are able to handle this vendor...)
     phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
