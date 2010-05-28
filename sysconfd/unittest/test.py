@@ -78,6 +78,15 @@ class TestGeneric(unittest.TestCase):
         self.assertEqual(resp.status, 200)
         print cjson.decode(data)
 
+    def test_40_services(self):
+        (resp, data) = self.client.request('POST', '/services', {'networking': 'stop'})
+        self.assertEqual(resp.status, 200)
+        
+        import time; time.sleep(5)
+        
+        (resp, data) = self.client.request('POST', '/services', {'networking': 'start'})
+        self.assertEqual(resp.status, 200)
+
         
 if __name__ == '__main__':
     unittest.main()

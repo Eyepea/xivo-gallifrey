@@ -1425,6 +1425,17 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_load_ipbx_service();
 		$module = &$this->_xobj->get_module('netiface');
 
+		//computing broadcast address
+		$ip = split('\.', $netiface['address']);
+		$nm = split('\.', $netiface['netmask']);
+	
+		$bcast  = array();
+		for($i = 0; $i < 4; $i++)
+			$bcast[]  = intval($ip[$i]) | (intval($nm[$i]) ^ 255);
+	
+		$bcast  = implode('.', $bcast);
+	
+	
 		$data = array(
 			'name'        => $name,
 			'ifname'      => $name,
@@ -1434,6 +1445,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			'method'      => 'static',
 			'address'     => $netiface['address'],
 			'netmask'     => $netiface['netmask'],
+			'broadcast'   => $bcast,
 			'gateway'     => $netiface['gateway'],
 			'mtu'         => 1500,
 			'description' => 'wizard configuration'
@@ -1535,16 +1547,21 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$this->_wizsess['commit']['step']['validate'] = true;
 
-        // Generate commonconf file
-        $this->_load_xivo_dso();
-        $this->_load_ipbx_service();
+		// Generate commonconf file
+		$this->_load_xivo_dso();
+		$this->_load_ipbx_service();
 
-        if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
-            return(false);
-        if($commonconf->generate() === false)
-            return(false);
-        if($commonconf->apply() === false)
-            return(false);
+		if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
+			return(false);
+		if($commonconf->generate() === false)
+			return(false);
+		if($commonconf->apply() === false)
+			return(false);
+
+		// restart provisioning service
+		if($this->_sysconfd->request_post('/services', array('pf-xivo-provisioning' => 'restart')) === false)
+			return(false);
+
 
 		return(true);
 	}
