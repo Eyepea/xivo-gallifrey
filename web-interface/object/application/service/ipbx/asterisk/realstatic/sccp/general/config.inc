@@ -302,10 +302,10 @@ $array['element']['hotline_enabled']['default'] = 'yes';
 $array['element']['hotline_enabled']['value'] = array('no', 'yes');
 
 $array['element']['hotline_context'] = array();
-$array['element']['hotline_context']['default'] = 'default';
+$array['element']['hotline_context']['default'] = 'xivo-initconfig';
 
 $array['element']['hotline_extension'] = array();
-$array['element']['hotline_extension']['default'] = 111;
+$array['element']['hotline_extension']['default'] = 'sccp';
 
 dwho::load_class('dwho_network');
 

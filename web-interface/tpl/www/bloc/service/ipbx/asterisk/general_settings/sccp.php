@@ -876,25 +876,19 @@ endif;
 					'labelid'	=> 'hotline_enabled',
 					'help'		=> $this->bbf('hlp_fm_hotline_enabled'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_enabled'),
-					'required'	=> true,
-					'readonly'	=> true,
+					'disabled'	=> true,
 					'checked'	=> $this->get_var('info','hotline_enabled','var_val'),
 					'default'	=> $element['hotline_enabled']['default']));
 
-if($context_list !== false):
-	echo	$form->select(array('desc'	=> $this->bbf('fm_hotline_context'),
-				    'name'		=> 'hotline_context',
-				    'labelid'	=> 'hotline_context',
-				    'empty'		=> false,
-				    'key'		=> 'identity',
-				    'altkey'	=> 'name',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_hotline_context'),
+					'name'		=> 'hotline_context',
+					'labelid'	=> 'hotline_context',
+					'value'		=> $this->get_var('info','hotline_context','var_val'),
 					'help'		=> $this->bbf('hlp_fm_hotline_context'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_context'),
-					'required'	=> true,
-					'readonly'	=> true,
-				    'default'	=> $element['hotline_context']['default'],
-				    'selected'	=> $this->get_var('info','hotline_context','var_val')),$context_list);
-endif;
+					'disabled'	=> true,
+					'default'	=> $element['hotline_context']['default'],
+	));
 
 	echo	$form->text(array('desc'	=> $this->bbf('fm_hotline_extension'),
 					'name'		=> 'hotline_extension',
@@ -902,10 +896,9 @@ endif;
 					'value'		=> $this->get_var('info','hotline_extension','var_val'),
 					'help'		=> $this->bbf('hlp_fm_hotline_extension'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_extension'),
-					'required'	=> true,
-					'readonly'	=> true,
+					'disabled'	=> true,
 					'default'	=> $element['hotline_extension']['default'],
-					'error'		=> $this->bbf_args('error',$this->get_var('error', 'hotline_extension')) ));
+	));
 ?>
 </div>
 
