@@ -401,8 +401,12 @@ class xivo_application_xivo_object_iproute extends xivo_application_xivo_object_
 		
 		$curroute = $this->_info['iproute'];
 		foreach($list as &$route)
+		{
 			$route['current'] = ($route['id'] == $curroute['id']);
-
+			// we need system network interface name, not database name
+			$iface            = $this->_netiface->get($route['iface']);
+			$route['iface']   = $iface['ifname'];
+		}
 
 		$ret = (bool) $this->_sysconfd->request_post('/routes', $list);
 		return(($this->_return['sysconfnet'] = $ret));
