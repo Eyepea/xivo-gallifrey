@@ -44,7 +44,7 @@ class Cisco(PhoneVendorMixin):
                     ('cp7960g', '7960'),
                     ('cp7941g', '7941GE'),
                     ('cp7961g', '7961GE'),
-                    ('cpip', 'CPIP'))
+                    ('cipc', 'cipc'))
 
     CISCO_COMMON_HTTP_USER = "admin"
     CISCO_COMMON_HTTP_PASS = ""
