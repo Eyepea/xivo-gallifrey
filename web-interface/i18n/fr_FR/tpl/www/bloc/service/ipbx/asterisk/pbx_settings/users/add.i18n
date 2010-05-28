@@ -1028,7 +1028,7 @@ Action
 Aucunes actions associées
 
 ; softkey_event(onhook)
-En ligne
+Raccroché
 
 ; softkey_event(connected)
 ; softkey_event(onhold)
@@ -1038,7 +1038,7 @@ En attente
 Sonnerie
 
 ; softkey_event(offhook)
-Raccroché
+En ligne
 
 ; softkey_event(conntrans)
 ; softkey_event(digitsfoll)
