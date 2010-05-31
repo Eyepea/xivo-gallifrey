@@ -1,0 +1,9 @@
+[{
+"id":"9999"
+"enableclient":true
+"context":"default"
+"loginclient":"ctitrunk"
+"passwdclient":"ctitrunk"
+"profileclient":"switchboard"
+"fullname":"CTI Trunk"
+}]
