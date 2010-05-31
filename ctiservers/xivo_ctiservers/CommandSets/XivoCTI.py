@@ -1216,15 +1216,16 @@ class XivoCTICommand(BaseCommand):
         whichitem = actionopt.get(sheetkind)
         if whichitem is not None and len(whichitem) > 0:
             for k, v in self.lconf.read_section('sheet_qtui', whichitem).iteritems():
-                try:
-                    r = urllib.urlopen(v)
-                    t = r.read().decode('utf8')
-                    r.close()
-                except Exception, exc: # conscious limited exception output ("No such file or directory")
-                    log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
-                    t = None
-                if t is not None:
-                    linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
+                if v: # since WEBI config generates a default {'null' : ''} entry
+                    try:
+                        r = urllib.urlopen(v)
+                        t = r.read().decode('utf8')
+                        r.close()
+                    except Exception, exc: # conscious limited exception output ("No such file or directory")
+                        log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                        t = None
+                    if t is not None:
+                        linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
         return linestosend
 
     def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
@@ -1511,7 +1512,7 @@ class XivoCTICommand(BaseCommand):
                 uinfostosend = []
                 if whom == 'dest':
                     for uinfo in userinfos:
-                        if capaids is None or uinfo.get('capaid') in capaids:
+                        if not capaids or uinfo.get('capaid') in capaids:
                             uinfostosend.append(uinfo)
 
                 elif whom == 'subscribe':
