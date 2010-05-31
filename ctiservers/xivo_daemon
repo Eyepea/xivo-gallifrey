@@ -841,11 +841,16 @@ class xivo_daemon:
         self.configs = {}
         self.xdname = None
         self.tqueue = Queue.Queue()
-
-
+        
         while True:
-            self.main_loop()
-
+            try:
+                self.main_loop()
+            except Exception:
+                # this will occur at server startup, when WEBI is not started yet
+                # XXX this is a very naughty way, however, to handle that
+                log.exception('main loop has crashed ... retrying in 5 seconds ...')
+                time.sleep(5)
+                
     ## \brief Handler for catching signals (in the main thread)
     # \param signum signal number
     # \param frame frame
