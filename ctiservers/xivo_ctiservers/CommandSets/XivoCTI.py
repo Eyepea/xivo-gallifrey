@@ -720,7 +720,7 @@ class XivoCTICommand(BaseCommand):
             vvv = vv.split(',')
             if len(vvv) > 1:
                 self.display_hints[v] = { 'longname' : vvv[0],
-                    'color' : vvv[1] }
+                                          'color' : vvv[1] }
         if 'required_client_version' in self.xivoconf:
             self.required_client_version = int(self.xivoconf['required_client_version'])
         return
@@ -2695,7 +2695,7 @@ class XivoCTICommand(BaseCommand):
             if actionid in self.amirequests[astid]:
                 # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.amirequests[astid][actionid]))
                 pass
-            elif actionid == '00':
+            elif actionid.startswith('init_'):
                 log.debug('%s AMI Response=Success : %s (init)' % (astid, event))
             else:
                 log.info('%s AMI Response=Success : (tracked) %s' % (astid, event))
@@ -2731,7 +2731,7 @@ class XivoCTICommand(BaseCommand):
         elif msg in self.ami_error_responses_list:
             if actionid in self.amirequests[astid]:
                 log.warning('%s AMI Response=Error : %s %s' % (astid, event, self.amirequests[astid][actionid]))
-            elif actionid == '00':
+            elif actionid.startswith('init_'):
                 log.debug('%s AMI Response=Error : %s (init)' % (astid, event))
             else:
                 log.warning('%s AMI Response=Error : %s' % (astid, event))
@@ -3307,6 +3307,11 @@ class XivoCTICommand(BaseCommand):
 
     def ami_agentdump(self, astid, event):
         log.info('%s ami_agentdump : %s' % (astid, event))
+        return
+
+    def ami_agentcomplete(self, astid, event):
+        log.info('%s ami_agentcomplete : %s' % (astid, event))
+        # {u'TalkTime': u'43', u'MemberName': u'SIP/bqtdolkqxupcqh', u'Queue': u'q_ltr0y', u'Reason': u'agent', u'Uniqueid': u'1274777510.23', u'HoldTime': u'67', u'Channel': u'SIP/bqtdolkqxupcqh-00000024'}
         return
 
     def ami_agentconnect(self, astid, event):
@@ -4588,7 +4593,7 @@ class XivoCTICommand(BaseCommand):
         reason = event.get('Reason')
         # -1 unknown (among which agent reached)
         # 0 unknown (among which caller abandon)
-        # 1 timeout, 2 joinempty, 3 leaveempty, 6 full
+        # 1 timeout, 2 joinempty, 3 leaveempty, 6 full ... see app_queue.c
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
             queueid = self.weblist['queues'][astid].reverse_index[queuename]
@@ -5553,14 +5558,14 @@ class XivoCTICommand(BaseCommand):
         log.info('__ipbxaction__ %s' % args)
         if args.has_key('command'):
             actionname = args.get('command')
-
+            
             actions_queues_list = ['agentjoinqueue',
-                'agentleavequeue',
-                'agentpausequeue',
-                'agentunpausequeue']
+                                   'agentleavequeue',
+                                   'agentpausequeue',
+                                   'agentunpausequeue']
             actions_transfer_list = ['record', 'stoprecord',
-                'listen', 'stoplisten',
-                'transfer']
+                                     'listen', 'stoplisten',
+                                     'transfer']
             if actionname in actions_queues_list:
                 agentids = self.__mergelist__(userinfo, args.get('agentids').split(','))
                 queueids = self.__mergelist__(userinfo, args.get('queueids').split(','))

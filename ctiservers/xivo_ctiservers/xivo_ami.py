@@ -644,17 +644,18 @@ class AMIList:
 
             # sendparkedcalls before sendstatus : parked calls can be identified later
             # sendmeetmelist before sendstatus : to fill the times spent for various conf rooms
-            conn_ami.setactionid('00')
+            initphaseid = ''.join(random.sample(__alphanums__, 10))
+            conn_ami.setactionid('init_parkedcalls_%s' % initphaseid)
             conn_ami.sendparkedcalls()
-            conn_ami.setactionid('00')
+            conn_ami.setactionid('init_meetmelist_%s' % initphaseid)
             conn_ami.sendmeetmelist()
-            conn_ami.setactionid('00')
+            conn_ami.setactionid('init_status_%s' % initphaseid)
             conn_ami.sendstatus()
-            conn_ami.setactionid('00')
+            conn_ami.setactionid('init_agents_%s' % initphaseid)
             conn_ami.sendagents()
-            conn_ami.setactionid('00')
+            conn_ami.setactionid('init queues_%s' % initphaseid)
             conn_ami.sendqueuestatus()
-            conn_ami.setactionid('00')
+            conn_ami.setactionid('init_close_%s' % initphaseid)
         return
 
     def set_aoriginate(self, astid, aoriginatecmd):

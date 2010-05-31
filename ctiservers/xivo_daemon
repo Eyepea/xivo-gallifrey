@@ -721,7 +721,7 @@ class manage_connection:
                     efn = todisp.pop('Event')
                     for ik, iv in daemon.fdlist_established.iteritems():
                         if iv == 'INFO':
-                            ik.sendall('%s %s %s\n' % (astid, efn, todisp))
+                            ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
             if evfunction == 'Reload':
                 log.warning('%s AMI:Reload %s' % (astid, this_event))
                 daemon.commandclass.ami_reload(astid, this_event)
@@ -818,7 +818,7 @@ class xivo_daemon:
         log = logging.getLogger('main')
         
         try:
-            logfilehandler = RotatingFileHandler(LOGFILENAME)
+            logfilehandler = RotatingFileHandler(LOGFILENAME, maxBytes=25000000, backupCount=10)
             formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
                                           % LOGDAEMONNAME)
             logfilehandler.setFormatter(formatter)
