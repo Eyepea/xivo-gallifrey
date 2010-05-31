@@ -1,5 +1,5 @@
 ; fm_status_name
-Nom status :
+Nom du statut :
 
 ; fm_status_description
 Description
@@ -14,10 +14,10 @@ Le nom compréhensible qui sera affiché
 Couleur
 
 ; cmt_status_color
-Couleur de l'icône de status
+Couleur de l'icône de statut
 
 ; cti-access_status
-Autres status accessibles dans ce mode
+Autres statuts accessibles depuis ce mode
 
 ; col_actions-name
 Action

@@ -2,7 +2,7 @@
 Haute-Disponibilité
 
 ; smenu_status
-Status
+Statut
 
 ; smenu_services
 Services activés
@@ -212,7 +212,7 @@ Maître
 Esclave
 
 ; fm_help-ha_status
-Affiche le status Heartbeat actuel du serveur
+Affiche le statut Heartbeat actuel du serveur
 
 ; error_pf_ha_uname_node(empty)
 Vous devez saisir le nom d'une noeud HA

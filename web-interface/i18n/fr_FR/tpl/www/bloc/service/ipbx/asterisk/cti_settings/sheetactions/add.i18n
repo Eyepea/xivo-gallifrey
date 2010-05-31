@@ -1,14 +1,14 @@
 ; title_content_name
-Création d'une action
+Ajout d'une action
 
 ; smenu_general
 Options générales
 
 ; smenu_screens
- Fiches
+Fiche
 
 ; smenu_systrays
- Miniatures
+Info bulle
 
-; smenu_infos 
-Informations
+; smenu_infos
+Actions

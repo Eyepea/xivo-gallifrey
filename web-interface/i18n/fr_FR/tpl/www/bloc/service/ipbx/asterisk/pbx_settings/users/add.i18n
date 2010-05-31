@@ -911,7 +911,7 @@ Vérification de présence:
 Activée
 
 ; fm_privacy(off)
-Dépend du status de la touche
+Dépend du statut de la touche
 
 ; fm_privacy(full)
 Désactivée

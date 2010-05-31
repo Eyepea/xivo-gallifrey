@@ -17,10 +17,10 @@ Contextes
 Profils XiVO Client
 
 ; col_1
-Champ affiché
+Titre du champ
 
 ; col_2
-Type de champ
+Type du champ
 
 ; col_3
 Valeur par défaut
@@ -32,10 +32,10 @@ Format d'affichage
 Aucune fiche
 
 ; no_systrays
-Aucune miniature
+Aucune info-bulle
 
 ; no_informations
-Aucune information
+Aucune action
 
 ; fm_description
 Description
