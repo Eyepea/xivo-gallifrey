@@ -344,7 +344,7 @@ Hello %{FULLNAME}$s,
 You have been invited to join %{CONFNAME}$s conference room.
 
 * Date : %{CONFDATE}$s
-* Duratopn : %{CONFDURATION}$s minutes
+* Duration : %{CONFDURATION}$s minutes
 * Room number : %{CONFNUMBER}$s
 * PIN : %{CONFPIN}$s
 
