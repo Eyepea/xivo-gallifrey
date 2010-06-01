@@ -8,7 +8,7 @@ Password
 Authorization
 
 ; no_rightcall
-No call permissions found
+No call permission found
 
 ; rightcall_authorization-0
 Deny

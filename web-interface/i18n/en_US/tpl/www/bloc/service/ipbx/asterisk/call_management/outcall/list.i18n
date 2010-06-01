@@ -8,7 +8,7 @@ Extension
 Context
 
 ; no_outcall
-No outgoing calls found
+No outgoing call found
 
 ; opt_delete_confirm
 Are you sure you want to delete this outgoing call?
