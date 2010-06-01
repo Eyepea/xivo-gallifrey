@@ -116,7 +116,6 @@ class XivoCTICommand(BaseCommand):
         'meetme',
         'endinit',
         'chitchat',
-        'message',
         'actionfiche',
         'availstate',
         'keepalive',
@@ -4894,14 +4893,6 @@ class XivoCTICommand(BaseCommand):
                             repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
                             self.__presence_action__(astid, self.__agentnum__(userinfo), userinfo)
                             self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
-
-                    elif classcomm == 'message':
-                        pass
-                    # if self.capas[capaid].match_funcs(ucapa, 'messages'):
-                    # tosend = { 'class' : 'message',
-                    # 'payload' : ['%s/%s' % (astid, username),
-                    # '<%s>' % icommand.struct.get('message')] }
-                    # self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
 
                     elif classcomm == 'featuresget':
                         if self.capas[capaid].match_funcs(ucapa, 'features'):

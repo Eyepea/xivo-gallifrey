@@ -32,7 +32,7 @@ log = logging.getLogger('capas')
 class Capabilities:
     allowed_funcs = ['agents', 'conference', 'customerinfo', 'dial',
                      'directory', 'fax', 'features', 'history',
-                     'messages', 'chitchat', 'presence', 'database',
+                     'chitchat', 'presence', 'database',
                      'switchboard']
 
 
