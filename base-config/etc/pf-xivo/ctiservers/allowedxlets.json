@@ -1,29 +1,34 @@
 {
-"agents" : ["agents"],
-"agentsnext" : ["agents"],
-"agentdetails" : ["agents"],
-"queues" : ["agents"],
-"queuedetails" : ["agents"],
-"queueentrydetails" : ["agents"],
+"identity" : ["dial"],
+"dial" : ["dial"],
+"customerinfo" : ["customerinfo"],
+"history" : ["history"],
+"search" : ["dial"],
+"directory" : ["directory"],
+"outlook" : [],
+
 "calls" : ["dial"],
 "parking" : ["dial"],
 "switchboard" : ["dial"],
-"customerinfo" : ["customerinfo"],
-"datetime" : [],
-"dial" : ["dial"],
-"directory" : ["directory"],
-"outlook" : [],
+"operator" : ["dial"],
+
 "fax" : ["fax"],
 "features" : ["features"],
-"history" : ["history"],
-"identity" : ["dial"],
-"search" : ["dial"],
-"messages" : [],
 "conference" : ["conference"],
-"operator" : ["dial"],
+
+"agents" : ["agents"],
+"agentsnext" : ["agents"],
+"agentdetails" : ["agents"],
+
+"queues" : ["agents"],
+"queuedetails" : ["agents"],
+"queueentrydetails" : ["agents"],
+
+"datetime" : [],
+
 "mylocaldir" : [],
 "callcampaign" : [],
-"xletproto" : [],
+
 "xletweb" : [],
 "tabber" : [],
 "video" : []
