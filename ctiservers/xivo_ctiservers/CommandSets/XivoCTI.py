@@ -1661,18 +1661,19 @@ class XivoCTICommand(BaseCommand):
         if channel not in self.channels[astid]:
             log.warning('%s __phoneid_from_channel__ : channel %s not found' % (astid, channel))
         # special cases : AsyncGoto/IAX2/asteriskisdn-13622<ZOMBIE>
-        if channel.startswith('SIP/'):
-            tech = 'sip'
-            phoneid = channel[4:].split('-')[0]
-        # elif channel.startswith('AsyncGoto/SIP/'):
-        #  tech = 'sip'
-        #  phoneid = channel[14:].split('-')[0]
-        elif channel.startswith('Parked/SIP/'):
-            tech = 'sip'
-            phoneid = channel[11:].split('-')[0]
-        elif channel.startswith('IAX2/'):
-            tech = 'iax2'
-            phoneid = channel[5:].split('-')[0]
+        channelstarts = { 'SIP/' : 'sip',
+                          'Parked/SIP/' : 'sip',
+                          # 'AsyncGoto/SIP/' : 'sip',
+                          'IAX2/' : 'iax2',
+                          'Parked/IAX2/' : 'iax2',
+                          'SCCP/' : 'sccp',
+                          'Parked/SCCP/' : 'sccp'
+                          }
+        for cs, looptech in channelstarts.iteritems():
+            if channel.startswith(cs):
+                tech = looptech
+                phoneid = channel[len(cs):].split('-')[0]
+                break
         if tech is not None and phoneid is not None:
             for phoneref, b in self.weblist['phones'][astid].keeplist.iteritems():
                 if b['tech'] == tech and b['phoneid'] == phoneid:
