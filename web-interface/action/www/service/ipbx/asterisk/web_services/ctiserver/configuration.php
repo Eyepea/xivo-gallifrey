@@ -45,10 +45,16 @@ switch($act)
 		$ctiphonehints = &$ipbx->get_module('ctiphonehints');
 		$ctirdid = &$ipbx->get_module('ctireversedirectories');
 
-		$db_type = $app->_serverfeatures->_dso->_dso->_type;
-		$db_path =    $app->_serverfeatures->_dso->_dso->_param['db'];
-		$db_timeout = $app->_serverfeatures->_dso->_dso->_param['timeout'];
-		
+		// load database settings
+		// 1. xivo
+		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'cti.ini');
+		$db_cti = $config['general']['datastorage'];
+
+		// 2. asterisk
+		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+		$db_ast  = $config['general']['datastorage'];
+
+
 		$load_contexts = $cticontexts->get_all();
 		$load_directories = $ctidirectories->get_all();
 		$load_displays = $ctidisplays->get_all();
@@ -346,13 +352,14 @@ switch($act)
 											$json . 'trunk_management/sip',
 											$json . 'trunk_management/iax'
 										),
-					'urllist_phonebook' => array($json . 'pbx_services/phonebook'),
-					'ami_port' => $list[$v]['ami_port'],
-					'ami_login' => $list[$v]['ami_login'],
-					'ami_pass' => $list[$v]['ami_pass'],
-					'cdr_db_uri' => $db_type . ':' . $db_path . '?timeout_ms=' . $db_timeout,
-					'userfeatures_db_uri' => $db_type . ':' . $db_path . '?timeout_ms=' . $db_timeout,
-					'url_queuelog' => 'file:' . $app->_serverfeatures->_sre->_ini['logfiles']['path'] . '/queue_log'
+					'urllist_phonebook'   => array($json . 'pbx_services/phonebook'),
+					'ami_port'            => $list[$v]['ami_port'],
+					'ami_login'           => $list[$v]['ami_login'],
+					'ami_pass'            => $list[$v]['ami_pass'],
+					'cdr_db_uri'          => $db_ast,
+					'userfeatures_db_uri' => $db_ast,
+					'ctilog_db_uri'       => $db_cti,
+					'url_queuelog'        => 'file:' . $app->_serverfeatures->_sre->_ini['logfiles']['path'] . '/queue_log'
 				);
 			}
 			$out['main']['userlists'][] = "file:///etc/pf-xivo/ctiservers/guest_account.json";
