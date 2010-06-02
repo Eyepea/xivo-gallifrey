@@ -717,16 +717,6 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			return(false);
 		}
 		
-		// we can only have 1 voip interface
-		if($arr['networktype'] == 'voip')
-		{
-    		$voip_iface = $this->_netiface->get_voip_iface();
-    		if($voip_iface !== false 
-    		#&& $voip_iface['ifname'] != $arr['ifname']
-    		&& $voip_iface['name'] != $arr['id'])
-    		    $this->_set_error('netiface', 'networktype', 'voip-max');
-    	}
-
 		$this->_set_result('netiface',$normalized);
 
 		return(true);
@@ -799,6 +789,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = 'add';
 		$this->_return = array();
 		$netifacename = null;
+		$voip_iface = $this->_netiface->get_voip_iface();
 
 		if($this->get_errnb() > 0
 		|| ($netifacename = $this->add_netiface()) === false
@@ -809,12 +800,33 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 			if($netifacename !== null)
 				$this->_reverse_add();
 		}
+		
+
+		/*
+			If we found another VoIP interface, we update this last so
+			we have only 1 VoIP interface at time
+		*/
+		if($voip_iface !== false
+		&& ($rs = $this->get_result('netiface')) !== false
+		&& $rs['networktype'] == 'voip'
+		&& $voip_iface['name'] != $rs['name'])
+		{
+			$iface = $this->get($voip_iface['name']);
+			$iface['networktype'] = 'data';
+			$iface['netiface']['networktype'] = 'data';
+			
+			if(($rs = $this->_netiface->chk_values($iface['netiface'])) === false
+			or $this->_netiface->edit($iface['netiface']['name'], $rs) === false)
+				return false;
+		}
+
+		$this->_set_result('netiface',$normalized);
 
 		$this->_status = '';
-        if($r === false)
-            return false;
+		if($r === false)
+			return false;
 
-        return $this->update_server();
+		return $this->update_server();
 	}
 
 	function add_netiface()
@@ -902,6 +914,8 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		$this->_status = 'edit';
 		$this->_return = array();
 
+		$voip_iface = $this->_netiface->get_voip_iface();
+
 		if($this->get_errnb() > 0
 		|| $this->edit_netiface() === false
 		|| $this->commit_sysconfnet() === false)
@@ -911,10 +925,28 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 		}
 
 		$this->_status = '';
-        if($r === false)
-            return false;
+		if($r === false)
+			return false;
 
-        return $this->update_server();
+		/*
+			If we found another VoIP interface, we update this last so
+			we have only 1 VoIP interface at time
+		*/
+		if($voip_iface !== false
+		&& ($rs = $this->get_result('netiface')) !== false
+		&& $rs['networktype'] == 'voip'
+		&& $voip_iface['name'] != $rs['name'])
+		{
+			$iface = $this->get($voip_iface['name']);
+			$iface['networktype'] = 'data';
+			$iface['netiface']['networktype'] = 'data';
+			
+			if(($rs = $this->_netiface->chk_values($iface['netiface'])) === false
+			or $this->_netiface->edit($iface['netiface']['name'], $rs) === false)
+				return false;
+		}
+
+		return $this->update_server();
 	}
 
 	function edit_netiface()

@@ -223,7 +223,7 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
             return false;
             
         // IF ALL IT'S OK, SAVE DATA
-        $this->_set_save($conf);
+        return $this->_set_save($conf);
     }
     
     function generate()
@@ -260,7 +260,15 @@ class xivo_application_xivo_object_ha extends xivo_application_xivo_object_abstr
         for($i = 0; $i < count($conf['pf.ha.dest']); $i++)
             $conf['pf.ha.dest'][$i]['transfer'] = ($conf['pf.ha.dest'][$i]['transfer'] == '1');
             
-        return $this->_sysconfd->request_post('/ha_generate', $conf);
+        if($this->_sysconfd->request_post('/ha_generate', $conf) === false)
+            return false;
+        
+        // update commonconf
+        if(($_commonconf = &$this->_xobj->get_module('commonconf')) === false
+        || $_commonconf->generate()                                 === false)
+            return false;
+
+        return true;
     }
 }
 

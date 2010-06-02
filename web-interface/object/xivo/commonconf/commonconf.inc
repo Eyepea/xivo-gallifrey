@@ -43,6 +43,21 @@ class xivo_object_commonconf extends xivo_object_abstract
 		return(true);
 	}
 	
+	function _ip2subnet($ip, $netmask)
+	{
+		$dotted_ip = split('\.', $ip);
+		$dotted_nm = split('\.', $netmask);
+
+		$subnet = sprintf("%d.%d.%d.%d",
+			(((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
+			(((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
+			(((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
+			(((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
+		);
+
+		return($subnet);
+	}
+	
 	function generate()
 	{
         $conf    = array();
@@ -101,7 +116,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             return false;
             
         $list = $this->_netiface->get_netifaces_list();
-        
+
         // we filter network devices list, keeping only 'voip' interfaces:
         //  1. 1st vlan
         //  2. 1st voip iface
@@ -127,37 +142,57 @@ class xivo_object_commonconf extends xivo_object_abstract
                 $cidr_id = $i;
         }
 
+        // no VOIP netiface defined
+        if($cidr_id < 0)
+            return false;
+
+        $net = array(
+            'ipaddr'    => $list[$cidr_id]['netiface']['address'], 
+            'netmask'   => $list[$cidr_id]['netiface']['netmask'], 
+            'broadcast' => $list[$cidr_id]['netiface']['broadcast']);
+
         $ifaces = trim($ifaces);
+        $subnet = $this->_ip2subnet($list[$cidr_id]['netiface']['address'], $list[$cidr_id]['netiface']['netmask']);
+
+        /* checking with HA configuration
+             If HA is activated, we must use HA ip address instead of server one
+#        */
+        if(($havirtnet_mod = &$this->_xobj->get_module('ha_virtnet')) === false)
+            return false;
         
-##        var_dump($list);
-#        var_dump($ifaces);
-#        var_dump($vlanid);
-#        var_dump($cidr_id);
-        
-        $subnet = null;
-        if($cidr_id >= 0)
+        $virtnets = $havirtnet_mod->get_all();
+        if(is_array($virtnets) && count($virtnets) > 0)
         {
-            $dotted_ip = split('\.', $list[$cidr_id]['netiface']['address']);
-            $dotted_nm = split('\.', $list[$cidr_id]['netiface']['netmask']);
-        
-            $subnet = sprintf("%d.%d.%d.%d",
-                (((int)$dotted_ip[0]) & ((int)$dotted_nm[0])),
-                (((int)$dotted_ip[1]) & ((int)$dotted_nm[1])),
-                (((int)$dotted_ip[2]) & ((int)$dotted_nm[2])),
-                (((int)$dotted_ip[3]) & ((int)$dotted_nm[3]))
-            );
+            $hafound = false;
+            
+            foreach($virtnets as $virtnet)
+            {
+                $virtsubnet = $this->_ip2subnet($virtnet['ipaddr'], $virtnet['netmask']);
+                if($virtsubnet == $subnet)
+                {
+                    $net    = $virtnet;
+                    $subnet = $virtsubnet;
+                    $hafound = true;
+                    break;
+                }
+            }
+            
+            // no HA virtnet set for VoIP interface
+            if(!$hafound)
+                return false;
         }
+
         
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
             'xivo.voip.vlan.id'     => $vlanid,
             
-            'xivo.net4.ip'          => ($cidr_id < 0)?null:$list[$cidr_id]['netiface']['address'],
-            'xivo.net4.netmask'     => $cidr_id < 0?null:$list[$cidr_id]['netiface']['netmask'],
-            'xivo.net4.broadcast'   => $cidr_id < 0?null:$list[$cidr_id]['netiface']['broadcast'],
+            'xivo.net4.ip'          => $net['ipaddr'],
+            'xivo.net4.netmask'     => $net['netmask'],
+            'xivo.net4.broadcast'   => $net['broadcast'],
             'xivo.net4.subnet'      => $subnet,
         ));
-  
+
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
 	}
 

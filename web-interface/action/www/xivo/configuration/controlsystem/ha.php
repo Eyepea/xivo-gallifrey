@@ -18,9 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$sysconfd    = &$_XOBJ->get_module('sysconfd');
-$content     = $sysconfd->request_get('/ha_apply');
-$status      = $sysconfd->last_status_code();
+$sysconfd     = &$_XOBJ->get_module('sysconfd');
+$content      = $sysconfd->request_get('/ha_apply');
+$status       = $sysconfd->last_status_code();
+$content      = $sysconfd->request_get('/commonconf_apply');
+$status      |= $sysconfd->last_status_code();
 
 if($status != 200)
 {
