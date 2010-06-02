@@ -66,21 +66,22 @@ class Config:
                         else:
                             self.xivoconf.set('general', k, v)
 
+                    urllist_params_list = ['urllist_phonebook', 'urllist_voicemail', 'urllist_trunks',
+                                           'urllist_agents', 'urllist_agents', 'urllist_queues',
+                                           'urllist_phones', 'urllist_incomingcalls', 'urllist_groups',
+                                           'urllist_meetme']
                     for asterisk_server in json['main']['asterisklist']:
                         debug_add_section(self.xivoconf, asterisk_server)
                         for asterisk_config in json[asterisk_server]:
-                            urllist_params_list = ['urllist_phonebook', 'urllist_voicemail', 'urllist_trunks',
-                                                   'urllist_agents', 'urllist_agents', 'urllist_queues',
-                                                   'urllist_phones', 'urllist_incomingcalls', 'urllist_groups',
-                                                   'urllist_meetme']
-                            if asterisk_config in urllist_params_list:
-                                self.xivoconf.set(asterisk_server,
-                                                  asterisk_config,
-                                                  ','.join(json[asterisk_server][asterisk_config]).replace("\\/","/"))
-                            else:
-                                self.xivoconf.set(asterisk_server,
-                                                  asterisk_config,
-                                                  json[asterisk_server][asterisk_config].replace("\\/","/"))
+                            if json[asterisk_server][asterisk_config]:
+                                if asterisk_config in urllist_params_list:
+                                    self.xivoconf.set(asterisk_server,
+                                                      asterisk_config,
+                                                      ','.join(json[asterisk_server][asterisk_config]).replace("\\/","/"))
+                                else:
+                                    self.xivoconf.set(asterisk_server,
+                                                      asterisk_config,
+                                                      json[asterisk_server][asterisk_config].replace("\\/","/"))
 
                     debug_add_section(self.xivoconf, 'xivocti')
                     self.xivoconf.set('xivocti','allowedxlets', "file:///etc/pf-xivo/ctiservers/allowedxlets.json")

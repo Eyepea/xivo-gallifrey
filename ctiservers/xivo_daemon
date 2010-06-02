@@ -1028,7 +1028,7 @@ class xivo_daemon:
     
         self.extraconn = xivoconf_general.get('extraconn', '')
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
-        ctilog = xivoconf_general.get('ctilog')
+        ctilog = xivoconf_general.get('ctilog_db_uri')
         socktimeout = xivoconf_general.get('sockettimeout', '2')
         logintimeout = int(xivoconf_general.get('logintimeout', '5'))
         self.apnoeafile = xivoconf_general.get('apnoeafile')

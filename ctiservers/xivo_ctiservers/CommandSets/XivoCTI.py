@@ -904,15 +904,16 @@ class XivoCTICommand(BaseCommand):
             try:
                 if not mitem.get('commented'):
                     lmlist[mitem.get('id')] = { 'number' :    mitem.get('number'),
-                        'confno' :    mitem.get('confno'),
-                        'name' :      mitem.get('name'),
-                        'context' :   mitem.get('context'),
-                        'pin' :       mitem.get('pin'),
-                        'pinadmin' :  mitem.get('pinadmin'),
-
-                        'adminid' : None,
-                        'uniqueids' : {}
-                        }
+                                                'confno' :    mitem.get('confno'),
+                                                'name' :      mitem.get('name'),
+                                                'context' :   mitem.get('context'),
+                                                'pin' :       mitem.get('pin'),
+                                                'pinadmin' :  mitem.get('pinadmin'),
+                                                
+                                                'adminid' : None,
+                                                'adminnum' : None,
+                                                'uniqueids' : {}
+                                                }
             except Exception:
                 log.exception('(getmeetmelist : %s)' % mitem)
         return lmlist
@@ -1476,7 +1477,7 @@ class XivoCTICommand(BaseCommand):
                     queueid = self.weblist['groups'][astid].reverse_index[queuename]
                 # find who are the queue members
                 for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'].iteritems():
-                    # XXX sip@queue
+                    # XXX sip/iax2/sccp @queue
                     if status.get('Paused') == '0':
                         userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[6:]))
             elif where.startswith('custom-'):
@@ -1886,7 +1887,7 @@ class XivoCTICommand(BaseCommand):
                             self.last_agents[astid][agent_channel] = {}
                         self.last_agents[astid][agent_channel][qaction] = qdate
                     else:
-                        # log.warning('%s sip@queue (qlogA) %s %s' % (astid, qaction, agent_channel))
+                        # log.warning('%s sip/iax2/sccp @queue (qlogA) %s %s' % (astid, qaction, agent_channel))
                         pass
                 if qaction in ['UNPAUSE', 'PAUSE', 'ADDMEMBER', 'REMOVEMEMBER', 'AGENTCALLED', 'CONNECT']:
                     agent_channel = line[3]
@@ -1897,7 +1898,7 @@ class XivoCTICommand(BaseCommand):
                             self.last_queues[astid][qname][agent_channel] = {}
                         self.last_queues[astid][qname][agent_channel][qaction] = qdate
                     else:
-                        # log.warning('%s sip@queue (qlogB) %s %s' % (astid, qaction, agent_channel))
+                        # log.warning('%s sip/iax2/sccp @queue (qlogB) %s %s' % (astid, qaction, agent_channel))
                         pass
         qlog.close()
         for aid, v in self.last_agents[astid].iteritems():
@@ -2783,16 +2784,6 @@ class XivoCTICommand(BaseCommand):
                             userinfo.get('astid'), userinfo.get('context'))
         return
 
-    sippresence = {
-        '-2' : 'Removed',
-        '-1' : 'Deactivated',
-        '0'  : 'Ready',
-        '1'  : 'InUse', # Calling OR Online
-        '2'  : 'Busy',
-        '4'  : 'Unavailable',
-        '8'  : 'Ringing',
-        '16' : 'OnHold' }
-
     def amiresponse_extensionstatus(self, astid, event):
         # 90 seconds are needed to retrieve ~ 9000 phone statuses from an asterisk (on daemon startup)
         status  = event.get('Status')
@@ -3280,7 +3271,7 @@ class XivoCTICommand(BaseCommand):
                         astid, thisagent.get('context'))
                     # self.weblist['agents'][astid].keeplist[agent_id]['agentstats'] # XXX : count calls ++
         else:
-            # sip@queue
+            # sip/iax2/sccp @queue
             for uinfo in self.ulist_ng.keeplist.itervalues():
                 if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
                     exten = uinfo.get('phonenum')
@@ -3332,7 +3323,7 @@ class XivoCTICommand(BaseCommand):
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                         astid, thisagent.get('context'))
         else:
-            log.warning('%s sip@queue (ami_agentconnect) %s' % (astid, event))
+            log.warning('%s sip/iax2/sccp @queue (ami_agentconnect) %s' % (astid, event))
         # {'BridgedChannel': '1228753144.217', 'Member': 'SIP/103', 'MemberName': 'permmember', 'Queue': 'martinique', 'Uniqueid': '1228753144.216', 'Holdtime': '4', 'Event': 'AgentConnect', 'Channel': 'SIP/103-081d7358'}
         # {'Member': 'SIP/108', 'Queue': 'commercial', 'Uniqueid': '1215006134.1166', 'Holdtime': '9', 'Event': 'AgentConnect', 'Channel': 'SIP/108-08190098'}
         return
@@ -3518,7 +3509,7 @@ class XivoCTICommand(BaseCommand):
                 }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
-            log.warning('%s sip@queue (ami_queuememberadded) %s' % (astid, event))
+            log.warning('%s sip/iax2/sccp @queue (ami_queuememberadded) %s' % (astid, event))
         return
 
     def ami_queuememberremoved(self, astid, event):
@@ -3573,7 +3564,7 @@ class XivoCTICommand(BaseCommand):
                 }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
-            log.warning('%s sip@queue (ami_queuememberremoved) %s' % (astid, event))
+            log.warning('%s sip/iax2/sccp @queue (ami_queuememberremoved) %s' % (astid, event))
         return
 
     def ami_queuememberstatus(self, astid, event):
@@ -3640,7 +3631,7 @@ class XivoCTICommand(BaseCommand):
                     }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
-            # sip@queue
+            # sip/iax2/sccp @queue
             for uinfo in self.ulist_ng.keeplist.itervalues():
                 if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
                     exten = uinfo.get('phonenum')
@@ -3754,7 +3745,7 @@ class XivoCTICommand(BaseCommand):
                     }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
-            log.warning('%s sip@queue (ami_queuememberpaused) %s' % (astid, event))
+            log.warning('%s sip/iax2/sccp @queue (ami_queuememberpaused) %s' % (astid, event))
         return
 
     def ami_queueparams(self, astid, event):
@@ -3831,7 +3822,7 @@ class XivoCTICommand(BaseCommand):
                     }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
-            # sip@queue
+            # sip/iax2/sccp @queue
             nlocations = self.__nlocations__(astid, location, context_queue)
             if nlocations:
                 self.weblist[queueorgroup][astid].queuememberupdate(queueid, nlocations[0], event)
@@ -4120,17 +4111,17 @@ class XivoCTICommand(BaseCommand):
         meetmeref['uniqueids'][uniqueid]['authed'] = status
 
         tosend = { 'class' : 'meetme',
-            'function' : 'update',
-            'payload' : { 'action' : 'auth',
-                'authed' : status,
-                'astid' : astid,
-                'meetmeid': meetmeid,
-                'confno' : confno,
-                'roomnum' : meetmenum,
-                'uniqueid' : uniqueid,
-                'details' : meetmeref['uniqueids'][uniqueid]
-                }
-            }
+                   'function' : 'update',
+                   'payload' : { 'action' : 'auth',
+                                 'authed' : status,
+                                 'astid' : astid,
+                                 'meetmeid': meetmeid,
+                                 'confno' : confno,
+                                 'roomnum' : meetmenum,
+                                 'uniqueid' : uniqueid,
+                                 'details' : meetmeref['uniqueids'][uniqueid]
+                                 }
+                   }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
         return
 
@@ -4207,30 +4198,30 @@ class XivoCTICommand(BaseCommand):
                 meetmeref['adminlist'].append(userid)
 
         meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
-            'mutestatus' : 'off',
-            'recordstatus' : 'off',
-            'time_start' : time.time(),
-            'userid' : userid,
-            'fullname' : calleridname,
-            'phonenum' : calleridnum,
-            'authed' : authed }
+                                             'mutestatus' : 'off',
+                                             'recordstatus' : 'off',
+                                             'time_start' : time.time(),
+                                             'userid' : userid,
+                                             'fullname' : calleridname,
+                                             'phonenum' : calleridnum,
+                                             'authed' : authed }
         log.info('%s ami_meetmejoin : (%s) channel %s added to meetme %s'
-            % (astid, uniqueid, channel, confno))
+                 % (astid, uniqueid, channel, confno))
         tosend = { 'class' : 'meetme',
-            'function' : 'update',
-            'payload' : { 'action' : 'join',
-                'astid' : astid,
-                'meetmeid': meetmeid,
-                'confno' : confno,
-                'roomnum' : meetmenum,
-                'adminnum' : meetmeref['adminnum'],
-                'roomname' : meetmeref['name'],
-                'adminid' : meetmeref['adminid'],
-                'adminlist' : meetmeref['adminlist'],
-                'uniqueid' : uniqueid,
-                'details' : meetmeref['uniqueids'][uniqueid],
-                'authed' : authed }
-            }
+                   'function' : 'update',
+                   'payload' : { 'action' : 'join',
+                                 'astid' : astid,
+                                 'meetmeid': meetmeid,
+                                 'confno' : confno,
+                                 'roomnum' : meetmenum,
+                                 'adminnum' : meetmeref['adminnum'],
+                                 'roomname' : meetmeref['name'],
+                                 'adminid' : meetmeref['adminid'],
+                                 'adminlist' : meetmeref['adminlist'],
+                                 'uniqueid' : uniqueid,
+                                 'details' : meetmeref['uniqueids'][uniqueid],
+                                 'authed' : authed }
+                   }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
         return
 
