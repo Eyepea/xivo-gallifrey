@@ -653,7 +653,7 @@ class AMIList:
             conn_ami.sendstatus()
             conn_ami.setactionid('init_agents_%s' % initphaseid)
             conn_ami.sendagents()
-            conn_ami.setactionid('init queues_%s' % initphaseid)
+            conn_ami.setactionid('init_queues_%s' % initphaseid)
             conn_ami.sendqueuestatus()
             conn_ami.setactionid('init_close_%s' % initphaseid)
         return
