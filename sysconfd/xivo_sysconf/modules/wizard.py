@@ -59,7 +59,6 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
        'provisioning_config_path':              None,
        'webinterface_xivo_config_filename':     "xivo.ini",
        'webinterface_ipbx_config_filename':     "ipbx.ini",
-       'webinterface_cti_config_filename':      "cti.ini",
        'webinterface_tpl_directory':            "web-interface",
        'webinterface_config_path':              None}
 
@@ -481,12 +480,6 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
                           Wdc['webinterface_ipbx_file'],
                           {'general':
                                 {'datastorage': '"%s"' % args['ipbx']}})
-
-        merge_config_file(Wdc['webinterface_cti_tpl_file'],
-                          Wdc['webinterface_cti_custom_tpl_file'],
-                          Wdc['webinterface_cti_file'],
-                          {'general':
-                                {'datastorage': '"%s"' % args['xivo']}})
 
         if args['ipbxengine'] == 'asterisk':
             asterisk_configuration(ipbxdburi, ipbxdbinfo[ipbxdburi[0]], ipbxdbparams)
