@@ -241,10 +241,10 @@ Administrator :
 None
 
 ; fm_meetmefeatures_admin-typefrom-opt(internal)
-Intern
+Internal
 
 ; fm_meetmefeatures_admin-typefrom-opt(external)
-Extern
+External
 
 ; fm_meetmefeatures_admin-typefrom-opt(undefined)
 Undefined
@@ -268,7 +268,7 @@ Talk
 All
 
 ; fm_meetmefeatures_user-announceusercount
-Announce participants number :
+Announce the number of participants :
 
 ; fm_meetmefeatures_user-hiddencalls
 Reject anonymous calls :
