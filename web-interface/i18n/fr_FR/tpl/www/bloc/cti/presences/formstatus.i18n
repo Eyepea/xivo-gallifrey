@@ -1,0 +1,63 @@
+; fm_status_name
+Nom status :
+
+; fm_status_description
+Description
+
+; fm_status_display_name
+Nom affiché
+
+; cmt_status_display_name
+Le nom compréhensible qui sera affiché
+
+; fm_status_color
+Couleur
+
+; cmt_status_color
+Couleur de l'icône de status
+
+; cti-access_status
+Autres status accessibles dans ce mode
+
+; col_actions-name
+Action
+
+; col_actions-args
+Paramètre
+
+; no_actions
+Aucune action
+
+; action-queueadd
+Ajouter dans la file d'attente
+
+; action-queueremove
+Supprimer de la file d'attente
+
+; action-queuepause
+Mettre en pause (file d'attente)
+
+; action-queueunpause
+Sortir de pause (file d'attente)
+
+; action-enablevoicemail
+Activer la messagerie vocale
+
+; action-callrecord
+Enregistrer les appels
+
+; action-incallfilter
+Filtrer les appels entrants
+
+; action-enablednd
+Activer le mode NPD
+
+; action-enableunc
+Activer le transfert inconditionnel
+
+; action-enablebusy
+Activer le transfert sur occupation
+
+; action-enablerna
+Activer le transfert sur non réponse
+

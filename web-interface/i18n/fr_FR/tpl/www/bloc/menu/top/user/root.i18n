@@ -10,6 +10,9 @@ Services
 ; mn_sub_top_services_ipbx
 IPBX
 
+; mn_sub_top_services_cti
+Serveur CTI
+
 ; mn_sub_top_services_monitoring
 Monitoring
 

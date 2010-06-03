@@ -40,6 +40,10 @@ $this->file_include('bloc/menu/top/user/loginbox');
 								   'service/ipbx');?>
 					</li>
 					<li>
+						<?=$url->href_html($this->bbf('mn_sub_top_services_cti'),
+								   'cti/general');?>
+					</li>
+					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
 								   'xivo');?>
 					</li>

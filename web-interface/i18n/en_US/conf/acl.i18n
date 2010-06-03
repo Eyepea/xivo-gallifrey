@@ -211,37 +211,37 @@ CTI server
 ; acl(service-ipbx-ctiserver-configuration)
 Configuration
 
-; acl(service-ipbx-cti_settings)
+; acl(service-cti)
 CTI servers
 
-; acl(service-ipbx-cti_settings-general)
+; acl(service-cti-general)
 General
 
-; acl(service-ipbx-cti_settings-presences)
+; acl(service-cti-presences)
 Presences
 
-; acl(service-ipbx-cti_settings-phonehints)
+; acl(service-cti-phonehints)
 Phone hints
 
-; acl(service-ipbx-cti_settings-profiles)
+; acl(service-cti-profiles)
 Profiles
 
-; acl(service-ipbx-cti_settings-directories)
+; acl(service-cti-directories)
 Directories
 
-; acl(service-ipbx-cti_settings-reversedirectories)
+; acl(service-cti-reversedirectories)
 Reverse directories
 
-; acl(service-ipbx-cti_settings-displays)
+; acl(service-cti-displays)
 Display filters
 
-; acl(service-ipbx-cti_settings-contexts)
+; acl(service-cti-contexts)
 Contexts
 
-; acl(service-ipbx-cti_settings-sheetactions)
+; acl(service-cti-sheetactions)
 Sheets : Actions
 
-; acl(service-ipbx-cti_settings-sheetevents)
+; acl(service-cti-sheetevents)
 Sheets : Events
 
 ; acl(service-ipbx-pbx_settings)

@@ -1,0 +1,41 @@
+; fm_sheetactions_name
+Nom :
+
+; fm_sheetactions_whom
+Destinataire :
+
+; fm_sheetactions_focus
+Focus :
+
+; fm_sheetactions_qtui
+Interface Qt :
+
+; cti-sheetactions-context
+Contextes
+
+; cti-sheetactions-capaids
+Profils XiVO Client
+
+; col_1
+Champ affiché
+
+; col_2
+Type de champ
+
+; col_3
+Valeur par défaut
+
+; col_4
+Format d'affichage
+
+; no_screens
+Aucune fiche
+
+; no_systrays
+Aucune miniature
+
+; no_informations
+Aucune information
+
+; fm_description
+Description

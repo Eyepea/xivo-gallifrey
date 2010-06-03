@@ -64,37 +64,37 @@ Serveurs CTI
 ; acl(service-ipbx-ctiserver-configuration)
 Configuration
 
-; acl(service-ipbx-cti_settings)
+; acl(service-cti)
 Serveurs CTI
 
-; acl(service-ipbx-cti_settings-general)
+; acl(service-cti-general)
 Options générales
 
-; acl(service-ipbx-cti_settings-presences)
+; acl(service-cti-presences)
 Présences
 
-; acl(service-ipbx-cti_settings-phonehints)
+; acl(service-cti-phonehints)
 Présences téléphoniques
 
-; acl(service-ipbx-cti_settings-profiles)
+; acl(service-cti-profiles)
 Profiles
 
-; acl(service-ipbx-cti_settings-directories)
+; acl(service-cti-directories)
 Répertoires
 
-; acl(service-ipbx-cti_settings-reversedirectories)
+; acl(service-cti-reversedirectories)
 Répertoires inverses
 
-; acl(service-ipbx-cti_settings-displays)
+; acl(service-cti-displays)
 Filtres d'affichage
 
-; acl(service-ipbx-cti_settings-contexts)
+; acl(service-cti-contexts)
 Contextes
 
-; acl(service-ipbx-cti_settings-sheetactions)
+; acl(service-cti-sheetactions)
 Fiches : Actions
 
-; acl(service-ipbx-cti_settings-sheetevents)
+; acl(service-cti-sheetevents)
 Fiches : Evènements
 
 ; acl(service-ipbx-pbx_settings)

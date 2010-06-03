@@ -78,6 +78,7 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
+/*
 	if(xivo_user::chk_acl('cti_settings') === true):
 		echo 	'<dl><dt>',$this->bbf('mn_left_ti_ctisettings'),'</dt>';
 
@@ -143,7 +144,7 @@ $dhtml = &$this->get_module('dhtml');
 		endif;
 	endif;
 	echo	'</dl>';
-
+*/
 
 	if(xivo_user::chk_acl('call_center') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_callcenter'),'</dt>';

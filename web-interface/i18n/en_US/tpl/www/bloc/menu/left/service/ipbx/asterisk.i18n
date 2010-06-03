@@ -22,38 +22,6 @@ Phonebook
 ; mn_left_generalsettings-advanced
 Advanced
 
-; mn_left_ti_ctisettings
-CTI Server
-
-; mn_left_ctisettings-general
-General
-
-; mn_left_ctisettings-presences
-Presences
-
-; mn_left_ctisettings-phonehints
-Phone Hints
-
-; mn_left_ctisettings-profiles
-Profiles
-
-; mn_left_ctisettings-directories
-Directories
-
-; mn_left_ctisettings-reversedirectories
-Reverse Directories
-
-; mn_left_ctisettings-displays
-Displays
-
-; mn_left_ctisettings-contexts
-Contexts
-
-; mn_left_ctisettings-sheetactions
-Sheet Actions
-
-; mn_left_ctisettings-sheetevents
-Sheet Events
 
 ; mn_left_ti_callcenter
 Call Center

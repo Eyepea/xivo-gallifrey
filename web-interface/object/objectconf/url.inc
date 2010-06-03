@@ -76,16 +76,7 @@ $array['service/ipbx/general_settings/voicemail'] = 'service/ipbx/index.php/gene
 $array['service/ipbx/general_settings/phonebook'] = 'service/ipbx/index.php/general_settings/phonebook/';
 $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/general_settings/advanced/';
 
-$array['service/ipbx/cti_settings/general'] = 'service/ipbx/index.php/cti_settings/general/';
-$array['service/ipbx/cti_settings/presences'] = 'service/ipbx/index.php/cti_settings/presences/';
-$array['service/ipbx/cti_settings/phonehints'] = 'service/ipbx/index.php/cti_settings/phonehints/';
-$array['service/ipbx/cti_settings/profiles'] = 'service/ipbx/index.php/cti_settings/profiles/';
-$array['service/ipbx/cti_settings/directories'] = 'service/ipbx/index.php/cti_settings/directories/';
-$array['service/ipbx/cti_settings/reversedirectories'] = 'service/ipbx/index.php/cti_settings/reversedirectories/';
-$array['service/ipbx/cti_settings/displays'] = 'service/ipbx/index.php/cti_settings/displays/';
-$array['service/ipbx/cti_settings/contexts'] = 'service/ipbx/index.php/cti_settings/contexts/';
-$array['service/ipbx/cti_settings/sheetactions'] = 'service/ipbx/index.php/cti_settings/sheetactions/';
-$array['service/ipbx/cti_settings/sheetevents'] = 'service/ipbx/index.php/cti_settings/sheetevents/';
+
 
 $array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
@@ -123,7 +114,6 @@ $array['service/ipbx/web_services/phonebook/menu'] = 'service/ipbx/web_services.
 
 $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/local/';
 
-$array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';
 
 $array['service/ipbx/json/restricted/pbx_settings/agents'] = 'service/ipbx/json.php/restricted/pbx_settings/agents/';
 $array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
@@ -136,8 +126,6 @@ $array['service/ipbx/json/restricted/call_center/queueskills'] = 'service/ipbx/j
 $array['service/ipbx/json/restricted/call_center/queueskillrules'] = 'service/ipbx/json.php/restricted/call_center/queueskillrules/';
 
 
-
-$array['service/ipbx/json/private/ctiserver/configuration'] = 'service/ipbx/json.php/private/ctiserver/configuration/';
 
 $array['service/ipbx/json/private/pbx_settings/agents'] = 'service/ipbx/json.php/private/pbx_settings/agents/';
 $array['service/ipbx/json/private/pbx_settings/users'] = 'service/ipbx/json.php/private/pbx_settings/users/';
@@ -163,6 +151,24 @@ $array['service/ipbx/ui/pbx_settings/groups'] = 'service/ipbx/ui.php/pbx_setting
 $array['service/ipbx/ui/pbx_settings/queues'] = 'service/ipbx/ui.php/pbx_settings/queues/';
 $array['service/ipbx/ui/pbx_settings/meetme'] = 'service/ipbx/ui.php/pbx_settings/meetme/';
 $array['service/ipbx/ui/pbx_settings/voicemail'] = 'service/ipbx/ui.php/pbx_settings/voicemail/';
+
+// CTI
+$array['cti']                    = 'cti/index.php';
+$array['cti/general']            = 'cti/index.php/general';
+$array['cti/presences']          = 'cti/index.php/presences/';
+$array['cti/phonehints']         = 'cti/index.php/phonehints/';
+$array['cti/profiles']           = 'cti/index.php/profiles/';
+$array['cti/directories']        = 'cti/index.php/directories/';
+$array['cti/reversedirectories'] = 'cti/index.php/reversedirectories/';
+$array['cti/displays']           = 'cti/index.php/displays/';
+$array['cti/contexts']           = 'cti/index.php/contexts/';
+$array['cti/sheetactions']       = 'cti/index.php/sheetactions/';
+$array['cti/sheetevents']        = 'cti/index.php/sheetevents/';
+
+
+$array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';
+$array['service/ipbx/json/private/ctiserver/configuration']    = 'service/ipbx/json.php/private/ctiserver/configuration/';
+
 
 // munin stats
 $array['graphs'] = 'graphs/index.php';

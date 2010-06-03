@@ -1,0 +1,23 @@
+; fm_displays_name
+Nom :
+
+; col_1
+Champ affiché
+
+; col_2
+Type de champ
+
+; col_3
+Valeur par défaut
+
+; col_4
+Format d'affichage
+
+; fm_description
+Description
+
+; list-avail-formats
+<i>Formats d'affichage disponibles :&nbsp;</i>
+
+; no_disp
+Aucun affichage
