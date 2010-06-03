@@ -401,7 +401,7 @@ endif;
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_html($this->bbf('create_user'),
-					'service/ipbx/pbx_settings/users',
+					'service/ipbx/call_center/users',
 					'act=add'),
 			'</div>';
 	endif;
@@ -525,7 +525,7 @@ endif;
 		else:
 			echo	'<div id="create-agent" class="txt-center">',
 					$url->href_html($this->bbf('create_agent'),
-							'service/ipbx/pbx_settings/agents',
+							'service/ipbx/call_center/agents',
 							'act=addagent'),
 				'</div>';
 		endif;
@@ -533,7 +533,7 @@ endif;
 	else:
 		echo	'<div class="txt-center">',
 				$url->href_html($this->bbf('create_agent-group'),
-						'service/ipbx/pbx_settings/agents',
+						'service/ipbx/call_center/agents',
 						'act=add'),
 			'</div>';
 	endif;

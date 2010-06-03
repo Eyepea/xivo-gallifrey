@@ -83,10 +83,10 @@ endif;
 <div class="sb-advanced-menu">
 	<ul id="toolbar-add-menu">
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-group'),
-				       'service/ipbx/pbx_settings/agents',
+				       'service/ipbx/call_center/agents',
 				       'act=add');?></li>
 		<li><?=$url->href_html($this->bbf('toolbar_adv_menu_add-agent'),
-				       'service/ipbx/pbx_settings/agents',
+				       'service/ipbx/call_center/agents',
 				       $param);?></li>
 	</ul>
 </div><?php

@@ -215,7 +215,7 @@ endif;
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_html($this->bbf('create_queue'),
-					'service/ipbx/pbx_settings/queues',
+					'service/ipbx/call_center/queues',
 					'act=add'),
 			'</div>';
 	endif;

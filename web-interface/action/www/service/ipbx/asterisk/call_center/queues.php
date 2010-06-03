@@ -80,7 +80,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('xivo[queuelist,update]');
-				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 			}
 		}
 
@@ -185,7 +185,7 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 
 		if(isset($_QR['id']) === false || ($info = $appqueue->get($_QR['id'])) === false)
-			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 
 		$result = $fm_save = $error = null;
 		$return = &$info;
@@ -239,7 +239,7 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('xivo[queuelist,update]');
-				$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+				$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 			}
 		}
 
@@ -347,19 +347,19 @@ switch($act)
 		$appqueue = &$ipbx->get_application('queue');
 
 		if(isset($_QR['id']) === false || $appqueue->get($_QR['id']) === false)
-			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 
 		$appqueue->delete();
 
 		$ipbx->discuss('xivo[queuelist,update]');
 
-		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 		break;
 	case 'deletes':
 		$param['page'] = $page;
 
 		if(($values = dwho_issa_val('queues',$_QR)) === false)
-			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 
 		$appqueue = &$ipbx->get_application('queue');
 
@@ -373,7 +373,7 @@ switch($act)
 
 		$ipbx->discuss('xivo[queuelist,update]');
 
-		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 		break;
 	case 'disables':
 	case 'enables':
@@ -382,7 +382,7 @@ switch($act)
 		$invdisable = $disable === false;
 
 		if(($values = dwho_issa_val('queues',$_QR)) === false)
-			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 
 		$queuefeatures = &$ipbx->get_module('queuefeatures');
 		$queue = &$ipbx->get_module('queue');
@@ -397,7 +397,7 @@ switch($act)
 
 		$ipbx->discuss('xivo[queuelist,update]');
 
-		$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+		$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 		break;
 	default:
 		$act = 'list';
@@ -419,7 +419,7 @@ switch($act)
 		if($list === false && $total > 0 && $prevpage > 0)
 		{
 			$param['page'] = $prevpage;
-			$_QRY->go($_TPL->url('service/ipbx/pbx_settings/queues'),$param);
+			$_QRY->go($_TPL->url('service/ipbx/call_center/queues'),$param);
 		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
@@ -431,9 +431,9 @@ $_TPL->set_var('act',$act);
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/service/ipbx/'.$ipbx->get_name());
-$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues');
+$menu->set_toolbar('toolbar/service/ipbx/'.$ipbx->get_name().'/call_center/queues');
 
-$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/pbx_settings/queues/'.$act);
+$_TPL->set_bloc('main','service/ipbx/'.$ipbx->get_name().'/call_center/queues/'.$act);
 $_TPL->set_struct('service/ipbx/'.$ipbx->get_name());
 $_TPL->display('index');
 

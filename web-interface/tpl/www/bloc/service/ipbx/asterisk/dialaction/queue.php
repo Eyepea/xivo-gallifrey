@@ -63,7 +63,7 @@ else:
 	if($this->get_var('dialaction_from') === 'queue'):
 		echo	$this->bbf('dialaction_no-queue');
 	else:
-		echo	$url->href_html($this->bbf('create_queue'),'service/ipbx/pbx_settings/queues','act=add');
+		echo	$url->href_html($this->bbf('create_queue'),'service/ipbx/call_center/queues','act=add');
 	endif;
 	echo	'</div>';
 endif;

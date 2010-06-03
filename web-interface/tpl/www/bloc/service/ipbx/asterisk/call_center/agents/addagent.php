@@ -29,7 +29,7 @@ $form = &$this->get_module('form');
 	</h3>
 
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/submenuagent');
+	$this->file_include('bloc/service/ipbx/asterisk/call_center/agents/submenuagent');
 ?>
 
 	<div class="sb-content">
@@ -40,15 +40,12 @@ $form = &$this->get_module('form');
 					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'editagent')),
+					    'value'	=> 'addagent')),
 
 			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1)),
+					    'value'	=> 1));
 
-			$form->hidden(array('name'	=> 'id',
-					    'value'	=> $this->get_var('id')));
-
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/formagent');
+		$this->file_include('bloc/service/ipbx/asterisk/call_center/agents/formagent');
 
 		echo	$form->submit(array('name'	=> 'submit',
 					    'id'	=> 'it-submit',

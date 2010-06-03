@@ -124,7 +124,7 @@ endif;
 
 <div id="sb-part-queueskills" class="b-nodisplay">
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/agents/queueskills');
+	$this->file_include('bloc/service/ipbx/asterisk/call_center/agents/queueskills');
 ?>
 </div>
 
@@ -183,7 +183,7 @@ endif;
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_html($this->bbf('create_user'),
-					'service/ipbx/pbx_settings/users',
+					'service/ipbx/call_center/users',
 					'act=add'),
 			'</div>';
 	endif;
@@ -286,7 +286,7 @@ endif;
 	else:
 		echo	'<div class="txt-center">',
 			$url->href_html($this->bbf('create_queue'),
-					'service/ipbx/pbx_settings/queues',
+					'service/ipbx/call_center/queues',
 					'act=add'),
 			'</div>';
 	endif;

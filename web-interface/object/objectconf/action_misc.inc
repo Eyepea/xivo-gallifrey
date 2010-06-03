@@ -21,7 +21,7 @@
 $array = array();
 
 $array['service/ipbx/asterisk/ui/pbx_settings/users/agents/search'] = array(
-	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/agents',
+	'path'		=> 'service/ipbx/asterisk/ui/call_center/agents',
 	'define'	=> array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'agents',
@@ -39,7 +39,7 @@ $array['service/ipbx/asterisk/ui/pbx_settings/users/groups/search'] = array(
 			'XIVO_LOC_UI_ACTION'		=> 'search'));
 
 $array['service/ipbx/asterisk/ui/pbx_settings/users/queues/search'] = array(
-	'path'		=> 'service/ipbx/asterisk/ui/pbx_settings/queues',
+	'path'		=> 'service/ipbx/asterisk/ui/call_center/queues',
 	'define'	=> array(
 			'XIVO_LOC_UI_ACL_CATEGORY'	=> 'pbx_settings',
 			'XIVO_LOC_UI_ACL_SUBCATEGORY'	=> 'users',
@@ -91,8 +91,8 @@ $array['service/ipbx/asterisk/web_services/private/ctiserver/configuration'] = a
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
-$array['service/ipbx/asterisk/web_services/private/pbx_settings/agents'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/agents',
+$array['service/ipbx/asterisk/web_services/private/call_center/agents'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/agents',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/users'] = array(
@@ -103,8 +103,8 @@ $array['service/ipbx/asterisk/web_services/private/pbx_settings/groups'] = array
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/groups',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
-$array['service/ipbx/asterisk/web_services/private/pbx_settings/queues'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/queues',
+$array['service/ipbx/asterisk/web_services/private/call_center/queues'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/queues',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/meetme'] = array(
@@ -198,8 +198,8 @@ $array['service/ipbx/asterisk/web_services/restricted/ctiserver/configuration'] 
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 
-$array['service/ipbx/asterisk/web_services/restricted/pbx_settings/agents'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/agents',
+$array['service/ipbx/asterisk/web_services/restricted/call_center/agents'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/agents',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/pbx_settings/users'] = array(
@@ -210,8 +210,8 @@ $array['service/ipbx/asterisk/web_services/restricted/pbx_settings/groups'] = ar
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/groups',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
-$array['service/ipbx/asterisk/web_services/restricted/pbx_settings/queues'] = array(
-	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/queues',
+$array['service/ipbx/asterisk/web_services/restricted/call_center/queues'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/queues',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/pbx_settings/meetme'] = array(

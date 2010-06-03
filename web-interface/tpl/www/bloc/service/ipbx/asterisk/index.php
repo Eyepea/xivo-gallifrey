@@ -49,9 +49,9 @@ $voicemailstat = $this->get_var('voicemailstat');
 				<tr class="l-infos-1on2">
 					<td class="td-left txt-left">
 <?php
-	if(xivo_user::chk_acl('pbx_settings','agents') === true):
+	if(xivo_user::chk_acl('call_center','agents') === true):
 		echo	$url->href_html($this->bbf('stats_type-agent'),
-					'service/ipbx/pbx_settings/agents',
+					'service/ipbx/call_center/agents',
 					'act=list');
 	else:
 		echo $this->bbf('stats_type-agents');
@@ -63,11 +63,11 @@ $voicemailstat = $this->get_var('voicemailstat');
 					<td class="td-center"><?=$agentstat['total']?></td>
 					<td class="td-right txt-center">
 <?php
-	if(xivo_user::chk_acl('pbx_settings','agents') === true):
+	if(xivo_user::chk_acl('call_center','agents') === true):
 		echo	$url->href_html($url->img_html('img/site/button/mini/blue/add.gif',
 						       $this->bbf('opt_add'),
 						       'border="0"'),
-					'service/ipbx/pbx_settings/agents',
+					'service/ipbx/call_center/agents',
 					array('act'	=> 'add'),
 					null,
 					$this->bbf('opt_add_agent'));
@@ -142,9 +142,9 @@ $voicemailstat = $this->get_var('voicemailstat');
 				<tr class="l-infos-2on2">
 					<td class="td-left txt-left">
 <?php
-	if(xivo_user::chk_acl('pbx_settings','queues') === true):
+	if(xivo_user::chk_acl('call_center','queues') === true):
 		echo	$url->href_html($this->bbf('stats_type-queue'),
-					'service/ipbx/pbx_settings/queues',
+					'service/ipbx/call_center/queues',
 					'act=list');
 	else:
 		echo	$this->bbf('stats_type-queue');
@@ -156,11 +156,11 @@ $voicemailstat = $this->get_var('voicemailstat');
 					<td class="td-center"><?=$queuestat['total']?></td>
 					<td class="td-right txt-center">
 <?php
-	if(xivo_user::chk_acl('pbx_settings','queues') === true):
+	if(xivo_user::chk_acl('call_center','queues') === true):
 		echo	$url->href_html($url->img_html('img/site/button/mini/blue/add.gif',
 						       $this->bbf('opt_add'),
 						       'border="0"'),
-					'service/ipbx/pbx_settings/queues',
+					'service/ipbx/call_center/queues',
 					array('act'	=> 'add'),
 					null,
 					$this->bbf('opt_add_queue'));

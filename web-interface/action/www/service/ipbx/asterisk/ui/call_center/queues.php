@@ -26,7 +26,7 @@ if(defined('XIVO_LOC_UI_ACL_CATEGORY') === true
 }
 else
 {
-	$access_category = 'pbx_settings';
+	$access_category = 'call_center';
 	$access_subcategory = 'queues';
 }
 
@@ -56,6 +56,6 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
-$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/generic');
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_center/generic');
 
 ?>

@@ -28,33 +28,31 @@ $form = &$this->get_module('form');
 		<span class="span-right">&nbsp;</span>
 	</h3>
 <?php
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/submenu');
+	$this->file_include('bloc/service/ipbx/asterisk/call_center/queues/submenu');
 ?>
+
 	<div class="sb-content">
 		<form action="#" method="post" accept-charset="utf-8" onsubmit="dwho.form.select('it-queue-periodic-announce');
 										dwho.form.select('it-user');
 										dwho.form.select('it-agentgroup');
-										dwho.form.select('it-agent');
-										dwho.form.select('it-rightcall');">
+										dwho.form.select('it-agent');">
 <?php
 		echo	$form->hidden(array('name'	=> DWHO_SESS_NAME,
 					    'value'	=> DWHO_SESS_ID)),
 
 			$form->hidden(array('name'	=> 'act',
-					    'value'	=> 'edit')),
+					    'value'	=> 'add')),
 
 			$form->hidden(array('name'	=> 'fm_send',
-					    'value'	=> 1)),
+					    'value'	=> 1));
 
-			$form->hidden(array('name'	=> 'id',
-					    'value'	=> $this->get_var('id')));
-
-		$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/queues/form');
+		$this->file_include('bloc/service/ipbx/asterisk/call_center/queues/form');
 
 		echo	$form->submit(array('name'	=> 'submit',
 					    'id'	=> 'it-submit',
 					    'value'	=> $this->bbf('fm_bt-save')));
 ?>
+
 		</form>
 	</div>
 	<div class="sb-foot xspan">

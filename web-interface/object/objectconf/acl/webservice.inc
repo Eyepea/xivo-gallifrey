@@ -40,14 +40,14 @@ $array['tree']['service']['ipbx']['ctiserver'] = array();
 $array['tree']['service']['ipbx']['ctiserver']['configuration'] = true;
 
 $array['tree']['service']['ipbx']['pbx_settings'] = array();
-$array['tree']['service']['ipbx']['pbx_settings']['agents'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['users'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['groups'] = true;
-$array['tree']['service']['ipbx']['pbx_settings']['queues'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['meetme'] = true;
 $array['tree']['service']['ipbx']['pbx_settings']['voicemail'] = true;
 
 $array['tree']['service']['ipbx']['call_center'] = array();
+$array['tree']['service']['ipbx']['call_center']['agents'] = true;
+$array['tree']['service']['ipbx']['call_center']['queues'] = true;
 $array['tree']['service']['ipbx']['call_center']['queueskills'] = true;
 $array['tree']['service']['ipbx']['call_center']['queueskillrules'] = true;
 

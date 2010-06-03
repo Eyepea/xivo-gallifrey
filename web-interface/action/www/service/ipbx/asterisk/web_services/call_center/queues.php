@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$access_category = 'pbx_settings';
-$access_subcategory = 'agents';
+$access_category = 'call_center';
+$access_subcategory = 'queues';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
@@ -28,11 +28,14 @@ $act = $_QRY->get('act');
 switch($act)
 {
 	case 'view':
-		$appagent = &$ipbx->get_application('agent');
+		$appqueue = &$ipbx->get_application('queue');
 
-		$nocomponents = array('contextmember'	=> true);
+		$nocomponents = array('queuemacro'		=> true,
+				      'extenumbers'		=> true,
+				      'contextnummember'	=> true,
+				      'contextmember'		=> true);
 
-		if(($info = $appagent->get($_QRY->get('id'),
+		if(($info = $appqueue->get($_QRY->get('id'),
 					   null,
 					   $nocomponents)) === false)
 		{
@@ -43,13 +46,12 @@ switch($act)
 		$_TPL->set_var('info',$info);
 		break;
 	case 'add':
-		$appagent = &$ipbx->get_application('agent');
+		$appqueue = &$ipbx->get_application('queue');
 
-		if($appagent->add_from_json() === true)
+		if($appqueue->add_from_json() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('module reload chan_agent.so');
-			$ipbx->discuss('xivo[agentlist,update]');
+			$ipbx->discuss('xivo[queuelist,update]');
 		}
 		else
 			$status = 400;
@@ -58,15 +60,14 @@ switch($act)
 		$http_response->send(true);
 		break;
 	case 'delete':
-		$appagent = &$ipbx->get_application('agent');
+		$appqueue = &$ipbx->get_application('queue');
 
-		if($appagent->get($_QRY->get('id')) === false)
+		if($appqueue->get($_QRY->get('id')) === false)
 			$status = 404;
-		else if($appagent->delete() === true)
+		else if($appqueue->delete() === true)
 		{
 			$status = 200;
-			$ipbx->discuss('module reload chan_agent.so');
-			$ipbx->discuss('xivo[agentlist,update]');
+			$ipbx->discuss('xivo[queuelist,update]');
 		}
 		else
 			$status = 500;
@@ -74,13 +75,24 @@ switch($act)
 		$http_response->set_status_line($status);
 		$http_response->send(true);
 		break;
+	case 'search':
+		$appqueue = &$ipbx->get_application('queue',null,false);
+
+		if(($list = $appqueue->get_queues_search($_QRY->get('search'))) === false)
+		{
+			$http_response->set_status_line(204);
+			$http_response->send(true);
+		}
+
+		$_TPL->set_var('list',$list);
+		break;
 	case 'list':
 	default:
 		$act = 'list';
 
-		$appagent = &$ipbx->get_application('agent',null,false);
+		$appqueue = &$ipbx->get_application('queue',null,false);
 
-		if(($list = $appagent->get_agents_list()) === false)
+		if(($list = $appqueue->get_queues_list()) === false)
 		{
 			$http_response->set_status_line(204);
 			$http_response->send(true);
@@ -91,6 +103,6 @@ switch($act)
 
 $_TPL->set_var('act',$act);
 $_TPL->set_var('sum',$_QRY->get('sum'));
-$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/agents');
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/generic');
 
 ?>

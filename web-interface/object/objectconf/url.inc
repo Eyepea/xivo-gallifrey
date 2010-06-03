@@ -78,10 +78,8 @@ $array['service/ipbx/general_settings/advanced'] = 'service/ipbx/index.php/gener
 
 
 
-$array['service/ipbx/pbx_settings/agents'] = 'service/ipbx/index.php/pbx_settings/agents/';
 $array['service/ipbx/pbx_settings/users'] = 'service/ipbx/index.php/pbx_settings/users/';
 $array['service/ipbx/pbx_settings/groups'] = 'service/ipbx/index.php/pbx_settings/groups/';
-$array['service/ipbx/pbx_settings/queues'] = 'service/ipbx/index.php/pbx_settings/queues/';
 $array['service/ipbx/pbx_settings/meetme'] = 'service/ipbx/index.php/pbx_settings/meetme/';
 $array['service/ipbx/pbx_settings/voicemail'] = 'service/ipbx/index.php/pbx_settings/voicemail/';
 $array['service/ipbx/call_management/incall'] = 'service/ipbx/index.php/call_management/incall/';
@@ -103,6 +101,8 @@ $array['service/ipbx/system_management/backupfiles'] = 'service/ipbx/index.php/s
 $array['service/ipbx/system_management/configfiles'] = 'service/ipbx/index.php/system_management/configfiles/';
 $array['service/ipbx/system_management/context'] = 'service/ipbx/index.php/system_management/context/';
 $array['service/ipbx/system_management/ldapfilter'] = 'service/ipbx/index.php/system_management/ldapfilter/';
+$array['service/ipbx/call_center/queues'] = 'service/ipbx/index.php/call_center/queues/';
+$array['service/ipbx/call_center/agents'] = 'service/ipbx/index.php/call_center/agents/';
 $array['service/ipbx/call_center/queueskills'] = 'service/ipbx/index.php/call_center/queueskills/';
 $array['service/ipbx/call_center/queueskillrules'] = 'service/ipbx/index.php/call_center/queueskillrules/';
 $array['service/ipbx/control_system/logfiles'] = 'service/ipbx/index.php/control_system/logfiles/';
@@ -115,10 +115,8 @@ $array['service/ipbx/web_services/phonebook/menu'] = 'service/ipbx/web_services.
 $array['service/ipbx/json/phonebook/local'] = 'service/ipbx/json.php/phonebook/local/';
 
 
-$array['service/ipbx/json/restricted/pbx_settings/agents'] = 'service/ipbx/json.php/restricted/pbx_settings/agents/';
 $array['service/ipbx/json/restricted/pbx_settings/users'] = 'service/ipbx/json.php/restricted/pbx_settings/users/';
 $array['service/ipbx/json/restricted/pbx_settings/groups'] = 'service/ipbx/json.php/restricted/pbx_settings/groups/';
-$array['service/ipbx/json/restricted/pbx_settings/queues'] = 'service/ipbx/json.php/restricted/pbx_settings/queues/';
 $array['service/ipbx/json/restricted/pbx_settings/meetme'] = 'service/ipbx/json.php/restricted/pbx_settings/meetme/';
 $array['service/ipbx/json/restricted/pbx_settings/voicemail'] = 'service/ipbx/json.php/restricted/pbx_settings/voicemail/';
 $array['service/ipbx/json/restricted/call_management/incall'] = 'service/ipbx/json.php/restricted/call_management/incall/';
@@ -127,15 +125,12 @@ $array['service/ipbx/json/restricted/call_center/queueskillrules'] = 'service/ip
 
 
 
-$array['service/ipbx/json/private/pbx_settings/agents'] = 'service/ipbx/json.php/private/pbx_settings/agents/';
 $array['service/ipbx/json/private/pbx_settings/users'] = 'service/ipbx/json.php/private/pbx_settings/users/';
 $array['service/ipbx/json/private/pbx_settings/groups'] = 'service/ipbx/json.php/private/pbx_settings/groups/';
-$array['service/ipbx/json/private/pbx_settings/queues'] = 'service/ipbx/json.php/private/pbx_settings/queues/';
 $array['service/ipbx/json/private/pbx_settings/meetme'] = 'service/ipbx/json.php/private/pbx_settings/meetme/';
 $array['service/ipbx/json/private/pbx_settings/voicemail'] = 'service/ipbx/json.php/private/pbx_settings/voicemail/';
 $array['service/ipbx/json/private/call_management/incall'] = 'service/ipbx/json.php/private/call_management/incall/';
 
-$array['service/ipbx/ui/pbx_settings/agents'] = 'service/ipbx/ui.php/pbx_settings/agents/';
 $array['service/ipbx/ui/pbx_settings/users'] = 'service/ipbx/ui.php/pbx_settings/users/';
 $array['service/ipbx/ui/pbx_settings/users/search'] = 'service/ipbx/ui.php/pbx_settings/users/search/';
 $array['service/ipbx/ui/pbx_settings/users/groups'] = 'service/ipbx/ui.php/pbx_settings/users/groups/';
@@ -148,9 +143,18 @@ $array['service/ipbx/ui/pbx_settings/users/voicemail'] = 'service/ipbx/ui.php/pb
 $array['service/ipbx/ui/pbx_settings/users/voicemail/search'] = 'service/ipbx/ui.php/pbx_settings/users/voicemail/search/';
 $array['service/ipbx/ui/pbx_settings/users/voicemail/view'] = 'service/ipbx/ui.php/pbx_settings/users/voicemail/view/';
 $array['service/ipbx/ui/pbx_settings/groups'] = 'service/ipbx/ui.php/pbx_settings/groups/';
-$array['service/ipbx/ui/pbx_settings/queues'] = 'service/ipbx/ui.php/pbx_settings/queues/';
 $array['service/ipbx/ui/pbx_settings/meetme'] = 'service/ipbx/ui.php/pbx_settings/meetme/';
 $array['service/ipbx/ui/pbx_settings/voicemail'] = 'service/ipbx/ui.php/pbx_settings/voicemail/';
+
+// call center
+$array['service/ipbx/json/restricted/call_center/agents'] = 'service/ipbx/json.php/restricted/call_center/agents/';
+$array['service/ipbx/json/restricted/call_center/queues'] = 'service/ipbx/json.php/restricted/call_center/queues/';
+
+$array['service/ipbx/json/private/call_center/agents'] = 'service/ipbx/json.php/private/call_center/agents/';
+$array['service/ipbx/json/private/call_center/queues'] = 'service/ipbx/json.php/private/call_center/queues/';
+
+$array['service/ipbx/ui/call_center/agents'] = 'service/ipbx/ui.php/call_center/agents/';
+$array['service/ipbx/ui/call_center/queues'] = 'service/ipbx/ui.php/call_center/queues/';
 
 // CTI
 $array['cti']                    = 'cti/index.php';

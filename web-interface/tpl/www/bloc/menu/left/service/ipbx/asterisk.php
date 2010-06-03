@@ -78,91 +78,22 @@ $dhtml = &$this->get_module('dhtml');
 		echo	'</dl>';
 	endif;
 
-/*
-	if(xivo_user::chk_acl('cti_settings') === true):
-		echo 	'<dl><dt>',$this->bbf('mn_left_ti_ctisettings'),'</dt>';
-
-		if(xivo_user::chk_acl('cti_settings','general') === true):
-			echo	'<dd id="mn-cti-settings--general">',
-				$url->href_html($this->bbf('mn_left_ctisettings-general'),
-					'service/ipbx/cti_settings/general'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','presences') === true):
-			echo	'<dd id="mn-cti-settings--presences">',
-				$url->href_html($this->bbf('mn_left_ctisettings-presences'),
-					'service/ipbx/cti_settings/presences'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','phonehints') === true):
-			echo	'<dd id="mn-cti-settings--phonehints">',
-				$url->href_html($this->bbf('mn_left_ctisettings-phonehints'),
-					'service/ipbx/cti_settings/phonehints'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','profiles') === true):
-			echo	'<dd id="mn-cti-settings--profiles">',
-				$url->href_html($this->bbf('mn_left_ctisettings-profiles'),
-					'service/ipbx/cti_settings/profiles'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','directories') === true):
-			echo	'<dd id="mn-cti-settings--directories">',
-				$url->href_html($this->bbf('mn_left_ctisettings-directories'),
-					'service/ipbx/cti_settings/directories'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','reversedirectories') === true):
-			echo	'<dd id="mn-cti-settings--reversedirectories">',
-				$url->href_html($this->bbf('mn_left_ctisettings-reversedirectories'),
-					'service/ipbx/cti_settings/reversedirectories'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','displays') === true):
-			echo	'<dd id="mn-cti-settings--displays">',
-				$url->href_html($this->bbf('mn_left_ctisettings-displays'),
-					'service/ipbx/cti_settings/displays'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','contexts') === true):
-			echo	'<dd id="mn-cti-settings--contexts">',
-				$url->href_html($this->bbf('mn_left_ctisettings-contexts'),
-					'service/ipbx/cti_settings/contexts'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','sheetactions') === true):
-			echo	'<dd id="mn-cti-settings--sheetactions">',
-				$url->href_html($this->bbf('mn_left_ctisettings-sheetactions'),
-					'service/ipbx/cti_settings/sheetactions'),
-				'</dd>';
-		endif;
-		if(xivo_user::chk_acl('cti_settings','sheetevents') === true):
-			echo	'<dd id="mn-cti-settings--sheetevents">',
-				$url->href_html($this->bbf('mn_left_ctisettings-sheetevents'),
-					'service/ipbx/cti_settings/sheetevents'),
-				'</dd>';
-		endif;
-	endif;
-	echo	'</dl>';
-*/
 
 	if(xivo_user::chk_acl('call_center') === true):
 		echo	'<dl><dt>',$this->bbf('mn_left_ti_callcenter'),'</dt>';
 
-		// must be migrate from pbxsettings to callcenter
 		if(xivo_user::chk_acl('call_center','agents') === true):
 			echo	'<dd id="mn-call-center--agents">',
 				$url->href_html($this->bbf('mn_left_callcenter-agents'),
-						'service/ipbx/pbx_settings/agents',
+						'service/ipbx/call_center/agents',
 						'act=list'),
 				'</dd>';
 		endif;
 
-		// must be migrate from pbxsettings to callcenter
 		if(xivo_user::chk_acl('call_center','queues') === true):
 			echo	'<dd id="mn-call-center--queues">',
 				$url->href_html($this->bbf('mn_left_callcenter-queues'),
-						'service/ipbx/pbx_settings/queues',
+						'service/ipbx/call_center/queues',
 						'act=list'),
 				'</dd>';
 		endif;
