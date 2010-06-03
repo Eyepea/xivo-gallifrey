@@ -17,7 +17,7 @@ Color status:
 Color of icon status
 
 ; cti-access_status
-Other status available in this mode
+Other reachable statuses from this mode
 
 ; col_actions-name
 Action
@@ -36,7 +36,6 @@ Remove
 
 ; no_actions
 No action
-
 
 ; action-queueadd
 Add in queue

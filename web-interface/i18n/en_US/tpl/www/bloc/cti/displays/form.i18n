@@ -2,22 +2,22 @@
 Name :
 
 ; col_1
-Displayed field
+Field title
 
 ; col_2
-Field posted
+Field type
 
 ; col_3
-Default values
+Default value
 
 ; col_4
-Display Format
+Display format
 
 ; fm_description
 Description
 
 ; list-avail-formats
-<i>Display formats available :&nbsp;</i>
+<i>Available display formats :&nbsp;</i>
 
 ; no_disp
 No display

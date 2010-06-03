@@ -11,31 +11,31 @@ Focus:
 Qt interface:
 
 ; cti-sheetactions-context
-Context
+Contexts
 
 ; cti-sheetactions-capaids
 XiVO Client profiles
 
 ; col_1
-Field posted
+Field title
 
 ; col_2
 Field type
 
 ; col_3
-Default values
+Default value
 
 ; col_4
-Display Format
+Display format
 
 ; no_screens
-No screens
+No sheet
 
 ; no_systrays
-No systrays
+No systray
 
 ; no_informations
-No information
+No action
 
 ; fm_description
 Description
