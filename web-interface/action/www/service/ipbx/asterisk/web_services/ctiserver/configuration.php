@@ -181,6 +181,7 @@ switch($act)
 			$dispout = array();
 			foreach($load_sheetactions as $action)
 			{
+#var_dump($action);
 				$qtui = "null";
 				$actid = $action['name'];
 				$actout[$actid]['whom'] = $action['whom'];
@@ -201,6 +202,7 @@ switch($act)
 						$qtui = $a1[3];
 				}
 				$dispout['systrays'][$actid] = dwho_json::decode($action['systray_info'], true) == false ? array() : dwho_json::decode($action['systray_info'], true);
+				$dispout['screens'][$actid] = dwho_json::decode($action['sheet_info'], true) == false ? array() : dwho_json::decode($action['sheet_info'], true);
 				$dispout['qtui'][$actid][$qtui] = $action['sheet_qtui'];
 				$dispout['infos'][$actid] = dwho_json::decode($action['action_info'], true) == false ? array() : dwho_json::decode($action['action_info'], true);
 
