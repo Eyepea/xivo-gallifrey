@@ -215,6 +215,7 @@ class manage_connection:
                 break
             try:
                 xivocmd_update_list = ['xivo[userlist,update]',
+                                       'xivo[meetmelist,update]',
                                        'xivo[agentlist,update]',
                                        'xivo[queuelist,update]',
                                        'xivo[grouplist,update]']

@@ -2717,11 +2717,11 @@ class XivoCTICommand(BaseCommand):
             if actionid in self.faxes:
                 faxid = self.faxes[actionid]
                 log.warning('%s AMI : fax not sent size=%s dest=%s hide=%s %s/%s'
-                    % (astid, faxid.size, faxid.number, faxid.hide,
-                        faxid.uinfo.get('astid'), faxid.uinfo.get('xivo_userid')))
+                            % (astid, faxid.size, faxid.number, faxid.hide,
+                               faxid.uinfo.get('astid'), faxid.uinfo.get('xivo_userid')))
                 tosend = { 'class' : 'faxprogress',
-                    'status' : 'ko',
-                    'reason' : 'orig' }
+                           'status' : 'ko',
+                           'reason' : 'orig' }
                 self.__send_msg_to_cti_client__(faxid.uinfo, self.__cjson_encode__(tosend))
                 del self.faxes[actionid]
             else:
