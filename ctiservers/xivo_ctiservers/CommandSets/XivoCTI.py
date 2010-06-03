@@ -785,9 +785,9 @@ class XivoCTICommand(BaseCommand):
                             log.info('%s %s %s : %s' % (astid, itemname, function, updatestatus[function]))
                             # TODO: do one deltalist per context and send them only to that context ?
                             tosend = { 'class' : itemname,
-                                'function' : function,
-                                'astid' : astid,
-                                'deltalist' : updatestatus[function] }
+                                       'function' : function,
+                                       'astid' : astid,
+                                       'deltalist' : updatestatus[function] }
                             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
                     if itemname in ['queues', 'groups']:
                         for qid, qq in self.weblist[itemname][astid].keeplist.iteritems():
@@ -865,17 +865,17 @@ class XivoCTICommand(BaseCommand):
         for pitem in plist:
             try:
                 idx = '.'.join([pitem.get('protocol'), pitem.get('context'),
-                    pitem.get('name'), pitem.get('number')])
+                                pitem.get('name'), pitem.get('number')])
                 lplist[idx] = { 'number' : pitem.get('number'),
-                    'tech' : pitem.get('protocol'),
-                    'context': pitem.get('context'),
-                    'enable_hint': pitem.get('enablehint'),
-                    'initialized': pitem.get('initialized'),
-                    'phoneid': pitem.get('name'),
-
-                    'hintstatus' : 'none',
-                    'comms' : {}
-                    }
+                                'tech' : pitem.get('protocol'),
+                                'context': pitem.get('context'),
+                                'enable_hint': pitem.get('enablehint'),
+                                'initialized': pitem.get('initialized'),
+                                'phoneid': pitem.get('name'),
+                                
+                                'hintstatus' : 'none',
+                                'comms' : {}
+                                }
             except Exception:
                 log.exception('(getphoneslist : %s)' % pitem)
         return lplist
@@ -903,12 +903,11 @@ class XivoCTICommand(BaseCommand):
         for mitem in mlist:
             try:
                 if not mitem.get('commented'):
-                    lmlist[mitem.get('id')] = { 'number' :    mitem.get('number'),
-                                                'confno' :    mitem.get('confno'),
-                                                'name' :      mitem.get('name'),
-                                                'context' :   mitem.get('context'),
-                                                'pin' :       mitem.get('pin'),
-                                                'pinadmin' :  mitem.get('pinadmin'),
+                    lmlist[mitem.get('id')] = { 'roomnumber' : mitem.get('number'),
+                                                'roomname' :   mitem.get('name'),
+                                                'context' :    mitem.get('context'),
+                                                'pin' :        mitem.get('pin'),
+                                                'pinadmin' :   mitem.get('pinadmin'),
                                                 
                                                 'adminid' : None,
                                                 'adminnum' : None,
@@ -917,7 +916,7 @@ class XivoCTICommand(BaseCommand):
             except Exception:
                 log.exception('(getmeetmelist : %s)' % mitem)
         return lmlist
-
+    
     def getphonebook(self, pbook):
         """
         Fill the phonebook items.
@@ -963,15 +962,15 @@ class XivoCTICommand(BaseCommand):
                 if not gitem.get('commented'):
                     gid = gitem.get('id')
                     lglist[gid] = { 'groupname' : gitem.get('name'),
-                        'number' : gitem.get('number'),
-                        'context' : gitem.get('context'),
-                        'id' : gitem.get('id'),
-
-                        'agents_in_queue' : {},
-                        'phones_in_queue' : {},
-                        'channels' : {},
-                        'queuestats' : {}
-                        }
+                                    'number' : gitem.get('number'),
+                                    'context' : gitem.get('context'),
+                                    'id' : gitem.get('id'),
+                                    
+                                    'agents_in_queue' : {},
+                                    'phones_in_queue' : {},
+                                    'channels' : {},
+                                    'queuestats' : {}
+                                    }
             except Exception:
                 log.exception('(getgroupslist : %s)' % gitem)
         return lglist
@@ -983,15 +982,15 @@ class XivoCTICommand(BaseCommand):
                 if not qitem.get('commented'):
                     qid = qitem.get('id')
                     lqlist[qid] = { 'queuename' : qitem.get('name'),
-                        'number' : qitem.get('number'),
-                        'context' : qitem.get('context'),
-                        'id' : qitem.get('id'),
-
-                        'agents_in_queue' : {},
-                        'phones_in_queue' : {},
-                        'channels' : {},
-                        'queuestats' : {}
-                        }
+                                    'number' : qitem.get('number'),
+                                    'context' : qitem.get('context'),
+                                    'id' : qitem.get('id'),
+                                    
+                                    'agents_in_queue' : {},
+                                    'phones_in_queue' : {},
+                                    'channels' : {},
+                                    'queuestats' : {}
+                                    }
             except Exception:
                 log.exception('(getqueueslist : %s)' % qitem)
         return lqlist
@@ -4100,13 +4099,13 @@ class XivoCTICommand(BaseCommand):
         usernum = event.get('Usernum')
         status = (event.get('Status') == 'off')
         
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmenoauthed : unable to find room %s' % (astid, confno))
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('number')
+        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
 
         meetmeref['uniqueids'][uniqueid]['authed'] = status
 
@@ -4117,7 +4116,7 @@ class XivoCTICommand(BaseCommand):
                                  'astid' : astid,
                                  'meetmeid': meetmeid,
                                  'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['name'],
+                                 'roomname' : meetmeref['roomname'],
                                  'uniqueid' : uniqueid,
                                  'details' : meetmeref['uniqueids'][uniqueid]
                                  }
@@ -4129,13 +4128,13 @@ class XivoCTICommand(BaseCommand):
         confno = event.get('Meetme')
         status = (event.get('Status') == 'on')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmepause : unable to find room %s' % (astid, confno))
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('number')
+        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
 
         meetmeref['paused'] = status
 
@@ -4145,7 +4144,7 @@ class XivoCTICommand(BaseCommand):
                                  'astid' : astid,
                                  'meetmeid': meetmeid,
                                  'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['name'],
+                                 'roomname' : meetmeref['roomname'],
                                  'paused': status
                                  }
                    }
@@ -4165,7 +4164,7 @@ class XivoCTICommand(BaseCommand):
         # here we flip/flop the 'not authed' event to an 'authed' event
         authed = ( event.get('NoAuthed') == 'No' )
         
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, confno))
             return
@@ -4173,7 +4172,7 @@ class XivoCTICommand(BaseCommand):
         # XXX check to do (and in other meetme events : confno should be == meetmeref['name']
         
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('number')
+        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
         
         if uniqueid in meetmeref['uniqueids']:
             log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
@@ -4215,7 +4214,7 @@ class XivoCTICommand(BaseCommand):
                                  'astid' : astid,
                                  'meetmeid': meetmeid,
                                  'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['name'],
+                                 'roomname' : meetmeref['roomname'],
                                  'adminnum' : meetmeref['adminnum'],
                                  'adminid' : meetmeref['adminid'],
                                  'adminlist' : meetmeref['adminlist'],
@@ -4232,13 +4231,13 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         usernum = event.get('Usernum')
         
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, confno))
             return
         
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('number')
+        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
         
         phoneid = self.__phoneid_from_channel__(astid, channel)
         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
@@ -4266,7 +4265,7 @@ class XivoCTICommand(BaseCommand):
                                  'astid' : astid,
                                  'meetmeid' : meetmeid,
                                  'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['name'],
+                                 'roomname' : meetmeref['roomname'],
                                  'uniqueid' : uniqueid,
                                  'adminid' : meetmeref['adminid'],
                                  'adminlist' : meetmeref['adminlist'],
@@ -4284,13 +4283,13 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         usernum = event.get('Usernum')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmemute : unable to find room %s' % (astid, confno))
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('number')
+        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
 
         mutestatus = event.get('Status')
         if uniqueid in meetmeref['uniqueids']:
@@ -4300,7 +4299,7 @@ class XivoCTICommand(BaseCommand):
                 'payload' : { 'action' : 'mutestatus',
                               'astid' : astid,
                               'meetmeid' : meetmeid,
-                              'roomname' : meetmeref['name'],
+                              'roomname' : meetmeref['roomname'],
                               'roomnumber' : meetmenum,
                               'uniqueid' : uniqueid,
                               'details' : meetmeref['uniqueids'][uniqueid] }
@@ -4329,7 +4328,7 @@ class XivoCTICommand(BaseCommand):
         calleridnum = event.get('CallerIDNum')
         calleridname = event.get('CallerIDName')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmelist : unable to find room %s' % (astid, confno))
             return
@@ -4403,7 +4402,7 @@ class XivoCTICommand(BaseCommand):
             # however knowing how much time has been spent might be useful here
             confno = applidata[0]
             seconds = int(event.get('Seconds'))
-            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byconfno(confno)
+            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
             if meetmeref is not None:
                 if uniqueid in meetmeref['uniqueids']:
                     meetmeref['uniqueids'][uniqueid]['time_start'] = time.time() - seconds
@@ -4762,7 +4761,7 @@ class XivoCTICommand(BaseCommand):
                                 uniqueid = argums[3]
                                 if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
                                     channel = self.uniqueids[castid][uniqueid]['channel']
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byconfno(confno)
+                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
                                     if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
                                         if userid == meetmeref['adminid']:
                                             datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
@@ -4778,7 +4777,7 @@ class XivoCTICommand(BaseCommand):
                                 uniqueid = argums[3]
                                 if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
                                     channel = self.uniqueids[castid][uniqueid]['channel']
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byconfno(confno)
+                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
                                     if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
                                         if userid == meetmeref['adminid']:
                                             meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'off'
@@ -4792,7 +4791,7 @@ class XivoCTICommand(BaseCommand):
                                 confno = argums[1]
                                 status = argums[2]
                                 if castid in self.uniqueids:
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byconfno(confno)
+                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
                                     self.__ami_execute__(castid, 'sendcommand',
                                         function, [('Meetme', '%s' % (confno)),
                                             ('status', '%s' % (status))])
@@ -4803,7 +4802,7 @@ class XivoCTICommand(BaseCommand):
                                 usernum = argums[2]
                                 adminnum = argums[3]
                                 if castid in self.uniqueids:
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byconfno(confno)
+                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
                                     if userid == meetmeref['adminid']:
                                         self.__ami_execute__(castid, 'sendcommand',
                                             function, [('Meetme', '%s' % (confno)), 
@@ -4816,7 +4815,7 @@ class XivoCTICommand(BaseCommand):
                                 uniqueid = argums[3]
                                 if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
                                     channel = self.uniqueids[castid][uniqueid]['channel']
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byconfno(confno)
+                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
                                     if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
                                         if userid == meetmeref['adminid'] or userid == meetmeref['uniqueids'][uniqueid]['userid']:
                                             self.__ami_execute__(castid, 'sendcommand',
@@ -4830,8 +4829,8 @@ class XivoCTICommand(BaseCommand):
                                 for iastid, v in self.weblist['meetme'].iteritems():
                                     fullstat[iastid] = v.keeplist
                                 tosend = { 'class' : 'meetme',
-                                    'function' : 'sendlist',
-                                    'payload' : fullstat }
+                                           'function' : 'sendlist',
+                                           'payload' : fullstat }
                                 repstr = self.__cjson_encode__(tosend)
                         else:
                             log.debug('capability conference not matched')
@@ -4875,11 +4874,11 @@ class XivoCTICommand(BaseCommand):
                                 'tdirection' : 'upload',
                                 'fileid' : newfax.reference }
                             repstr = self.__cjson_encode__(tosend)
-
+                            
                     elif classcomm == 'endinit':
                         tosend = { 'class' : 'endinit' }
                         repstr = self.__cjson_encode__(tosend)
-
+                        
                     elif classcomm == 'availstate':
                         if self.capas[capaid].match_funcs(ucapa, 'presence'):
                             # updates the new status and sends it to other people

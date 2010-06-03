@@ -30,7 +30,7 @@ log = logging.getLogger('meetmelist')
 
 class MeetmeList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = {'keywords' : ['confno', 'number', 'name', 'context',
+        self.anylist_properties = {'keywords' : ['number', 'name', 'context',
                                                  'pin', 'pinadmin'],
                                    'name' : 'meetme',
                                    'action' : 'getmeetmelist',
@@ -42,15 +42,15 @@ class MeetmeList(AnyList):
         ret = AnyList.update(self)
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
-            if ag['confno'] not in self.reverse_index:
-                self.reverse_index[ag['confno']] = idx
+            if ag['roomname'] not in self.reverse_index:
+                self.reverse_index[ag['roomname']] = idx
             else:
-                log.warning('2 meetme have the same confno')
+                log.warning('2 meetme have the same roomname')
         return ret
 
-    def byconfno(self, confno):
+    def byroomname(self, roomname):
         meetmeref = None
-        meetme_id = self.reverse_index.get(confno)
+        meetme_id = self.reverse_index.get(roomname)
         if meetme_id:
             meetmeref = self.keeplist.get(meetme_id)
         return (meetmeref, meetme_id)
