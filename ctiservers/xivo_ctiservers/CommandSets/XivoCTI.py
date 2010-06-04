@@ -5379,10 +5379,16 @@ class XivoCTICommand(BaseCommand):
                 exten_dst = whodst
             # 'agent:', 'queue:', 'group:', 'meetme:' ?
             elif typedst == 'user':
+                dstuinfo = None
                 if whodst == 'special:me':
                     dstuinfo = userinfo
+                elif whodst == 'special:myvoicemail':
+                    context_dst = context_src
+                    cidname_dst = "*98 (" + self.weblist['voicemail'][astid_src].keeplist[userinfo["voicemailid"]]["password"] + ")"
+                    exten_dst = "*98"
                 else:
                     dstuinfo = self.ulist_ng.keeplist[whodst]
+
                 if dstuinfo is not None:
                     astid_dst = dstuinfo.get('astid')
                     exten_dst = dstuinfo.get('phonenum')
@@ -5477,7 +5483,7 @@ class XivoCTICommand(BaseCommand):
             except Exception:
                 log.exception('unable to %s' % commname)
         else:
-            log.warning('unallowed command %s' % commargs)
+            log.warning('unallowed command %s' % commname)
         return
 
 
