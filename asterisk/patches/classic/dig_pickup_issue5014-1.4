@@ -1,7 +1,7 @@
-Index: asterisk-1.4.31/channels/chan_sip.c
+Index: asterisk-1.4.32/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.31.orig/channels/chan_sip.c	2010-05-20 16:14:38.000000000 +0200
-+++ asterisk-1.4.31/channels/chan_sip.c	2010-05-20 16:15:04.000000000 +0200
+--- asterisk-1.4.32.orig/channels/chan_sip.c	2010-06-04 16:06:40.000000000 +0200
++++ asterisk-1.4.32/channels/chan_sip.c	2010-06-04 16:07:09.000000000 +0200
 @@ -885,6 +885,13 @@
          REFER_NOAUTH                   /*!< We had no auth for REFER */
  };
@@ -54,7 +54,7 @@ Index: asterisk-1.4.31/channels/chan_sip.c
  		ast_build_string(&t, &maxbytes, "<state>%s</state>\n", statestring);
  		if (state == AST_EXTENSION_ONHOLD) {
  			ast_build_string(&t, &maxbytes, "<local>\n<target uri=\"%s\">\n"
-@@ -14749,6 +14771,36 @@
+@@ -14764,6 +14786,36 @@
  	return sip_uri_params_cmp(params1, params2);
  }
  
@@ -91,7 +91,7 @@ Index: asterisk-1.4.31/channels/chan_sip.c
  
  /*! \brief Handle incoming INVITE request
  \note 	If the INVITE has a Replaces header, it is part of an
-@@ -14767,6 +14819,7 @@
+@@ -14782,6 +14834,7 @@
  	unsigned int required_profile = 0;
  	struct ast_channel *c = NULL;		/* New channel */
  	int reinvite = 0;
@@ -99,7 +99,7 @@ Index: asterisk-1.4.31/channels/chan_sip.c
  
  	/* Find out what they support */
  	if (!p->sipoptions) {
-@@ -14937,10 +14990,35 @@
+@@ -14952,10 +15005,35 @@
  			ast_log(LOG_DEBUG,"Invite/replaces: Will use Replace-Call-ID : %s Fromtag: %s Totag: %s\n", replace_id, fromtag ? fromtag : "<no from tag>", totag ? totag : "<no to tag>");
  
  
@@ -139,7 +139,7 @@ Index: asterisk-1.4.31/channels/chan_sip.c
  			ast_log(LOG_NOTICE, "Supervised transfer attempted to replace non-existent call id (%s)!\n", replace_id);
  			transmit_response_reliable(p, "481 Call Leg Does Not Exist (Replaces)", req);
  			error = 1;
-@@ -14961,7 +15039,7 @@
+@@ -14976,7 +15054,7 @@
  			error = 1;
  		}
  
@@ -148,7 +148,7 @@ Index: asterisk-1.4.31/channels/chan_sip.c
  			/* Oops, someting wrong anyway, no owner, no call */
  			ast_log(LOG_NOTICE, "Supervised transfer attempted to replace non-existing call id (%s)!\n", replace_id);
  			/* Check for better return code */
-@@ -14969,7 +15047,7 @@
+@@ -14984,7 +15062,7 @@
  			error = 1;
  		}
  
@@ -157,7 +157,7 @@ Index: asterisk-1.4.31/channels/chan_sip.c
  			ast_log(LOG_NOTICE, "Supervised transfer attempted to replace non-ringing or active call id (%s)!\n", replace_id);
  			transmit_response_reliable(p, "603 Declined (Replaces)", req);
  			error = 1;
-@@ -15175,13 +15253,37 @@
+@@ -15190,13 +15268,37 @@
  		p->lastinvite = seqno;
  
  	if (replace_id) { 	/* Attended transfer or call pickup - we're the target */

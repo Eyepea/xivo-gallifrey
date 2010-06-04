@@ -3,11 +3,11 @@ one of them.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.30/Makefile
+Index: asterisk-1.4.32/Makefile
 ===================================================================
---- asterisk-1.4.30.orig/Makefile	2010-03-16 11:47:49.000000000 +0100
-+++ asterisk-1.4.30/Makefile	2010-03-16 11:47:51.000000000 +0100
-@@ -403,7 +403,6 @@
+--- asterisk-1.4.32.orig/Makefile	2010-06-04 16:06:52.000000000 +0200
++++ asterisk-1.4.32/Makefile	2010-06-04 16:06:54.000000000 +0200
+@@ -402,7 +402,6 @@
  
  distclean: $(SUBDIRS_DIST_CLEAN) _clean
  	@$(MAKE) -C menuselect dist-clean
@@ -15,7 +15,7 @@ Index: asterisk-1.4.30/Makefile
  	rm -f menuselect.makeopts makeopts menuselect-tree menuselect.makedeps
  	rm -f makeopts.embed_rules
  	rm -f config.log config.status config.cache
-@@ -413,6 +412,10 @@
+@@ -412,6 +411,10 @@
  	rm -rf doc/api
  	rm -f build_tools/menuselect-deps
  
@@ -24,5 +24,5 @@ Index: asterisk-1.4.30/Makefile
 +	@$(MAKE) -C sounds dist-clean
 +
  datafiles: _all
- 	if [ `$(ID) -u` = 0 ]; then \
- 		CFLAGS="$(_ASTCFLAGS) $(ASTCFLAGS)" build_tools/mkpkgconfig $(DESTDIR)/usr/lib/pkgconfig; \
+ 	CFLAGS="$(_ASTCFLAGS) $(ASTCFLAGS)" build_tools/mkpkgconfig $(DESTDIR)$(libdir)/pkgconfig;
+ # Should static HTTP be installed during make samples or even with its own target ala

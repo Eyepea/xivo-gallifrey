@@ -1,7 +1,7 @@
-Index: asterisk-1.4.31/apps/app_queue.c
+Index: asterisk-1.4.32/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.31.orig/apps/app_queue.c	2010-05-20 16:24:38.000000000 +0200
-+++ asterisk-1.4.31/apps/app_queue.c	2010-05-20 16:24:40.000000000 +0200
+--- asterisk-1.4.32.orig/apps/app_queue.c	2010-06-04 16:08:54.000000000 +0200
++++ asterisk-1.4.32/apps/app_queue.c	2010-06-04 16:08:58.000000000 +0200
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -343,7 +343,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  		return -1;
  
  	switch (q->strategy) {
-@@ -5119,6 +5281,37 @@
+@@ -5118,6 +5280,37 @@
  	return 0;
  }
  
@@ -381,7 +381,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  /*!\brief The starting point for all queue calls
   *
   * The process involved here is to 
-@@ -5138,13 +5331,15 @@
+@@ -5137,13 +5330,15 @@
  	struct ast_module_user *lu;
  	const char *user_priority;
  	const char *max_penalty_str;
@@ -398,7 +398,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  	AST_DECLARE_APP_ARGS(args,
  		AST_APP_ARG(queuename);
  		AST_APP_ARG(options);
-@@ -5153,12 +5348,14 @@
+@@ -5152,12 +5347,14 @@
  		AST_APP_ARG(queuetimeoutstr);
  		AST_APP_ARG(agi);
  		AST_APP_ARG(skill_ruleset);
@@ -414,7 +414,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  		return -1;
  	}
  
-@@ -5209,9 +5406,31 @@
+@@ -5208,9 +5405,31 @@
  		max_penalty = 0;
  	}
  
@@ -446,7 +446,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  	if (option_debug)
  		ast_log(LOG_DEBUG, "queue: %s, options: %s, url: %s, announce: %s, expires: %ld, priority: %d\n",
  			args.queuename, args.options, args.url, args.announceoverride, (long)qe.expire, prio);
-@@ -5219,6 +5438,7 @@
+@@ -5218,6 +5437,7 @@
  	qe.chan = chan;
  	qe.prio = prio;
  	qe.max_penalty = max_penalty;
@@ -454,7 +454,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  	if (!ast_strlen_zero(args.skill_ruleset)) {
  		ast_copy_string(qe.skill_ruleset, args.skill_ruleset, sizeof(qe.skill_ruleset));
  	}
-@@ -5227,11 +5447,13 @@
+@@ -5226,11 +5446,13 @@
  	qe.last_periodic_announce_time = time(NULL);
  	qe.last_periodic_announce_sound = 0;
  	qe.valid_digits = 0;
@@ -469,7 +469,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  check_turns:
  		if (ringing) {
  			ast_indicate(chan, AST_CONTROL_RINGING);
-@@ -5297,12 +5519,18 @@
+@@ -5293,12 +5515,18 @@
  				ast_queue_log(args.queuename, chan->uniqueid, "NONE", "EXITWITHTIMEOUT", "%d", qe.pos);
  				break;
  			}
@@ -489,7 +489,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  
  			/* exit after 'timeout' cycle if 'n' option enabled */
  			if (noption && tries >= qe.parent->membercount) {
-@@ -5969,11 +6197,56 @@
+@@ -5960,11 +6188,56 @@
  	return 1;
  }
  
@@ -546,7 +546,7 @@ Index: asterisk-1.4.31/apps/app_queue.c
  	ret |= reload_skills();
  	ret |= reload_skill_rules();
  
-@@ -6147,13 +6420,13 @@
+@@ -6138,13 +6411,13 @@
  				if (qe->vqueue)
  					continue;
  				if (s)
@@ -564,10 +564,10 @@ Index: asterisk-1.4.31/apps/app_queue.c
  			}
  		} else if (s)
  			astman_append(s, "   No Callers%s", term);
-Index: asterisk-1.4.31/configs/queuerules.conf.sample
+Index: asterisk-1.4.32/configs/queuerules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.31/configs/queuerules.conf.sample	2010-05-20 16:24:40.000000000 +0200
++++ asterisk-1.4.32/configs/queuerules.conf.sample	2010-06-04 16:08:58.000000000 +0200
 @@ -0,0 +1,20 @@
 +; It is possible to change the value of the QUEUE_MAX_PENALTY and QUEUE_MIN_PENALTY
 +; channel variables in mid-call by defining rules in the queue for when to do so. This can allow for

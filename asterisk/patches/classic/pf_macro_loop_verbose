@@ -6,10 +6,10 @@
 
 	Added Macro() arguments information in log if there is a possible infinite loop.
 
-Index: asterisk-1.4.26.1/apps/app_macro.c
+Index: asterisk-1.4.32/apps/app_macro.c
 ===================================================================
---- asterisk-1.4.26.1.orig/apps/app_macro.c	2009-08-12 10:57:12.000000000 +0200
-+++ asterisk-1.4.26.1/apps/app_macro.c	2009-08-12 10:57:42.000000000 +0200
+--- asterisk-1.4.32.orig/apps/app_macro.c	2010-06-04 16:06:39.000000000 +0200
++++ asterisk-1.4.32/apps/app_macro.c	2010-06-04 16:07:22.000000000 +0200
 @@ -234,7 +234,7 @@
  		sscanf(inhangupc, "%30d", &inhangup);
  

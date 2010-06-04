@@ -8,11 +8,11 @@ Should be reported upstream.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.31/Makefile
+Index: asterisk-1.4.32/Makefile
 ===================================================================
---- asterisk-1.4.31.orig/Makefile	2010-05-20 16:14:39.000000000 +0200
-+++ asterisk-1.4.31/Makefile	2010-05-20 16:14:44.000000000 +0200
-@@ -525,7 +525,7 @@
+--- asterisk-1.4.32.orig/Makefile	2010-06-04 16:06:41.000000000 +0200
++++ asterisk-1.4.32/Makefile	2010-06-04 16:06:46.000000000 +0200
+@@ -522,7 +522,7 @@
  	@exit 1
  endif
  
@@ -21,7 +21,7 @@ Index: asterisk-1.4.31/Makefile
  	@if [ -x /usr/sbin/asterisk-post-install ]; then \
  		/usr/sbin/asterisk-post-install $(DESTDIR) . ; \
  	fi
-@@ -830,7 +830,6 @@
+@@ -827,7 +827,6 @@
  .PHONY: _uninstall
  .PHONY: uninstall-all
  .PHONY: dont-optimize
