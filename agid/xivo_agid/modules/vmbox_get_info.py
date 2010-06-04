@@ -21,18 +21,15 @@ from xivo_agid import objects
 
 def vmbox_get_info(agi, cursor, args):
     vmboxid = agi.get_variable('XIVO_VMBOXID')
-    userid = agi.get_variable('XIVO_USERID')
 
     xlen = len(args)
 
-    try:
-        caller = objects.User(agi, cursor, xid=userid)
-    except (ValueError, LookupError), e:
-        agi.dp_break(str(e))
-
+    caller = vmbox = None
     if xlen > 0 and args[0] != '':
         try:
             if xlen == 1:
+                userid  = agi.get_variable('XIVO_USERID')
+                caller  = objects.User(agi, cursor, xid=int(userid))
                 context = caller.context
             else:
                 context = args[1]
@@ -47,7 +44,7 @@ def vmbox_get_info(agi, cursor, args):
             agi.dp_break(str(e))
 
 
-    if vmbox.skipcheckpass:
+    if vmbox and vmbox.skipcheckpass:
         vmmain_options = "s"
     else:
         vmmain_options = ""
