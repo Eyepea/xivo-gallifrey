@@ -64,7 +64,7 @@ class CommonConf(jsoncore.JsonCore):
          ],
         '5. Maintenance': ['xivo.maintenance'],
         '6. Alerts'     : ['alert_emails', 'dahdi_monitor_ports', 'max_call_duration'],
-        '7. Databases'  : ['xivo.db', 'asterisk.db'],
+        '7. Databases'  : ['xivo.xivodb' , 'xivo.astdb'],
     }
     KEYSELECT = ''
     

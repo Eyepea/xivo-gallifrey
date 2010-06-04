@@ -202,8 +202,8 @@ class xivo_object_commonconf extends xivo_object_abstract
         $db_ast  = $config['general']['datastorage'];
 
         $conf = array_merge($conf, array(
-            'asterisk.db'         => $db_ast,
-            'xivo.db'             => $db_xivo,
+            'xivo.astdb'            => $db_ast,
+            'xivo.xivodb'           => $db_xivo,
         ));
         
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
