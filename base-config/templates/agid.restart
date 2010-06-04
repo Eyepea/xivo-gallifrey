@@ -1,0 +1,1 @@
+invoke-rc.d pf-xivo-agid restart

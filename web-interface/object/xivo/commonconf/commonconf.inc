@@ -181,7 +181,6 @@ class xivo_object_commonconf extends xivo_object_abstract
             if(!$hafound)
                 return false;
         }
-
         
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
@@ -193,6 +192,20 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.net4.subnet'      => $subnet,
         ));
 
+        // load database uri
+        // 1. xivo
+        $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'xivo.ini');
+        $db_xivo = $config['general']['datastorage'];
+
+        // 2. asterisk
+        $config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
+        $db_ast  = $config['general']['datastorage'];
+
+        $conf = array_merge($conf, array(
+            'asterisk.db'         => $db_ast,
+            'xivo.db'             => $db_xivo,
+        ));
+        
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
 	}
 
