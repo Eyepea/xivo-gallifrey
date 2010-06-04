@@ -773,42 +773,55 @@ class XivoCTICommand(BaseCommand):
             log.exception('getmem')
             td = 0
         return td
-
-    def updates(self):
-        self.ulist_ng.update()
-        for astid, plist in self.weblist['phones'].iteritems():
+    
+    def __update_itemlist__(self, listtorequest, astid):
+        try:
+            updatestatus = self.weblist[listtorequest][astid].update()
+            for function in ['del', 'add']:
+                if updatestatus[function]:
+                    log.info('%s %s %s : %s' % (astid, listtorequest, function, updatestatus[function]))
+                    # TODO: do one deltalist per context and send them only to that context ?
+                    tosend = { 'class' : listtorequest,
+                               'function' : function,
+                               'astid' : astid,
+                               'deltalist' : updatestatus[function] }
+                    self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
+            if listtorequest in ['queues', 'groups']:
+                for qid, qq in self.weblist[listtorequest][astid].keeplist.iteritems():
+                    qq['queuestats']['Xivo-Join'] = 0
+                    qq['queuestats']['Xivo-Link'] = 0
+                    qq['queuestats']['Xivo-Lost'] = 0
+                    qq['queuestats']['Xivo-Rate'] = -1
+                    qq['queuestats']['Xivo-TalkingTime'] = 0
+                    qq['queuestats']['Xivo-Wait'] = 0
+                    self.__update_queue_stats__(astid, qid, listtorequest)
+        except Exception:
+            log.exception('(__update_itemlist__ : %s %s)' % (listtorequest, astid))
+            
+    def updates(self, astid, what = None):
+        if what is None:
+            self.ulist_ng.update()
             for itemname in self.weblist.keys():
-                try:
-                    updatestatus = self.weblist[itemname][astid].update()
-                    for function in ['del', 'add']:
-                        if updatestatus[function]:
-                            log.info('%s %s %s : %s' % (astid, itemname, function, updatestatus[function]))
-                            # TODO: do one deltalist per context and send them only to that context ?
-                            tosend = { 'class' : itemname,
-                                       'function' : function,
-                                       'astid' : astid,
-                                       'deltalist' : updatestatus[function] }
-                            self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
-                    if itemname in ['queues', 'groups']:
-                        for qid, qq in self.weblist[itemname][astid].keeplist.iteritems():
-                            qq['queuestats']['Xivo-Join'] = 0
-                            qq['queuestats']['Xivo-Link'] = 0
-                            qq['queuestats']['Xivo-Lost'] = 0
-                            qq['queuestats']['Xivo-Rate'] = -1
-                            qq['queuestats']['Xivo-TalkingTime'] = 0
-                            qq['queuestats']['Xivo-Wait'] = 0
-                            self.__update_queue_stats__(astid, qid, itemname)
-                except Exception:
-                    log.exception('(updates : %s)' % itemname)
+                self.__update_itemlist__(itemname, astid)
             self.askstatus(astid, self.weblist['phones'][astid].keeplist)
-
+        else:
+            matches = { 'xivo[meetmelist,update]' : 'meetme',
+                        'xivo[queuelist,update]'  : 'queues',
+                        'xivo[grouplist,update]'  : 'groups',
+                        'xivo[agentlist,update]'  : 'agents',
+                        'xivo[userlist,update]'   : 'phones'
+                        }
+            itemname = matches.get(what)
+            self.__update_itemlist__(itemname, astid)
+            if what == 'xivo[userlist,update]':
+                self.ulist_ng.update()
         m2 = self.getmem()
         if m2 != self.save_memused:
             log.info('memory = %10d ; delta = %10d' % (m2, m2 - self.save_memused))
             self.save_memused = m2
         # check : agentnumber should be unique
         return
-
+    
     def set_userlist_urls(self, urls):
         self.ulist_ng.setandupdate(urls)
         return
@@ -3374,7 +3387,7 @@ class XivoCTICommand(BaseCommand):
                     thisagentstats['agent_phone_number'] = agentphonenumber
                 if 'agent_phone_context' not in thisagentstats:
                     thisagentstats['agent_phone_context'] = context
-
+                    
                 if 'Xivo-Agent-Status-Recorded' not in thisagentstats:
                     thisagentstats['Xivo-Agent-Status-Recorded'] = False
                 if 'Xivo-Agent-Status-Link' not in thisagentstats:
@@ -4105,18 +4118,15 @@ class XivoCTICommand(BaseCommand):
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
 
         meetmeref['uniqueids'][uniqueid]['authed'] = status
 
         tosend = { 'class' : 'meetme',
                    'function' : 'update',
                    'payload' : { 'action' : 'auth',
-                                 'authed' : status,
                                  'astid' : astid,
-                                 'meetmeid': meetmeid,
-                                 'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['roomname'],
+                                 'meetmeid' : meetmeid,
+                                 'authed' : status,
                                  'uniqueid' : uniqueid,
                                  'details' : meetmeref['uniqueids'][uniqueid]
                                  }
@@ -4134,7 +4144,6 @@ class XivoCTICommand(BaseCommand):
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
 
         meetmeref['paused'] = status
 
@@ -4142,10 +4151,8 @@ class XivoCTICommand(BaseCommand):
                    'function' : 'update',
                    'payload' : { 'action' : 'changeroompausedstate',
                                  'astid' : astid,
-                                 'meetmeid': meetmeid,
-                                 'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['roomname'],
-                                 'paused': status
+                                 'meetmeid' : meetmeid,
+                                 'paused' : status
                                  }
                    }
         
@@ -4172,7 +4179,7 @@ class XivoCTICommand(BaseCommand):
         # XXX check to do (and in other meetme events : confno should be == meetmeref['name']
         
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
+        meetmenumber = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
         
         if uniqueid in meetmeref['uniqueids']:
             log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
@@ -4180,7 +4187,7 @@ class XivoCTICommand(BaseCommand):
             
         phoneid = self.__phoneid_from_channel__(astid, channel)
         if phoneid:
-            self.weblist['phones'][astid].ami_meetmejoin(phoneid, uniqueid, meetmenum)
+            self.weblist['phones'][astid].ami_meetmejoin(phoneid, uniqueid, meetmenumber)
             self.__update_phones_trunks__(astid, phoneid, None, None, None, 'ami_meetmejoin')
             
         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
@@ -4212,9 +4219,7 @@ class XivoCTICommand(BaseCommand):
                    'function' : 'update',
                    'payload' : { 'action' : 'join',
                                  'astid' : astid,
-                                 'meetmeid': meetmeid,
-                                 'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['roomname'],
+                                 'meetmeid' : meetmeid,
                                  'adminnum' : meetmeref['adminnum'],
                                  'adminid' : meetmeref['adminid'],
                                  'adminlist' : meetmeref['adminlist'],
@@ -4237,7 +4242,6 @@ class XivoCTICommand(BaseCommand):
             return
         
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
         
         phoneid = self.__phoneid_from_channel__(astid, channel)
         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
@@ -4264,8 +4268,6 @@ class XivoCTICommand(BaseCommand):
                    'payload' : { 'action' : 'leave',
                                  'astid' : astid,
                                  'meetmeid' : meetmeid,
-                                 'roomnumber' : meetmenum,
-                                 'roomname' : meetmeref['roomname'],
                                  'uniqueid' : uniqueid,
                                  'adminid' : meetmeref['adminid'],
                                  'adminlist' : meetmeref['adminlist'],
@@ -4289,21 +4291,18 @@ class XivoCTICommand(BaseCommand):
             return
 
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
-        meetmenum = self.weblist['meetme'][astid].keeplist[meetmeid].get('roomnumber')
 
         mutestatus = event.get('Status')
         if uniqueid in meetmeref['uniqueids']:
             meetmeref['uniqueids'][uniqueid]['mutestatus'] = mutestatus
             tosend = { 'class' : 'meetme',
-                'function' : 'update',
-                'payload' : { 'action' : 'mutestatus',
-                              'astid' : astid,
-                              'meetmeid' : meetmeid,
-                              'roomname' : meetmeref['roomname'],
-                              'roomnumber' : meetmenum,
-                              'uniqueid' : uniqueid,
-                              'details' : meetmeref['uniqueids'][uniqueid] }
-                }
+                       'function' : 'update',
+                       'payload' : { 'action' : 'mutestatus',
+                                     'astid' : astid,
+                                     'meetmeid' : meetmeid,
+                                     'uniqueid' : uniqueid,
+                                     'details' : meetmeref['uniqueids'][uniqueid] }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
         else:
             log.warning('%s ami_meetmemute : (%s) channel %s not in meetme %s'
@@ -4349,11 +4348,11 @@ class XivoCTICommand(BaseCommand):
                 if userid not in meetmeref['adminlist']:
                     meetmeref['adminlist'].append(userid)
             meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
-                'mutestatus' : mutestatus,
-                'recordstatus' : recordstatus,
-                'userid' : userid,
-                'fullname' : calleridname,
-                'phonenum' : calleridnum }
+                                                 'mutestatus' : mutestatus,
+                                                 'recordstatus' : recordstatus,
+                                                 'userid' : userid,
+                                                 'fullname' : calleridname,
+                                                 'phonenum' : calleridnum }
         else:
             log.warning('%s ami_meetmelist : (%s) channel %s already in meetme %s'
                 % (astid, uniqueid, channel, confno))
@@ -4520,7 +4519,7 @@ class XivoCTICommand(BaseCommand):
         return
 
     def ami_statuscomplete(self, astid, event):
-        log.info('%s ami_statuscomplete' % astid)
+        log.info('%s ami_statuscomplete : %s' % (astid, event))
         return
 
     def ami_join(self, astid, event):
@@ -4805,9 +4804,9 @@ class XivoCTICommand(BaseCommand):
                                     (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
                                     if userid == meetmeref['adminid']:
                                         self.__ami_execute__(castid, 'sendcommand',
-                                            function, [('Meetme', '%s' % (confno)), 
-                                                ('Usernum', '%s' % (usernum)),
-                                                ('Adminnum', '%s' % (adminnum))])
+                                                             function, [('Meetme', '%s' % (confno)), 
+                                                                        ('Usernum', '%s' % (usernum)),
+                                                                        ('Adminnum', '%s' % (adminnum))])
                             elif function in ['kick', 'mute', 'unmute'] and len(argums) > 2:
                                 castid = argums[0]
                                 confno = argums[1]
@@ -4819,8 +4818,8 @@ class XivoCTICommand(BaseCommand):
                                     if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
                                         if userid == meetmeref['adminid'] or userid == meetmeref['uniqueids'][uniqueid]['userid']:
                                             self.__ami_execute__(castid, 'sendcommand',
-                                                'Command', [('Command', 'meetme %s %s %s'
-                                                    % (function, confno, usernum))])
+                                                                 'Command', [('Command', 'meetme %s %s %s'
+                                                                              % (function, confno, usernum))])
                                 else:
                                     log.warning('(%s) either astid %s or uniqueid %s is unknown'
                                         % (function, castid, uniqueid))

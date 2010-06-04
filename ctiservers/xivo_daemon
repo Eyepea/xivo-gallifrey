@@ -220,8 +220,11 @@ class manage_connection:
                                        'xivo[queuelist,update]',
                                        'xivo[grouplist,update]']
                 if usefulmsg in xivocmd_update_list:
-                    daemon.update_userlist[astid] = True
-                    log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                    if usefulmsg not in daemon.update_userlist[astid]:
+                        daemon.update_userlist[astid].append(usefulmsg)
+                        log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
+                    else:
+                        log.info('%s : WEBI re-requested %s (%s)' % (astid, usefulmsg, requester))
                 elif usefulmsg == 'xivo[daemon,reload]':
                     daemon.askedtoquit = True
                     log.info('%s : WEBI requested %s (%s)' % (astid, usefulmsg, requester))
@@ -1119,18 +1122,18 @@ class xivo_daemon:
         
         for astid in self.configs: # {
             try:
-                self.update_userlist[astid] = False
+                self.update_userlist[astid] = []
                 self.lastrequest_time[astid] = time.time()
                 manage_connection.update_amisocks(astid, self)
             except Exception:
-                log.exception('%s : failed while setting lists and sockets' % astid)
+                log.exception('%s : failed while setting lists and sockets' % astid)        
+                
+            try:
+                self.commandclass.updates(astid) # all updates ...
+            except Exception:
+                log.exception('%s : commandclass.updates()' % astid)
         # }
         
-        try:
-            self.commandclass.updates() # users' update, ...
-        except Exception:
-            log.exception('commandclass.updates()')
-            
         log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
         for portkind in incoming_tcp_ports:
@@ -1390,7 +1393,7 @@ class xivo_daemon:
                                         closemenow = manage_connection.manage_tcp_connections(self, sel_i, msg, kind)
                                     except Exception:
                                         log.exception('handling %s (%s)' % (requester, kind))
-
+                                        
                                 else:
                                     if kind == 'CTI':
                                         if sel_i in self.userinfo_by_requester:
@@ -1489,34 +1492,39 @@ class xivo_daemon:
                     for astid in self.configs: # {
                         if (time.time() - self.lastrequest_time[astid]) > self.updates_period or self.update_userlist[astid]:
                             self.lastrequest_time[astid] = time.time()
-                            log.info('[%s] %s : updates (computed timeout) %s'
-                                      % (self.xdname, astid, time.asctime()))
+                            log.info('[%s] %s : updates (computed timeout) %s (%s)'
+                                     % (self.xdname, astid, time.asctime(), self.update_userlist[astid]))
                             try:
                                 if self.outsock is None:
                                     self.outsock = self.commandclass.extrasock(self.extraconn)
                                 manage_connection.update_amisocks(astid, self)
                                 self.update_readconf()
                                 self.commandclass.regular_update()
-                                self.update_userlist[astid] = False
                             except Exception:
                                 log.exception('%s : failed while updating lists and sockets (computed timeout)' % astid)
                             try:
-                                self.commandclass.updates() # users' update, ...
+                                if self.update_userlist[astid]:
+                                    while self.update_userlist[astid]:
+                                        listtorequest = self.update_userlist[astid].pop()
+                                        self.commandclass.updates(astid, listtorequest)
+                                else:
+                                    self.commandclass.updates(astid) # all updates ...
                             except Exception:
-                                log.exception('commandclass.updates() (computed timeout)')
-
+                                log.exception('%s : commandclass.updates() (computed timeout)' % astid)
                     # }
                 # }
             # }
             else: # { when nothing happens on the sockets, we fall here sooner or later
                 log.info('[%s] updates (select timeout) %s'
                           % (self.xdname, time.asctime()))
-                try:
-                    self.commandclass.updates() # users' update, ...
-                except Exception:
-                    log.exception('commandclass.updates() (select timeout)')
-                for astid in self.configs: # {
+                for astid in self.configs:
+                    try:
+                        self.commandclass.updates(astid) # all updates ...
+                    except Exception:
+                        log.exception('%s : commandclass.updates() (select timeout)' % astid)
+                        
                     self.lastrequest_time[astid] = time.time()
+                    
                     try:
                         if self.outsock is None:
                             self.outsock = self.commandclass.extrasock(self.extraconn)
@@ -1525,7 +1533,6 @@ class xivo_daemon:
                         self.commandclass.regular_update()
                     except Exception:
                         log.exception('%s : failed while updating lists and sockets (select timeout)' % astid)
-
                 # }
             # }
         # }

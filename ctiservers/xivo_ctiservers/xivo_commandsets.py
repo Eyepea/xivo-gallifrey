@@ -128,7 +128,7 @@ class BaseCommand:
         return
     def set_contextlist(self, ctxlist):
         return
-    def updates(self):
+    def updates(self, astid, what = None):
         return
     def read_internatprefixes(self, internatprefixfile):
         return
