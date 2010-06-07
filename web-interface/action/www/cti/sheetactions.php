@@ -306,9 +306,10 @@ switch($act)
 
 		$return['capaids']['list'] = $profileclientlist;
 		$return['capaids']['slt'] = array();
+
 		if(isset($return['sheetactions']['capaids']) && dwho_has_len($return['sheetactions']['capaids']))
 		{
-			$return['capaids']['slt'] = dwho_array_intersect_key($arrpf, $return['capaids']['list']);
+			$return['capaids']['slt']  = dwho_array_intersect_key($arrpf, $return['capaids']['list'], null, true);
 			$return['capaids']['list'] = dwho_array_diff_key($return['capaids']['list'], $return['capaids']['slt']);
 		}
 
