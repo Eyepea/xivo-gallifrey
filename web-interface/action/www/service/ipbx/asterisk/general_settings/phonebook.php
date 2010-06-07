@@ -19,15 +19,10 @@
 #
 
 $appaccessfeatures = &$ipbx->get_application('accessfeatures',array('feature' => 'phonebook'));
-$appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
-$appldapfilter = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'ldap'));
 
 $info = array();
 $info['xivoserver'] = array();
 $info['ldapfilter'] = array();
-
-$info['xivoserver']['info'] = $appxivoserver->get();
-$info['ldapfilter']['info'] = $appldapfilter->get();
 $info['xivoserver']['slt'] = $info['ldapfilter']['slt'] = false;
 
 dwho::load_class('dwho_sort');
@@ -39,9 +34,13 @@ if(($info['accessfeatures'] = $appaccessfeatures->get()) !== false)
 
 $serversort = new dwho_sort(array('key' => 'identity'));
 
+$appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
+$info['xivoserver']['info'] = $appxivoserver->get();
 if(($info['xivoserver']['list'] = $appxivoserver->get_server_list()) !== false)
 	uasort($info['xivoserver']['list'],array(&$serversort,'str_usort'));
 
+$appldapfilter = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'ldap'));
+$info['ldapfilter']['info'] = $appldapfilter->get();
 if(($info['ldapfilter']['list'] = $appldapfilter->get_server_list()) !== false)
 	uasort($info['ldapfilter']['list'],array(&$serversort,'str_usort'));
 
