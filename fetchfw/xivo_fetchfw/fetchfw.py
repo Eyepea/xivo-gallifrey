@@ -4,6 +4,8 @@ Copyright (C) 2008-2010  Proformatique <technique@proformatique.com>
 
 """
 
+from __future__ import with_statement
+
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2008-2010  Proformatique <technique@proformatique.com>
@@ -23,11 +25,12 @@ __license__ = """
 """
 
 import os
-import md5
-import sha
+import hashlib
 import sys
 import shutil
+import urllib
 import urllib2
+import cookielib
 import subprocess
 import ConfigParser
 from stat import S_IRWXU, S_IRUSR, S_IWUSR, S_IRGRP, S_IXGRP, S_IROTH, S_IXOTH
@@ -35,15 +38,17 @@ from stat import S_IRWXU, S_IRUSR, S_IWUSR, S_IRGRP, S_IXGRP, S_IROTH, S_IXOTH
 
 from xivo_fetchfw import brands as brand_modules
 
-
-CONFIG_FILE = "/etc/pf-xivo/fetchfw.conf"
+CONFIG_FILE = '/etc/fetchfw.conf'
 CONFIG_SECTION_GENERAL = 'general'
+CONFIG_SECTION_CISCO = 'cisco'
 
 TFTP_PATH = None            # modified by _init()
 KFW_PATH = None             # modified by _init()
 TMP_PATH = None             # modified by _init()
 FIRMWARES_DB_PATH = None    # modified by _init()
 PROXY_URL = None            # modified by _init()
+CISCO_USER = None           # modified by _init()
+CISCO_PASS = None           # modified by _init()
 
 
 # Installation functions by brand and optionnally model.  INSTALL_FNS is
@@ -60,7 +65,7 @@ BRANDS = {}
 FIRMWARES = {}
 
 
-class RemoteFile:
+class RemoteFile(object):
     """
     This class is used to gather some properties about a remote file
     accessible through a protocol supported by the urllib2 module and
@@ -74,33 +79,35 @@ class RemoteFile:
 
     BUFFER_SIZE = 8192
 
-    def __init__(self, filename, url, size, md5sum, sha1sum):
+    def __init__(self, filename, url, size, sha1sum):
         self.filename = filename
         self.url = url
         self.size = size
-        self.md5sum = md5sum
         self.sha1sum = sha1sum
         self.path = os.path.join(TMP_PATH, filename)
 
+    def open_src(self):
+        """ Returns a file-like object on the original source. """
+        
+        if PROXY_URL:
+            thisproxy = urllib2.ProxyHandler({"http" : PROXY_URL})
+            opener = urllib2.build_opener(urllib2.HTTPDefaultErrorHandler, thisproxy)
+            return opener.open(self.url)
+        return urllib2.urlopen(self.url)
+    
     def fetch(self):
         """
         Download the firmware
         """
-        md_md5 = md5.new()
-        md_sha = sha.new()
+        md_sha = hashlib.sha1()
         size = 0
 
         try:
             src = open(self.path)
             dst = None
         except IOError:
-            if PROXY_URL:
-                thisproxy = urllib2.ProxyHandler({"http" : PROXY_URL})
-                opener = urllib2.build_opener(urllib2.HTTPDefaultErrorHandler, thisproxy)
-                src = opener.open(self.url)
-            else:
-                src = urllib2.urlopen(self.url)
-            dst = open(self.path, "w")
+            src = self.open_src()
+            dst = open(self.path, "wb")
 
         while True:
             buf = src.read(self.BUFFER_SIZE)
@@ -108,7 +115,6 @@ class RemoteFile:
             if not buf:
                 break
 
-            md_md5.update(buf)
             md_sha.update(buf)
             size += len(buf)
 
@@ -124,17 +130,71 @@ class RemoteFile:
             print "error: %s doesn't match for file %s" % (what, filename)
             sys.exit()
 
-        if md_md5.hexdigest() != self.md5sum:
-            die_dont_match("MD5 sum", self.filename)
-
         if md_sha.hexdigest() != self.sha1sum:
             die_dont_match("SHA-1 sum", self.filename)
 
         if size != self.size:
             die_dont_match("size", self.filename)
 
+class NoCiscoCredentialsError(Exception):
+    pass
 
-class Firmware:
+class CiscoRemoteFile(RemoteFile):
+    """ Encapsulate authenticated file access for downloads on Cisco website.
+    
+    """
+    
+    __login_url = 'https://www.cisco.com/authc/forms/CDClogin.fcc?TYPE=33619969&REALMOID=06-59fc1640-c46c-104a-a635-83846dc9304d&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-zjGKGqr62shoVBG6cNUdYNajdKPzmOFLa%2fZkeebT0%2bNV%2bEcoXFhv%2fvB8k65Cw%2f%2bx&TARGET=-SM-http%3a%2f%2fcisco%2ecom%2fcgi--bin%2flogin'
+    __opener = None
+    
+    def __init__(self, filename, url, size, sha1sum):
+        if not CiscoRemoteFile.__has_credentials():
+            raise NoCiscoCredentialsError()
+        if not CiscoRemoteFile.__is_authenticated():
+            CiscoRemoteFile.__authenticate()
+
+        RemoteFile.__init__(self, filename, url, size, sha1sum)
+    
+    @staticmethod
+    def __has_credentials():
+        return True if CISCO_USER and CISCO_PASS else False
+    
+    @staticmethod
+    def __is_authenticated():
+        return CiscoRemoteFile.__opener is not None
+    
+    @staticmethod
+    def __authenticate():
+        handlers = []
+        handlers.append(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
+        if PROXY_URL:
+            handlers.append(urllib2.ProxyHandler({"http" : PROXY_URL}))
+        op = CiscoRemoteFile.__opener = urllib2.build_opener(*handlers)
+        
+        if __debug__:
+            print >> sys.stderr, 'Authenticating on cisco website...'
+        
+        params = {'USER': CISCO_USER,
+                  'PASSWORD': CISCO_PASS,
+                  'target': 'http://cisco.com/cgi-bin/login?referer=http://cisco.com/',
+                  'smauthreason': 0,
+                  'smquerydata': '',
+                  'smagentname': 'zjGKGqr62shoVBG6cNUdYNajdKPzmOFLa/ZkeebT0+NV+EcoXFhv/vB8k65Cw/+x',
+                  'postpreservationdata': '',
+                  'SMENC': 'ISO-8859-1',
+                  'SMLOCALE': 'US-EN',
+                  'login-button': 'Log In'}
+        f = op.open(CiscoRemoteFile.__login_url, urllib.urlencode(params))
+        f.close()
+        
+        if __debug__:
+            print >> sys.stderr, 'Authentication done.'
+        
+    def open_src(self):
+        return CiscoRemoteFile.__opener.open(self.url)
+
+
+class Firmware(object):
     """
     This class is used to store firmware properties and automatically
     select the appropriate installation function.  Properties are given
@@ -289,16 +349,24 @@ def _init():
     global TMP_PATH
     global FIRMWARES_DB_PATH
     global PROXY_URL
+    global CISCO_USER
+    global CISCO_PASS
     
     config = ConfigParser.RawConfigParser()
-    config.readfp(open(CONFIG_FILE))
+    with open(CONFIG_FILE) as f:
+        config.readfp(f)
+    
     TFTP_PATH = config.get(CONFIG_SECTION_GENERAL, 'tftp_path')
     KFW_PATH = config.get(CONFIG_SECTION_GENERAL, 'kfw_path')
     TMP_PATH = config.get(CONFIG_SECTION_GENERAL, 'tmp_path')
     FIRMWARES_DB_PATH = config.get(CONFIG_SECTION_GENERAL, 'firmwares_db_path')
-    if 'proxy_url' in dict(config.items(CONFIG_SECTION_GENERAL)):
+    if config.has_option(CONFIG_SECTION_GENERAL, 'proxy_url'):
         PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'proxy_url')
-    
+
+    if config.has_option(CONFIG_SECTION_CISCO, 'username'):
+        CISCO_USER = config.get(CONFIG_SECTION_CISCO, 'username')
+        CISCO_PASS = config.get(CONFIG_SECTION_CISCO, 'password')
+
     try:
         os.makedirs(TMP_PATH)
     except OSError:
@@ -310,7 +378,8 @@ def load():
     load all brand modules and do related initializations
     """
     config = ConfigParser.RawConfigParser()
-    config.readfp(open(FIRMWARES_DB_PATH))
+    with open(FIRMWARES_DB_PATH) as f:
+        config.readfp(f)
     
     # Load every brand module
     # Each register itself using register_install_fn()
@@ -327,12 +396,16 @@ def load():
         files = config.get(fw_name, 'files').split()
         remote_files = []
         
+        if brand == 'Cisco':
+            remote_file_class = CiscoRemoteFile
+        else:
+            remote_file_class = RemoteFile
+
         for xfile in files:
             url = config.get(xfile, 'url')
             size = config.getint(xfile, 'size')
-            md5sum = config.get(xfile, 'md5sum')
             sha1sum = config.get(xfile, 'sha1sum')
-            remote_files.append(RemoteFile(xfile, url, size, md5sum, sha1sum))
+            remote_files.append(remote_file_class(xfile, url, size, sha1sum))
         
         fw = Firmware(fw_name, brand, model, version, remote_files)
         

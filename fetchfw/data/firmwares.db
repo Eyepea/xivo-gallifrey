@@ -8,7 +8,6 @@ files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6730i_FC-001240-03-REV00_s
 [6730i_FC-001240-03-REV00_sr_2.6.0.66_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/6730i_FC-001240-03-REV00_sr_2.6.0.66_1005.zip
 size: 1805783
-md5sum: 1008288354ba38b3d0c3bd8a86673f92
 sha1sum: 061fe05c15000b629fe60e756fcff2267ca5da3f
 
 # Aastra 6731i 2.6.0
@@ -21,7 +20,6 @@ files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6731i_FC-001224-04-REV00_s
 [6731i_FC-001224-04-REV00_sr_2.6.0.66_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/6731i_FC-001224-04-REV00_sr_2.6.0.66_1005.zip
 size: 1805951
-md5sum: 200686624e8bd4d16d0868d5b68479a7
 sha1sum: 5d9d9389ce8f318325dc6d26a10cd36e92fc60cf
 
 # Aastra 6739i 3.0.1
@@ -34,7 +32,6 @@ files: LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip 6739i_FC-001274-00_REV01
 [6739i_FC-001274-00_REV01_3_0_1_38_1002.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/6739i_FC-001274-00_REV01_3_0_1_38_1002.zip
 size: 4457754
-md5sum: f6c6225e4ee694d0cd3504299c33177f
 sha1sum: 6b6f9fb8a1c467d75b4d26a3d0fa7609322b8aaa
 
 # Aastra 6751i 2.6.0
@@ -47,7 +44,6 @@ files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6751i_FC-001126-06-REV00_s
 [6751i_FC-001126-06-REV00_sr_2.6.0.66_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/6751i_FC-001126-06-REV00_sr_2.6.0.66_1005.zip
 size: 1751686
-md5sum: 6cacd538082ee459902297475f68c83e
 sha1sum: 5fcc562ad954c1aa0398f4143e1eeea2c958c03c
 
 # Aastra 6753i 2.6.0
@@ -60,7 +56,6 @@ files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6753i_FC-001086-10-REV00_s
 [6753i_FC-001086-10-REV00_sr_2.6.0.66_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/6753i_FC-001086-10-REV00_sr_2.6.0.66_1005.zip
 size: 2601161
-md5sum: f64f93dc33dde656f697ddd02e856d4f
 sha1sum: 231049414fb33aae75f6b670ed42b2ab21734351
 
 # Aastra 6755i 2.6.0
@@ -73,7 +68,6 @@ files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6755i_FC-001087-11-REV00_s
 [6755i_FC-001087-11-REV00_sr_2.6.0.66_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/6755i_FC-001087-11-REV00_sr_2.6.0.66_1005.zip
 size: 2633893
-md5sum: fbff597713daf6852567ba4ce86faf98
 sha1sum: d322f20326be86bd279ceb85296b5b9be5ff3139
 
 # Aastra 6757i 2.6.0
@@ -86,21 +80,30 @@ files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6757i_FC-001088-10-REV00_s
 [6757i_FC-001088-10-REV00_sr_2.6.0.66_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/6757i_FC-001088-10-REV00_sr_2.6.0.66_1005.zip
 size: 2634387
-md5sum: b2519924edcdaecfd8335881912a5d8a
 sha1sum: 05e42847098fc82853f7b7b5dde18dde04867ce5
 
 # Common files for Aastra phones
 [LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip
 size: 145824
-md5sum: ca71c53b6cd2ee9d35c798847701cd02
 sha1sum: 859de6f9b34ae3eb0addd18175af3ec9cef735d4
 
 [LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip]
 url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip
 size: 138130
-md5sum: a3b6b855a2eb0685a55f5e16140273f0
 sha1sum: fd79b1909b41254b864e4f993675a81d87209288
+
+# Cisco 7940 SCCP 8.1.2
+[cisco7940_812]
+brand: Cisco
+model: 7940G
+version: 8.1.2
+files: cmterm-7940-7960-sccp.8-1-2.zip
+
+[cmterm-7940-7960-sccp.8-1-2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
+size: 701384
+sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]
@@ -112,7 +115,6 @@ files: pap2t-5-1-6.zip
 [pap2t-5-1-6.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/pap2t-5-1-6.zip
 size: 734611
-md5sum: e7ba2044430f20c01110e3e46e865349
 sha1sum: 76e5279b2f6f41beade87f85ba1c28b34c2a049d
 
 # Linksys SPA400 1.1.2.2
@@ -125,7 +127,6 @@ files: spa400-1-1-2-2.zip
 [spa400-1-1-2-2.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa400-1-1-2-2.zip
 size: 3535892
-md5sum: 8f45e5395c2ef3ac5d8b4a35ab625cd1
 sha1sum: ce46e8c6b6361f503513f2c9ae19dff67cd21536
 
 # Linksys SPA901 5.1.5
@@ -138,7 +139,6 @@ files: spa901-5-1-5.zip
 [spa901-5-1-5.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa901-5-1-5.zip
 size: 790126
-md5sum: 6c92d3d962f5896a32c6190a2e702513
 sha1sum: cff1a62082ed114fef2a7634a0e7b5cbb14eea52
 
 # Linksys SPA921 5.1.8
@@ -165,7 +165,6 @@ files: spa941-5-1-8.zip
 [spa941-5-1-8.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa941-5-1-8.zip
 size: 756584
-md5sum: e2610e2646a5beb9770f4eed73a3073e
 sha1sum: 2b32106a2193b3e9d64ea5e1a732745c385b26a4
 
 # Linksys SPA942 6.1.5a
@@ -178,13 +177,11 @@ files: SPA9X2_Dictionaries_v615.zip spa942-5-2-8.zip spa942-6-1-5a.zip
 [spa942-5-2-8.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa942-5-2-8.zip
 size: 879295
-md5sum: e93af37471a9727cdf0627b19433007d
 sha1sum: 76428a78e7e70e884d47141e3bd626876ecaf220
 
 [spa942-6-1-5a.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa942-6-1-5a.zip
 size: 956441
-md5sum: 9a47c223bdbbbc776e90da42f2196a6b
 sha1sum: 6b7732df053f42dce1ec0cf9b2fa8f1defe46e15
 
 # Linksys SPA962 6.1.5a
@@ -197,7 +194,6 @@ files: SPA9X2_Dictionaries_v615.zip spa962-6-1-5a.zip
 [spa962-6-1-5a.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa962-6-1-5a.zip
 size: 1119259
-md5sum: ade48124fc30008a439749b3e3895fa1
 sha1sum: 02bbb8786572c4deb00134e41f981a23f01820f8
 
 # Linksys SPA3102 5.1.10
@@ -210,7 +206,6 @@ files: spa3102-5-1-10.zip
 [spa3102-5-1-10.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa3102-5-1-10.zip
 size: 1005565
-md5sum: d6d2e6ae61cd952784969de8615f78b2
 sha1sum: 75305f786a0c799f921f2a77b2c2ff36d1522652
 
 # Linksys SPA8000 6.1.3
@@ -223,14 +218,12 @@ files: spa8000-6-1-3.zip
 [spa8000-6-1-3.zip]
 url: http://downloads.xivo.fr/firmware/Linksys/spa8000-6-1-3.zip
 size: 1069281
-md5sum: c90de19ba70b93c4b9ea755e68e47647
 sha1sum: 6b1ca5196dea149a350a621d0d8157f2ea2c1e55
 
 # Languages files for Linksys SPA9X2 phones 6.1.5
 [SPA9X2_Dictionaries_v615.zip]
 url: https://www.myciscocommunity.com/servlet/JiveServlet/downloadBody/2845-102-1-4613/SPA9X2_Dictionaries_v615.zip
 size: 215186
-md5sum: 9576e77de9bc58753da1cbc62d77e109
 sha1sum: 5b4fcb2d822b2eea6743fa873894d54ed4ba713f
 
 # Polycom SoundPoint IP 301 3.1.2RevB
@@ -350,19 +343,16 @@ files: spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip spip_ssip_vvx_3_1_3RevB_r
 [spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip]
 url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_vvx_BootROM_4_1_2RevB_release_sig.zip
 size: 29547371
-md5sum: d708541cfd61e1f73d47ac4950c62052
 sha1sum: 95e2e6c27a9d17f12d44ec227142e771e8ca8763
 
 [spip_ssip_vvx_3_1_2RevB_release_sig_split.zip]
 url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_vvx_3_1_2RevB_release_sig_split.zip
 size: 75649597
-md5sum: 2128b962ff4de71b3332b56294ef5332
 sha1sum: 4a101ba0e5f8a7fdf41c8aa2cc95f29d6920d23a
 
 [spip_ssip_vvx_3_1_3RevB_release_sig_split.zip]
 url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_vvx_3_1_3RevB_release_sig_split.zip
 size: 76006473
-md5sum: 5beffe74f6dcd1efec1de74cc247b3be
 sha1sum: e584d67fb33eecba80b708dabd96aac47a1945fc
 
 # Siemens C470IP 022140000000
@@ -382,7 +372,6 @@ files: chagall214_02.bin
 [chagall214_02.bin]
 url: http://gigaset.siemens.com/chagall/2/chagall214_02.bin
 size: 1835008
-md5sum: bd8c0cfc0d2007353c8f52d3cd20fc7c
 sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
 
 # Snom 300 7.3.30
@@ -395,7 +384,6 @@ files: snom300-7.3.30-SIP-bf.bin
 [snom300-7.3.30-SIP-bf.bin]
 url: http://provisioning.snom.com/download/fw/snom300-7.3.30-SIP-bf.bin
 size: 3080484
-md5sum: 6d4e2276febaff9474c22bc2f9b5f8dc
 sha1sum: 2b29056258ef76b7e063077115031808fa17e572
 
 # Snom 320 7.3.30
@@ -408,7 +396,6 @@ files: snom320-7.3.30-SIP-bf.bin
 [snom320-7.3.30-SIP-bf.bin]
 url: http://provisioning.snom.com/download/fw/snom320-7.3.30-SIP-bf.bin
 size: 3096144
-md5sum: 89c946d99750680765c1cc9403d50f0e
 sha1sum: 269a9a596ebc267094255787550e176ed423e64c
 
 # Snom 360 7.3.30
@@ -421,7 +408,6 @@ files: snom360-7.3.30-SIP-bf.bin
 [snom360-7.3.30-SIP-bf.bin]
 url: http://provisioning.snom.com/download/fw/snom360-7.3.30-SIP-bf.bin
 size: 3139012
-md5sum: 58c5c199f8a039e2bffad725b9d617da
 sha1sum: 90f42372dd4c4287b8a7a994b87717fdf477d066
 
 # Snom 370 7.3.30
@@ -434,7 +420,6 @@ files: snom370-7.3.30-SIP-bf.bin
 [snom370-7.3.30-SIP-bf.bin]
 url: http://provisioning.snom.com/download/fw/snom370-7.3.30-SIP-bf.bin
 size: 4157820
-md5sum: b90a0eca0241d6f9b6e89bd6ae7dbc64
 sha1sum: e5de486dc6d55a8cbefdf96057b040d6be70d7d4
 
 # Snom 820 8.2.11
@@ -447,7 +432,6 @@ files: snom820-8.2.11-SIP-r.bin
 [snom820-8.2.11-SIP-r.bin]
 url: http://provisioning.snom.com/download/fw/snom820-8.2.11-SIP-r.bin
 size: 22156992
-md5sum: c23b31e81ef4bb69027e3b8993ebf6e0
 sha1sum: b86abba960b9697a972c0241a7c0ada7d3d63ed6
 
 # Snom 870 8.3.2
@@ -460,7 +444,6 @@ files: snom870-8.3.2-SIP-r.bin
 [snom870-8.3.2-SIP-r.bin]
 url: http://provisioning.snom.com/download/fw/snom870-8.3.2-SIP-r.bin
 size: 22363984
-md5sum: 4f148d7913ebad60a0d7bc099c66682a
 sha1sum: f82f2fdd6f6b3e0998cbbf8938d560a5f0673cf5
 
 # Snom m3 2.0.2
@@ -473,13 +456,11 @@ files: SnakeGw_fr01_v0202.fwu SnakePp_fr01_v0202.fwu
 [SnakeGw_fr01_v0202.fwu]
 url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakeGw_fr01_v0202.fwu
 size: 1022280
-md5sum: 302bef870c1a070c29be3e3710b0a1b4
 sha1sum: 8cebcd1e3eb45c5eb30a5fbb8be8940139ed7dfe
 
 [SnakePp_fr01_v0202.fwu]
 url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakePp_fr01_v0202.fwu
 size: 990184
-md5sum: d115d0c148d2ebb3e7b220a0962597e4
 sha1sum: b5d3b660feb6fbf0f49493bb96799716ef0368c3
 
 # Snom m9 9.0.163
@@ -492,7 +473,6 @@ files: m9-9.0.163.bin
 [m9-9.0.163.bin]
 url: http://provisioning.snom.com/download/fw/m9-9.0.163.bin
 size: 3503696
-md5sum: 2dac879ce955e65c3e252a9dcc1a5c46
 sha1sum: 34fcc209cfdc88a5ee51dfff26ae9be40919af69
 
 # Snom MP 8.2.1
@@ -505,7 +485,6 @@ files: snomMP-8.2.1-SIP-a.bin
 [snomMP-8.2.1-SIP-a.bin]
 url: http://provisioning.snom.com/download/fw/snomMP-8.2.1-SIP-a.bin
 size: 2024576
-md5sum: e12160260e35a7ffc532c8bd7eabf1ae
 sha1sum: 2e789423490b2e4e20e1b4dd35917a776a6f2ea3
 
 # Thomson ST2022 4.68
@@ -518,7 +497,6 @@ files: ST2022_SG_v4.68_Release_Package.zip
 [ST2022_SG_v4.68_Release_Package.zip]
 url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6712
 size: 7885268
-md5sum: 0c4a8312bbc7feb066ce1249a0b72595
 sha1sum: ac4ac77b82905af195e2c7e045131abdc524afd8
 
 # Thomson ST2030 2.69
@@ -531,7 +509,6 @@ files: ST2030_SG_v2.69_SED_Release_packag.zip
 [ST2030_SG_v2.69_SED_Release_packag.zip]
 url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6781
 size: 11100346
-md5sum: 49ab9162f4ce5f91abdc65341cb261a1
 sha1sum: ae06f9c7f94616b2093c3f76137b6b2c223d405c
 
 # Thomson TB30 1.70
@@ -544,7 +521,6 @@ files: TB30_SG_V1.70_Release_Package_20100421.zip
 [TB30_SG_V1.70_Release_Package_20100421.zip]
 url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6938
 size: 5456351
-md5sum: 531f32486d8e83c2e269a55764ede404
 sha1sum: 8c29e5b99491cbdbb68ba0639ab9534cc4990321
 
 # Yealink T20
@@ -557,7 +533,6 @@ files: 9.43.0.50.rom
 [9.43.0.50.rom]
 url: http://yealink.com/download/firmware/Yealink%20SIP-T20(P)%20V43%20Firmware-9.43.0.50.zip
 size: 5595652
-md5sum: cdf40a4869f17464df495b0e9e3f74bb
 sha1sum: 306c7ee73378a4361a79be596744a014081dee93
 
 # Yealink T22
@@ -570,7 +545,6 @@ files: 7.43.0.50.rom
 [7.43.0.50.rom]
 url: http://yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V43%20Firmware-7.43.0.50.zip
 size: 6051925
-md5sum: b4062cb52ea756adc55f71b9dd9fe605
 sha1sum: 28496df30f90f9d127417a8f98cc21a7a3ef104e
 
 # Yealink T26
@@ -583,7 +557,6 @@ files: 6.43.0.50.rom
 [6.43.0.50.rom]
 url: http://yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V43%20Firmware-6.43.0.50.zip
 size: 6057278
-md5sum: e3895ccc59346a1bcda4316f39398c36
 sha1sum: f96403773b334d98ef3d311e71445edab500b776
 
 # Yealink T28
@@ -596,7 +569,6 @@ files: 2.43.0.50.rom
 [2.43.0.50.rom]
 url: http://yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V43%20Firmware-2.43.0.50.zip
 size: 6206912
-md5sum: 45419d27eeee3d7ffb0fb2739cebae32
 sha1sum: c7828bbfeee71943a30d76898b783a407c3c103b
 
 ###
@@ -614,7 +586,6 @@ files: dahdi-fw-oct6114-128-1.05.01.tar.gz
 [dahdi-fw-oct6114-128-1.05.01.tar.gz]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-128-1.05.01.tar.gz
 size: 165849
-md5sum: c1f1a18d3e20d283f42c71e580a64b5a
 sha1sum: bcf07434f4589d07d9b5f67f7b3a8fb115aa9229
 
 [oct6114-064_10501]
@@ -626,7 +597,6 @@ files: dahdi-fw-oct6114-064-1.05.01.tar.gz
 [dahdi-fw-oct6114-064-1.05.01.tar.gz]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct6114-064-1.05.01.tar.gz
 size: 165869
-md5sum: 88db9b7a07d8392736171b1b3e6bcc66
 sha1sum: 2fb8e5f4f7aedb285ffa21632efd45af877eacd4
 
 [tc400m_612]
@@ -638,7 +608,6 @@ files: dahdi-fw-tc400m-MR6.12.tar.gz
 [dahdi-fw-tc400m-MR6.12.tar.gz]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-tc400m-MR6.12.tar.gz
 size: 1750035
-md5sum: 2ea860bb8a9d8ede2858b9557b74ee3c
 sha1sum: 9206abda4c9cf192e8cae7e707f2e4e65beb8f87
 
 [vpmadt032_107]
@@ -650,7 +619,6 @@ files: dahdi-fw-vpmadt032-1.07.tar.gz
 [dahdi-fw-vpmadt032-1.07.tar.gz]
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-vpmadt032-1.07.tar.gz
 size: 41376
-md5sum: e1c7231d6225ac999cb18f4e858f66b6
 sha1sum: fd470e7aec0db62e3750aa4819ff03b70c6e9977
 
 # Sangoma
@@ -664,7 +632,6 @@ files: A101dm_0040_V36.BIN
 [A101dm_0040_V36.BIN]
 url: ftp://ftp.sangoma.com/firmware/A101dm_0040_V36.BIN
 size: 212392
-md5sum: b4c6fd8a9e804b386d493aac3178ef15
 sha1sum: 56cf2ff219e4716e428c9e6f2935878d1888104a
 
 [aft_a102d]
@@ -676,7 +643,6 @@ files: A102dm_0040_V36.BIN
 [A102dm_0040_V36.BIN]
 url: ftp://ftp.sangoma.com/firmware/A102dm_0040_V36.BIN
 size: 212392
-md5sum: b1cada375703d5b9cd626b6be20bd91d
 sha1sum: f1b91ccc3383d9ca4971b3d7e129f4f8763b065d
 
 [aft_a104d]
@@ -688,7 +654,6 @@ files: A104d_0100_V36.BIN
 [A104d_0100_V36.BIN]
 url: ftp://ftp.sangoma.com/firmware/A104d_0100_V36.BIN
 size: 402936
-md5sum: d632182df2000826296d4d5dba25b441
 sha1sum: a28f09a3741cbbee536d586cae9239d5cd0c4f04
 
 [aft_a108d]
@@ -700,7 +665,6 @@ files: A108dm_0100_V41.BIN
 [A108dm_0100_V41.BIN]
 url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V41.BIN
 size: 402936
-md5sum: 787482d3b18c08d68a9d0dffc29968ed
 sha1sum: aa95101469fb32fd52abaaf7dcc1d3ead1a1c653
 
 [aft_a200]
@@ -712,7 +676,6 @@ files: A200_0040_V12.BIN
 [A200_0040_V12.BIN]
 url: ftp://ftp.sangoma.com/firmware/A200_0040_V12.BIN
 size: 212392
-md5sum: 5ec972bd0bb8ad3fb05e7dcb76115ddc
 sha1sum: 99458fbf9bdae1ab9914caba456b39fef0052ef9
 
 [aft_a400]
@@ -724,7 +687,6 @@ files: A400_0040_V11.BIN
 [A400_0040_V11.BIN]
 url: ftp://ftp.sangoma.com/firmware/A400_0040_V11.BIN
 size: 212392
-md5sum: 7940790760b2ea02ecb797f0cbd223b3
 sha1sum: 2df9a41b96b2381002db677886cdc03509e8705f
 
 [aft_a500]
@@ -736,7 +698,6 @@ files: A500_0040_V35.BIN
 [A500_0040_V35.BIN]
 url: ftp://ftp.sangoma.com/firmware/A500_0040_V35.BIN
 size: 212392
-md5sum: 4d90657f625e0edba647f5f2224561f4
 sha1sum: 1a2871119d02e1af30c0b84708448e4da453e5aa
 
 [aft_b600]
@@ -748,7 +709,6 @@ files: B600_0025_V02.BIN
 [B600_0025_V02.BIN]
 url: ftp://ftp.sangoma.com/firmware/B600_0025_V02.BIN
 size: 169216
-md5sum: 46a923cb2ba6a25016c1c721a399f382
 sha1sum: ac3aba913ebdcc48309ccb0b62fa8d6366958b57
 
 [aft_b601]
@@ -760,7 +720,6 @@ files: B601_0025_V03.BIN
 [B601_0025_V03.BIN]
 url: ftp://ftp.sangoma.com/firmware/B601_0025_V03.BIN
 size: 169216
-md5sum: 5df78753a862715cec95d3c897f1ed32
 sha1sum: db03b208683a8a930947376a3246114f605bb277
 
 [aft_b700]
@@ -772,7 +731,6 @@ files: B700_0040_V35.BIN
 [B700_0040_V35.BIN]
 url: ftp://ftp.sangoma.com/firmware/B700_0040_V35.BIN
 size: 212392
-md5sum: 254e753a46d17780267933995998acd1
 sha1sum: c8003ff4bac7f8a64514c860e90079c5e9806bf0
 
 [aft_a14x]
@@ -784,7 +742,6 @@ files: A140_0100_V07.BIN
 [A140_0100_V07.BIN]
 url: ftp://ftp.sangoma.com/firmware/A140_0100_V07.BIN
 size: 402936
-md5sum: 3e3fa7bd1524bb59732967a90045154d
 sha1sum: 28ffa475ab151fecaac33b018720edf2b0c1bbfc
 
 [aft_echocan]
@@ -796,5 +753,4 @@ files: wanpipe-3.5.10.tgz
 [wanpipe-3.5.10.tgz]
 url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.10.tgz
 size: 22581851
-md5sum: f2888f03a74fe00a0d382efc3b460f07
 sha1sum: 06759bbec8e6f9c69283531bb6b315a24b05d3a4
