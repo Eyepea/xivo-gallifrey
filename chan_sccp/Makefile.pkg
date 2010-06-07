@@ -12,7 +12,7 @@ TARBALL_DIR := $(shell mktemp -d)
 
 SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
 TARBALL_NAME = "$(DEB_PKG)_$(SRCVER).orig.tar.gz"
-UPSTREAM_VER = $(SRCVER)+dfsg+pf.xivo.$(MAINREV)~svn$(SVNREV)
+UPSTREAM_VER = $(SRCVER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
 default:
