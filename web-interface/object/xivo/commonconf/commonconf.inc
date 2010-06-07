@@ -86,7 +86,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         $conf = array_merge($conf, array(
             'xivo.maintenance'             => $rawdata['maintenance']==0?false:true,
             'alert_emails'                 => 
-                strlen($rawdata['alert_emails'])?null:$rawdata['alert_emails'],
+                strlen($rawdata['alert_emails']) == 0?null:$rawdata['alert_emails'],
             'dahdi_monitor_ports'          => 
                 strlen($rawdata['dahdi_monitor_ports'])==0?null:$rawdata['dahdi_monitor_ports'],
             'max_call_duration'            => 
@@ -205,7 +205,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.astdb'            => $db_ast,
             'xivo.xivodb'           => $db_xivo,
         ));
-        
+
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
 	}
 
