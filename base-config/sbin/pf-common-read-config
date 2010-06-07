@@ -65,7 +65,9 @@ if [ "${XIVO_MAINTENANCE}" = "1" ]; then
   XIVO_SMTP_CANONICAL="root\t${_PF_EMAIL_REPORTS}\nasterisk\t${_PF_EMAIL_REPORTS}"
 fi
 
-if [ -z "${XIVO_SMTP_MYDOMAIN}" ]; then
+if [ -n "${XIVO_SMTP_MYDOMAIN}" ]; then
+  _XIVO_SMTP_MYDOMAIN=${XIVO_SMTP_MYDOMAIN}
+else
   _XIVO_SMTP_MYDOMAIN=${XIVO_DOMAIN}
 fi
 
