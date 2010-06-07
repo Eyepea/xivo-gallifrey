@@ -19,15 +19,16 @@
 #
 
 $appvoicemail = &$ipbx->get_apprealstatic('voicemail');
-$appgeneralvoicemail = &$appvoicemail->get_module('general');
-$appzonemessages = &$appvoicemail->get_module('zonemessages');
 
 $fm_save = null;
-
 $info = $error = array();
 
+$appgeneralvoicemail = &$appvoicemail->get_module('general');
 $info['voicemail'] = $appgeneralvoicemail->get_all_by_category();
+
+$appzonemessages = &$appvoicemail->get_module('zonemessages');
 $info['zonemessages'] = $appzonemessages->get_all_name();
+
 
 if(isset($_QR['fm_send']) === true && dwho_issa('voicemail',$_QR) === true)
 {
