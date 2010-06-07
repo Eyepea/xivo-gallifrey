@@ -21,9 +21,9 @@ fi
 SVN_OPTS="${SVN_OPTS} -r ${REVISION}"
 
 if [ -n "${DFSG_EXCLUDE_PATTERNS}" ]; then
-	VERSION="0~svn${REVISION}+dfsg"
+	VERSION="0~prerelease+svn${REVISION}+dfsg"
 else
-	VERSION="0~svn${REVISION}"
+	VERSION="0~prerelease+svn${REVISION}"
 fi
 FILENAME="${PKG_NAME}_${VERSION}.orig.tar.gz"
 
