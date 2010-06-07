@@ -38,7 +38,7 @@ from stat import S_IRWXU, S_IRUSR, S_IWUSR, S_IRGRP, S_IXGRP, S_IROTH, S_IXOTH
 
 from xivo_fetchfw import brands as brand_modules
 
-CONFIG_FILE = '/etc/fetchfw.conf'
+CONFIG_FILE = '/etc/pf-xivo/fetchfw.conf'
 CONFIG_SECTION_GENERAL = 'general'
 CONFIG_SECTION_CISCO = 'cisco'
 
@@ -139,6 +139,14 @@ class RemoteFile(object):
 class NoCiscoCredentialsError(Exception):
     pass
 
+class InvalidCiscoCredentialsError(Exception):
+    pass
+
+class WeakCiscoCredentialsError(Exception):
+    """ Raised when the credentials are valid but they don't give access to
+    software downloads.
+    """
+
 class CiscoRemoteFile(RemoteFile):
     """ Encapsulate authenticated file access for downloads on Cisco website.
     
@@ -148,11 +156,6 @@ class CiscoRemoteFile(RemoteFile):
     __opener = None
     
     def __init__(self, filename, url, size, sha1sum):
-        if not CiscoRemoteFile.__has_credentials():
-            raise NoCiscoCredentialsError()
-        if not CiscoRemoteFile.__is_authenticated():
-            CiscoRemoteFile.__authenticate()
-
         RemoteFile.__init__(self, filename, url, size, sha1sum)
     
     @staticmethod
@@ -171,9 +174,6 @@ class CiscoRemoteFile(RemoteFile):
             handlers.append(urllib2.ProxyHandler({"http" : PROXY_URL}))
         op = CiscoRemoteFile.__opener = urllib2.build_opener(*handlers)
         
-        if __debug__:
-            print >> sys.stderr, 'Authenticating on cisco website...'
-        
         params = {'USER': CISCO_USER,
                   'PASSWORD': CISCO_PASS,
                   'target': 'http://cisco.com/cgi-bin/login?referer=http://cisco.com/',
@@ -185,13 +185,25 @@ class CiscoRemoteFile(RemoteFile):
                   'SMLOCALE': 'US-EN',
                   'login-button': 'Log In'}
         f = op.open(CiscoRemoteFile.__login_url, urllib.urlencode(params))
+        for line in f:
+            if 'title' in line.lower():
+                break
         f.close()
         
-        if __debug__:
-            print >> sys.stderr, 'Authentication done.'
+        if 'login' in line.lower():
+            raise InvalidCiscoCredentialsError() 
         
     def open_src(self):
-        return CiscoRemoteFile.__opener.open(self.url)
+        if not CiscoRemoteFile.__has_credentials():
+            raise NoCiscoCredentialsError()
+        if not CiscoRemoteFile.__is_authenticated():
+            CiscoRemoteFile.__authenticate()
+        
+        f = CiscoRemoteFile.__opener.open(self.url)
+        if f.info().type == 'text/html':
+            raise WeakCiscoCredentialsError()
+        
+        return f
 
 
 class Firmware(object):

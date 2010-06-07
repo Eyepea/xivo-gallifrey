@@ -94,9 +94,16 @@ size: 138130
 sha1sum: fd79b1909b41254b864e4f993675a81d87209288
 
 # Cisco 7940 SCCP 8.1.2
-[cisco7940_812]
+[cisco7940_sccp_812]
 brand: Cisco
-model: 7940G
+model: 7940
+version: 8.1.2
+files: cmterm-7940-7960-sccp.8-1-2.zip
+
+# Cisco 7960 SCCP 8.1.2
+[cisco7960_sccp_812]
+brand: Cisco
+model: 7960
 version: 8.1.2
 files: cmterm-7940-7960-sccp.8-1-2.zip
 

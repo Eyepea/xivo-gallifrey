@@ -48,7 +48,14 @@ def install_firmware(fw_name):
         fetchfw.die("firmware %s not found" % fw_name)
 
     firmware = fetchfw.FIRMWARES[fw_name]
-    firmware.install()
+    try:
+        firmware.install()
+    except fetchfw.NoCiscoCredentialsError:
+        fetchfw.die("No cisco.com credentials: see %s" % fetchfw.CONFIG_FILE)
+    except fetchfw.InvalidCiscoCredentialsError:
+        fetchfw.die("Invalid cisco.com credentials: see %s" % fetchfw.CONFIG_FILE)
+    except fetchfw.WeakCiscoCredentialsError:
+        fetchfw.die("Your cisco.com credentials doesn't give you access to this software")
 
 parser = optparse.OptionParser()
 parser.add_option("-s", action = "store_true", dest = "search",
