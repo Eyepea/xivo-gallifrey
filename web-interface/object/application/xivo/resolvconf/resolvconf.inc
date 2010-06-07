@@ -22,14 +22,16 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','xivo.inc'),true);
 
 class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_object_abstract
 {
-	var $_resolvconf	= false;
-	var $_commonconf    = false;
+	var $_resolvconf  = false;
+	var $_sysconfd    = false;
+	var $_commonconf  = false;
 
 	function xivo_application_xivo_object_resolvconf(&$xobj)
 	{
 		$this->xivo_application_xivo_object_abstract(&$xobj);
 
 		if(($this->_resolvconf = &$this->_xobj->get_module('resolvconf')) === false
+		|| ($this->_sysconfd   = &$this->_xobj->get_module('sysconfd'))   === false
 		|| ($this->_commonconf = &$this->_xobj->get_module('commonconf')) === false)
 			return(false);
 
@@ -44,7 +46,7 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 			return(false);
 
 		$this->_origin['resolvconf'] = $this->_resolvconf->get_origin();
-        
+
 		return($this->_info);
 	}
 
@@ -95,7 +97,8 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->save_resolvconf() === false
+		|| $this->save_resolvconf()       === false
+		|| $this->set_sysconfd()          === false
 		|| $this->_commonconf->generate() === false)
 			$r = false;
 
@@ -113,6 +116,26 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 		$this->_return['resolvconf'] = $this->_resolvconf->save($rs);
 
 		return($this->_return['resolvconf']);
+	}
+	
+	function set_sysconfd()
+	{
+		if(($rs = $this->get_result('resolvconf')) === null
+		|| $rs === false)
+			return(false);
+
+		$ns = array();
+		foreach(range(1, 3) as $i)
+			if(!is_null($rs["nameserver$i"]))
+				$ns[] = $rs["nameserver$i"];
+
+		$args = array();
+		if(count($ns) > 0)
+			$args['nameservers'] = $ns;
+		if(!is_null($rs['search']))
+			$args['search']      = explode(' ', $rs['search']);
+
+		return $this->_sysconfd->request_post('/resolv_conf', $args);
 	}
 	
 	function save_from_json()

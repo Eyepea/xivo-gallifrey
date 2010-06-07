@@ -52,7 +52,7 @@ $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('info',$return);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('element',$appresolvconf->get_elements());
-$_TPL->set_var('searches',$searches);
+$_TPL->set_var('search',$searches);
 
 $dhtml = &$_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
