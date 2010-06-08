@@ -58,7 +58,7 @@ $array['element']['deletable'] = array();
 $array['element']['deletable']['default'] = 1;
 
 $array['filter'] = array();
-$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9]+$/i');
+$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[[:alnum:]]+$/i');
 $array['filter']['context'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['whom'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['capaids'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');

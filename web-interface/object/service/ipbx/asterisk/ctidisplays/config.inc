@@ -37,7 +37,7 @@ $array['element']['deletable'] = array();
 $array['element']['deletable']['default'] = 1;
 
 $array['filter'] = array();
-$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9]+$/i');
+$array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[[:alnum:]]+$/i');
 $array['filter']['data'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['deletable'] 	= array('set' => false, 'chk' => 2, 'cast' => 'int');
