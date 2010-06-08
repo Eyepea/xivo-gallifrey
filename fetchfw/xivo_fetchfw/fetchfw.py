@@ -23,7 +23,7 @@ __license__ = """
 """
 
 import os
-import hashlib
+import sha
 import sys
 import shutil
 import urllib
@@ -97,7 +97,7 @@ class RemoteFile(object):
         """
         Download the firmware
         """
-        md_sha = hashlib.sha1()
+        md_sha = sha.new()
         size = 0
 
         try:
