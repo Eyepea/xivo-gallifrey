@@ -255,7 +255,7 @@ switch($act)
 			}
 			$str .= "]";
 			$_QR['sheetactions']['capaids'] = $str;
-			
+
 			$str = "[";
 			if(isset($_QR['context']))
 			{
@@ -273,9 +273,12 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
+				$error = $app->get_error();
 			}
 			else
+			{
 				$_QRY->go($_TPL->url('cti/sheetactions'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -309,8 +312,8 @@ switch($act)
 
 		if(isset($return['sheetactions']['capaids']) && dwho_has_len($return['sheetactions']['capaids']))
 		{
-			$return['capaids']['slt']  = dwho_array_intersect_key($arrpf, $return['capaids']['list'], null, true);
-			$return['capaids']['list'] = dwho_array_diff_key($return['capaids']['list'], $return['capaids']['slt']);
+			$return['capaids']['slt']  = array_intersect($arrpf, $return['capaids']['list']);
+			$return['capaids']['list'] = array_diff($return['capaids']['list'], $return['capaids']['slt']);
 		}
 
 		$screens = null;

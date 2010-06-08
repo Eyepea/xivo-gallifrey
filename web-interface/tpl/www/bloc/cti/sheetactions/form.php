@@ -120,12 +120,11 @@ endif;
                 <div class="slt-outlist">
 <?php
                 echo    $form->select(array('name'  => 'capaidslist',
-                            'label' => false,
-                            'id'    => 'it-capaidslist',
-                            'key'   => 'name',
-                            'altkey'    => 'id',
+                            'label'     => false,
+                            'id'        => 'it-capaidslist',
+                            'key'       => false,
                             'multiple'  => true,
-                            'size'  => 5,
+                            'size'      => 5,
                             'paragraph' => false),
                             $info['capaids']['list']);
 ?>
@@ -150,12 +149,11 @@ endif;
                 <div class="slt-inlist">
 <?php
                 echo    $form->select(array('name'  => 'capaids[]',
-                        'label' => false,
-                        'id'    => 'it-capaids',
-                        'key'   => 'name',
-                        'altkey'    => 'id',
+                        'label'     => false,
+                        'id'        => 'it-capaids',
+                        'key'       => false,
                         'multiple'  => true,
-                        'size'  => 5,
+                        'size'      => 5,
                         'paragraph' => false),
                     $info['capaids']['slt']);
 ?>
