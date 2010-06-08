@@ -129,7 +129,7 @@ if sc_mode == 'ip':
     # 'webservice' mode
     remoteip = infile_or_ip
     mode = 'restricted'
-    if remoteip == '127.0.0.1':
+    if remoteip in ['127.0.0.1', 'localhost']:
         mode = 'private'
     print 'request to %s' % remoteip
     if not sc_begin:
@@ -140,16 +140,22 @@ if sc_mode == 'ip':
     w = urllib.urlopen('https://%s/service/ipbx/json.php/%s/call_management/cdr/?act=search&dbeg=%s&dend=%s'
                        % (remoteip, mode, sc_begin, sc_end))
     wr = w.readlines()
-    for z in cjson.decode(''.join(wr)):
-        nl += 1
-        start = z.get('calldate')
-        length = z.get('duration')
-        chan1 = z.get('channel')
-        chan2 = z.get('dstchannel')
-        gtl = gettimelength(start, length, chan1, chan2, '%Y-%m-%d %H:%M:%S')
-        if gtl:
-            mystats.append(gtl)
-
+    if wr:
+        for z in cjson.decode(''.join(wr)):
+            nl += 1
+            start = z.get('calldate')
+            length = z.get('duration')
+            chan1 = z.get('channel')
+            chan2 = z.get('dstchannel')
+            gtl = gettimelength(start, length, chan1, chan2, '%Y-%m-%d %H:%M:%S')
+            if gtl:
+                mystats.append(gtl)
+    else:
+        print 'It seems the Web Service returned an empty result :'
+        print ' - did you give some meaningful begin and end dates ? (%s -> %s)' % (sc_begin, sc_end)
+        print ' - are you on a sufficiently high XiVO version (1.0 or greater) ?'
+        sys.exit(1)
+        
 elif sc_mode == 'file':
     # file/url mode
     if infile_or_ip.startswith('http:'):
