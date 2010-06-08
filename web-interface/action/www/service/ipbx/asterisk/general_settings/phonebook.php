@@ -43,16 +43,18 @@ $appldapfilter = $ipbx->get_application('serverfeatures',array('feature' => 'pho
 $info['ldapfilter']['info'] = $appldapfilter->get();
 if(($info['ldapfilter']['list'] = $appldapfilter->get_server_list()) !== false)
 	uasort($info['ldapfilter']['list'],array(&$serversort,'str_usort'));
+var_dump($info['xivoserver']);
 
 $error = array();
 $error['accessfeatures'] = array();
-$error['xivoserver'] = array();
-$error['ldapfilter'] = array();
+$error['xivoserver']     = array();
+$error['ldapfilter']     = array();
 
 $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
 {
+var_dump($_QR);
 	if(isset($_QR['accessfeatures']) === false)
 		$_QR['accessfeatures'] = array();
 
@@ -80,11 +82,12 @@ if(isset($_QR['fm_send']) === true)
 	$info['xivoserver']['info'] = $appxivoserver->get_result();
 	$error['xivoserver'] = $appxivoserver->get_error();
 
+var_dump($fm_save);
 	if(isset($error['xivoserver'][0]) === true)
 		$fm_save = false;
 	else if($fm_save !== false)
 		$fm_save = true;
-
+var_dump($fm_save, $appxivoserver->get_error());
 	if(isset($_QR['ldapfilter']) === false)
 		$_QR['ldapfilter'] = array();
 
