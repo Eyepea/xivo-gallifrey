@@ -93,17 +93,105 @@ url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/LangPacksPA-001
 size: 138130
 sha1sum: fd79b1909b41254b864e4f993675a81d87209288
 
-# Cisco 7940 SCCP 8.1.2
-[cisco7940_sccp_812]
+# Cisco 7975G SCCP 9.0.2SR2
+[cisco7975_sccp_902]
 brand: Cisco
-model: 7940
-version: 8.1.2
-files: cmterm-7940-7960-sccp.8-1-2.zip
+model: 7975
+version: 9.0.2
+files: cmterm-7975-sccp.9-0-2SR2.zip
 
-# Cisco 7960 SCCP 8.1.2
+[cmterm-7975-sccp.9-0-2SR2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/281346597/contract/cmterm-7975-sccp.9-0-2SR2.zip 
+size: 5883038
+sha1sum: 5ba89b488e3651979b6eb918421d18558a38789a
+
+# Cisco 7971G-GE SCCP 9.0.2SR2
+[cisco7971_sccp_902]
+brand: Cisco
+model: 7971
+version: 9.0.2
+files: cmterm-7970_7971-sccp.9-0-2SR2.zip
+
+# Cisco 7970G SCCP 9.0.2SR2
+[cisco7970_sccp_902]
+brand: Cisco
+model: 7970
+version: 9.0.2
+files: cmterm-7970_7971-sccp.9-0-2SR2.zip
+
+[cmterm-7970_7971-sccp.9-0-2SR2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/278436620/contract/cmterm-7970_7971-sccp.9-0-2SR2.zip
+size: 5271985
+sha1sum: 98d069ac131b983236487bf5aa6a32c92d4e9af6
+
+# Cisco 7965G SCCP 8.5.4
+[cisco7965_sccp_854]
+brand: Cisco
+model: 7965
+version: 8.5.4
+files: cmterm-7945_7965-sccp.8-5-4.zip
+
+# Cisco 7962G SCCP 9.0.2SR2
+[cisco7962_sccp_902]
+brand: Cisco
+model: 7962
+version: 9.0.2
+files: cmterm-7942_7962-sccp.9-0-2SR2.zip
+
+# Cisco 7961G-GE SCCP 9.0.2SR2
+[cisco7961_sccp_902]
+brand: Cisco
+model: 7961
+version: 9.0.2
+files: cmterm-7941_7961-sccp.9-0-2SR2.zip
+
+# Cisco 7960G SCCP 8.1.2
 [cisco7960_sccp_812]
 brand: Cisco
 model: 7960
+version: 8.1.2
+files: cmterm-7940-7960-sccp.8-1-2.zip
+
+# Cisco 7945G SCCP 8.5.4
+[cisco7945_sccp_854]
+brand: Cisco
+model: 7945
+version: 8.5.4
+files: cmterm-7945_7965-sccp.8-5-4.zip
+
+[cmterm-7945_7965-sccp.8-5-4.zip]
+url: http://download-sj.cisco.com/swc/esd/03/281346594/contract/cmterm-7945_7965-sccp.8-5-4.zip
+size: 5210056
+sha1sum: 044fc328e2c665413915fb8978cb532a11751d13
+
+# Cisco 7942G SCCP 9.0.2SR2
+[cisco7942_sccp_902]
+brand: Cisco
+model: 7942
+version: 9.0.2
+files: cmterm-7942_7962-sccp.9-0-2SR2.zip
+
+[cmterm-7942_7962-sccp.9-0-2SR2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/281346593/contract/cmterm-7942_7962-sccp.9-0-2SR2.zip
+size: 5754858
+sha1sum: 378f746938cde838df54dbc4ed313c87c965069e
+
+# Cisco 7941G-GE SCCP 9.0.2SR2
+[cisco7941_sccp_902]
+brand: Cisco
+model: 7941
+version: 9.0.2
+files: cmterm-7941_7961-sccp.9-0-2SR2.zip
+
+[cmterm-7941_7961-sccp.9-0-2SR2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/279251499/contract/cmterm-7941_7961-sccp.9-0-2SR2.zip
+size: 5164374
+sha1sum: a91f9e10dbf8887866e3f8551475dae55b1c7d39
+
+# Cisco 7940G SCCP 8.1.2
+[cisco7940_sccp_812]
+brand: Cisco
+model: 7940
 version: 8.1.2
 files: cmterm-7940-7960-sccp.8-1-2.zip
 
@@ -111,6 +199,121 @@ files: cmterm-7940-7960-sccp.8-1-2.zip
 url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960-sccp.8-1-2.zip
 size: 701384
 sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
+
+# Cisco 7931G SCCP 9.0.2SR2
+[cisco7931_sccp_902]
+brand: Cisco
+model: 7931
+version: 9.0.2
+files: cmterm-7931-sccp.9-0-2SR2.zip
+
+[cmterm-7931-sccp.9-0-2SR2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/280799963/contract/cmterm-7931-sccp.9-0-2SR2.zip
+size: 5048018
+sha1sum: 6a71a86fa6627773edcbff0bf6834e210ab376a4
+
+# Cisco 7912G SCCP 8.0.4
+[cisco7912_sccp_804]
+brand: Cisco
+model: 7912
+version: 8.0.4
+files: cmterm-7912G-sccp.8-0-4.zip
+
+[cmterm-7912G-sccp.8-0-4.zip]
+url: http://download-sj.cisco.com/swc/esd/02/278115698/contract/cmterm-7912G-sccp.8-0-4.zip
+size: 339004
+sha1sum: 5c93605519fb691690b3c1eefc67127e85497892
+
+# Cisco 7911G SCCP 9.0.2SR2
+[cisco7911_sccp_902]
+brand: Cisco
+model: 7911
+version: 9.0.2
+files: cmterm-7911_7906-sccp.9-0-2SR2.zip
+
+# Cisco 7910G+SW SCCP 5.0.7
+[cisco7910_sccp_507]
+brand: Cisco
+model: 7910
+version: 5.0.7
+files: cmterm-7910-sccp.5-0-7.zip
+
+[cmterm-7910-sccp.5-0-7.zip]
+url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp.5-0-7.zip
+size: 592359
+sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
+
+# Cisco 7906G SCCP 9.0.2SR2
+[cisco7906_sccp_902]
+brand: Cisco
+model: 7906
+version: 9.0.2
+files: cmterm-7911_7906-sccp.9-0-2SR2.zip
+
+[cmterm-7911_7906-sccp.9-0-2SR2.zip]
+url: http://download-sj.cisco.com/swc/esd/03/280136569/contract/cmterm-7911_7906-sccp.9-0-2SR2.zip
+size: 5056088
+sha1sum: 8d9331b7580106a51a4e7cbb7378240eca53c898
+
+# Cisco 7905G SCCP 8.0.3 
+[cisco7905_sccp_803]
+brand: Cisco
+model: 7905
+version: 8.0.3
+files: cmterm-7905G-sccp.8-0-3.zip
+
+[cmterm-7905G-sccp.8-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/02/273941556/contract/cmterm-7905G-sccp.8-0-3.zip
+size: 673168
+sha1sum: c68b1ddddc06ab7bc85eef2a5956d6a58844d700
+
+# Cisco 7902G SCCP 8.0.2 
+[cisco7902_sccp_802]
+brand: Cisco
+model: 7902
+version: 8.0.2
+files: cmterm-7902G-sccp.8-0-2.zip
+
+[cmterm-7902G-sccp.8-0-2.zip]
+url: http://download-sj.cisco.com/swc/esd/02/278078615/contract/cmterm-7902G-sccp.8-0-2.zip
+size: 329363
+sha1sum: 691fb351d9228bd193dcb78cb1e7ddec73ccf835
+
+# Cisco Expansion Module 7916 SCCP 1.0.4
+[cisco7916_sccp_104]
+brand: Cisco
+model: 7916
+version: 1.0.4
+files: cmterm-7916.1-0-4.zip
+
+[cmterm-7916.1-0-4.zip]
+url: http://download-sj.cisco.com/swc/esd/03/282159702/contract/cmterm-7916.1-0-4.zip
+size: 76859
+sha1sum: 4643db66e2c8b1800eee1ca110297b01c481bbcc
+
+# Cisco Expansion Module 7915 SCCP 1.0.4
+[cisco7915_sccp_104]
+brand: Cisco
+model: 7915
+version: 1.0.4
+files: cmterm-7915.1-0-4.zip
+
+[cmterm-7915.1-0-4.zip]
+url: http://download-sj.cisco.com/swc/esd/03/282159701/contract/cmterm-7915.1-0-4.zip
+size: 64899
+sha1sum: 3897cb03c3cd76e031375b52a2275aa5d82a1674
+
+# Cisco Expansion Module 7914 SCCP 5.0.4
+[cisco7914_sccp_504]
+brand: Cisco
+model: 7914
+version: 5.0.4
+files: cmterm-7914-sccp.5-0-4.zip
+
+[cmterm-7914-sccp.5-0-4.zip]
+url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp.5-0-4.zip
+size: 26206
+sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]

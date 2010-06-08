@@ -4,8 +4,6 @@ Copyright (C) 2008-2010  Proformatique <technique@proformatique.com>
 
 """
 
-from __future__ import with_statement
-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2008-2010  Proformatique <technique@proformatique.com>
@@ -160,7 +158,9 @@ class CiscoRemoteFile(RemoteFile):
     
     @staticmethod
     def __has_credentials():
-        return True if CISCO_USER and CISCO_PASS else False
+        if CISCO_USER and CISCO_PASS:
+            return True
+        return False
     
     @staticmethod
     def __is_authenticated():
@@ -365,8 +365,11 @@ def _init():
     global CISCO_PASS
     
     config = ConfigParser.RawConfigParser()
-    with open(CONFIG_FILE) as f:
+    try:
+        f = open(CONFIG_FILE)
         config.readfp(f)
+    finally:
+        f.close()
     
     TFTP_PATH = config.get(CONFIG_SECTION_GENERAL, 'tftp_path')
     KFW_PATH = config.get(CONFIG_SECTION_GENERAL, 'kfw_path')
@@ -390,8 +393,11 @@ def load():
     load all brand modules and do related initializations
     """
     config = ConfigParser.RawConfigParser()
-    with open(FIRMWARES_DB_PATH) as f:
+    try:
+        f = open(FIRMWARES_DB_PATH)
         config.readfp(f)
+    finally:
+        f.close()
     
     # Load every brand module
     # Each register itself using register_install_fn()
