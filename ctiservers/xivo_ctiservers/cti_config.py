@@ -204,7 +204,6 @@ class Config:
 
 
     def read_section(self, type, sectionname):
-        #print "LALALA TRYING TO READ %s (%s)" % (type, sectionname)
         v = {}
         if self.kind == 'file':
             print self.kind, sectionname

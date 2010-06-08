@@ -88,6 +88,8 @@ AGENT_NO_PHONENUMBER = 'N.A.'
 PRESENCE_UNKNOWN = 'Absent'
 CALLERID_UNKNOWN_NUM = 'Inconnu'
 CALLERID_UNKNOWN_NAME = 'Inconnu'
+DIRECTIONS = { 'incoming' : 'Entrant',
+               'internal' : 'Interne' }
 
 rename_phph = [False, False, True, True]
 rename_trtr = [True, True, False, False]
@@ -1253,7 +1255,7 @@ class XivoCTICommand(BaseCommand):
                         for kk, vv in inputvars.iteritems():
                             if vv is None:
                                 log.warning('__build_xmlsheet__ %s %s : for the key %s, the value is None'
-                                    % (sheetkind, whichitem, kk))
+                                            % (sheetkind, whichitem, kk))
                             else:
                                 try:
                                     basestr = basestr.replace('{%s}' % kk, vv.decode('utf8'))
@@ -1261,10 +1263,10 @@ class XivoCTICommand(BaseCommand):
                                     basestr = basestr.replace('{%s}' % kk, vv)
                         basestr = re.sub('{[a-z\-]*}', defaultval, basestr)
                         linestosend.append('<%s order="%s" name="%s" type="%s"><![CDATA[%s]]></%s>'
-                            % (sheetkind, k, title, type, basestr, sheetkind))
+                                           % (sheetkind, k, title, type, basestr, sheetkind))
                     else:
                         log.warning('__build_xmlsheet__ wrong number of fields in definition for %s %s %s'
-                            % (sheetkind, whichitem, k))
+                                    % (sheetkind, whichitem, k))
                 except Exception:
                     log.exception('(__build_xmlsheet__) %s %s' % (sheetkind, whichitem))
         return linestosend
@@ -1320,13 +1322,13 @@ class XivoCTICommand(BaseCommand):
     def __sheet_construct__(self, where, astid, context, event, extraevent):
         actionopt = self.sheet_actions.get(where)
         linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-            '<profile>',
-            '<user>']
+                       '<profile>',
+                       '<user>']
         itemdir = {'xivo-where' : where,
-            'xivo-astid' : astid,
-            'xivo-context' : context,
-            'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
-            'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
+                   'xivo-astid' : astid,
+                   'xivo-context' : context,
+                   'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
+                   'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
         if actionopt.get('focus') == 'no':
             linestosend.append('<internal name="nofocus"></internal>')
         linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
@@ -1408,10 +1410,10 @@ class XivoCTICommand(BaseCommand):
 
         if 'xivo-channel' in itemdir:
             linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
-                % itemdir['xivo-channel'])
+                               % itemdir['xivo-channel'])
         if 'xivo-uniqueid' in itemdir:
             linestosend.append('<internal name="uniqueid"><![CDATA[%s]]></internal>'
-                % itemdir['xivo-uniqueid'])
+                               % itemdir['xivo-uniqueid'])
         linestosend.extend(self.__build_xmlqtui__('sheet_qtui', actionopt, itemdir))
         linestosend.extend(self.__build_xmlsheet__('action_info', actionopt, itemdir))
         linestosend.extend(self.__build_xmlsheet__('sheet_info', actionopt, itemdir))
@@ -1609,7 +1611,7 @@ class XivoCTICommand(BaseCommand):
             dialplan_data['xivo-calleridnum'] = self.ulist_ng.keeplist[xuserid].get('phonenum')
             dialplan_data['xivo-calleridname'] = self.ulist_ng.keeplist[xuserid].get('fullname')
             try:
-                e = self.lconf.read_section('directory_internal', 'directory_internal')
+                e = self.lconf.read_section('directory_internal', 'directories.internal')
                 for k, v in e.iteritems():
                     if k.startswith('field_'):
                         nk = 'db-%s' % k[6:]
@@ -3894,16 +3896,16 @@ class XivoCTICommand(BaseCommand):
             self.uniqueids[astid][uniqueid]['DID'] = True # XXX to merge with xivo-origin
 
             dialplan_data = { 'xivo-astid' : astid,
-                'xivo-origin' : 'did',
-                'xivo-direction' : 'Entrant', # XXX to be read from a configuration
-                'xivo-channel' : channel,
-                'xivo-uniqueid' : uniqueid,
-                'xivo-did' : didnumber,
-                'xivo-calleridnum' : calleridnum,
-                'xivo-calleridname' : calleridname,
-                'xivo-calleridrdnis' : calleridrdnis,
-                'xivo-calleridton' : calleridton
-                }
+                              'xivo-origin' : 'did',
+                              'xivo-direction' : DIRECTIONS.get('incoming'),
+                              'xivo-channel' : channel,
+                              'xivo-uniqueid' : uniqueid,
+                              'xivo-did' : didnumber,
+                              'xivo-calleridnum' : calleridnum,
+                              'xivo-calleridname' : calleridname,
+                              'xivo-calleridrdnis' : calleridrdnis,
+                              'xivo-calleridton' : calleridton
+                              }
             self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
             for v, vv in self.weblist['incomingcalls'][astid].keeplist.iteritems():
                 if vv['exten'] == didnumber:
@@ -3989,7 +3991,7 @@ class XivoCTICommand(BaseCommand):
                     'xivo-dstid' : xivo_dstid
                     }
                 if eventname not in ['MacroOutcall']:
-                    dialplan_data['xivo-direction'] = 'Interne' # XXX to be read from a configuration
+                    dialplan_data['xivo-direction'] = DIRECTIONS.get('internal')
                 self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
                 self.__dialplan_fill_src__(dialplan_data)
                 self.__dialplan_fill_dst__(dialplan_data)
@@ -4039,15 +4041,15 @@ class XivoCTICommand(BaseCommand):
             log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
             function = event.get('Function')
             services_functions_list = ['busy', 'rna', 'unc', 'vm', 'dnd',
-                'callrecord', 'incallfilter', 'bsfilter']
+                                       'callrecord', 'incallfilter', 'bsfilter']
             if function in services_functions_list:
                 repstr = { function : { 'enabled' : bool(int(event.get('Status'))),
-                    'number' : event.get('Value') } }
+                                        'number' : event.get('Value') } }
                 userid = '%s/%s' % (astid, event.get('XIVO_USERID'))
                 tosend = { 'class' : 'features',
-                    'function' : 'update',
-                    'userid' : userid,
-                    'payload' : repstr }
+                           'function' : 'update',
+                           'userid' : userid,
+                           'payload' : repstr }
                 # XXX context to be defined with the userid ?
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
             elif function in ['agentstaticlogin', 'agentstaticlogoff', 'agentdynamiclogin']:
@@ -4055,7 +4057,7 @@ class XivoCTICommand(BaseCommand):
                 pass
             else:
                 log.warning('%s ami_userevent : unknown UserEvent for Feature / %s'
-                    % (astid, function))
+                            % (astid, function))
 
         elif eventname == 'LocalCall':
             log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
@@ -4065,7 +4067,7 @@ class XivoCTICommand(BaseCommand):
             if uniqueid in self.uniqueids[astid]:
                 if appli == 'ChanSpy':
                     self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
-                        'actionid' : actionid})
+                                                            'actionid' : actionid})
         else:
             log.info('%s AMI untracked UserEvent %s' % (astid, event))
         return
@@ -5862,8 +5864,8 @@ class XivoCTICommand(BaseCommand):
             uniq_mylines.append(fsl)
 
         tosend = { 'class' : 'directory',
-            'headers' : self.ctxlist.display_header[ctx],
-            'resultlist' : uniq_mylines }
+                   'headers' : self.ctxlist.display_header[ctx],
+                   'resultlist' : uniq_mylines }
         return self.__cjson_encode__(tosend)
 
     def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):

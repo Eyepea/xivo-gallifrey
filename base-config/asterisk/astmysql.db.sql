@@ -258,7 +258,8 @@ CREATE TABLE `cticontexts` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `cticontexts` VALUES(3,'default','Répertoire XiVO','Display','Contexte par défaut',1);
+INSERT INTO `cticontexts` VALUES(3,'default','xivodir,internal','Display','Contexte par défaut',1);
+
 
 DROP TABLE IF EXISTS `ctidirectories`;
 CREATE TABLE `ctidirectories` (
@@ -280,7 +281,8 @@ CREATE TABLE `ctidirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectories` VALUES(4,'Répertoire XiVO','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["{db-fullname}"]','Répertoire XiVO par défaut',1,'','');
+INSERT INTO `ctidirectories` VALUES(4,'xivodir','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["{db-fullname}"]','','','Répertoire XiVO Externe',1);
+INSERT INTO `ctidirectories` VALUES(5,'internal','','','','','','["{internal-fullname}"]','','','','','','Répertoire XiVO Interne',1);
 
 
 DROP TABLE IF EXISTS `ctidisplays`;
@@ -387,7 +389,7 @@ CREATE TABLE `ctireversedirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctireversedirectories` VALUES(1,'default','["Répertoire XiVO"]','Répertoire XiVO',1);
+INSERT INTO `ctireversedirectories` VALUES(1,'default','["xivodir","internal"]','Répertoires XiVO',1);
 
 
 DROP TABLE IF EXISTS `ctisheetactions`;
