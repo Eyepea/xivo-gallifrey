@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if(isset($_SERVER['REMOTE_ADDR']) === false || $_SERVER['REMOTE_ADDR'] !== '127.0.0.1')
+if(isset($_SERVER['REMOTE_ADDR']) === false || ($_SERVER['REMOTE_ADDR'] !== '127.0.0.1' && $_SERVER['REMOTE_ADDR'] !== '::1'))
 {
 	$http_response->set_status_line(403);
 	$http_response->send(true);

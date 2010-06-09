@@ -94,7 +94,7 @@ class xivo_application_xivo_object_netiface extends xivo_application_xivo_object
 	{
 		if(isset($_SERVER['SERVER_ADDR']) === false)
 			return(false);
-		else if($_SERVER['SERVER_ADDR'] === '127.0.0.1')
+		else if($_SERVER['SERVER_ADDR'] === '127.0.0.1' || $_SERVER['REMOTE_ADDR'] === '::1')
 			return(null);
 		else if(($res = $this->_sysconfd->request_get('/discover_netifaces')) === false
 		|| is_array($res) === false)

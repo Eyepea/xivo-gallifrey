@@ -254,6 +254,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(isset($_SERVER['SERVER_ADDR'],$_SERVER['SERVER_PORT']) === false)
 			return(false);
 		else if($_SERVER['SERVER_ADDR'] !== '127.0.0.1'
+		&& $_SERVER['REMOTE_ADDR'] !== '::1'
 		&& dwho_issa('netiface',$this->_wizsess) === true
 		&& isset($this->_wizsess['netiface']['address']) === true)
 			$uri = $this->_wizsess['netiface']['address'];
@@ -487,6 +488,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 				continue;
 			else if(isset($_SERVER['SERVER_ADDR']) === true
 			&& $_SERVER['SERVER_ADDR'] !== '127.0.0.1'
+			&& $_SERVER['SERVER_ADDR'] !== '::1'
 			&& dwho_network::ipv4_in_subnet($_SERVER['SERVER_ADDR'],
 							$iface['address'].'/'.$iface['netmask']) === false)
 				continue;
