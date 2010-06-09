@@ -551,12 +551,11 @@ class xivo_service_asterisk extends xivo_service_abstract
 	function mk_interface($name,$protocol='',$number='',$context='',$channel='')
 	{
 		$r = false;
-
-		$name = strval($name);
+		$name     = strtolower(strval($name));
 		$protocol = strval($protocol);
-		$number = strval($number);
-		$context = strtolower(strval($context));
-		$channel = strval($channel);
+		$number   = strval($number);
+		$context  = strtolower(strval($context));
+		$channel  = strval($channel);
 
 		if($protocol === XIVO_SRE_IPBX_AST_PROTO_CUSTOM)
 			return($name);
