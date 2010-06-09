@@ -822,7 +822,7 @@ class xivo_daemon:
         log = logging.getLogger('main')
         
         try:
-            logfilehandler = RotatingFileHandler(LOGFILENAME, maxBytes=25000000, backupCount=10)
+            logfilehandler = RotatingFileHandler(LOGFILENAME)
             formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
                                           % LOGDAEMONNAME)
             logfilehandler.setFormatter(formatter)
