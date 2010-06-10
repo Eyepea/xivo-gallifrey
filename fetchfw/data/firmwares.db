@@ -27,12 +27,12 @@ sha1sum: 5d9d9389ce8f318325dc6d26a10cd36e92fc60cf
 brand: Aastra
 model: 6739i
 version: 3.0.1
-files: LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip 6739i_FC-001274-00_REV01_3_0_1_38_1002.zip
+files: LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip 6739i_FC-001274-00_REV02_3_0_1_2015_1006.zip
 
-[6739i_FC-001274-00_REV01_3_0_1_38_1002.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/6739i_FC-001274-00_REV01_3_0_1_38_1002.zip
-size: 4457754
-sha1sum: 6b6f9fb8a1c467d75b4d26a3d0fa7609322b8aaa
+[6739i_FC-001274-00_REV02_3_0_1_2015_1006.zip]
+url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-546DF7DD/04/6739i_FC-001274-00_REV02_3_0_1_2015_1006.zip
+size: 4489543
+sha1sum: 37772ac130225bd048ae3224d8834555fa3b5625
 
 # Aastra 6751i 2.6.0
 [aa6751i_260]
