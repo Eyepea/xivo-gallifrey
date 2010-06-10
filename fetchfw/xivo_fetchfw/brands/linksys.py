@@ -17,6 +17,7 @@ __license__ = """
 """
 
 import os
+import os.path
 import shutil
 from xivo_fetchfw import fetchfw
 
@@ -25,10 +26,7 @@ def linksys_install_spa9x2_langs(xfile):
     zip_path = fetchfw.zip_extract_all('linksys_langs', xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'language', 'spa9X2')
 
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
 
     for fw_file in os.listdir(zip_path):
         fw_src_path = os.path.join(zip_path, fw_file)
@@ -37,27 +35,47 @@ def linksys_install_spa9x2_langs(xfile):
         shutil.copy2(fw_src_path, fw_dst_path)
 
 
-def linksys_install_fw(firmware, xfile):
-    zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
-    fw_file = "%s.bin" % xfile.filename.rsplit('.')[0]
-    fw_src_path = os.path.join(zip_path, fw_file)
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
-    fw_dst_path = os.path.join(fw_dst_dir, fw_file)
+def linksys_dblzip_install(firmware, zip_name, fw_name):
+    zipfile1_path = firmware.remote_files[0].path
+    unzip_dir = fetchfw.zip_extract_all(firmware.name, zipfile1_path)
+    zipfile2_path = os.path.join(unzip_dir, zip_name)
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
+    fetchfw.makedirs(fw_dst_path)
+    fetchfw.zip_extract_files(zipfile2_path, (fw_name,), fw_dst_path)
 
-    shutil.copy2(fw_src_path, fw_dst_path)
 
+def linksys_zip_install(firmware, fw_name):
+    zipfile_path = firmware.remote_files[0].path
+    
+    fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
+    fetchfw.makedirs(fw_dst_path)
+    fetchfw.zip_extract_files(zipfile_path, (fw_name,), fw_dst_path)
+
+
+dblzipped_fw = {('SPA962', '6.1.5a'): ('SPA962_6.1.5a.zip', 'spa962-6-1-5a.bin'),
+                ('SPA942', '6.1.5a'): ('SPA942_6.1.5a.zip', 'spa942-6-1-5a.bin'),
+                ('SPA941', '5.1.8'):  ('spa941-5.1.8.zip', 'spa941-5-1-8.bin'),
+                ('SPA922', '6.1.5a'): ('SPA942_6.1.5a.zip', 'spa942-6-1-5a.bin'),
+                ('SPA921', '5.1.8'):  ('spa941-5.1.8.zip', 'spa941-5-1-8.bin'),
+                ('SPA901', '5.1.5'):  ('spa901--5.1.5.zip', 'spa901-5-1-5.bin')
+               }
+
+zipped_fw = {('PAP2T', '5.1.6'): 'pap2t-5-1-6.bin',
+             ('SPA8000', '6.1.3'): 'spa8000-6-1-3.bin',
+             ('SPA3102', '5.1.10'): 'spa3102-5-1-10-GW.bin',
+             ('SPA2102', '5.2.10'): 'spa2102-5-2-10.bin',
+             ('SPA400', '01-01-02-02'): 'spa400-01-01-02-02.bin'
+            }
 
 def linksys_install(firmware):
-    for xfile in firmware.remote_files:
-        if xfile.filename.startswith('SPA9X2_Dictionaries'):
-            linksys_install_spa9x2_langs(xfile)
-        else:
-            linksys_install_fw(firmware, xfile)
-
+    fw_key = (firmware.model, firmware.version)
+    if fw_key in zipped_fw:
+        linksys_zip_install(firmware, zipped_fw[fw_key])
+    elif fw_key in dblzipped_fw:
+        zip_name, fw_name = dblzipped_fw[fw_key]
+        linksys_dblzip_install(firmware, zip_name, fw_name)
+    else:
+        raise fetchfw.FirmwareInstallationError()
 
 fetchfw.register_install_fn('Linksys', None, linksys_install)

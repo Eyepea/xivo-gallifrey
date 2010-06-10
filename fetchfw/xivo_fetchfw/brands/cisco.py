@@ -16,13 +16,39 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import os.path
 import distutils.dir_util
 from xivo_fetchfw import fetchfw
 
+# Destination path for Cisco SMB firmwares.
+smb_fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Cisco', 'firmware')
+
+def ciscosmb_install(firmware, fw_name):
+    zipfile_path = firmware.remote_files[0].path
+    
+    fetchfw.makedirs(smb_fw_dst_path)
+    fetchfw.zip_extract_files(zipfile_path, (fw_name,), smb_fw_dst_path)
+
+    
+def cisco7900_install(firmware):
+    zipfile_path = firmware.remote_files[0]
+    unzip_dir = fetchfw.zip_extract_all(firmware.name, zipfile_path.path)
+    distutils.dir_util.copy_tree(unzip_dir, fetchfw.TFTP_PATH)
+
+
 def cisco_install(firmware):
-    xfile = firmware.remote_files[0]
-    zip_path = fetchfw.zip_extract_all(firmware.name, xfile.path)
-    distutils.dir_util.copy_tree(zip_path, fetchfw.TFTP_PATH)
+    if firmware.model == 'SPA525' and firmware.version == '7.4.4':
+        ciscosmb_install(firmware, 'spa525g-7-4-4.bin')
+    elif firmware.model in ('SPA509', 'SPA508', 'SPA504', 'SPA502', 'SPA501') \
+         and firmware.version == '7.4.4':
+        ciscosmb_install(firmware, 'spa5x5-7-4-4.bin')
+    elif firmware.model in ('7975', '7971', '7970', '7965', '7962', '7961',
+                            '7960', '7945', '7942', '7941', '7940', '7931',
+                            '7916', '7915', '7914', '7912', '7911', '7910',
+                            '7906', '7905', '7902'):
+        cisco7900_install(firmware)
+    else:
+        raise fetchfw.FirmwareInstallationError()
 
 
 fetchfw.register_install_fn('Cisco', None, cisco_install)

@@ -26,10 +26,7 @@ def snom_install(firmware):
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
     fw_dst_path = os.path.join(fw_dst_dir, firmware.remote_files[0].filename)
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
     
     shutil.copy2(firmware.remote_files[0].path, fw_dst_path)
 
@@ -37,10 +34,7 @@ def snom_install(firmware):
 def snom_m3_install(firmware):
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
     
     for xfile in firmware.remote_files:
         fw_dst_path = os.path.join(fw_dst_dir, xfile.filename)

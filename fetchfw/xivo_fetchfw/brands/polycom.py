@@ -70,10 +70,7 @@ def polycom_install_bootrom(xfile):
     zip_path = fetchfw.zip_extract_all("polycom_bootrom", xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Polycom")
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
     
     for fw_file in os.listdir(zip_path):
         fw_src_path = os.path.join(zip_path, fw_file)
@@ -85,10 +82,7 @@ def polycom_install_app(xfile):
     zip_path = fetchfw.zip_extract_all("polycom_app", xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Polycom")
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
     
     for fw_file in APP_FILES:
         fw_src_path = os.path.join(zip_path, fw_file)

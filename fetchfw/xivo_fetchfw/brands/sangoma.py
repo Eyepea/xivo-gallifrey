@@ -26,10 +26,7 @@ SANGOMA_ECHOCAN_PATH = "/etc/wanpipe/wan_ec"
 def sangoma_install(firmware):
     xfile = firmware.remote_files[0]
     
-    try:
-        os.makedirs(SANGOMA_FW_PATH)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(SANGOMA_FW_PATH)
     
     shutil.copy2(xfile.path, SANGOMA_FW_PATH)
 
@@ -37,10 +34,7 @@ def sangoma_echocan_install(firmware):
     xfile = firmware.remote_files[0]
     tgz_path = fetchfw.tgz_extract_all("sangoma_echocan", xfile.path)
     
-    try:
-        os.makedirs(SANGOMA_ECHOCAN_PATH)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(SANGOMA_ECHOCAN_PATH)
     
     for root, dirs, files, in os.walk(tgz_path):
         for fw_file in files:

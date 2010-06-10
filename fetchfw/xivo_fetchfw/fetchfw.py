@@ -26,11 +26,13 @@ import os
 import sha
 import sys
 import shutil
+import zipfile
 import urllib
 import urllib2
 import cookielib
 import subprocess
 import ConfigParser
+from xivo import progressbar
 from stat import S_IRWXU, S_IRUSR, S_IWUSR, S_IRGRP, S_IXGRP, S_IROTH, S_IXOTH
 
 
@@ -75,7 +77,7 @@ class RemoteFile(object):
     was cached.
     """
 
-    BUFFER_SIZE = 8192
+    BUFFER_SIZE = 16384
 
     def __init__(self, filename, url, size, sha1sum):
         self.filename = filename
@@ -89,7 +91,7 @@ class RemoteFile(object):
         
         if PROXY_URL:
             thisproxy = urllib2.ProxyHandler({"http" : PROXY_URL})
-            opener = urllib2.build_opener(urllib2.HTTPDefaultErrorHandler, thisproxy)
+            opener = urllib2.build_opener(thisproxy)
             return opener.open(self.url)
         return urllib2.urlopen(self.url)
     
@@ -99,6 +101,19 @@ class RemoteFile(object):
         """
         md_sha = sha.new()
         size = 0
+        
+        widgets = [self.filename,
+                   ':    ',
+                   progressbar.FileTransferSpeed(),
+                   ' ',
+                   progressbar.ETA(),
+                   ' ',
+                   progressbar.Bar(),
+                   ' ',
+                   progressbar.Percentage(),
+                   ]
+        pbar = progressbar.ProgressBar(widgets=widgets, maxval=self.size)
+        pbar.start()
 
         try:
             src = open(self.path)
@@ -115,10 +130,12 @@ class RemoteFile(object):
 
             md_sha.update(buf)
             size += len(buf)
+            pbar.update(size)
 
             if dst:
                 dst.write(buf)
 
+        pbar.finish()
         src.close()
 
         if dst:
@@ -206,6 +223,11 @@ class CiscoRemoteFile(RemoteFile):
         return f
 
 
+class FirmwareInstallationError(Exception):
+    """ Raised when a problem occurs during a firmware installation. """
+    pass
+
+
 class Firmware(object):
     """
     This class is used to store firmware properties and automatically
@@ -239,16 +261,10 @@ class Firmware(object):
 
 
 def warn(message):
-    """
-    XXX replace with logging module
-    """
     sys.stderr.write("warning: %s.\n" % message)
 
 
 def die(message):
-    """
-    XXX replace with logging module
-    """
     sys.stderr.write("error: %s.\n" % message)
     sys.exit(1)
 
@@ -310,6 +326,19 @@ def _common_extract_all(label, file_path, start_of_cmd, kind):
     
     return archive_path
 
+def zip_extract_files(zip_path, filenames, dir_path):
+    """ Extract files in filenames from zip_path into the directory dir_path. """
+    zipobj = zipfile.ZipFile(zip_path, "r")
+    try:
+        for filename in filenames:
+            out_file = os.path.join(dir_path, filename)
+            f = open(out_file, 'wb')
+            try:
+                f.write(zipobj.read(filename))
+            finally:
+                f.close()
+    finally:
+        zipobj.close()
 
 def zip_extract_all(label, zipfile_path):
     """
@@ -351,6 +380,18 @@ def tbz2_extract_all(label, tbz2file_path):
     return _common_extract_all(label, tbz2file_path, ['tar', 'xjf'], "tbz2")
 
 
+def makedirs(path, mode=0777):
+    """ 
+    Wraps os.makedirs so it doesn't raise an OSError if the leaf directory
+    already exists.
+    """ 
+    try:
+        os.makedirs(path, mode)
+    except OSError:
+        if not os.path.isdir(path):
+            raise
+
+
 def _init():
     """
     Initialize global variables and create the temporary directory
@@ -382,10 +423,7 @@ def _init():
         CISCO_USER = config.get(CONFIG_SECTION_CISCO, 'username')
         CISCO_PASS = config.get(CONFIG_SECTION_CISCO, 'password')
 
-    try:
-        os.makedirs(TMP_PATH)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    makedirs(TMP_PATH)
 
 
 def load():

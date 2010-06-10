@@ -47,10 +47,7 @@ def thomson_install(firmware):
     fw_zip_path = os.path.join(zip_path, fw_src_path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Thomson", "binary")
 
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
 
     modelnum = firmware.model[2:]
     if modelnum == 'TB30':

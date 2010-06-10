@@ -30,10 +30,7 @@ def aastra_install_langs(firmware, xfile):
     zip_path = fetchfw.zip_extract_all(label, xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra")
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
     
     for fw_file in os.listdir(zip_path):
         fw_src_path = os.path.join(zip_path, fw_file)
@@ -50,10 +47,7 @@ def aastra_install_fw(firmware, xfile):
        and AASTRA_MODEL_STANDARDIZE.has_key(firmware.model):
         fw_src_path = os.path.join(zip_path, "%s.st" % AASTRA_MODEL_STANDARDIZE.get(firmware.model))
 
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
     
     shutil.copy2(fw_src_path, fw_dst_dir)
 

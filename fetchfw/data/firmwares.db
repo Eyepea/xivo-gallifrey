@@ -315,126 +315,179 @@ url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp
 size: 26206
 sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 
-# Linksys PAP2T 5.1.6
-[lspap2t_516]
-brand: Linksys
-model: PAP2T
-version: 5.1.6
-files: pap2t-5-1-6.zip
+# Cisco SPA 525G 7.4.4
+[ciscospa525_744]
+brand: Cisco
+model: SPA525
+version: 7.4.4
+files: spa525g-7-4-4.zip
 
-[pap2t-5-1-6.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/pap2t-5-1-6.zip
-size: 734611
-sha1sum: 76e5279b2f6f41beade87f85ba1c28b34c2a049d
+[spa525g-7-4-4.zip]
+url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282414147/guest/spa525g-7-4-4.zip
+size: 10562212
+sha1sum: fd89788a118aa132c9d721d7c969c696fb62f0df
 
-# Linksys SPA400 1.1.2.2
-[lsspa400_1122]
-brand: Linksys
-model: SPA400
-version: 1.1.2.2
-files: spa400-1-1-2-2.zip
+# Cisco SPA 509G 7.4.4
+[ciscospa509_744]
+brand: Cisco
+model: SPA509
+version: 7.4.4
+files: spa5x5-7-4-4.zip
 
-[spa400-1-1-2-2.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa400-1-1-2-2.zip
-size: 3535892
-sha1sum: ce46e8c6b6361f503513f2c9ae19dff67cd21536
+# Cisco SPA 508G 7.4.4
+[ciscospa508_744]
+brand: Cisco
+model: SPA508
+version: 7.4.4
+files: spa5x5-7-4-4.zip
 
-# Linksys SPA901 5.1.5
-[lsspa901_515]
-brand: Linksys
-model: SPA901
-version: 5.1.5
-files: spa901-5-1-5.zip
+# Cisco SPA 504G 7.4.4
+[ciscospa504_744]
+brand: Cisco
+model: SPA504
+version: 7.4.4
+files: spa5x5-7-4-4.zip
 
-[spa901-5-1-5.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa901-5-1-5.zip
-size: 790126
-sha1sum: cff1a62082ed114fef2a7634a0e7b5cbb14eea52
+# Cisco SPA 502G 7.4.4
+[ciscospa502_744]
+brand: Cisco
+model: SPA502
+version: 7.4.4
+files: spa5x5-7-4-4.zip
 
-# Linksys SPA921 5.1.8
-[lsspa921_518]
-brand: Linksys
-model: SPA921
-version: 5.1.8
-files: spa941-5-1-8.zip
+# Cisco SPA 501G 7.4.4
+[ciscospa501_744]
+brand: Cisco
+model: SPA501
+version: 7.4.4
+files: spa5x5-7-4-4.zip
 
-# Linksys SPA922 6.1.5a
-[lsspa922_615a]
-brand: Linksys
-model: SPA922
-version: 6.1.5a
-files: SPA9X2_Dictionaries_v615.zip spa942-5-2-8.zip spa942-6-1-5a.zip
-
-# Linksys SPA941 5.1.8
-[lsspa941_518]
-brand: Linksys
-model: SPA941
-version: 5.1.8
-files: spa941-5-1-8.zip
-
-[spa941-5-1-8.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa941-5-1-8.zip
-size: 756584
-sha1sum: 2b32106a2193b3e9d64ea5e1a732745c385b26a4
-
-# Linksys SPA942 6.1.5a
-[lsspa942_615a]
-brand: Linksys
-model: SPA942
-version: 6.1.5a
-files: SPA9X2_Dictionaries_v615.zip spa942-5-2-8.zip spa942-6-1-5a.zip
-
-[spa942-5-2-8.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa942-5-2-8.zip
-size: 879295
-sha1sum: 76428a78e7e70e884d47141e3bd626876ecaf220
-
-[spa942-6-1-5a.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa942-6-1-5a.zip
-size: 956441
-sha1sum: 6b7732df053f42dce1ec0cf9b2fa8f1defe46e15
+[spa5x5-7-4-4.zip]
+url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282724524/guest/spa5x5-7-4-4.zip
+size: 7607391
+sha1sum: 2e4173d847170837011cb58b6107ad765041bc5d
 
 # Linksys SPA962 6.1.5a
 [lsspa962_615a]
 brand: Linksys
 model: SPA962
 version: 6.1.5a
-files: SPA9X2_Dictionaries_v615.zip spa962-6-1-5a.zip
+files: SPA962_Firmware.zip
 
-[spa962-6-1-5a.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa962-6-1-5a.zip
-size: 1119259
-sha1sum: 02bbb8786572c4deb00134e41f981a23f01820f8
+[SPA962_Firmware.zip]
+url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10040/SPA962_Firmware.zip
+size: 5706866
+sha1sum: 4c9671873c241c679285065b495b5d7cf29f6975
 
-# Linksys SPA3102 5.1.10
-[lsspa3102_5110]
+# Linksys SPA942 6.1.5a
+[lsspa942_615a]
 brand: Linksys
-model: SPA3102
-version: 5.1.10
-files: spa3102-5-1-10.zip
+model: SPA942
+version: 6.1.5a
+files: SPA942_Firmware.zip
 
-[spa3102-5-1-10.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa3102-5-1-10.zip
-size: 1005565
-sha1sum: 75305f786a0c799f921f2a77b2c2ff36d1522652
+[SPA942_Firmware.zip]
+url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10039/SPA942_Firmware.zip
+size: 4996209
+sha1sum: 0fe2d285981aacc5ce38e828973557021d0496e0
+
+# Linksys SPA941 5.1.8
+[lsspa941_518]
+brand: Linksys
+model: SPA941
+version: 5.1.8
+files: SPA941_Firmware.zip
+
+[SPA941_Firmware.zip]
+url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10038/SPA941_Firmware.zip
+size: 2058390
+sha1sum: 12c1891c22d037736d11f866ba4b82a2fe1a4e5d
+
+# Linksys SPA922 6.1.5a
+[lsspa922_615a]
+brand: Linksys
+model: SPA922
+version: 6.1.5a
+files: SPA942_Firmware.zip
+
+# Linksys SPA921 5.1.8
+[lsspa921_518]
+brand: Linksys
+model: SPA921
+version: 5.1.8
+files: SPA941_Firmware.zip
+
+# Linksys SPA901 5.1.5
+[lsspa901_515]
+brand: Linksys
+model: SPA901
+version: 5.1.5
+files: SPA901_Firmware.zip
+
+[SPA901_Firmware.zip]
+url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10034/SPA901_Firmware.zip
+size: 3531905
+sha1sum: 0015dc9dd6d1a8d2e0ffe03915bf19f00787caf9
+
+# Linksys PAP2T 5.1.6
+[lspap2t_516]
+brand: Linksys
+model: PAP2T
+version: 5.1.6
+files: PAP2T_v5.1.6_fw.zip
+
+[PAP2T_v5.1.6_fw.zip]
+url: http://download-sj.cisco.com/swc/esd/03/282414114/anon/PAP2T_v5.1.6_fw.zip
+size: 1504430
+sha1sum: c8a2c48e06e3bd89de6f444824a41ebc7e1d57f5
 
 # Linksys SPA8000 6.1.3
 [lsspa8000_613]
 brand: Linksys
 model: SPA8000
 version: 6.1.3
-files: spa8000-6-1-3.zip
+files: SPA8000_v6.1.3_fw.zip
 
-[spa8000-6-1-3.zip]
-url: http://downloads.xivo.fr/firmware/Linksys/spa8000-6-1-3.zip
-size: 1069281
-sha1sum: 6b1ca5196dea149a350a621d0d8157f2ea2c1e55
+[SPA8000_v6.1.3_fw.zip]
+url: http://download-sj.cisco.com/swc/esd/03/282414110/anon/SPA8000_v6.1.3_fw.zip
+size: 2290349
+sha1sum: 043ddf18fae067e012b3e7f0f495bf82d4ecd4b1
 
-# Languages files for Linksys SPA9X2 phones 6.1.5
-[SPA9X2_Dictionaries_v615.zip]
-url: https://www.myciscocommunity.com/servlet/JiveServlet/downloadBody/2845-102-1-4613/SPA9X2_Dictionaries_v615.zip
-size: 215186
-sha1sum: 5b4fcb2d822b2eea6743fa873894d54ed4ba713f
+# Linksys SPA3102 5.1.10
+[lsspa3102_5110]
+brand: Linksys
+model: SPA3102
+version: 5.1.10 
+files: SPA3102_5.1.10.zip
+
+[SPA3102_5.1.10.zip]
+url: http://download-sj.cisco.com/swc/esd/03/282414112/anon/SPA3102_5.1.10.zip
+size: 2086224
+sha1sum: 3281b0adc7f4e1e86e16f3f76100df478ba221b0
+
+# Linksys SPA2102 5.2.10
+[lsspa2102_5210]
+brand: Linksys
+model: SPA2102
+version: 5.2.10
+files: SPA2102_Firmware.zip
+
+[SPA2102_Firmware.zip]
+url: http://download-sj.cisco.com/swc/esd/03/282414111/anon/SPA2102_Firmware.zip
+size: 3424733
+sha1sum: e735d328e29d5a5ce17f381350a6c623c3b70436
+
+# Linksys SPA400 01-01-02-02
+[lsspa400_01010202]
+brand: Linksys
+model: SPA400
+version: 01-01-02-02
+files: SPA400_Firmware.ZIP
+
+[SPA400_Firmware.ZIP]
+url: http://www.cisco.com/en/US/prod/voicesw/ps6788/vcallcon/ps10030/ps10032/SPA400_Firmware.ZIP
+size: 3535794
+sha1sum: 947556fd4ccd089e76f41c954f66da63055ddfe9
 
 # Polycom SoundPoint IP 301 3.1.2RevB
 [pcspip301_312]

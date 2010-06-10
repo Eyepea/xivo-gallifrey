@@ -26,10 +26,7 @@ def siemens_install(firmware):
     xfile = firmware.remote_files[0]
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Siemens', 'firmware', firmware.model.lower())
 
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    fetchfw.makedirs(fw_dst_dir)
 
     shutil.copy2(xfile.path, fw_dst_dir)
 

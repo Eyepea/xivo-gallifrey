@@ -49,10 +49,7 @@ def yealink_install_fw(firmware, xfile):
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Yealink')
     fw_dst_path = os.path.join(fw_dst_dir, fw_file)
     
-    try:
-        os.makedirs(fw_dst_dir)
-    except OSError:
-        pass # XXX: catching every OSError is not appropriate
+    os.makedirs(fw_dst_dir)
 
     shutil.copy2(fw_src_path, fw_dst_path)
 
