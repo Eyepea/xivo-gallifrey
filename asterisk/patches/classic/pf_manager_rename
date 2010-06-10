@@ -1,0 +1,64 @@
+2010-06-10  Corentin Le Gall <clegall@proformatique.com>
+
+	pf_manager_rename
+	$Revision$
+	$Date$
+        There are 4 Rename AMI events that can be sent :
+        - added a Where identifier for each
+
+Index: asterisk-1.4.32/main/channel.c
+===================================================================
+--- asterisk-1.4.32.orig/main/channel.c	2010-06-10 11:58:14.000000000 +0200
++++ asterisk-1.4.32/main/channel.c	2010-06-10 12:02:22.000000000 +0200
+@@ -3780,7 +3780,12 @@
+ 
+ void ast_change_name(struct ast_channel *chan, char *newname)
+ {
+-	manager_event(EVENT_FLAG_CALL, "Rename", "Oldname: %s\r\nNewname: %s\r\nUniqueid: %s\r\n", chan->name, newname, chan->uniqueid);
++	manager_event(EVENT_FLAG_CALL, "Rename",
++                      "Oldname: %s\r\n"
++                      "Newname: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "Where: ChangeName\r\n",
++                      chan->name, newname, chan->uniqueid);
+ 	ast_string_field_set(chan, name, newname);
+ }
+ 
+@@ -3953,10 +3958,20 @@
+ 
+ 	/* Mangle the name of the clone channel */
+ 	ast_string_field_set(clone, name, masqn);
+-	
++
+ 	/* Notify any managers of the change, first the masq then the other */
+-	manager_event(EVENT_FLAG_CALL, "Rename", "Oldname: %s\r\nNewname: %s\r\nUniqueid: %s\r\n", newn, masqn, clone->uniqueid);
+-	manager_event(EVENT_FLAG_CALL, "Rename", "Oldname: %s\r\nNewname: %s\r\nUniqueid: %s\r\n", orig, newn, original->uniqueid);
++	manager_event(EVENT_FLAG_CALL, "Rename",
++                      "Oldname: %s\r\n"
++                      "Newname: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "Where: ToMasq\r\n",
++                      newn, masqn, clone->uniqueid);
++	manager_event(EVENT_FLAG_CALL, "Rename",
++                      "Oldname: %s\r\n"
++                      "Newname: %s\r\n"
++                      "Uniqueid: %s\r\n"
++                      "Where: New\r\n",
++                      orig, newn, original->uniqueid);
+ 
+ 	/* Swap the technologies */	
+ 	t = original->tech;
+@@ -4045,7 +4060,12 @@
+ 	snprintf(zombn, sizeof(zombn), "%s<ZOMBIE>", orig);
+ 	/* Mangle the name of the clone channel */
+ 	ast_string_field_set(clone, name, zombn);
+-	manager_event(EVENT_FLAG_CALL, "Rename", "Oldname: %s\r\nNewname: %s\r\nUniqueid: %s\r\n", masqn, zombn, clone->uniqueid);
++	manager_event(EVENT_FLAG_CALL, "Rename",
++                      "Oldname: %s\r\n"
++                      "Newname: %s\r\n"
++                      "Uniqueid: %s\r\n",
++                      "Where: Zombie\r\n",
++                      masqn, zombn, clone->uniqueid);
+ 
+ 	/* Update the type. */
+ 	t_pvt = original->monitor;
