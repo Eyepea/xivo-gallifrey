@@ -49,11 +49,11 @@ def thomson_install(firmware):
 
     fetchfw.makedirs(fw_dst_dir)
 
-    modelnum = firmware.model[2:]
-    if modelnum == 'TB30':
-        pre_dsp_file = "%sS_V" % modelnum 
-        pre_fw_file = "%sS." % modelnum
+    if firmware.model == 'TB30':
+        pre_dsp_file = "%sS_V" % firmware.model
+        pre_fw_file = "%sS." % firmware.model
     else:
+        modelnum = firmware.model[2:]
         pre_dsp_file = "v%s_dsp_" % modelnum
         pre_fw_file = "v%sSG." % modelnum
 
