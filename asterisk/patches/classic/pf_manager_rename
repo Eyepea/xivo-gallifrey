@@ -56,7 +56,7 @@ Index: asterisk-1.4.32/main/channel.c
 +	manager_event(EVENT_FLAG_CALL, "Rename",
 +                      "Oldname: %s\r\n"
 +                      "Newname: %s\r\n"
-+                      "Uniqueid: %s\r\n",
++                      "Uniqueid: %s\r\n"
 +                      "Where: Zombie\r\n",
 +                      masqn, zombn, clone->uniqueid);
  
