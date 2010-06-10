@@ -194,6 +194,7 @@ class XivoCTICommand(BaseCommand):
         self.origapplication = {}
         self.events_link = {}
         self.localchans = {} # leaks
+        self.rename_stack = {}
         # astid + actionid (AMI) indexed hashes
         self.amirequests = {}
         self.getvar_requests = {}
@@ -737,7 +738,7 @@ class XivoCTICommand(BaseCommand):
                                    self.queues_channels_list, self.attended_targetchannels,
                                    self.ignore_dtmf, self.parkedcalls, self.origapplication,
                                    self.amirequests, self.getvar_requests,
-                                   self.events_link, self.localchans]:
+                                   self.events_link, self.localchans, self.rename_stack]:
                     if astid not in astid_hash:
                         astid_hash[astid] = {}
             if listname in self.weblistprops:
@@ -1739,14 +1740,14 @@ class XivoCTICommand(BaseCommand):
             (tmpchan, tmpuid, _clid, _clidn) = self.__translate_local_channel_uid__(astid, self.uniqueids[astid][uid1]['channel'], uid1)
             if chan1 == tmpchan:
                 self.uniqueids[astid][uid1].update({where : chan2,
-                    'channel' : chan1,
-                    'time-%s' % where : time.time()})
+                                                    'channel' : chan1,
+                                                    'time-%s' % where : time.time()})
         if uid2 in self.uniqueids[astid]:
             (tmpchan, tmpuidn, _clid, _clidn) = self.__translate_local_channel_uid__(astid, self.uniqueids[astid][uid2]['channel'], uid2)
             if chan2 == tmpchan:
                 self.uniqueids[astid][uid2].update({where : chan1,
-                    'channel' : chan2,
-                    'time-%s' % where : time.time()})
+                                                    'channel' : chan2,
+                                                    'time-%s' % where : time.time()})
         return
 
     # Methods to handle Asterisk AMI events
@@ -2054,13 +2055,14 @@ class XivoCTICommand(BaseCommand):
         clonechannel = event.get('Clone')
 
         # always implies Rename's ?
-        if originalstate == 'Ringing' and clonestate == 'Down':
-            # interception
-            log.info('%s ami_masquerade : probably %s has catched a call for %s'
-                % (astid, clonechannel, originalchannel))
-            # elif originalstate == 'Ringing' and clonestate == 'Up':
-            # # probably interception also ... XXX
-            # pass
+        if originalstate == 'Ringing':
+            if clonestate == 'Down':
+                # interception ?
+                log.info('%s ami_masquerade : probably %s has catched a call for %s'
+                         % (astid, clonechannel, originalchannel))
+            else:
+                log.warning('%s ami_masquerade : unknown use case : clone = %s ; original = %s'
+                            % (astid, clonechannel, originalchannel))
         elif originalstate == 'Up' and clonestate == 'Up':
             if astid in self.attended_targetchannels and originalchannel in self.attended_targetchannels[astid]:
                 # transfer
@@ -2070,11 +2072,11 @@ class XivoCTICommand(BaseCommand):
             else:
                 if originalchannel.startswith('AsyncGoto/'):
                     log.info('%s ami_masquerade : probably direct transfer to a meetme room %s %s (Up+Up but no transfer)'
-                        % (astid, originalchannel, clonechannel))
+                             % (astid, originalchannel, clonechannel))
                     # 'wait' for an ami_transfer
                 else:
                     log.info('%s ami_masquerade : probably agent relation %s %s (Up+Up but no transfer)'
-                        % (astid, originalchannel, clonechannel))
+                             % (astid, originalchannel, clonechannel))
             # elif originalstate == 'Ring' and clonestate == 'Up':
             # # probably transfer also ... XXX
             # pass
@@ -2084,6 +2086,8 @@ class XivoCTICommand(BaseCommand):
             # elif originalstate == 'Ringing' and clonestate == 'Up':
             # # {'Original': 'SIP/fpotiquet-08203d00', 'Clone': 'SIP/118-081daba8', 'OriginalState': 'Ringing', 'CloneState': 'Up' }
             # pass
+        elif originalstate == 'Down' and clonestate == 'Up' and originalchannel.startswith('Parked/'):
+            log.info('%s ami_masquerade : a call is being parked ... : %s' % (astid, event))
         else:
             log.info('%s ami_masquerade : %s' % (astid, event))
         return
@@ -2300,6 +2304,11 @@ class XivoCTICommand(BaseCommand):
         uid2 = event.get('Uniqueid2')
         where = event.get('Where')
         log.info('%s AMI_UNLINK : %s' % (astid, event))
+        
+        if chan1.startswith('Parked/') or chan2.startswith('Parked/'):
+            log.warning('%s ignoring an Unlink event (parked call) : %s' % (astid, event))
+            return
+        
         if uid1 not in self.events_link[astid]:
             log.warning('%s ignoring an Unlink event (Link never happened or identifier already deleted) : %s' % (astid, event))
             return
@@ -2312,10 +2321,10 @@ class XivoCTICommand(BaseCommand):
                 return
             else:
                 del self.events_link[astid][uid1]
-
+                
         (chan1, _uid1, _clid1, _clidn1) = self.__translate_local_channel_uid__(astid, chan1, uid1)
         (chan2, _uid2, _clid2, _clidn2) = self.__translate_local_channel_uid__(astid, chan2, uid2)
-
+        
         if self.__ignore_dtmf__(astid, uid1, 'unlink'):
             return
         if self.__ignore_dtmf__(astid, uid2, 'unlink'):
@@ -2389,9 +2398,9 @@ class XivoCTICommand(BaseCommand):
                             self.weblist[queueorgroup][astid].keeplist[queueid]['queuestats'][field] = 0
 
                     tosend = { 'class' : queueorgroup,
-                        'function' : 'sendlist',
-                        'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
-                        }
+                               'function' : 'sendlist',
+                               'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
+                               }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                         astid, self.weblist[queueorgroup][astid].getcontext(queuename))
         else:
@@ -2411,11 +2420,11 @@ class XivoCTICommand(BaseCommand):
             for qval in thisagent['groups_by_agent'].itervalues():
                 qval['Xivo-QueueMember-StateTime'] = time.time()
             tosend = { 'class' : 'agents',
-                'function' : 'sendlist',
-                'payload' : { astid : { agent_id : thisagent } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { agent_id : thisagent } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
-                astid, thisagent.get('context'))
+                                             astid, thisagent.get('context'))
 
             # 'postcall' for the agent
             status = 'postcall'
@@ -2450,11 +2459,11 @@ class XivoCTICommand(BaseCommand):
                     for qval in thisagent['groups_by_agent'].itervalues():
                         qval['Xivo-QueueMember-StateTime'] = time.time()
                     tosend = { 'class' : 'agents',
-                        'function' : 'sendlist',
-                        'payload' : { astid : { agent_id : thisagent } }
-                        }
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
-                        astid, thisagent.get('context'))
+                                                     astid, thisagent.get('context'))
         return
 
     def __presence_action__(self, astid, anum, userinfo):
@@ -2984,8 +2993,8 @@ class XivoCTICommand(BaseCommand):
             log.warning('%s empty channel name in event %s' % (astid, event))
             return
         self.uniqueids[astid][uniqueid] = { 'channel' : channel,
-            'time-newchannel' : time.time(),
-            'dialplan_data' : {} }
+                                            'time-newchannel' : time.time(),
+                                            'dialplan_data' : {} }
         self.channels[astid][channel] = uniqueid
         if state == 'Rsrvd':
             self.uniqueids[astid][uniqueid]['state'] = state
@@ -3020,16 +3029,16 @@ class XivoCTICommand(BaseCommand):
         self.parkedcalls[astid][channel] = event
         # TODO check context ???
         tosend = { 'class' : 'parkcall',
-            'payload' : { 'status' : 'parkedcall',
-                'astid' : astid,
-                'channel' : channel,
-                'exten' : exten,
-                'fromchannel' : cfrom,
-                'timeout' : timeout,
-                'calleridnum' : calleridnum,
-                'calleridname' : calleridname,
-                'fromcalleridnum' : fromcalleridnum,
-                'fromcalleridname' : fromcalleridname } }
+                   'payload' : { 'status' : 'parkedcall',
+                                 'astid' : astid,
+                                 'channel' : channel,
+                                 'exten' : exten,
+                                 'fromchannel' : cfrom,
+                                 'timeout' : timeout,
+                                 'calleridnum' : calleridnum,
+                                 'calleridname' : calleridname,
+                                 'fromcalleridnum' : fromcalleridnum,
+                                 'fromcalleridname' : fromcalleridname } }
         #log.info('%s PARKEDCALL sending %s' % (astid, self.__cjson_encode__(tosend)))
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
@@ -3063,11 +3072,11 @@ class XivoCTICommand(BaseCommand):
             self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
         # a subsequent 'link' AMI event should make the new status transmitted
         tosend = { 'class' : 'parkcall',
-            'payload' : { 'status' : 'unparkedcall',
-                'astid' : astid,
-                'channel' : channel,
-                'fromchannel' : cfrom,
-                'exten' : exten } }
+                   'payload' : { 'status' : 'unparkedcall',
+                                 'astid' : astid,
+                                 'channel' : channel,
+                                 'fromchannel' : cfrom,
+                                 'exten' : exten } }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
 
@@ -3077,10 +3086,10 @@ class XivoCTICommand(BaseCommand):
         uid     = event.get('Uniqueid')
         log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, exten))
         tosend = { 'class' : 'parkcall',
-            'payload' : { 'status' : 'parkedcallgiveup',
-                'astid' : astid,
-                'channel' : channel,
-                'exten' : exten } }
+                   'payload' : { 'status' : 'parkedcallgiveup',
+                                 'astid' : astid,
+                                 'channel' : channel,
+                                 'exten' : exten } }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
 
@@ -3090,10 +3099,10 @@ class XivoCTICommand(BaseCommand):
         uid     = event.get('Uniqueid')
         log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
         tosend = { 'class' : 'parkcall',
-            'payload' : { 'status' : 'parkedcalltimeout',
-                'astid' : astid,
-                'channel' : channel,
-                'exten' : exten } }
+                   'payload' : { 'status' : 'parkedcalltimeout',
+                                 'astid' : astid,
+                                 'channel' : channel,
+                                 'exten' : exten } }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
 
@@ -3114,9 +3123,9 @@ class XivoCTICommand(BaseCommand):
             if agent_id:
                 thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                 tosend = { 'class' : 'agents',
-                    'function' : 'sendlist',
-                    'payload' : { astid : { agent_id : thisagent } }
-                    }
+                           'function' : 'sendlist',
+                           'payload' : { astid : { agent_id : thisagent } }
+                           }
                 # self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                 # astid, thisagent.get('context'))
 
@@ -3290,13 +3299,13 @@ class XivoCTICommand(BaseCommand):
                 if uinfo.get('astid') == astid and uinfo.has_key('phonenum'):
                     exten = uinfo.get('phonenum')
                     phoneref = '.'.join([agent_channel.split('/')[0].lower(), queuecontext,
-                        agent_channel.split('/')[1], exten])
+                                         agent_channel.split('/')[1], exten])
                     if phoneref in uinfo.get('techlist'):
                         peerchan = event.get('ChannelCalling')
                         uid = self.channels[astid].get(peerchan)
                         infos = {'peerchannel': peerchan,
-                            'status': 'ringing',
-                            'timestamp-dial': time.time()}
+                                 'status': 'ringing',
+                                 'timestamp-dial': time.time()}
                         if uid is not None and uid in self.uniqueids[astid]:
                             infos['calleridnum'] = self.uniqueids[astid][uid].get('calleridnum')
                             infos['calleridname'] = self.uniqueids[astid][uid].get('calleridname')
@@ -4380,9 +4389,9 @@ class XivoCTICommand(BaseCommand):
 
         if uniqueid not in self.uniqueids[astid]:
             self.uniqueids[astid][uniqueid] = { 'channel' : channel,
-                'application' : appliname,
-                'calleridname' : calleridname,
-                'calleridnum' : calleridnum }
+                                                'application' : appliname,
+                                                'calleridname' : calleridname,
+                                                'calleridnum' : calleridnum }
             self.channels[astid][channel] = uniqueid
         else:
             log.warning('%s : uid %s already in uniqueids list, updating callerid' % (astid, uniqueid))
@@ -4633,24 +4642,96 @@ class XivoCTICommand(BaseCommand):
             log.info('%s ami_peerstatus %s' % (astid, event))
         return
 
+    def __ami_rename_later__(self, astid, event):
+        event.pop('Event')
+        if 'Where' in event:
+            where = event.pop('Where')
+            if where == 'ToMasq':
+                # first Rename event
+                # clean the structure, by the way
+                self.rename_stack[astid] = {'tomasq' : event}
+            elif where == 'New':
+                # second Rename event
+                self.rename_stack[astid].update({'new' : event})
+            elif where == 'Zombie':
+                # third and last Rename event
+                self.rename_stack[astid].update({'zombie' : event})
+
+                # checking everything has come like we expected it ...
+                uniqueid1 = self.rename_stack[astid]['tomasq'].get('Uniqueid')
+                uniqueid2 = self.rename_stack[astid]['new'].get('Uniqueid')
+                uniqueid3 = self.rename_stack[astid]['zombie'].get('Uniqueid')
+                if uniqueid1 == uniqueid3:
+                    chan_old_3 = self.rename_stack[astid]['zombie'].get('Oldname')
+                    chan_new_1 = self.rename_stack[astid]['tomasq'].get('Newname')
+                    if chan_old_3 == chan_new_1:
+                        chan_old_1 = self.rename_stack[astid]['tomasq'].get('Oldname')
+                        chan_new_2 = self.rename_stack[astid]['new'].get('Newname')
+                        if chan_old_1 == chan_new_2:
+                            chan_old_2 = self.rename_stack[astid]['new'].get('Oldname')
+                            chan_new_3 = self.rename_stack[astid]['zombie'].get('Newname')
+                            if chan_old_2 + '<ZOMBIE>' == chan_new_3:
+                                log.info('%s Rename 1 : uniqueid %s channels %s => %s (tmp %s)'
+                                         % (astid, uniqueid1,
+                                            chan_old_1, chan_new_3, chan_new_1))
+                                log.info('%s Rename 2 : uniqueid %s channels %s => %s'
+                                         % (astid, uniqueid2,
+                                            chan_old_2, chan_old_1))
+                                
+                                # processing now the renamings
+                                if chan_old_2.startswith('Parked/') and chan_old_2 == 'Parked/' + chan_old_1:
+                                    if chan_old_1 + '<MASQ>' == chan_new_1:
+                                        self.uniqueids[astid][uniqueid2] = { 'channel' : chan_old_1,
+                                                                             'time-newchannel' : time.time(),
+                                                                             'dialplan_data' : {} }
+                                    else:
+                                        log.warning('%s Rename : I don t get it' % astid)
+                                else:
+                                    self.__ami_rename_now__(astid, chan_old_1, chan_new_1, uniqueid1)
+                                    self.__ami_rename_now__(astid, chan_old_2, chan_new_2, uniqueid2)
+                                    self.__ami_rename_now__(astid, chan_old_3, chan_new_3, uniqueid3)
+                            else:
+                                log.warning('%s Rename : chan_old_2 and chan_new_3 do not match modulo <ZOMBIE> : %s %s'
+                                            % (astid, chan_old_2, chan_new_3))
+                        else:
+                            log.warning('%s Rename : chan_old_1 and chan_new_2 do not match %s %s'
+                                        % (astid, chan_old_1, chan_new_2))
+                    else:
+                        log.warning('%s Rename : chan_old_3 and chan_new_1 do not match %s %s'
+                                    % (astid, chan_old_3, chan_new_1))
+                else:
+                    log.warning('%s Rename : uniqueids 1 and 3 do not match %s %s'
+                                % (astid, uniqueid1, uniqueid3))
+                    
+                # cleaning for next time
+                self.rename_stack[astid] = {}
+            else:
+                # the ChangeName could fall here
+                # we do not handle it (yet) since it looks like it is never used
+                log.warning('%s Rename : unhandled field in event %s' % (astid, event))
+        else:
+            log.warning('%s Rename : no Where field in event %s' % (astid, event))
+        return
+    
     def ami_rename(self, astid, event):
-        oldname = event.get('Oldname')
-        newname = event.get('Newname')
+        self.__ami_rename_later__(astid, event)
+        return
+    
+    def __ami_rename_now__(self, astid, oldname, newname, uid):
         # remove <MASQ> at the end. IGNORE
         if oldname[-6:] == '<MASQ>':
             oldname = oldname[:-6]
         if newname[-6:] == '<MASQ>':
             newname = newname[:-6]
-        uid = event.get('Uniqueid')
         (oldname, _uid, _clid, _clidn) = self.__translate_local_channel_uid__(astid, oldname, uid)
-
+        
         if oldname == newname:
             log.info('%s AMI Rename : nothing to do %s => %s' % (astid, oldname, newname))
             return
-
+        
         oldphoneid = self.__phoneid_from_channel__(astid, oldname)
         oldtrunkid = self.__trunkid_from_channel__(astid, oldname)
-
+        
         if uid in self.uniqueids[astid] and oldname == self.uniqueids[astid][uid]['channel']:
             self.uniqueids[astid][uid]['channel'] = newname
             del self.channels[astid][oldname]
@@ -4675,7 +4756,7 @@ class XivoCTICommand(BaseCommand):
             self.weblist['phones'][astid].ami_rename_fromtrunk(newphoneid, oldname, newname, uid, tomove)
         else:
             log.warning('%s AMI Rename : unknown configuration : %s %s %s %s'
-                % (astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid))
+                        % (astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid))
 
         self.__update_phones_trunks__(astid, oldphoneid, newphoneid, oldtrunkid, newtrunkid, 'ami_rename')
 
@@ -4688,9 +4769,8 @@ class XivoCTICommand(BaseCommand):
                         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
                         if uinfo:
                             self.__update_sheet_user__(astid, uinfo, newname)
-
         return
-
+    
     def ami_alarm(self, astid, event):
         log.warning('%s ami_alarm : %s' % (astid, event))
         return
@@ -6396,10 +6476,10 @@ class XivoCTICommand(BaseCommand):
             olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
             log.debug('%s __sheet_disconnect__ olduser=%s' % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
             tosend = { 'class': 'sheet',
-                'function': 'loseownership',
-                'astid': astid,
-                'channel': channel,
-                }
+                       'function': 'loseownership',
+                       'astid': astid,
+                       'channel': channel,
+                       }
             self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
         self.sheetmanager[astid].del_sheet(channel)
 
