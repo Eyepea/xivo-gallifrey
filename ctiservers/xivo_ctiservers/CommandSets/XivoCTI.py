@@ -1220,11 +1220,11 @@ class XivoCTICommand(BaseCommand):
 
 
     sheet_allowed_events = ['incomingqueue', 'incominggroup', 'incomingdid',
-        'agentcalled', 'agentlinked', 'agentunlinked',
-        'dial', 'link', 'unlink', 'hangup',
-        'faxreceived',
-        'callmissed', # see GG (in order to tell a user that he missed a call)
-        'localphonecalled', 'outgoing']
+                            'agentcalled', 'agentlinked', 'agentunlinked',
+                            'dial', 'link', 'unlink', 'hangup',
+                            'faxreceived',
+                            'callmissed', # see GG (in order to tell a user that he missed a call)
+                            'localphonecalled', 'outgoing']
 
     def __build_xmlqtui__(self, sheetkind, actionopt, inputvars):
         linestosend = []
@@ -2230,9 +2230,9 @@ class XivoCTICommand(BaseCommand):
             for qval in thisagent['groups_by_agent'].itervalues():
                 qval['Xivo-QueueMember-StateTime'] = time.time()
             tosend = { 'class' : 'agents',
-                'function' : 'sendlist',
-                'payload' : { astid : { agent_id : thisagent } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { agent_id : thisagent } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                 astid, thisagent.get('context'))
 
@@ -2259,9 +2259,9 @@ class XivoCTICommand(BaseCommand):
                     for qval in thisagent['groups_by_agent'].itervalues():
                         qval['Xivo-QueueMember-StateTime'] = time.time()
                     tosend = { 'class' : 'agents',
-                        'function' : 'sendlist',
-                        'payload' : { astid : { agent_id : thisagent } }
-                        }
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                         astid, thisagent.get('context'))
 
@@ -2288,9 +2288,9 @@ class XivoCTICommand(BaseCommand):
                     for qval in thisagent['groups_by_agent'].itervalues():
                         qval['Xivo-QueueMember-StateTime'] = time.time()
                     tosend = { 'class' : 'agents',
-                        'function' : 'sendlist',
-                        'payload' : { astid : { agent_id : thisagent } }
-                        }
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                         astid, thisagent.get('context'))
         return
@@ -3004,10 +3004,11 @@ class XivoCTICommand(BaseCommand):
             self.weblist['phones'][astid].ami_newchannel(phoneid, uniqueid, channel)
         return
 
+
     def ami_parkedcall(self, astid, event):
         channel = event.get('Channel')
         cfrom   = event.get('From')
-        exten   = event.get('Exten')
+        parkingbay = event.get('Exten')
         timeout = event.get('Timeout')
         uid     = event.get('Uniqueid')
         uidfrom = event.get('UniqueidFrom') or event.get('FromUniqueid')
@@ -3016,23 +3017,26 @@ class XivoCTICommand(BaseCommand):
         fromcalleridnum = event.get('FromCallerIDNum')
         fromcalleridname = event.get('FromCallerIDName')
 
-        log.info('%s PARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten, calleridnum, calleridname))
+        log.info('%s PARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, parkingbay, calleridnum, calleridname))
         if uid in self.uniqueids[astid]:
             ctuid = self.uniqueids[astid][uid]
-            ctuid['parkexten-callback'] = exten
+            ctuid['parkexten-callback'] = parkingbay
             phoneid = self.__phoneid_from_channel__(astid, channel)
-            self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid, exten)
+            self.weblist['phones'][astid].ami_parkedcall(phoneid, uid, ctuid, parkingbay)
             tosend = self.weblist['phones'][astid].status(phoneid)
             tosend['astid'] = astid
             # TODO check context ???
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
-        self.parkedcalls[astid][channel] = event
+        if parkingbay not in self.parkedcalls[astid]:
+            self.parkedcalls[astid][parkingbay] = event
+        else:
+            log.warning('%s ami_parkedcall : a call is alreaky parked in parking bay %s' % (astid, parkingbay))
         # TODO check context ???
         tosend = { 'class' : 'parkcall',
-                   'payload' : { 'status' : 'parkedcall',
-                                 'astid' : astid,
-                                 'channel' : channel,
-                                 'exten' : exten,
+                   'eventkind' : 'parkedcall',
+                   'astid' : astid,
+                   'parkingbay' : parkingbay,
+                   'payload' : { 'channel' : channel,
                                  'fromchannel' : cfrom,
                                  'timeout' : timeout,
                                  'calleridnum' : calleridnum,
@@ -3046,14 +3050,14 @@ class XivoCTICommand(BaseCommand):
     def ami_unparkedcall(self, astid, event):
         channel = event.get('Channel')
         cfrom   = event.get('From')
-        exten   = event.get('Exten')
+        parkingbay = event.get('Exten')
         uid     = event.get('Uniqueid')
         uidfrom = event.get('UniqueidFrom')
         callerid = event.get('CallerID')
         calleridname = event.get('CallerIDName')
         (channel, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, channel, uid, None, None)
         (cfrom, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, cfrom, uidfrom, None, None)
-        log.info('%s UNPARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, exten, callerid, calleridname))
+        log.info('%s UNPARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, parkingbay, callerid, calleridname))
 
         phoneidsrc = self.__phoneid_from_channel__(astid, cfrom)
         uinfo = self.__userinfo_from_phoneid__(astid, phoneidsrc)
@@ -3072,40 +3076,39 @@ class XivoCTICommand(BaseCommand):
             self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
         # a subsequent 'link' AMI event should make the new status transmitted
         tosend = { 'class' : 'parkcall',
-                   'payload' : { 'status' : 'unparkedcall',
-                                 'astid' : astid,
-                                 'channel' : channel,
-                                 'fromchannel' : cfrom,
-                                 'exten' : exten } }
+                   'eventkind' : 'unparkedcall',
+                   'astid' : astid,
+                   'parkingbay' : parkingbay,
+                   'payload' : { 'channel' : channel,
+                                 'fromchannel' : cfrom } }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
 
     def ami_parkedcallgiveup(self, astid, event):
         channel = event.get('Channel')
-        exten   = event.get('Exten')
+        parkingbay = event.get('Exten')
         uid     = event.get('Uniqueid')
-        log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, exten))
+        log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, parkingbay))
         tosend = { 'class' : 'parkcall',
-                   'payload' : { 'status' : 'parkedcallgiveup',
-                                 'astid' : astid,
-                                 'channel' : channel,
-                                 'exten' : exten } }
+                   'eventkind' : 'parkedcallgiveup',
+                   'astid' : astid,
+                   'parkingbay' : parkingbay,
+                   'payload' : { 'channel' : channel } }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
 
     def ami_parkedcalltimeout(self, astid, event):
         channel = event.get('Channel')
-        exten   = event.get('Exten')
+        parkingbay = event.get('Exten')
         uid     = event.get('Uniqueid')
-        log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, exten))
+        log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, parkingbay))
         tosend = { 'class' : 'parkcall',
-                   'payload' : { 'status' : 'parkedcalltimeout',
-                                 'astid' : astid,
-                                 'channel' : channel,
-                                 'exten' : exten } }
+                   'eventkind' : 'parkedcalltimeout',
+                   'astid' : astid,
+                   'parkingbay' : parkingbay,
+                   'payload' : { 'channel' : channel } }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
-
 
 
     # Agent Login's and Logoff's
@@ -3240,9 +3243,9 @@ class XivoCTICommand(BaseCommand):
                 if 'Xivo-AgentLoginTime' in thisagent['agentstats']:
                     del thisagent['agentstats']['Xivo-AgentLoginTime']
                 tosend = { 'class' : 'agents',
-                    'function' : 'sendlist',
-                    'payload' : { astid : { agent_id : thisagent } }
-                    }
+                           'function' : 'sendlist',
+                           'payload' : { astid : { agent_id : thisagent } }
+                           }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                     astid, thisagent.get('context'))
 
@@ -3287,9 +3290,9 @@ class XivoCTICommand(BaseCommand):
                     thisagent['agentstats']['Xivo-ReceivedCalls'] += 1
                     thisagent['agentstats']['Xivo-LostCalls'] += 1
                     tosend = { 'class' : 'agents',
-                        'function' : 'sendlist',
-                        'payload' : { astid : { agent_id : thisagent } }
-                        }
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                         astid, thisagent.get('context'))
                     # self.weblist['agents'][astid].keeplist[agent_id]['agentstats'] # XXX : count calls ++
@@ -5308,8 +5311,8 @@ class XivoCTICommand(BaseCommand):
             if self.capas[capaid].match_funcs(ucapa, 'agents'):
                 fullstat = self.__parting_astid_context__(userinfo, 'groups')
         tosend = { 'class' : ccomm,
-            'function' : 'sendlist',
-            'payload' : fullstat }
+                   'function' : 'sendlist',
+                   'payload' : fullstat }
         tsencoded = self.__cjson_encode__(tosend)
         log.info('__getlist__ : sendlist size is %d for %s' % (len(tsencoded), ccomm))
         return tsencoded
@@ -5325,7 +5328,7 @@ class XivoCTICommand(BaseCommand):
                         fullstat[astid][xid] = xvalue
         except Exception:
             log.exception('(__parting_astid_context__) %s/%s %s'
-                % (userinfo.get('astid'), userinfo.get('xivo_userid'), listname))
+                          % (userinfo.get('astid'), userinfo.get('xivo_userid'), listname))
         return fullstat
 
     # \brief Builds the features_get reply.
@@ -5352,7 +5355,7 @@ class XivoCTICommand(BaseCommand):
                     repstr[key] = {'enabled' : bool(results[0][0])}
                 else:
                     log.warning('%s __build_features_get__ : nobody matches (%s %s)'
-                        % (astid, key, params))
+                                % (astid, key, params))
             except Exception:
                 log.exception('features_get(bool) id=%s key=%s' % (userid, key))
         for key in ['unc', 'busy', 'rna']:
@@ -5374,9 +5377,9 @@ class XivoCTICommand(BaseCommand):
             except Exception:
                 log.exception('features_get(str) id=%s key=%s' % (userid, key))
         tosend = { 'class' : 'features',
-            'function' : 'get',
-            'userid' : userid,
-            'payload' : repstr }
+                   'function' : 'get',
+                   'userid' : userid,
+                   'payload' : repstr }
         return self.__cjson_encode__(tosend)
 
 
