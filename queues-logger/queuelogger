@@ -6,6 +6,9 @@ __date__      = '$Date$'
 
 import sys
 import time
+import urllib2
+import cjson
+
 from optparse import OptionParser
 
 from xivo import daemonize
@@ -34,6 +37,10 @@ def parse_cmd_line():
                       help="an anysql uri", metavar="",
                       default="sqlite3:/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db")
 
+    parser.add_option("-w", "--web-config-uri", dest="webconfig_uri", type="string",
+                      help="specify a xivo daemon config URI to use the same database URI",
+                      metavar="https://loc...", default="")
+
     parser.add_option("-i", "--ip", dest="ip", type="string",
                       help="monitor AMI ip", metavar="127.0.0.1",
                       default="127.0.0.1")
@@ -41,7 +48,7 @@ def parse_cmd_line():
     parser.add_option("-p", "--port", dest="port", type="int",
                       help="monitor AMI port", metavar="5038", default=5038)
 
-    parser.add_option("-l", "--userlogin", dest="user", type="string",
+    parser.add_option("-l", "--ami-user-login", dest="user", type="string",
                       help="AMI user for login", metavar="xivouser",
                       default="xivouser")
 
@@ -49,14 +56,9 @@ def parse_cmd_line():
                       help="AMI user password", metavar="xivouser",
                       default="xivouser")
 
-    parser.add_option("-d", "--debug",
-                      dest = "debug",
-                      action = "store_true",
+    parser.add_option("-d", "--debug", dest = "debug", action = "store_true",
                       help = "debug mode",
                       default = False)
-
-    #parser.add_option("-c", "--config", dest="config_file", type="string",
-    #                  help="specify a config file'", metavar="FILE", default=None)
 
     (options, args) = parser.parse_args()
 
@@ -67,6 +69,13 @@ def parse_cmd_line():
 def main():
 # (
     options = parse_cmd_line()
+
+    # fetch the database URI on a xivo_daemon JSON config
+    if options.webconfig_uri != "":
+        req = urllib2.Request(url=options.webconfig_uri)
+        config_file = cjson.decode(urllib2.urlopen(req).read())
+        options.anysql_uri = config_file["main"]["asterisk_queuestat_db"]
+        
 
     if not options.debug:
         daemonize.daemonize()
