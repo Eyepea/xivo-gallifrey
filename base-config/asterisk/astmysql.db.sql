@@ -358,7 +358,7 @@ INSERT INTO `ctipresences` VALUES(1,'xivo','De base non supprimable',0);
 DROP TABLE IF EXISTS `ctiprofiles`;
 CREATE TABLE `ctiprofiles` (
  `id` int(10) unsigned auto_increment,
- `xlets` varchar(255),
+ `xlets` text,
  `funcs` varchar(255),
  `maxgui` integer,
  `appliname` varchar(255),

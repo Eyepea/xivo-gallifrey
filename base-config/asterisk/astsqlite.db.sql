@@ -355,7 +355,7 @@ INSERT INTO ctipresences VALUES(1,'xivo','De base non supprimable',0);
 DROP TABLE ctiprofiles;
 CREATE TABLE ctiprofiles (
  id integer unsigned,
- xlets varchar(255),
+ xlets text,
  funcs varchar(255),
  maxgui integer,
  appliname varchar(255),
