@@ -336,7 +336,7 @@ def asterisk_configuration(dburi, dbinfo, dbparams):
 
     if dburi[0] == 'mysql':
         if dburi[2]:
-            if dburi[2] == '/':
+            if dburi[2][0] == '/':
                 dbname = dburi[2][1:]
             else:
                 dbname = dburi[2]
