@@ -47,6 +47,7 @@ class CommonConf(jsoncore.JsonCore):
 
         self.file       = options.configuration.get('commonconf', 'commonconf_file')
         self.cmd        = options.configuration.get('commonconf', 'commonconf_cmd')
+        self.monit      = options.configuration.get('commonconf', 'commonconf_monit')
    
     SECTIONS  = {
         '1. VoIP'       : ['xivo.voip.ifaces', 'xivo.voip.vlan.id'],
@@ -81,6 +82,15 @@ class CommonConf(jsoncore.JsonCore):
             ret = p.wait()
             output = p.stdout.read()
             self.log.debug("commonconf apply: %d" % ret)
+
+            if ret != 0:
+                raise HttpReqError(500, output)
+
+            # monit configuration also need to be updated (if emails changed)
+            p = subprocess.Popen([self.monit], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            ret = p.wait()
+            output = p.stdout.read()
+            self.log.debug("monit apply: %d" % ret)
 
             if ret != 0:
                 raise HttpReqError(500, output)
