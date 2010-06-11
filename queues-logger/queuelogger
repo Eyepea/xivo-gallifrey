@@ -38,7 +38,8 @@ def parse_cmd_line():
                       default="sqlite3:/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db")
 
     parser.add_option("-w", "--web-config-uri", dest="webconfig_uri", type="string",
-                      help="specify a xivo daemon config URI to use the same database URI",
+                      help="specify a queuelogger webconfig URI to be sure to use"
+                           " the same database than the one used by the xivo_daemon",
                       metavar="https://loc...", default="")
 
     parser.add_option("-i", "--ip", dest="ip", type="string",
@@ -70,11 +71,13 @@ def main():
 # (
     options = parse_cmd_line()
 
-    # fetch the database URI on a xivo_daemon JSON config
+    # fetch the database URI on a queue_logger JSON config
+    # normally something like
+    # https://localhost/service/ipbx/json.php/private/queuelogger/configuration
     if options.webconfig_uri != "":
         req = urllib2.Request(url=options.webconfig_uri)
         config_file = cjson.decode(urllib2.urlopen(req).read())
-        options.anysql_uri = config_file["main"]["asterisk_queuestat_db"]
+        options.anysql_uri = config_file["db_uri"]
         
 
     if not options.debug:
