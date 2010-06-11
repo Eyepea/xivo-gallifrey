@@ -88,16 +88,16 @@ class Config:
                     for profile in json['xivocti']['profiles']:
                         self.xivoconf.set('xivocti', profile + "-funcs", ','.join(json['xivocti']['profiles'][profile]['funcs']))
                         xletlist = ""
-                        for xlet_attr in json['xivocti']['profiles'][profile]['xlets']:
-                            if 'N/A' in xlet_attr:
-                                xlet_attr.remove('N/A')
-                            if ('tab' or 'tabber') in xlet_attr:
-                                del xlet_attr[2]
-                            if xlet_attr[1] == "grid" :
-                                del xlet_attr[2]
-                            xletlist += '-'.join(xlet_attr) + ","
-                        
-                        xletlist = xletlist[:-1]
+                        if json['xivocti']['profiles'][profile]['xlets']:
+                            for xlet_attr in json['xivocti']['profiles'][profile]['xlets']:
+                                if 'N/A' in xlet_attr:
+                                    xlet_attr.remove('N/A')
+                                if ('tab' or 'tabber') in xlet_attr:
+                                    del xlet_attr[2]
+                                if xlet_attr[1] == "grid" :
+                                    del xlet_attr[2]
+                                xletlist += '-'.join(xlet_attr) + ","
+                            xletlist = xletlist[:-1]
                         self.xivoconf.set('xivocti', profile + "-xlets", xletlist)
                         self.xivoconf.set('xivocti', profile + "-funcs", ','.join(json['xivocti']['profiles'][profile]['funcs']))
                         self.xivoconf.set('xivocti', profile + "-appliname",json['xivocti']['profiles'][profile]['appliname'] )
