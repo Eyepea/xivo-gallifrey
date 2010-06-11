@@ -49,6 +49,7 @@ switch($act)
 		// 1. xivo
 		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'cti.ini');
 		$db_cti = $config['general']['datastorage'];
+		$db_queuelogger = $config['queuelogger']['datastorage'];
 
 		// 2. asterisk
 		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'ipbx.ini');
@@ -273,7 +274,7 @@ switch($act)
 		$out['main']['contextlist'] = $ctxlist;
 		$out['main']['userlists'] = array();
 		$out['main']['parting_astid_context'] = array();
-		$out['main']['asterisk_queuestat_db'] = 'sqlite3:/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db';
+		$out['main']['asterisk_queuestat_db'] = $db_queuelogger;
 		if($load_inf[0]['parting_astid_context'] != "")
 			$out['main']['parting_astid_context'] = explode(",", $load_inf[0]['parting_astid_context']);
 

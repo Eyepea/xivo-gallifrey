@@ -173,6 +173,8 @@ $array['cti/sheetevents']        = 'cti/index.php/sheetevents/';
 $array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';
 $array['service/ipbx/json/private/ctiserver/configuration']    = 'service/ipbx/json.php/private/ctiserver/configuration/';
 
+$array['service/ipbx/json/private/ctiserver/queuelogger']    = 'service/ipbx/json.php/private/ctiserver/queuelogger/';
+
 
 // munin stats
 $array['graphs'] = 'graphs/index.php';

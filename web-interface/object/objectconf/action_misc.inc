@@ -90,6 +90,10 @@ $array['service/ipbx/asterisk/web_services/private/ctiserver/configuration'] = a
 	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/configuration',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['service/ipbx/asterisk/web_services/private/ctiserver/queuelogger'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/ctiserver/queuelogger',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 
 $array['service/ipbx/asterisk/web_services/private/call_center/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_center/agents',
