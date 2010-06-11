@@ -73,7 +73,7 @@ from xivo_ctiservers.client_connection import ClientConnection
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 waiting_actionid = {}
 waiting_actionid_timer = {}
-dumpami = False
+dumpami = None
 
 LOGDAEMONNAME = 'cti-server'
 try:
@@ -275,7 +275,8 @@ class manage_connection:
         global log
         requester = '%s:%d' % connid.getpeername()
         multimsg = msg.replace('\r', '').split(sep)
-        for usefulmsg in multimsg:
+        for iusefulmsg in multimsg:
+            usefulmsg = iusefulmsg.strip()
             if len(usefulmsg) == 0:
                 break
             try:
@@ -329,10 +330,17 @@ class manage_connection:
                                time_uptime)
                     connid.sendall(reply + '\n')
                     # connid.sendall('server capabilities = %s\n' % (','.join()))
-                elif usefulmsg == 'dumpami enable':
-                    dumpami = True
-                elif usefulmsg == 'dumpami disable':
-                    dumpami = False
+                elif usefulmsg.startswith('dumpami'):
+                    command_args = usefulmsg.split()
+                    if len(command_args) > 1:
+                        action = command_args[1]
+                        if action == 'enable':
+                            if len(command_args) > 2:
+                                dumpami = command_args[2].split(',')
+                            else:
+                                dumpami = 'all'
+                        elif action == 'disable':
+                            dumpami = None
                 elif usefulmsg.startswith('loglevel '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -723,9 +731,10 @@ class manage_connection:
                 todisp = this_event
                 if 'Event' in todisp:
                     efn = todisp.pop('Event')
-                    for ik, iv in daemon.fdlist_established.iteritems():
-                        if iv == 'INFO':
-                            ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
+                    if dumpami == 'all' or efn in dumpami:
+                        for ik, iv in daemon.fdlist_established.iteritems():
+                            if iv == 'INFO':
+                                ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
             if evfunction == 'Reload':
                 log.warning('%s AMI:Reload %s' % (astid, this_event))
                 daemon.commandclass.ami_reload(astid, this_event)
