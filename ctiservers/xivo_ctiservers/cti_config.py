@@ -63,9 +63,9 @@ class Config:
                                 self.xivoconf.set('general', k, ' : '.join(v))
                             else:
                                 self.xivoconf.set('general', k, ','.join(v))
-                        else:
+                        elif v is not None:
                             self.xivoconf.set('general', k, v)
-
+                            
                     urllist_params_list = ['urllist_phonebook', 'urllist_voicemail', 'urllist_trunks',
                                            'urllist_agents', 'urllist_agents', 'urllist_queues',
                                            'urllist_phones', 'urllist_incomingcalls', 'urllist_groups',
@@ -82,7 +82,7 @@ class Config:
                                     self.xivoconf.set(asterisk_server,
                                                       asterisk_config,
                                                       json[asterisk_server][asterisk_config].replace("\\/","/"))
-
+                                    
                     debug_add_section(self.xivoconf, 'xivocti')
                     self.xivoconf.set('xivocti','allowedxlets', "file:///etc/pf-xivo/ctiservers/allowedxlets.json")
                     for profile in json['xivocti']['profiles']:

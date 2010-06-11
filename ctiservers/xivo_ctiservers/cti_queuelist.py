@@ -227,8 +227,12 @@ class QueueList(AnyList):
             'urloptions' : (1, 5, True)}
         AnyList.__init__(self, newurls)
 
-        self.stats = QueueStats(misc["conf"].xivoconf.get('general','asterisk_queuestat_db'));
-
+        try:
+            self.stats = QueueStats(misc["conf"].xivoconf.get('general','asterisk_queuestat_db'));
+        except Exception, exc:
+            log.exception('could not access queuestats db %s' % exc)
+            self.stats = None
+            
         return
     
     queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
@@ -354,6 +358,7 @@ class QueueList(AnyList):
 
     def get_queuesstats(self, param):
         payload = {}
-        for queue, param in param.iteritems():
-            payload[queue] = self.stats.get_queue_stats(self.keeplist[queue]['queuename'], param)
+        if self.stats:
+            for queue, param in param.iteritems():
+                payload[queue] = self.stats.get_queue_stats(self.keeplist[queue]['queuename'], param)
         return payload
