@@ -89,7 +89,7 @@ class CommonConf(jsoncore.JsonCore):
             # monit configuration also need to be updated (if emails changed)
             p = subprocess.Popen([self.monit], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             ret = p.wait()
-            output = p.stdout.read()
+            output += '\n' + p.stdout.read()
             self.log.debug("monit apply: %d" % ret)
 
             if ret != 0:
