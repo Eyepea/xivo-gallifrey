@@ -102,7 +102,8 @@ class TimeoutingTelnet(telnetlib.Telnet):
 class Thomson(PhoneVendorMixin):
 
     THOMSON_MODELS = (('2022s', 'ST2022S'),
-                      ('2030s', 'ST2030S'))
+                      ('2030s', 'ST2030S'),
+                      ('30s', 'TB30S'))
 
     THOMSON_USER = "admin"          # XXX
     THOMSON_PASSWD = "superpass"    # XXX
