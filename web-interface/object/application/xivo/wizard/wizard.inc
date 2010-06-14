@@ -1421,6 +1421,18 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 		}
 
+		return true;
+	}
+	
+	function _prepare_netiface()
+	{
+		if(dwho_issa('netiface',$this->_wizsess) === false
+		|| isset($this->_wizsess['netiface']['name']) === false)
+			return(false);
+
+		$netiface = $this->_wizsess['netiface'];
+		$name = $netiface['name'];
+
 		// save to database
 		$this->_load_xivo_dso();
 		
@@ -1451,18 +1463,49 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			'gateway'     => $netiface['gateway'],
 			'mtu'         => 1500,
 			'description' => 'wizard configuration'
-	);
+		);
 
-	if(($data = $module->chk_values($data)) === false)
-		return false;
+		if(($data = $module->chk_values($data)) === false)
+			return false;
 
-	if($module->save($data) === false)
-		return false;
+		if($module->save($data) === false)
+			return false;
 
-	return(true);
+		return(true);
 	}
 
-	function save_step_validate()
+	function send_redirect($tpl)
+	{
+		$uri = $this->discover_finish_uri();
+		$tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
+
+
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
+<head>
+	<title><?= dwho_htmlsc($_TPL->bbf('page_title',php_uname('n'))); ?></title>
+	<script> 
+		function redirect()
+		{
+			window.location = "<?= $url->href($uri, $uri, true, null, true, false); ?>";
+		}
+		
+		setInterval("redirect()", 10000);
+	</script>
+</head>
+<body>
+	<p><?=nl2br($_TPL->bbf('redirect_message',$seconds));?></p>
+</body>
+</html>
+<?php
+
+		ob_flush();
+		flush();
+		ob_end_flush();
+	}
+
+	function save_step_validate($data, $tpl)
 	{
 		if(isset($this->_wizsess['commit']) === false)
 			$this->_wizsess['commit'] = array();
@@ -1545,7 +1588,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if(array_key_exists('netiface',$ref_components) === false
 		|| $ref_components['netiface'] === false)
-			$ref_components['netiface'] = $this->_commit_netiface();
+			$ref_components['netiface'] = $this->_prepare_netiface();
 
 		$this->_wizsess['commit']['step']['validate'] = true;
 
@@ -1557,7 +1600,13 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 		if($commonconf->generate() === false)
 			return(false);
-		if($commonconf->apply() === false)
+
+		//page redirection must be sent to client BEFORE changing server ip address
+		$this->send_redirect($tpl);
+
+
+		if($this->_commit_netiface() === false
+		|| $commonconf->apply()      === false)
 			return(false);
 
 		// restart provisioning service
@@ -1568,7 +1617,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		return(true);
 	}
 
-	function save($data)
+	function save($data, $tpl)
 	{
 		$step = $this->get_current_step();
 
@@ -1577,7 +1626,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		$save_step_function_name = 'save_step_'.$step;
 
-		return($this->$save_step_function_name($data));
+		return($this->$save_step_function_name($data, $tpl));
 	}
 }
 

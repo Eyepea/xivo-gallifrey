@@ -44,7 +44,7 @@ if($_QRY->get('step') === $appwizard->get_current_step())
 	&& $verify === false)
 	{
 		$trysave = true;
-		$ressave = $appwizard->save($_QR);
+		$ressave = $appwizard->save($_QR, $_TPL);
 	}
 }
 
