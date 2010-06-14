@@ -212,6 +212,9 @@ if do_apply ${BASE_RESULT_DIR} phones-config-thomson; then
     if ls /tftpboot/ST*.txt 2>/dev/null 1>/dev/null; then
       sed -ri "s/^config_sn=.*\$/config_sn=${SERIAL}/" /tftpboot/ST*.txt
     fi
+    if ls /tftpboot/TB*.txt 2>/dev/null 1>/dev/null; then
+      sed -ri "s/^config_sn=.*\$/config_sn=${SERIAL}/" /tftpboot/TB*.txt
+    fi
   else
     echo "DEBUG: would replace old configuration files: ${RM_LIST}"
     echo "DEBUG: would update all Thomson phones serials"

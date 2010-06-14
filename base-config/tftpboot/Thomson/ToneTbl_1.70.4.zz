@@ -1,0 +1,329 @@
+<ThomsonToneTable>
+    <Country-TableName>UNITED STATES</Country-TableName>
+    <Busy>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>480</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Freq-2>620</Freq-2>
+            <Amp-2>-240</Amp-2>
+            <Duration>500</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>500</Duration>
+        </Tone-Element-2>
+
+    </Busy>
+
+    <Ring-Back>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>400</Freq-1>
+            <Amp-1>-180</Amp-1>
+            <Freq-2>480</Freq-2>
+            <Amp-2>-180</Amp-2>
+            <Duration>2000</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>4000</Duration>
+        </Tone-Element-2>
+
+    </Ring-Back>
+
+    <Congestion>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>480</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Freq-2>620</Freq-2>
+            <Amp-2>-240</Amp-2>
+            <Duration>250</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>250</Duration>
+        </Tone-Element-2>
+
+    </Congestion>
+
+    <Dial-Tone>
+        <Num-of-Element>1</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>350</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Freq-2>440</Freq-2>
+            <Amp-2>-130</Amp-2>
+            <Duration>Forever</Duration>
+        </Tone-Element-1>
+
+    </Dial-Tone>
+
+    <Dial-Tone2>
+        <Num-of-Element>1</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>350</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Freq-2>440</Freq-2>
+            <Amp-2>-130</Amp-2>
+            <Duration>Forever</Duration>
+        </Tone-Element-1>
+
+    </Dial-Tone2>
+
+    <out-of-Service>
+        <Num-of-Element>4</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>950</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>330</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>1400</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>330</Duration>
+        </Tone-Element-2>
+
+        <Tone-Element-3>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>1800</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>330</Duration>
+        </Tone-Element-3>
+
+        <Tone-Element-4>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>3000</Duration>
+        </Tone-Element-4>
+
+    </out-of-Service>
+
+    <Address-Ack>
+        <Num-of-Element>4</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>600</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Duration>125</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>125</Duration>
+        </Tone-Element-2>
+
+        <Tone-Element-3>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>600</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Duration>125</Duration>
+        </Tone-Element-3>
+
+        <Tone-Element-4>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>Forever</Duration>
+        </Tone-Element-4>
+
+    </Address-Ack>
+
+    <Disconnect>
+        <Num-of-Element>4</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>480</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Freq-2>620</Freq-2>
+            <Amp-2>-240</Amp-2>
+            <Duration>250</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>250</Duration>
+        </Tone-Element-2>
+
+        <Tone-Element-3>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>480</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Freq-2>620</Freq-2>
+            <Amp-2>-240</Amp-2>
+            <Duration>250</Duration>
+        </Tone-Element-3>
+
+        <Tone-Element-4>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>Forever</Duration>
+        </Tone-Element-4>
+
+    </Disconnect>
+
+    <Offhook-Notice>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>4</Num-of-Tones>
+            <Freq-1>1400</Freq-1>
+            <Amp-1>-280</Amp-1>
+            <Freq-2>2060</Freq-2>
+            <Amp-2>-280</Amp-2>
+            <Freq-3>2450</Freq-3>
+            <Amp-3>-280</Amp-3>
+            <Freq-4>2600</Freq-4>
+            <Amp-4>-280</Amp-4>
+            <Duration>100</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>100</Duration>
+        </Tone-Element-2>
+
+    </Offhook-Notice>
+
+    <Offhook-Alert>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>4</Num-of-Tones>
+            <Freq-1>1400</Freq-1>
+            <Amp-1>-280</Amp-1>
+            <Freq-2>2060</Freq-2>
+            <Amp-2>-280</Amp-2>
+            <Freq-3>2450</Freq-3>
+            <Amp-3>-280</Amp-3>
+            <Freq-4>2600</Freq-4>
+            <Amp-4>-280</Amp-4>
+            <Duration>100</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>100</Duration>
+        </Tone-Element-2>
+
+    </Offhook-Alert>
+
+    <Dial-Tone3>
+        <Num-of-Element>1</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>350</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Freq-2>440</Freq-2>
+            <Amp-2>-130</Amp-2>
+            <Duration>1000</Duration>
+        </Tone-Element-1>
+
+    </Dial-Tone3>
+
+    <OFF-ON-Dial-Tone>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>350</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Freq-2>440</Freq-2>
+            <Amp-2>-130</Amp-2>
+            <Duration>100</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>100</Duration>
+        </Tone-Element-2>
+
+    </OFF-ON-Dial-Tone>
+
+    <Call-Waiting-Tone>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>440</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>300</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>10000</Duration>
+        </Tone-Element-2>
+
+    </Call-Waiting-Tone>
+
+    <Call-Waiting-Tone-2>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>440</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>300</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>Forever</Duration>
+        </Tone-Element-2>
+
+    </Call-Waiting-Tone-2>
+
+    <Call-Waiting-Tone-3>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>440</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>300</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>Forever</Duration>
+        </Tone-Element-2>
+
+    </Call-Waiting-Tone-3>
+
+    <Call-Waiting-Tone-4>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>1</Num-of-Tones>
+            <Freq-1>440</Freq-1>
+            <Amp-1>-130</Amp-1>
+            <Duration>300</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>Forever</Duration>
+        </Tone-Element-2>
+
+    </Call-Waiting-Tone-4>
+
+    <Reorder-Tone>
+        <Num-of-Element>2</Num-of-Element>
+        <Tone-Element-1>
+            <Num-of-Tones>2</Num-of-Tones>
+            <Freq-1>480</Freq-1>
+            <Amp-1>-240</Amp-1>
+            <Freq-2>620</Freq-2>
+            <Amp-2>-240</Amp-2>
+            <Duration>250</Duration>
+        </Tone-Element-1>
+
+        <Tone-Element-2>
+            <Num-of-Tones>0</Num-of-Tones>
+            <Duration>250</Duration>
+        </Tone-Element-2>
+
+    </Reorder-Tone>
+</ThomsonToneTable>
