@@ -281,7 +281,7 @@ CREATE TABLE `ctidirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectories` VALUES(4,'xivodir','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["{db-fullname}"]','','','Répertoire XiVO Externe',1);
+INSERT INTO `ctidirectories` VALUES(4,'xivodir','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["phonebook.firstname"]','["phonebook.lastname"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
 INSERT INTO `ctidirectories` VALUES(5,'internal','','','','','','["{internal-fullname}"]','','','','','','Répertoire XiVO Interne',1);
 
 
