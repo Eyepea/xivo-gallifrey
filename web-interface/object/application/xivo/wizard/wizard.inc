@@ -1477,25 +1477,25 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 	function send_redirect($tpl)
 	{
 		$uri = $this->discover_finish_uri();
+		$tpl->load_i18n_file('tpl/tpl.i18n', 'global');
 		$tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
-
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
 <head>
-	<title><?= dwho_htmlsc($_TPL->bbf('page_title',php_uname('n'))); ?></title>
+	<title><?= dwho_htmlsc($tpl->bbf('page_title',php_uname('n'))); ?></title>
 	<script> 
 		function redirect()
 		{
-			window.location = "<?= $url->href($uri, $uri, true, null, true, false); ?>";
+			window.location = "<?= $uri ?>";
 		}
 		
 		setInterval("redirect()", 10000);
 	</script>
 </head>
 <body>
-	<p><?=nl2br($_TPL->bbf('redirect_message',$seconds));?></p>
+	<p><?=nl2br($tpl->bbf('redirect_message',$seconds));?></p>
 </body>
 </html>
 <?php
