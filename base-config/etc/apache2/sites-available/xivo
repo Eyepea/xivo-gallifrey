@@ -52,6 +52,8 @@ NameVirtualHost *:80
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2030\ hw[0-9]\ fw2\.
 	# XXX Thomson phones ST2022 fw4.xx without SSL certificate
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ ST2022\ hw[0-9]\ fw4\.
+	# XXX Thomson phones TB30 fw1.xx without SSL certificate
+	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ TB30\ hw[0-9]\ fw1\.
 	# XXX Yealink phones don't support SSL
 	RewriteCond %{HTTP_USER_AGENT} !^yealink
 	# Used for stats/monitoring
