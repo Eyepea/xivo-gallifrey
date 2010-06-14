@@ -103,7 +103,7 @@ class Thomson(PhoneVendorMixin):
 
     THOMSON_MODELS = (('2022s', 'ST2022S'),
                       ('2030s', 'ST2030S'),
-                      ('30s', 'TB30S'))
+                      ('tb30s', 'TB30S'))
 
     THOMSON_USER = "admin"          # XXX
     THOMSON_PASSWD = "superpass"    # XXX
@@ -118,9 +118,9 @@ class Thomson(PhoneVendorMixin):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
         cls.THOMSON_COMMON_DIR = os.path.join(cls.TFTPROOT, "Thomson/")
-        cls.THOMSON_COMMON_INF = os.path.join(cls.THOMSON_COMMON_DIR, "ST") # + "2030S_common"
-        cls.THOMSON_SPEC_TXT_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "ST") # + "2030S_template.txt"
-        cls.THOMSON_SPEC_TXT_BASENAME = os.path.join(cls.TFTPROOT, "ST") # + "2030S_template.txt"
+        cls.THOMSON_COMMON_INF = cls.THOMSON_COMMON_DIR # + "2030S_common"
+        cls.THOMSON_SPEC_TXT_TEMPLATE = cls.TEMPLATES_DIR # + "2030S_template.txt"
+        cls.THOMSON_SPEC_TXT_BASENAME = cls.TFTPROOT # + "2030S_template.txt"
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
@@ -177,10 +177,13 @@ class Thomson(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", txt_template_specific_path)
             txt_template_file = open(txt_template_specific_path)
         except IOError, (errno, errstr):
-            txt_template_common_path = os.path.join(self.THOMSON_COMMON_DIR, "templates", "ST" + model + "_template.txt")
+            phonetype = "ST"
+            if self.phone['model'] == "tb30s":
+		phonetype = "TB"
+            txt_template_common_path = os.path.join(self.THOMSON_COMMON_DIR, "templates", phonetype + model + "_template.txt")
 
             if not os.access(txt_template_common_path, os.R_OK):
-                txt_template_common_path = self.THOMSON_SPEC_TXT_TEMPLATE + model + "_template.txt"
+                txt_template_common_path = self.THOMSON_SPEC_TXT_TEMPLATE + phonetype + model + "_template.txt"
 
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       txt_template_specific_path,
@@ -191,7 +194,7 @@ class Thomson(PhoneVendorMixin):
 
         txt_template_lines = txt_template_file.readlines()
         txt_template_file.close()
-        tmp_filename = self.THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".txt.tmp"
+        tmp_filename = self.THOMSON_SPEC_TXT_BASENAME + phonetype + model + "_" + macaddr + ".txt.tmp"
         txt_filename = tmp_filename[:-4]
 
         provinfo['subscribemwi'] = str(int(bool(int(provinfo.get('subscribemwi', 0)))))
@@ -220,13 +223,13 @@ class Thomson(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, txt_filename) # atomically update the file
-        inf_filename = self.THOMSON_SPEC_TXT_BASENAME + model + "_" + macaddr + ".inf"
+        inf_filename = self.THOMSON_SPEC_TXT_BASENAME + phonetype + model + "_" + macaddr + ".inf"
         try:
             os.lstat(inf_filename)
             os.unlink(inf_filename)
         except Exception: # XXX: OsError?
             pass
-        os.symlink(self.THOMSON_COMMON_INF + model, inf_filename)
+        os.symlink(self.THOMSON_COMMON_INF + phonetype + model, inf_filename)
 
     # Daemon entry points for configuration generation and issuing commands
 
