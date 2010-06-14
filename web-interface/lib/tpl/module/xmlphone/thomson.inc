@@ -41,7 +41,7 @@ class dwho_tpl_xmlphone_thomson extends dwho_tpl_xmlphone_abstract
 	function get_model()
 	{
 		if(isset($_SERVER['HTTP_USER_AGENT']) === false
-		|| preg_match('/^THOMSON (ST20(?:22|30)) /',
+		|| preg_match('/^THOMSON (ST2022|ST2030|TB30) /',
 			      $_SERVER['HTTP_USER_AGENT'],
 			      $match) !== 1)
 			return(null);
