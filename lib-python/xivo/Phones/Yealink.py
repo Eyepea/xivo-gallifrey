@@ -234,16 +234,17 @@ class Yealink(PhoneVendorMixin):
         Extract Vendor / Model / FirmwareRevision from SIP User-Agent
         or return None if we don't deal with this kind of Agent.
         """
-        # T28 2.41.0.60
+        # Yealink SIP-T28P 2.43.0.50
 
-        ua_splitted = ua.split(" ", 1)
-        if ua_splitted[0] not in cls.YEALINK_MODELS:
+        ua_splitted = ua.split(" ", 2)
+        ua_split_model = ua_splitted[1].split("-",1)
+        if ua_split_model[1] not in cls.YEALINK_MODELS:
             return None
 
-        model = ua_splitted[0].lower()
+        model = ua_split_model[1].lower()
 
-        if len(ua_splitted) == 2:
-            fw = ua_splitted[1]
+        if len(ua_splitted) == 3:
+            fw = ua_splitted[2]
         else:
             fw = 'unknown'
 
