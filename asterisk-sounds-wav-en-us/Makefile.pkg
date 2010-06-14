@@ -1,0 +1,25 @@
+#!/usr/bin/make -f
+# -*- mode: makefile; coding: utf-8 -*-
+#
+# $Revision: 8077 $
+# $Date: 2010-05-06 16:12:24 +0200 (Thu, 06 May 2010) $
+
+include $(NONO_MK)/autobuild.mk
+include $(NONO_MK)/autobuild-classic.mk
+
+DEB_PKG = "asterisk-sounds-wav-en-us"
+TARBALL_DIR := $(shell mktemp -d)
+
+SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
+TARBALL_NAME = "asterisk-sounds-wav-en-us_$(SRCVER).orig.tar.gz"
+UPSTREAM_VER = $(SRCVER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
+
+
+default:
+
+prepare-tarball::
+	cp $(MODULE_PATH)/tarballs/$(TARBALL_NAME) ${TARBALL_DIR}
+
+clean-tarball::
+	@rm -rf ${TARBALL_DIR}
+
