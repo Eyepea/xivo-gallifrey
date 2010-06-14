@@ -49,12 +49,12 @@ class Config:
                     self.kind = 'file'
                     response = urllib2.urlopen(urilist)
                     self.json_config = response.read()
-                
+                    
                     json = cjson.decode(self.json_config)
-                
+                    
                     self.xivoconf = ConfigParser.ConfigParser()
                     debug_add_section(self.xivoconf, 'general')
-
+                    
                     for k, v in json["main"].iteritems():
                         if type(v) == type(list()):
                             if k in ['incoming_tcp_fagi', 'incoming_tcp_cti',
@@ -201,8 +201,21 @@ class Config:
                     self.xivoconf.readfp(open(uri))
                 
         return
-
-
+    
+    def set_queuelogger_path(self, loggeruri):
+        try:
+            response = urllib2.urlopen(loggeruri)
+            json_config = response.read()
+            json = cjson.decode(json_config)
+            ql_uri = json.get('db_uri')
+            if ql_uri:
+                self.xivoconf.set('general', 'asterisk_queuestat_db', ql_uri)
+            else:
+                log.warning('loggeruri : empty db_uri value from %s' % loggeruri)
+        except Exception:
+            log.exception('set_queuelogger_path : %s' % loggeruri)
+        return
+    
     def read_section(self, type, sectionname):
         v = {}
         if self.kind == 'file':

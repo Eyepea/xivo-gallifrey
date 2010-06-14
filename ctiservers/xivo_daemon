@@ -83,11 +83,12 @@ except:
 
 # XIVO lib-python modules initialization
 #XIVO_CONF_FILE   = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
-XIVO_CONF_FILE   = "https://localhost/service/ipbx/json.php/private/ctiserver/configuration"
-PIDFILE          = '/var/run/%s.pid' % DAEMONNAME
-LOGFILENAME      = '/var/log/pf-xivo-cti-server/daemon.log'
-GETOPT_SHORTOPTS = 'dc:p:l:'
-GETOPT_LONGOPTS  = ['debug', 'config=', 'pidfile=', 'logfile=']
+XIVO_CONF_FILE     = "https://localhost/service/ipbx/json.php/private/ctiserver/configuration"
+QUEUELOG_CONF_FILE = "https://localhost/service/ipbx/json.php/private/queuelogger/configuration"
+PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
+LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
+GETOPT_SHORTOPTS   = 'dc:p:l:'
+GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=']
 debug_mode = False
 
 def parse_command_line():
@@ -888,6 +889,7 @@ class xivo_daemon:
     def update_readconf(self):
         log.info('reparsing config file(s)')
         lconf = cti_config.Config(XIVO_CONF_FILE)
+        lconf.set_queuelogger_path(QUEUELOG_CONF_FILE)
         self.commandclass.set_cticonfig(lconf)
         self.commandclass.set_options(self.cconf.read_section('commandset', self.commandset), self.cconf)
 
@@ -1012,6 +1014,7 @@ class xivo_daemon:
         self.userinfo_current = {}
         
         self.cconf = cti_config.Config(XIVO_CONF_FILE)
+        self.cconf.set_queuelogger_path(QUEUELOG_CONF_FILE)
         xivoconf_general = self.cconf.read_section('general', 'general')
         
         # loads the general configuration
