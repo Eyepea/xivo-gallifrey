@@ -2,6 +2,9 @@
 <settings>
  <phone-settings e="2">
   <language perm="">Francais</language>
+  <http_user perm="">guest</http_user>
+  <http_pass perm="">guest</http_pass>
+  <admin_mode_password perm="">guest</admin_mode_password>
   <vlan perm="">#XIVO_VOIP_VLAN_ID</vlan>
   <vlan_id perm="">#XIVO_VOIP_VLAN_ID</vlan_id>
   <vlan_qos perm=""></vlan_qos>
