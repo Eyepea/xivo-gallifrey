@@ -26,8 +26,8 @@ else
 	$macaddr = '';
 
 if(isset($_SERVER['HTTP_USER_AGENT']) === true
-&& preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match)
-&& preg_match('/(snom8[27]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1)
+&& (preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match)
+|| preg_match('/(snom8[27]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1))
 	$type = $match[1];
 else
 {
