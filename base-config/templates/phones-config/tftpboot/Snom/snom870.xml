@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<settings>
+ <phone-settings e="2">
+  <language perm="">Francais</language>
+  <vlan perm="">#XIVO_VOIP_VLAN_ID</vlan>
+  <vlan_id perm="">#XIVO_VOIP_VLAN_ID</vlan_id>
+  <vlan_qos perm=""></vlan_qos>
+  <display_method perm="">display_name_number</display_method>
+  <ntp_server perm="RW">#XIVO_NET4_IP#</ntp_server>
+  <timezone perm="">FRA+1</timezone>
+  <user_phone perm="">true</user_phone>
+  <tone_scheme perm="">FRA</tone_scheme>
+  <update_server perm="RW">http://#XIVO_NET4_IP#:8667</update_server>
+  <user_active idx="1" perm="">on</user_active>
+  <user_realname idx="1" perm="">guest</user_realname>
+  <user_name idx="1" perm="">guest</user_name>
+  <user_host idx="1" perm="">#XIVO_NET4_IP#</user_host>
+  <user_pname idx="1" perm="">guest</user_pname>
+  <user_pass idx="1" perm="">guest</user_pass>
+ </phone-settings>
+</settings>
