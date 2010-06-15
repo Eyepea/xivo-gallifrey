@@ -45,7 +45,7 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['language'] = array();
-$array['element']['language']['value'] = array('en','fr');
+$array['element']['language']['value'] = array('en_US', 'es_ES', 'fr_FR', 'fr_CA');
 $array['element']['language']['default'] = '';
 $array['element']['language']['null'] = true;
 
@@ -258,7 +258,7 @@ $array['filter']['dbsecret'] = array('set'	=> false,
 				     'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+\/[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:%]+$/');
 $array['filter']['context'] = array('callback'		=> 'xivo_service_asterisk::chk_context',
 				    'callbackarg'	=> array(array(XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
-$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 2,'maxlen' => 2,'key' => array('en','fr'));
+$array['filter']['language'] = array('set' => false,'chk' => 2,'minlen' => 5,'maxlen' => 5,'key' => array('en_US', 'es_ES', 'fr_FR', 'fr_CA'));
 $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 20);
 $array['filter']['amaflags'] = array('set'	=> false,
 				     'chk'	=> 2,

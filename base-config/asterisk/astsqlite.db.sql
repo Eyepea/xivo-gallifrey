@@ -1188,7 +1188,7 @@ INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','accountcode',NULL
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','amaflags','default');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','adsi','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','transfer','yes');
-INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','language','fr');
+INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','language','fr_FR');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','mohinterpret','default');
 INSERT INTO staticiax VALUES (NULL,0,0,1,'iax.conf','general','mohsuggest',NULL);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','encryption','no');
@@ -1346,7 +1346,7 @@ INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','dtmfmode','info')
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','qualify','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','useclientcode','no');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','progressinband','never');
-INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','language','fr');
+INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','language','fr_FR');
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','mohinterpret','default');
 INSERT INTO staticsip VALUES (NULL,0,0,1,'sip.conf','general','mohsuggest',NULL);
 INSERT INTO staticsip VALUES (NULL,0,0,0,'sip.conf','general','vmexten','*98');
@@ -1482,7 +1482,7 @@ INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','trustphoneip','n
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','private','on');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','protocolversion',11);
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','disallow','all');
-INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','language','fr');
+INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','language','fr_FR');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_enabled','yes');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_context','xivo-initconfig');
 INSERT INTO staticsccp VALUES(NULL,0,0,0,'sccp.conf','general','hotline_extension','sccp');

@@ -135,8 +135,8 @@ $array['element']['musicclass'] = array();
 $array['element']['musicclass']['default'] = 'default';
 
 $array['element']['language'] = array();
-$array['element']['language']['default'] = 'fr';
-$array['element']['language']['value'] = array('fr', 'en');
+$array['element']['language']['default'] = 'fr_FR';
+$array['element']['language']['value'] = array('en_US', 'es_ES', 'fr_FR', 'fr_CA');
 
 $array['element']['callevents'] = array();
 $array['element']['callevents']['default'] = 'no';
@@ -328,7 +328,7 @@ $array['filter']['firstdigittimeout'] = array('set' => false,'chk' => 2,'cast' =
 $array['filter']['digittimeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(1,65535));
 $array['filter']['digittimeoutchar'] = array('key' => array('#','*'));
 $array['filter']['debug'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z,\.]+$/i','maxlen' => 80);
-$array['filter']['language'] = array('key' => array('en','fr'));
+$array['filter']['language'] = array('key' => array('en_US', 'es_ES', 'fr_FR', 'fr_CA'));
 
 ##############################################################
 # NETWORK PART
