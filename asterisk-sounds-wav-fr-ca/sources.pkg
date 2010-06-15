@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://downloads.asterisk.org/pub/telephony/sounds/releases/"
+TARBALL_PREFIX="asterisk-core-sounds-fr-wav-"
+SRC_DIR_PREFIX=
+PKG_NAME="asterisk-sounds-wav-fr-ca"
+DFSG_EXCLUDE_PATTERNS=
