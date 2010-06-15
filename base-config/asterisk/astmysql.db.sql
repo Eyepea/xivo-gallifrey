@@ -70,7 +70,7 @@ CREATE TABLE `agentgroup` (
  `deleted` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `agentgroup__idx__groupid` ON `agentgroup`(`groupid`);
 CREATE INDEX `agentgroup__idx__name` ON `agentgroup`(`name`);
@@ -1088,7 +1088,7 @@ CREATE TABLE `rightcall` (
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `rightcall__idx__context` ON `rightcall`(`context`);
 CREATE INDEX `rightcall__idx__passwd` ON `rightcall`(`passwd`);
@@ -1561,7 +1561,7 @@ CREATE TABLE `trunkfeatures` (
  `registercommented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=ascii;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 CREATE INDEX `trunkfeatures__idx__registerid` ON `trunkfeatures`(`registerid`);
 CREATE INDEX `trunkfeatures__idx__registercommented` ON `trunkfeatures`(`registercommented`);
