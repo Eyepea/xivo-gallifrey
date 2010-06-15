@@ -101,44 +101,45 @@ class XivoCTICommand(BaseCommand):
     xdname = 'XiVO Daemon'
 
     commnames = ['login_id', 'login_pass', 'login_capas',
-        'history', 'directory-search',
-        'featuresget', 'featuresput',
-        'logclienterror',
-        'powerevent',
-        'phones',
-        'agents',
-        'queues',
-        'groups',
-        'users',
-        'callcampaign',
-        'logout',
-        'faxsend',
-        'filetransfer',
-        'database',
-        'meetme',
-        'endinit',
-        'chitchat',
-        'actionfiche',
-        'availstate',
-        'keepalive',
-        'ipbxcommand',
-        'originate', 'transfer', 'atxfer',
-        'sheet']
+                 'history', 'directory-search',
+                 'featuresget', 'featuresput',
+                 'logclienterror',
+                 'powerevent',
+                 'phones',
+                 'agents',
+                 'queues',
+                 'groups',
+                 'users',
+                 'callcampaign',
+                 'logout',
+                 'faxsend',
+                 'filetransfer',
+                 'database',
+                 'meetme',
+                 'parking',
+                 'endinit',
+                 'chitchat',
+                 'actionfiche',
+                 'availstate',
+                 'keepalive',
+                 'ipbxcommand',
+                 'originate', 'transfer', 'atxfer',
+                 'sheet']
     astid_vars = ['stats_queues',
-        'last_agents',
-        'last_queues',
-        'attended_targetchannels',
-        'uniqueids',
-        'channels',
-        'parkedcalls',
-        'ignore_dtmf',
-        'queues_channels_list',
-        'origapplication',
-        'events_link',
-        'localchans',
-        'amirequests',
-        'getvar_requests']
-
+                  'last_agents',
+                  'last_queues',
+                  'attended_targetchannels',
+                  'uniqueids',
+                  'channels',
+                  'parkedcalls',
+                  'ignore_dtmf',
+                  'queues_channels_list',
+                  'origapplication',
+                  'events_link',
+                  'localchans',
+                  'amirequests',
+                  'getvar_requests']
+    
     def __init__(self, amilist, ctiports, queued_threads_pipe):
         BaseCommand.__init__(self)
         self.amilist = amilist
@@ -3006,9 +3007,9 @@ class XivoCTICommand(BaseCommand):
 
 
     def ami_parkedcall(self, astid, event):
+        parkingbay = event.get('Exten')
         channel = event.get('Channel')
         cfrom   = event.get('From')
-        parkingbay = event.get('Exten')
         timeout = event.get('Timeout')
         uid     = event.get('Uniqueid')
         uidfrom = event.get('UniqueidFrom') or event.get('FromUniqueid')
@@ -3017,7 +3018,9 @@ class XivoCTICommand(BaseCommand):
         fromcalleridnum = event.get('FromCallerIDNum')
         fromcalleridname = event.get('FromCallerIDName')
 
-        log.info('%s PARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, parkingbay, calleridnum, calleridname))
+        log.info('%s %s PARKEDCALL (uids = %s %s) (%s %s %s) (%s %s %s)' % (astid, parkingbay, uidfrom, uid,
+                                                                            channel, calleridnum, calleridname,
+                                                                            cfrom, fromcalleridnum, fromcalleridname))
         if uid in self.uniqueids[astid]:
             ctuid = self.uniqueids[astid][uid]
             ctuid['parkexten-callback'] = parkingbay
@@ -3027,38 +3030,41 @@ class XivoCTICommand(BaseCommand):
             tosend['astid'] = astid
             # TODO check context ???
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
-        if parkingbay not in self.parkedcalls[astid]:
-            self.parkedcalls[astid][parkingbay] = event
-        else:
+        if parkingbay in self.parkedcalls[astid]:
             log.warning('%s ami_parkedcall : a call is alreaky parked in parking bay %s' % (astid, parkingbay))
-        # TODO check context ???
+            
+        self.parkedcalls[astid][parkingbay] = { 'channel' : channel,
+                                                'fromchannel' : cfrom,
+                                                'timeout' : timeout,
+                                                'calleridnum' : calleridnum,
+                                                'calleridname' : calleridname,
+                                                'fromcalleridnum' : fromcalleridnum,
+                                                'fromcalleridname' : fromcalleridname,
+                                                'parkingtime' : time.time()
+                                                }
+        # TODO check context ? no, since there are no contexts associated with parked calls
         tosend = { 'class' : 'parkcall',
                    'eventkind' : 'parkedcall',
                    'astid' : astid,
                    'parkingbay' : parkingbay,
-                   'payload' : { 'channel' : channel,
-                                 'fromchannel' : cfrom,
-                                 'timeout' : timeout,
-                                 'calleridnum' : calleridnum,
-                                 'calleridname' : calleridname,
-                                 'fromcalleridnum' : fromcalleridnum,
-                                 'fromcalleridname' : fromcalleridname } }
+                   'payload' : self.parkedcalls[astid][parkingbay] }
         #log.info('%s PARKEDCALL sending %s' % (astid, self.__cjson_encode__(tosend)))
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
-
+    
     def ami_unparkedcall(self, astid, event):
+        parkingbay = event.get('Exten')
         channel = event.get('Channel')
         cfrom   = event.get('From')
-        parkingbay = event.get('Exten')
         uid     = event.get('Uniqueid')
         uidfrom = event.get('UniqueidFrom')
-        callerid = event.get('CallerID')
+        calleridnum = event.get('CallerID')
         calleridname = event.get('CallerIDName')
         (channel, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, channel, uid, None, None)
         (cfrom, _uid, clid, clidname) = self.__translate_local_channel_uid__(astid, cfrom, uidfrom, None, None)
-        log.info('%s UNPARKEDCALL %s %s %s %s %s %s %s' % (astid, uidfrom, uid, cfrom, channel, parkingbay, callerid, calleridname))
-
+        log.info('%s %s UNPARKEDCALL (uids = %s %s) (%s %s %s) (%s)' % (astid, parkingbay, uidfrom, uid,
+                                                                        channel, calleridnum, calleridname,
+                                                                        cfrom))
         phoneidsrc = self.__phoneid_from_channel__(astid, cfrom)
         uinfo = self.__userinfo_from_phoneid__(astid, phoneidsrc)
         phoneiddst = self.__phoneid_from_channel__(astid, channel)
@@ -3074,43 +3080,44 @@ class XivoCTICommand(BaseCommand):
                 ctuid['parkexten-callback'] = uinfo.get('phonenum')
             ctuid['peerchannel'] = cfrom
             self.weblist['phones'][astid].ami_unparkedcall(phoneiddst, uid, ctuid)
+
+        del self.parkedcalls[astid][parkingbay]
+        
         # a subsequent 'link' AMI event should make the new status transmitted
         tosend = { 'class' : 'parkcall',
                    'eventkind' : 'unparkedcall',
                    'astid' : astid,
-                   'parkingbay' : parkingbay,
-                   'payload' : { 'channel' : channel,
-                                 'fromchannel' : cfrom } }
+                   'parkingbay' : parkingbay }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
-
+    
     def ami_parkedcallgiveup(self, astid, event):
         channel = event.get('Channel')
         parkingbay = event.get('Exten')
         uid     = event.get('Uniqueid')
         log.info('%s PARKEDCALLGIVEUP %s %s %s' % (astid, uid, channel, parkingbay))
+        del self.parkedcalls[astid][parkingbay]
         tosend = { 'class' : 'parkcall',
                    'eventkind' : 'parkedcallgiveup',
                    'astid' : astid,
-                   'parkingbay' : parkingbay,
-                   'payload' : { 'channel' : channel } }
+                   'parkingbay' : parkingbay }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
-
+    
     def ami_parkedcalltimeout(self, astid, event):
         channel = event.get('Channel')
         parkingbay = event.get('Exten')
         uid     = event.get('Uniqueid')
         log.info('%s PARKEDCALLTIMEOUT %s %s %s' % (astid, uid, channel, parkingbay))
+        del self.parkedcalls[astid][parkingbay]
         tosend = { 'class' : 'parkcall',
                    'eventkind' : 'parkedcalltimeout',
                    'astid' : astid,
-                   'parkingbay' : parkingbay,
-                   'payload' : { 'channel' : channel } }
+                   'parkingbay' : parkingbay }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid)
         return
-
-
+    
+    
     # Agent Login's and Logoff's
     def ami_agentlogin(self, astid, event):
         """
@@ -4919,17 +4926,27 @@ class XivoCTICommand(BaseCommand):
                         else:
                             log.debug('capability conference not matched')
 
+                    elif classcomm == 'parking':
+                        for astid, pcalls in self.parkedcalls.iteritems():
+                            for parkingbay, pprops in pcalls.iteritems():
+                                tosend = { 'class' : 'parkcall',
+                                           'eventkind' : 'parkedcall',
+                                           'astid' : astid,
+                                           'parkingbay' : parkingbay,
+                                           'payload' : pprops }
+                                repstr = self.__cjson_encode__(tosend)
+                                
                     elif classcomm == 'history':
                         if self.capas[capaid].match_funcs(ucapa, 'history'):
                             repstr = self.__build_history_string__(icommand.struct.get('peer'),
-                                icommand.struct.get('size'),
-                                icommand.struct.get('mode'),
-                                icommand.struct.get('morerecentthan'))
-
+                                                                   icommand.struct.get('size'),
+                                                                   icommand.struct.get('mode'),
+                                                                   icommand.struct.get('morerecentthan'))
+                            
                     elif classcomm == 'directory-search':
                         if self.capas[capaid].match_funcs(ucapa, 'directory'):
                             repstr = self.__build_customers__(context, icommand.struct.get('pattern'))
-
+                            
                     elif classcomm == 'keepalive':
                         nbytes = icommand.struct.get('rate-bytes', -1)
                         nmsec = icommand.struct.get('rate-msec', -1)
@@ -4942,7 +4959,7 @@ class XivoCTICommand(BaseCommand):
                             else:
                                 log.info('keepalive from user:%s (%d %d/0 > %.1f bytes/ms)'
                                     % (userid, nsamples, nbytes, float(nbytes)))
-
+                                
                     elif classcomm == 'logclienterror':
                         log.warning('shouldNotOccur from user:%s : %s : %s'
                             % (userid, icommand.struct.get('classmethod'), icommand.struct.get('message')))
@@ -5439,7 +5456,8 @@ class XivoCTICommand(BaseCommand):
                     techdetails = srcuinfo.get('techlist')[0]
                     proto_src = techdetails.split('.')[0]
                     # XXXX 'local' might break the XIVO_ORIGSRCNUM mechanism (trick for thomson)
-                    phonenum_src = techdetails.split('.')[2]
+                    phonename_src = techdetails.split('.')[2]
+                    phonenum_src = techdetails.split('.')[3]
                     ### srcuinfo.get('phonenum')
                     # if termlist empty + agentphonenumber not empty => call this one
                     cidname_src = srcuinfo.get('fullname')
@@ -5448,6 +5466,7 @@ class XivoCTICommand(BaseCommand):
                 context_src = userinfo['context']
                 astid_src = userinfo['astid']
                 proto_src = 'local'
+                phonename_src = whosrc
                 phonenum_src = whosrc
                 cidname_src = whosrc
             else:
@@ -5473,7 +5492,7 @@ class XivoCTICommand(BaseCommand):
                     exten_dst = "*98"
                 else:
                     dstuinfo = self.ulist_ng.keeplist[whodst]
-
+                    
                 if dstuinfo is not None:
                     astid_dst = dstuinfo.get('astid')
                     exten_dst = dstuinfo.get('phonenum')
@@ -5482,20 +5501,20 @@ class XivoCTICommand(BaseCommand):
             else:
                 log.warning('unknown typedst <%s>' % typedst)
                 return
-
+            
             if typesrc == typedst and typedst == 'ext' and len(whosrc) > 8 and len(whodst) > 8:
                 log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s). Canceling' % (whosrc, whodst))
                 return
-
+            
             try:
                 if len(exten_dst) > 0:
                     ret = self.__ami_execute__(astid_src, AMI_ORIGINATE,
-                        proto_src, phonenum_src, cidname_src,
-                        exten_dst, cidname_dst,  context_dst,
-                        {'XIVO_USERID' : userinfo.get('xivo_userid')})
+                                               proto_src, phonename_src, phonenum_src, cidname_src,
+                                               exten_dst, cidname_dst,  context_dst,
+                                               {'XIVO_USERID' : userinfo.get('xivo_userid')})
             except Exception:
                 log.exception('unable to originate')
-
+                
         elif commname in ['transfer', 'atxfer']:
             [typesrc, whosrc] = srcsplit
             [typedst, whodst] = dstsplit
@@ -5511,6 +5530,7 @@ class XivoCTICommand(BaseCommand):
                     astid_src = srcuinfo.get('astid')
                     context_src = srcuinfo.get('context')
                     proto_src = 'local'
+                    # phonename_src = srcuinfo.get('phonenum')
                     phonenum_src = srcuinfo.get('phonenum')
                     # if termlist empty + agentphonenumber not empty => call this one
                     cidname_src = srcuinfo.get('fullname')
@@ -5563,8 +5583,8 @@ class XivoCTICommand(BaseCommand):
                 else:
                     if exten_dst:
                         ret = self.__ami_execute__(astid_src, commname,
-                            chan_src,
-                            exten_dst, context_src)
+                                                   chan_src,
+                                                   exten_dst, context_src)
             except Exception:
                 log.exception('unable to %s' % commname)
         else:
@@ -6198,7 +6218,7 @@ class XivoCTICommand(BaseCommand):
 
             context = fastagi.get_variable('XIVO_REAL_CONTEXT')
             log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
-                % (astid, function, context, uniqueid, channel))
+                     % (astid, function, context, uniqueid, channel))
         except Exception:
             log.exception('%s handle_fagi %s' % (astid, fastagi.env))
             return
