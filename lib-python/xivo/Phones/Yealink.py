@@ -39,10 +39,10 @@ log = logging.getLogger("xivo.Phones.Yealink") # pylint: disable-msg=C0103
 
 class Yealink(PhoneVendorMixin):
 
-    YEALINK_MODELS = ('T20',
-                      'T22',
-                      'T26',
-                      'T28')
+    YEALINK_MODELS = ('T20P',
+                      'T22P',
+                      'T26P',
+                      'T28P')
 
     YEALINK_MACADDR_PREFIX = ('1:00:15:65',)
 
