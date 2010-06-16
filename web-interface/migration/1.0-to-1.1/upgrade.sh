@@ -22,56 +22,91 @@ set -e
 
 source "`dirname $0`/../functions.sh"
 
-XIVOSQLITE_BACKUP_DIR=$1
-XIVOSQLITE_DB="/var/lib/pf-xivo-web-interface/sqlite/xivo.db"
+sqlite_migrate() {
+	XIVOSQLITE_DB="/var/lib/pf-xivo-web-interface/sqlite/xivo.db"
+
+	if ! ask_yn_question "Would you like to upgrade XIVO Web Interface SQLite Database?";	then
+		return 0;
+	fi
+
+	if [ ! -f "${XIVOSQLITE_DB}" ];	then
+		echo "SQLite XIVO Web Interface Database does not exist";
+		return 1;
+	fi
+
+	echo "Backup old XIVO Web Interface Database";
+	cp -a "${XIVOSQLITE_DB}" "${BACKUP_DIR}/xivo.db-1.0-`date +%Y%m%d%H%M%S`";
+
+	echo "Performing upgrade... ";
+	sqlite "${XIVOSQLITE_DB}" < "`dirname $0`/scripts/sqlite.schema.sql";
+
+	echo "sqlite: done !";
+	return 0;
+}
+
+mysql_migrate() {
+	DBNAME='xivo'
+
+	if ! ask_yn_question "Would you like to upgrade XIVO Web Interface MySQL Database?";
+	then
+		return 0;
+	fi
+
+	echo "Backup old XIVO Web Interface Database";
+	mysqldump --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} > "${BACKUP_DIR}/xivo-mysql.dump-1.0-`date +%Y%m%d%H%M%S`";
+	if [ $? != 0 ]; then
+		echo "Can't backup ${DBNAME} mysql database";
+		return 1;
+	fi
+
+	echo "Performing upgrade... ";
+	mysql --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} < "`dirname $0`/scripts/mysql.schema.sql";
+	
+	echo "mysql: done!";
+	return 0;
+}
 
 
-if ! ask_yn_question "Would you like to upgrade XIVO Web Interface SQLite Database?";
-then
-	exit 0
-fi
-
-if [ "${XIVOSQLITE_BACKUP_DIR}" == "" ]\
-|| [ "${XIVOSQLITE_BACKUP_DIR}" == "-h" ]\
-|| [ "${XIVOSQLITE_BACKUP_DIR}" == "--help" ];
-then
-	echo "Usage: $0 /path/for/backupfile"
+if [ "$2" == "" ]; then
+	echo "Usage: $0 {sqlite|mysql|both} /path/to/backupfile"
 	exit 1
 fi
 
-if [ -f "${XIVOSQLITE_BACKUP_DIR}" ];
-then
+BACKUP_DIR=$2
+if [ -f "${BACKUP_DIR}" ]; then
 	echo "Invalid backup path"
 	exit 1
 fi
 
-if [ "`whoami`" != "root" ];
-then
+if [ "`whoami`" != "root" ]; then
 	echo "You need to be root to use this script..."
 	exit 1
 fi
 
-if [ ! -e "${XIVOSQLITE_BACKUP_DIR}" ];
-then
-	mkdir -p "${XIVOSQLITE_BACKUP_DIR}"
+if [ ! -e "${BACKUP_DIR}" ]; then
+	mkdir -p "${BACKUP_DIR}"
 fi
 
-if [ ! -w "${XIVOSQLITE_BACKUP_DIR}" ];
-then
+if [ ! -w "${BACKUP_DIR}" ]; then
 	echo "Backup directory not writable"
 	exit 1
 fi
 
-if [ ! -f "${XIVOSQLITE_DB}" ];
-then
-	echo "SQLite XIVO Web Interface Database does not exist"
-	exit 1
-fi
 
-echo "Backup old XIVO Web Interface Database"
-cp -a "${XIVOSQLITE_DB}" "${XIVOSQLITE_BACKUP_DIR}/xivo.db-1.0-`date +%Y%m%d%H%M%S`"
 
-echo "Performing upgrade..."
-sqlite "${XIVOSQLITE_DB}" < "`dirname $0`/scripts/sqlite.schema.sql"
-
-echo "done !"
+case $1 in
+	sqlite)
+		sqlite_migrate;
+	;;
+	mysql)
+		mysql_migrate;
+	;;
+	both)
+		sqlite_migrate;
+		mysql_migrate;
+	;;
+	*)
+		echo "$0 {sqlite|mysql|both} /path/to/backupfile"
+		exit 1
+	;;
+esac
