@@ -56,6 +56,8 @@ NameVirtualHost *:80
 	RewriteCond %{HTTP_USER_AGENT} !^THOMSON\ TB30\ hw[0-9]\ fw1\.
 	# XXX Yealink phones don't support SSL
 	RewriteCond %{HTTP_USER_AGENT} !^yealink
+	# Cisco phones don't support SSL (phonebook)
+	RewriteCond %{HTTP_USER_AGENT} !^Allegro-Software
 	# Used for stats/monitoring
 	RewriteCond %{REQUEST_URI} !^/server-status$
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
@@ -76,8 +78,11 @@ NameVirtualHost *:80
 		Allow from all
 	</Location>
 
-	# Used for Snom phones
+	# Used for Snom & Cisco phones
 	<Location /service/ipbx/web_services.php/phonebook/search>
+		Allow from all
+	</Location>
+	<Location /service/ipbx/web_services.php/phonebook/menu>
 		Allow from all
 	</Location>
 
