@@ -1,6 +1,9 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" ?>
 <settings>
  <phone-settings>
+  <admin_mode perm="">on</admin_mode>
+  <admin_mode_password perm="">12345</admin_mode_password>
+  <display_methoderm="">display_name_number</display_method>
   <gateway perm="RW">{{asterisk_ipv4}}</gateway>
   <ntp_server perm="RW">{{ntp_server_ipv4}}</ntp_server>
   <user_realname idx="1" perm="">{{user_display_name}}</user_realname>
