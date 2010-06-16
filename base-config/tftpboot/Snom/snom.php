@@ -21,37 +21,33 @@
 
 if(isset($_GET['mac']) === true
 && preg_match('/^[A-F0-9]{12}$/',strval($_GET['mac']),$match) === 1)
-	$macaddr = $match[0];
+        $macaddr = $match[0];
 else
-	$macaddr = '';
+        $macaddr = '';
 
 if(isset($_SERVER['HTTP_USER_AGENT']) === true
-&& (preg_match('/(snom3[026]0)-/',$_SERVER['HTTP_USER_AGENT'],$match)
-|| preg_match('/(snom8[27]0)-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1))
-	$type = $match[1];
+&& preg_match('/(snom[0-9]{3})-/',$_SERVER['HTTP_USER_AGENT'],$match) === 1){
+        $type = $match[1];
+}
 else
 {
-	if(is_file('snom.htm') === true)
-		include('snom.htm');
-	die();
+        if(is_file('snom.htm') === true)
+                include('snom.htm');
+        die();
 }
-
-echo    '<html>',"\n",'<pre>',"\n";
 
 $filename = $type.'.xml';
 
 if(is_file($filename) === true)
-	include($filename);
+        print file_get_contents($filename);
 
 if(isset($macaddr{0}) === true)
 {
-	$filename = $type.'-'.$macaddr.'.xml';
+        $filename = $type.'-'.$macaddr.'.xml';
 
-	if(is_file($filename) === true)
-		include($filename);
+        if(is_file($filename) === true)
+                print file_get_contents($filename);
 }
-
-echo    '</pre>',"\n",'</html>',"\n";
 
 die();
 
