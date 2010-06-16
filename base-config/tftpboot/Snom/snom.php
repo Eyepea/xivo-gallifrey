@@ -36,17 +36,21 @@ else
         die();
 }
 
-$filename = $type.'.xml';
-
-if(is_file($filename) === true)
-        print file_get_contents($filename);
-
 if(isset($macaddr{0}) === true)
 {
+        print "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n <settings>\n";
         $filename = $type.'-'.$macaddr.'.xml';
-
         if(is_file($filename) === true)
                 print file_get_contents($filename);
+        else
+        {
+                $filename = $type.'.xml';
+                if(is_file($filename) === true)
+                        print file_get_contents($filename);
+        }
+
+        print file_get_contents($type.'-firmware.xml');
+        print "</settings>";
 }
 
 die();
