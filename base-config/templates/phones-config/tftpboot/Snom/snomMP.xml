@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<settings>
  <phone-settings e="2">
   <language perm="">Francais</language>
   <ntp_server perm="RW">#XIVO_NET4_IP#</ntp_server>
@@ -14,4 +12,3 @@
   <user_pname idx="1" perm="">guest</user_pname>
   <user_pass idx="1" perm="">guest</user_pass>
  </phone-settings>
-</settings>
