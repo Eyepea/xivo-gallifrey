@@ -27,7 +27,7 @@ class dwho_tpl_xmlphone_aastra extends dwho_tpl_xmlphone_abstract
 	var $_argseparator	= '&amp;';
 	var $_cdata		= true;
 	var $_escape		= false;
-	var $_utf8		= false;
+	var $_utf8		= true;
 	var $_tags		= array('directory'	=> 'AastraIPPhoneDirectory',
 					'menu'		=> 'AastraIPPhoneTextMenu',
 					'input'		=> 'AastraIPPhoneInputScreen');
