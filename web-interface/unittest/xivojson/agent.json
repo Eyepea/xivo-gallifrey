@@ -1,0 +1,41 @@
+{
+	"agentfeatures" : {
+		"firstname": "john",
+		"lastname" : "doe",
+		"number"   : "160",
+		"passwd"   : "",
+		"numgroup" : "1",
+		"context"  : "default",
+		"language" : "en_US",
+		"silent"   : "no",
+		"description" : "",
+		"fullname" : "john doe",
+		"identity" : "john doe <160>"
+	},
+	"agentgroup" : { 
+		"groupid" : "1",
+		"name" : "default",
+		"groups" : "",
+		"commented" : False,
+		"deleted" : False,
+		"description" : "",
+		"deletable" : False
+	},
+
+	"agentoptions" : {
+		"ackcall" : "no",
+		"endcall" : "yes",
+		"autologoff" : "0",
+		"autologoffunavail" : "no",
+		"wrapuptime" : "0",
+		"maxlogintries" : "3",
+		"updatecdr" : "no",
+		"musiconhold" : "default",
+		"recordagentcalls" : "no",
+		"recordformat" : "wav",
+		"urlprefix" : "",
+		"custom_beep" : "beep",
+		"goodbye" : "vm-goodbye"
+	}
+}
+

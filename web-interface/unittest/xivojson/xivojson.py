@@ -32,6 +32,7 @@ class JSONClient(object):
 
         'queueskill'    : ['service/ipbx'            , 'call_center'],
         'queueskillrules': ['service/ipbx'            , 'call_center'],
+        'agents'        : ['service/ipbx'            , 'call_center'],
         
         'mail'          : ['xivo/configuration'      , 'network'],
         'dhcp'          : ['xivo/configuration'      , 'network'],
@@ -63,7 +64,7 @@ class JSONClient(object):
             uri    = "%s%s%s" % (uri, mark, urllib.urlencode(params))
             params = None
 
-#        print 'request= ', uri
+        print 'request= ', uri
         self.conn.request(method, uri, params, self.headers)
         response = self.conn.getresponse()
         data     = response.read()
