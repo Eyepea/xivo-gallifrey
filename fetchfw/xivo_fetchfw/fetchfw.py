@@ -101,7 +101,6 @@ class RemoteFile(object):
         """
         md_sha = sha.new()
         size = 0
-        
         widgets = [self.filename,
                    ':    ',
                    progressbar.FileTransferSpeed(),
@@ -113,7 +112,6 @@ class RemoteFile(object):
                    progressbar.Percentage(),
                    ]
         pbar = progressbar.ProgressBar(widgets=widgets, maxval=self.size)
-        pbar.start()
 
         try:
             src = open(self.path)
@@ -121,10 +119,9 @@ class RemoteFile(object):
         except IOError:
             src = self.open_src()
             dst = open(self.path, "wb")
-
+        pbar.start()
         while True:
             buf = src.read(self.BUFFER_SIZE)
-
             if not buf:
                 break
 
@@ -137,7 +134,6 @@ class RemoteFile(object):
 
         pbar.finish()
         src.close()
-
         if dst:
             dst.close()
 
@@ -167,7 +163,8 @@ class CiscoRemoteFile(RemoteFile):
     
     """
     
-    __login_url = 'https://www.cisco.com/authc/forms/CDClogin.fcc?TYPE=33619969&REALMOID=06-59fc1640-c46c-104a-a635-83846dc9304d&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-zjGKGqr62shoVBG6cNUdYNajdKPzmOFLa%2fZkeebT0%2bNV%2bEcoXFhv%2fvB8k65Cw%2f%2bx&TARGET=-SM-http%3a%2f%2fcisco%2ecom%2fcgi--bin%2flogin'
+    #__login_url = 'https://www.cisco.com/authc/forms/CDClogin.fcc?TYPE=33619969&REALMOID=06-59fc1640-c46c-104a-a635-83846dc9304d&GUID=&SMAUTHREASON=0&METHOD=GET&SMAGENTNAME=-SM-zjGKGqr62shoVBG6cNUdYNajdKPzmOFLa%2fZkeebT0%2bNV%2bEcoXFhv%2fvB8k65Cw%2f%2bx&TARGET=-SM-http%3a%2f%2fcisco%2ecom%2fcgi--bin%2flogin'
+    __login_url = r'http://www.cisco.com/cgi-bin/login'
     __opener = None
     
     def __init__(self, filename, url, size, sha1sum):
@@ -191,24 +188,24 @@ class CiscoRemoteFile(RemoteFile):
             handlers.append(urllib2.ProxyHandler({"http" : PROXY_URL}))
         op = CiscoRemoteFile.__opener = urllib2.build_opener(*handlers)
         
+        print "Logging in on cisco website... "
+        # First request to get the URL of the 'real' log in page
+        f_login = op.open(CiscoRemoteFile.__login_url)
+        form_url = f_login.geturl()
+        f_login.close()
+
+        # Second request to authenticate
         params = {'USER': CISCO_USER,
-                  'PASSWORD': CISCO_PASS,
-                  'target': 'http://cisco.com/cgi-bin/login?referer=http://cisco.com/',
-                  'smauthreason': 0,
-                  'smquerydata': '',
-                  'smagentname': 'zjGKGqr62shoVBG6cNUdYNajdKPzmOFLa/ZkeebT0+NV+EcoXFhv/vB8k65Cw/+x',
-                  'postpreservationdata': '',
-                  'SMENC': 'ISO-8859-1',
-                  'SMLOCALE': 'US-EN',
-                  'login-button': 'Log In'}
-        f = op.open(CiscoRemoteFile.__login_url, urllib.urlencode(params))
+                  'PASSWORD': CISCO_PASS}
+        f = op.open(form_url, urllib.urlencode(params))
         for line in f:
             if 'title' in line.lower():
                 break
         f.close()
         
         if 'login' in line.lower():
-            raise InvalidCiscoCredentialsError() 
+            raise InvalidCiscoCredentialsError()
+        print "Logged in."
         
     def open_src(self):
         if not CiscoRemoteFile.__has_credentials():
@@ -452,7 +449,7 @@ def load():
         files = config.get(fw_name, 'files').split()
         remote_files = []
         
-        if brand == 'Cisco':
+        if brand in ('Cisco', 'CiscoSMB'):
             remote_file_class = CiscoRemoteFile
         else:
             remote_file_class = RemoteFile

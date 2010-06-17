@@ -21,13 +21,22 @@ import distutils.dir_util
 from xivo_fetchfw import fetchfw
 
 # Destination path for Cisco SMB firmwares.
-smb_fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Cisco', 'firmware')
+smb_fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'CiscoSMB', 'firmware')
+smb_dict_dst_path = os.path.join(fetchfw.TFTP_PATH, 'CiscoSMB', 'language')
 
 def ciscosmb_install(firmware, fw_name):
     zipfile_path = firmware.remote_files[0].path
-    
     fetchfw.makedirs(smb_fw_dst_path)
     fetchfw.zip_extract_files(zipfile_path, (fw_name,), smb_fw_dst_path)
+    
+    try:
+        dict_zipfile_path = firmware.remote_files[1].path
+        unzip_dir = fetchfw.zip_extract_all('ciscosmb_langs', dict_zipfile_path)
+        fetchfw.makedirs(smb_dict_dst_path)
+        distutils.dir_util.copy_tree(unzip_dir, smb_dict_dst_path)
+    except IndexError:
+        # No dictionary file attached to the firmware
+        pass
 
     
 def cisco7900_install(firmware):
@@ -52,3 +61,4 @@ def cisco_install(firmware):
 
 
 fetchfw.register_install_fn('Cisco', None, cisco_install)
+fetchfw.register_install_fn('CiscoSMB', None, cisco_install)

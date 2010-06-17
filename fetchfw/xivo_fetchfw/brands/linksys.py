@@ -22,6 +22,10 @@ import shutil
 from xivo_fetchfw import fetchfw
 
 
+def is_dict_file(xfile):
+    return xfile.filename.startswith('SPA9X2_Dictionaries')
+
+
 def linksys_install_spa9x2_langs(xfile):
     zip_path = fetchfw.zip_extract_all('linksys_langs', xfile.path)
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'language', 'spa9X2')
@@ -36,21 +40,29 @@ def linksys_install_spa9x2_langs(xfile):
 
 
 def linksys_dblzip_install(firmware, zip_name, fw_name):
-    zipfile1_path = firmware.remote_files[0].path
-    unzip_dir = fetchfw.zip_extract_all(firmware.name, zipfile1_path)
-    zipfile2_path = os.path.join(unzip_dir, zip_name)
-    
-    fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
-    fetchfw.makedirs(fw_dst_path)
-    fetchfw.zip_extract_files(zipfile2_path, (fw_name,), fw_dst_path)
+    for xfile in firmware.remote_files:
+        if is_dict_file(xfile):
+            linksys_install_spa9x2_langs(xfile)
+        else:
+            zipfile1_path = firmware.remote_files[0].path
+            unzip_dir = fetchfw.zip_extract_all(firmware.name, zipfile1_path)
+            zipfile2_path = os.path.join(unzip_dir, zip_name)
+            
+            fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
+            fetchfw.makedirs(fw_dst_path)
+            fetchfw.zip_extract_files(zipfile2_path, (fw_name,), fw_dst_path)
 
 
 def linksys_zip_install(firmware, fw_name):
-    zipfile_path = firmware.remote_files[0].path
-    
-    fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
-    fetchfw.makedirs(fw_dst_path)
-    fetchfw.zip_extract_files(zipfile_path, (fw_name,), fw_dst_path)
+    for xfile in firmware.remote_files:
+        if is_dict_file(xfile):
+            linksys_install_spa9x2_langs(xfile)
+        else:
+            zipfile_path = xfile.path
+            
+            fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'firmware')
+            fetchfw.makedirs(fw_dst_path)
+            fetchfw.zip_extract_files(zipfile_path, (fw_name,), fw_dst_path)
 
 
 dblzipped_fw = {('SPA962', '6.1.5a'): ('SPA962_6.1.5a.zip', 'spa962-6-1-5a.bin'),

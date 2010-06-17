@@ -315,64 +315,76 @@ url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp
 size: 26206
 sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 
-# Cisco SPA 525G 7.4.4
+# CiscoSMB SPA 525G 7.4.4
 [ciscospa525_744]
-brand: Cisco
+brand: CiscoSMB
 model: SPA525
 version: 7.4.4
-files: spa525g-7-4-4.zip
+files: spa525g-7-4-4.zip spa525_v745.zip
 
 [spa525g-7-4-4.zip]
 url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282414147/guest/spa525g-7-4-4.zip
 size: 10562212
 sha1sum: fd89788a118aa132c9d721d7c969c696fb62f0df
 
-# Cisco SPA 509G 7.4.4
+# Langages files for CiscoSMB SPA525G phone 7.4.X
+[spa525_v745.zip]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-1-67251/spa525_v745.zip
+size: 120137
+sha1sum: c57412fb760767c20103d8a5a093d0f00817c660
+
+# CiscoSMB SPA 509G 7.4.4
 [ciscospa509_744]
-brand: Cisco
+brand: CiscoSMB
 model: SPA509
 version: 7.4.4
-files: spa5x5-7-4-4.zip
+files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
 
-# Cisco SPA 508G 7.4.4
+# CiscoSMB SPA 508G 7.4.4
 [ciscospa508_744]
-brand: Cisco
+brand: CiscoSMB
 model: SPA508
 version: 7.4.4
-files: spa5x5-7-4-4.zip
+files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
 
-# Cisco SPA 504G 7.4.4
+# CiscoSMB SPA 504G 7.4.4
 [ciscospa504_744]
-brand: Cisco
+brand: CiscoSMB
 model: SPA504
 version: 7.4.4
-files: spa5x5-7-4-4.zip
+files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
 
-# Cisco SPA 502G 7.4.4
+# CiscoSMB SPA 502G 7.4.4
 [ciscospa502_744]
-brand: Cisco
+brand: CiscoSMB
 model: SPA502
 version: 7.4.4
-files: spa5x5-7-4-4.zip
+files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
 
-# Cisco SPA 501G 7.4.4
+# CiscoSMB SPA 501G 7.4.4
 [ciscospa501_744]
-brand: Cisco
+brand: CiscoSMB
 model: SPA501
 version: 7.4.4
-files: spa5x5-7-4-4.zip
+files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
 
 [spa5x5-7-4-4.zip]
 url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282724524/guest/spa5x5-7-4-4.zip
 size: 7607391
 sha1sum: 2e4173d847170837011cb58b6107ad765041bc5d
 
+# Langages files for CiscoSMB SPA50X phones 7.4.X
+[spa50x_30x_v745.zip]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-2-67252/spa50x_30x_v745.zip
+size: 69437
+sha1sum: fecbded0ba1a187d325eb44db8a69bd32a47849d
+
 # Linksys SPA962 6.1.5a
 [lsspa962_615a]
 brand: Linksys
 model: SPA962
 version: 6.1.5a
-files: SPA962_Firmware.zip
+files: SPA962_Firmware.zip SPA9X2_Dictionaries_v615.zip
 
 [SPA962_Firmware.zip]
 url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10040/SPA962_Firmware.zip
@@ -384,7 +396,7 @@ sha1sum: 4c9671873c241c679285065b495b5d7cf29f6975
 brand: Linksys
 model: SPA942
 version: 6.1.5a
-files: SPA942_Firmware.zip
+files: SPA942_Firmware.zip SPA9X2_Dictionaries_v615.zip
 
 [SPA942_Firmware.zip]
 url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10039/SPA942_Firmware.zip
@@ -408,7 +420,7 @@ sha1sum: 12c1891c22d037736d11f866ba4b82a2fe1a4e5d
 brand: Linksys
 model: SPA922
 version: 6.1.5a
-files: SPA942_Firmware.zip
+files: SPA942_Firmware.zip SPA9X2_Dictionaries_v615.zip
 
 # Linksys SPA921 5.1.8
 [lsspa921_518]
@@ -428,6 +440,12 @@ files: SPA901_Firmware.zip
 url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10034/SPA901_Firmware.zip
 size: 3531905
 sha1sum: 0015dc9dd6d1a8d2e0ffe03915bf19f00787caf9
+
+# Langages files for Linksys SPA9X2 phones 6.1.5
+[SPA9X2_Dictionaries_v615.zip]
+url: https://supportforums.cisco.com/servlet/JiveServlet/downloadBody/9931-102-1-22413/SPA9X2_Dictionaries_v615.zip
+size: 215186
+sha1sum: 5b4fcb2d822b2eea6743fa873894d54ed4ba713f
 
 # Linksys PAP2T 5.1.6
 [lspap2t_516]
