@@ -339,13 +339,18 @@ class dwho_http_1_1_response extends dwho_http_1_1_abstract
 		return($this->_upload_file);
 	}
 
-	function send($die=false)
+	function send($die=false, $content=NULL)
 	{
 		if(isset($this->_status_line) === true)
 			header($this->_status_line);
 
 		foreach($this->_headers as $value)
 			header($value);
+
+		if(is_string($content))
+			echo $content;
+		else if(!is_null($content))
+			var_dump($content);
 
 		if((bool) $die === true)
 			die();
