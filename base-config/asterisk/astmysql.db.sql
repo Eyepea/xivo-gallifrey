@@ -281,8 +281,8 @@ CREATE TABLE `ctidirectories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectories` VALUES(4,'xivodir','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["phonebook.firstname"]','["phonebook.lastname"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
-INSERT INTO `ctidirectories` VALUES(5,'internal','','','','','','["{internal-fullname}"]','','','','','','Répertoire XiVO Interne',1);
+INSERT INTO `ctidirectories` VALUES(4,'xivodir','phonebook','phonebook','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["phonebook.firstname"]','["phonebook.lastname"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
+INSERT INTO `ctidirectories` VALUES(5,'internal','internal','','','','','["{internal-fullname}"]','','','','','','Répertoire XiVO Interne',1);
 
 
 DROP TABLE IF EXISTS `ctidisplays`;
@@ -1348,7 +1348,7 @@ INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','usereqphone','n
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','realm','xivo');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','alwaysauthreject','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','limitonpeer','yes');
-INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useragent','XIVO PBX');
+INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','useragent','XiVO PBX');
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','checkmwi',10);
 INSERT INTO `staticsip` VALUES (NULL,0,0,0,'sip.conf','general','buggymwi','no');
 INSERT INTO `staticsip` VALUES (NULL,0,0,1,'sip.conf','general','regcontext',NULL);
@@ -1473,11 +1473,11 @@ INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','vol
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','mailcmd','/usr/sbin/sendmail -t');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','serveremail','xivo');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','charset','UTF-8');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','fromstring','XIVO PBX');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','fromstring','XiVO PBX');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emaildateformat','%A %d %B %Y à %H:%M:%S %Z');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emaildatelocale','fr_FR.UTF-8');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pbxskip','no');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XIVO');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailsubject','Messagerie XiVO');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','emailbody','Bonjour ${VM_NAME} !
 
 Vous avez reçu un message d\'une durée de ${VM_DUR} minute(s), il vous reste actuellement ${VM_MSGNUM} message(s) non lu(s) sur votre messagerie vocale : ${VM_MAILBOX}.
@@ -1486,8 +1486,8 @@ Le dernier a été envoyé par ${VM_CALLERID}, le ${VM_DATE}. Si vous le souhait
 
 Merci.
 
--- Messagerie XIVO --');
-INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pagerfromstring','XIVO PBX');
+-- Messagerie XiVO --');
+INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','pagerfromstring','XiVO PBX');
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagersubject',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,1,'voicemail.conf','general','pagerbody',NULL);
 INSERT INTO `staticvoicemail` VALUES (NULL,0,0,0,'voicemail.conf','general','adsifdn','0000000F');

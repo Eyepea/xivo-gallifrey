@@ -266,7 +266,7 @@ Expéditeur :
 Sujet :
 
 ; meetmefeatures_emailsubject
-[XIVO] Invitation à la chambre de conférence
+[XiVO] Invitation à la chambre de conférence
 
 ; fm_meetmefeatures_emailbody
 Corps :
@@ -282,4 +282,4 @@ Vous avez été invité à rejoindre la chambre de conférence : %{CONFNAME}$s.
 
 Merci.
 
--- Chambre de conférence XIVO --
+-- Chambre de conférence XiVO --

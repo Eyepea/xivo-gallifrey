@@ -334,7 +334,7 @@ Sender :
 Subject :
 
 ; meetmefeatures_emailsubject
-[XIVO] Invitation to join a conference room
+[XiVO] Invitation to join a conference room
 
 ; fm_meetmefeatures_emailbody
 Body :
@@ -350,5 +350,5 @@ You have been invited to join %{CONFNAME}$s conference room.
 
 Thanks.
 
--- XIVO Conference Room --
+-- XiVO Conference Room --
 
