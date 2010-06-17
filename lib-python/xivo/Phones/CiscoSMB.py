@@ -44,7 +44,8 @@ class CiscoSMB(PhoneVendorMixin):
                        'spa502g',
                        'spa504g',
                        'spa508g',
-                       'spa509g')
+                       'spa509g',
+                       'spa525g')
 
     CISCOSMB_MACADDR_PREFIX = ('1:00:26:99',)
 
@@ -57,7 +58,7 @@ class CiscoSMB(PhoneVendorMixin):
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
-        cls.CISCOSMB_COMMON_DIR = os.path.join(cls.TFTPROOT, "CiscoSMB/")
+        cls.CISCOSMB_COMMON_DIR = os.path.join(cls.TFTPROOT, 'CiscoSMB', '')
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
@@ -206,6 +207,11 @@ class CiscoSMB(PhoneVendorMixin):
                     key -= 12
                     fk_config_lines.append(cls.__format_function_keys_unit(key, func))
                     continue
+            elif model == 'spa525g':
+                if key > 5:
+                    key -= 5
+                    fk_config_lines.append(cls.__format_function_keys_unit(key, func))
+                    continue
             elif key > 12:
                 continue
 
@@ -282,7 +288,6 @@ class CiscoSMB(PhoneVendorMixin):
                 '              or option vendor-class-identifier = "Cisco %s");\n' % model.upper(),
                 '    log("boot CiscoSMB %s");\n' % model.upper(),
                 '    option tftp-server-name "%s";\n' % addresses['bootServer'],
-                '    option bootfile-name "CiscoSMB/%s.cfg";\n' % (model[:-1] + model[-1].upper()),
                 '}\n',
                 '\n'):
                 yield line
