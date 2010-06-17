@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://www.greenable.de/downloads/"
+TARBALL_PREFIX="core-prompts-DE-greenable"
+SRC_DIR_PREFIX=
+PKG_NAME="asterisk-sounds-gsm-de-de"
+DFSG_EXCLUDE_PATTERNS=
