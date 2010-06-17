@@ -333,6 +333,11 @@ class xivo_application_xivo_object_entity extends xivo_application_xivo_object_a
 		return($r);
 	}
 
+	function delete_all()
+	{
+		return($this->_dso->delete_all());
+	}
+
 	function delete_entity()
 	{
 		if(dwho_issa('entity',$this->_info) === false)

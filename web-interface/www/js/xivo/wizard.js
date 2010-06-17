@@ -19,28 +19,30 @@
 var xivo_wz_fm_dbconfig_backend_elt = {
 	'error-dbconfig-sqlite-xivo':	{'style':	{display: 'none'}},
 	'fd-dbconfig-sqlite-xivodb':	{'style':	{display: 'none'}},
-	'it-dbconfig-sqlite-xivodb':	{'property':	{disabled: true}}, 
+	'it-dbconfig-sqlite-xivodb':	{'property':	{disabled: true}},
 	'error-dbconfig-sqlite-ipbx':	{'style':	{display: 'none'}},
 	'fd-dbconfig-sqlite-ipbxdb':	{'style':	{display: 'none'}},
-	'it-dbconfig-sqlite-ipbxdb':	{'property':	{disabled: true}}, 
+	'it-dbconfig-sqlite-ipbxdb':	{'property':	{disabled: true}},
+	'fd-dbconfig-sqlite-qldb':	{'style':	{display: 'none'}},
+	'it-dbconfig-sqlite-qldb':	{'property':	{disabled: true}},
 	'fd-dbconfig-mysql-host':	{'style':	{display: 'none'}},
-	'it-dbconfig-mysql-host':	{'property':	{disabled: true}}, 
+	'it-dbconfig-mysql-host':	{'property':	{disabled: true}},
 	'fd-dbconfig-mysql-port':	{'style':	{display: 'none'}},
 	'it-dbconfig-mysql-port':	{'property':	{disabled: true}},
 	'error-dbconfig-mysql-xivo':	{'style':	{display: 'none'}},
 	'fd-dbconfig-mysql-xivodbname': {'style':	{display: 'none'}},
 	'it-dbconfig-mysql-xivodbname': {'property':	{disabled: true}},
 	'fd-dbconfig-mysql-xivouser':	{'style':	{display: 'none'}},
-	'it-dbconfig-mysql-xivouser':	{'property':	{disabled: true}}, 
+	'it-dbconfig-mysql-xivouser':	{'property':	{disabled: true}},
 	'fd-dbconfig-mysql-xivopass':	{'style':	{display: 'none'}},
-	'it-dbconfig-mysql-xivopass':	{'property':	{disabled: true}}, 
+	'it-dbconfig-mysql-xivopass':	{'property':	{disabled: true}},
 	'error-dbconfig-mysql-ipbx':	{'style':	{display: 'none'}},
 	'fd-dbconfig-mysql-ipbxdbname': {'style':	{display: 'none'}},
 	'it-dbconfig-mysql-ipbxdbname': {'property':	{disabled: true}},
 	'fd-dbconfig-mysql-ipbxuser':	{'style':	{display: 'none'}},
-	'it-dbconfig-mysql-ipbxuser':	{'property':	{disabled: true}}, 
+	'it-dbconfig-mysql-ipbxuser':	{'property':	{disabled: true}},
 	'fd-dbconfig-mysql-ipbxpass':	{'style':	{display: 'none'}},
-	'it-dbconfig-mysql-ipbxpass':	{'property':	{disabled: true}}, 
+	'it-dbconfig-mysql-ipbxpass':	{'property':	{disabled: true}},
 	'links':
 		{link:	[['error-dbconfig-sqlite-xivo',0,1],
 			 ['fd-dbconfig-sqlite-xivodb',0,1],
@@ -48,6 +50,8 @@ var xivo_wz_fm_dbconfig_backend_elt = {
 			 ['error-dbconfig-sqlite-ipbx',0,1],
 			 ['fd-dbconfig-sqlite-ipbxdb',0,1],
 			 ['it-dbconfig-sqlite-ipbxdb',0,1],
+			 ['fd-dbconfig-sqlite-qldb',0,1],
+			 ['it-dbconfig-sqlite-qldb',0,1],
 			 ['fd-dbconfig-mysql-host',0,1],
 			 ['it-dbconfig-mysql-host',0,1],
 			 ['fd-dbconfig-mysql-port',0,1],
@@ -76,6 +80,8 @@ xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-xivodb']['property'] =
 xivo_wz_fm_dbconfig_backend['sqlite']['error-dbconfig-sqlite-ipbx']['style'] = {display: 'block'};
 xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-ipbxdb']['style'] = {display: 'block'};
 xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-ipbxdb']['property'] = {disabled: false};
+xivo_wz_fm_dbconfig_backend['sqlite']['fd-dbconfig-sqlite-qldb']['style'] = {display: 'block'};
+xivo_wz_fm_dbconfig_backend['sqlite']['it-dbconfig-sqlite-qldb']['property'] = {disabled: false};
 
 xivo_attrib_register('fm_dbconfig_backend-sqlite',xivo_wz_fm_dbconfig_backend['sqlite']);
 
@@ -180,3 +186,4 @@ function xivo_wizard_dbconfig_backend_onload()
 }
 
 dwho.dom.set_onload(xivo_wizard_dbconfig_backend_onload);
+

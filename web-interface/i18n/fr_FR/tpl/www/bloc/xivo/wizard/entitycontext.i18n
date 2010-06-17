@@ -23,7 +23,7 @@ Nom :
 Nom affiché :
 
 ; fm_context_internal-displayname-default(default)
-Défaut
+Appel Interne
 
 ; fm_context_internal-numberbeg
 Début de l'intervalle de numéro :
@@ -72,7 +72,7 @@ Appels sortants
 
 ; cmt_fm_context_internal-displayname
 
-; cmt_fm_context_internal-numberbeg 
+; cmt_fm_context_internal-numberbeg
 
 ; cmt_fm_context_internal-numberend
 

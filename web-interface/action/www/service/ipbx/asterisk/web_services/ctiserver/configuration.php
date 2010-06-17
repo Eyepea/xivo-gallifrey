@@ -182,7 +182,6 @@ switch($act)
 			$dispout = array();
 			foreach($load_sheetactions as $action)
 			{
-#var_dump($action);
 				$qtui = "null";
 				$actid = $action['name'];
 				$actout[$actid]['whom'] = $action['whom'];

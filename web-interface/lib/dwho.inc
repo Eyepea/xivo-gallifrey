@@ -266,7 +266,7 @@ class dwho
 		if(dwho_datastorage::is_valid($dso['type']) === false)
 			die('ERR: Invalid datastorage "type" configuration');
 		else if(dwho_datastorage::chk_extension_loaded($dso['type'],true) === false)
-			die('ERR: Datastorage '.$dso['type'].' extension is not loaded'); 
+			die('ERR: Datastorage '.$dso['type'].' extension is not loaded');
 		else if(($datastorage = &dwho_gct::set_get(
 						dwho_datastorage::factory($dso['type'],
 									  $dso),

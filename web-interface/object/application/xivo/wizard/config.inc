@@ -57,6 +57,9 @@ $array['element']['dbconfig']['sqlite']['xivodb']['default'] = '/var/lib/pf-xivo
 $array['element']['dbconfig']['sqlite']['ipbxdb'] = array();
 $array['element']['dbconfig']['sqlite']['ipbxdb']['default'] = '/var/lib/asterisk/astsqlite';
 
+$array['element']['dbconfig']['sqlite']['qldb'] = array();
+$array['element']['dbconfig']['sqlite']['qldb']['default'] = '/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db';
+
 $array['element']['dbconfig']['mysql'] = array();
 $array['element']['dbconfig']['mysql']['host'] = array();
 $array['element']['dbconfig']['mysql']['host']['default'] = 'localhost';
@@ -171,6 +174,9 @@ $array['filter']['dbconfig']['sqlite']['xivodb'] = array('minlen'	=> 4,
 							 'maxlen'	=> 255,
 							 'cast'		=> 'sgraph');
 $array['filter']['dbconfig']['sqlite']['ipbxdb'] = array('minlen'	=> 4,
+							 'maxlen'	=> 255,
+							 'cast'		=> 'sgraph');
+$array['filter']['dbconfig']['sqlite']['qldb'] = array('minlen'	=> 4,
 							 'maxlen'	=> 255,
 							 'cast'		=> 'sgraph');
 

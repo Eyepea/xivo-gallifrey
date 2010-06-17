@@ -43,7 +43,7 @@ endif;
 echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-xivodb'),
 			  'name'	=> 'dbconfig[sqlite][xivodb]',
 			  'labelid'	=> 'dbconfig-sqlite-xivodb',
-			  'size'	=> 20,
+			  'size'	=> 40,
 #			  'help'	=> $this->bbf('hlp_fm_dbconfig_sqlite-xivodb'),
 			  'comment'	=> $this->bbf('cmt_fm_dbconfig_sqlite-xivodb'),
 			  'default'	=> $element['sqlite']['xivodb']['default'],
@@ -51,7 +51,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-xivodb'),
 			  'error'	=> $this->bbf_args('error_generic',
 							   $this->get_var('error','dbconfig','sqlite','xivodb'))));
 
-if(($error = (string) $this->get_var('error','dbconfig','sqlite','ipbx')) !== ''):
+if(($error = (string) $this->get_var('error','dbconfig','sqlite','ipbxdb')) !== ''):
 	echo	'<div id="error-dbconfig-sqlite-ipbx" class="dwho-txt-error">','
 			<span class="dwho-msg-error-icon">&nbsp;</span>',
 			$this->bbf_args('error_dbconfig_ipbx',$error),
@@ -61,13 +61,24 @@ endif;
 echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-ipbxdb'),
 			  'name'	=> 'dbconfig[sqlite][ipbxdb]',
 			  'labelid'	=> 'dbconfig-sqlite-ipbxdb',
-			  'size'	=> 20,
+			  'size'	=> 40,
 #			  'help'	=> $this->bbf('hlp_fm_dbconfig_sqlite-ipbxdb'),
 			  'comment'	=> $this->bbf('cmt_fm_dbconfig_sqlite-ipbxdb'),
 			  'default'	=> $element['sqlite']['ipbxdb']['default'],
 			  'value'	=> $this->get_var('info','sqlite','ipbxdb'),
 			  'error'	=> $this->bbf_args('error_generic',
 							   $this->get_var('error','dbconfig','sqlite','ipbxdb')))),
+
+	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-qldb'),
+			  'name'	=> 'dbconfig[sqlite][qldb]',
+			  'labelid'	=> 'dbconfig-sqlite-qldb',
+			  'size'	=> 40,
+#			  'help'	=> $this->bbf('hlp_fm_dbconfig_sqlite-ipbxdb'),
+			  'comment'	=> $this->bbf('cmt_fm_dbconfig_sqlite-qldb'),
+			  'default'	=> $element['sqlite']['qldb']['default'],
+			  'value'	=> $this->get_var('info','sqlite','qldb'),
+			  'error'	=> $this->bbf_args('error_generic',
+							   $this->get_var('error','dbconfig','sqlite','qldb')))),
 
 	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_mysql-host'),
 			  'name'	=> 'dbconfig[mysql][host]',
@@ -91,7 +102,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_sqlite-ipbxdb'),
 			  'error'	=> $this->bbf_args('error_generic',
 							   $this->get_var('error','dbconfig','mysql','port'))));
 
-if(($error = (string) $this->get_var('error','dbconfig','mysql','xivo')) !== ''):
+if(($error = (string) $this->get_var('error','dbconfig','mysql','xivodb')) !== ''):
 	echo	'<div id="error-dbconfig-mysql-xivo" class="dwho-txt-error">','
 			<span class="dwho-msg-error-icon">&nbsp;</span>',
 			$this->bbf_args('error_dbconfig_xivo',$error),
@@ -131,7 +142,7 @@ echo	$form->text(array('desc'	=> $this->bbf('fm_dbconfig_mysql-xivodbname'),
 			  'error'	=> $this->bbf_args('error_generic',
 							   $this->get_var('error','dbconfig','mysql','xivopass'))));
 
-if(($error = (string) $this->get_var('error','dbconfig','mysql','ipbx')) !== ''):
+if(($error = (string) $this->get_var('error','dbconfig','mysql','ipbxdb')) !== ''):
 	echo	'<div id="error-dbconfig-mysql-ipbx" class="dwho-txt-error">',
 			'<span class="dwho-msg-error-icon">&nbsp;</span>',
 			$this->bbf_args('error_dbconfig_ipbx',$error),

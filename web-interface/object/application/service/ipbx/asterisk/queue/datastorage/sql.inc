@@ -150,7 +150,6 @@ class xivo_application_service_asterisk_queue_sql extends xivo_application_abstr
 		$this->_dso->new_order('id', null, 'queueskill');
 		$this->_dso->limit($limit);
 		
-#        var_dump($this->_dso->_query);
 		if(!is_null($id))
 		{ $res = $this->_dso->select_single(); }
 		else

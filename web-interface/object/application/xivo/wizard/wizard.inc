@@ -639,6 +639,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 	function save_step_dbconfig($data)
 	{
+
 		$this->_wizsess['prevstep'] = $this->get_current_step();
 
 		if(dwho_issa('dbconfig',$data) === false
@@ -678,7 +679,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return(false);
 		}
 
-		$ipbxdburi = $xivodburi = array('scheme' => $result['backend']);
+		$ipbxdburi = $xivodburi = $qldburi = array('scheme' => $result['backend']);
 
 		$ref = &$result[$result['backend']];
 
@@ -687,6 +688,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			case 'sqlite':
 				$xivodburi['path'] = $ref['xivodb'];
 				$ipbxdburi['path'] = $ref['ipbxdb'];
+				$qldburi['path'] = $ref['qldb'];
 				break;
 			case 'mysql':
 				$xivodburi['host'] = $ref['host'];
@@ -708,10 +710,14 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		}
 
 		if(($xivodburistr = $this->_uri->build_uri($xivodburi)) === false)
-			$this->_set_error('dbconfig',$backend,'xivo','invalid');
+			$this->_set_error('dbconfig',$backend,'xivodb','invalid');
 
 		if(($ipbxdburistr = $this->_uri->build_uri($ipbxdburi)) === false)
-			$this->_set_error('dbconfig',$backend,'ipbx','invalid');
+			$this->_set_error('dbconfig',$backend,'ipbxdb','invalid');
+
+		if($result['backend'] == 'sqlite'
+		&& ($qldburistr = $this->_uri->build_uri($qldburi)) === false)
+			$this->_set_error('dbconfig',$backend,'qldb','invalid');
 
 		$this->_set_result('dbconfig',$result);
 
@@ -722,24 +728,28 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if(($xivoparamdso = dwho_datastorage::get_param_from_uri($xivodburistr)) === false
 		|| ($xivodso = @dwho_datastorage::factory($xivoparamdso['type'],$xivoparamdso)) === false)
-			$this->_set_error('dbconfig',$backend,'xivo','invalid');
+			$this->_set_error('dbconfig',$backend,'xivodb','invalid');
 
 		if(($ipbxparamdso = dwho_datastorage::get_param_from_uri($ipbxdburistr)) === false
 		|| ($ipbxdso = @dwho_datastorage::factory($ipbxparamdso['type'],$ipbxparamdso)) === false)
-			$this->_set_error('dbconfig',$backend,'ipbx','invalid');
+			$this->_set_error('dbconfig',$backend,'ipbxdb','invalid');
+
+		if($result['backend'] == 'sqlite'
+		&& (($qlparamdso = dwho_datastorage::get_param_from_uri($qldburistr)) === false
+		|| ($qldso = @dwho_datastorage::factory($qlparamdso['type'],$qlparamdso)) === false))
+			$this->_set_error('dbconfig',$backend,'qldb','invalid');
 
 		if($this->get_errnb() > 0)
 			return(false);
 
 		if($xivodso->is_open() === false)
-			$this->_set_error('dbconfig',$backend,'xivo','connection');
-		else
-			$xivodso->close();
+			$this->_set_error('dbconfig',$backend,'xivodb','connection');
 
 		if($ipbxdso->is_open() === false)
-			$this->_set_error('dbconfig',$backend,'ipbx','connection');
-		else
-			$ipbxdso->close();
+			$this->_set_error('dbconfig',$backend,'ipbxdb','connection');
+
+		$xivodso->close();
+		$ipbxdso->close();
 
 		if($this->get_errnb() > 0)
 			return(false);
@@ -748,6 +758,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_wizsess['dbconfig']['save'] = array();
 		$this->_wizsess['dbconfig']['save']['xivo'] = $xivodburistr;
 		$this->_wizsess['dbconfig']['save']['ipbx'] = $ipbxdburistr;
+		$this->_wizsess['dbconfig']['save']['ql'] = $qldburistr;
 		$this->_wizsess['dbconfig']['result'] = $result;
 
 		$this->_wizsess['step'] = $this->get_next_step('dbconfig');
@@ -953,7 +964,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$this->_set_error('context_outcall','missing_context');
 		else
 		{
-			$outcall = $this->_prepare_context($data['context']['outcall']);
+			$outcall = $this->_prepare_context($data['context']['outcall'],null,$entity);
 
 			if(($resoutcall = (bool) $appcontext->set_add($outcall)) === false)
 				$this->_set_error('context_outcall',$appcontext->get_error());
@@ -1286,14 +1297,15 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(dwho_issa('entity',$this->_wizsess) === false)
 			return(false);
 
+		$name = $this->_wizsess['entity']['name'];
+
 		$this->_load_xivo_dso();
 		$this->_load_ipbx_service();
 
 		$appentity = &$this->_xobj->get_application('entity');
 
 		// allow to reexecute the process several times
-		if($appentity->get(1) !== false)
-			$appentity->delete_entity();
+		$appentity->delete_all();
 
 		if($appentity->set_add($this->_wizsess['entity']) === false
 		|| $appentity->add() === false)
@@ -1334,7 +1346,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 				$appcontext->delete();
 			}
 		}
-
 
 		if($appcontext->set_add($this->_wizsess['context']['internal']) === false
 		|| $appcontext->add() === false)
@@ -1389,6 +1400,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$dbconfig = array();
 		$dbconfig['xivo'] = $this->_wizsess['dbconfig']['save']['xivo'];
 		$dbconfig['ipbx'] = $this->_wizsess['dbconfig']['save']['ipbx'];
+		$dbconfig['ql'] = $this->_wizsess['dbconfig']['save']['ql'];
 		$dbconfig['ipbxengine'] = $this->_wizsess['ipbxengine']['engine'];
 
 		if($this->_sysconfd->request_post('/set_db_backends',$dbconfig) === false)
@@ -1423,7 +1435,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		return true;
 	}
-	
+
 	function _prepare_netiface()
 	{
 		if(dwho_issa('netiface',$this->_wizsess) === false
@@ -1435,21 +1447,21 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		// save to database
 		$this->_load_xivo_dso();
-		
+
 		$this->_load_ipbx_service();
 		$module = &$this->_xobj->get_module('netiface');
 
 		//computing broadcast address
 		$ip = split('\.', $netiface['address']);
 		$nm = split('\.', $netiface['netmask']);
-	
+
 		$bcast  = array();
 		for($i = 0; $i < 4; $i++)
 			$bcast[]  = intval($ip[$i]) | (intval($nm[$i]) ^ 255);
-	
+
 		$bcast  = implode('.', $bcast);
-	
-	
+
+
 		$data = array(
 			'name'        => $name,
 			'ifname'      => $name,
@@ -1485,12 +1497,12 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 <html lang="<?=DWHO_I18N_BABELFISH_LANGUAGE?>">
 <head>
 	<title><?= dwho_htmlsc($tpl->bbf('page_title',php_uname('n'))); ?></title>
-	<script> 
+	<script>
 		function redirect()
 		{
 			window.location = "<?= $uri ?>";
 		}
-		
+
 		setInterval("redirect()", 10000);
 	</script>
 </head>
@@ -1604,7 +1616,6 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		//page redirection must be sent to client BEFORE changing server ip address
 		$this->send_redirect($tpl);
 
-
 		if($this->_commit_netiface() === false
 		|| $commonconf->apply()      === false)
 			return(false);
@@ -1613,6 +1624,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if($this->_sysconfd->request_post('/services', array('pf-xivo-provisioning' => 'restart')) === false)
 			return(false);
 
+		// restart asterisk service
+		if($this->_sysconfd->request_post('/services', array('asterisk' => 'restart')) === false)
+			return(false);
 
 		return(true);
 	}

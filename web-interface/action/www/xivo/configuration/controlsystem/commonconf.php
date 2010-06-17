@@ -34,9 +34,6 @@ $content = str_replace("\n", "<br/>\n", $content);
 $_TPL->set_var('status',$sysconfd->last_status_code());
 $_TPL->set_var('info' , $content);
 
-#var_dump($sysconfd->last_status_code());
-#var_dump($content);
-
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));
 $menu->set_left('left/xivo/configuration');

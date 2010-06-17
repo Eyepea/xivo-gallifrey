@@ -19,6 +19,11 @@ XiVO database :
 ; fm_dbconfig_sqlite-ipbxdb
 IPBX database :
 
+; fm_dbconfig_sqlite-qldb
+queuelogger database :
+
+; cmt_fm_dbconfig_sqlite-qldb
+
 ; fm_dbconfig_mysql-host
 Host :
 
