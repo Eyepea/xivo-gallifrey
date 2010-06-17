@@ -1121,8 +1121,9 @@ endif;
 			'</p>';
 	endif;
 
-	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp_addons');
 	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/phonefunckey');
+
+	$this->file_include('bloc/service/ipbx/asterisk/pbx_settings/users/sccp_addons');
 
 	// softkeys
 ?>
