@@ -59,6 +59,7 @@ Wdc = {'templates_path':                        os.path.join(os.path.sep, 'usr',
        'provisioning_config_path':              None,
        'webinterface_xivo_config_filename':     "xivo.ini",
        'webinterface_ipbx_config_filename':     "ipbx.ini",
+       'webinterface_cti_config_filename':      "cti.ini",
        'webinterface_tpl_directory':            "web-interface",
        'webinterface_config_path':              None}
 
@@ -411,6 +412,9 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
 
         args['xivo'] = urisup.uri_help_unsplit(xivodburi)
 
+    if 'ql' not in args:
+        args['ql'] = args['xivo']
+
     if 'ipbxengine' not in args:
         raise HttpReqError(415, "missing option 'ipbxengine'")
     elif args['ipbxengine'] not in WIZARD_IPBX_ENGINES:
@@ -475,6 +479,15 @@ def set_db_backends(args, options): # pylint: disable-msg=W0613
                           {'general':
                                 {'datastorage': '"%s"' % args['xivo']}})
 
+        merge_config_file(Wdc['webinterface_cti_tpl_file'],
+                          Wdc['webinterface_cti_custom_tpl_file'],
+                          Wdc['webinterface_cti_file'],
+                          {'general':
+                                {'datastorage': '"%s"' % args['xivo']},
+                           'queuelogger':
+                                {'datastorage': '"%s"' % args['ql']},
+			  })
+
         merge_config_file("%s.%s" % (Wdc['webinterface_ipbx_tpl_file'], args['ipbxengine']),
                           "%s.%s" % (Wdc['webinterface_ipbx_custom_tpl_file'], args['ipbxengine']),
                           Wdc['webinterface_ipbx_file'],
@@ -534,7 +547,7 @@ def safe_init(options):
                                                               Wdc['asterisk_tpl_directory'],
                                                               Wdc["asterisk_%s_config_filename" % x])
 
-    for x in ('xivo', 'ipbx'):
+    for x in ('xivo', 'ipbx', 'cti'):
         Wdc["webinterface_%s_file" % x] = os.path.join(Wdc['webinterface_config_path'],
                                                        Wdc["webinterface_%s_config_filename" % x])
 
