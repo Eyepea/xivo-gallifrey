@@ -349,9 +349,9 @@ class AMIClass:
                                ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                ('Async', 'true')]
             if switch_originates:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
-                                       ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                       ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrcnum))
+                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)))
+                command_details.append(('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc))
+                command_details.append(('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrcnum))
             else:
                 command_details.append(('CallerID', '"%s"<%s>' % (cidnamesrc, phonesrcnum)))
             for var, val in extravars.iteritems():
@@ -380,9 +380,9 @@ class AMIClass:
                                ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                ('Async', 'true')]
             if switch_originates:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
-                                       ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc),
-                                       ('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrcnum))
+                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)))
+                command_details.append(('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc))
+                command_details.append(('Variable', 'XIVO_ORIGSRCNUM=%s'  % phonesrcnum))
             else:
                 command_details.append(('CallerID', '"%s"<%s>' % (cidnamesrc, phonesrcnum)))
             for var, val in extravars.iteritems():
@@ -411,8 +411,8 @@ class AMIClass:
                                ('Variable', 'XIVO_ORIGAPPLI=%s' % 'OrigDial'),
                                ('Async', 'true')]
             if switch_originates:
-                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)),
-                                       ('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc))
+                command_details.append(('CallerID', '"%s"<%s>' % (cidnamedst, phonedst)))
+                command_details.append(('Variable', 'XIVO_ORIGSRCNAME=%s' % cidnamesrc))
                 if 'XIVO_ORIGSRCNUM' not in extravars:
                     extravars['XIVO_ORIGSRCNUM'] = phonesrcnum
             else:

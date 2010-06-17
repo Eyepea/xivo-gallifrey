@@ -474,12 +474,15 @@ class XivoCTICommand(BaseCommand):
                     userinfo['state'] = state
                 else:
                     log.warning('(user %s) : state <%s> is not an allowed one => <%s>'
-                        % (userinfo.get('user'), state, self.presence_sections[presenceid].getdefaultstate()))
+                                % (userinfo.get('user'), state,
+                                   self.presence_sections[presenceid].getdefaultstate()))
                     userinfo['state'] = self.presence_sections[presenceid].getdefaultstate()
             else:
                 userinfo['state'] = 'xivo_unknown'
 
-            self.__presence_action__(userinfo['astid'], self.__agentnum__(userinfo), userinfo)
+            self.__presence_action__(userinfo['astid'],
+                                     self.__agentnum__(userinfo),
+                                     userinfo)
 
             self.capas[capaid].conn_inc()
         except Exception:
@@ -2986,6 +2989,8 @@ class XivoCTICommand(BaseCommand):
         channel = event.get('Channel')
         uniqueid = event.get('Uniqueid')
         state = event.get('State')
+        timenow = time.time()
+        log.info('%s time delay since uniqueid : %f' % (astid, timenow - int(float(uniqueid))))
         if channel == 'Substitution/voicemail':
             # this kind of channel 1) seems useless for us 2) never hangups
             return
@@ -2994,7 +2999,7 @@ class XivoCTICommand(BaseCommand):
             log.warning('%s empty channel name in event %s' % (astid, event))
             return
         self.uniqueids[astid][uniqueid] = { 'channel' : channel,
-                                            'time-newchannel' : time.time(),
+                                            'time-newchannel' : timenow,
                                             'dialplan_data' : {} }
         self.channels[astid][channel] = uniqueid
         if state == 'Rsrvd':
@@ -5436,10 +5441,10 @@ class XivoCTICommand(BaseCommand):
 
     # \brief Originates / transfers.
     def __originate_or_transfer__(self, commname, userinfo, src, dst):
-        log.info('%s %s %s %s' % (commname, userinfo, src, dst))
+        log.info('__originate_or_transfer__ %s %s %s %s' % (commname, userinfo, src, dst))
         srcsplit = src.split(':', 1)
         dstsplit = dst.split(':', 1)
-
+        
         if commname == 'originate' and len(srcsplit) == 2 and len(dstsplit) == 2:
             [typesrc, whosrc] = srcsplit
             [typedst, whodst] = dstsplit
@@ -5472,7 +5477,7 @@ class XivoCTICommand(BaseCommand):
             else:
                 log.warning('unknown typesrc <%s>' % typesrc)
                 return
-
+            
             # dst
             if typedst == 'ext':
                 context_dst = context_src
