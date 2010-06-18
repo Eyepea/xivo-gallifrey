@@ -58,7 +58,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 
 		$this->_dso->aggregate_where();
 
-		$sip = $iax = $custom = array();
+		$sip = $iax = $sccp = $custom = array();
 		$sip['category'] = $iax['category'] = $custom['category'] = 'user';
 
 		$arr['internal'] = 0;
