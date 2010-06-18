@@ -47,6 +47,7 @@ class Linksys(PhoneVendorMixin):
                       ('spa941', 'SPA-941'),
                       ('spa942', 'SPA-942'),
                       ('spa962', 'SPA-962'),
+                      ('spa2102', 'SPA-2102'),
                       ('spa3102', 'SPA-3102'),
                       #('spa8000', 'SPA8000'),
                       ('pap2t', 'PAP2T'))
