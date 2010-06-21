@@ -131,7 +131,7 @@ class xivo_application_service_asterisk_user_sql extends xivo_application_abstra
 
 		$arr['internal'] = 0;
 
-		$sip = $iax = $custom = array();
+		$sip = $iax = $custom = $sccp = array();
 		$sip['category'] = $iax['category'] = $custom['category'] = 'user';
 
 		if($disable !== null)
