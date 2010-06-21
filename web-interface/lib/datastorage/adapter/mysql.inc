@@ -187,6 +187,8 @@ class dwho_datastorage_adapter_mysql extends dwho_datastorage_adapter_abstract_s
 
 		$this->_query = $query;
 
+		$this->select_db();
+
 		if(($this->_result = mysql_query($this->_query,$this->_link)) === false && (bool) $this->_debug === true)
 			$this->halt();
 
