@@ -23,7 +23,11 @@ from xivo_agid import objects
 
 from optparse import OptionParser
 
+MEETME_RECORDINGDIR = '/var/lib/asterisk/sounds/meetme/'
+
 def conf_authentication(agi, meetme, adminflag):
+    global MEETME_RECORDINGDIR
+
     agi.appexec('Answer')
     calleridnum = agi.get_variable('CALLERID(num)')
 
@@ -196,7 +200,7 @@ def incoming_meetme_set_features(agi, cursor, args):
         preprocess_subroutine = ""
 
     agi.set_variable('MEETME_EXIT_CONTEXT', exitcontext)
-    agi.set_variable('MEETME_RECORDINGFILE', "meetme-%s-%s" % (meetme.confno, int(time.time())))
+    agi.set_variable('MEETME_RECORDINGFILE', MEETME_RECORDINGDIR + "meetme-%s-%s" % (meetme.confno, int(time.time())))
 
     agi.set_variable('XIVO_REAL_NUMBER', meetme.number)
     agi.set_variable('XIVO_REAL_CONTEXT', meetme.context)
