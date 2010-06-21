@@ -29,7 +29,7 @@ else
 	die('ERR: [logaccess] in ipbx.ini not configured');
 
 if (isset($action_path) === false)
-	$action_path = 'www/logoff'
+	$action_path = 'www/logoff';
 
 $str_log = substr($action_path, (strrpos($action_path,'www')+4), -4);
 
