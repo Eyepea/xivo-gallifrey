@@ -28,6 +28,9 @@ if(dwho_issa('logaccess',$ipbx_ini) === true
 else
 	die('ERR: [logaccess] in ipbx.ini not configured');
 
+if (isset($action_path) === false)
+	$action_path = 'www/logoff'
+
 $str_log = substr($action_path, (strrpos($action_path,'www')+4), -4);
 
 if (XIVO_LOG_TYPE === 'json')

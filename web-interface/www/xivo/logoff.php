@@ -20,8 +20,12 @@
 
 require_once('xivo.php');
 
+$login = '';
+if (isset($_USR->_info['login']) === true)
+	$login = $_USR->_info['login'];
+
 require_once(DWHO_PATH_ROOT.DIRECTORY_SEPARATOR.'logaccess.inc');
-dwho_logw('logoff',$_USR->_info['login'],'logoff');
+dwho_logw('logoff',$login,'logoff');
 
 xivo_user::logoff();
 $_QRY->go($_TPL->url('index'));
