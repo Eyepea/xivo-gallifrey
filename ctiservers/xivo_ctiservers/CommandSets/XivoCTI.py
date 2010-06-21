@@ -1627,7 +1627,7 @@ class XivoCTICommand(BaseCommand):
                                 v2 = v2.replace('{internal-%s}' % kk, vv)
                         dialplan_data[nk] = v2
                 if 'name' in e:
-                    dialplan_data['xivo-dir'] = e.get('name')
+                    dialplan_data['xivo-directory'] = e.get('name')
             except Exception:
                 log.exception('__internal__ %s' % xuserid)
         return
@@ -6013,7 +6013,7 @@ class XivoCTICommand(BaseCommand):
                         ldapattrib)
                 if results is not None:
                     for result in results:
-                        futureline = {'xivo-dir' : z.name}
+                        futureline = {'xivo-directory' : z.name}
                         for keyw, dbkeys in z.fkeys.iteritems():
                             for dbkey in dbkeys:
                                 if futureline.get(keyw, '') != '':
@@ -6052,7 +6052,7 @@ class XivoCTICommand(BaseCommand):
                                 matchme = True
                     if matchme:
                         # XXX problem when badly set delimiter + index()
-                        futureline = {'xivo-dir' : z.name}
+                        futureline = {'xivo-directory' : z.name}
                         for keyw, dbkeys in z.fkeys.iteritems():
                             for dbkey in dbkeys:
                                 idx = headerfields.index(dbkey)
@@ -6081,7 +6081,7 @@ class XivoCTICommand(BaseCommand):
                                 if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
                                     matchme = True
                     if matchme:
-                        futureline = {'xivo-dir' : z.name}
+                        futureline = {'xivo-directory' : z.name}
                         for keyw, dbkeys in z.fkeys.iteritems():
                             for dbkey in dbkeys:
                                 if dbkey in v.keys():
@@ -6113,7 +6113,7 @@ class XivoCTICommand(BaseCommand):
                             if isinstance(ll, str): # dont try to decode unicode string.
                                 ll = ll.decode(charset)
                             t = ll.split(z.delimiter)
-                            futureline = {'xivo-dir' : z.name}
+                            futureline = {'xivo-directory' : z.name}
                             # XXX problem when badly set delimiter + index()
                             for keyw, dbkeys in z.fkeys.iteritems():
                                 for dbkey in dbkeys:
@@ -6137,7 +6137,8 @@ class XivoCTICommand(BaseCommand):
                 # TODO : use f.info() to detect charset
                 fsl = f.read().strip()
                 if fsl:
-                    fullstatlist = [{'xivo-dir' : z.name, 'db-fullname' : fsl}]
+                    fullstatlist = [ {'xivo-directory' : z.name,
+                                      'db-fullname' : fsl}]
                 else:
                     fullstatlist = []
 
@@ -6164,7 +6165,7 @@ class XivoCTICommand(BaseCommand):
                 log.exception('sqlrequest for %s' % z.uri)
 
             for result in results:
-                futureline = {'xivo-dir' : z.name}
+                futureline = {'xivo-directory' : z.name}
                 for keyw, dbkeys in z.fkeys.iteritems():
                     for dbkey in dbkeys:
                         if dbkey in z.match_direct:
