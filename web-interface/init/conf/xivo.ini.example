@@ -14,7 +14,7 @@ save_path = "/var/lib/pf-xivo-web-interface/session"
 
 [error]
 level = 2047
-report_type = 7
+report_type = 0
 report_mode = 1
 report_func = 1
 email = foo@example.com
