@@ -770,7 +770,7 @@ endif;
 					    'key'	=> 'identity',
 					    'altkey'	=> 'name',
 					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
-					    'selected'	=> $info['protocol']['pickupcontext']),
+					    'selected'	=> $this-get_var('info', 'protocol', 'pickupcontext')),
 				      $context_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupmodeanswer'),
@@ -899,7 +899,7 @@ endif;
 				  'size'	=> 15,
 				  'help'		=> $this->bbf('hlp_fm_incominglimit'),
 				  'default'	=> $element['protocol']['sccp']['incominglimit'],
-				  'value'	=> $info['protocol']['incominglimit'],
+				  'value'	=> $this->get_var('info', 'protocol', 'incominglimit'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'incominglimit')) )),
 
