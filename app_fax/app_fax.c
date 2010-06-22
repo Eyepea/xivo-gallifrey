@@ -9,7 +9,7 @@
  *
  * Source: http://users.netplex.net/~andrew/asterisk/
  *
- * PATCHED BY (C) 2009-2010 Proformatique <technique@proformatique.com>
+ * PATCHED BY (C) 2009-2010 Proformatique <dev@proformatique.com>
  * - added PhaseEStatus, PhaseEString in FaxReceived and FaxSent events
  * - sent FaxReceived and FaxSent events even if fax didn't successfully receive or send
  *
