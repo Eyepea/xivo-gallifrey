@@ -1106,3 +1106,11 @@ Conférence
 ; softkey_conf
 ; softkey_backjoin
 
+; fm_protocol_requirecalltoken
+Validation des jetons d'appel :
+
+; fm_protocol_requirecalltoken-opt(no)
+Désactivée
+
+; fm_protocol_requirecalltoken-opt(yes)
+Activée

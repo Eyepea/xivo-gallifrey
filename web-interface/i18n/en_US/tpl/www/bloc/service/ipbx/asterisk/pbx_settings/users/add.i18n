@@ -1065,3 +1065,11 @@ Conference room
 ; softkey_conf
 ; softkey_backjoin
 
+; fm_protocol_requirecalltoken
+Calltoken validation : 
+
+; fm_protocol_requirecalltoken-opt(no)
+no
+
+; fm_protocol_requirecalltoken-opt(yes)
+yes
