@@ -1,8 +1,8 @@
-Index: asterisk-1.4.29/main/file.c
+Index: asterisk-1.4.33/main/file.c
 ===================================================================
---- asterisk-1.4.29.orig/main/file.c	2010-02-25 13:53:32.000000000 +0100
-+++ asterisk-1.4.29/main/file.c	2010-02-25 13:55:06.000000000 +0100
-@@ -226,12 +226,14 @@
+--- asterisk-1.4.33.orig/main/file.c	2010-05-14 01:08:13.000000000 +0200
++++ asterisk-1.4.33/main/file.c	2010-06-22 11:28:12.000000000 +0200
+@@ -227,12 +227,14 @@
  {
  	int ifd, ofd, len;
  	char buf[4096];	/* XXX make it lerger. */

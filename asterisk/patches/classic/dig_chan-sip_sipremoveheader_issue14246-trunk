@@ -1,7 +1,7 @@
-Index: asterisk-1.4.32/channels/chan_sip.c
+Index: asterisk-1.4.33/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.32.orig/channels/chan_sip.c	2010-06-04 16:07:17.000000000 +0200
-+++ asterisk-1.4.32/channels/chan_sip.c	2010-06-04 16:07:24.000000000 +0200
+--- asterisk-1.4.33.orig/channels/chan_sip.c	2010-06-22 11:24:23.000000000 +0200
++++ asterisk-1.4.33/channels/chan_sip.c	2010-06-22 11:24:29.000000000 +0200
 @@ -1470,6 +1470,7 @@
  static int function_sipchaninfo_read(struct ast_channel *chan, char *cmd, char *data, char *buf, size_t len);
  static int sip_dtmfmode(struct ast_channel *chan, void *data);
@@ -10,7 +10,7 @@ Index: asterisk-1.4.32/channels/chan_sip.c
  static int sip_do_reload(enum channelreloadreason reason);
  static int sip_reload(int fd, int argc, char *argv[]);
  static int acf_channel_read(struct ast_channel *chan, char *funcname, char *preparse, char *buf, size_t buflen);
-@@ -19297,6 +19298,26 @@
+@@ -19308,6 +19309,26 @@
  "Adding the wrong headers may jeopardize the SIP dialog.\n"
  "Always returns 0\n";
  
@@ -37,7 +37,7 @@ Index: asterisk-1.4.32/channels/chan_sip.c
  
  /*! \brief Set the DTMFmode for an outbound SIP call (application) */
  static int sip_dtmfmode(struct ast_channel *chan, void *data)
-@@ -19387,6 +19408,38 @@
+@@ -19398,6 +19419,38 @@
  	return 0;
  }
  
@@ -76,7 +76,7 @@ Index: asterisk-1.4.32/channels/chan_sip.c
  /*! \brief Transfer call before connect with a 302 redirect
  \note	Called by the transfer() dialplan application through the sip_transfer()
  	pbx interface function if the call is in ringing state 
-@@ -19697,6 +19750,7 @@
+@@ -19708,6 +19761,7 @@
  	/* Register dialplan applications */
  	ast_register_application(app_dtmfmode, sip_dtmfmode, synopsis_dtmfmode, descrip_dtmfmode);
  	ast_register_application(app_sipaddheader, sip_addheader, synopsis_sipaddheader, descrip_sipaddheader);
@@ -84,7 +84,7 @@ Index: asterisk-1.4.32/channels/chan_sip.c
  
  	/* Register dialplan functions */
  	ast_custom_function_register(&sip_header_function);
-@@ -19736,6 +19790,7 @@
+@@ -19747,6 +19801,7 @@
  	/* Unregister dial plan applications */
  	ast_unregister_application(app_dtmfmode);
  	ast_unregister_application(app_sipaddheader);

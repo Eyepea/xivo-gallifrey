@@ -13,11 +13,11 @@ Should be removed when #438815 closes.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.28/main/loader.c
+Index: asterisk-1.4.33/main/loader.c
 ===================================================================
---- asterisk-1.4.28.orig/main/loader.c	2009-12-22 15:02:14.000000000 +0100
-+++ asterisk-1.4.28/main/loader.c	2009-12-22 15:02:25.000000000 +0100
-@@ -377,6 +377,12 @@
+--- asterisk-1.4.33.orig/main/loader.c	2010-06-22 11:23:17.000000000 +0200
++++ asterisk-1.4.33/main/loader.c	2010-06-22 11:24:03.000000000 +0200
+@@ -378,6 +378,12 @@
  
  	strcpy(resource_being_loaded->resource, resource);
  
