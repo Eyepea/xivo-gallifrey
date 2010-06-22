@@ -1462,6 +1462,16 @@ endif;
 				    'selected'	=> $this->get_var('info','protocol','adsi')),
 			      $element['protocol']['iax']['adsi']['value']),
 
+		$form->select(array('desc'	=> $this->bbf('fm_protocol_requirecalltoken'),
+				    'name'	=> 'protocol[requirecalltoken]',
+				    'labelid'	=> 'protocol-requirecalltoken',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_protocol_requirecalltoken-opt',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['protocol']['iax']['requirecalltoken']['default'],
+				    'selected'	=> $this->get_var('info', 'protocol', 'requirecalltoken')),
+			      $element['protocol']['iax']['requirecalltoken']['value']),
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_keepalive'),
 				  'name'	=> 'protocol[keepalive]',
 				  'labelid'	=> 'protocol-keepalive',

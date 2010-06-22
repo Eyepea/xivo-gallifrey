@@ -1711,7 +1711,7 @@ CREATE TABLE `useriax` (
  `protocol` enum('iax') NOT NULL DEFAULT 'iax',
  `category` enum('user','trunk') NOT NULL,
  `commented` tinyint(1) NOT NULL DEFAULT 0,
- `requirecalltoken` varchar(4) NOT NULL DEFAULT '', -- peer--
+ `requirecalltoken` varchar(4) NOT NULL DEFAULT 'no', -- peer--
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 

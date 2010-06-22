@@ -239,6 +239,10 @@ $array['element']['category'] = array();
 $array['element']['category']['default'] = 'user';
 $array['element']['category']['forcedef'] = true;
 
+$array['element']['requirecalltoken'] = array();
+$array['element']['requirecalltoken']['default'] = 'no';
+$array['element']['requirecalltoken']['value']   = array('yes', 'no');
+
 
 dwho::load_class('dwho_network');
 
@@ -347,5 +351,6 @@ $array['filter']['ipaddr'] = array('set' => false,'chk' => 0);
 $array['filter']['regseconds'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
+$array['filter']['requirecalltoken'] = array('set' => false,'chk' => 2,'key' => array('no','yes'));
 
 ?>

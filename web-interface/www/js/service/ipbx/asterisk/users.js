@@ -102,6 +102,8 @@ var xivo_ast_users_elt_default = {
 	'protocol-video_tos': {it: false, fd: false},
 	'protocol-video_cos': {it: false, fd: false},
 	'protocol-adhocnumber': {it: false, fd: false},
+	'protocol-requirecalltoken': {it: false, fd: false},
+
 	
 	'userfeatures-firstname': {it: true},
 	'userfeatures-lastname': {it: true},
