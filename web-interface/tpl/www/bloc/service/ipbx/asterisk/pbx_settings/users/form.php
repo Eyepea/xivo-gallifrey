@@ -770,7 +770,7 @@ endif;
 					    'key'	=> 'identity',
 					    'altkey'	=> 'name',
 					    'help'		=> $this->bbf('hlp_fm_pickupcontext'),
-					    'selected'	=> $this-get_var('info', 'protocol', 'pickupcontext')),
+					    'selected'	=> $this->get_var('info', 'protocol', 'pickupcontext')),
 				      $context_list),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_pickupmodeanswer'),
