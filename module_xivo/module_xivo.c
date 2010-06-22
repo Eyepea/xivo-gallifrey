@@ -1,6 +1,6 @@
 /*
  * Various Asterisk functions and applications used in XIVO.
- * Copyright (C) 2008-2010  Proformatique <technique@proformatique.com>
+ * Copyright (C) 2008-2010  Proformatique <dev@proformatique.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
