@@ -19,3 +19,4 @@ setup(
           ('/usr/share/pf-xivo-queues-logger/sqlite3/', ['db/create.sql'])
       ]
      )
+
