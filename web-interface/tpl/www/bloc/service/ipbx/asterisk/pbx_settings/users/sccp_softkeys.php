@@ -111,7 +111,7 @@ $errdisplay = '';
 	<?php
 					echo	$form->select(array(
 							'name'		=> "softkeys_order[$softkey][]",
-							'id'			=> "it-softkey_".$softkey."_order[$i]",
+#							'id'			=> "it-softkey_".$softkey."_order[$i]",
 							'key'			=> false,
 							'empty'		=> false,
 						),
@@ -122,7 +122,7 @@ $errdisplay = '';
 	<?php
 					echo	$form->select(array(
 							'name'		=> "softkeys_key[$softkey][]",
-							'id'			=> "it-softkey_".$softkey."_key[$i]",
+#							'id'			=> "it-softkey_".$softkey."_key[$i]",
 							'key'			=> 'name',
 							'altkey'  => 'id',
 							'empty'		=> false,

@@ -99,7 +99,7 @@ $info    = $this->get_var('info');
 	<?php
 					echo	$form->select(array(
 							'name'		=> 'sccp_addons[]',
-							'id'			=> "it-sccp_addons[$i]",
+#							'id'			=> "it-sccp_addons[$i]",
 							'key'			=> false,
 							'empty'		=> false
 						),
