@@ -69,3 +69,4 @@ setup(name='xivo_provisioning',
             ('/usr/share/pf-xivo-provisioning/bin', ['bin/dhcpconfig'])
          ],
      )
+
