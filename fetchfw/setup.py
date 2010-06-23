@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 __version__ = "$Revision$ $Date$"
 
 from distutils.core import setup
