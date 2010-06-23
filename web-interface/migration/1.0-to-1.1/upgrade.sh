@@ -110,3 +110,7 @@ case $1 in
 		exit 1
 	;;
 esac
+
+# update configurations
+echo -e "\n[logaccess]\nfile = /var/log/pf-xivo-web-interface/xivo.log" >> /etc/pf-xivo/web-interface/ipbx.ini
+
