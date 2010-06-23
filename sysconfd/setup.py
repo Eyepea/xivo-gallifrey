@@ -15,3 +15,4 @@ setup(name='xivo_sysconfd',
                   ('/usr/sbin', ['sysconfd']),
                  ],
      )
+
