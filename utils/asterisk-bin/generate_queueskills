@@ -25,6 +25,8 @@ cursor = xivo_helpers.db_connect().cursor()
 section = None
 
 cursor.query("SELECT ${columns} FROM userqueueskill u, userfeatures uf, queueskill s WHERE u.userid = uf.id AND u.skillid = s.id", ('uf.id', 's.name', 'u.weight'))
+import time; time.sleep(30)
+print cursor.rowcount
 res = cursor.fetchall()
 for r in res:
 	nsection = "%d" % r['uf.id']
@@ -34,6 +36,8 @@ for r in res:
 		section = nsection
 
 	print "%s = %s" % (r['s.name'], r['u.weight'])
+
+
 
 cursor.query("SELECT ${columns} FROM agentqueueskill a, agentfeatures af, queueskill s WHERE a.agentid = af.id AND a.skillid = s.id", ('af.id', 's.name', 'a.weight'))
 res = cursor.fetchall()
