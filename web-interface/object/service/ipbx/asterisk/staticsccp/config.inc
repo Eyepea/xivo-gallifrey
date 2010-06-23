@@ -80,7 +80,7 @@ $array['element']['musicclass']['default'] = 'default';
 
 $array['element']['language'] = array();
 $array['element']['language']['default'] = 'fr';
-$array['element']['language']['value'] = array('en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
 
 $array['element']['callevents'] = array();
 $array['element']['callevents']['default'] = 'no';

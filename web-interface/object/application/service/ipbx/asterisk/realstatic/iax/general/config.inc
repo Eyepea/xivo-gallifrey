@@ -124,7 +124,7 @@ $array['element']['transfer']['value'] = array('no','yes','mediaonly');
 $array['element']['transfer']['default'] = 'yes';
 
 $array['element']['language'] = array();
-$array['element']['language']['value'] = array('en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
 $array['element']['language']['default'] = 'fr_FR';
 
 $array['element']['mohinterpret'] = array();
@@ -233,7 +233,7 @@ $array['filter']['accountcode'] = array('set' => false,'chk' => 2,'maxlen' => 20
 $array['filter']['amaflags'] = array('key' => xivo_service_asterisk::get_amaflags_list());
 $array['filter']['adsi'] = array('bool' => true);
 $array['filter']['transfer'] = array('key' => array('no','yes','mediaonly'));
-$array['filter']['language'] = array('key' => array('en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['language'] = array('key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
 $array['filter']['mohinterpret'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['encryption'] = array('key' => array('no','yes','aes128'));
