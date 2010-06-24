@@ -57,5 +57,7 @@ $array['import']['field']['incallcontext'] = array('incall','context');
 $array['import']['field']['incallringseconds'] = array('incall','ringseconds');
 $array['import']['field']['accountcode'] = array('protocol','accountcode');
 $array['import']['field']['amaflags'] = array('protocol','amaflags');
+$array['import']['field']['vendormodel']       = array('autoprov','vendormodel');
+$array['import']['field']['macaddr']           = array('autoprov','macaddr');
 
 ?>
