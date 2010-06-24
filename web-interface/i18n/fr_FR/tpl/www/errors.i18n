@@ -15,7 +15,7 @@ Contient des caractères invalides
 Contient des caractères invalides
 
 ; error_before_create_context
-Vous devez dabord créer un contexte
+Vous devez d'abord créer un contexte
 
 ; error(already_exist)
 Ce champ est unique et il est déjà utilisé
