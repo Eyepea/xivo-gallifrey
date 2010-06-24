@@ -4,4 +4,8 @@ Nom du répertoire
 ; col_uri
 URI
 
+; no_directories
+Aucun répertoire
 
+; opt_delete_confirm
+Êtes-vous certain de vouloir supprimer cet élément ?
