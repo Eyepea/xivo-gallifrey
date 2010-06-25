@@ -1,6 +1,6 @@
 """Support for Yealink phones for XIVO Configuration
 
-Yealink T20, T22, T26 and T28 are supported.
+Yealink T20P, T22P, T26P and T28P are supported.
 
 Copyright (C) 2010  Proformatique
 
@@ -184,7 +184,7 @@ class Yealink(PhoneVendorMixin):
 
     @classmethod
     def __format_function_keys(cls, funckey, model, exten_pickup_prefix):
-        if model not in ('t26', 't28'):
+        if model not in ('t26p', 't28p'):
             return ""
 
         sorted_keys = funckey.keys()
@@ -234,19 +234,26 @@ class Yealink(PhoneVendorMixin):
         Extract Vendor / Model / FirmwareRevision from SIP User-Agent
         or return None if we don't deal with this kind of Agent.
         """
-        # Yealink SIP-T28P 2.43.0.50
 
-        ua_splitted = ua.split(" ", 2)
-        ua_split_model = ua_splitted[1].split("-",1)
-        if ua_split_model[1] not in cls.YEALINK_MODELS:
-            return None
+        ua_splitted = ua.strip().split(" ", 3)
+        fw          = 'unknown'
 
-        model = ua_split_model[1].lower()
+        # Yealink SIP-T28P 2.50.0.50
+        if ua_splitted[0] == "Yealink" and len(ua_splitted) > 1:
+            model_splitted = ua_splitted[1].split("-", 1)
+            if len(model_splitted) != 2 or model_splitted[1] not in cls.YEALINK_MODELS:
+                return None
+            model = model_splitted[1].lower()
+            if len(ua_splitted) > 2:
+                fw = ua_splitted[2]
+        # T28 2.50.0.50
+        elif ("%sP" % ua_splitted[0]) in cls.YEALINK_MODELS:
+            model = "%sp" % ua_splitted[0].lower()
 
-        if len(ua_splitted) == 3:
-            fw = ua_splitted[2]
+            if len(ua_splitted) > 1:
+                fw = ua_splitted[1]
         else:
-            fw = 'unknown'
+            return None
 
         return ("yealink", model, fw)
 

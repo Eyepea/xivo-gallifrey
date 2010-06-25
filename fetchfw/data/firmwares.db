@@ -851,52 +851,52 @@ size: 5456351
 sha1sum: 8c29e5b99491cbdbb68ba0639ab9534cc4990321
 
 # Yealink T20
-[yealinkt20_943]
+[yealinkt20_950]
 brand: Yealink
 model: T20
-version: 9.43.0.50
-files: 9.43.0.50.rom
+version: 9.50.0.50
+files: 9.50.0.50.rom
 
-[9.43.0.50.rom]
-url: http://yealink.com/download/firmware/Yealink%20SIP-T20(P)%20V43%20Firmware-9.43.0.50.zip
-size: 5595652
-sha1sum: 306c7ee73378a4361a79be596744a014081dee93
+[9.50.0.50.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T20(P)%20V50%20Firmware-9.50.0.50.zip
+size: 5781728
+sha1sum: dc59f5acd8278d3f65bda92673390f763ead1808
 
 # Yealink T22
-[yealinkt22_743]
+[yealinkt22_750]
 brand: Yealink
 model: T22
-version: 7.43.0.50
-files: 7.43.0.50.rom
+version: 7.50.0.50
+files: 7.50.0.50.rom
 
-[7.43.0.50.rom]
-url: http://yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V43%20Firmware-7.43.0.50.zip
-size: 6051925
-sha1sum: 28496df30f90f9d127417a8f98cc21a7a3ef104e
+[7.50.0.50.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T22(P)%20V50%20Firmware-7.50.0.50.zip
+size: 6321569
+sha1sum: dba79e701a5ba671cc6d1fa4f54d416efc854f38
 
 # Yealink T26
-[yealinkt26_643]
+[yealinkt26_650]
 brand: Yealink
 model: T26
-version: 6.43.0.50
-files: 6.43.0.50.rom
+version: 6.50.0.50
+files: 6.50.0.50.rom
 
-[6.43.0.50.rom]
-url: http://yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V43%20Firmware-6.43.0.50.zip
-size: 6057278
-sha1sum: f96403773b334d98ef3d311e71445edab500b776
+[6.50.0.50.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T26(P)%20V50%20Firmware-6.50.0.50.zip
+size: 6492962
+sha1sum: a9b38e8c988cec74305580dca02afb03a851524b
 
 # Yealink T28
-[yealinkt28_243]
+[yealinkt28_250]
 brand: Yealink
 model: T28
-version: 2.43.0.50
-files: 2.43.0.50.rom
+version: 2.50.0.50
+files: 2.50.0.50.rom
 
-[2.43.0.50.rom]
-url: http://yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V43%20Firmware-2.43.0.50.zip
-size: 6206912
-sha1sum: c7828bbfeee71943a30d76898b783a407c3c103b
+[2.50.0.50.rom]
+url: http://www.yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V50%20Firmware-2.50.0.50.zip
+size: 6644890
+sha1sum: 66be3d5003f56d94ce4ea809929d91777873d6a1
 
 ###
 ### Cards Firmwares starting from here ###
