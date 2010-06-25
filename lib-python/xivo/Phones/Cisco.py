@@ -39,11 +39,21 @@ log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
 
 class Cisco(PhoneVendorMixin):
 
-    CISCO_MODELS = (('cp7912g', '7912'),
+    CISCO_MODELS = (('cp7906g', '7906'),
+                    ('cp7911g', '7911'),
+                    ('cp7912g', '7912'),
+                    ('cp7931g', '7931'),
                     ('cp7940g', '7940'),
-                    ('cp7960g', '7960'),
                     ('cp7941g', '7941GE'),
+                    ('cp7942g', '7942'),
+                    ('cp7945g', '7945'),
+                    ('cp7960g', '7960'),
                     ('cp7961g', '7961GE'),
+                    ('cp7962g', '7962'),
+                    ('cp7965g', '7965'),
+                    ('cp7970g', '7970'),
+                    ('cp7971g', '7971GE'),
+                    ('cp7975g', '7975'),
                     ('cipc', 'cipc'))
 
     CISCO_COMMON_HTTP_USER = "admin"
@@ -52,18 +62,23 @@ class Cisco(PhoneVendorMixin):
     CISCO_COMMON_DIR = None
     
     CISCO_LOCALES = {
-        'en': {
+        'en_US': {
             # name of locales directory (/tftpboot/Cisco/XXX)
             'name'         : 'English_United_States',
             'langCode'     : 'en',
             # dial tones
             'networkLocale': 'United_States',
         },
-        'fr': {
+        'fr_FR': {
             'name'         : 'French_France',
             'langCode'     : 'fr',
             'networkLocale': 'France',
         },
+        'fr_CA': {
+            'name'         : 'French_France',
+            'langCode'     : 'fr',
+            'networkLocale': 'Canada',
+        }
     }
 
     @classmethod
@@ -208,16 +223,16 @@ class Cisco(PhoneVendorMixin):
         addons = ''.join(addons)
 
         ## sccp:: language
-        language = 'en'
         if 'language' in provinfo and provinfo['language'] in self.CISCO_LOCALES:
-            language = provinfo['language']
-        language = """
+            language = """
  <userLocale>
   <name>%(name)s</name>
   <langCode>%(langCode)s</langCode>
  </userLocale>
  <networkLocale>%(networkLocale)s</networkLocale>
-""" % self.CISCO_LOCALES[language]
+""" % self.CISCO_LOCALES[provinfo['language']]
+        else:
+            language = ''
 
 
         txt = xivo_config.txtsubst(
@@ -295,24 +310,24 @@ class Cisco(PhoneVendorMixin):
         or return None if we don't deal with this kind of Agent.
         """
 
-	# Cisco-CP7941G-GE/8.0
-	# Cisco-CP7961G-GE/8.0
-	# Cisco-CP7940G/8.0
-	# Cisco-CP7960G/8.0
-
-	ua_splitted = ua.split("-", 2)
-	if ua_splitted[0] != 'Cisco':
-	    return None
-	model = 'unknown'
-	fw = 'unknown'
-	if len(ua_splitted) == 3:
-	    fws = ua_splitted[2].split("/", 1)
-	    fw = fws[1]
-	    model = ua_splitted[1].lower()
-	elif len(ua_splitted) == 2:
-	    fws = ua_splitted[1].split("/", 1)
-	    fw = fws[1]
-	    model = fws[0].lower()
+        # Cisco-CP7941G-GE/8.0
+        # Cisco-CP7961G-GE/8.0
+        # Cisco-CP7940G/8.0
+        # Cisco-CP7960G/8.0
+    
+        ua_splitted = ua.split("-", 2)
+        if ua_splitted[0] != 'Cisco':
+            return None
+        model = 'unknown'
+        fw = 'unknown'
+        if len(ua_splitted) == 3:
+            fws = ua_splitted[2].split("/", 1)
+            fw = fws[1]
+            model = ua_splitted[1].lower()
+        elif len(ua_splitted) == 2:
+            fws = ua_splitted[1].split("/", 1)
+            fw = fws[1]
+            model = fws[0].lower()
         return ("cisco", model, fw)
 
     @classmethod

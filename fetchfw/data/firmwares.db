@@ -93,57 +93,57 @@ url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/LangPacksPA-001
 size: 138130
 sha1sum: fd79b1909b41254b864e4f993675a81d87209288
 
-# Cisco 7975G SCCP 9.0.2SR2
-[cisco7975_sccp_902]
+# Cisco 7975G SCCP 9.0.3
+[cisco7975_sccp_903]
 brand: Cisco
 model: 7975
-version: 9.0.2
-files: cmterm-7975-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7975-sccp.9-0-3.zip
 
-[cmterm-7975-sccp.9-0-2SR2.zip]
-url: http://download-sj.cisco.com/swc/esd/03/281346597/contract/cmterm-7975-sccp.9-0-2SR2.zip 
-size: 5883038
-sha1sum: 5ba89b488e3651979b6eb918421d18558a38789a
+[cmterm-7975-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/281346597/contract/cmterm-7975-sccp.9-0-3.zip
+size: 5891350
+sha1sum: f9d72ce5953cfd1364d33e218d941d5c1015ff28
 
-# Cisco 7971G-GE SCCP 9.0.2SR2
-[cisco7971_sccp_902]
+# Cisco 7971G-GE SCCP 9.0.3
+[cisco7971_sccp_903]
 brand: Cisco
 model: 7971
-version: 9.0.2
-files: cmterm-7970_7971-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7970_7971-sccp.9-0-3.zip
 
-# Cisco 7970G SCCP 9.0.2SR2
-[cisco7970_sccp_902]
+# Cisco 7970G SCCP 9.0.3
+[cisco7970_sccp_903]
 brand: Cisco
 model: 7970
-version: 9.0.2
-files: cmterm-7970_7971-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7970_7971-sccp.9-0-3.zip
 
-[cmterm-7970_7971-sccp.9-0-2SR2.zip]
-url: http://download-sj.cisco.com/swc/esd/03/278436620/contract/cmterm-7970_7971-sccp.9-0-2SR2.zip
-size: 5271985
-sha1sum: 98d069ac131b983236487bf5aa6a32c92d4e9af6
+[cmterm-7970_7971-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/278436620/contract/cmterm-7970_7971-sccp.9-0-3.zip
+size: 5279034
+sha1sum: 04e8620c3b84d761f9654cdcc20c837c35944cc7
 
-# Cisco 7965G SCCP 8.5.4
-[cisco7965_sccp_854]
+# Cisco 7965G SCCP 9.0.3
+[cisco7965_sccp_903]
 brand: Cisco
 model: 7965
-version: 8.5.4
-files: cmterm-7945_7965-sccp.8-5-4.zip
+version: 9.0.3
+files: cmterm-7945_7965-sccp.9-0-3.zip
 
-# Cisco 7962G SCCP 9.0.2SR2
-[cisco7962_sccp_902]
+# Cisco 7962G SCCP 9.0.3
+[cisco7962_sccp_903]
 brand: Cisco
 model: 7962
-version: 9.0.2
-files: cmterm-7942_7962-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7942_7962-sccp.9-0-3.zip
 
-# Cisco 7961G-GE SCCP 9.0.2SR2
-[cisco7961_sccp_902]
+# Cisco 7961G-GE SCCP 9.0.3
+[cisco7961_sccp_903]
 brand: Cisco
 model: 7961
-version: 9.0.2
-files: cmterm-7941_7961-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7941_7961-sccp.9-0-3.zip
 
 # Cisco 7960G SCCP 8.1.2
 [cisco7960_sccp_812]
@@ -152,41 +152,41 @@ model: 7960
 version: 8.1.2
 files: cmterm-7940-7960-sccp.8-1-2.zip
 
-# Cisco 7945G SCCP 8.5.4
-[cisco7945_sccp_854]
+# Cisco 7945G SCCP 9.0.3
+[cisco7945_sccp_903]
 brand: Cisco
 model: 7945
-version: 8.5.4
-files: cmterm-7945_7965-sccp.8-5-4.zip
+version: 9.0.3
+files: cmterm-7945_7965-sccp.9-0-3.zip
 
-[cmterm-7945_7965-sccp.8-5-4.zip]
-url: http://download-sj.cisco.com/swc/esd/03/281346594/contract/cmterm-7945_7965-sccp.8-5-4.zip
-size: 5210056
-sha1sum: 044fc328e2c665413915fb8978cb532a11751d13
+[cmterm-7945_7965-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/281346594/contract/cmterm-7945_7965-sccp.9-0-3.zip
+size: 5891955
+sha1sum: 98eb810de064cf777eb4660426aaa1e202413e78
 
-# Cisco 7942G SCCP 9.0.2SR2
-[cisco7942_sccp_902]
+# Cisco 7942G SCCP 9.0.3
+[cisco7942_sccp_903]
 brand: Cisco
 model: 7942
-version: 9.0.2
-files: cmterm-7942_7962-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7942_7962-sccp.9-0-3.zip
 
-[cmterm-7942_7962-sccp.9-0-2SR2.zip]
-url: http://download-sj.cisco.com/swc/esd/03/281346593/contract/cmterm-7942_7962-sccp.9-0-2SR2.zip
-size: 5754858
-sha1sum: 378f746938cde838df54dbc4ed313c87c965069e
+[cmterm-7942_7962-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/281346593/contract/cmterm-7942_7962-sccp.9-0-3.zip
+size: 5763153
+sha1sum: 752deea2d776790be5f6b43e93687193e00bec35
 
-# Cisco 7941G-GE SCCP 9.0.2SR2
-[cisco7941_sccp_902]
+# Cisco 7941G-GE SCCP 9.0.3
+[cisco7941_sccp_903]
 brand: Cisco
 model: 7941
-version: 9.0.2
-files: cmterm-7941_7961-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7941_7961-sccp.9-0-3.zip
 
-[cmterm-7941_7961-sccp.9-0-2SR2.zip]
-url: http://download-sj.cisco.com/swc/esd/03/279251499/contract/cmterm-7941_7961-sccp.9-0-2SR2.zip
-size: 5164374
-sha1sum: a91f9e10dbf8887866e3f8551475dae55b1c7d39
+[cmterm-7941_7961-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/279251499/contract/cmterm-7941_7961-sccp.9-0-3.zip
+size: 5170819
+sha1sum: 3ff5b72ced1a8df06ad43727439fe0b497809c57
 
 # Cisco 7940G SCCP 8.1.2
 [cisco7940_sccp_812]
@@ -200,17 +200,17 @@ url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/cmterm-7940-7960
 size: 701384
 sha1sum: bdd4acc78d947ee0e50af88917d622b3fba3c545
 
-# Cisco 7931G SCCP 9.0.2SR2
-[cisco7931_sccp_902]
+# Cisco 7931G SCCP 9.0.3
+[cisco7931_sccp_903]
 brand: Cisco
 model: 7931
-version: 9.0.2
-files: cmterm-7931-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7931-sccp.9-0-3.zip
 
-[cmterm-7931-sccp.9-0-2SR2.zip]
-url: http://download-sj.cisco.com/swc/esd/03/280799963/contract/cmterm-7931-sccp.9-0-2SR2.zip
-size: 5048018
-sha1sum: 6a71a86fa6627773edcbff0bf6834e210ab376a4
+[cmterm-7931-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/280799963/contract/cmterm-7931-sccp.9-0-3.zip
+size: 5056948
+sha1sum: 9e85007387de085ebb0e8becf16197bacc01caa9
 
 # Cisco 7912G SCCP 8.0.4
 [cisco7912_sccp_804]
@@ -224,12 +224,12 @@ url: http://download-sj.cisco.com/swc/esd/02/278115698/contract/cmterm-7912G-scc
 size: 339004
 sha1sum: 5c93605519fb691690b3c1eefc67127e85497892
 
-# Cisco 7911G SCCP 9.0.2SR2
-[cisco7911_sccp_902]
+# Cisco 7911G SCCP 9.0.3
+[cisco7911_sccp_903]
 brand: Cisco
 model: 7911
-version: 9.0.2
-files: cmterm-7911_7906-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7911_7906-sccp.9-0-3.zip
 
 # Cisco 7910G+SW SCCP 5.0.7
 [cisco7910_sccp_507]
@@ -243,17 +243,17 @@ url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp
 size: 592359
 sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
 
-# Cisco 7906G SCCP 9.0.2SR2
-[cisco7906_sccp_902]
+# Cisco 7906G SCCP 9.0.3
+[cisco7906_sccp_903]
 brand: Cisco
 model: 7906
-version: 9.0.2
-files: cmterm-7911_7906-sccp.9-0-2SR2.zip
+version: 9.0.3
+files: cmterm-7911_7906-sccp.9-0-3.zip
 
-[cmterm-7911_7906-sccp.9-0-2SR2.zip]
-url: http://download-sj.cisco.com/swc/esd/03/280136569/contract/cmterm-7911_7906-sccp.9-0-2SR2.zip
-size: 5056088
-sha1sum: 8d9331b7580106a51a4e7cbb7378240eca53c898
+[cmterm-7911_7906-sccp.9-0-3.zip]
+url: http://download-sj.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.9-0-3.zip
+size: 5066707
+sha1sum: 02f37cd69aab190d018d13f86ccdc61cc2bb4235
 
 # Cisco 7905G SCCP 8.0.3 
 [cisco7905_sccp_803]
@@ -315,65 +315,99 @@ url: http://download-sj.cisco.com/swc/esd/02/272881679/contract/cmterm-7914-sccp
 size: 26206
 sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 
+# Locales for Cisco 79xx
+[cisco79xx_locale_fr_FR]
+brand: Cisco
+model: 79xx fr_FR
+version: 9.0.2
+files: po-locale-fr_FR-9.0.2.1000-1.cop.sgn po-locale-combined_network-9.0.2.1000-1.cop.sgn
+
+[cisco79xx_locale_fr_CA]
+brand: Cisco
+model: 79xx fr_CA
+version: 9.0.2
+files: po-locale-fr_FR-9.0.2.1000-1.cop.sgn po-locale-combined_network-9.0.2.1000-1.cop.sgn
+
+[po-locale-fr_FR-9.0.2.1000-1.cop.sgn]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-fr_FR-9.0.2.1000-1.cop.sgn
+size: 4397839
+sha1sum: 326407685f6950e6d4b06c692a2243a218aaf62e
+
+[po-locale-combined_network-9.0.2.1000-1.cop.sgn]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-combined_network-9.0.2.1000-1.cop.sgn
+size: 9351296
+sha1sum: f08e688de664d7e6d4fb19377cc057e5fc251d1d
+
 # CiscoSMB SPA 525G 7.4.4
 [ciscospa525_744]
 brand: CiscoSMB
 model: SPA525
 version: 7.4.4
-files: spa525g-7-4-4.zip spa525_v745.zip
+files: spa525g-7-4-4.zip
 
 [spa525g-7-4-4.zip]
 url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282414147/guest/spa525g-7-4-4.zip
 size: 10562212
 sha1sum: fd89788a118aa132c9d721d7c969c696fb62f0df
 
-# Langages files for CiscoSMB SPA525G phone 7.4.X
-[spa525_v745.zip]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-1-67251/spa525_v745.zip
-size: 120137
-sha1sum: c57412fb760767c20103d8a5a093d0f00817c660
-
 # CiscoSMB SPA 509G 7.4.4
 [ciscospa509_744]
 brand: CiscoSMB
 model: SPA509
 version: 7.4.4
-files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
+files: spa5x5-7-4-4.zip
 
 # CiscoSMB SPA 508G 7.4.4
 [ciscospa508_744]
 brand: CiscoSMB
 model: SPA508
 version: 7.4.4
-files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
+files: spa5x5-7-4-4.zip
 
 # CiscoSMB SPA 504G 7.4.4
 [ciscospa504_744]
 brand: CiscoSMB
 model: SPA504
 version: 7.4.4
-files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
+files: spa5x5-7-4-4.zip
 
 # CiscoSMB SPA 502G 7.4.4
 [ciscospa502_744]
 brand: CiscoSMB
 model: SPA502
 version: 7.4.4
-files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
+files: spa5x5-7-4-4.zip
 
 # CiscoSMB SPA 501G 7.4.4
 [ciscospa501_744]
 brand: CiscoSMB
 model: SPA501
 version: 7.4.4
-files: spa5x5-7-4-4.zip spa50x_30x_v745.zip
+files: spa5x5-7-4-4.zip
 
 [spa5x5-7-4-4.zip]
 url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282724524/guest/spa5x5-7-4-4.zip
 size: 7607391
 sha1sum: 2e4173d847170837011cb58b6107ad765041bc5d
 
-# Langages files for CiscoSMB SPA50X phones 7.4.X
+# Locales for CiscoSMB SPA5xx phones 7.4.X
+[ciscospa5xx_locale_fr]
+brand: CiscoSMB
+model: 5xx fr
+version: 7.4.5
+files: spa525_v745.zip spa50x_30x_v745.zip
+
+[ciscospa5xx_locale_en]
+brand: CiscoSMB
+model: 5xx en
+version: 7.4.5
+files: spa525_v745.zip spa50x_30x_v745.zip
+
+[spa525_v745.zip]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-1-67251/spa525_v745.zip
+size: 120137
+sha1sum: c57412fb760767c20103d8a5a093d0f00817c660
+
 [spa50x_30x_v745.zip]
 url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-2-67252/spa50x_30x_v745.zip
 size: 69437
@@ -384,7 +418,7 @@ sha1sum: fecbded0ba1a187d325eb44db8a69bd32a47849d
 brand: Linksys
 model: SPA962
 version: 6.1.5a
-files: SPA962_Firmware.zip SPA9X2_Dictionaries_v615.zip
+files: SPA962_Firmware.zip
 
 [SPA962_Firmware.zip]
 url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10040/SPA962_Firmware.zip
@@ -396,7 +430,7 @@ sha1sum: 4c9671873c241c679285065b495b5d7cf29f6975
 brand: Linksys
 model: SPA942
 version: 6.1.5a
-files: SPA942_Firmware.zip SPA9X2_Dictionaries_v615.zip
+files: SPA942_Firmware.zip
 
 [SPA942_Firmware.zip]
 url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10039/SPA942_Firmware.zip
@@ -420,7 +454,7 @@ sha1sum: 12c1891c22d037736d11f866ba4b82a2fe1a4e5d
 brand: Linksys
 model: SPA922
 version: 6.1.5a
-files: SPA942_Firmware.zip SPA9X2_Dictionaries_v615.zip
+files: SPA942_Firmware.zip
 
 # Linksys SPA921 5.1.8
 [lsspa921_518]
@@ -441,7 +475,19 @@ url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10034/SPA90
 size: 3531905
 sha1sum: 0015dc9dd6d1a8d2e0ffe03915bf19f00787caf9
 
-# Langages files for Linksys SPA9X2 phones 6.1.5
+# Locales for Linksys SPA9x2 phones
+[lsspa9xx_locale_fr]
+brand: Linksys
+model: SPA9xx fr
+version: 6.1.5
+files: SPA9X2_Dictionaries_v615.zip
+
+[lsspa9xx_locale_en]
+brand: Linksys
+model: SPA9xx en
+version: 6.1.5
+files: SPA9X2_Dictionaries_v615.zip
+
 [SPA9X2_Dictionaries_v615.zip]
 url: https://supportforums.cisco.com/servlet/JiveServlet/downloadBody/9931-102-1-22413/SPA9X2_Dictionaries_v615.zip
 size: 215186

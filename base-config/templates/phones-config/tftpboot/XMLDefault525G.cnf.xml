@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<flat-profile xmlns="http://www.sipura.net/xsd/SPA525G-SIP" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sipura.net/xsd/SPA525G-SIP http://www.sipura.net/xsd/SPA525G-SIP/SPA525G-SIP-7-5-1.xsd">
-  <Profile_Rule group="Provisioning/Configuration_Profile">tftp://#XIVO_NET4_IP#/CiscoSMB/spa525G.cfg</Profile_Rule>
-</flat-profile>

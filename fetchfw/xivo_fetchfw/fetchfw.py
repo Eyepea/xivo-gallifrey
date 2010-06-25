@@ -314,7 +314,7 @@ def _common_extract_all(label, file_path, start_of_cmd, kind):
     try:
         result = subprocess.call(start_of_cmd + [file_path], cwd=archive_path, close_fds=True)
 
-        fix_permissions(archive_path)
+        #fix_permissions(archive_path)
 
         if result:
             die(kind + " extraction failed")
