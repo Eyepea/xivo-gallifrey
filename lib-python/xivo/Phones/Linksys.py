@@ -74,6 +74,12 @@ class Linksys(PhoneVendorMixin):
     LINKSYS_COMMON_HTTP_PASS = "adminpass"
 
     LINKSYS_COMMON_DIR = None
+    
+    LINKSYS_LOCALES = {
+        'en_US': 'English',
+        'fr_FR': 'French',
+        'fr_CA': 'French',
+    }
 
     @classmethod
     def setup(cls, config):
@@ -169,6 +175,11 @@ class Linksys(PhoneVendorMixin):
 
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'], model)
+        
+        if 'language' in provinfo and provinfo['language'] in self.LINKSYS_LOCALES:
+            language = self.LINKSYS_LOCALES[provinfo['language']]
+        else:
+            language = ''
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -176,7 +187,8 @@ class Linksys(PhoneVendorMixin):
                     provinfo,
                     { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
                       'exten_pickup_prefix':    exten_pickup_prefix,
-                      'function_keys':          function_keys_config_lines
+                      'function_keys':          function_keys_config_lines,
+                      'language':               language,
                     },
                     self.xml_escape,
                     clean_extension),
