@@ -58,7 +58,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 		return($subnet);
 	}
 	
-	function generate()
+	function generate($onlystatic=true)
 	{
         $conf    = array();
 
@@ -138,7 +138,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             if($vlanid == 0 && $item['netinfo']['vlanif'])
                 $vlanid = intval($item['netiface']['vlanid']);
                 
-            if($cidr_id < 0 && strcmp($item['netinfo']['method'], 'static') == 0)
+            if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
                 $cidr_id = $i;
         }
 

@@ -1491,6 +1491,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$uri = $this->discover_finish_uri();
 		$tpl->load_i18n_file('tpl/tpl.i18n', 'global');
 		$tpl->load_i18n_file('tpl/www/struct/page/redirect.i18n', 'global');
+		
+		$seconds = 10;
 
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -1610,7 +1612,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		if(($commonconf = &$this->_xobj->get_module('commonconf')) === false)
 			return(false);
-		if($commonconf->generate() === false)
+		if($commonconf->generate(false) === false)
 			return(false);
 
 		//page redirection must be sent to client BEFORE changing server ip address
