@@ -31,7 +31,7 @@ $param['act'] = 'list';
 
 $result = $fm_save = $error = null;
 
-$prefixes = array('sqlite', 'mysql', 'file', 'phonebook');
+$prefixes = array('sqlite', 'mysql', 'file', 'phonebook', 'internal');
 
 switch($act)
 {
@@ -57,15 +57,13 @@ switch($act)
 					break;
 				}
 				case 3:
-				{
-					$uri = $_QR['uri'];
-					break;
-				}
+					$uri = $_QR['uri']; break;
+				// internal
 				case 4:
-				{
-					$uri = "phonebook";
-					break;
-				}
+					$uri = 'internal'; break;
+				// phonebook
+				case 5:
+					$uri = 'phonebook'; break;
 				default:
 				{
 					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
@@ -73,24 +71,24 @@ switch($act)
 				}
 			}
 
-			$data['uri'] = $uri;
-			$data['eid'] = $_QR['_eid'];
-			$data['name'] = $_QR['name'];
-			$data['tablename'] = $_QR['tablename'];
+			$data['uri']         = $uri;
+			$data['eid']         = $_QR['_eid'];
+			$data['name']        = $_QR['name'];
+			$data['tablename']   = $_QR['tablename'];
 			$data['description'] = $_QR['description'];
-			$data['dirtype'] = 'toto';
+			$data['dirtype']     = null;
 
 			$result = $_DIR->chk_values($data);
-			if(($result = $_DIR->chk_values($data)) === false)
+			if(($result = $_DIR->chk_values($data)) === false
+			|| $_DIR->add($result)                  === false)
 			{
 				$fm_save = false;
-				$result = $_DIR->get_filter_result();
-				$error = $_DIR->get_filter_error();
+				$result  = $_DIR->get_filter_result();
+				$error   = $_DIR->get_filter_error();
 			}
 			else 
 			{
-				if($_DIR->add($result) !== false)
-					$_QRY->go($_TPL->url('xivo/configuration/manage/directories'),$param);
+				$_QRY->go($_TPL->url('xivo/configuration/manage/directories'), $param);
 			}
 		}
 
@@ -140,10 +138,10 @@ switch($act)
 					break;
 				}
 				case 4:
-				{
-					$uri = "phonebook";
-					break;
-				}
+					$uri = 'internal'; break;
+				// phonebook
+				case 5:
+					$uri = 'phonebook'; break;
 				default:
 				{
 					$uri = $prefixes[$_QR['type']] . "://" . $_QR['uri'];
@@ -156,9 +154,10 @@ switch($act)
 			$data['name'] = $_QR['name'];
 			$data['tablename'] = $_QR['tablename'];
 			$data['description'] = $_QR['description'];
-			$data['dirtype'] = 'toto';
+			$data['dirtype'] = null;
 
-			if(($result = $_DIR->chk_values($data)) === false)
+			if(($result = $_DIR->chk_values($data)) === false
+			|| $_DIR->edit($info['id'], $result)    === false)
 			{
 				$fm_save = false;
 				$result = $_DIR->get_filter_result();
@@ -166,8 +165,7 @@ switch($act)
 			}
 			else 
 			{
-				if($_DIR->edit($info['id'], $result) !== false)
-					$_QRY->go($_TPL->url('xivo/configuration/manage/directories'),$param);
+				$_QRY->go($_TPL->url('xivo/configuration/manage/directories'),$param);
 			}
 		}
 
@@ -183,10 +181,10 @@ switch($act)
 
 		$parsed = $uriobject->parse_uri($return['uri']);
 		$return['type'] = -1;
-		if($parsed['path'] == 'phonebook')
-		{
+		if($parsed['path'] == 'internal')
 			$return['type'] = 4;
-		}
+		else if($parsed['path'] == 'phonebook')
+			$return['type'] = 5;
 		else
 		{
 			foreach($prefixes as $k => $p)

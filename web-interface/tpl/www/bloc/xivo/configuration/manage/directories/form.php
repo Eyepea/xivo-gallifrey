@@ -45,7 +45,7 @@ endif;
 					'labelid'	=> 'type',
 					'default'	=> $element['type']['default'],
 					'selected'	=> $info['type']),
-				  array('Sqlite','MySQL','File','Webservices','Internal'),
+				  array('Sqlite','MySQL','File','Webservices','Internal', 'Phonebook'),
 				  'onchange="javascript:hidediv();"'),
 
 		$form->text(array('desc'	=> $this->bbf('fm_uri'),

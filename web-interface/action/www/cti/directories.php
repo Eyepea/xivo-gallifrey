@@ -124,6 +124,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $app->get_result();
+				$error  = $app->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('cti/directories'),$param);

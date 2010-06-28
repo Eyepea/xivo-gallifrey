@@ -49,6 +49,9 @@ CREATE TABLE directories (
  PRIMARY KEY(id)
 );
 
+INSERT INTO directories VALUES (1,'internal' , NULL, 'internal' , '', '');
+INSERT INTO directories VALUES (2,'phonebook', NULL, 'phonebook', '', '');
+
 
 DROP TABLE entity;
 CREATE TABLE entity (

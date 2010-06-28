@@ -34,11 +34,6 @@ class xivo_directories extends xivo_libdatastorage_abstract
 		$this->_load_dso();
 	}
 
-/*	function _prepare($data)
-	{
-		return($data);
-	}
-*/
 	function add($arr,$id=0)
 	{
 		if(is_array($arr) === false)
