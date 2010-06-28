@@ -52,7 +52,8 @@ CREATE TABLE directories (
  PRIMARY KEY(id)
 );
 
-INSERT INTO directories VALUES (NULL, 'phonebook', 'internal', 'internal', NULL, '');
+INSERT INTO directories VALUES (1,'internal' , NULL, 'internal' , '', '');
+INSERT INTO directories VALUES (2,'phonebook', NULL, 'phonebook', '', '');
 
 
 CREATE TABLE iproute (

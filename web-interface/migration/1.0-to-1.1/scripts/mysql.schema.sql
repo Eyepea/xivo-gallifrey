@@ -42,7 +42,8 @@ CREATE TABLE `directories` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `directories` VALUES (NULL, 'phonebook', 'internal', 'internal', NULL, '');
+INSERT INTO `directories` VALUES (1,'internal' , NULL, 'internal' , '', 'XiVO internal users');
+INSERT INTO `directories` VALUES (2,'phonebook', NULL, 'phonebook', '', 'XiVO phonebook');
 
 CREATE TABLE `iproute` (
  `id` int(10) unsigned auto_increment,
