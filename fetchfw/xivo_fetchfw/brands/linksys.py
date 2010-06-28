@@ -87,9 +87,9 @@ linksys_install_map = {
     'lsspa400_01010202':
         linksys_zip_metainstall_fw('spa400-01-01-02-02.bin'),
     'lsspa9xx_locale_fr':
-        linksys_metainstall_locale('enS_US_v615.xml', 'frS_FR.xml'),
+        linksys_metainstall_locale('frS_FR_v615.xml', 'frS_FR.xml'),
     'lsspa9xx_locale_en':
-        linksys_metainstall_locale('frS_FR_v615.xml', 'enS_EN.xml'),
+        linksys_metainstall_locale('enS_US_v615.xml', 'enS_US.xml'),
 }
 
 
