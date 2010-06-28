@@ -866,15 +866,12 @@ endif;
 </div>
 
 <div id="sb-part-last" class="b-nodisplay">
-<br/>
-<p><?php echo $this->bbf('hlp_hotline_part'); ?></p>
-<br/>
 <?php
 
 	echo	$form->checkbox(array('desc'	=> $this->bbf('fm_hotline_enabled'),
 					'name'		=> 'hotline_enabled',
 					'labelid'	=> 'hotline_enabled',
-					'help'		=> $this->bbf('hlp_fm_hotline_enabled'),
+					'help'		=> $this->bbf('hlp_hotline_part'),
 					'comment'	=> $this->bbf('cmt_fm_hotline_enabled'),
 					'disabled'	=> true,
 					'checked'	=> $this->get_var('info','hotline_enabled','var_val'),
