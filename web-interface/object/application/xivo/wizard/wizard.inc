@@ -1486,6 +1486,27 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		return(true);
 	}
 
+	function _commit_language($lang)
+	{
+		$this->_load_xivo_dso();
+		$this->_load_ipbx_service();
+
+		if($lang == 'fr')
+			$lang = 'fr_FR';
+		else
+			$lang = 'en_US';
+
+		foreach(array('sip', 'iax', 'sccp') as $name)
+		{
+			$app = &$this->_ipbx->get_apprealstatic($name);
+			$module = &$app->get_module('general');
+			if(!$module->set_save_all(array('language' => $lang)))
+				return(false);
+		}
+
+		return(true);
+	}
+
 	function send_redirect($tpl)
 	{
 		$uri = $this->discover_finish_uri();
@@ -1604,7 +1625,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		|| $ref_components['netiface'] === false)
 			$ref_components['netiface'] = $this->_prepare_netiface();
 
-		$this->_wizsess['commit']['step']['validate'] = true;
+
+		if(!$this->_commit_language($this->_wizsess['welcome']['language']))
+			return(false);
 
 		// Generate commonconf file
 		$this->_load_xivo_dso();
@@ -1630,6 +1653,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if($this->_sysconfd->request_post('/services', array('asterisk' => 'restart')) === false)
 			return(false);
 
+		$this->_wizsess['commit']['step']['validate'] = true;
 		return(true);
 	}
 
