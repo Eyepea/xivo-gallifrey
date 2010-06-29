@@ -1073,3 +1073,6 @@ no
 
 ; fm_protocol_requirecalltoken-opt(yes)
 yes
+
+; fm_userfeatures_timezone
+Timezone : 

@@ -194,6 +194,9 @@ $array['element']['internal']['value'] = array(0,1);
 $array['element']['internal']['default'] = 0;
 $array['element']['internal']['forcedef'] = true;
 
+$array['element']['timezone'] = array();
+$array['element']['timezone']['default'] = '';
+
 $array['element']['description'] = array();
 $array['element']['description']['default'] = '';
 
@@ -258,6 +261,7 @@ $array['filter']['preprocess_subroutine'] = array('set' => false,
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['internal'] = array('set' => false,'chk' => 0);
+$array['filter']['timezone'] = array('set' => false,'chk' => 2);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 
 ?>

@@ -1114,3 +1114,6 @@ Désactivée
 
 ; fm_protocol_requirecalltoken-opt(yes)
 Activée
+
+; fm_userfeatures_timezone
+Fuseau horaire : 

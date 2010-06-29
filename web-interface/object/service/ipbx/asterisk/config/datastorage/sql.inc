@@ -324,4 +324,8 @@ $array['agentqueueskill'] = array();
 $array['agentqueueskill']['table'] = 'agentqueueskill';
 $array['agentqueueskill']['primary'] = array('agentid' => '', 'skillid' => '');
 
+$array['general'] = array();
+$array['general']['table'] = 'general';
+$array['general']['primary'] = array('id' => '');
+
 ?>

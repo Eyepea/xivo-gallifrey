@@ -1951,5 +1951,15 @@ CREATE UNIQUE INDEX sccpline__uidx__name ON sccpline(name);
 -- INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
 
 
+DROP TABLE IF EXISTS general;
+CREATE TABLE general
+(
+ id       integer unsigned,
+ timezone varchar(128),
+ PRIMARY KEY(`id`)
+);
+
+INSERT INTO general VALUES (1, 'Europe/Paris');
+
 
 COMMIT;

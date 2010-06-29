@@ -205,6 +205,10 @@ if(dwho_issa('allow',$element['protocol']['iax']) === true
 	$element['protocol']['iax']['allow']['value'] = array_diff($element['protocol']['iax']['allow']['value'],$allow);
 }
 
+$general_module   = &$ipbx->get_module('general');
+$general = $general_module->get(1);
+$element['userfeatures']['timezone']['default'] = $general['timezone'];
+
 if(empty($result) === false)
 {
 	$result['protocol']['allow'] = $allow;

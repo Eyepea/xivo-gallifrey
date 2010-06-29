@@ -200,6 +200,16 @@ endif;
 				    'selected'	=> $this->get_var('info','protocol','language')),
 			      $element['protocol']['sip']['language']['value']),
 
+		$form->select(array('desc'	=> $this->bbf('fm_userfeatures_timezone'),
+				    'name'	=> 'userfeatures[timezone]',
+				    'labelid'	=> 'userfeatures-timezone',
+				    'empty'	=> true,
+				    'key'	=> false,
+# no default value => take general value
+#				    'default'		=> $element['userfeatures']['timezone']['default'],
+				    'selected'	=> $this->get_var('info','userfeatures','timezone')),
+			      array_keys(dwho_i18n::get_timezone_list())),
+
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_nat'),
 				    'name'	=> 'protocol[nat]',
 				    'labelid'	=> 'sip-protocol-nat',

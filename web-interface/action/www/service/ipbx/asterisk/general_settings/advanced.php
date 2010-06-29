@@ -29,10 +29,14 @@ $appgeneralmeetme = &$appmeetme->get_module('general');
 
 $appuserguest = &$ipbx->get_application('user',array('internal' => 1),false);
 
+$general   = &$ipbx->get_module('general');
+
+
 $info = array();
 $info['generalagents'] = $appgeneralagents->get_all_by_category();
 $info['generalqueues'] = $appgeneralqueues->get_all_by_category();
 $info['generalmeetme'] = $appgeneralmeetme->get_all_by_category();
+$info['general']       = $general->get(1);
 
 $info['userinternal'] = array();
 $info['userinternal']['guest'] = $appuserguest->get_where(array('name' => 'guest'),null,true);
@@ -41,6 +45,7 @@ $element = array();
 $element['generalagents'] = $appgeneralagents->get_elements();
 $element['generalqueues'] = $appgeneralqueues->get_elements();
 $element['generalmeetme'] = $appgeneralmeetme->get_elements();
+$element['general']       = array_keys(dwho_i18n::get_timezone_list());
 
 $error = array();
 $error['generalagents'] = array();
@@ -107,14 +112,28 @@ if(isset($_QR['fm_send']) === true)
 				$info['userinternal']['guest']['userfeatures']['commented'] = true;
 		}
 	}
+	
+	if(dwho_issa('general',$_QR) === false)
+		$_QR['general'] = array();
+		
+	if(!$general->edit(1, $_QR['general']))
+	{
+		$info['general']  = $general->get_result();
+		$error['general'] = $general->get_error();
+
+		$fm_save = false;
+	}
+	else
+	{ $info['general'] = $_QR['general']; }
 }
 
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
-$_TPL->set_var('generalagents',$info['generalagents']);
-$_TPL->set_var('generalqueues',$info['generalqueues']);
-$_TPL->set_var('generalmeetme',$info['generalmeetme']);
-$_TPL->set_var('userinternal',$info['userinternal']);
+$_TPL->set_var('generalagents', $info['generalagents']);
+$_TPL->set_var('generalqueues', $info['generalqueues']);
+$_TPL->set_var('generalmeetme', $info['generalmeetme']);
+$_TPL->set_var('userinternal' , $info['userinternal']);
+$_TPL->set_var('general'      , $info['general']);
 $_TPL->set_var('element',$element);
 
 $dhtml = &$_TPL->get_module('dhtml');

@@ -1627,6 +1627,7 @@ CREATE TABLE `userfeatures` (
  `bsfilter` enum('no','boss','secretary') NOT NULL DEFAULT 'no',
  `preprocess_subroutine` varchar(39),
  `internal` tinyint(1) NOT NULL DEFAULT 0,
+ `timezone` varchar(128),
  `commented` tinyint(1) NOT NULL DEFAULT 0,
  `description` text NOT NULL,
  PRIMARY KEY(`id`)
@@ -2019,5 +2020,16 @@ CREATE TABLE `sccpline`
 );
 
 CREATE UNIQUE INDEX `sccpline__uidx__name` ON `sccpline`(`name`);
+
+DROP TABLE IF EXISTS `general`;
+CREATE TABLE `general`
+(
+ `id`       int(10) unsigned auto_increment,
+ `timezone` varchar(128),
+ PRIMARY KEY(`id`)
+);
+
+INSERT INTO `general` VALUES (1, 'Europe/Paris');
+
 
 COMMIT;
