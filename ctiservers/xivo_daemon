@@ -6,9 +6,9 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# Alternatively, XIVO Daemon is available under other licenses directly
+# Alternatively, XiVO CTI Server is available under other licenses directly
 # contracted with Pro-formatique SARL. See the LICENSE file at top of the
-# source tree or delivered in the installable package in which XIVO Daemon
+# source tree or delivered in the installable package in which XiVO CTI Server
 # is distributed for more details.
 #
 # This program is distributed in the hope that it will be useful,
@@ -26,8 +26,8 @@ __copyright__ = 'Copyright (C) 2007-2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
 """
-# 1) General description of XIVO CTI Daemon
-# The XIVO CTI Daemon is a general-purpose daemon, whose basic features are :
+# 1) General description of XiVO CTI Server
+# The XiVO CTI Server is a general-purpose daemon, whose basic features are :
 #  - the monitoring of one or more Asterisk, through AMI
 #  - taking care of Asteriks AGI requests
 #  - the ability to receive incoming "CTI clients" connections
@@ -291,7 +291,7 @@ class manage_connection:
                     helptxt = ['',
                                'help                     : this help',
                                '-- general purpose commands --',
-                               'show_infos               : gives a few informations about the daemon (version, uptime)',
+                               'show_infos               : gives a few informations about the server (version, uptime)',
                                '-- informations about misc lists --',
                                'show_users               : the users list',
                                'show_phones, show_trunks : phones and trunks lists',
@@ -433,6 +433,14 @@ class manage_connection:
                             connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg == 'fdlist':
+                    for k, v in daemon.fdlist_listen_cti.iteritems():
+                        connid.sendall('  listen TCP : %s %s\n' % (k, v))
+                    for k, v in daemon.fdlist_udp_cti.iteritems():
+                        connid.sendall('  listen UDP : %s %s\n' % (k, v))
+                    for k, v in daemon.fdlist_established.iteritems():
+                        connid.sendall('  conn   TCP : %s %s\n' % (k, v))
+                    connid.sendall('  full : %s\n' % daemon.fdlist_full)
                 elif usefulmsg.startswith('reverse '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -717,6 +725,7 @@ class manage_connection:
         'Status':               'ami_status',
         'StatusComplete':       'ami_statuscomplete',
         'Atxfer':               'ami_atxfer',                   #
+        'ActionRequest':        'ami_actionrequest',            #
     }
     
     
@@ -751,7 +760,7 @@ class manage_connection:
                 getattr(daemon.commandclass, manage_connection.evfunction_to_method_name[evfunction])(astid, this_event)
             else:
                 log.warning('%s AMI ... this event (%s) is not tracked : %s' % (astid, evfunction, this_event))
-    
+                
         except Exception:
             log.exception('%s AMI / %s : event %s' % (astid, evfunction, this_event))
     
@@ -996,10 +1005,10 @@ class xivo_daemon:
         
         self.time_start = time.localtime()
         if self.nreload == 0:
-            log.info('# STARTING XiVO Daemon %s (pid %d) / svn:%s # (0/3) Starting' %
+            log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Starting' %
                      (XIVOVERSION, os.getpid(), __revision__))
         else:
-            log.info('# STARTING XiVO Daemon %s (pid %d) / svn:%s # (0/3) Reloading (%d)' %
+            log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Reloading (%d)' %
                      (XIVOVERSION, os.getpid(), __revision__, self.nreload))
         self.nreload += 1
         
@@ -1248,7 +1257,7 @@ class xivo_daemon:
             if self.askedtoquit:
                 self.commandclass.reset('stop')
                 time_uptime = int(time.time() - time.mktime(self.time_start))
-                log.info('# STOPPING XiVO Daemon %s (pid %d) / svn:%s # uptime %d s (since %s)'
+                log.info('# STOPPING XiVO CTI Server %s (pid %d) / svn:%s # uptime %d s (since %s)'
                          % (XIVOVERSION, os.getpid(), __revision__,
                             time_uptime, time.asctime(self.time_start)))
                 for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):

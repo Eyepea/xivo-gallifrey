@@ -1,4 +1,4 @@
-# XIVO Daemon
+# XiVO CTI Server
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -10,9 +10,9 @@ __author__    = 'Corentin Le Gall'
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# Alternatively, XIVO Daemon is available under other licenses directly
+# Alternatively, XiVO CTI Server is available under other licenses directly
 # contracted with Pro-formatique SARL. See the LICENSE file at top of the
-# source tree or delivered in the installable package in which XIVO Daemon
+# source tree or delivered in the installable package in which XiVO CTI Server
 # is distributed for more details.
 #
 # This program is distributed in the hope that it will be useful,
@@ -201,8 +201,13 @@ class BaseCommand:
         return
     def ami_cdr(self, astid, event):
         return
-	def ami_faxsent(self, astid, event):
-		return
+    def ami_atxfer(self, astid, event):
+        return
+    def ami_actionrequest(self, astid, event):
+        return
+
+    def ami_faxsent(self, astid, event):
+        return
     def ami_faxreceived(self, astid, event):
         return
     def ami_dtmf(self, astid, event):
