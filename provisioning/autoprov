@@ -287,6 +287,7 @@ class SQLBackEnd:
             UF_TABLE+".protocol":        'proto',
             SIP_TABLE+".mailbox":        'mailbox',
             SIP_TABLE+".subscribemwi":   'subscribemwi',
+            SIP_TABLE+".language":       'language',
         }
         confdico = self.sql_select_one(
             ("SELECT ${columns} "
