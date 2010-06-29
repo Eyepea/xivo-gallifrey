@@ -75,6 +75,9 @@ $array['element']['preprocess_subroutine'] = array();
 $array['element']['preprocess_subroutine']['default'] = '';
 $array['element']['preprocess_subroutine']['null'] = true;
 
+$array['element']['description'] = array();
+$array['element']['description']['default'] = '';
+
 $array['element']['hangupringtime'] = array();
 $array['element']['hangupringtime']['value'] = array(0,15,30,45,60,75,90,
 						     105,120,135,150,165,180,195,
@@ -108,6 +111,7 @@ $array['filter']['callerid'] = array('set'	=> false,
 $array['filter']['useenum'] = array('bool' => true);
 $array['filter']['internal'] = array('bool' => true);
 $array['filter']['preprocess_subroutine'] = array('set' => false,'chk' => 2,'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 $array['filter']['hangupringtime'] = array('set'	=> false,
 					   'chk'	=> 2,
 					   'key' => array(0,15,30,45,60,75,90,

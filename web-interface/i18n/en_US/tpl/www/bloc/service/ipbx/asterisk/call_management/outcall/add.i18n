@@ -116,7 +116,7 @@ Add one or more call permissions ->
 Create a call permission
 
 ; fm_outcall_preprocess-subroutine
-Preprocess subroutine: 
+Preprocess subroutine:
 
 ; fm_outcall_hangupringtime-opt(0)
 Unlimited
@@ -136,3 +136,5 @@ Unlimited
 ; fm_outcall_hangupringtime-opt-minutes-seconds
 %s min. %s sec.
 
+; fm_outcall_description
+Description :

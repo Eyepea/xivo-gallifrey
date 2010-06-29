@@ -167,6 +167,23 @@ endif;
 				    'selected'	=> $info['outcall']['hangupringtime']),
 			      $element['outcall']['hangupringtime']['value']);
 
+?>
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-outcall-description" for="it-outcall-description"><?=$this->bbf('fm_outcall_description');?></label>
+		</p>
+		<?=$form->textarea(array('paragraph'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'outcall[description]',
+					 'id'		=> 'outcall-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['outcall']['description']['default'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'outcall', 'description')) ),
+				   $info['outcall']['description']);?>
+	</div>
+<?php
 if($outcalltrunk['list'] !== false):
 ?>
 <div id="outcalltrunklist" class="fm-paragraph fm-multilist">

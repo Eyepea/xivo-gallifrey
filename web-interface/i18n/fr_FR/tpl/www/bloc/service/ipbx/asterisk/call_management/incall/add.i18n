@@ -34,6 +34,9 @@ Suffixer
 ; fm_incall_preprocess-subroutine
 Sous-routine de prétraitement :
 
+; fm_incall_description
+Description :
+
 ; fm_incall_faxdetectenable
 Activer la détection :
 

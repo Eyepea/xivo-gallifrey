@@ -39,6 +39,7 @@ class xivo_application_service_asterisk_outcall_sql extends xivo_application_abs
 			$this->_dso->aggregate_where();
 			$this->_dso->wherecontain('name',$value,true,$this->_table['outcall']);
 			$this->_dso->orwherecontain('exten',$value,true,$this->_table['outcall']);
+			$this->_dso->orwherecontain('description',$value,true,$this->_table['outcall']);
 			$this->_dso->aggregate_where();
 		}
 

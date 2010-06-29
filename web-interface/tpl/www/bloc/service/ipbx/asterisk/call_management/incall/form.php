@@ -53,7 +53,9 @@ if($context_list !== false):
 				    'key'	=> 'identity',
 				    'altkey'	=> 'name',
 				    'default'	=> $element['incall']['context']['default'],
-				    'selected'	=> $this->get_var('incall','context')),
+				    'selected'	=> $this->get_var('incall','context'),
+					'error'	=> $this->bbf_args('context',
+					   $this->get_var('error','contextnummember'))),
 			      $context_list);
 else:
 	echo	'<div id="fd-incall-context" class="txt-center">',
@@ -97,6 +99,21 @@ endif;
 				  'error'	=> $this->bbf_args('incall-preprocess-subroutine',
 					   $this->get_var('error','incall','preprocess_subroutine'))));
 ?>
+	<div class="fm-paragraph fm-description">
+		<p>
+			<label id="lb-incall-description" for="it-incall-description"><?=$this->bbf('fm_incall_description');?></label>
+		</p>
+		<?=$form->textarea(array('paragraph'	=> false,
+					 'label'	=> false,
+					 'name'		=> 'incall[description]',
+					 'id'		=> 'incall-description',
+					 'cols'		=> 60,
+					 'rows'		=> 5,
+					 'default'	=> $element['incall']['description']['default'],
+					 'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'incall', 'description')) ),
+				   $this->get_var('incall','description'));?>
+	</div>
 </div>
 
 <div id="sb-part-faxdetect" class="b-nodisplay">

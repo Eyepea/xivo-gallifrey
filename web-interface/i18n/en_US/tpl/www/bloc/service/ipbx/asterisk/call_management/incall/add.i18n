@@ -19,6 +19,9 @@ Create a context
 ; fm_incall_type
 Destination:
 
+; fm_incall_description
+Description :
+
 ; fm_incall_type-opt-endcall
 End call
 
