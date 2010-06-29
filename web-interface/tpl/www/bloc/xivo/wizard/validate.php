@@ -126,25 +126,25 @@ endif;
 <fieldset id="fld-entity">
 	<legend><?=$this->bbf('fld-entity');?></legend>
 	<dl>
-		<dt>Nom :</dt>
+		<dt><?= $this->bbf('entity_name'); ?></dt>
 		<dd><?=dwho_htmlen($info['entity']['name']),
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_entity',
 					        $this->get_var('error','entity'))));?></dd>
-		<dt>Nom affiché :</dt>
+		<dt><?= $this->bbf('entity_displayname'); ?></dt>
 		<dd><?=dwho_htmlen($info['entity']['displayname']);?></dd>
 	</dl>
 </fieldset>
 <fieldset id="fld-context">
 	<legend><?=$this->bbf('fld-context');?></legend>
 	<dl>
-		<dt>Appels internes :</dt>
+		<dt><?= $this->bbf('internal_calls'); ?></dt>
 		<dd><?=dwho_htmlen($info['context_internal']['context']['displayname'].
 				   ' ('.$info['context_internal']['context']['name'].')'),
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_context_internal',
 					        $this->get_var('error','context_internal'))));?></dd>
-		<dt>Appels entrants :</dt>
+		<dt><?= $this->bbf('incoming_calls'); ?></dt>
 		<dd><?=dwho_htmlen($info['context_incall']['context']['displayname'].
 				   ' ('.$info['context_incall']['context']['name'].')'),
 		       $dhtml->message_error(

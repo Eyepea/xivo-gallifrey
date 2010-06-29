@@ -128,3 +128,18 @@ Possible errors :
 1. Impossible configuration server
 2. A problem occured when generating configuration files
 
+
+; entity_name
+Name : 
+
+; entity_displayname
+Display name : 
+
+; internal_calls
+Internal calls : 
+
+; incoming_calls
+Incoming calls : 
+
+; outgoing_calls
+Outgoing calls : 
