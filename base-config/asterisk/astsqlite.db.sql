@@ -1565,6 +1565,7 @@ CREATE TABLE userfeatures (
  bsfilter varchar(9) NOT NULL DEFAULT 'no',
  preprocess_subroutine varchar(39),
  internal tinyint(1) NOT NULL DEFAULT 0,
+ timezone varchar(128),
  commented tinyint(1) NOT NULL DEFAULT 0,
  description text NOT NULL,
  PRIMARY KEY(id)
