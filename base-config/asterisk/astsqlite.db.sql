@@ -1954,7 +1954,7 @@ CREATE UNIQUE INDEX sccpline__uidx__name ON sccpline(name);
 -- INSERT INTO sccpline (id, name, pin, label) VALUES (NULL, '160', '1234', 'ligne 160');
 
 
-DROP TABLE IF EXISTS general;
+DROP TABLE general;
 CREATE TABLE general
 (
  id       integer unsigned,
