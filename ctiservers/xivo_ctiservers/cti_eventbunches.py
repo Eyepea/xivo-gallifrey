@@ -1,7 +1,7 @@
 # XiVO CTI Server
 
-__version__   = '$Revision: 7879 $'
-__date__      = '$Date: 2010-04-07 10:41:14 +0200 (Wed, 07 Apr 2010) $'
+__version__   = '$Revision$'
+__date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2010 Proformatique'
 __author__    = 'Thomas Bernard'
 
@@ -54,6 +54,8 @@ def match_event(astid, ami_event, event, seea):
         seea[astid].remove(toexp)
         if toexp.matched_event == 'Atxfer':
             # to set according to previous event
+            seea[astid].append(post_ami_atxfer_answered(found))
+        elif toexp.matched_event == 'AtxferAnswered':
             seea[astid].append(post_ami_atxfer_linked(found))
         elif toexp.matched_event == 'AtxferLinked':
             pass
@@ -151,8 +153,8 @@ class post_ami_atxfer(post_events):
 ##            Newchannel {'CallerIDNum': '1647', 'State': 'Down', 'Uniqueid': ${UID5}, 'CallerIDName': ${CIDNZ}, 'Channel': ${TECH_DEST}}
 ##            Dial {'CallerID': '1178', 'SrcUniqueID': ${UID4}, 'Destination': ${TECH_DEST}, 'DestUniqueID': ${UID5}, 'Source': ${LOCAL2}, 'CallerIDName': ${CIDNB}, 'Data': 'SIP/zlosfbpeajsxrn|30|'}
 
-class post_ami_atxfer_linked(post_events):
-    matched_event = 'AtxferLinked'
+class post_ami_atxfer_answered(post_events):
+    matched_event = 'AtxferAnswered'
     def __init__(self, event):
         post_events.__init__(self)
         
@@ -243,5 +245,70 @@ class post_ami_atxfer_linked(post_events):
                             'Uniqueid': (None, re.compile(uid4)),
                             # 'Cause': None,
                             'Channel': (None, re.compile(local2))
+                            }
+                          ]
+
+class post_ami_atxfer_linked(post_events):
+    matched_event = 'AtxferLinked'
+    def __init__(self, event):
+        post_events.__init__(self)
+        
+        uid1 = event.get('uid1')
+        uid2 = event.get('uid2')
+        uid3 = event.get('uid3')
+        uid6 = event.get('uid6')
+        
+        tech_dest = event.get('tech_dest')
+        tech_std = event.get('tech_std')
+        tech_orig = event.get('tech_orig')
+        tech_origm = tech_orig + '<MASQ>'
+        tech_origt = 'Transfered/' + tech_orig
+        tech_origtz = tech_origt + '<ZOMBIE>'
+        
+        self.expected = [ { 'Event' : 'Unlink',
+                            'Uniqueid2': (None, re.compile(uid3)),
+                            'Uniqueid1': (None, re.compile(uid2)),
+                            'Channel2': (None, re.compile(tech_dest)),
+                            'Channel1': (None, re.compile(tech_std))
+                            },
+                          { 'Event' : 'Masquerade',
+                            'Original' : (None, re.compile(tech_origt)),
+                            'Clone' : (None, re.compile(tech_orig)),
+                            'OriginalState' : 'Up',
+                            'CloneState' : 'Up'
+                            },
+                          { 'Event' : 'Rename',
+                            'Newname' : (None, re.compile(tech_origm)),
+                            'Oldname' : (None, re.compile(tech_orig)),
+                            'Uniqueid' : (None, re.compile(uid1)),
+                            'Where' : 'ToMasq'
+                            },
+                          { 'Event' : 'Rename',
+                            'Newname' : (None, re.compile(tech_orig)),
+                            'Oldname' : (None, re.compile(tech_origt)),
+                            'Uniqueid' : (None, re.compile(uid6)),
+                            'Where' : 'New'
+                            },
+                          { 'Event' : 'Rename',
+                            'Newname' : (None, re.compile(tech_origtz)),
+                            'Oldname' : (None, re.compile(tech_origm)),
+                            'Uniqueid' : (None, re.compile(uid1)),
+                            'Where' : 'Zombie'
+                            },
+                          { 'Event' : 'Link',
+                            'Uniqueid2' : (None, re.compile(uid3)),
+                            'Uniqueid1' : (None, re.compile(uid6)),
+                            'Channel2' : (None, re.compile(tech_dest)),
+                            'Channel1' : (None, re.compile(tech_orig)),
+                            },
+                          { 'Event' : 'Hangup',
+                            'Uniqueid': (None, re.compile(uid2)),
+                            # 'Cause': None,
+                            'Channel': (None, re.compile(tech_std))
+                            },
+                          { 'Event' : 'Hangup',
+                            'Uniqueid': (None, re.compile(uid1)),
+                            # 'Cause': None,
+                            'Channel': (None, re.compile(tech_origtz))
                             }
                           ]
