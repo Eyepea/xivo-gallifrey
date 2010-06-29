@@ -1515,7 +1515,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(is_null($tz))
 			return true;
 
-		$module = &$this->_xobj->get_module('general');
+		$module = &$this->_ipbx->get_module('general');
 		return $module->edit(1, array('timezone' => $tz));
 	}
 

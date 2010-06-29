@@ -150,7 +150,7 @@ endif;
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_context_incall',
 					        $this->get_var('error','context_incall'))));?></dd>
-		<dt>Appels sortants :</dt>
+		<dt><?= $this->bbf('outgoing_calls'); ?></dt>
 		<dd><?=dwho_htmlen($info['context_outcall']['context']['displayname'].
 				   ' ('.$info['context_outcall']['context']['name'].')'),
 		       $dhtml->message_error(
