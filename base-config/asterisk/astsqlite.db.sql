@@ -678,6 +678,7 @@ CREATE TABLE incall (
  faxdetecttimeout tinyint unsigned NOT NULL DEFAULT 4,
  faxdetectemail varchar(255) NOT NULL DEFAULT '',
  commented tinyint(1) NOT NULL DEFAULT 0,
+ description` text NOT NULL,
  PRIMARY KEY(id)
 );
 
@@ -821,6 +822,7 @@ CREATE TABLE outcall (
  preprocess_subroutine varchar(39),
  hangupringtime smallint unsigned NOT NULL DEFAULT 0,
  commented tinyint(1) NOT NULL DEFAULT 0,
+ description text NOT NULL,
  PRIMARY KEY(id)
 );
 
