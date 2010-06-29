@@ -1506,6 +1506,18 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 
 		return(true);
 	}
+	
+	function _commit_timezone()
+	{
+		if(($tz = $this->_sysconfd->request_get('/timezone')) === false)
+			return false;
+
+		if(is_null($tz))
+			return true;
+
+		$module = &$this->_xobj->get_module('general');
+		return $module->edit(1, array('timezone' => $tz));
+	}
 
 	function send_redirect($tpl)
 	{
@@ -1626,7 +1638,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			$ref_components['netiface'] = $this->_prepare_netiface();
 
 
-		if(!$this->_commit_language($this->_wizsess['welcome']['language']))
+		if(!$this->_commit_language($this->_wizsess['welcome']['language'])
+		|| !$this->_commit_timezone())
 			return(false);
 
 		// Generate commonconf file

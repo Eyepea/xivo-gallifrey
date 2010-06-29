@@ -87,6 +87,10 @@ class TestGeneric(unittest.TestCase):
         (resp, data) = self.client.request('POST', '/services', {'networking': 'start'})
         self.assertEqual(resp.status, 200)
 
-        
+    def test_50_time(self):
+        (resp, data) = self.client.request('GET', '/timezone', {})
+        print resp.status, data
+
+
 if __name__ == '__main__':
     unittest.main()
