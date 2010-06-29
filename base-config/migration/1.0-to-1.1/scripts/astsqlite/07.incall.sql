@@ -20,6 +20,16 @@ CREATE INDEX incall__idx__context ON incall(context);
 CREATE INDEX incall__idx__commented ON incall(commented);
 CREATE UNIQUE INDEX incall__uidx__exten_context ON incall(exten,context);
 
-INSERT INTO incall SELECT * FROM incall_tmp;
+INSERT INTO incall SELECT 
+			id,
+			exten,
+			context,
+			preprocess_subroutine,
+			faxdetectenable,
+			faxdetecttimeout,
+			faxdetectemail,
+			commented,
+			''
+		FROM incall_tmp;
 DROP TABLE incall_tmp;
 

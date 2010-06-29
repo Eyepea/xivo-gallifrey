@@ -25,6 +25,22 @@ CREATE INDEX outcall__idx__commented ON outcall(commented);
 CREATE UNIQUE INDEX outcall__uidx__name ON outcall(name);
 CREATE UNIQUE INDEX outcall__uidx__exten_context ON outcall(exten,context);
 
-INSERT INTO outcall SELECT * FROM outcall_tmp;
+INSERT INTO outcall SELECT 
+			id,
+			name,
+			exten,
+			context,
+			externprefix,
+			stripnum,
+			setcallerid,
+			callerid,
+			useenum,
+			internal,
+			preprocess_subroutine,
+			hangupringtime,
+			commented,
+			''
+		 FROM outcall_tmp;
+
 DROP TABLE outcall_tmp;
 
