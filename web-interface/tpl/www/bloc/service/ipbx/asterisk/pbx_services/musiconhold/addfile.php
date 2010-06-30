@@ -18,6 +18,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+print XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN;
+print '<br>';
+print XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH;
+
 $form = &$this->get_module('form');
 $element = $this->get_var('element');
 $option = $this->get_var('option');
@@ -53,6 +57,7 @@ endif;
 		$form->file(array('desc'	=> $this->bbf('fm_filename'),
 				  'name'	=> 'filename',
 				  'labelid'	=> 'filename',
+				  'help'	=> $this->bbf('hlp_fm_filename'),
 				  'size'	=> 15,
 				  'value'	=> $info['filename'])),
 

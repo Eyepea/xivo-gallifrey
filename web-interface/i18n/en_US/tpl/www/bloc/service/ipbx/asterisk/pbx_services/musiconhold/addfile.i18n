@@ -4,5 +4,8 @@ On-Hold Music > Add a file
 ; fm_filename
 File name:
 
+; hlp_fm_filename
+The file name accepts only lowercase (a-z), uppercase (A-Z), digit (0-9) and [_-.] special characters contained between the parentheses. It must not contain spaces and be between 1 and 50 characters.
+
 ; fm_category
 Category:

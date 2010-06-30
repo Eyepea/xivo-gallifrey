@@ -4,5 +4,8 @@ Musiques d'attente > Ajouter un fichier
 ; fm_filename
 Nom du fichier :
 
+; hlp_fm_filename
+Le nom de fichier accepte seulement les minuscules (a-z), majuscules (A-Z), chiffres (0-9) et les caractères spéciaux [_-.] contenu entre les parenthèses. Il ne doit pas contenir d'éspaces et être compris entre 1 et 50 caractères.
+
 ; fm_category
 Catégorie :

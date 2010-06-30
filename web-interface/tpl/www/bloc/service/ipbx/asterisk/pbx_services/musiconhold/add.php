@@ -48,6 +48,7 @@ endif;
 		$form->text(array('desc'	=> $this->bbf('fm_category'),
 				  'name'	=> 'category',
 				  'labelid'	=> 'category',
+				  'help'		=> $this->bbf('hlp_fm_category'),
 				  'size'	=> 15,
 				  'default'	=> $element['category']['default'],
 				  'value'	=> $this->get_var('info','category'))),

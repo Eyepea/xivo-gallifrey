@@ -4,6 +4,9 @@ Musiques d'attente > Ajouter une catégorie
 ; fm_category
 Nom de la catégorie :
 
+; hlp_fm_category
+Le nom du dossier accepte seuelement les minuscules (a-z), chiffres (0-9) et les caractères spéciaux [_-] contenu entre les parenthèses. Il ne doit pas contenir d'éspaces et être compris entre 1 et 20 caractères.
+
 ; fm_mode
 Mode :
 

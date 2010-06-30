@@ -21,7 +21,7 @@
 $info['filename'] = '';
 $info['category'] = $cat;
 
-$fm_save = null;
+$fm_save = $error = null;
 
 if(isset($_QR['fm_send'],$_QR['category']) === false
 || ($infos = $musiconhold->get_category($_QR['category'])) === false
@@ -51,6 +51,7 @@ else
 }
 
 $_TPL->set_var('info',$info);
+$_TPL->set_var('error',$error);
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('option',$musiconhold->get_option());
 

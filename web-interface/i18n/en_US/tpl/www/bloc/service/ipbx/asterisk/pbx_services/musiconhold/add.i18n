@@ -4,6 +4,9 @@ On-Hold Music > Add a category
 ; fm_category
 Category name:
 
+; hlp_fm_category
+The folder name accepts only lowercase (a-z), digit (0-9) and [_-] special characters contained between the parentheses. It must not contain spaces and be between 1 and 20 characters.
+
 ; fm_mode
 Mode:
 

@@ -52,6 +52,7 @@ endif;
 		$form->text(array('desc'	=> $this->bbf('fm_filename'),
 				  'name'	=> 'filename',
 				  'labelid'	=> 'filename',
+				  'help'	=> $this->bbf('hlp_fm_filename'),
 				  'size'	=> 15,
 				  'value'	=> $info['filename'])),
 
