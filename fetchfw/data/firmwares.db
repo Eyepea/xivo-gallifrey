@@ -805,7 +805,7 @@ model: 870
 version: 8.3.6
 files: snom870-8.3.6-SIP-r.bin
 
-[snom870-8.3.2-SIP-r.bin]
+[snom870-8.3.6-SIP-r.bin]
 url: http://provisioning.snom.com/download/fw/snom870-8.3.6-SIP-r.bin
 size: 21718064
 sha1sum: 76d0f03efad0398926b3a0913eea619c8db0b615
