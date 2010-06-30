@@ -838,17 +838,17 @@ url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6781
 size: 11100346
 sha1sum: ae06f9c7f94616b2093c3f76137b6b2c223d405c
 
-# Thomson TB30 1.70
-[thtb30_170]
+# Thomson TB30 1.72
+[thtb30_172]
 brand: Thomson
 model: TB30
-version: 1.70
-files: TB30_SG_V1.70_Release_Package_20100421.zip 
+version: 1.72
+files: TB30_SG_V1.72_Release_Package.zip
 
-[TB30_SG_V1.70_Release_Package_20100421.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6938
-size: 5456351
-sha1sum: 8c29e5b99491cbdbb68ba0639ab9534cc4990321
+[TB30_SG_V1.72_Release_Package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=7190
+size: 4745006
+sha1sum: 22bb73764c5cc8ab045114a27f3a3e4336227f15
 
 # Yealink T20
 [yealinkt20_950]

@@ -31,7 +31,7 @@ FW_PATHS = {
     },
 
     'TB30': {
-        '1.70': os.path.join("TB30_SG_V1[1].70_Release_Package_20100421","Binary")
+        '1.72': os.path.join("TB30_SG_V1[2].72_Release_Package","Binary")
     }
 }
 
