@@ -40,7 +40,8 @@ def match_event(astid, ami_event, event, seea):
         try:
             log.info('lookup %s (length %d)' % (ami_event, len(seea[astid])))
             for toexp in seea[astid]:
-                if match_one(ami_event, event, toexp):
+                g = match_one(ami_event, event, toexp)
+                if g:
                     log.info('matched %s' % ami_event)
                     toexp.update(event)
                     if toexp.empty():
@@ -86,27 +87,40 @@ def match_one(ami_event, event, toexp):
             match = True
             for k, v in toexp.expected[0].iteritems():
                 if k != 'Event' and v is not None:
-                    if isinstance(v, tuple) and len(v) == 2:
+                    if isinstance(v, tuple):
                         var_toset = v[0]
-                        re_tomatch = v[1]
-                        
+                        if len(v) > 1:
+                            string_tomatch = v[1]
+                            if len(v) > 2:
+                                re_tomatch = v[2]
+                            else:
+                                re_tomatch = None
+                        else:
+                            string_tomatch = None
+                            re_tomatch = None
+                            
+                        eventvarvalue = event.get(k)
                         matched_string = None
                         if re_tomatch:
-                            vmatch = re_tomatch.match(event.get(k))
-                            if not vmatch:
+                            vmatch = re_tomatch.match(eventvarvalue)
+                            if vmatch:
+                                matched_string = vmatch.group()
+                            else:
                                 match = False
                                 break
+                        elif string_tomatch:
+                            if string_tomatch == eventvarvalue:
+                                matched_string = eventvarvalue
                             else:
-                                matched_string = vmatch.group()
+                                match = False
+                                break
                         else:
                             # this is the case of variables that we just want to get
-                            pass
+                            # ('uidN', None, None) cases
+                            matched_string = eventvarvalue
                         
-                        if var_toset:
-                            if matched_string:
-                                toexp.variables[var_toset] = matched_string
-                            else:
-                                toexp.variables[var_toset] = event.get(k)
+                        if var_toset and matched_string:
+                            toexp.variables[var_toset] = matched_string
                     else:
                         log.warning('match_one : bad compliance %s' % ami_event)
     except Exception:
@@ -140,26 +154,26 @@ class post_ami_atxfer(post_events):
         
         self.event = event
         self.expected = [ { 'Event' : 'Unlink',
-                            'Channel2' : ('tech_std', re.compile(channel)),
-                            'Channel1' : ('tech_orig', None),
-                            'Uniqueid2' : ('uid2', None),
-                            'Uniqueid1' : ('uid1', None),
+                            'Channel2' : ('tech_std', channel),
+                            'Channel1' : ('tech_orig',),
+                            'Uniqueid2' : ('uid2',),
+                            'Uniqueid1' : ('uid1',),
                             },
                           { 'Event' : 'Newchannel',
-                            'Channel' : ('local1', re.compile('Local/%s@%s-.*,1' % (exten, context))),
-                            'Uniqueid' : ('uid3', None),
+                            'Channel' : ('local1', None, re.compile('Local/%s@%s-.*,1' % (exten, context))),
+                            'Uniqueid' : ('uid3',),
                             },
                           { 'Event' : 'Newchannel',
-                            'Channel' : ('local2', re.compile('Local/%s@%s-.*,2' % (exten, context))),
-                            'Uniqueid' : ('uid4', None),
+                            'Channel' : ('local2', None, re.compile('Local/%s@%s-.*,2' % (exten, context))),
+                            'Uniqueid' : ('uid4',),
                             },
                           { 'Event' : 'Newchannel',
-                            'CallerIDNum' : (None, re.compile(exten)),
-                            'Uniqueid' : ('uid5', None),
-                            'Channel' : ('tech_dest', None),
+                            'CallerIDNum' : (None, exten),
+                            'Uniqueid' : ('uid5',),
+                            'Channel' : ('tech_dest',),
                             },
                           { 'Event' : 'Dial',
-                            'Source' : ('local2bis', re.compile('Local/%s@%s-.*,2' % (exten, context))),
+                            'Source' : ('local2bis', None, re.compile('Local/%s@%s-.*,2' % (exten, context))),
                             }
                           ]
         return
@@ -194,79 +208,79 @@ class post_ami_atxfer_answered(post_events):
         
         self.event = event
         self.expected = [ { 'Event' : 'Link',
-                            'Uniqueid2' : (None, re.compile(uid5)),
-                            'Uniqueid1' : (None, re.compile(uid4)),
-                            'Channel2' : (None, re.compile(tech_dest)),
-                            'Channel1' : (None, re.compile(local2))
+                            'Channel1' : (None, local2),
+                            'Uniqueid1' : (None, uid4),
+                            'Channel2' : (None, tech_dest),
+                            'Uniqueid2' : (None, uid5),
                             },
                           { 'Event' : 'Atxfer',
-                            'SrcChannel' : ('tech_std', None), # (None, re.compile(tech_std)),
-                            'SrcUniqueid' : ('uid2', None), # (None, re.compile(uid2)),
-                            'DstUniqueid' : (None, re.compile(uid3)),
-                            'DstChannel' : (None, re.compile(local1))
+                            'SrcChannel' : ('tech_std',), # (None, re.compile(tech_std)),
+                            'SrcUniqueid' : ('uid2',), # (None, re.compile(uid2)),
+                            'DstUniqueid' : (None, uid3),
+                            'DstChannel' : (None, local1),
                             },
                           { 'Event' : 'Link',
-                            'Uniqueid2' : (None, re.compile(uid3)),
-                            'Uniqueid1' : ('uid2', None), # (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(local1)),
-                            'Channel1' : ('tech_std', None), # (None, re.compile(tech_std)),
+                            'Uniqueid2' : (None, uid3),
+                            'Uniqueid1' : ('uid2'), # (None, re.compile(uid2)),
+                            'Channel2' : (None, local1),
+                            'Channel1' : ('tech_std',), # (None, re.compile(tech_std)),
                             },
                           { 'Event' : 'Unlink',
-                            'Uniqueid2' : (None, re.compile(uid3)),
-                            'Uniqueid1' : ('uid2', None), # (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(local1)),
-                            'Channel1' : ('tech_std', None), # (None, re.compile(tech_std)),
+                            'Uniqueid2' : (None, uid3),
+                            'Uniqueid1' : ('uid2',), # (None, re.compile(uid2)),
+                            'Channel2' : (None, local1),
+                            'Channel1' : ('tech_std',), # (None, re.compile(tech_std)),
                             },
                           { 'Event' : 'Link',
-                            'Uniqueid2' : (None, re.compile(uid3)),
-                            'Uniqueid1' : ('uid2', None), # (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(local1)),
-                            'Channel1' : ('tech_std', None), # (None, re.compile(tech_std)),
+                            'Uniqueid2' : (None, uid3),
+                            'Uniqueid1' : ('uid2',), # (None, re.compile(uid2)),
+                            'Channel2' : (None, local1),
+                            'Channel1' : ('tech_std',), # (None, re.compile(tech_std)),
                             },
                           { 'Event' : 'Masquerade',
-                            'Original' : (None, re.compile(local1)),
-                            'Clone' : (None, re.compile(tech_dest)),
-                            'OriginalState' : (None, re.compile('Up')),
-                            'CloneState' : (None, re.compile('Up'))
+                            'Original' : (None, local1),
+                            'Clone' : (None, tech_dest),
+                            'OriginalState' : (None, 'Up'),
+                            'CloneState' : (None, 'Up'),
                             },
                           { 'Event' : 'Rename',
-                            'Newname' : (None, re.compile(tech_destm)),
-                            'Oldname' : (None, re.compile(tech_dest)),
-                            'Uniqueid' : (None, re.compile(uid5)),
-                            'Where' : (None, re.compile('ToMasq'))
+                            'Newname' : (None, tech_destm),
+                            'Oldname' : (None, tech_dest),
+                            'Uniqueid' : (None, uid5),
+                            'Where' : (None, 'ToMasq'),
                             },
                           { 'Event' : 'Rename',
-                            'Newname' : (None, re.compile(tech_dest)),
-                            'Oldname' : (None, re.compile(local1)),
-                            'Uniqueid' : (None, re.compile(uid3)),
-                            'Where' : (None, re.compile('New'))
+                            'Newname' : (None, tech_dest),
+                            'Oldname' : (None, local1),
+                            'Uniqueid' : (None, uid3),
+                            'Where' : (None, 'New'),
                             },
                           { 'Event' : 'HangupRequest',
-                            'Channel' : (None, re.compile(local2)),
-                            'Uniqueid' : (None, re.compile(uid4))
+                            'Channel' : (None, local2),
+                            'Uniqueid' : (None, uid4),
                             },
                           { 'Event' : 'Rename',
-                            'Newname' : (None, re.compile(local1z)),
-                            'Oldname' : (None, re.compile(tech_destm)),
-                            'Uniqueid' : (None, re.compile(uid5)),
-                            'Where' : (None, re.compile('Zombie'))
+                            'Newname' : (None, local1z),
+                            'Oldname' : (None, tech_destm),
+                            'Uniqueid' : (None, uid5),
+                            'Where' : (None, 'Zombie')
                             },
                           { 'Event' : 'Unlink',
-                            'Uniqueid2' : (None, re.compile(uid5)),
-                            'Uniqueid1' : (None, re.compile(uid4)),
-                            'Channel2' : (None, re.compile(local1z)),
-                            'Channel1' : (None, re.compile(local2)),
-                            'Where' : (None, re.compile('loopisover'))
+                            'Uniqueid2' : (None, uid5),
+                            'Uniqueid1' : (None, uid4),
+                            'Channel2' : (None, local1z),
+                            'Channel1' : (None, local2),
+                            'Where' : (None, 'loopisover')
                             },
                           { 'Event' : 'Hangup',
-                            'Uniqueid' : (None, re.compile(uid5)),
+                            'Uniqueid' : (None, uid5),
                             # 'Cause': None,
-                            'Channel' : (None, re.compile(local1z))
+                            'Channel' : (None, local1z)
                             },
                           { 'Event' : 'Hangup',
-                            'Uniqueid' : (None, re.compile(uid4)),
+                            'Uniqueid' : (None, uid4),
                             # 'Cause': None,
-                            'Channel' : (None, re.compile(local2))
+                            'Channel' : (None, local2)
                             }
                           ]
         return
@@ -285,33 +299,33 @@ class post_ami_atxfer_refused(post_events):
         
         self.event = event
         self.expected = [ { 'Event' : 'Hangup',
-                            'Channel' : (None, re.compile(tech_dest)),
-                            'Uniqueid' : (None, re.compile(uid5)),
-                            'Cause': (None, re.compile('21')),
+                            'Channel' : (None, tech_dest),
+                            'Uniqueid' : (None, uid5),
+                            'Cause': (None, '21'),
                             },
                           { 'Event' : 'Atxfer',
-                            'SrcChannel' : (None, re.compile(tech_std)),
-                            'SrcUniqueid' : (None, re.compile(uid2)),
-                            'DstChannel' : (None, re.compile(local1)),
-                            'DstUniqueid' : (None, re.compile(uid3)),
+                            'SrcChannel' : (None, tech_std),
+                            'SrcUniqueid' : (None, uid2),
+                            'DstChannel' : (None, local1),
+                            'DstUniqueid' : (None, uid3),
                             },
                           { 'Event' : 'Link',
-                            'Channel1' : (None, re.compile(tech_std)),
-                            'Uniqueid1' : (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(local1)),
-                            'Uniqueid2' : (None, re.compile(uid3)),
+                            'Channel1' : (None, tech_std),
+                            'Uniqueid1' : (None, uid2),
+                            'Channel2' : (None, local1),
+                            'Uniqueid2' : (None, uid3),
                             },
                           { 'Event' : 'Unlink',
-                            'Channel1' : (None, re.compile(tech_std)),
-                            'Uniqueid1' : (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(local1)),
-                            'Uniqueid2' : (None, re.compile(uid3)),
+                            'Channel1' : (None, tech_std),
+                            'Uniqueid1' : (None, uid2),
+                            'Channel2' : (None, local1),
+                            'Uniqueid2' : (None, uid3),
                             },
                           { 'Event' : 'Link',
-                            'Channel1' : (None, re.compile(tech_std)),
-                            'Uniqueid1' : (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(local1)),
-                            'Uniqueid2' : (None, re.compile(uid3)),
+                            'Channel1' : (None, tech_std),
+                            'Uniqueid1' : (None, uid2),
+                            'Channel2' : (None, local1),
+                            'Uniqueid2' : (None, uid3),
                             }
                           ]
         return
@@ -334,26 +348,26 @@ class post_ami_atxfer_timedout(post_events):
         
         self.event = event
         self.expected = [ { 'Event' : 'HangupRequest',
-                            'Channel' : (None, re.compile(local2)),
-                            'Uniqueid' : (None, re.compile(uid4)),
+                            'Channel' : (None, local2),
+                            'Uniqueid' : (None, uid4),
                             },
                           { 'Event' : 'Hangup',
-                            'Channel' : (None, re.compile(local1)),
-                            'Uniqueid' : (None, re.compile(uid3)),
+                            'Channel' : (None, local1),
+                            'Uniqueid' : (None, uid3),
                             },
                           { 'Event' : 'Hangup',
-                            'Channel' : (None, re.compile(tech_dest)),
-                            'Uniqueid' : (None, re.compile(uid5)),
+                            'Channel' : (None, tech_dest),
+                            'Uniqueid' : (None, uid5),
                             },
                           { 'Event' : 'Hangup',
-                            'Channel' : (None, re.compile(local2)),
-                            'Uniqueid' : (None, re.compile(uid4)),
+                            'Channel' : (None, local2),
+                            'Uniqueid' : (None, uid4),
                             },
                           { 'Event' : 'Link',
-                            'Channel1' : (None, re.compile(tech_orig)),
-                            'Uniqueid1' : (None, re.compile(uid1)),
-                            'Channel2' : (None, re.compile(tech_std)),
-                            'Uniqueid2' : (None, re.compile(uid2)),
+                            'Channel1' : (None, tech_orig),
+                            'Uniqueid1' : (None, uid1),
+                            'Channel2' : (None, tech_std),
+                            'Uniqueid2' : (None, uid2),
                             }
                           ]
         return
@@ -372,20 +386,20 @@ class post_ami_atxfer_denied(post_events):
         
         self.event = event
         self.expected = [ { 'Event' : 'Unlink',
-                            'Channel1' : (None, re.compile(tech_std)),
-                            'Uniqueid1' : (None, re.compile(uid2)),
-                            'Channel2' : (None, re.compile(tech_dest)),
-                            'Uniqueid2' : (None, re.compile(uid3)),
+                            'Channel1' : (None, tech_std),
+                            'Uniqueid1' : (None, uid2),
+                            'Channel2' : (None, tech_dest),
+                            'Uniqueid2' : (None, uid3),
                             },
                           { 'Event' : 'Hangup',
-                            'Channel' : (None, re.compile(tech_dest)),
-                            'Uniqueid' : (None, re.compile(uid3)),
+                            'Channel' : (None, tech_dest),
+                            'Uniqueid' : (None, uid3),
                             },
                           { 'Event' : 'Link',
-                            'Channel1' : (None, re.compile(tech_orig)),
-                            'Uniqueid1' : (None, re.compile(uid1)),
-                            'Channel2' : (None, re.compile(tech_std)),
-                            'Uniqueid2' : (None, re.compile(uid2)),
+                            'Channel1' : (None, tech_orig),
+                            'Uniqueid1' : (None, uid1),
+                            'Channel2' : (None, tech_std),
+                            'Uniqueid2' : (None, uid2),
                             }
                           ]
         return
@@ -408,50 +422,50 @@ class post_ami_atxfer_linked(post_events):
         
         self.event = event
         self.expected = [ { 'Event' : 'Unlink',
-                            'Uniqueid2': (None, re.compile(uid3)),
-                            'Uniqueid1': (None, re.compile(uid2)),
-                            'Channel2': (None, re.compile(tech_dest)),
-                            'Channel1': (None, re.compile(tech_std))
+                            'Uniqueid2': (None, uid3),
+                            'Uniqueid1': (None, uid2),
+                            'Channel2': (None, tech_dest),
+                            'Channel1': (None, tech_std)
                             },
                           { 'Event' : 'Masquerade',
-                            'Original' : (None, re.compile(tech_origt)),
-                            'Clone' : (None, re.compile(tech_orig)),
-                            'OriginalState' : (None, re.compile('Up')),
-                            'CloneState' : (None, re.compile('Up')),
+                            'Original' : (None, tech_origt),
+                            'Clone' : (None, tech_orig),
+                            'OriginalState' : (None, 'Up'),
+                            'CloneState' : (None, 'Up'),
                             },
                           { 'Event' : 'Rename',
-                            'Newname' : (None, re.compile(tech_origm)),
-                            'Oldname' : (None, re.compile(tech_orig)),
-                            'Uniqueid' : (None, re.compile(uid1)),
-                            'Where' : (None, re.compile('ToMasq')),
+                            'Newname' : (None, tech_origm),
+                            'Oldname' : (None, tech_orig),
+                            'Uniqueid' : (None, uid1),
+                            'Where' : (None, 'ToMasq'),
                             },
                           { 'Event' : 'Rename',
-                            'Newname' : (None, re.compile(tech_orig)),
-                            'Oldname' : (None, re.compile(tech_origt)),
-                            'Uniqueid' : ('uid6', None),
-                            'Where' : (None, re.compile('New')),
+                            'Newname' : (None, tech_orig),
+                            'Oldname' : (None, tech_origt),
+                            'Uniqueid' : ('uid6',),
+                            'Where' : (None, 'New'),
                             },
                           { 'Event' : 'Rename',
-                            'Newname' : (None, re.compile(tech_origtz)),
-                            'Oldname' : (None, re.compile(tech_origm)),
-                            'Uniqueid' : (None, re.compile(uid1)),
-                            'Where' : (None, re.compile('Zombie')),
+                            'Newname' : (None, tech_origtz),
+                            'Oldname' : (None, tech_origm),
+                            'Uniqueid' : (None, uid1),
+                            'Where' : (None, 'Zombie'),
                             },
                           { 'Event' : 'Link',
-                            'Uniqueid2' : (None, re.compile(uid3)),
-                            'Uniqueid1' : ('uid6bis', None),
-                            'Channel2' : (None, re.compile(tech_dest)),
-                            'Channel1' : (None, re.compile(tech_orig)),
+                            'Uniqueid2' : (None, uid3),
+                            'Uniqueid1' : ('uid6bis',),
+                            'Channel2' : (None, tech_dest),
+                            'Channel1' : (None, tech_orig),
                             },
                           { 'Event' : 'Hangup',
-                            'Uniqueid': (None, re.compile(uid2)),
+                            'Uniqueid': (None, uid2),
                             # 'Cause': None,
-                            'Channel': (None, re.compile(tech_std))
+                            'Channel': (None, tech_std)
                             },
                           { 'Event' : 'Hangup',
-                            'Uniqueid': (None, re.compile(uid1)),
+                            'Uniqueid': (None, uid1),
                             # 'Cause': None,
-                            'Channel': (None, re.compile(tech_origtz))
+                            'Channel': (None, tech_origtz)
                             }
                           ]
         return
