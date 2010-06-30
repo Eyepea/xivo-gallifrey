@@ -3,7 +3,7 @@
 __version__   = '$Revision$'
 __date__      = '$Date$'
 __copyright__ = 'Copyright (C) 2010 Proformatique'
-__author__    = 'Thomas Bernard'
+__author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,11 +56,27 @@ def match_event(astid, ami_event, event, seea):
             # to set according to previous event
             found.update(toexp.event)
             seea[astid].append(post_ami_atxfer_answered(found))
+            seea[astid].append(post_ami_atxfer_refused(found))
+            seea[astid].append(post_ami_atxfer_timedout(found))
+            
         elif toexp.matched_event == 'AtxferAnswered':
             found.update(toexp.event)
+            # XXX : remove 'refused' + 'timedout'
             seea[astid].append(post_ami_atxfer_linked(found))
+            seea[astid].append(post_ami_atxfer_denied(found))
+        elif toexp.matched_event == 'AtxferRefused':
+            found.update(toexp.event)
+            # XXX : remove 'answered' + 'timedout'
+        elif toexp.matched_event == 'AtxferTimedOut':
+            found.update(toexp.event)
+            # XXX : remove 'refused' + 'answered'
+            
         elif toexp.matched_event == 'AtxferLinked':
-            pass
+            found.update(toexp.event)
+            # XXX : remove 'denied'
+        elif toexp.matched_event == 'AtxferDenied':
+            found.update(toexp.event)
+            # XXX : remove 'linked'
     return False
 
 def match_one(ami_event, event, toexp):
@@ -121,9 +137,10 @@ class post_ami_atxfer(post_events):
         exten = event.get('Exten')
         context = event.get('Context')
         # self.consumedindex
+        
         self.event = event
         self.expected = [ { 'Event' : 'Unlink',
-                            'Channel2' : (None, re.compile(channel)),
+                            'Channel2' : ('tech_std', re.compile(channel)),
                             'Channel1' : ('tech_orig', None),
                             'Uniqueid2' : ('uid2', None),
                             'Uniqueid1' : ('uid1', None),
@@ -164,16 +181,14 @@ class post_ami_atxfer_answered(post_events):
     def __init__(self, event):
         post_events.__init__(self)
         
-        tech_dest = event.get('tech_dest')
         local1 = event.get('local1')
         local2 = event.get('local2')
+        uid2 = event.get('uid2')
         uid3 = event.get('uid3')
         uid4 = event.get('uid4')
         uid5 = event.get('uid5')
-        
-        uid2 = event.get('uid2')
         tech_std = event.get('tech_std')
-        
+        tech_dest = event.get('tech_dest')
         tech_destm = tech_dest + '<MASQ>'
         local1z = local1 + '<ZOMBIE>'
         
@@ -254,6 +269,126 @@ class post_ami_atxfer_answered(post_events):
                             'Channel' : (None, re.compile(local2))
                             }
                           ]
+        return
+
+class post_ami_atxfer_refused(post_events):
+    matched_event = 'AtxferRefused'
+    def __init__(self, event):
+        post_events.__init__(self)
+        
+        local1 = event.get('local1')
+        uid2 = event.get('uid2')
+        uid3 = event.get('uid3')
+        uid5 = event.get('uid5')
+        tech_std = event.get('tech_std')
+        tech_dest = event.get('tech_dest')
+        
+        self.event = event
+        self.expected = [ { 'Event' : 'Hangup',
+                            'Channel' : (None, re.compile(tech_dest)),
+                            'Uniqueid' : (None, re.compile(uid5)),
+                            'Cause': (None, re.compile('21')),
+                            },
+                          { 'Event' : 'Atxfer',
+                            'SrcChannel' : (None, re.compile(tech_std)),
+                            'SrcUniqueid' : (None, re.compile(uid2)),
+                            'DstChannel' : (None, re.compile(local1)),
+                            'DstUniqueid' : (None, re.compile(uid3)),
+                            },
+                          { 'Event' : 'Link',
+                            'Channel1' : (None, re.compile(tech_std)),
+                            'Uniqueid1' : (None, re.compile(uid2)),
+                            'Channel2' : (None, re.compile(local1)),
+                            'Uniqueid2' : (None, re.compile(uid3)),
+                            },
+                          { 'Event' : 'Unlink',
+                            'Channel1' : (None, re.compile(tech_std)),
+                            'Uniqueid1' : (None, re.compile(uid2)),
+                            'Channel2' : (None, re.compile(local1)),
+                            'Uniqueid2' : (None, re.compile(uid3)),
+                            },
+                          { 'Event' : 'Link',
+                            'Channel1' : (None, re.compile(tech_std)),
+                            'Uniqueid1' : (None, re.compile(uid2)),
+                            'Channel2' : (None, re.compile(local1)),
+                            'Uniqueid2' : (None, re.compile(uid3)),
+                            }
+                          ]
+        return
+
+class post_ami_atxfer_timedout(post_events):
+    matched_event = 'AtxferTimedOut'
+    def __init__(self, event):
+        post_events.__init__(self)
+        
+        local1 = event.get('local1')
+        local2 = event.get('local2')
+        uid1 = event.get('uid1')
+        uid2 = event.get('uid2')
+        uid3 = event.get('uid3')
+        uid4 = event.get('uid4')
+        uid5 = event.get('uid5')
+        tech_orig = event.get('tech_orig')
+        tech_std = event.get('tech_std')
+        tech_dest = event.get('tech_dest')
+        
+        self.event = event
+        self.expected = [ { 'Event' : 'HangupRequest',
+                            'Channel' : (None, re.compile(local2)),
+                            'Uniqueid' : (None, re.compile(uid4)),
+                            },
+                          { 'Event' : 'Hangup',
+                            'Channel' : (None, re.compile(local1)),
+                            'Uniqueid' : (None, re.compile(uid3)),
+                            },
+                          { 'Event' : 'Hangup',
+                            'Channel' : (None, re.compile(tech_dest)),
+                            'Uniqueid' : (None, re.compile(uid5)),
+                            },
+                          { 'Event' : 'Hangup',
+                            'Channel' : (None, re.compile(local2)),
+                            'Uniqueid' : (None, re.compile(uid4)),
+                            },
+                          { 'Event' : 'Link',
+                            'Channel1' : (None, re.compile(tech_orig)),
+                            'Uniqueid1' : (None, re.compile(uid1)),
+                            'Channel2' : (None, re.compile(tech_std)),
+                            'Uniqueid2' : (None, re.compile(uid2)),
+                            }
+                          ]
+        return
+
+class post_ami_atxfer_denied(post_events):
+    matched_event = 'AtxferDenied'
+    def __init__(self, event):
+        post_events.__init__(self)
+        
+        uid1 = event.get('uid1')
+        uid2 = event.get('uid2')
+        uid3 = event.get('uid3')
+        tech_orig = event.get('tech_orig')
+        tech_std = event.get('tech_std')
+        tech_dest = event.get('tech_dest')
+        
+        self.event = event
+        self.expected = [ { 'Event' : 'Unlink',
+                            'Channel1' : (None, re.compile(tech_std)),
+                            'Uniqueid1' : (None, re.compile(uid2)),
+                            'Channel2' : (None, re.compile(tech_dest)),
+                            'Uniqueid2' : (None, re.compile(uid3)),
+                            },
+                          { 'Event' : 'Hangup',
+                            'Channel' : (None, re.compile(tech_dest)),
+                            'Uniqueid' : (None, re.compile(uid3)),
+                            },
+                          { 'Event' : 'Link',
+                            'Channel1' : (None, re.compile(tech_orig)),
+                            'Uniqueid1' : (None, re.compile(uid1)),
+                            'Channel2' : (None, re.compile(tech_std)),
+                            'Uniqueid2' : (None, re.compile(uid2)),
+                            }
+                          ]
+        return
 
 class post_ami_atxfer_linked(post_events):
     matched_event = 'AtxferLinked'
@@ -319,3 +454,4 @@ class post_ami_atxfer_linked(post_events):
                             'Channel': (None, re.compile(tech_origtz))
                             }
                           ]
+        return
