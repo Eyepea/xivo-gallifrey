@@ -29,7 +29,11 @@ TimeFlag=1
 Suppress-DomainName-Flag=1
 Transfer_to_voice_mail=1
 TransfOnRingFlag=0
-
+AutoLockTimeout=0
+IncomingLock=0
+LogoDisplay=0
+LogoTimeOut=30
+PhoneLockMode=0
 
 [net]
 DNSSrv1=0.0.0.0
@@ -329,7 +333,21 @@ use_PrivateNumber=0
 UseContactInSubscribe=0
 VoiceMailAddr=172.16.10.11
 VoiceMailPort=5060
-
+Accept18Xwithout100rel=0
+Answer_180_100rel=0
+ComverseParkCode=*61#|*62X#|*63#|*64X#
+ComverseParkFlag=0
+RetPrevTransNotAllow=0
+CallFwdPlayAnn=0
+DNDPlayAnn=0
+TrVoiceMailPlayAnn=0
+CallBlockPlayAnn=0
+ClirPlayAnn=0
+CallWaitingPlayAnn=0
+SFPlayAnn=0
+HgPlayAnn=0
+RejectCode=0
+TLSNoDisconTimeout=0
 
 [snmp]
 commRW1=0
@@ -614,7 +632,13 @@ UserPWD=568745
 VOIPDialPlan=x.T
 VAD=0
 WebPWD=784518
-
+BrandName=Thomson
+FeatureKeyLock=
+ModelName=TB30
+Log_Decryption_Key=Th0mson2$8s8@9z!
+logINlogOUTmode=0
+WebGuiBlocked=0
+WebLogoDisplay=0
 
 [autoprovision]
 AutoprovisionFlag=1
