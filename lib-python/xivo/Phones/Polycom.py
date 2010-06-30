@@ -41,7 +41,10 @@ class Polycom(PhoneVendorMixin):
 
     POLYCOM_MODELS = (('spip_301', 'SPIP301'),
                       ('spip_320', 'SPIP320'),
+                      ('spip_321', 'SPIP321'),
                       ('spip_330', 'SPIP330'),
+                      ('spip_331', 'SPIP331'),
+                      ('spip_335', 'SPIP335'),
                       ('spip_430', 'SPIP430'),
                       ('spip_450', 'SPIP450'),
                       ('spip_500', 'SPIP500'),
@@ -53,10 +56,11 @@ class Polycom(PhoneVendorMixin):
                       ('spip_650', 'SPIP650'),
                       ('spip_670', 'SPIP670'),
                       ('spip_4000', 'SSIP4000'),
+                      ('spip_5000', 'SSIP5000'),
                       ('spip_6000', 'SSIP6000'),
                       ('spip_7000', 'SSIP7000'))
 
-    POLYCOM_SSIP_MODELS = ('ssip_4000', 'ssip_6000', 'ssip_7000')
+    POLYCOM_SSIP_MODELS = ('ssip_4000', 'spip_5000', 'ssip_6000', 'ssip_7000')
 
     POLYCOM_COMMON_HTTP_USER = "Polycom"
     POLYCOM_COMMON_HTTP_PASS = "456"
