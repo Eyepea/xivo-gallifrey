@@ -1650,7 +1650,7 @@ CREATE UNIQUE INDEX `userfeatures__uidx__protocol_name` ON `userfeatures`(`proto
 CREATE UNIQUE INDEX `userfeatures__uidx__protocol_protocolid` ON `userfeatures`(`protocol`,`protocolid`);
 
 INSERT INTO `userfeatures` VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
-                                   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,0,'');
+                                   30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,NULL,0,'');
 
 
 DROP TABLE IF EXISTS `useriax`;
