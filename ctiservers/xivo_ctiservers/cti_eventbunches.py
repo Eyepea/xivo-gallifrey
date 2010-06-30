@@ -82,12 +82,20 @@ def match_event(astid, ami_event, event, seea):
 
 def match_one(ami_event, event, toexp):
     match = False
+    matched_event = toexp.matched_event
     try:
         if toexp.expected[0].get('Event') == ami_event:
             match = True
             for k, v in toexp.expected[0].iteritems():
                 if k != 'Event' and v is not None:
                     if isinstance(v, tuple):
+                        # the syntax for event variables values is, for 'Channel', for instance :
+                        # 'Channel' : ('varfield', 'string', re.compile('Local/%s@%s-.*,1' % (exten, context)))
+                        # i.e. (key, string value, regexep)
+                        # - each of these can be None, and if not set, are treated like if they were so
+                        # - if the first is defined, it's the key of a variable that will be set later on
+                        # - if the 3rd (regexp) is defined, the value will be checked against it
+                        # - if the 2nd (string) is defined, the value will be checked against it
                         var_toset = v[0]
                         if len(v) > 1:
                             string_tomatch = v[1]
@@ -122,9 +130,9 @@ def match_one(ami_event, event, toexp):
                         if var_toset and matched_string:
                             toexp.variables[var_toset] = matched_string
                     else:
-                        log.warning('match_one : bad compliance %s' % ami_event)
+                        log.warning('match_one : bad compliance %s (%s)' % (ami_event, matched_event))
     except Exception:
-        log.exception('match_one : %s' % ami_event)
+        log.exception('match_one : %s (%s)' % (ami_event, matched_event))
     return match
 
 class post_events():
@@ -214,28 +222,28 @@ class post_ami_atxfer_answered(post_events):
                             'Uniqueid2' : (None, uid5),
                             },
                           { 'Event' : 'Atxfer',
-                            'SrcChannel' : ('tech_std',), # (None, re.compile(tech_std)),
-                            'SrcUniqueid' : ('uid2',), # (None, re.compile(uid2)),
+                            'SrcChannel' : ('tech_std',), # (None, tech_std),
+                            'SrcUniqueid' : ('uid2',), # (None, uid2),
                             'DstUniqueid' : (None, uid3),
                             'DstChannel' : (None, local1),
                             },
                           { 'Event' : 'Link',
                             'Uniqueid2' : (None, uid3),
-                            'Uniqueid1' : ('uid2'), # (None, re.compile(uid2)),
+                            'Uniqueid1' : ('uid2',), # (None, uid2),
                             'Channel2' : (None, local1),
-                            'Channel1' : ('tech_std',), # (None, re.compile(tech_std)),
+                            'Channel1' : ('tech_std',), # (None, tech_std),
                             },
                           { 'Event' : 'Unlink',
                             'Uniqueid2' : (None, uid3),
-                            'Uniqueid1' : ('uid2',), # (None, re.compile(uid2)),
+                            'Uniqueid1' : ('uid2',), # (None, uid2),
                             'Channel2' : (None, local1),
-                            'Channel1' : ('tech_std',), # (None, re.compile(tech_std)),
+                            'Channel1' : ('tech_std',), # (None, tech_std),
                             },
                           { 'Event' : 'Link',
                             'Uniqueid2' : (None, uid3),
-                            'Uniqueid1' : ('uid2',), # (None, re.compile(uid2)),
+                            'Uniqueid1' : ('uid2',), # (None, uid2),
                             'Channel2' : (None, local1),
-                            'Channel1' : ('tech_std',), # (None, re.compile(tech_std)),
+                            'Channel1' : ('tech_std',), # (None, tech_std),
                             },
                           { 'Event' : 'Masquerade',
                             'Original' : (None, local1),
