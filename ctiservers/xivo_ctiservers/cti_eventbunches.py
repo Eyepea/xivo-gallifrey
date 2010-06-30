@@ -125,8 +125,8 @@ class post_ami_atxfer(post_events):
         self.expected = [ { 'Event' : 'Unlink',
                             'Channel2' : (None, re.compile(channel)),
                             'Channel1' : ('tech_orig', None),
-                            'Uniqueid2' : (None, re.compile(uid2)),
-                            'Uniqueid1' : (None, re.compile(uid1)),
+                            'Uniqueid2' : ('uid2', None),
+                            'Uniqueid1' : ('uid1', None),
                             },
                           { 'Event' : 'Newchannel',
                             'Channel' : ('local1', re.compile('Local/%s@%s-.*,1' % (exten, context))),
@@ -263,7 +263,6 @@ class post_ami_atxfer_linked(post_events):
         uid1 = event.get('uid1')
         uid2 = event.get('uid2')
         uid3 = event.get('uid3')
-        uid6 = event.get('uid6')
         
         tech_dest = event.get('tech_dest')
         tech_std = event.get('tech_std')
@@ -294,7 +293,7 @@ class post_ami_atxfer_linked(post_events):
                           { 'Event' : 'Rename',
                             'Newname' : (None, re.compile(tech_orig)),
                             'Oldname' : (None, re.compile(tech_origt)),
-                            'Uniqueid' : (None, re.compile(uid6)),
+                            'Uniqueid' : ('uid6', None),
                             'Where' : (None, re.compile('New')),
                             },
                           { 'Event' : 'Rename',
@@ -305,7 +304,7 @@ class post_ami_atxfer_linked(post_events):
                             },
                           { 'Event' : 'Link',
                             'Uniqueid2' : (None, re.compile(uid3)),
-                            'Uniqueid1' : (None, re.compile(uid6)),
+                            'Uniqueid1' : ('uid6bis', None),
                             'Channel2' : (None, re.compile(tech_dest)),
                             'Channel1' : (None, re.compile(tech_orig)),
                             },
