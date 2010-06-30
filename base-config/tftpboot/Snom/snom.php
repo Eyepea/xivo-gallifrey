@@ -49,7 +49,6 @@ if(isset($macaddr{0}) === true)
                         print file_get_contents($filename);
         }
 
-        print file_get_contents($type.'-firmware.xml');
         print "</settings>";
 }
 

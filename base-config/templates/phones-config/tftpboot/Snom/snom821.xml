@@ -22,4 +22,5 @@
   <user_phone perm="RO">off</user_phone>
   <filter_registrar perm="RO">off</filter_registrar>
   <challenge_response perm="RO">off</challenge_response>
+  <firmware_status perm="">http://#XIVO_NET4_IP#:8667/Snom/snom821-firmware.xml</firmware_status>
  </phone-settings>
