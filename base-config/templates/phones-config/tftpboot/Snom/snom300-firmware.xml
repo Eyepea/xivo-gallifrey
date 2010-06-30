@@ -1,3 +1,3 @@
  <firmware-settings>
-  <firmware perm="">http://#XIVO_NET4_IP#:8667/Snom/Firmware/snom300-7.3.30-SIP-bf.bin</firmware>
+  <firmware perm="">http://#XIVO_NET4_IP#:8667/Snom/Firmware/snom300-8.2.35-SIP-f.bin</firmware>
  </firmware-settings>
