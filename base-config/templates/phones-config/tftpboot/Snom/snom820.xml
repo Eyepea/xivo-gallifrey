@@ -5,8 +5,8 @@
   <http_user perm="RO">guest</http_user>
   <http_pass perm="RO">guest</http_pass>
   <admin_mode_password perm="RO">12345</admin_mode_password>
-  <vlan perm="RO">#XIVO_VOIP_VLAN_ID</vlan>
-  <vlan_id perm="RO">#XIVO_VOIP_VLAN_ID</vlan_id>
+  <vlan perm="RO">#XIVO_VOIP_VLAN_ID#</vlan>
+  <vlan_id perm="RO">#XIVO_VOIP_VLAN_ID#</vlan_id>
   <vlan_qos perm="RO"></vlan_qos>
   <display_method perm="RO">display_name_number</display_method>
   <ntp_server perm="RO">#XIVO_NET4_IP#</ntp_server>
