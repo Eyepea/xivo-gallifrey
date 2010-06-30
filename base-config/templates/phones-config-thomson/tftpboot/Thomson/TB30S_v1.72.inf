@@ -1,0 +1,15 @@
+[application]
+fw_filename=Thomson/binary/TB30S.100604.1.72.0.zz
+dsp_filename=Thomson/binary/TB30S_V2.30.1_dsp.zz
+boot_filename=Thomson/binary/TB30S_V0.01.1_bc.zz
+
+[config]
+telcfg=Thomson/TelConfTB30S.100604.1.72.0.txt
+common_config=Thomson/TB30S_common_v1.72-#SERIAL#.txt
+
+melodies=Thomson/Tone-Melodies.txt
+system_melodies=Thomson/Tone-RG.txt
+call_waiting_tone=Thomson/Tone-CW.txt
+
+tone_table=Thomson/ToneTbl_1.72.zz
+language_table=Thomson/LangTbl_1.72.zz
