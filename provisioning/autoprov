@@ -459,15 +459,16 @@ class SQLBackEnd:
         Right now this is limited to the 'sip' protocol, so the result
         is a single phone description in the form of a dictionary
         containing the classic keys.
+        XXX This comment is out of date.
 
         'macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'
         """
         return self.sql_select_one(
             ("SELECT ${columns} FROM %s "
-             "WHERE iduserfeatures = %s AND proto = %s")
-             % ( TABLE, '%s', '%s' ),
+             "WHERE iduserfeatures = %s")
+             % (TABLE, '%s'),
             ('macaddr', 'vendor', 'model', 'proto', 'iduserfeatures', 'isinalan'),
-            (iduserfeatures, TECH_SIP))
+            (iduserfeatures,))
 
     def delete_phone_by_iduserfeatures(self, iduserfeatures):
         """
