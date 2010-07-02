@@ -1403,6 +1403,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$dbconfig['ql'] = $this->_wizsess['dbconfig']['save']['ql'];
 		$dbconfig['ipbxengine'] = $this->_wizsess['ipbxengine']['engine'];
 
+		$dbconfig['ql'] = str_replace('sqlite:/','sqlite3:/', $dbconfig['ql']);
+
 		if($this->_sysconfd->request_post('/set_db_backends',$dbconfig) === false)
 		{
 			$this->_set_error('dbconfig','backends','save');
