@@ -115,7 +115,7 @@ if(isset($_QR['fm_send']) === true)
 	
 	if(dwho_issa('general',$_QR) === false)
 		$_QR['general'] = array();
-		
+	
 	$arr = $general->get(1);
 	if($arr['timezone'] != $_QR['general']['timezone'])
 	{

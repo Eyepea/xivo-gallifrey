@@ -127,8 +127,7 @@ if(isset($error_js[0]) === true)
 				 'name'		=> 'userinternal[guest]',
 				 'labelid'	=> 'userinternal-guest',
 				 'help'	=> $this->bbf('hlp_fm_userinternal_guest'),
-				 'checked'	=> ($this->get_var('userinternal',
-								     array('guest','userfeatures','commented')) === false)));?>
+				 'checked'	=> ($this->get_var('userinternal','guest','userfeatures','commented'))?'no':'yes'));?>
 </div>
 
 <div id="sb-part-agent" class="b-nodisplay">
