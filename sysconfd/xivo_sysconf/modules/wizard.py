@@ -274,7 +274,7 @@ def asterisk_extconfig(tplfilename, customtplfilename, newfilename, extconfig, d
                 line.append(dbtype)
             else:
                 line.append(values.group(1))
-            if not values.group(2):
+            if not values.group(2) or not customfile:
                 line.append('"%s"' % dbname)
             else:
                 line.append(values.group(2))
