@@ -43,7 +43,7 @@ setup(name='xivo_provisioning',
                  'files/linksys-spa962.cfg',
                  'files/linksys-spa2102.cfg',
                  'files/linksys-spa3102.cfg',
-                 'files/polycom-phone.cfg',
+                 'files/polycom-user.cfg',
                  'files/sccp-cisco-addons.cfg',
                  'files/sccp-cisco-cipc.cfg',
                  'files/sccp-cisco-cp7912g.cfg',
@@ -66,7 +66,8 @@ setup(name='xivo_provisioning',
             ('/etc/pf-xivo', ['etc/pf-xivo/provisioning.conf']),
             ('/usr/sbin', ['autoprov']),
             ('/usr/share/asterisk/agi-bin', ['bin/initconfig']),
-            ('/usr/share/pf-xivo-provisioning/bin', ['bin/dhcpconfig'])
+            ('/usr/share/pf-xivo-provisioning/bin', ['bin/dhcpconfig']),
+            ('/usr/share/pf-xivo-provisioning/bin', ['bin/polycomgendefault'])
          ],
      )
 
