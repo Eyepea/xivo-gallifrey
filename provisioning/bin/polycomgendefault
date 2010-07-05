@@ -1,0 +1,83 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+"""Creates default per-phone configuration file for polycom phones.
+
+This resolve a 'chicken and egg' problem, where the phone needs its
+configuration file to boot properly, but the configuration file would
+normally get created only after the phone gets provisioned.
+
+"""
+
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+
+import logging
+from logging.handlers import SysLogHandler
+from optparse import OptionParser
+import os
+import os.path
+import sys
+
+from xivo.xivo_config import ProvGeneralConf as Pgc
+from xivo import network
+
+
+CONFIG_FILE = '/etc/pf-xivo/provisioning.conf'
+FILE_CONTENT = """\
+<?xml version="1.0" standalone="yes"?>
+<user>
+</user>
+"""
+
+
+syslog_handler = SysLogHandler('/dev/log', SysLogHandler.LOG_DAEMON)
+syslog_handler.setFormatter(logging.Formatter('%(name)s: %(message)s'))
+logger = logging.getLogger('polycomgendefault')
+logger.addHandler(syslog_handler)
+logger.setLevel(logging.INFO)
+
+parser = OptionParser()
+parser.add_option('-v', '--verbose', action='store_true', dest='verbose')
+(options, args) = parser.parse_args()
+if options.verbose:
+    logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.DEBUG)
+if len(args) != 1:
+    logger.error('usage: polycomgendefault [-v] <macaddr>')
+    sys.exit(1)
+
+macaddr = args[0]
+logger.debug('macaddr = %s', macaddr)
+if not network.is_mac_address_valid(macaddr):
+    logger.error('invalid mac address: %s', macaddr)
+    raise sys.exit(2)
+macaddr = network.normalize_mac_address(macaddr).replace(':', '').lower()
+pathname = os.path.join(Pgc['tftproot'], 'Polycom', '%s-user.cfg' % macaddr)
+logger.debug('output file pathname = %s', pathname)
+
+if os.path.isfile(pathname):
+    logger.debug('Configuration file %s already exist -- exiting', pathname)
+    raise sys.exit(0)
+logger.info('About to write new default configuration file %s', pathname)
+f = open(pathname, 'w')
+try:
+    f.write(FILE_CONTENT)
+    logger.debug('File successfully written')
+finally:
+    f.close()

@@ -47,7 +47,6 @@ class Polycom(PhoneVendorMixin):
                       ('spip_335', 'SPIP335'),
                       ('spip_430', 'SPIP430'),
                       ('spip_450', 'SPIP450'),
-                      ('spip_500', 'SPIP500'),
                       ('spip_501', 'SPIP501'),
                       ('spip_550', 'SPIP550'),
                       ('spip_560', 'SPIP560'),
@@ -66,6 +65,12 @@ class Polycom(PhoneVendorMixin):
     POLYCOM_COMMON_HTTP_PASS = "456"
 
     POLYCOM_COMMON_DIR = None
+    
+    POLYCOM_LOCALES = {
+        'en_US': 'English_United_States',
+        'fr_FR': 'French_France',
+        'fr_CA': 'French_France',
+    }
 
     @classmethod
     def setup(cls, config):
@@ -116,10 +121,10 @@ class Polycom(PhoneVendorMixin):
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            template_common_path = os.path.join(self.POLYCOM_COMMON_DIR, "templates", "polycom-phone.cfg")
+            template_common_path = os.path.join(self.POLYCOM_COMMON_DIR, "templates", "polycom-user.cfg")
 
             if not os.access(template_common_path, os.R_OK):
-                template_common_path = os.path.join(self.TEMPLATES_DIR, "polycom-phone.cfg")
+                template_common_path = os.path.join(self.TEMPLATES_DIR, "polycom-user.cfg")
 
             log.debug("Could not open phone specific template %r (errno: %r, errstr: %r). Using common template %r",
                       template_specific_path,
@@ -131,19 +136,25 @@ class Polycom(PhoneVendorMixin):
         template_lines = template_file.readlines()
         template_file.close()
 
-        tmp_filename = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-phone.cfg.tmp")
+        tmp_filename = os.path.join(self.POLYCOM_COMMON_DIR, macaddr + "-user.cfg.tmp")
         cfg_filename = tmp_filename[:-4]
 
         if bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
+        
+        if 'language' in provinfo and provinfo['language'] in self.POLYCOM_LOCALES:
+            language = self.POLYCOM_LOCALES[provinfo['language']]
+        else:
+            language = ''
 
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
                     { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
+                      'language':               language,
                     },
                     self.xml_escape,
                     clean_extension),
