@@ -98,6 +98,6 @@ INSERT INTO userfeatures SELECT
    internal,
    NULL,
    commented,
-   description,
+   description
  FROM userfeatures_tmp;
 DROP TABLE userfeatures_tmp;
