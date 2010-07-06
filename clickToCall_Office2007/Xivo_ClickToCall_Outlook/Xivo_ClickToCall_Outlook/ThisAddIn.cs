@@ -13,7 +13,8 @@ namespace Xivo_ClickToCall_Outlook
 {
     public partial class ThisAddIn
     {
-      
+        public Boolean uneForm = false; //booleen pour bloquer l'ouverture de plus d'une fenêtre
+
         private void ThisAddIn_Startup(object sender, System.EventArgs e)
         {
             this.Application.ItemContextMenuDisplay += new Microsoft.Office.Interop.Outlook.ApplicationEvents_11_ItemContextMenuDisplayEventHandler(Application_ItemContextMenuDisplay);
@@ -186,10 +187,14 @@ namespace Xivo_ClickToCall_Outlook
         }
 
         void ControlTel_Click(Microsoft.Office.Core.CommandBarButton Ctrl, ref bool CancelDefault)
-        {
-            String numero = Ctrl.accName;
-            Xivo_Appel formAppel = new Xivo_Appel(numero.Substring(numero.IndexOf(':') + 2));
-            formAppel.Show();
+        { //utilisation d'un booleen pour bloquer l'ouverture de plus d'une fenêtre
+            if (!uneForm)
+            {
+                String numero = Ctrl.accName;
+                Xivo_Appel formAppel = new Xivo_Appel(numero.Substring(numero.IndexOf(':') + 2));
+                formAppel.Show();
+                uneForm = true;
+            }
         }
 
         private string VerifSaisie(string numero)

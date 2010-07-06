@@ -10,9 +10,6 @@ namespace Xivo_ClickToCall_Outlook
 {
     public partial class Ribbon_ClickToCall_Xivo
     {
-        
-       
-
 
         private void Ribbon_ClickToCall_Xivo_Load(object sender, RibbonUIEventArgs e)
         {
@@ -20,9 +17,15 @@ namespace Xivo_ClickToCall_Outlook
 
 
         private void button1_Click(object sender, RibbonControlEventArgs e)
-        {
-            Xivo_Appel formAppel = new Xivo_Appel("");
-            formAppel.Show();
+        { 
+            //utilisation d'un booleen pour bloquer l'ouverture de plus d'une fenêtre
+            if (!Globals.ThisAddIn.uneForm)
+            {
+                Xivo_Appel formAppel = new Xivo_Appel("");
+                formAppel.Show();
+                Globals.ThisAddIn.uneForm = true;
+            }
+
         }
 
     }

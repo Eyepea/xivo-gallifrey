@@ -100,6 +100,7 @@
             this.Name = "Xivo_Appel";
             this.Text = "xivo : Nouvelle appel";
             this.TopMost = true;
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Xivo_Appel_FormClosed);
             this.groupBox_NumeroaComposer.ResumeLayout(false);
             this.groupBox_NumeroaComposer.PerformLayout();
             this.ResumeLayout(false);

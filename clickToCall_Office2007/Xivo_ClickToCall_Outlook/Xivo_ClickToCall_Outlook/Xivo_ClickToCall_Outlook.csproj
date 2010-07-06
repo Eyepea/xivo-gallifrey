@@ -27,16 +27,16 @@
     <RootNamespace>Xivo_ClickToCall_Outlook</RootNamespace>
     <AssemblyName>Xivo_ClickToCall_Outlook</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <IsWebBootstrapper>False</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>C:\Xivo_publish\</PublishUrl>
     <InstallUrl />
     <TargetCulture>fr</TargetCulture>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.0.1</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
-    <IsWebBootstrapper>False</IsWebBootstrapper>
     <ProductName>Xivo_ClickToCall_Outlook</ProductName>
     <PublisherName />
     <SupportUrl />

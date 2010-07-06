@@ -14,7 +14,7 @@ namespace Xivo_ClickToCall_Outlook
     {
         public Xivo_Appel(string numero)
         {
-            InitializeComponent();
+           InitializeComponent();
             tb_Numero.Text = VerifSaisie(numero);
 
         }
@@ -41,11 +41,17 @@ namespace Xivo_ClickToCall_Outlook
                 myProcess.Close();
                 MessageBox.Show("Numéro transmis au Xivo Client");
                 this.Close();
+                this.Dispose();
+                //utilisation d'un booleen pour bloquer l'ouverture de plus d'une fenêtre
+                Globals.ThisAddIn.uneForm = false;
             }
             catch
             {
                 MessageBox.Show("Erreur de transmission de donnée au Xivo Client");
                 this.Close();
+                this.Dispose();
+                //utilisation d'un booleen pour bloquer l'ouverture de plus d'une fenêtre
+                Globals.ThisAddIn.uneForm = false;
             }
         }
 
@@ -59,6 +65,16 @@ namespace Xivo_ClickToCall_Outlook
         private void button_Fermer_Click_1(object sender, EventArgs e)
         {
             this.Close();
+            this.Dispose();
+            //utilisation d'un booleen pour bloquer l'ouverture de plus d'une fenêtre
+            Globals.ThisAddIn.uneForm = false;
+        }
+
+        private void Xivo_Appel_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            this.Dispose();
+            //utilisation d'un booleen pour bloquer l'ouverture de plus d'une fenêtre
+            Globals.ThisAddIn.uneForm = false;
         }
     }
 }
