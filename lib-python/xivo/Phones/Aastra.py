@@ -60,7 +60,7 @@ class Aastra(PhoneVendorMixin):
     
     AASTRA_LOCALES = {
         'en_US': 'language: 0',
-        'fr_FR': 'language: 1\nlanguage 1: lang_fr.txt',
+        'fr_FR': 'language: 1\nlanguage 1: lang_fr.txt\ntone set: France',
         'fr_CA': 'language: 1\nlanguage 1: lang_fr_ca.txt',
     }
 
