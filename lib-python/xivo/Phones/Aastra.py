@@ -57,6 +57,12 @@ class Aastra(PhoneVendorMixin):
                                       ('N', '[2-9]'),
                                       ('.', '+'),
                                       ('!', '+'))
+    
+    AASTRA_LOCALES = {
+        'en_US': 'language: 0',
+        'fr_FR': 'language: 1\nlanguage 1: lang_fr.txt',
+        'fr_CA': 'language: 1\nlanguage 1: lang_fr_ca.txt',
+    }
 
     @classmethod
     def setup(cls, config):
@@ -212,13 +218,19 @@ class Aastra(PhoneVendorMixin):
 
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'], model)
+        
+        if 'language' in provinfo and provinfo['language'] in self.AASTRA_LOCALES:
+            language = self.AASTRA_LOCALES[provinfo['language']]
+        else:
+            language = ''
 
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
                     { 'exten_pickup_prefix':    exten_pickup_prefix,
-                      'function_keys':          function_keys_config_lines
+                      'function_keys':          function_keys_config_lines,
+                      'language':               language
                     },
                     format_extension=self.__format_extension),
                 cfg_filename,
