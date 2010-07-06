@@ -25,7 +25,7 @@ source "`dirname $0`/../constants.sh"
 
 
 sqlite_migrate() {
-	if ! ask_yn_question "Would you like to upgrade XIVO Web Interface SQLite Database?";	then
+	if ! ask_yn_question "Would you like to upgrade XIVO Asterisk SQLite Database?";	then
 		return 0;
 	fi
 
