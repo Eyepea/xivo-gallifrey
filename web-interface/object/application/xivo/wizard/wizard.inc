@@ -1502,7 +1502,9 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		{
 			$app = &$this->_ipbx->get_apprealstatic($name);
 			$module = &$app->get_module('general');
-			if(!$module->set_save_all(array('language' => $lang)))
+
+			if(!$module->set(array('var_name' => 'language', 'var_val' => $lang))
+			|| !$module->save())
 				return(false);
 		}
 
@@ -1518,7 +1520,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 			return true;
 
 		$module = &$this->_ipbx->get_module('general');
-		return $module->edit(1, array('timezone' => $tz));
+		$module->edit(1, array('timezone' => $tz));
+		return true;
 	}
 
 	function send_redirect($tpl)
