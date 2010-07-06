@@ -15,8 +15,8 @@ namespace Xivo_ClickToCall_Outlook
         public Xivo_Appel(string numero)
         {
            InitializeComponent();
-            tb_Numero.Text = VerifSaisie(numero);
-
+           String numeroVerifie = VerifSaisie(numero);
+           tb_Numero.Text = numeroVerifie;
         }
 
         private void xivo_appel_Load(object sender, EventArgs e)
@@ -57,9 +57,30 @@ namespace Xivo_ClickToCall_Outlook
 
         private string VerifSaisie(string numero)
         {
+            Boolean plusEnPremier = false;
+            String resultatfinal = "";
             numero = numero.Trim();
+            //filtre regex on ne garde que ce qui est chiffre et '+'
             System.Text.RegularExpressions.Regex myRegex = new System.Text.RegularExpressions.Regex("[^0-9+]");
-            return myRegex.Replace(numero, ""); //renvoi la chaine modifiée    
+            string resultat1 = myRegex.Replace(numero, "");
+            
+            if (resultat1.Length > 0)//Si le résultat du premier chiffre donne autre chose qu'une chainbe vide on continue
+            {
+                if (resultat1[0] == '+')//on verifie si le premier élement de la collection de caractére est un "+", si oui on valorise un booleen
+                { plusEnPremier = true; }
+                myRegex = new System.Text.RegularExpressions.Regex("[^0-9]");//on garde que les chiffres dans la chaine
+            }
+            //test du boleen si oui on rajoute le caractére '+' 
+            if (plusEnPremier)
+            {
+                resultatfinal = "+" + myRegex.Replace(resultat1, "");
+            }
+            else
+            {
+                resultatfinal = myRegex.Replace(resultat1, "");
+            }
+
+            return resultatfinal; //renvoi la chaine modifiée    
         }
 
         private void button_Fermer_Click_1(object sender, EventArgs e)

@@ -197,12 +197,6 @@ namespace Xivo_ClickToCall_Outlook
             }
         }
 
-        private string VerifSaisie(string numero)
-        {
-            numero = numero.Trim();
-            System.Text.RegularExpressions.Regex myRegex = new System.Text.RegularExpressions.Regex("[^0-9+]");
-            return myRegex.Replace(numero, ""); //renvoi la chaine modifiée    
-        }
 
         #region Traitement de l'image
 
