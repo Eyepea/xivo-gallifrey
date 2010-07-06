@@ -200,10 +200,10 @@ class Cisco(PhoneVendorMixin):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
-            
+
         ## sccp:: addons
         addons = ['\n']
-        if 'addons' in provinfo and len(provinfo['addons']) > 0:
+        if 'addons' in provinfo and provinfo['addons'] is not None and len(provinfo['addons']) > 0:
             log.debug("addons= %s", provinfo['addons'])
             addons_tpl_path = os.path.join(self.TEMPLATES_DIR, "sccp-cisco-addons.cfg")
             if not os.access(addons_tpl_path, os.R_OK):
