@@ -88,12 +88,12 @@ class CommonConf(object):
 			print " * ERROR: *%s* interfaces not configured in the system" % list(notfound)
 			return
 
-		if self.vlanid is None:
+		if self.vlanid is None or self.vlanid == 0:
 			iface = self.ifaces_candidates[0]
 			del self.ifaces_candidates[0]
 		else:
 			# found matching device
-			vlandev = filter(lambda x: 'vlan-id' in self.network[x] and self.network[x]['vland-id'] == self.vlandid, self.network)
+			vlandev = filter(lambda x: 'vlan-id' in self.network[x] and self.network[x]['vlan-id'] == self.vlandid, self.network)
 			if len(vlandev) == 0:
 				print " * ERROR: *%d* vlanid does not match with any network interface" % self.vlanid
 				return
@@ -120,22 +120,33 @@ class CommonConf(object):
 			iface,
 			dct['hwtypeid'],
 			'voip',          # networktype
+			'iface',
+			'inet',
 			dct['method'],
 			dct.get('address'),
 			dct.get('netmask'),
 			dct.get('broadcast'),
 			dct.get('gateway'),
-			dct['mtu']
+			dct['mtu'],
+			dct.get('vlan-raw-device'),
+			dct.get('vlan-id'),
+			dct.get('vlan-raw-device'),
 		]
 
-		self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 'created by 1.1 migration tool')", parameters=parameters)
+		self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 'created by 1.1 migration tool')", parameters=parameters)
 
 		if len(self.extra_ifaces) > 0:
 			xtra_ifaces = ' '.join(self.extra_ifaces)
 			for iface in xtra_ifaces:
 				dct = self.network[iface]
-				parameters = [iface, iface, dct['hwtypeid'], 'voip', dct['method'], dct.get('address'), dct.get('netmask'), dct.get('broadcast'), dct.get('gateway'), dct['mtu']]
-				self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 'created by 1.1 migration tool')", parameters=parameters)
+				parameters = [
+					iface, iface, dct['hwtypeid'], 'voip', 'iface', 'inet', dct['method'], 
+					dct.get('address'), dct.get('netmask'), dct.get('broadcast'), 
+					dct.get('gateway'), dct['mtu'], dct.get('vlan-raw-device'), 
+					dct.get('vlan-id'), dct.get('vlan-raw-device')
+				]
+
+				self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 'created by 1.1 migration tool')", parameters=parameters)
 
 			self.cursor.query(
 				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
@@ -187,7 +198,7 @@ class CommonConf(object):
 #				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
 #				parameters = (val,)
 #		)
-		self.extra_ifaces = val
+		self.extra_ifaces = val.split(' ')
 
 
 	# callback function
