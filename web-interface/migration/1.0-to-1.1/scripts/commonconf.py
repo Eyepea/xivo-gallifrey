@@ -132,7 +132,7 @@ class CommonConf(object):
 			dct.get('vlan-id'),
 		]
 
-		self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 0, 'created by 1.1 migration tool')", parameters=parameters)
+		self.cursor.query("REPLACE INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 0, 'created by 1.1 migration tool')", parameters=parameters)
 
 		if len(self.extra_ifaces) > 0:
 			xtra_ifaces = ' '.join(self.extra_ifaces)
@@ -145,11 +145,11 @@ class CommonConf(object):
 					dct.get('vlan-id')
 				]
 
-				self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 0, 'created by 1.1 migration tool')", parameters=parameters)
+				self.cursor.query("REPLACE INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 0, 'created by 1.1 migration tool')", parameters=parameters)
 
 			self.cursor.query(
 				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
-				parameters = (val,)
+				parameters = (xtra_ifaces,)
 			)
 
 
