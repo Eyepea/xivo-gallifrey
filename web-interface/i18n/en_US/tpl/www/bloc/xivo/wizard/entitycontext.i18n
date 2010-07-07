@@ -41,7 +41,7 @@ Name :
 Printed name :
 
 ; fm_context_incall-displayname-default(from-extern)
-Outcalls
+Incalls
 
 ; fm_context_incall-numberbeg
 Numbers interval start  :
