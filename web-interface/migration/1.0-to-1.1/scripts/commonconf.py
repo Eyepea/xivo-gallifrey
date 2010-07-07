@@ -1,5 +1,4 @@
-#!/usr/bin/python2.5
-from __future__ import with_statement
+#!/usr/bin/python
 __version__ = "$Revision$ $Date$"
 __author__  = "Guillaume Bour <gbour@proformatique.com>"
 __license__ = """
@@ -226,14 +225,15 @@ if __name__ == '__main__':
 	print " * INFO: starting common.conf migration"
 	cc = CommonConf(cursor)
 
-	with open(COMMON_CONFFILE) as f:
-		for l in f.xreadlines():
-			if l.startswith('#') or '=' not in l:
-				continue
+	f = open(COMMON_CONFFILE)
+	for l in f.xreadlines():
+		if l.startswith('#') or '=' not in l:
+			continue
 		
-			(key, value) = l[:-1].strip().split('=')
-#			print "%s = %s" % (key, value)
-			getattr(cc, key.lower())(value.replace('"', '').strip())
+		(key, value) = l[:-1].strip().split('=')
+#		print "%s = %s" % (key, value)
+		getattr(cc, key.lower())(value.replace('"', '').strip())
+	f.close()
 
 	cc.docomplete()
 	print " * INFO: common.conf migration complete"
