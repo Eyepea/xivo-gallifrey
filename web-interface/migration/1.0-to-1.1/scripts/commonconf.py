@@ -23,7 +23,7 @@ __license__ = """
 """
 
 
-import sys, os.path
+import sys, os.path, cjson, httplib, urllib
 from xivo import OrderedConf, ConfigDict, xivo_config
 from xivo.xivo_helpers import db_connect
 
@@ -55,15 +55,108 @@ class CommonConf(object):
 		self.cursor       = cursor
 		self.extra_ifaces = ()
 
+		# get network config
+		headers = {
+			"Content-type": "application/json",
+			"Accept": "text/plain"
+		}
+
+		conn = httplib.HTTPConnection('localhost', 8668)
+		conn.request('GET', '/discover_netifaces', None, headers)
+		response = conn.getresponse()
+		if response.status != 200:
+			raise Exception('cannot query network configuration !!!')
+		self.network = cjson.decode(response.read())
+#		import pprint; pprint.pprint(self.network)
+
+		self.ifaces_candidates = []
+		self.extra_ifaces      = []
+		self.vlanid            = None
+		self.net4cidr          = None
+
+	def docomplete(self):
+		"""Complete migration (networking part)
+		"""
+		iface = None
+
+		if len(self.ifaces_candidates) == 0:
+			print " * WARNING: no VoIP defined"
+		elif len(self.ifaces_candidates) > 1:
+			print " * WARNING: you can only set ONE VoIP interface (value is '%s'). Will try to autoselect one..."
+
+		notfound = set(self.ifaces_candidates).difference(self.network)
+		if len(notfound) > 0:
+			print " * ERROR: *%s* interfaces not configured in the system" % list(notfound)
+			return
+
+		if self.vlanid is None:
+			iface = self.ifaces_candidates[0]
+			del self.ifaces_candidates[0]
+		else:
+			# found matching device
+			vlandev = filter(lambda x: 'vlan-id' in self.network[x] and self.network[x]['vland-id'] == self.vlandid, self.network)
+			if len(vlandev) == 0:
+				print " * ERROR: *%d* vlanid does not match with any network interface" % self.vlanid
+				return
+			elif len(vlandev) > 1:
+				print " * ERROR: *%d* vlanid match with more than on network interface (%s)" % (self.vlanid, vlandev)
+				return
+			elif vlandev[0] not in self.ifaces_candidates:
+				print " * ERROR: *%d* vlanid does not match any of declared network interfaces (%s)" % (self.vlanid, self.ifaces_candidates)
+
+			del self.ifaces_candidates[self.ifaces_candidates.index(vlandev[0])]
+			iface = vlandev[0]
+
+		self.extra_ifaces.extend(self.ifaces_candidates)
+
+		# saving voip network interface
+		dct = self.network[iface]
+		if self.net4cidr is not None:
+			net4, cidr = self.net4cidr.split('/')
+			if net4 != dct['address']:
+				print " * ERROR: NET4_CIDR (%s) does not match interface address (%s: %s)" % (net4, iface, dct['address'])
+			
+		parameters = [
+			iface,
+			iface,
+			dct['hwtypeid'],
+			'voip',          # networktype
+			dct['method'],
+			dct.get('address'),
+			dct.get('netmask'),
+			dct.get('broadcast'),
+			dct.get('gateway'),
+			dct['mtu']
+		]
+
+		self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 'created by 1.1 migration tool')", parameters=parameters)
+
+		if len(self.extra_ifaces) > 0:
+			xtra_ifaces = ' '.join(self.extra_ifaces)
+			for iface in xtra_ifaces:
+				dct = self.network[iface]
+				parameters = [iface, iface, dct['hwtypeid'], 'voip', dct['method'], dct.get('address'), dct.get('netmask'), dct.get('broadcast'), dct.get('gateway'), dct['mtu']]
+				self.cursor.query("INSERT INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 0, 'created by 1.1 migration tool')", parameters=parameters)
+
+			self.cursor.query(
+				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
+				parameters = (val,)
+			)
+
+
 	# specific callbacks
 	def xivo_voip_ifaces(self, val):
-		ifaces = val.split(' ')
-		if len(ifaces) > 1:
-			print " * WARNING: you can only set ONE VoIP interface (value is '%s')." % val + \
-				" Selected *%s* as VoIP interface" % ifaces[0]
-			self.extra_ifaces = ifaces[1:]
-		
-		#TODO
+		self.ifaces_candidates = val.split(' ')
+#		if len(ifaces) > 1:
+#			print " * WARNING: you can only set ONE VoIP interface (value is '%s')." % val + \
+#				" Selected *%s* as VoIP interface" % ifaces[0]
+#			self.extra_ifaces = ifaces[1:]
+
+	def xivo_voip_vlan_id(self, val):
+		self.vlanid = int(val)
+
+	def xivo_net4_cidr(self, val):
+		self.net4cidr = val
 
 	def xivo_nameservers(self, val):
 		if len(val.strip()) == 0:
@@ -87,14 +180,15 @@ class CommonConf(object):
 		)
 		
 	def xivo_dhcp_extra_ifaces(self, val):
-		if len(self.extra_ifaces) > 0:
-			val += ' ' + ' '.join(self.extra_ifaces)
-		val = val.strip()
+#		if len(self.extra_ifaces) > 0:
+#			val += ' ' + ' '.join(self.extra_ifaces)
+#		val = val.strip()
 
-		self.cursor.query(
-				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
-				parameters = (val,)
-		)
+#		self.cursor.query(
+#				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
+#				parameters = (val,)
+#		)
+		self.extra_ifaces = val
 
 
 	# callback function
@@ -129,6 +223,7 @@ if __name__ == '__main__':
 	if cursor is None:
 		print "cannot connect to xivo database. exit..."; sys.exit(0)
 
+	print " * INFO: starting common.conf migration"
 	cc = CommonConf(cursor)
 
 	with open(COMMON_CONFFILE) as f:
@@ -139,4 +234,7 @@ if __name__ == '__main__':
 			(key, value) = l[:-1].strip().split('=')
 #			print "%s = %s" % (key, value)
 			getattr(cc, key.lower())(value.replace('"', '').strip())
+
+	cc.docomplete()
+	print " * INFO: common.conf migration complete"
 
