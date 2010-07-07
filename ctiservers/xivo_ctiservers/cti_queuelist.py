@@ -229,8 +229,8 @@ class QueueList(AnyList):
 
         try:
             self.stats = QueueStats(misc["conf"].xivoconf.get('general','asterisk_queuestat_db'));
-        except Exception, exc:
-            log.exception('could not access queuestats db %s' % exc)
+        except Exception:
+            log.exception('could not access queuestats db')
             self.stats = None
             
         return

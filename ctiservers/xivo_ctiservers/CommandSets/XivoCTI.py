@@ -1,5 +1,5 @@
 # vim: set fileencoding=utf-8 :
-# XIVO Daemon
+# XIVO CTI Server
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -11,9 +11,9 @@ __author__    = 'Corentin Le Gall'
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# Alternatively, XIVO Daemon is available under other licenses directly
+# Alternatively, XIVO CTI Server is available under other licenses directly
 # contracted with Pro-formatique SARL. See the LICENSE file at top of the
-# source tree or delivered in the installable package in which XIVO Daemon
+# source tree or delivered in the installable package in which XIVO CTI Server
 # is distributed for more details.
 #
 # This program is distributed in the hope that it will be useful,
@@ -98,7 +98,7 @@ rename_trph = [True, False, False, True]
 
 class XivoCTICommand(BaseCommand):
 
-    xdname = 'XiVO Daemon'
+    xdname = 'XiVO CTI Server'
 
     commnames = ['login_id', 'login_pass', 'login_capas',
                  'history', 'directory-search',
@@ -5971,9 +5971,14 @@ class XivoCTICommand(BaseCommand):
         for fsl in [uniq.setdefault(e,e) for e in mylines if e not in uniq]:
             uniq_mylines.append(fsl)
 
-        tosend = { 'class' : 'directory',
-                   'headers' : self.ctxlist.display_header[ctx],
-                   'resultlist' : uniq_mylines }
+        if ctx in self.ctxlist.display_header:
+            tosend = { 'class' : 'directory',
+                       'headers' : self.ctxlist.display_header[ctx],
+                       'resultlist' : uniq_mylines }
+        else:
+            # XXX todo : manage this emptyreason field on client side
+            tosend = { 'class' : 'directory',
+                       'emptyreason' : 'invalid_context' }
         return self.__cjson_encode__(tosend)
 
     def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
