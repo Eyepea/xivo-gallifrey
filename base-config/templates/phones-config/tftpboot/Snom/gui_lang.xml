@@ -1,25 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <gui-languages>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_BS.xml" name="Bosanski"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_CA.xml" name="Catalan"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_CS.xml" name="Cestina"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_DA.xml" name="Dansk"/>
   <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_DE.xml" name="Deutsch"/>
   <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_EN.xml" name="English"/>
   <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_UK.xml" name="English(UK)"/>
   <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_ES.xml" name="Espanol"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_ET.xml" name="Estonian"/>
   <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_FR.xml" name="Francais"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_HE.xml" name="Hebrew"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_HU.xml" name="Hungarian"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_IT.xml" name="Italiano"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_NL.xml" name="Nederlands"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_NO.xml" name="Norsk"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_PL.xml" name="Polski"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_PT.xml" name="Portugues"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_RU.xml" name="Russian"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_SK.xml" name="Slovencina"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_FI.xml" name="Suomi"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_SV.xml" name="Svenska"/>
-  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/gui_lang_TR.xml" name="Turkce"/>
 </gui-languages>

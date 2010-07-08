@@ -13,6 +13,7 @@
     <http_user perm="R">guest</http_user>
     <http_pass perm="R">guest</http_pass>
     <ntp_server perm="R">#XIVO_NET4_IP#</ntp_server>
+    <pnp_config perm="R">off</pnp_config>
     <update_policy perm="R">auto_update</update_policy>
     <user_active idx="1" perm="R">on</user_active>
     <user_dtmf_info idx="1" perm="R">on</user_dtmf_info>
