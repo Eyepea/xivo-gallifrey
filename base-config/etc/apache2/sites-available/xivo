@@ -21,12 +21,6 @@ NameVirtualHost *:8667
 <VirtualHost *:8667>
 	DocumentRoot /tftpboot/
 
-	RewriteEngine On
-
-	# Rewrite for Snom firmware
-	RewriteCond %{HTTP_USER_AGENT} snom[38][0267][01]
-	RewriteRule ^/(snom[38][0267][01])/(.*) /Snom/$2 [PT,L]
-
 	ErrorLog /var/log/apache2/xivo_error_provi_http.log
 	CustomLog /var/log/apache2/xivo_access_provi_http.log combined
 

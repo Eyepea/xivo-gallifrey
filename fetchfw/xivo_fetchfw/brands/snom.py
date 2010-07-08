@@ -16,19 +16,30 @@ __license__ = """
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import distutils.dir_util
 import os
 import shutil
 from xivo_fetchfw import fetchfw
 
 
-def snom_install(firmware):
-    assert len(firmware.remote_files) == 1
+def snom3xx_install_lang(xfile):
+    unzip_dir = fetchfw.tgz_extract_all('snom-lang', xfile.path)
+    src_dir = os.path.join(unzip_dir, "snomlang")
+    dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom/lang")
+    distutils.dir_util.copy_tree(src_dir, dst_dir)
+
+
+def snom_install_fw(xfile):
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
-    fw_dst_path = os.path.join(fw_dst_dir, firmware.remote_files[0].filename)
+    fw_dst_path = os.path.join(fw_dst_dir, xfile.filename)
     
     fetchfw.makedirs(fw_dst_dir)
+    shutil.copy2(xfile.path, fw_dst_path)
     
-    shutil.copy2(firmware.remote_files[0].path, fw_dst_path)
+def snom_install(firmware):
+    snom_install_fw(firmware.remote_files[0])
+    if len(firmware.remote_files) > 1:
+        snom3xx_install_lang(firmware.remote_files[1])
 
 
 def snom_m3_install(firmware):

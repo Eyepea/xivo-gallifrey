@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings>
+  <phone-settings>
+    <language perm="!">English</language>
+    <tone_scheme perm="!">USA</tone_scheme>
+    <timezone perm="!">USA-5</timezone>
+    <time_24_format perm="!">on</time_24_format>
+    
+    <admin_mode perm="R">on</admin_mode>
+    <admin_mode_password perm="R">12345</admin_mode_password>
+    <display_method perm="R">display_name_number</display_method>
+    <gateway perm="R">#XIVO_NET4_IP#</gateway>
+    <http_user perm="R">guest</http_user>
+    <http_pass perm="R">guest</http_pass>
+    <ntp_server perm="R">#XIVO_NET4_IP#</ntp_server>
+    <update_policy perm="R">auto_update</update_policy>
+    <user_active idx="1" perm="R">on</user_active>
+    <user_dtmf_info idx="1" perm="R">on</user_dtmf_info>
+    <user_host idx="1" perm="R">#XIVO_NET4_IP#</user_host>
+    <user_name idx="1" perm="!">guest</user_name>
+    <user_pass idx="1" perm="!">guest</user_pass>
+    <user_realname idx="1" perm="!">guest</user_realname>
+    <user_server_type idx="1" perm="R">Default</user_server_type>
+    <vlan_id perm="R">#XIVO_VOIP_VLAN_ID#</vlan_id>
+
+    <!-- http://wiki.snom.com/Interoperability/PBX/Asterisk-->
+    <call_completion perm="R">off</call_completion>
+    <challenge_response perm="R">off</challenge_response>
+    <filter_registrar perm="R">off</filter_registrar>
+    <user_phone perm="R">off</user_phone>
+  </phone-settings>
+</settings>

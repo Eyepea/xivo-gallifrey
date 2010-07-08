@@ -34,35 +34,38 @@ from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Snom") # pylint: disable-msg=C0103
 
-
-# SNOM BUG #1
-# Snom doesn't support something else than files at root of tftproot when using
-# tftp... :/ (It just internaly replaces the first '/' with a '\0' :/// )
-# TODO: check if still true!
-
 # SNOM BUG #2
 # Because it seems much technically impossible to detect the phone model by
 # dhcp request (model not in the request.... :///), we'll need to also support
 # HTTP based xivo_config
-# TODO: check if still true!
+# update (2010-07-07): vendor-class-identifier option is sent starting since
+# firmware 7.3.15
 
 
 class Snom(PhoneVendorMixin):
 
-    SNOM_MODELS = ('300', '320', '360', '370', '820', '870')
+    SNOM_MODELS = ('300', '320', '360', '370', '820', '821', '870')
 
     SNOM_COMMON_HTTP_USER = "guest"
     SNOM_COMMON_HTTP_PASS = "guest"
 
     SNOM_SPEC_DIR = None
     SNOM_SPEC_TEMPLATE = None
+    
+    SNOM_LOCALES = {
+        'de_DE': ('Deutsch', 'GER'),
+        'en_US': ('English', 'USA'),
+        'es_ES': ('Espanol', 'ESP'),
+        'fr_FR': ('Francais', 'FRA'),
+        'fr_CA': ('Francais', 'USA'),
+    }
 
     @classmethod
     def setup(cls, config):
         "Configuration of class attributes"
         PhoneVendorMixin.setup(config)
-        cls.SNOM_SPEC_DIR = os.path.join(cls.TFTPROOT, "Snom/")
-        cls.SNOM_SPEC_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "snom-template.xml")
+        cls.SNOM_SPEC_DIR = os.path.join(cls.TFTPROOT, "Snom")
+        cls.SNOM_SPEC_TEMPLATE = os.path.join(cls.TEMPLATES_DIR, "snom-template.htm")
 
     def __init__(self, phone):
         PhoneVendorMixin.__init__(self, phone)
@@ -127,7 +130,7 @@ class Snom(PhoneVendorMixin):
         model = self.phone['model']
         macaddr = self.phone['macaddr'].replace(":", "").upper()
 
-        xml_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml")
+        xml_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm")
         try:
             os.unlink(xml_filename)
         except OSError:
@@ -142,11 +145,11 @@ class Snom(PhoneVendorMixin):
         macaddr = self.phone['macaddr'].replace(":", "").upper()
 
         try:
-            template_specific_path = os.path.join(self.SNOM_SPEC_DIR, macaddr + "-template.cfg")
+            template_specific_path = os.path.join(self.SNOM_SPEC_DIR, macaddr + "-template.htm")
             log.debug("Trying phone specific template %r", template_specific_path)
             template_file = open(template_specific_path)
         except IOError, (errno, errstr):
-            template_common_path = os.path.join(self.SNOM_SPEC_DIR, "templates", "snom-template.xml")
+            template_common_path = os.path.join(self.SNOM_SPEC_DIR, "templates", "snom-template.htm")
 
             if not os.access(template_common_path, os.R_OK):
                 template_common_path = self.SNOM_SPEC_TEMPLATE
@@ -160,11 +163,19 @@ class Snom(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml.tmp")
+        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm.tmp")
         xml_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
+        
+        lang_code = 'en_US'
+        if 'language' in provinfo and provinfo['language'] in self.SNOM_LOCALES:
+            lang_code = provinfo['language']
+        language = """\
+    <language perm="RW">%s</language>
+    <tone_scheme perm="RW">%s</tone_scheme>""" % (self.SNOM_LOCALES[lang_code][0],
+                                                  self.SNOM_LOCALES[lang_code][1])
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -173,6 +184,7 @@ class Snom(PhoneVendorMixin):
                     { 'http_user':          self.SNOM_COMMON_HTTP_USER,
                       'http_pass':          self.SNOM_COMMON_HTTP_PASS,
                       'function_keys':      function_keys_config_lines,
+                      'language':           language,
                     },
                     format_extension=clean_extension),
                 xml_filename,
@@ -217,7 +229,7 @@ class Snom(PhoneVendorMixin):
                 '    match if option vendor-class-identifier = "snom%s";\n' % model,
                 '    log("boot Snom %s");\n' % model,
                 '    option tftp-server-name "http://%s:8667/";\n' % addresses['bootServer'],
-                '    option bootfile-name "snom.php?mac={mac}";\n',
+                '    option bootfile-name "Snom/snom%s.htm";\n' % model,
                 '}\n',
                 '\n'):
                 yield line

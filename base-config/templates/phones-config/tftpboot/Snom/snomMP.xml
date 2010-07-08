@@ -1,26 +1,7 @@
- <phone-settings e="2">
-  <language perm="">Francais</language>
-  <timezone perm="">FRA+1</timezone>
-  <tone_scheme perm="">FRA</tone_scheme>
-  <http_user perm="RO">guest</http_user>
-  <http_pass perm="RO">guest</http_pass>
-  <admin_mode_password perm="RO">12345</admin_mode_password>
-  <vlan perm="RO">#XIVO_VOIP_VLAN_ID#</vlan>
-  <vlan_id perm="RO">#XIVO_VOIP_VLAN_ID#</vlan_id>
-  <vlan_qos perm="RO"></vlan_qos>
-  <display_method perm="RO">display_name_number</display_method>
-  <ntp_server perm="RO">#XIVO_NET4_IP#</ntp_server>
-  <user_phone perm="RO">true</user_phone>
-  <update_server perm="RO">http://#XIVO_NET4_IP#:8667</update_server>
-  <user_active idx="1" perm="RO">on</user_active>
-  <user_realname idx="1" perm="RO">guest</user_realname>
-  <user_name idx="1" perm="RO">guest</user_name>
-  <user_host idx="1" perm="RO">#XIVO_NET4_IP#</user_host>
-  <user_pname idx="1" perm="RO">guest</user_pname>
-  <user_pass idx="1" perm="RO">guest</user_pass>
-  <call_completion perm="RO">off</call_completion>
-  <user_phone perm="RO">off</user_phone>
-  <filter_registrar perm="RO">off</filter_registrar>
-  <challenge_response perm="RO">off</challenge_response>
-  <firmware_status perm="">http://#XIVO_NET4_IP#:8667/Snom/snom320-firmware.xml</firmware_status>
- </phone-settings>
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings>
+  <phone-settings>
+    <setting_server perm="R">http://#XIVO_NET4_IP#:8667/Snom/snomMP.htm</setting_server>
+    <firmware_status perm="R">http://#XIVO_NET4_IP#:8667/Snom/snomMP-firmware.xml</firmware_status>
+  </phone-settings>
+</settings>

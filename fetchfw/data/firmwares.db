@@ -727,11 +727,11 @@ size: 1835008
 sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
 
 # Snom 300 8.2.35
-[sn300_8.2.35]
+[sn300_8235]
 brand: Snom
 model: 300
 version: 8.2.35
-files: snom300-8.2.35-SIP-f.bin
+files: snom300-8.2.35-SIP-f.bin snomlang-8.2.35.tgz
 
 [snom300-8.2.35-SIP-f.bin]
 url: http://provisioning.snom.com/download/fw/snom300-8.2.35-SIP-f.bin
@@ -743,7 +743,7 @@ sha1sum: 3b92efbe8f7d035dd33a6c5e55acfe48d40f53d5
 brand: Snom
 model: 320
 version: 8.2.35
-files: snom320-8.2.35-SIP-f.bin
+files: snom320-8.2.35-SIP-f.bin snomlang-8.2.35.tgz
 
 [snom320-8.2.35-SIP-f.bin]
 url: http://provisioning.snom.com/download/fw/snom320-8.2.35-SIP-f.bin
@@ -751,11 +751,11 @@ size: 3234204
 sha1sum: af7b97b624909251aa12bb4a9fb74f97a7c1d164
 
 # Snom 360 8.2.35
-[sn360_8.2.35]
+[sn360_8235]
 brand: Snom
 model: 360
 version: 8.2.35
-files: snom360-8.2.35-SIP-f.bin
+files: snom360-8.2.35-SIP-f.bin snomlang-8.2.35.tgz
 
 [snom360-8.2.35-SIP-f.bin]
 url: http://provisioning.snom.com/download/fw/snom360-8.2.35-SIP-f.bin
@@ -850,6 +850,12 @@ files: snomMP-8.2.35-SIP-r.bin
 url: http://provisioning.snom.com/download/fw/snomMP-8.2.35-SIP-r.bin
 size: 12526608
 sha1sum: 8c2eef5b0b68c1b0d9c9e3395f12e70585072b71
+
+# Common files for Snom 300/320/360
+[snomlang-8.2.35.tgz]
+url: http://fox.snom.com/config/snomlang-8.2.35.tgz
+size: 736848
+sha1sum: 1d100b026f2ff5cf5678f5728123de5e1cb327be
 
 # Thomson ST2022 4.68
 [thst2022_468]

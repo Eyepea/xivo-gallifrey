@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-languages>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_BS.xml" name="Bosanski"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_CS.xml" name="Cestina"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_DA.xml" name="Dansk"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_DE.xml" name="Deutsch"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_EN.xml" name="English"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_ES.xml" name="Espanol"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_FR.xml" name="Francais"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_HE.xml" name="Hebrew"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_HU.xml" name="Hungarian"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_IT.xml" name="Italiano"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_NL.xml" name="Nederlands"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_NO.xml" name="Norsk"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_PT.xml" name="Portugues"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_RU.xml" name="Russian"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_FI.xml" name="Suomi"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_SV.xml" name="Svenska"/>
+  <language url="http://#XIVO_NET4_IP#:8667/Snom/lang/web_lang_TR.xml" name="Turkce"/>
+</web-languages>
