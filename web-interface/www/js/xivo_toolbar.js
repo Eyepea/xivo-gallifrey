@@ -32,6 +32,22 @@ var xivo_toolbar_fn_adv_menu_delete = function(e)
 	}
 }
 
+var xivo_toolbar_fn_adv_menu_delete_agents = function(e)
+{
+	if(dwho_is_function(e.preventDefault) === true)
+		e.preventDefault();
+
+	if(confirm(xivo_toolbar_adv_menu_delete_confirm) === true)
+	{
+		if(dwho_is_undef(dwho.fm[xivo_toolbar_form_name]['search']) === false
+		&& typeof(xivo_toolbar_fm_search) !== 'undefined')
+			dwho.fm[xivo_toolbar_form_name]['search'].value = xivo_toolbar_fm_search;
+
+		dwho.fm[xivo_toolbar_form_name]['act'].value = 'deleteagents';
+		dwho.fm[xivo_toolbar_form_name].submit();
+	}
+}
+
 dwho.dom.set_onload(function()
 {
 	if(typeof(xivo_toolbar_fm_search) === 'undefined' || dwho_has_len(xivo_toolbar_fm_search) === false)
@@ -119,4 +135,8 @@ dwho.dom.set_onload(function()
 	dwho.dom.add_event('click',
 			   dwho_eid('toolbar-advanced-menu-delete'),
 			   xivo_toolbar_fn_adv_menu_delete);
+	dwho.dom.add_event('click',
+			   dwho_eid('toolbar-advanced-menu-delete-agents'),
+			   xivo_toolbar_fn_adv_menu_delete_agents);
+
 });

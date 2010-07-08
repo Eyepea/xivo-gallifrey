@@ -132,7 +132,7 @@ elseif($act === 'listagent'):
 			<a href="#" id="toolbar-advanced-menu-select-all"><?=$this->bbf('toolbar_adv_menu_select-all');?></a>
 		</li>
 		<li>
-			<a href="#" id="toolbar-advanced-menu-delete"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
+			<a href="#" id="toolbar-advanced-menu-delete-agents"><?=$this->bbf('toolbar_adv_menu_delete');?></a>
 		</li>
 	</ul>
 </div>
