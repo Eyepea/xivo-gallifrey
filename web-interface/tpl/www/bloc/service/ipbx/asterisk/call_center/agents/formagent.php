@@ -96,6 +96,7 @@ endif;
 				    'name'	=> 'agentfeatures[language]',
 				    'labelid'	=> 'agentfeatures-language',
 				    'key'	=> false,
+				    'empty' => true,
 				    'default'	=> $element['agentfeatures']['language']['default'],
 				    'selected'	=> $info['agentfeatures']['language']),
 			      $element['agentfeatures']['language']['value']),
