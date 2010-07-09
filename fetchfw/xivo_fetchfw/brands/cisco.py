@@ -105,9 +105,9 @@ def cisco79xx_install_locale(xfile, user_locale):
     # 4. Copy the file into tftpboot
     src_base_dir = os.path.join(untar_dir2, 'usr', 'local', 'cm', 'tftp')
     src_dir = user_locale
-    dest_dir = '_'.join(word.capitalize() for word in src_dir.split('_'))
+    dest_dir = user_locale
     distutils.dir_util.copy_tree(os.path.join(src_base_dir, src_dir),
-                                 os.path.join(fetchfw.TFTP_PATH, dest_dir))
+                                 os.path.join(fetchfw.TFTP_PATH, 'Cisco/i18n', dest_dir))
 
 
 def cisco79xx_metainstall_locale(user_locale, network_locale):
@@ -158,6 +158,10 @@ cisco_install_map = {
         cisco79xx_install_fw,
     'cisco7914_sccp_504':
         cisco79xx_install_fw,
+    'cisco79xx_locale_de_DE':
+        cisco79xx_metainstall_locale('german_germany', 'germany'),
+    'cisco79xx_locale_es_ES':
+        cisco79xx_metainstall_locale('spanish_spain', 'spain'),
     'cisco79xx_locale_fr_FR':
         cisco79xx_metainstall_locale('french_france', 'france'),
     'cisco79xx_locale_fr_CA':

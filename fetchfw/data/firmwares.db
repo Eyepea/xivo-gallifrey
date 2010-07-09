@@ -316,6 +316,18 @@ size: 26206
 sha1sum: 187c5628874db55950a058480b9aa2ec3fdabd72
 
 # Locales for Cisco 79xx
+[cisco79xx_locale_de_DE]
+brand: Cisco
+model: 79xx de_DE
+version: 9.0.2
+files: po-locale-de_DE-9.0.2.1000-1.cop.sgn po-locale-combined_network-9.0.2.1000-1.cop.sgn
+
+[cisco79xx_locale_es_ES]
+brand: Cisco
+model: 79xx es_ES
+version: 9.0.2
+files: po-locale-es_ES-9.0.2.1000-1.cop.sgn po-locale-combined_network-9.0.2.1000-1.cop.sgn
+
 [cisco79xx_locale_fr_FR]
 brand: Cisco
 model: 79xx fr_FR
@@ -327,6 +339,16 @@ brand: Cisco
 model: 79xx fr_CA
 version: 9.0.2
 files: po-locale-fr_FR-9.0.2.1000-1.cop.sgn po-locale-combined_network-9.0.2.1000-1.cop.sgn
+
+[po-locale-de_DE-9.0.2.1000-1.cop.sgn]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-de_DE-9.0.2.1000-1.cop.sgn
+size: 3561211
+sha1sum: b5fb97239f7f3414557d7bc10606d66c2123ddff
+
+[po-locale-es_ES-9.0.2.1000-1.cop.sgn]
+url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-es_ES-9.0.2.1000-1.cop.sgn
+size: 4306710
+sha1sum: 20a7a6e89a91c4df7119557423f533d207a1ee87
 
 [po-locale-fr_FR-9.0.2.1000-1.cop.sgn]
 url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-fr_FR-9.0.2.1000-1.cop.sgn

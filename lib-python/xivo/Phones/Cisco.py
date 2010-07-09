@@ -61,23 +61,32 @@ class Cisco(PhoneVendorMixin):
 
     CISCO_COMMON_DIR = None
     
+    DEFAULT_LOCALE = 'fr_FR'
     CISCO_LOCALES = {
+        'de_DE': {
+            'name': 'german_germany',
+            'langCode': 'de',
+            'networkLocale': 'germany'
+        },
         'en_US': {
-            # name of locales directory (/tftpboot/Cisco/XXX)
-            'name'         : 'English_United_States',
-            'langCode'     : 'en',
-            # dial tones
-            'networkLocale': 'United_States',
+            'name': 'english_united_states',
+            'langCode': 'en',
+            'networkLocale': 'united_states'
+        },
+        'es_ES': {
+            'name': 'spanish_spain',
+            'langCode': 'es',
+            'networkLocale': 'spain'
         },
         'fr_FR': {
-            'name'         : 'French_France',
-            'langCode'     : 'fr',
-            'networkLocale': 'France',
+            'name': 'french_france',
+            'langCode': 'fr',
+            'networkLocale': 'france'
         },
         'fr_CA': {
-            'name'         : 'French_France',
-            'langCode'     : 'fr',
-            'networkLocale': 'Canada',
+            'name': 'french_france',
+            'langCode': 'fr',
+            'networkLocale': 'canada'
         }
     }
 
@@ -224,16 +233,16 @@ class Cisco(PhoneVendorMixin):
 
         ## sccp:: language
         if 'language' in provinfo and provinfo['language'] in self.CISCO_LOCALES:
-            language = """
+            locale = provinfo['language']
+        else:
+            locale = self.DEFAULT_LOCALE
+        language = """\
  <userLocale>
-  <name>%(name)s</name>
+  <name>Cisco/i18n/%(name)s</name>
   <langCode>%(langCode)s</langCode>
  </userLocale>
- <networkLocale>%(networkLocale)s</networkLocale>
-""" % self.CISCO_LOCALES[provinfo['language']]
-        else:
-            language = ''
-
+ <networkLocale>Cisco/i18n/%(networkLocale)s</networkLocale>\
+ """ % self.CISCO_LOCALES[locale]
 
         txt = xivo_config.txtsubst(
                 template_lines,
