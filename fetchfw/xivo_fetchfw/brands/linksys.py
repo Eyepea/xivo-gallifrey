@@ -23,7 +23,7 @@ from xivo_fetchfw import fetchfw
 
 def linksys_install_locale(xfile, src_file, dst_file):
     unzip_dir = fetchfw.zip_extract_all('linksys_langs', xfile.path)
-    lang_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys', 'language', 'spa9X2')
+    lang_dst_path = os.path.join(fetchfw.TFTP_PATH, 'Linksys/i18n')
     fetchfw.makedirs(lang_dst_path)
     shutil.copy(os.path.join(unzip_dir, src_file), os.path.join(lang_dst_path, dst_file))
 
@@ -86,10 +86,14 @@ linksys_install_map = {
         linksys_zip_metainstall_fw('spa2102-5-2-10.bin'),
     'lsspa400_01010202':
         linksys_zip_metainstall_fw('spa400-01-01-02-02.bin'),
-    'lsspa9xx_locale_fr':
-        linksys_metainstall_locale('frS_FR_v615.xml', 'frS_FR.xml'),
+    'lsspa9xx_locale_de':
+        linksys_metainstall_locale('deS_v615.xml', 'deS.xml'),
     'lsspa9xx_locale_en':
-        linksys_metainstall_locale('enS_US_v615.xml', 'enS_US.xml'),
+        linksys_metainstall_locale('enS_US_v615.xml', 'enS.xml'),
+    'lsspa9xx_locale_es':
+        linksys_metainstall_locale('esS_ES_v615.xml', 'esS.xml'),
+    'lsspa9xx_locale_fr':
+        linksys_metainstall_locale('frS_FR_v615.xml', 'frS.xml'),
 }
 
 

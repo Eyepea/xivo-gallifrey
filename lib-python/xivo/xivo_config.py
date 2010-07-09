@@ -293,6 +293,7 @@ class PhoneVendorMixin(object):
     TEMPLATES_DIR = None
     NTP_SERVER_IPV4 = None
     TFTPROOT = None
+    DEFAULT_LOCALE = 'fr_FR'
     PROVI_VARS = {'config':
                         {'asterisk_ipv4':   None,
                          'ntp_server_ipv4': None},

@@ -61,7 +61,6 @@ class Cisco(PhoneVendorMixin):
 
     CISCO_COMMON_DIR = None
     
-    DEFAULT_LOCALE = 'fr_FR'
     CISCO_LOCALES = {
         'de_DE': {
             'name': 'german_germany',

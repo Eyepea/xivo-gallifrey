@@ -55,7 +55,9 @@ class CiscoSMB(PhoneVendorMixin):
     CISCOSMB_COMMON_DIR = None
     
     CISCOSMB_LOCALES = {
+        'de_DE': 'German',
         'en_US': 'English',
+        'es_ES': 'Spanish',
         'fr_FR': 'French',
         'fr_CA': 'French',
     }
@@ -156,9 +158,10 @@ class CiscoSMB(PhoneVendorMixin):
                 self.__format_function_keys(provinfo['funckey'], model)
 
         if 'language' in provinfo and provinfo['language'] in self.CISCOSMB_LOCALES:
-            language = self.CISCOSMB_LOCALES[provinfo['language']]
+            locale = provinfo['language']
         else:
-            language = ''
+            locale = self.DEFAULT_LOCALE
+        language = self.CISCOSMB_LOCALES[locale]
         
         txt = xivo_config.txtsubst(
                 template_lines,

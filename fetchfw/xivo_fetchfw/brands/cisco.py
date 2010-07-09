@@ -25,7 +25,7 @@ from xivo_fetchfw import fetchfw
 
 # Destination path for Cisco SMB firmwares.
 smb_fw_dst_path = os.path.join(fetchfw.TFTP_PATH, 'CiscoSMB', 'firmware')
-smb_dict_dst_path = os.path.join(fetchfw.TFTP_PATH, 'CiscoSMB', 'language')
+smb_dict_dst_path = os.path.join(fetchfw.TFTP_PATH, 'CiscoSMB', 'i18n')
 
 GZIP_MAGIC_NUMBER_ = '\x1f\x8b'  # see http://www.gzip.org/zlib/rfc-gzip.html#file-format
 
@@ -162,10 +162,10 @@ cisco_install_map = {
         cisco79xx_metainstall_locale('german_germany', 'germany'),
     'cisco79xx_locale_es_ES':
         cisco79xx_metainstall_locale('spanish_spain', 'spain'),
-    'cisco79xx_locale_fr_FR':
-        cisco79xx_metainstall_locale('french_france', 'france'),
     'cisco79xx_locale_fr_CA':
         cisco79xx_metainstall_locale('french_france', 'canada'),
+    'cisco79xx_locale_fr_FR':
+        cisco79xx_metainstall_locale('french_france', 'france'),
     'ciscospa525_744':
         ciscospa5xx_metainstall_fw('spa525g-7-4-4.bin'),
     'ciscospa509_744':
@@ -178,16 +178,26 @@ cisco_install_map = {
         ciscospa5xx_metainstall_fw('spa5x5-7-4-4.bin'),
     'ciscospa501_744':
         ciscospa5xx_metainstall_fw('spa5x5-7-4-4.bin'),
-    'ciscospa5xx_locale_fr':
-        ciscospa5xx_metainstall_locale('spa525_v745/spa525_fr_v745.xml',
-                                       'spa525_fr.xml',
-                                       'spa50x_30x_v745/spa50x_30x_fr_v745.xml',
-                                       'spa50x_30x_fr.xml'),
+    'ciscospa5xx_locale_de':
+        ciscospa5xx_metainstall_locale('spa525_v745/spa525_de_v745.xml',
+                                       'spa525_de.xml',
+                                       'spa50x_30x_v745/spa50x_30x_de_v745.xml',
+                                       'spa50x_30x_de.xml'),
     'ciscospa5xx_locale_en':
         ciscospa5xx_metainstall_locale('spa525_v745/spa525_en_v745.xml',
                                        'spa525_en.xml',
                                        'spa50x_30x_v745/spa50x_30x_en_v745.xml',
                                        'spa50x_30x_en.xml'),
+    'ciscospa5xx_locale_es':
+        ciscospa5xx_metainstall_locale('spa525_v745/spa525_es_v745.xml',
+                                       'spa525_es.xml',
+                                       'spa50x_30x_v745/spa50x_30x_es_v745.xml',
+                                       'spa50x_30x_es.xml'),
+    'ciscospa5xx_locale_fr':
+        ciscospa5xx_metainstall_locale('spa525_v745/spa525_fr_v745.xml',
+                                       'spa525_fr.xml',
+                                       'spa50x_30x_v745/spa50x_30x_fr_v745.xml',
+                                       'spa50x_30x_fr.xml'),
 }
 
 

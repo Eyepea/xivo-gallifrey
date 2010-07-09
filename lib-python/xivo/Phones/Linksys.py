@@ -76,7 +76,9 @@ class Linksys(PhoneVendorMixin):
     LINKSYS_COMMON_DIR = None
     
     LINKSYS_LOCALES = {
+        'de_DE': 'German',
         'en_US': 'English',
+        'es_ES': 'Spanish',
         'fr_FR': 'French',
         'fr_CA': 'French',
     }
@@ -177,9 +179,10 @@ class Linksys(PhoneVendorMixin):
                 self.__format_function_keys(provinfo['funckey'], model)
         
         if 'language' in provinfo and provinfo['language'] in self.LINKSYS_LOCALES:
-            language = self.LINKSYS_LOCALES[provinfo['language']]
+            locale = provinfo['language']
         else:
-            language = ''
+            locale = self.DEFAULT_LOCALE
+        language = self.LINKSYS_LOCALES[locale]
 
         txt = xivo_config.txtsubst(
                 template_lines,

@@ -412,6 +412,12 @@ url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282724524/guest/spa5x5-
 size: 7607391
 sha1sum: 2e4173d847170837011cb58b6107ad765041bc5d
 
+[ciscospa5xx_locale_de]
+brand: CiscoSMB
+model: 5xx de
+version: 7.4.5
+files: spa525_v745.zip spa50x_30x_v745.zip
+
 # Locales for CiscoSMB SPA5xx phones 7.4.X
 [ciscospa5xx_locale_fr]
 brand: CiscoSMB
@@ -422,6 +428,12 @@ files: spa525_v745.zip spa50x_30x_v745.zip
 [ciscospa5xx_locale_en]
 brand: CiscoSMB
 model: 5xx en
+version: 7.4.5
+files: spa525_v745.zip spa50x_30x_v745.zip
+
+[ciscospa5xx_locale_es]
+brand: CiscoSMB
+model: 5xx es
 version: 7.4.5
 files: spa525_v745.zip spa50x_30x_v745.zip
 
@@ -498,15 +510,27 @@ size: 3531905
 sha1sum: 0015dc9dd6d1a8d2e0ffe03915bf19f00787caf9
 
 # Locales for Linksys SPA9x2 phones
-[lsspa9xx_locale_fr]
+[lsspa9xx_locale_de]
 brand: Linksys
-model: SPA9xx fr
+model: SPA9xx de
 version: 6.1.5
 files: SPA9X2_Dictionaries_v615.zip
 
 [lsspa9xx_locale_en]
 brand: Linksys
 model: SPA9xx en
+version: 6.1.5
+files: SPA9X2_Dictionaries_v615.zip
+
+[lsspa9xx_locale_es]
+brand: Linksys
+model: SPA9xx es
+version: 6.1.5
+files: SPA9X2_Dictionaries_v615.zip
+
+[lsspa9xx_locale_fr]
+brand: Linksys
+model: SPA9xx fr
 version: 6.1.5
 files: SPA9X2_Dictionaries_v615.zip
 
