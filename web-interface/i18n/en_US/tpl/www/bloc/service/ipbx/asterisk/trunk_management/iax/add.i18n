@@ -126,13 +126,13 @@ Forbid transfers:
 Trunk mode activation:
 
 ; fm_protocol_type-opt(peer)
-Peer
+Outgoing
 
 ; fm_protocol_type-opt(user)
-User
+Incoming
 
 ; fm_protocol_type-opt(friend)
-Friend
+Incoming/Outgoing
 
 ; fm_protocol_language
 Language:
