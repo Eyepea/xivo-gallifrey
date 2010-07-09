@@ -67,7 +67,9 @@ class Polycom(PhoneVendorMixin):
     POLYCOM_COMMON_DIR = None
     
     POLYCOM_LOCALES = {
+        'de_DE': 'German_Germany',
         'en_US': 'English_United_States',
+        'es_ES': 'Spanish_Spain',
         'fr_FR': 'French_France',
         'fr_CA': 'French_France',
     }
@@ -145,9 +147,10 @@ class Polycom(PhoneVendorMixin):
             provinfo['vmailaddr'] = ""
         
         if 'language' in provinfo and provinfo['language'] in self.POLYCOM_LOCALES:
-            language = self.POLYCOM_LOCALES[provinfo['language']]
+            locale = provinfo['language']
         else:
-            language = ''
+            locale = self.DEFAULT_LOCALE
+        language = self.POLYCOM_LOCALES[locale]
 
         txt = xivo_config.txtsubst(
                 template_lines,
