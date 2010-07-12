@@ -27,6 +27,7 @@ __license__ = """
 import os
 import logging
 import urllib
+import time
 
 from xml.sax.saxutils import escape
 
@@ -96,7 +97,9 @@ class Polycom(PhoneVendorMixin):
         return escape(data)
 
     def __action(self, command, user, passwd):
-        params = urllib.urlencode({'reg.1.server.1.address': "%s " % self.ASTERISK_IPV4})
+        # For the phone to reboot, its configuration must change, so we set a
+        # different value for the inexistent foobar attribute every time
+        params = urllib.urlencode({'foobar': time.time()})
 
         try: # XXX: also check return values?
             request = urllib.urlopen("http://%s:%s@%s/form-submit" % (user, passwd, self.phone['ipv4']), params)
