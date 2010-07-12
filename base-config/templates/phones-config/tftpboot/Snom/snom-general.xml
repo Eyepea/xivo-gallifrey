@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <settings>
   <phone-settings>
-    <language perm="!">English</language>
-    <tone_scheme perm="!">USA</tone_scheme>
-    <timezone perm="!">USA-5</timezone>
+    <language perm="!">Francais</language>
+    <tone_scheme perm="!">FRA</tone_scheme>
+    <timezone perm="!">FRA+1</timezone>
     <time_24_format perm="!">on</time_24_format>
     
     <admin_mode perm="R">on</admin_mode>

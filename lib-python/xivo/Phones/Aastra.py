@@ -59,9 +59,11 @@ class Aastra(PhoneVendorMixin):
                                       ('!', '+'))
     
     AASTRA_LOCALES = {
-        'en_US': 'language: 0',
-        'fr_FR': 'language: 1\nlanguage 1: lang_fr.txt\ntone set: France',
-        'fr_CA': 'language: 1\nlanguage 1: lang_fr_ca.txt',
+        'de_DE': 'language: 1\nlanguage 1: lang_de.txt\ntone set: Germany\ninput language: German',
+        'en_US': 'language: 0\ntone set: US\ninput language: English',
+        'es_ES': 'language: 1\nlanguage 1: lang_es.txt\ntone set: Europe\ninput language: Spanish',
+        'fr_FR': 'language: 1\nlanguage 1: lang_fr.txt\ntone set: France\ninput language: French',
+        'fr_CA': 'language: 1\nlanguage 1: lang_fr_ca.txt\ntone set: US\ninput language: French',
     }
 
     @classmethod
@@ -220,9 +222,10 @@ class Aastra(PhoneVendorMixin):
                 self.__format_function_keys(provinfo['funckey'], model)
         
         if 'language' in provinfo and provinfo['language'] in self.AASTRA_LOCALES:
-            language = self.AASTRA_LOCALES[provinfo['language']]
+            locale = provinfo['language']
         else:
-            language = ''
+            locale = self.DEFAULT_LOCALE
+        language = self.AASTRA_LOCALES[locale]
 
         txt = xivo_config.txtsubst(
                 template_lines,

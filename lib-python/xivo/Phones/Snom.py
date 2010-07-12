@@ -169,13 +169,16 @@ class Snom(PhoneVendorMixin):
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'])
         
-        lang_code = 'en_US'
         if 'language' in provinfo and provinfo['language'] in self.SNOM_LOCALES:
-            lang_code = provinfo['language']
+            locale = provinfo['language']
+        else:
+            locale = self.DEFAULT_LOCALE
         language = """\
     <language perm="RW">%s</language>
-    <tone_scheme perm="RW">%s</tone_scheme>""" % (self.SNOM_LOCALES[lang_code][0],
-                                                  self.SNOM_LOCALES[lang_code][1])
+    <web_language perm="RW">%s</language>
+    <tone_scheme perm="RW">%s</tone_scheme>""" % (self.SNOM_LOCALES[locale][0],
+                                                  self.SNOM_LOCALES[locale][0],
+                                                  self.SNOM_LOCALES[locale][1])
 
         txt = xivo_config.txtsubst(
                 template_lines,
