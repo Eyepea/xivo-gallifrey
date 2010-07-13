@@ -57,6 +57,8 @@ NameVirtualHost *:80
 	RewriteCond %{HTTP_USER_AGENT} !^yealink
 	# Cisco phones don't support SSL (phonebook)
 	RewriteCond %{HTTP_USER_AGENT} !^Allegro-Software
+        # XXX Polycom phones don't support SSL without a valid certificate
+        RewriteCond %{HTTP_USER_AGENT} !^Microbrowser
 	# Used for stats/monitoring
 	RewriteCond %{REQUEST_URI} !^/server-status$
 	RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
