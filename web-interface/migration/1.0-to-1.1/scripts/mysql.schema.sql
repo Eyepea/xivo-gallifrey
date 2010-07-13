@@ -114,6 +114,7 @@ CREATE TABLE `resolvconf` (
 ) ENGINE=MyISAM DEFAULT CHARSET=ascii;
 
 CREATE UNIQUE INDEX `resolvconf__uidx__hostname` ON `resolvconf`(`hostname`);
+INSERT INTO `resolvconf` VALUES(1, '', '', NULL, NULL, NULL, NULL, '');
 
 CREATE TABLE `dhcp` (
  `id` int(10) unsigned auto_increment,
