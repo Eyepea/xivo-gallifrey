@@ -187,7 +187,7 @@ CREATE TABLE resolvconf (
 );
 
 CREATE UNIQUE INDEX resolvconf__uidx__hostname ON resolvconf(hostname);
-
+INSERT INTO resolvconf VALUES(1, '', '', NULL, NULL, NULL, NULL, '');
 
 DROP TABLE server;
 CREATE TABLE server (
