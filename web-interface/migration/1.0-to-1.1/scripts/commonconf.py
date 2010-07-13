@@ -52,7 +52,6 @@ class CommonConf(object):
 	}
 	def __init__(self, cursor):
 		self.cursor       = cursor
-		self.extra_ifaces = ()
 
 		# get network config
 		headers = {
@@ -81,7 +80,7 @@ class CommonConf(object):
 		if len(self.ifaces_candidates) == 0:
 			print " * WARNING: no VoIP defined"
 		elif len(self.ifaces_candidates) > 1:
-			print " * WARNING: you can only set ONE VoIP interface (value is '%s'). Will try to autoselect one..."
+			print " * WARNING: you can only set ONE VoIP interface (value is '%s'). Will try to autoselect one..." % self.ifaces_candidates
 
 		notfound = set(self.ifaces_candidates).difference(self.network)
 		if len(notfound) > 0:
@@ -93,7 +92,7 @@ class CommonConf(object):
 			del self.ifaces_candidates[0]
 		else:
 			# found matching device
-			vlandev = filter(lambda x: 'vlan-id' in self.network[x] and self.network[x]['vlan-id'] == self.vlandid, self.network)
+			vlandev = filter(lambda x: 'vlan-id' in self.network[x] and self.network[x]['vlan-id'] == self.vlanid, self.network)
 			if len(vlandev) == 0:
 				print " * ERROR: *%d* vlanid does not match with any network interface" % self.vlanid
 				return
@@ -135,8 +134,11 @@ class CommonConf(object):
 		self.cursor.query("REPLACE INTO netiface VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, '', 0, 0, 'created by 1.1 migration tool')", parameters=parameters)
 
 		if len(self.extra_ifaces) > 0:
-			xtra_ifaces = ' '.join(self.extra_ifaces)
-			for iface in xtra_ifaces:
+			for iface in self.extra_ifaces:
+				if iface not in self.network:
+					print " * WARNING: DHCP extra interface %s is not configured in the system" % iface
+					continue
+
 				dct = self.network[iface]
 				parameters = [
 					iface, iface, dct['hwtypeid'], 'data', 'iface', 'inet', dct['method'], 
@@ -149,7 +151,7 @@ class CommonConf(object):
 
 			self.cursor.query(
 				"UPDATE dhcp SET extra_ifaces = %s WHERE id = 1", 
-				parameters = (xtra_ifaces,)
+				parameters = (' '.join(self.extra_ifaces),)
 			)
 
 
