@@ -111,6 +111,7 @@ case $1 in
 	;;
 esac
 
-# update configurations
-echo -e "\n[logaccess]\nfile = /var/log/pf-xivo-web-interface/xivo.log" >> /etc/pf-xivo/web-interface/ipbx.ini
+# update configurations scripts
+`dirname $0`/scripts/inifiles.py /etc/pf-xivo/web-interface
+`dirname $0`/scripts/commonconf.py
 

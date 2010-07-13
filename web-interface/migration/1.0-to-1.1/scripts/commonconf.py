@@ -78,7 +78,7 @@ class CommonConf(object):
 		iface = None
 
 		if len(self.ifaces_candidates) == 0:
-			print " * WARNING: no VoIP defined"
+			print " * ERROR: no VoIP defined"; return
 		elif len(self.ifaces_candidates) > 1:
 			print " * WARNING: you can only set ONE VoIP interface (value is '%s'). Will try to autoselect one..." % self.ifaces_candidates
 
@@ -101,6 +101,7 @@ class CommonConf(object):
 				return
 			elif vlandev[0] not in self.ifaces_candidates:
 				print " * ERROR: *%d* vlanid does not match any of declared network interfaces (%s)" % (self.vlanid, self.ifaces_candidates)
+				return
 
 			del self.ifaces_candidates[self.ifaces_candidates.index(vlandev[0])]
 			iface = vlandev[0]
@@ -112,7 +113,7 @@ class CommonConf(object):
 		if self.net4cidr is not None:
 			net4, cidr = self.net4cidr.split('/')
 			if net4 != dct['address']:
-				print " * ERROR: NET4_CIDR (%s) does not match interface address (%s: %s)" % (net4, iface, dct['address'])
+				print " * WARNING: NET4_CIDR (%s) does not match interface address (%s: %s)" % (net4, iface, dct['address'])
 			
 		parameters = [
 			iface,
@@ -225,16 +226,17 @@ class CommonConf(object):
 		return void
 
 if __name__ == '__main__':
+	print " * INFO: starting common.conf migration"
+
 	if not os.path.exists(COMMON_CONFFILE):
-		print "common.conf file not found. exit..."; sys.exit(0)
+		print " * FATAL: common.conf file not found. skip common.conf migration..."; sys.exit(0)
 
 	#WARNING: we must remove trailing double quotes
 	db_uri = ConfigDict.ReadSingleKey(XIVO_CONFFILE, 'general', 'datastorage')[1:-1]
 	cursor = db_connect(db_uri).cursor()
 	if cursor is None:
-		print "cannot connect to xivo database. exit..."; sys.exit(0)
+		print " * FATAL: cannot connect to xivo database. skip common.conf migration..."; sys.exit(0)
 
-	print " * INFO: starting common.conf migration"
 	cc = CommonConf(cursor)
 
 	f = open(COMMON_CONFFILE)
