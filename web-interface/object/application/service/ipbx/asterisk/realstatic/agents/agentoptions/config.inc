@@ -65,17 +65,17 @@ $array['element']['updatecdr']['value'] = array('no','yes');
 $array['element']['updatecdr']['default'] = 'no';
 $array['element']['updatecdr']['set'] = true;
 
-$array['element']['recordagentcalls'] = array();
-$array['element']['recordagentcalls']['value'] = array('no','yes');
-$array['element']['recordagentcalls']['default'] = 'no';
-$array['element']['recordagentcalls']['set'] = true;
+#$array['element']['recordagentcalls'] = array();
+#$array['element']['recordagentcalls']['value'] = array('no','yes');
+#$array['element']['recordagentcalls']['default'] = 'no';
+#$array['element']['recordagentcalls']['set'] = true;
 
-$array['element']['recordformat'] = array();
-$array['element']['recordformat']['value'] = array(XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
-						   XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
-						   XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM);
-$array['element']['recordformat']['default'] = XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV;
-$array['element']['recordformat']['setdef'] = true;
+#$array['element']['recordformat'] = array();
+#$array['element']['recordformat']['value'] = array(XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
+#						   XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
+#						   XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM);
+#$array['element']['recordformat']['default'] = XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV;
+#$array['element']['recordformat']['setdef'] = true;
 
 $array['element']['urlprefix'] = array();
 $array['element']['urlprefix']['default'] = '';
@@ -99,12 +99,12 @@ $array['filter']['goodbye'] = array('set'	=> false,
 				    'regexp'	=> '/^'.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.'$/');
 $array['filter']['musiconhold'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['updatecdr'] = array('bool' => true);
-$array['filter']['recordagentcalls'] = array('bool' => true);
-$array['filter']['recordformat'] = array('set'	=> false,
-					 'chk'	=> 2,
-					 'key'	=> array(XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
-							 XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
-							 XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM));
+#$array['filter']['recordagentcalls'] = array('bool' => true);
+#$array['filter']['recordformat'] = array('set'	=> false,
+#					 'chk'	=> 2,
+#					 'key'	=> array(XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV,
+#							 XIVO_SRE_IPBX_AST_FORMAT_AUDIO_WAV49,
+#							 XIVO_SRE_IPBX_AST_FORMAT_AUDIO_GSM));
 $array['filter']['urlprefix'] = array('set'	=> false,
 				      'chk'	=> 2,
 				      'minlen'	=> 3,

@@ -22,7 +22,7 @@ __license__ = """
 """
 
 
-import sys, os.path, cjson, httplib, urllib
+import sys, os.path, cjson, httplib, urllib, traceback
 from xivo import OrderedConf, ConfigDict, xivo_config
 from xivo.xivo_helpers import db_connect
 
@@ -244,9 +244,14 @@ if __name__ == '__main__':
 		if l.startswith('#') or '=' not in l:
 			continue
 		
-		(key, value) = l[:-1].strip().split('=')
-#		print "%s = %s" % (key, value)
-		getattr(cc, key.lower())(value.replace('"', '').strip())
+		try:
+			(key, value) = l[:-1].strip().split('=', 1)
+#			print "%s = %s" % (key, value)
+			getattr(cc, key.lower())(value.replace('"', '').strip())
+		catch Exception, e:
+			print " * WARNING: malformed line :: %s" % l[:-1]
+			traceback.print_exc()
+
 	f.close()
 
 	cc.docomplete()

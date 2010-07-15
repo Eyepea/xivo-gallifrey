@@ -362,7 +362,7 @@ endif;
 				      'labelid'	=> 'agentoptions-updatecdr',
 				      'default'	=> $element['agentoptions']['updatecdr']['default'],
 				      'checked' => $info['agentoptions']['updatecdr'])),
-
+/*
 		$form->checkbox(array('desc'	=> $this->bbf('fm_agentoptions_recordagentcalls'),
 				      'name'	=> 'agentoptions[recordagentcalls]',
 				      'labelid'	=> 'agentoptions-recordagentcalls',
@@ -378,7 +378,7 @@ endif;
 				    'default'	=> $element['agentoptions']['recordformat']['default'],
 				    'selected'	=> $info['agentoptions']['recordformat']),
 			      $element['agentoptions']['recordformat']['value']),
-
+*/
 		$form->text(array('desc'	=> $this->bbf('fm_agentoptions_urlprefix'),
 				  'name'	=> 'agentoptions[urlprefix]',
 				  'labelid'	=> 'agentoptions-urlprefix',

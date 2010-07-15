@@ -144,7 +144,25 @@ if(isset($error_js[0]) === true)
 				      'labelid'	=> 'generalagents-multiplelogin',
 				      'default'	=> $element['generalagents']['multiplelogin']['default'],
 				      'help'	=> $this->bbf('hlp_fm_generalagents_multiplelogin'),
-				      'checked'	=> $this->get_var('generalagents','multiplelogin','var_val')));
+				      'checked'	=> $this->get_var('generalagents','multiplelogin','var_val'))),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_generalagents_recordagentcalls'),
+				      'name'	=> 'generalagents[recordagentcalls]',
+				      'labelid'	=> 'generalagents-recordagentcalls',
+				      'default'	=> $element['generalagents']['recordagentcalls']['default'],
+				      'help'	=> $this->bbf('hlp_fm_generalagents_recordagentcalls'),
+				      'checked'	=> $this->get_var('generalagents','recordagentcalls','var_val'))),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalagents_recordformat'),
+				    'name'	=> 'generalagents[recordformat]',
+				    'labelid'	=> 'generalagents-recordformat',
+				    'key'	=> false,
+				    'bbf'	=> 'ast_format_name_info',
+				    'bbfopt'	=> array('argmode' => 'paramvalue'),
+				    'default'	=> $element['generalagents']['recordformat']['default'],
+				    'selected'	=> $info['generalagents']['recordformat']),
+			      $element['generalagents']['recordformat']['value']);
+
 ?>
 </div>
 
