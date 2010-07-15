@@ -30,11 +30,14 @@ from ConfigParser import ConfigParser
 def migrate_cti(basedir):
 	frm = ConfigParser()
 	frm.read(basedir + '/xivo.ini')
-	
+
 	to = ConfigParser()
 	to.read(basedir + '/cti.ini')
 	
 	datastorage = frm.get('general', 'datastorage')
+	
+	if not to.has_section('general'):
+		to.add_section('general')
 	to.set('general', 'datastorage', datastorage)
 
 	with open(basedir + '/cti.ini', 'wb') as fp:
@@ -58,7 +61,12 @@ def migrate_ipbx(basedir):
 	cfg = ConfigParser()
 	cfg.read(basedir + '/ipbx.ini')
 
+	if not cfg.has_section('configfiles'):
+		cfg.add_section('configfiles')
 	cfg.set('configfiles', 'path', '/etc/asterisk/extensions_extra.d')
+
+	if not cfg.has_section('logaccess'):
+		cfg.add_section('logaccess')
 	cfg.set('logaccess'  , 'file', '/var/log/pf-xivo-web-interface/xivo.log')
 
 	with open(basedir + '/ipbx.ini', 'wb') as fp:
@@ -72,7 +80,11 @@ if __name__ == '__main__':
 	basedir = sys.argv[1]
 	if not os.path.isdir(basedir):
 		print "%s directory not found or not directory"; sys.exit(1)
-		
-	migrate_cti(basedir)
-	migrate_xivo(basedir)
-	migrate_ipbx(basedir)
+
+	try:
+		migrate_cti(basedir)
+		migrate_xivo(basedir)
+		migrate_ipbx(basedir)
+	except Exception, e:
+		print " * ERROR: fail to migrate ini files :: %s" % e
+
