@@ -98,15 +98,24 @@ class xivo_object_commonconf extends xivo_object_abstract
         $this->_resolvconf  = &$this->_xobj->get_application('resolvconf');
         if($this->_resolvconf == false)
             return false;
-            
+
         $rawdata = $this->_resolvconf->get(1);
+        $ns = '';
+        if(strlen($rawdata['resolvconf']['nameserver1']) > 0)
+            $ns .= $rawdata['resolvconf']['nameserver1'] . " ";
+        if(strlen($rawdata['resolvconf']['nameserver2']) > 0)
+            $ns .= $rawdata['resolvconf']['nameserver2'] . " ";
+        if(strlen($rawdata['resolvconf']['nameserver3']) > 0)
+            $ns .= $rawdata['resolvconf']['nameserver3'];
+        $ns = trim($ns);
+            
         $conf = array_merge($conf, array(
             'xivo.hostname'                => 
                 is_null($rawdata['resolvconf']['hostname'])?'':$rawdata['resolvconf']['hostname'],
             'xivo.domain'                  => 
                 is_null($rawdata['resolvconf']['domain'])?'':$rawdata['resolvconf']['domain'],
             'xivo.extra.dns.search'        => '',
-            'xivo.nameservers'             => '',
+            'xivo.nameservers'             => $ns,
         ));
 
         // netiface
