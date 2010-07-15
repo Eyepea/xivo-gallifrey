@@ -45,7 +45,7 @@ class Config:
         if urilist.find('json') >= 0:
             if urilist.find(':') >= 0:
                 xconf = urilist.split(':')
-                if xconf[0] in ['http', 'https']:
+                if xconf[0] in ['http', 'https', 'file']:
                     self.kind = 'file'
                     response = urllib2.urlopen(urilist)
                     self.json_config = response.read()
