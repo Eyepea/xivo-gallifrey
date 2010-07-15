@@ -56,7 +56,6 @@ $fm_save = null;
 
 if(isset($_QR['fm_send']) === true)
 {
-var_dump($_QR);
 	if(dwho_issa('generalagents',$_QR) === false)
 		$_QR['generalagents'] = array();
 
@@ -132,7 +131,6 @@ var_dump($_QR);
 	}
 }
 
-var_dump($info['generalagents']);
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('generalagents', $info['generalagents']);
