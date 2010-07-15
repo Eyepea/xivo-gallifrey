@@ -59,6 +59,7 @@ def migrate_ipbx(basedir):
 	cfg.read(basedir + '/ipbx.ini')
 
 	cfg.set('configfiles', 'path', '/etc/asterisk/extensions_extra.d')
+	cfg.set('logaccess'  , 'file', '/var/log/pf-xivo-web-interface/xivo.log')
 
 	with open(basedir + '/ipbx.ini', 'wb') as fp:
 		cfg.write(fp)
