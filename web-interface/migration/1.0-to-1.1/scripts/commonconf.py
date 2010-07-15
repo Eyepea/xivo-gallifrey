@@ -248,7 +248,7 @@ if __name__ == '__main__':
 			(key, value) = l[:-1].strip().split('=', 1)
 #			print "%s = %s" % (key, value)
 			getattr(cc, key.lower())(value.replace('"', '').strip())
-		catch Exception, e:
+		except Exception, e:
 			print " * WARNING: malformed line :: %s" % l[:-1]
 			traceback.print_exc()
 
