@@ -1,0 +1,50 @@
+#/bin/sh
+set -e
+
+try_mount() {
+	local device=$1
+	local type=$2
+	
+	if ! mount -t $type -o ro,exec $device /cdrom; then
+		echo "cannot mount CDROM"
+		exit 1
+	fi
+}
+
+device=`hwinfo --short --cdrom | grep "/dev" | sed -e "s/.*\(\/dev\/[^ ]\+\).*/\1/"`
+type=iso9660
+echo "device= ${device} / ${type}" >> xivo.postinst.log
+if [[ -z ${device} ]]; then
+	echo "no CDROM found"
+	exit 1
+fi
+
+# set cdrom as apt source
+cp /etc/apt/sources.list /etc/apt/sources.list.bkp
+echo '' > /etc/apt/sources.list
+echo -e "\n" |apt-cdrom add
+
+# add xivo keys
+try_mount $device $type
+apt-key add /cdrom/simple-cdd/ziyi_proformatique_current.asc
+
+# install xivo packages
+echo -e "\033[91m* Installing xivo packages\033[0m"
+export KERN_REL=$(ls /lib/modules/ | sort | head -n 1)
+
+apt-get update
+apt-get install -y dahdi-linux-modules-${KERN_REL}
+apt-get install -y x11-common
+apt-get install -y -o Dpkg::Options::="--force-confold" pf-fai-xivo-1.1-gallifrey-dev pf-xivo
+
+# restore apt configuration
+mv /etc/apt/sources.list.bkp /etc/apt/sources.list
+
+# set machine hostname
+echo "xivo" > /etc/hostname
+
+# console logo
+dpkg-divert --add /etc/issue.net
+
+cp /cdrom/simple-cdd/issue.xivo /etc/issue
+cp /cdrom/simple-cdd/issue.xivo /etc/issue.net

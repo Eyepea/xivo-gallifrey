@@ -1,0 +1,75 @@
+## debian generic
+# passwd : create new user : no
+d-i	passwd/make-user	boolean	false
+
+# apt : selected suite
+d-i	mirror/suite	select	lenny
+
+# popcon participation
+popularity-contest popularity-contest/participate boolean true
+
+#
+postfix postfix/master_upgrade_warning  boolean
+postfix postfix/db_upgrade_warning      boolean true
+postfix postfix/mailname        string  xivo-clients.proformatique.com
+postfix postfix/recipient_delim string  +
+postfix postfix/dynamicmaps_upgrade_warning     boolean
+postfix postfix/main_mailer_type        select  Internet Site
+postfix postfix/relayhost       string
+postfix postfix/procmail        boolean false
+postfix postfix/chattr  boolean false
+postfix postfix/root_address    string  NONE
+postfix postfix/rfc1035_violation       boolean false
+postfix postfix/mynetworks      string  127.0.0.0/8
+postfix postfix/destinations    string  xivo-clients.proformatique.com, localhost.localdomain, localhost.localdomain, localhost
+postfix postfix/nqmgr_upgrade_warning   boolean
+postfix postfix/mailbox_limit   string  0
+
+# dhcp server: listen on all interfaces
+dhcp3-server	dhcp3-server/interfaces	string	
+dhcp3-server    dhcp3-server/new_auth_behavior  note
+
+# beware to stay in sync with pf-xivo-base-config for atftpd preseeding
+# due to a bug in this package
+atftpd	atftpd/use_inetd	boolean	false
+atftpd	atftpd/retry-timeout	string	5
+atftpd	atftpd/basedir	string	/tftpboot
+atftpd	atftpd/port	string	69
+atftpd	atftpd/mcast_addr	string	239.239.239.0-255
+atftpd	atftpd/mcast_port	string	1758
+atftpd	atftpd/ttl	string	1
+atftpd	atftpd/maxthread	string	100
+atftpd	atftpd/verbosity	string	5
+atftpd	atftpd/logtofile	boolean	true
+atftpd	atftpd/logfile		string	/var/log/atftpd.log
+
+ca-certificates ca-certificates/trust_new_crts  select  no
+
+# ifplugd: listen interfaces and start options
+ifplugd ifplugd/interfaces		string	
+ifplugd ifplugd/hotplug_interfaces	string	
+ifplugd ifplugd/args			string	-q -f -u0 -d10 -w -I
+ifplugd	ifplugd/suspend_action		select	stop
+
+x11-common	x11-common/upgrade_issues	note
+
+libpaper1	libpaper/defaultpaper	select	a4
+
+
+# partitioning
+d-i	partman-auto/method string regular
+d-i partman-auto/expert_recipe string                         \
+      boot-root ::                                            \
+              512 512 200% linux-swap                         \
+                      method{ swap } format{ } .              \
+                                                              \
+              10240 10000 1000000 ext3                        \
+                      $primary{ } $bootable{ }                \
+                      method{ format } format{ }              \
+                      use_filesystem{ } filesystem{ ext3 }    \
+                      mountpoint{ / }                         \
+              .
+
+
+# d-i	preseed/early_command	string touch /PRESEED
+# d-i preseed/early_command string anna-install simple-cdd-profiles

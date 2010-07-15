@@ -1,0 +1,8 @@
+postfix
+dhcp3-server
+atftpd
+debconf-utils
+hwinfo
+openssh-server
+console-data
+locales-all

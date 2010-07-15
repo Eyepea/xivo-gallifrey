@@ -1,0 +1,5 @@
+#!/bin/sh
+
+touch /XIVO-INSTALL;
+
+echo "APT {\n  Get {\n    Assume-Yes \"true\";\n  };\n};" >> /etc/apt/apt.conf;
