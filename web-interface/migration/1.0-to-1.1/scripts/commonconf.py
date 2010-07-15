@@ -111,6 +111,10 @@ class CommonConf(object):
 		# saving voip network interface
 		dct = self.network[iface]
 		if self.net4cidr is not None:
+			if '/' not in self.net4cidr:
+				print " * ERROR: XIVO_NET4_CIDR value not well formed (should be address/netmask, is %s)" % self.net4cidr
+				return
+
 			net4, cidr = self.net4cidr.split('/')
 			if net4 != dct['address']:
 				print " * WARNING: NET4_CIDR (%s) does not match interface address (%s: %s)" % (net4, iface, dct['address'])
@@ -254,6 +258,11 @@ if __name__ == '__main__':
 
 	f.close()
 
-	cc.docomplete()
+	try:
+		cc.docomplete()
+	except Exception, e:
+			print " * ERROR: cannot complete common.conf migration. Please check manually"
+			traceback.print_exc()
+
 	print " * INFO: common.conf migration complete"
 
