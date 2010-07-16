@@ -14,20 +14,20 @@ Présences téléphonique
 Profils
 
 ; mn_left_ctisettings-directories
-Répertoires
+Répertoires : Définitions
 
 ; mn_left_ctisettings-reversedirectories
-Répertoires inverses
+Répertoires : Inverse
+
+; mn_left_ctisettings-contexts
+Répertoires : Direct
 
 ; mn_left_ctisettings-displays
-Filtres d'affichage
+Répertoires : Affichage
 
 ; mn_left_ctisettings-sheetactions
 Fiches : Actions
 
 ; mn_left_ctisettings-sheetevents
 Fiches : Événements
-
-; mn_left_ctisettings-contexts
-Contextes
 

@@ -14,20 +14,20 @@ Phone Hints
 Profiles
 
 ; mn_left_ctisettings-directories
-Directories
+Directories : Definitions
 
 ; mn_left_ctisettings-reversedirectories
-Reverse Directories
-
-; mn_left_ctisettings-displays
-Displays
+Directories : Reverse
 
 ; mn_left_ctisettings-contexts
-Contexts
+Directories : Direct
+
+; mn_left_ctisettings-displays
+Directories : Display
 
 ; mn_left_ctisettings-sheetactions
-Sheet Actions
+Sheets : Actions
 
 ; mn_left_ctisettings-sheetevents
-Sheet Events
+Sheets : Events
 

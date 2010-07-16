@@ -69,16 +69,16 @@ $dhtml = &$this->get_module('dhtml');
 					'cti/reversedirectories'),
 				'</dd>';
 		endif;
-		if(xivo_user::chk_acl('cti','displays', 'service') === true):
-			echo	'<dd id="mn-cti--displays">',
-				$url->href_html($this->bbf('mn_left_ctisettings-displays'),
-					'cti/displays'),
-				'</dd>';
-		endif;
 		if(xivo_user::chk_acl('cti','contexts', 'service') === true):
 			echo	'<dd id="mn-cti--contexts">',
 				$url->href_html($this->bbf('mn_left_ctisettings-contexts'),
 					'cti/contexts'),
+				'</dd>';
+		endif;
+		if(xivo_user::chk_acl('cti','displays', 'service') === true):
+			echo	'<dd id="mn-cti--displays">',
+				$url->href_html($this->bbf('mn_left_ctisettings-displays'),
+					'cti/displays'),
 				'</dd>';
 		endif;
 		if(xivo_user::chk_acl('cti','sheetactions', 'service') === true):
