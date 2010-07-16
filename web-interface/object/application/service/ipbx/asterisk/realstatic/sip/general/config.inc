@@ -407,6 +407,7 @@ $array['element']['progressinband']['default'] = 'never';
 $array['element']['language'] = array();
 $array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
 $array['element']['language']['default'] = 'fr_FR';
+$array['element']['language']['null'] = true;
 
 $array['element']['mohinterpret'] = array();
 $array['element']['mohinterpret']['default'] = XIVO_SRE_IPBX_AST_MOH_DEFAULT;
@@ -631,7 +632,7 @@ $array['filter']['dtmfmode'] = array('key' => array('rfc2833','inband','info','a
 $array['filter']['qualify'] = array('key' => array('no','yes',500,1000,1500,2000,2500,3000,3500,4000));
 $array['filter']['useclientcode'] = array('bool' => true);
 $array['filter']['progressinband'] = array('key' => array('no','yes','never'));
-$array['filter']['language'] = array('key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['language'] = array('set' => false,'chk' => 2, 'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
 $array['filter']['mohinterpret'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['mohsuggest'] = array('set' => false,'chk' => 2,'maxlen' => 20);
 $array['filter']['vmexten'] = array('regexp' => '/^[0-9\*]+$/','maxlen' => 40);
