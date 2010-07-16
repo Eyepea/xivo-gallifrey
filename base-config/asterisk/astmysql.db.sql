@@ -446,14 +446,11 @@ CREATE TABLE `ctistatus` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctistatus` VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,6',1);
-INSERT INTO `ctistatus` VALUES(2,1,'away','Parti loin','enablednd(true)','#FDE50A','1,6',1);
-INSERT INTO `ctistatus` VALUES(6,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,6',1);
-INSERT INTO `ctistatus` VALUES(7,2,'sdsds','dsd','','#FFFFFF','',1);
-INSERT INTO `ctistatus` VALUES(8,2,'outtolunch','sdf','','#FFFFFF','',1);
-INSERT INTO `ctistatus` VALUES(9,3,'outtolunch','Miam','','#FFB163','',1);
-INSERT INTO `ctistatus` VALUES(10,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,6',1);
-INSERT INTO `ctistatus` VALUES(11,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,6,10',1);
+INSERT INTO `ctistatus` VALUES(1,1,'available','Disponible','enablednd(false)','#08FD20','1,2,3,4,5',1);
+INSERT INTO `ctistatus` VALUES(2,1,'away','Sorti','enablednd(true)','#FDE50A','1,2,3,4,5',1);
+INSERT INTO `ctistatus` VALUES(3,1,'outtolunch','Parti Manger','enablednd(true)','#001AFF','1,2,3,4,5',1);
+INSERT INTO `ctistatus` VALUES(4,1,'donotdisturb','Ne pas déranger','enablednd(true)','#FF032D','1,2,3,4,5',1);
+INSERT INTO `ctistatus` VALUES(5,1,'berightback','Bientôt de retour','enablednd(true)','#FFB545','1,2,3,4,5',1);
 
 
 DROP TABLE IF EXISTS `dialaction`;
