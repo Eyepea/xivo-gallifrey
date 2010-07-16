@@ -109,12 +109,7 @@ class Cisco(PhoneVendorMixin):
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
                 s.connect(('127.0.0.1', 5004))
-                s.send('module unload chan_sccp.so')
-                s.close()
-
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
-                s.connect(('127.0.0.1', 5004))
-                s.send('module load chan_sccp.so')
+                s.send('sccp reload')
                 s.close()
             except Exception:
                 log.exception("error when trying to reload chan_sccp")
