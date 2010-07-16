@@ -1,17 +1,17 @@
 ; fm_status_name
-Name status:
+Presence name :
 
 ; fm_status_description
-Description:
+Description :
 
 ; fm_status_display_name
-Display name:
+Display name :
 
 ; cmt_status_display_name
 The human readable name to be displayed
 
 ; fm_status_color
-Color status:
+Color status :
 
 ; cmt_status_color
 Color of icon status

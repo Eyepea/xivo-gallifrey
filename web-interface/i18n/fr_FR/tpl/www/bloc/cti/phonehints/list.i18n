@@ -1,5 +1,5 @@
 ; col_name
-Nom présence
+Nom du statut
 
 ; col_number
 Numéro
@@ -8,8 +8,7 @@ Numéro
 Couleur
 
 ; no_phonehints
-Aucune présence téléphonique
+Aucun statut de terminaison
 
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet élément ?
-

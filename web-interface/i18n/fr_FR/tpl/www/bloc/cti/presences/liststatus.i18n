@@ -6,10 +6,10 @@ Description
 Action
 
 ; col_status
-Nom du statut
+Nom de la présence
 
 ; no_status
-Aucun statut
+Aucune présence
 
 ;opt_delete_confirm
 Supprimer cet élément ?
