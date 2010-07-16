@@ -1638,9 +1638,10 @@ class XivoCTICommand(BaseCommand):
         calleridton = dialplan_data.get('xivo-calleridton')
         context = dialplan_data.get('xivo-context')
 
+        OTHER_DIDS = 'default' # XXX TODO : replace with another (less context-like) keyword
         if calleridnum.isdigit(): # reverse only if digits
             ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
-            dirlist = ctx2dirs.get(context)
+            dirlist = ctx2dirs.get(OTHER_DIDS) # XXX TODO : match against given DID's
             if dirlist:
                 reversedata = self.findreverse(dirlist, calleridnum)
                 dialplan_data.update(reversedata)
@@ -3956,8 +3957,8 @@ class XivoCTICommand(BaseCommand):
                 destdetails = did_takeovers[calleridnum][didnumber]
                 # check channel !
                 self.__ami_execute__(astid, 'transfer', channel,
-                    destdetails.get('number'),
-                    destdetails.get('context'))
+                                     destdetails.get('number'),
+                                     destdetails.get('context'))
             #self.__create_new_sheet__(astid, self.uniqueids[astid][uniqueid]['channel'])
             self.__sheet_alert__('incomingdid', astid, context, event, dialplan_data, channel)
 

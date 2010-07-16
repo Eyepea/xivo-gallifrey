@@ -132,6 +132,10 @@ class Config:
                         for k, v in json["displays"][display_name].iteritems():
                             self.xivoconf.set(kname, k, '|'.join(v))
 
+                    debug_add_section(self.xivoconf, 'reversedid')
+                    for exten, directories in json["reversedid"].iteritems():
+                        self.xivoconf.set('reversedid', exten, ','.join(directories))
+
                     for directory_name in json["directories"]:
                         kname = 'directories.' + directory_name
                         debug_add_section(self.xivoconf, kname)
