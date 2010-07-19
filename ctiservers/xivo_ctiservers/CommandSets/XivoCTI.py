@@ -1665,10 +1665,10 @@ class XivoCTICommand(BaseCommand):
                                  % (calleridnum, reversedata))
                         dialplan_data.update(reversedata)
                     else:
-                        log.warning('__did__ (lookup for %s) : no match for did extension %s'
+                        log.warning('__did__ (lookup for %s) : no match for DID extension %s'
                                     % (calleridnum, didexten))
                 else:
-                    log.warning('__did__ (lookup for %s) : no match for did context %s'
+                    log.warning('__did__ (lookup for %s) : no match for DID context %s'
                                 % (calleridnum, didcontext))
             else:
                 log.warning('__did__ (lookup for %s) : no match for reversedid configuration'
@@ -4034,18 +4034,25 @@ class XivoCTICommand(BaseCommand):
                 log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
                 return
 
-            if xivo_userid:
-                dialplan_data = { 'xivo-astid' : astid,
-                    'xivo-origin' : 'internal',
-                    'xivo-userevent' : eventname,
-                    'xivo-channel' : channel,
-                    'xivo-uniqueid' : uniqueid,
-                    'xivo-userid' : xivo_userid,
-                    'xivo-dstid' : xivo_dstid
-                    }
+            if xivo_userid or eventname == 'MacroUser':
+                # when DID goes to a User, xivo_userid is not set, but we need these data nonetheless
+                dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
+                new_dialplan_data = { 'xivo-astid' : astid,
+                                      'xivo-origin' : 'internal',
+                                      'xivo-userevent' : eventname,
+                                      'xivo-channel' : channel,
+                                      'xivo-uniqueid' : uniqueid,
+                                      'xivo-userid' : xivo_userid,
+                                      'xivo-dstid' : xivo_dstid
+                                      }
                 if eventname not in ['MacroOutcall']:
                     dialplan_data['xivo-direction'] = DIRECTIONS.get('internal')
-                self.uniqueids[astid][uniqueid]['dialplan_data'] = dialplan_data
+
+                for k in new_dialplan_data:
+                    # do not supersede previously set variables
+                    if k not in dialplan_data:
+                        dialplan_data[k] = new_dialplan_data[k]
+
                 self.__dialplan_fill_src__(dialplan_data)
                 self.__dialplan_fill_dst__(dialplan_data)
             else:
