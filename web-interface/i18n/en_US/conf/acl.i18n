@@ -309,4 +309,8 @@ Graphs
 ; acl(service-graphs-munin)
 Munin graphs
 
+; acl(service-ipbx-queuelogger)
+Queuelogger
 
+; acl(service-ipbx-queuelogger-configuration)
+Configuration

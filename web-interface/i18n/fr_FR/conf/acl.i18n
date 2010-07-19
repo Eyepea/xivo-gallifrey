@@ -256,3 +256,8 @@ Haute-Disponibilité
 ; acl(xivo-configuration-support-monitoring)
 Monitoring
 
+; acl(service-ipbx-queuelogger)
+Queuelogger
+
+; acl(service-ipbx-queuelogger-configuration)
+Configuration
