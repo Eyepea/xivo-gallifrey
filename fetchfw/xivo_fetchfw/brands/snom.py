@@ -30,7 +30,7 @@ def snom3xx_install_lang(xfile):
 
 
 def snom_install_fw(xfile):
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "firmware")
     fw_dst_path = os.path.join(fw_dst_dir, xfile.filename)
     
     fetchfw.makedirs(fw_dst_dir)
@@ -43,7 +43,7 @@ def snom_install(firmware):
 
 
 def snom_m3_install(firmware):
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "Firmware")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom", "firmware")
     
     fetchfw.makedirs(fw_dst_dir)
     
