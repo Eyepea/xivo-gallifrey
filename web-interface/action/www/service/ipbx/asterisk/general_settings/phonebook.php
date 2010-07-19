@@ -74,11 +74,15 @@ if(isset($_QR['fm_send']) === true)
 	if(isset($_QR['xivoserver']) === false)
 		$_QR['xivoserver'] = array();
 
+	$appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 	if($appxivoserver->set($_QR['xivoserver']) !== false)
+	{
+		$appxivoserver->delete_all();
 		$appxivoserver->save();
+	}
 
 	$info['xivoserver']['info'] = $appxivoserver->get_result();
-	$error['xivoserver'] = $appxivoserver->get_error();
+	$error['xivoserver']        = $appxivoserver->get_error();
 
 	if(isset($error['xivoserver'][0]) === true)
 		$fm_save = false;
@@ -88,6 +92,7 @@ if(isset($_QR['fm_send']) === true)
 	if(isset($_QR['ldapfilter']) === false)
 		$_QR['ldapfilter'] = array();
 
+	$appldapfilter = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'ldap'));
 	if($appldapfilter->set($_QR['ldapfilter']) !== false)
 		$appldapfilter->save();
 

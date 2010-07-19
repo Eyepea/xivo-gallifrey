@@ -251,6 +251,14 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 		return($r);
 	}
 
+	function delete_all()
+	{
+		if(($r = $this->_serverfeatures->delete_all()) === false)
+			return false;
+
+		return true;
+	}
+
 	function _reverse_add()
 	{
 		if(is_array($this->_return) === false || ($nb = count($this->_return)) === 0)
