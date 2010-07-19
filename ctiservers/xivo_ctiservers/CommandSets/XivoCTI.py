@@ -81,6 +81,8 @@ __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
 AMI_ORIGINATE = 'originate'
 MONITORDIR = '/var/spool/asterisk/monitor'
+OTHER_DID_CONTEXTS = '*'
+OTHER_DID_EXTENS = '*'
 
 # some default values to display
 CONTEXT_UNKNOWN = 'undefined_context'
@@ -1017,7 +1019,7 @@ class XivoCTICommand(BaseCommand):
 
     # fields set at startup by reading informations
     userfields = ['user', 'company', 'astid', 'password', 'fullname',
-        'capaids', 'context', 'phonenum', 'techlist', 'agentid', 'xivo_userid']
+                  'capaids', 'context', 'phonenum', 'techlist', 'agentid', 'xivo_userid']
 
     def getuserslist(self, dlist):
         lulist = {}
@@ -1029,18 +1031,18 @@ class XivoCTICommand(BaseCommand):
                     uid = astid + '/' + uitem.get('id')
                     log.debug('getuserslist %s : %s' % (uid, uitem))
                     lulist[uid] = {'user' : uitem.get('loginclient'),
-                        'company' : uitem.get('context'),
-                        'password' : uitem.get('passwdclient'),
-                        'capaids' : uitem.get('profileclient').split(','),
-                        'fullname' : uitem.get('fullname'),
-                        'astid' : astid,
-                        'context' : uitem.get('context'),
-                        'techlist' : [],
-                        'mobilenum' : uitem.get('mobilephonenumber'),
-                        'xivo_userid' : uitem.get('id'),
-
-                        'state'    : 'xivo_unknown'
-                        }
+                                   'company' : uitem.get('context'),
+                                   'password' : uitem.get('passwdclient'),
+                                   'capaids' : uitem.get('profileclient').split(','),
+                                   'fullname' : uitem.get('fullname'),
+                                   'astid' : astid,
+                                   'context' : uitem.get('context'),
+                                   'techlist' : [],
+                                   'mobilenum' : uitem.get('mobilephonenumber'),
+                                   'xivo_userid' : uitem.get('id'),
+                                   
+                                   'state'    : 'xivo_unknown'
+                                   }
                     if uitem.get('simultcalls'):
                         lulist[uid]['simultcalls'] = int(uitem.get('simultcalls'))
                     if uitem.get('protocol') and uitem.get('context') and uitem.get('name') and uitem.get('number'):
@@ -1636,16 +1638,42 @@ class XivoCTICommand(BaseCommand):
         log.info('__did__ %s' % dialplan_data)
         calleridnum = dialplan_data.get('xivo-calleridnum')
         calleridton = dialplan_data.get('xivo-calleridton')
-        context = dialplan_data.get('xivo-context')
+        didcontext = dialplan_data.get('xivo-context', OTHER_DID_CONTEXTS)
+        didexten = dialplan_data.get('xivo-did', OTHER_DID_EXTENS)
 
-        OTHER_DIDS = 'default' # XXX TODO : replace with another (less context-like) keyword
+        # the expected reversedid structure is of the kind :
+        # {'*':{'*':['directory.xivodir'],
+        #       '2323':['directory.mydir']},
+        #  'mycontext':{'*':[]}}
+
         if calleridnum.isdigit(): # reverse only if digits
-            ctx2dirs = self.lconf.read_section('reversedid', 'reversedid')
-            dirlist = ctx2dirs.get(OTHER_DIDS) # XXX TODO : match against given DID's
-            if dirlist:
-                reversedata = self.findreverse(dirlist, calleridnum)
-                dialplan_data.update(reversedata)
-
+            reversedid_defs = self.lconf.xivoconf_json.get('reversedid')
+            if reversedid_defs:
+                if didcontext in reversedid_defs:
+                    dids = reversedid_defs.get(didcontext)
+                else:
+                    dids = reversedid_defs.get(OTHER_DID_CONTEXTS)
+                if dids:
+                    if didexten in dids:
+                        dirlist = dids.get(didexten)
+                    else:
+                        dirlist = dids.get(OTHER_DID_EXTENS)
+                    if dirlist:
+                        log.info('dirlist = %s' % dirlist)
+                        reversedata = self.findreverse(dirlist, calleridnum)
+                        log.info('__did__ (lookup for %s) : found %s'
+                                 % (calleridnum, reversedata))
+                        dialplan_data.update(reversedata)
+                    else:
+                        log.warning('__did__ (lookup for %s) : no match for did extension %s'
+                                    % (calleridnum, didexten))
+                else:
+                    log.warning('__did__ (lookup for %s) : no match for did context %s'
+                                % (calleridnum, didcontext))
+            else:
+                log.warning('__did__ (lookup for %s) : no match for reversedid configuration'
+                            % calleridnum)
+                
         # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
         #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
         #                  0x41       : 65 (3 chiffres)
@@ -5396,7 +5424,7 @@ class XivoCTICommand(BaseCommand):
                         'number' : resdest[0][0] }
                 else:
                     log.warning('%s __build_features_get__ : nobody matches (%s %s)'
-                        % (astid, key, params))
+                                % (astid, key, params))
             except Exception:
                 log.exception('features_get(str) id=%s key=%s' % (userid, key))
         tosend = { 'class' : 'features',

@@ -50,12 +50,12 @@ class Config:
                     response = urllib2.urlopen(urilist)
                     self.json_config = response.read()
                     
-                    json = cjson.decode(self.json_config)
+                    self.xivoconf_json = cjson.decode(self.json_config)
                     
                     self.xivoconf = ConfigParser.ConfigParser()
                     debug_add_section(self.xivoconf, 'general')
                     
-                    for k, v in json["main"].iteritems():
+                    for k, v in self.xivoconf_json["main"].iteritems():
                         if type(v) == type(list()):
                             if k in ['incoming_tcp_fagi', 'incoming_tcp_cti',
                                      'incoming_tcp_info', 'incoming_tcp_webi',
@@ -70,26 +70,26 @@ class Config:
                                            'urllist_agents', 'urllist_agents', 'urllist_queues',
                                            'urllist_phones', 'urllist_incomingcalls', 'urllist_groups',
                                            'urllist_meetme']
-                    for asterisk_server in json['main']['asterisklist']:
+                    for asterisk_server in self.xivoconf_json['main']['asterisklist']:
                         debug_add_section(self.xivoconf, asterisk_server)
-                        for asterisk_config in json[asterisk_server]:
-                            if json[asterisk_server][asterisk_config]:
+                        for asterisk_config in self.xivoconf_json[asterisk_server]:
+                            if self.xivoconf_json[asterisk_server][asterisk_config]:
                                 if asterisk_config in urllist_params_list:
                                     self.xivoconf.set(asterisk_server,
                                                       asterisk_config,
-                                                      ','.join(json[asterisk_server][asterisk_config]).replace("\\/","/"))
+                                                      ','.join(self.xivoconf_json[asterisk_server][asterisk_config]).replace("\\/","/"))
                                 else:
                                     self.xivoconf.set(asterisk_server,
                                                       asterisk_config,
-                                                      json[asterisk_server][asterisk_config].replace("\\/","/"))
+                                                      self.xivoconf_json[asterisk_server][asterisk_config].replace("\\/","/"))
                                     
                     debug_add_section(self.xivoconf, 'xivocti')
                     self.xivoconf.set('xivocti','allowedxlets', "file:///etc/pf-xivo/ctiservers/allowedxlets.json")
-                    for profile in json['xivocti']['profiles']:
-                        self.xivoconf.set('xivocti', profile + "-funcs", ','.join(json['xivocti']['profiles'][profile]['funcs']))
+                    for profile in self.xivoconf_json['xivocti']['profiles']:
+                        self.xivoconf.set('xivocti', profile + "-funcs", ','.join(self.xivoconf_json['xivocti']['profiles'][profile]['funcs']))
                         xletlist = ""
-                        if json['xivocti']['profiles'][profile]['xlets']:
-                            for xlet_attr in json['xivocti']['profiles'][profile]['xlets']:
+                        if self.xivoconf_json['xivocti']['profiles'][profile]['xlets']:
+                            for xlet_attr in self.xivoconf_json['xivocti']['profiles'][profile]['xlets']:
                                 if 'N/A' in xlet_attr:
                                     xlet_attr.remove('N/A')
                                 if ('tab' or 'tabber') in xlet_attr:
@@ -99,16 +99,16 @@ class Config:
                                 xletlist += '-'.join(xlet_attr) + ","
                             xletlist = xletlist[:-1]
                         self.xivoconf.set('xivocti', profile + "-xlets", xletlist)
-                        self.xivoconf.set('xivocti', profile + "-funcs", ','.join(json['xivocti']['profiles'][profile]['funcs']))
-                        self.xivoconf.set('xivocti', profile + "-appliname",json['xivocti']['profiles'][profile]['appliname'] )
-                        self.xivoconf.set('xivocti', profile + "-maxgui",json['xivocti']['profiles'][profile]['maxgui'] )
-                        self.xivoconf.set('xivocti', profile + "-presence",json['xivocti']['profiles'][profile]['presence'] )
-                        self.xivoconf.set('xivocti', profile + "-services",json['xivocti']['profiles'][profile]['services'] )
+                        self.xivoconf.set('xivocti', profile + "-funcs", ','.join(self.xivoconf_json['xivocti']['profiles'][profile]['funcs']))
+                        self.xivoconf.set('xivocti', profile + "-appliname",self.xivoconf_json['xivocti']['profiles'][profile]['appliname'] )
+                        self.xivoconf.set('xivocti', profile + "-maxgui",self.xivoconf_json['xivocti']['profiles'][profile]['maxgui'] )
+                        self.xivoconf.set('xivocti', profile + "-presence",self.xivoconf_json['xivocti']['profiles'][profile]['presence'] )
+                        self.xivoconf.set('xivocti', profile + "-services",self.xivoconf_json['xivocti']['profiles'][profile]['services'] )
                         
-                    for presence_list_name in json["presences"]:
+                    for presence_list_name in self.xivoconf_json["presences"]:
                         debug_add_section(self.xivoconf, 'presences.' + presence_list_name)
-                        for presence_name in json["presences"][presence_list_name]:
-                            presence = json["presences"][presence_list_name][presence_name]
+                        for presence_name in self.xivoconf_json["presences"][presence_list_name]:
+                            presence = self.xivoconf_json["presences"][presence_list_name][presence_name]
                             formatted_action = ""
                             for action_name, action_value in presence['actions'].iteritems():
                                 formatted_action += '|'.join([str(action_name), str(action_value)]) + ":"
@@ -117,29 +117,29 @@ class Config:
                             self.xivoconf.set('presences.' + presence_list_name, presence_name, presence_value)
 
                     debug_add_section(self.xivoconf, 'phonehints')
-                    for phonehint in json["phonehints"]:
-                        self.xivoconf.set('phonehints', phonehint, ','.join(json["phonehints"][phonehint]))
+                    for phonehint in self.xivoconf_json["phonehints"]:
+                        self.xivoconf.set('phonehints', phonehint, ','.join(self.xivoconf_json["phonehints"][phonehint]))
 
-                    for context_name in json["contexts"]:
+                    for context_name in self.xivoconf_json["contexts"]:
                         debug_add_section(self.xivoconf, 'contexts.' + context_name)
-                        self.xivoconf.set('contexts.' + context_name, "display", json["contexts"][context_name]['display'])
-                        self.xivoconf.set('contexts.' + context_name, "directories", ','.join(json["contexts"][context_name]['directories']))
+                        self.xivoconf.set('contexts.' + context_name, "display", self.xivoconf_json["contexts"][context_name]['display'])
+                        self.xivoconf.set('contexts.' + context_name, "directories", ','.join(self.xivoconf_json["contexts"][context_name]['directories']))
                         self.xivoconf.set('contexts.' + context_name, "contextname", context_name)
 
-                    for display_name in json["displays"]:
+                    for display_name in self.xivoconf_json["displays"]:
                         kname = 'displays.' + display_name
                         debug_add_section(self.xivoconf, kname)
-                        for k, v in json["displays"][display_name].iteritems():
+                        for k, v in self.xivoconf_json["displays"][display_name].iteritems():
                             self.xivoconf.set(kname, k, '|'.join(v))
 
                     debug_add_section(self.xivoconf, 'reversedid')
-                    for exten, directories in json["reversedid"].iteritems():
+                    for exten, directories in self.xivoconf_json["reversedid"].iteritems():
                         self.xivoconf.set('reversedid', exten, ','.join(directories))
 
-                    for directory_name in json["directories"]:
+                    for directory_name in self.xivoconf_json["directories"]:
                         kname = 'directories.' + directory_name
                         debug_add_section(self.xivoconf, kname)
-                        for k, v in json["directories"][directory_name].iteritems():
+                        for k, v in self.xivoconf_json["directories"][directory_name].iteritems():
                             if type(v) == type(list()):
                                 self.xivoconf.set(kname, k, ','.join(v))
                             else:
@@ -154,19 +154,19 @@ class Config:
                                 self.xivoconf.set(section_name, key, rest[key])
 
                     debug_add_section(self.xivoconf, 'sheet_events')
-                    for k in json["sheets"]["events"]:
+                    for k in self.xivoconf_json["sheets"]["events"]:
                         if k == "custom":
-                            for csheet in json["sheets"]["events"]["custom"]:
-                                self.xivoconf.set('sheet_events', csheet, json["sheets"]["events"][k][csheet])
+                            for csheet in self.xivoconf_json["sheets"]["events"]["custom"]:
+                                self.xivoconf.set('sheet_events', csheet, self.xivoconf_json["sheets"]["events"][k][csheet])
                                 add_sheet_action_section(self,
-                                                  json["sheets"]["events"][k][csheet],
-                                                  json["sheets"]["actions"][json["sheets"]["events"][k][csheet]])
+                                                  self.xivoconf_json["sheets"]["events"][k][csheet],
+                                                  self.xivoconf_json["sheets"]["actions"][self.xivoconf_json["sheets"]["events"][k][csheet]])
                         else:
-                            self.xivoconf.set('sheet_events', k, json["sheets"]["events"][k])
-                            if len(json["sheets"]["events"][k]):
+                            self.xivoconf.set('sheet_events', k, self.xivoconf_json["sheets"]["events"][k])
+                            if len(self.xivoconf_json["sheets"]["events"][k]):
                                 add_sheet_action_section(self,
-                                                  json["sheets"]["events"][k],
-                                                  json["sheets"]["actions"][json["sheets"]["events"][k]])
+                                                  self.xivoconf_json["sheets"]["events"][k],
+                                                  self.xivoconf_json["sheets"]["actions"][self.xivoconf_json["sheets"]["events"][k]])
 
                     def add_sheet_display_section(self, section_name, rest):
                         debug_add_section(self.xivoconf, section_name)
@@ -176,11 +176,11 @@ class Config:
                             else:
                                 self.xivoconf.set(section_name, key, rest[key])
 
-                    for sheet_type in json["sheets"]["displays"]:
-                        for sheet_name in json["sheets"]["displays"][sheet_type]:
+                    for sheet_type in self.xivoconf_json["sheets"]["displays"]:
+                        for sheet_name in self.xivoconf_json["sheets"]["displays"][sheet_type]:
                             add_sheet_display_section(self,
                                                       "sheets.displays." + sheet_type + "." + sheet_name,
-                                                      json["sheets"]["displays"][sheet_type][sheet_name])
+                                                      self.xivoconf_json["sheets"]["displays"][sheet_type][sheet_name])
 
         elif urilist.find(':') >= 0:
             xconf = urilist.split(':')
