@@ -992,8 +992,7 @@ endif;
 				    'key'		=> false,
 					'help'		=> $this->bbf('hlp_fm_language'),
 					'required'	=> false,
-				    'empty'		=> true,
-				    'selected'	=> is_null($this->get_var('info','language','var_val'))?' ':$this->get_var('info','language','var_val'),
+				    'selected'	=> $this->get_var('info','language','var_val'),
 				    'default'	=> $element['language']['default']),
 			      $element['language']['value']);
 
