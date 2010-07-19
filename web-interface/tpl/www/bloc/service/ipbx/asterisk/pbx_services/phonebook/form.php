@@ -61,6 +61,8 @@ endif;
 				  'name'	=> 'phonebook[displayname]',
 				  'labelid'	=> 'phonebook-displayname',
 				  'size'	=> 15,
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'phonebook', 'displayname')),
 				  'default'	=> $element['phonebook']['displayname']['default'],
 				  'value'	=> $info['phonebook']['displayname'])),
 

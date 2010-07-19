@@ -42,6 +42,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appphonebook->get_result();
+				$error  = $appphonebook->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
@@ -59,7 +60,8 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 
-		$_TPL->set_var('info',$result);
+		$_TPL->set_var('info'   ,$result);
+		$_TPL->set_var('error'  ,$error);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appphonebook->get_elements());
 		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
@@ -82,6 +84,7 @@ switch($act)
 			{
 				$fm_save = false;
 				$result = $appphonebook->get_result();
+				$error  = $appphonebook->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('service/ipbx/pbx_services/phonebook'),$param);
@@ -99,10 +102,11 @@ switch($act)
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
 
-		$_TPL->set_var('id',$info['phonebook']['id']);
-		$_TPL->set_var('info',$return);
-		$_TPL->set_var('phonebookaddress',$return['phonebookaddress']);
-		$_TPL->set_var('phonebooknumber',$return['phonebooknumber']);
+		$_TPL->set_var('id'              , $info['phonebook']['id']);
+		$_TPL->set_var('info'            , $return);
+		$_TPL->set_var('error'           , $error);
+		$_TPL->set_var('phonebookaddress', $return['phonebookaddress']);
+		$_TPL->set_var('phonebooknumber' , $return['phonebooknumber']);
 		$_TPL->set_var('fm_save',$fm_save);
 		$_TPL->set_var('element',$appphonebook->get_elements());
 		$_TPL->set_var('territory',dwho_i18n::get_territory_translated_list());
