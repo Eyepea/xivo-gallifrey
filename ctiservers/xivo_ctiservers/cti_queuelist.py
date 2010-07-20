@@ -228,7 +228,7 @@ class QueueList(AnyList):
         AnyList.__init__(self, newurls)
 
         try:
-            self.stats = QueueStats(misc["conf"].xivoconf.get('general','asterisk_queuestat_db'));
+            self.stats = QueueStats(misc["conf"].xivoconf_json['main']['asterisk_queuestat_db'].replace("\\/","/"));
         except Exception:
             log.exception('could not access queuestats db')
             self.stats = None

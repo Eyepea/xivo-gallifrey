@@ -724,11 +724,11 @@ class XivoCTICommand(BaseCommand):
                         self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
                 else:
                     log.warning('set_options unknown prop %s (%s)' % (prop, val))
-        for v, vv in allconf.read_section('phonehints', 'phonehints').iteritems():
-            vvv = vv.split(',')
-            if len(vvv) > 1:
-                self.display_hints[v] = { 'longname' : vvv[0],
-                                          'color' : vvv[1] }
+
+        for v, vv in self.lconf.xivoconf_json.get('phonehints').iteritems():
+            if len(vv) > 1:
+                self.display_hints[v] = { 'longname' : vv[0],
+                                          'color' : vv[1] }
         if 'required_client_version' in self.xivoconf:
             self.required_client_version = int(self.xivoconf['required_client_version'])
         return
@@ -3384,11 +3384,11 @@ class XivoCTICommand(BaseCommand):
                 if 'Xivo-ReceivedCalls' in thisagent['agentstats']:
                     thisagent['agentstats']['Xivo-LostCalls'] -= 1
                     tosend = { 'class' : 'agents',
-                        'function' : 'sendlist',
-                        'payload' : { astid : { agent_id : thisagent } }
-                        }
+                               'function' : 'sendlist',
+                               'payload' : { astid : { agent_id : thisagent } }
+                               }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
-                        astid, thisagent.get('context'))
+                                                     astid, thisagent.get('context'))
         else:
             log.warning('%s sip/iax2/sccp @queue (ami_agentconnect) %s' % (astid, event))
         # {'BridgedChannel': '1228753144.217', 'Member': 'SIP/103', 'MemberName': 'permmember', 'Queue': 'martinique', 'Uniqueid': '1228753144.216', 'Holdtime': '4', 'Event': 'AgentConnect', 'Channel': 'SIP/103-081d7358'}
@@ -3430,12 +3430,12 @@ class XivoCTICommand(BaseCommand):
                 nlost = nreceived - ngot
                 thisagentstats = self.weblist['agents'][astid].keeplist[agent_id]['agentstats']
                 thisagentstats.update( { 'status' : event.get('Status'),
-                    'loggedintime' : event.get('LoggedInTime'),
-                    'talkingto' : event.get('TalkingTo'),
-
-                    'Xivo-ReceivedCalls' : nreceived,
-                    'Xivo-LostCalls' : nlost
-                    } )
+                                         'loggedintime' : event.get('LoggedInTime'),
+                                         'talkingto' : event.get('TalkingTo'),
+                                         
+                                         'Xivo-ReceivedCalls' : nreceived,
+                                         'Xivo-LostCalls' : nlost
+                                         } )
                 # to avoid the displayed values to be changed from 102@defaut to Local/102@default-6417,1
                 # or SIP/102-094c67c8, during the updates ... only sets the values when starting
                 if 'agent_phone_number' not in thisagentstats:
@@ -3511,9 +3511,9 @@ class XivoCTICommand(BaseCommand):
         # print 'AMI QueueEntry', astid, queue, position, wait, channel, event
         self.weblist[queueorgroup][astid].queueentry_update(queueid, channel, position, time.time() - wait, calleridnum, calleridname)
         tosend = { 'class' : queueorgroup,
-            'function' : 'sendlist',
-            'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
-            }
+                   'function' : 'sendlist',
+                   'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
+                   }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
             self.weblist[queueorgroup][astid].getcontext(queueid))
         return
@@ -3557,13 +3557,13 @@ class XivoCTICommand(BaseCommand):
         event['Xivo-QueueMember-StateTime'] = time.time()
         if self.weblist[queueorgroup][astid].queuememberupdate(queueid, location, event):
             tosend = { 'class' : queueorgroup,
-                'function' : 'update',
-                'payload' : { astid :
-                    { queueid :
-                        { 'agents_in_queue' :
-                            { location : self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'][location]
-                                } } } }
-                }
+                       'function' : 'update',
+                       'payload' : { astid :
+                                     { queueid :
+                                       { 'agents_in_queue' :
+                                         { location : self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'][location]
+                                           } } } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
 
         if location.startswith('Agent/'):
@@ -3571,9 +3571,9 @@ class XivoCTICommand(BaseCommand):
             self.weblist['agents'][astid].queuememberadded(queueid, queueorgroup, location[6:], event)
             self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberadded')
             tosend = { 'class' : 'agents',
-                'function' : 'sendlist',
-                'payload' : { astid : { agent_id : thisagent } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { agent_id : thisagent } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
             log.warning('%s sip/iax2/sccp @queue (ami_queuememberadded) %s' % (astid, event))
@@ -3616,9 +3616,9 @@ class XivoCTICommand(BaseCommand):
 
         if self.weblist[queueorgroup][astid].queuememberremove(queueid, location):
             tosend = { 'class' : queueorgroup,
-                'function' : 'sendlist',
-                'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
 
         if location.startswith('Agent/'):
@@ -3626,9 +3626,9 @@ class XivoCTICommand(BaseCommand):
             self.weblist['agents'][astid].queuememberremoved(queueid, queueorgroup, location[6:], event)
             self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberremoved')
             tosend = { 'class' : 'agents',
-                'function' : 'sendlist',
-                'payload' : { astid : { agent_id : thisagent } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { agent_id : thisagent } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
             log.warning('%s sip/iax2/sccp @queue (ami_queuememberremoved) %s' % (astid, event))
@@ -3683,9 +3683,9 @@ class XivoCTICommand(BaseCommand):
             # } } } }
             # }
             tosend = { 'class' : queueorgroup,
-                'function' : 'sendlist',
-                'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
 
         if location.startswith('Agent/'):
@@ -3693,9 +3693,9 @@ class XivoCTICommand(BaseCommand):
             if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberstatus')
                 tosend = { 'class' : 'agents',
-                    'function' : 'sendlist',
-                    'payload' : { astid : { agent_id : thisagent } }
-                    }
+                           'function' : 'sendlist',
+                           'payload' : { astid : { agent_id : thisagent } }
+                           }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
             # sip/iax2/sccp @queue
@@ -3789,13 +3789,13 @@ class XivoCTICommand(BaseCommand):
         event['Xivo-QueueMember-StateTime'] = time.time()
         if self.weblist[queueorgroup][astid].queuememberupdate(queueid, location, event):
             tosend = { 'class' : queueorgroup,
-                'function' : 'update',
-                'payload' : { astid :
-                    { queueid :
-                        { 'agents_in_queue' :
-                            { location : self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'][location]
-                                } } } }
-                }
+                       'function' : 'update',
+                       'payload' : { astid :
+                                     { queueid :
+                                       { 'agents_in_queue' :
+                                         { location : self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'][location]
+                                           } } } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_queue)
 
         if location.startswith('Agent/'):
@@ -3804,12 +3804,12 @@ class XivoCTICommand(BaseCommand):
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberpaused')
                 qorg = '%s_by_agent' % queueorgroup
                 tosend = { 'class' : 'agents',
-                    'function' : 'update',
-                    'payload' : { astid :
-                        { agent_id :
-                            { 'agentstats' : thisagent['agentstats'],
-                                qorg : { queueid : thisagent[qorg][queueid] } } } }
-                    }
+                           'function' : 'update',
+                           'payload' : { astid :
+                                         { agent_id :
+                                           { 'agentstats' : thisagent['agentstats'],
+                                             qorg : { queueid : thisagent[qorg][queueid] } } } }
+                           }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
             log.warning('%s sip/iax2/sccp @queue (ami_queuememberpaused) %s' % (astid, event))
@@ -3835,9 +3835,9 @@ class XivoCTICommand(BaseCommand):
             # send an update only if something changed
             log.info('%s ami_queueparams : %s' % (astid, event))
             tosend = { 'class' : queueorgroup,
-                'function' : 'sendlist',
-                'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
-                }
+                       'function' : 'sendlist',
+                       'payload' : { astid : { queueid : self.weblist[queueorgroup][astid].keeplist[queueid] } }
+                       }
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
                 self.weblist[queueorgroup][astid].getcontext(queueid))
         return
@@ -3884,9 +3884,9 @@ class XivoCTICommand(BaseCommand):
             if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuemember')
                 tosend = { 'class' : 'agents',
-                    'function' : 'sendlist',
-                    'payload' : { astid : { agent_id : thisagent } }
-                    }
+                           'function' : 'sendlist',
+                           'payload' : { astid : { agent_id : thisagent } }
+                           }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context_member)
         else:
             # sip/iax2/sccp @queue

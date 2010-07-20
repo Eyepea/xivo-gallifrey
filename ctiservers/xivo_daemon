@@ -86,7 +86,6 @@ except:
 #XIVO_CONF_FILE   = '/etc/pf-xivo/ctiservers/xivo_daemon.conf'
 XIVO_CONF_FILE_DEFAULT = 'file:///etc/pf-xivo/ctiservers/ctiserver_default_configuration.json'
 XIVO_CONF_FILE         = 'https://localhost/service/ipbx/json.php/private/ctiserver/configuration'
-QUEUELOG_CONF_FILE     = 'https://localhost/service/ipbx/json.php/private/queuelogger/configuration'
 PIDFILE            = '/var/run/%s.pid' % DAEMONNAME
 LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
 GETOPT_SHORTOPTS   = 'dc:p:l:'
@@ -904,7 +903,6 @@ class xivo_daemon:
         except Exception:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             lconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
-        lconf.set_queuelogger_path(QUEUELOG_CONF_FILE)
         self.commandclass.set_cticonfig(lconf)
         self.commandclass.set_options(self.cconf.read_section('commandset', self.commandset), self.cconf)
 
@@ -1033,7 +1031,6 @@ class xivo_daemon:
         except Exception:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             self.cconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
-        self.cconf.set_queuelogger_path(QUEUELOG_CONF_FILE)
         xivoconf_general = self.cconf.read_section('general', 'general')
         
         # loads the general configuration

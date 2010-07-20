@@ -34,7 +34,7 @@ class TrunkList(AnyList):
     def __init__(self, newurls = [], useless = None):
         self.anylist_properties = {
             'keywords' : ['tech', 'name', 'ip',
-                'type', 'context'],
+                          'type', 'context'],
             'name' : 'trunk',
             'action' : 'gettrunklist',
             'urloptions' : (1, 5, True) }

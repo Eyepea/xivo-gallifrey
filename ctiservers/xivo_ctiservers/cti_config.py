@@ -77,11 +77,11 @@ class Config:
                                 if asterisk_config in urllist_params_list:
                                     self.xivoconf.set(asterisk_server,
                                                       asterisk_config,
-                                                      ','.join(self.xivoconf_json[asterisk_server][asterisk_config]).replace("\\/","/"))
+                                                      ','.join(self.xivoconf_json[asterisk_server][asterisk_config]))
                                 else:
                                     self.xivoconf.set(asterisk_server,
                                                       asterisk_config,
-                                                      self.xivoconf_json[asterisk_server][asterisk_config].replace("\\/","/"))
+                                                      self.xivoconf_json[asterisk_server][asterisk_config])
                                     
                     debug_add_section(self.xivoconf, 'xivocti')
                     self.xivoconf.set('xivocti','allowedxlets', "file:///etc/pf-xivo/ctiservers/allowedxlets.json")
@@ -115,11 +115,7 @@ class Config:
                             formatted_action = formatted_action[:-1]
                             presence_value = "%s,%s,%s,%s" % ( presence['display'], ':'.join(presence['status']), formatted_action,presence['color']) 
                             self.xivoconf.set('presences.' + presence_list_name, presence_name, presence_value)
-
-                    debug_add_section(self.xivoconf, 'phonehints')
-                    for phonehint in self.xivoconf_json["phonehints"]:
-                        self.xivoconf.set('phonehints', phonehint, ','.join(self.xivoconf_json["phonehints"][phonehint]))
-
+                            
                     for context_name in self.xivoconf_json["contexts"]:
                         debug_add_section(self.xivoconf, 'contexts.' + context_name)
                         self.xivoconf.set('contexts.' + context_name, "display", self.xivoconf_json["contexts"][context_name]['display'])
@@ -131,10 +127,6 @@ class Config:
                         debug_add_section(self.xivoconf, kname)
                         for k, v in self.xivoconf_json["displays"][display_name].iteritems():
                             self.xivoconf.set(kname, k, '|'.join(v))
-
-                    debug_add_section(self.xivoconf, 'reversedid')
-                    for exten, directories in self.xivoconf_json["reversedid"].iteritems():
-                        self.xivoconf.set('reversedid', exten, ','.join(directories))
 
                     for directory_name in self.xivoconf_json["directories"]:
                         kname = 'directories.' + directory_name
@@ -195,20 +187,6 @@ class Config:
                 self.xivoconf = ConfigParser.ConfigParser()
                 for uri in uris:
                     self.xivoconf.readfp(open(uri))
-        return
-    
-    def set_queuelogger_path(self, loggeruri):
-        try:
-            response = urllib2.urlopen(loggeruri)
-            json_config = response.read()
-            json = cjson.decode(json_config)
-            ql_uri = json.get('db_uri')
-            if ql_uri:
-                self.xivoconf.set('general', 'asterisk_queuestat_db', ql_uri)
-            else:
-                log.warning('loggeruri : empty db_uri value from %s' % loggeruri)
-        except Exception:
-            log.exception('set_queuelogger_path : %s' % loggeruri)
         return
     
     def read_section(self, type, sectionname):
