@@ -666,18 +666,11 @@ class XivoCTICommand(BaseCommand):
             self.ctilog_conn.commit()
         return
 
-    def __conf2json2dict__(self, structure, keyname):
+    def __json2dict__(self, urlvalue):
         """
         Meant to ensure that the result is a dict.
         """
         ret = {}
-        if not keyname:
-            log.warning('__conf2json2dict__ empty keyname %s' % keyname)
-            return ret
-        urlvalue = structure.get(keyname)
-        if not urlvalue:
-            log.warning('__conf2json2dict__ empty urlvalue %s for keyname %s' % (urlvalue, keyname))
-            return ret
         try:
             r = urllib.urlopen(urlvalue)
             jsonencoded = r.read().decode('utf8')
@@ -685,18 +678,18 @@ class XivoCTICommand(BaseCommand):
         except Exception:
             jsonencoded = None
         if not jsonencoded:
-            log.warning('__conf2json2dict__ jsonencoded is empty for keyname %s and urlvalue %s' % (keyname, urlvalue))
+            log.warning('__json2dict__ jsonencoded is empty for urlvalue %s' % urlvalue)
             return ret
         try:
             ret = cjson.decode(jsonencoded)
         except Exception:
-            log.exception('__conf2json2dict__ json decode %s %s' % (keyname, urlvalue))
+            log.exception('__json2dict__ json decode %s' % urlvalue)
         return ret
 
 
     def set_options(self, xivoconf, allconf):
         self.xivoconf = xivoconf
-        allowedxlets = self.__conf2json2dict__(self.xivoconf, 'allowedxlets')
+        allowedxlets = self.__json2dict__(allconf.xivoconf_json['xivocti']['allowedxlets'])
         for var, val in self.xivoconf.iteritems():
             if var.find('-') > 0 and val:
                 [name, prop] = var.split('-', 1)

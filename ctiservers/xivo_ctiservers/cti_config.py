@@ -84,7 +84,6 @@ class Config:
                                                       self.xivoconf_json[asterisk_server][asterisk_config])
                                     
                     debug_add_section(self.xivoconf, 'xivocti')
-                    self.xivoconf.set('xivocti','allowedxlets', "file:///etc/pf-xivo/ctiservers/allowedxlets.json")
                     for profile in self.xivoconf_json['xivocti']['profiles']:
                         self.xivoconf.set('xivocti', profile + "-funcs", ','.join(self.xivoconf_json['xivocti']['profiles'][profile]['funcs']))
                         xletlist = ""

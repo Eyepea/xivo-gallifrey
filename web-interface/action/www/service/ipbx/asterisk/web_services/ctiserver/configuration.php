@@ -290,6 +290,8 @@ switch($act)
 		}
 
 		# PROFILES
+		$out['xivocti']['allowedxlets'] = "file:///etc/pf-xivo/ctiservers/allowedxlets.json";
+		$out['xivocti']['required_client_version'] = CLIENT_VERSION;
 		if(isset($load_profiles))
 		{
 			foreach($load_profiles as $pf)
@@ -306,7 +308,6 @@ switch($act)
 					preg_match($pattern, $p, $match);
 					$prefout[$match[1]] = $match[2];
 				}
-				$out['xivocti']['required_client_version'] = CLIENT_VERSION;
 				$out['xivocti']['profiles'][$pfid] = array(
 					'xlets' => dwho_json::decode($pf['xlets'], true),
 					'funcs' => explode(',', $pf['funcs']),
