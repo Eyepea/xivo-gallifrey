@@ -3923,6 +3923,7 @@ class XivoCTICommand(BaseCommand):
         return
 
     def ami_userevent(self, astid, event):
+        # see files base-config/dialplan/asterisk/*.conf
         eventname = event.get('UserEvent')
         if eventname == 'MacroDid':
             channel = event.get('CHANNEL')
@@ -4027,6 +4028,12 @@ class XivoCTICommand(BaseCommand):
                 log.warning('%s AMI UserEvent %s : uniqueid %s is undefined' % (astid, eventname, uniqueid))
                 return
 
+            if eventname == 'MacroOutcall':
+                context = event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN)
+                if uniqueid in self.uniqueids[astid]:
+                    self.uniqueids[astid][uniqueid]['OUTCALL'] = True
+                self.__sheet_alert__('outcall', astid, context, event)
+
             if xivo_userid or eventname == 'MacroUser':
                 # when DID goes to a User, xivo_userid is not set, but we need these data nonetheless
                 dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
@@ -4050,6 +4057,16 @@ class XivoCTICommand(BaseCommand):
                 self.__dialplan_fill_dst__(dialplan_data)
             else:
                 log.warning('%s AMI UserEvent %s : xivo_userid is not set' % (astid, eventname))
+
+        elif eventname == 'LocalCall':
+            log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
+            uniqueid = event.get('UNIQUEID')
+            appli = event.get('XIVO_ORIGAPPLI')
+            actionid = event.get('XIVO_ORIGACTIONID')
+            if uniqueid in self.uniqueids[astid]:
+                if appli == 'ChanSpy':
+                    self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
+                                                            'actionid' : actionid})
 
         elif eventname == 'Custom':
             customname = event.get('NAME')
@@ -4081,15 +4098,6 @@ class XivoCTICommand(BaseCommand):
                     else:
                         log.warning('%s AMI UserEvent %s : no dialplan_data field (yet ?)' % (astid, eventname))
 
-        elif eventname == 'OUTCALL':
-            uniqueid = event.get('UNIQUEID')
-            context = event.get('XIVO_CONTEXT', CONTEXT_UNKNOWN)
-
-            if uniqueid in self.uniqueids[astid]:
-                log.info('%s AMI UserEvent %s %s' % (astid, eventname, self.uniqueids[astid][uniqueid]))
-                self.uniqueids[astid][uniqueid]['OUTCALL'] = True
-            self.__sheet_alert__('outcall', astid, context, event)
-
         elif eventname == 'Feature':
             log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
             function = event.get('Function')
@@ -4111,16 +4119,6 @@ class XivoCTICommand(BaseCommand):
             else:
                 log.warning('%s ami_userevent : unknown UserEvent for Feature / %s'
                             % (astid, function))
-
-        elif eventname == 'LocalCall':
-            log.info('%s AMI UserEvent %s %s' % (astid, eventname, event))
-            uniqueid = event.get('UNIQUEID')
-            appli = event.get('XIVO_ORIGAPPLI')
-            actionid = event.get('XIVO_ORIGACTIONID')
-            if uniqueid in self.uniqueids[astid]:
-                if appli == 'ChanSpy':
-                    self.uniqueids[astid][uniqueid].update({'time-chanspy' : time.time(),
-                                                            'actionid' : actionid})
         else:
             log.info('%s AMI untracked UserEvent %s' % (astid, event))
         return

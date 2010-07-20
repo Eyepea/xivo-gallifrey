@@ -57,11 +57,9 @@ class Config:
                     
                     for k, v in self.xivoconf_json["main"].iteritems():
                         if type(v) == type(list()):
-                            if k in ['incoming_tcp_fagi', 'incoming_tcp_cti',
-                                     'incoming_tcp_info', 'incoming_tcp_webi',
-                                     'incoming_udp_announce']:
-                                self.xivoconf.set('general', k, ' : '.join(v))
-                            else:
+                            if k not in ['incoming_tcp_fagi', 'incoming_tcp_cti',
+                                         'incoming_tcp_info', 'incoming_tcp_webi',
+                                         'incoming_udp_announce']:
                                 self.xivoconf.set('general', k, ','.join(v))
                         elif v is not None:
                             self.xivoconf.set('general', k, v)
