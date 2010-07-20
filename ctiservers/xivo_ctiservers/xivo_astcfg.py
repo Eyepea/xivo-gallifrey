@@ -34,9 +34,6 @@ class AsteriskConfig:
     ## \var astid
     # \brief Asterisk String ID
 
-    ## \var localaddr
-    # \brief Local IP address
-
     ## \var remoteaddr
     # \brief Address of the Asterisk server
 
@@ -56,7 +53,6 @@ class AsteriskConfig:
     def __init__(
         self,
         astid,
-        localaddr = '127.0.0.1',
         remoteaddr = '127.0.0.1',
         ipaddress_webi = '127.0.0.1',
         ami_port = 5038,
@@ -73,7 +69,6 @@ class AsteriskConfig:
         ):
 
             self.astid = astid
-            self.localaddr = localaddr
             self.remoteaddr = remoteaddr
             self.ipaddress_webi = ipaddress_webi
             self.ami_port = ami_port

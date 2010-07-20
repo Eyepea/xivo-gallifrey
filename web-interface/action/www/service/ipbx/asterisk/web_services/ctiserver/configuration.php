@@ -341,7 +341,6 @@ switch($act)
 				$out['main']['asterisklist'][] = $hostname;
 				$out['main']['userlists'][] = $json . 'pbx_settings/users';
 				$out[$hostname] = array(
-					'localaddr' => $list[$v]['host'],
 					'ipaddress' => $list[$v]['host'],
 					'ipaddress_webi' => $list[$v]['webi'],
 					'urllist_agents' => array($json . 'call_center/agents'),

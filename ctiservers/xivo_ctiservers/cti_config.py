@@ -67,9 +67,8 @@ class Config:
                             self.xivoconf.set('general', k, v)
                             
                     urllist_params_list = ['urllist_phonebook', 'urllist_voicemail', 'urllist_trunks',
-                                           'urllist_agents', 'urllist_agents', 'urllist_queues',
-                                           'urllist_phones', 'urllist_incomingcalls', 'urllist_groups',
-                                           'urllist_meetme']
+                                           'urllist_agents', 'urllist_queues', 'urllist_groups',
+                                           'urllist_phones', 'urllist_incomingcalls', 'urllist_meetme']
                     for asterisk_server in self.xivoconf_json['main']['asterisklist']:
                         debug_add_section(self.xivoconf, asterisk_server)
                         for asterisk_config in self.xivoconf_json[asterisk_server]:

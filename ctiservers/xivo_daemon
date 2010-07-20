@@ -911,7 +911,6 @@ class xivo_daemon:
         for astid in self.asterisklist:
             xivoconf_asterisk = self.cconf.read_section('ipbx', astid)
             if len(xivoconf_asterisk) > 0:
-                localaddr = '127.0.0.1'
                 urllist = {}
                 ipaddress = '127.0.0.1'
                 ipaddress_webi = '127.0.0.1'
@@ -926,8 +925,6 @@ class xivo_daemon:
                 aoriginate = 'AOriginate'
                 url_queuelog = None
                 
-                if 'localaddr' in xivoconf_asterisk:
-                    localaddr = xivoconf_asterisk['localaddr']
                 for listname in self.commandclass.weblist.keys():
                     fieldname = 'urllist_%s' % listname
                     if fieldname in xivoconf_asterisk:
@@ -960,11 +957,10 @@ class xivo_daemon:
                     realm = xivoconf_asterisk['realm']
                 if 'aoriginate' in xivoconf_asterisk:
                     aoriginate = xivoconf_asterisk['aoriginate']
-                        
+                    
                 capafeatures = []
                 
                 self.configs[astid] = xivo_astcfg.AsteriskConfig(astid,
-                                                                 localaddr,
                                                                  ipaddress,
                                                                  ipaddress_webi,
                                                                  ami_port,
@@ -981,11 +977,11 @@ class xivo_daemon:
                 
                 for ilist in self.commandclass.weblist.keys():
                     self.commandclass.set_urllist(astid, ilist, urllist[ilist])
-    
+                    
                 t1 = time.time()
                 self.commandclass.read_queuelog(astid, url_queuelog)
                 t2 = time.time()
-    
+                
                 log.info('%s spent %f seconds to read queuelog file' % (astid, t2 - t1))
                 
                 if ipaddress not in self.ip_reverse_sht:
@@ -998,13 +994,12 @@ class xivo_daemon:
                 else:
                     log.warning('WARNING - IP address (WEBI) already exists for asterisk <%s> - can not set it for <%s>' %
                                 (self.ip_reverse_webi[ipaddress_webi], astid))
-    
+                    
                 self.save_for_next_packet_events[astid] = ''
     # }
     
     def main_loop(self):    # {
         self.askedtoquit = False
-
         
         self.time_start = time.localtime()
         if self.nreload == 0:
