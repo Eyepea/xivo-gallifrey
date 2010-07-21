@@ -21,9 +21,11 @@
 $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
-$element = $this->get_var('element');
-$info = $this->get_var('info');
-$incallavail = $this->get_var('incallavail');
+$element     = $this->get_var('element');
+$info        = $this->get_var('info');
+$contexts    = $this->get_var('contexts');
+$incalls     = $this->get_var('incalls');
+$availextens = $this->get_var('extens');
 
 $yesno = array($this->bbf('no'), $this->bbf('yes'));
 
@@ -31,20 +33,89 @@ if($this->get_var('fm_save') === false):
 	$dhtml = &$this->get_module('dhtml');
 	$dhtml->write_js('xivo_form_result(false,\''.$dhtml->escape($this->bbf('fm_error-save')).'\');');
 endif;
+
+// *** DECLARE A JAVASCRIPT ARRAY FOR EACH CONTEXT
+$js   = array();
+$js[] = " var i18n_xivo_cti_rdid_all = '".$this->bbf('incalls-all')."';";
+
+foreach($incalls as $context => $extens)
+{
+	$context = str_replace('-', '__', $context);
+	$js[] = "	var context_" .$context. "_extens = new Array();";
+	for($i = 0; $i < count($extens); $i++)
+		$js[] = "	context_" .$context. "_extens[".$i."] = [".$extens[$i][0].",'".$extens[$i][1]."'];\n";
+}
+$dhtml = &$this->get_module('dhtml');
+$dhtml->write_js($js);
+
+// ***
 ?>
 
 <div id="sb-part-first">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_rdid_number'),
-				  'name'	=> 'reversedirectories[number]',
-				  'id'		=> false,
+				  'name'	=> 'reversedirectories[context]',
+				  'id'		=> 'it-rdid-contexts',
 				  'label'	=> false,
-				  'key'		=> false,
-				  'selected'	=> $info['reversedirectories']['number']
+				  'key'		=> 'name',
+				  'key'		=> 'id',
+				  'selected'	=> $info['reversedirectories']['context']
 				  ),
-				  $incallavail);
+				  $contexts);
 
 ?>
+		<fieldset id="cti-contexts_incalls">
+			<legend><?=$this->bbf('cti-contexts-incalls');?></legend>
+			<div id="contexts_incalls" class="fm-paragraph fm-multilist">
+				<div class="slt-outlist">
+<?php
+				echo    $form->select(array('name'  => 'incalls_in',
+							'label'     => false,
+							'id'        => 'it-rdid-incalls-in',
+							'key'       => 'name',
+							'altkey'    => 'id',
+							'multiple'  => true,
+							'size'      => 5,
+							'paragraph' => false),
+							$availextens);
+?>
+				</div>
+				<div class="inout-list">
+					<a href="#"
+					onclick="dwho.form.move_selected('it-rdid-incalls-in','it-rdid-incalls-out');
+					return(dwho.dom.free_focus());"
+					title="<?=$this->bbf('bt_add_incalls_contexts');?>">
+					<?=$url->img_html('img/site/button/arrow-left.gif',
+							$this->bbf('bt_inaccess_contexts'),
+							'class="bt-inlist" id="bt-add_incalls_contexts" border="0"');?></a><br />
+
+					<a href="#"
+					onclick="dwho.form.move_selected('it-rdid-incalls-out','it-rdid-incalls-in');
+					return(dwho.dom.free_focus());"
+					title="<?=$this->bbf('bt_remove_incalls_contexts');?>">
+					<?=$url->img_html('img/site/button/arrow-right.gif',
+							$this->bbf('bt_outaccess_contexts'),
+							'class="bt-outlist" id="bt-remove_incalls_contexts" border="0"');?></a>
+				</div>
+				<div class="slt-inlist">
+<?php
+				echo    $form->select(array('name'  => 'reversedirectories[extensions][]',
+						'label'     => false,
+						'id'        => 'it-rdid-incalls-out',
+						'key'       => 'name',
+						'altkey'    => 'id',
+						'multiple'  => true,
+						'size'      => 5,
+						'paragraph' => false),
+					$info['reversedirectories']['extensions']);
+?>
+				</div>
+			</div>
+		</fieldset>
+
+
+
+
 	<div class="fm-paragraph fm-description">
 		<fieldset id="cti-contexts_services">
 			<legend><?=$this->bbf('cti-contexts-directories');?></legend>

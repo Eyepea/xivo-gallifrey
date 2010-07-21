@@ -39,11 +39,7 @@ $appincall = &$ipbx->get_application('incall');
 $incalllist = $appincall->get_incalls_list();
 $dirlist = $dir->get_directories_list();
 
-$incallavail = array('default');
-foreach($incalllist as $v)
-{
-	$incallavail[] = $v['exten'];
-}
+$_TPL->load_i18n_file('tpl/www/bloc/cti/reversedirectories/form.i18n', 'global');
 
 $diravail = array();
 foreach($dirlist as $v)
@@ -52,10 +48,31 @@ foreach($dirlist as $v)
 	$diravail[] = $p['name'];
 }
 
+
+$appcontext = &$ipbx->get_application('context');
+$contexts   = array('*' => $_TPL->bbf('incallavailable-default'));
+foreach($appcontext->get_contexts_list($disable=false) as $context)
+	$contexts[$context['context']['name']] = $context['context']['displayname'];
+
+$appincall  = &$ipbx->get_application('incall');
+$incalls    = array();
+foreach($appincall->get_incalls_list($disable=false) as $incall)
+{
+	if(!array_key_exists($incall['context'], $incalls))
+		$incalls[$incall['context']] = array();
+
+	$incalls[$incall['context']][] = array($incall['id'], $incall['exten']);
+}
+
+
 switch($act)
 {
 	case 'add':
 		$result = $fm_save = null;
+
+		$extens = array('*' => $_TPL->bbf('incallavailable-default'));
+		foreach($incalls[$info['reversedirectories']['context']] as $exten)
+			$extens[$exten[1]] = $exten[1];
 
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('reversedirectories',$_QR) === true)
@@ -69,6 +86,10 @@ switch($act)
 			$str .= ']';
 			$_QR['reversedirectories']['directories'] = $str;
 			$_QR['reversedirectories']['deletable'] = 1;
+
+			if(!array_key_exists('extensions', $_QR['reversedirectories']))
+				$_QR['reversedirectories']['extensions'] = array();
+			$_QR['reversedirectories']['extensions'] = trim(implode(',', $_QR['reversedirectories']['extensions']));
 
 			if($app->set_add($_QR) === false
 			|| $app->add() === false)
@@ -86,8 +107,8 @@ switch($act)
 		$info['directories']['slt'] = null;
 		$info['reversedirectories'] = null;
 
-		$_TPL->set_var('incallavail',$incallavail);
 		$_TPL->set_var('info',$info);
+		$_TPL->set_var('extens',$extens);
 		$_TPL->set_var('fm_save',$fm_save);
 
 		$dhtml = &$_TPL->get_module('dhtml');
@@ -96,10 +117,30 @@ switch($act)
 		break;
 
 	case 'edit':
-
 		if(isset($_QR['idrdid']) === false
 		|| ($info = $app->get($_QR['idrdid'])) === false)
 			$_QRY->go($_TPL->url('cti/reversedirectories'),$param);
+
+		if(strlen($info['reversedirectories']['extensions']) == 0)
+			$info['reversedirectories']['extensions'] = array();
+		else
+			$info['reversedirectories']['extensions'] = explode(',', $info['reversedirectories']['extensions']);
+
+		$extens = array();
+		if(($idx = array_search('*', $info['reversedirectories']['extensions'])) !== false)
+			$info['reversedirectories']['extensions'][$idx] = array('*' => $_TPL->bbf('incallavailable-default'));
+		else
+			$extens['*'] = $_TPL->bbf('incallavailable-default');
+
+		foreach($incalls[$info['reversedirectories']['context']] as $exten)
+		{
+			if(($idx = array_search($exten[1], $info['reversedirectories']['extensions'])) !== false)
+			{
+				$info['reversedirectories']['extensions'][$idx] = array($exten[1] => $exten[1]);
+				continue;
+			}
+			$extens[$exten[1]] = $exten[1];
+		}
 
 		$result = $fm_save = null;
 		$return = &$info;
@@ -107,7 +148,6 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('reversedirectories',$_QR) === true)
 		{
-
 			$return = &$result;
 			$str = '[';
 			foreach($_QR['directories'] as $v)
@@ -118,11 +158,17 @@ switch($act)
 			$str .= ']';
 			$_QR['reversedirectories']['directories'] = $str;
 			$_QR['reversedirectories']['deletable'] = 1;
+
+			if(!array_key_exists('extensions', $_QR['reversedirectories']))
+				$_QR['reversedirectories']['extensions'] = array();
+			$_QR['reversedirectories']['extensions'] = trim(implode(',', $_QR['reversedirectories']['extensions']));
+
 			if($app->set_edit($_QR) === false
 			|| $app->edit() === false)
 			{
 				$fm_save = false;
-				$result = $app->get_result();
+				$result  = $app->get_result();
+				$error  = $app->get_error();
 			}
 			else
 				$_QRY->go($_TPL->url('cti/reversedirectories'),$param);
@@ -147,10 +193,10 @@ switch($act)
 		dwho::load_class('dwho_sort');
 
 
-		$_TPL->set_var('incallavail',$incallavail);
-		$_TPL->set_var('idcontexts',$info['reversedirectories']['id']);
-		$_TPL->set_var('info',$return);
-		$_TPL->set_var('fm_save',$fm_save);
+		$_TPL->set_var('idcontexts', $info['reversedirectories']['id']);
+		$_TPL->set_var('info'      , $return);
+		$_TPL->set_var('extens'    , $extens);
+		$_TPL->set_var('fm_save'   , $fm_save);
 
 		$dhtml = &$_TPL->get_module('dhtml');
 		$dhtml->set_js('js/dwho/submenu.js');
@@ -198,8 +244,14 @@ switch($act)
 		$_TPL->set_var('list',$list);
 }
 
-$_TPL->set_var('act',$act);
-$_TPL->set_var('idrdid',$idrdid);
+$_TPL->set_var('act'     , $act);
+$_TPL->set_var('idrdid'  , $idrdid);
+$_TPL->set_var('contexts', $contexts);
+$_TPL->set_var('incalls' , $incalls);
+	
+
+$dhtml = &$_TPL->get_module('dhtml');
+$dhtml->set_js('js/cti/reversedirectories.js');
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

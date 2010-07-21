@@ -10,3 +10,8 @@ Aucun répertoire inverse
 ; opt_delete_confirm
 Etes-vous certain de vouloir supprimer cet élément ?
 
+; col_context
+Contexte
+
+; col_extensions
+Extensions

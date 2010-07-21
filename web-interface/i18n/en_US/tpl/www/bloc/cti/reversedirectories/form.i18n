@@ -1,5 +1,5 @@
 ; fm_rdid_number
-Name:
+Context:
 
 ; cti-contexts-directories
 Related directories
@@ -13,3 +13,8 @@ Add »
 ; bt_outaccess_contexts
 « Remove
 
+; incallavailable-default
+* ALL *
+
+; cti-contexts-incalls
+Extensions

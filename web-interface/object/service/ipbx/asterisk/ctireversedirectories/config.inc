@@ -24,8 +24,10 @@ $array['element'] = array();
 $array['element'] = array();
 $array['element']['default'] = '';
 
-$array['element']['number'] = array();
-$array['element']['number']['default'] = '';
+$array['element']['context'] = array();
+$array['element']['context']['default'] = '';
+$array['element']['extensions'] = array();
+$array['element']['extensions']['default'] = '';
 $array['element']['directories'] = array();
 $array['element']['directories']['default'] = '';
 $array['element']['description'] = array();
@@ -34,7 +36,8 @@ $array['element']['deletable'] = array();
 $array['element']['deletable']['default'] = 1;
 
 $array['filter'] = array();
-$array['filter']['number'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[a-z0-9_\-\,]+$/i');
+$array['filter']['context'] 	= array('regexp' => '/^[a-z0-9_\-\,*]+$/i');
+$array['filter']['extensions'] 	= array('regexp' => '/^[a-z0-9_\-\,*]+$/i');
 $array['filter']['directories'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/i');
 $array['filter']['deletable'] = array('cast' => 'ulongint');
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);

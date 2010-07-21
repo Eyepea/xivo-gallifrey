@@ -22,8 +22,9 @@ $url = &$this->get_module('url');
 $form = &$this->get_module('form');
 $dhtml = &$this->get_module('dhtml');
 
-$pager = $this->get_var('pager');
-$act = $this->get_var('act');
+$pager    = $this->get_var('pager');
+$act      = $this->get_var('act');
+$contexts = $this->get_var('contexts');
 
 $page = $url->pager($pager['pages'],
 		    $pager['page'],
@@ -53,7 +54,8 @@ $page = $url->pager($pager['pages'],
 <table id="table-main-listing" cellspacing="0" cellpadding="0" border="0">
 	<tr class="sb-top">
 		<th class="th-left xspan"><span class="span-left">&nbsp;</span></th>
-		<th class="th-center"><?=$this->bbf('col_rdid');?></th>
+		<th class="th-center"><?=$this->bbf('col_context');?></th>
+		<th class="th-center"><?=$this->bbf('col_extensions');?></th>		
 		<th class="th-center"><?=$this->bbf('col_description');?></th>
 		<th class="th-center col-action"><?=$this->bbf('col_action');?></th>
 		<th class="th-right xspan"><span class="span-right">&nbsp;</span></th>
@@ -62,7 +64,7 @@ $page = $url->pager($pager['pages'],
 	if(($list = $this->get_var('list')) === false || ($nb = count($list)) === 0):
 ?>
 	<tr class="sb-content">
-		<td colspan="5" class="td-single"><?=$this->bbf('no_rdid');?></td>
+		<td colspan="6" class="td-single"><?=$this->bbf('no_rdid');?></td>
 	</tr>
 <?php
 	else:
@@ -81,13 +83,19 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left "
-		    title="<?=dwho_alttitle($ref['ctireversedirectories']['number']);?>">
+		<td class="txt-left"
+		    title="<?=dwho_alttitle($ref['ctireversedirectories']['context']);?>">
 <?php
-			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');
-			echo $ref['ctireversedirectories']['number'];
+			echo $url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');
+			echo $contexts[$ref['ctireversedirectories']['context']];
+			
+			$extens = explode(',', $ref['ctireversedirectories']['extensions']);
+			if(count($extens) > 3)
+				array_splice($extens, 3, count($extens), array('...'));
+			$extens = implode(',', $extens);
 ?>
 		</td>
+		<td align="left"><?=$extens?></td>
 		<td align="left"><?=$ref['ctireversedirectories']['description']?></td>
 		<td class="td-right" colspan="2">
 <?php
@@ -120,7 +128,7 @@ $page = $url->pager($pager['pages'],
 ?>
 	<tr class="sb-foot">
 		<td class="td-left xspan b-nosize"><span class="span-left b-nosize">&nbsp;</span></td>
-		<td class="td-center" colspan="3"><span class="b-nosize">&nbsp;</span></td>
+		<td class="td-center" colspan="4"><span class="b-nosize">&nbsp;</span></td>
 		<td class="td-right xspan b-nosize"><span class="span-right b-nosize">&nbsp;</span></td>
 	</tr>
 </table>

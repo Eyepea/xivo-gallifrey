@@ -10,3 +10,8 @@ No reverse directories
 ; opt_delete_confirm
 Delete this item ?
 
+; col_context
+Context
+
+; col_extensions
+Extensions

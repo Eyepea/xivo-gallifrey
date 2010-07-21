@@ -231,8 +231,19 @@ dwho.form.move_selected = function(from,to)
 		if(from.options[i].selected !== true)
 			continue;
 
-		to.options[to.options.length] = new Option(from.options[i].text,from.options[i].value);
+		opt = new Option(from.options[i].text,from.options[i].value);		
+		attrs = from.options[i].attributes;
+		for(j = 0; j < attrs.length; j++)
+		{
+			if(attrs[j].name.indexOf('xivo_') != 0)
+				continue;
+
+			opt.setAttribute(attrs[j].name, attrs[j].value);
+		}
+
+		to.options[to.options.length] = opt;
 		to.options[to.options.length-1].selected = true;
+
 		from.options[i--] = null;
 		len--;
 	}

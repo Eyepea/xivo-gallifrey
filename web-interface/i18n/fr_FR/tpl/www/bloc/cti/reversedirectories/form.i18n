@@ -1,8 +1,17 @@
 ; fm_rdid_number
-Numéro appelant :
+Contexte :
 
 ; cti-contexts-directories
 Répertoires concernés
 
 ; fm_contexts_description
 Description
+
+; incallavailable-default
+* TOUS *
+
+; incalls-all
+* TOUS *
+
+; cti-contexts-incalls
+Extensions

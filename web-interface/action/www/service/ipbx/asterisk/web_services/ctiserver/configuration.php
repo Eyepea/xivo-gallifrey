@@ -147,19 +147,34 @@ switch($act)
 		if(isset($load_rdid))
 		{
 			$rdidout = array();
-			
+			$curctx  = null;
+			$curblok = null;
+			$out['reversedid'] = array();
+
 			foreach($load_rdid as $rdid)
 			{
-				$rdidid = $rdid['number'];
-				$rdiddir = array();
-				$rdiddir = dwho_json::decode($rdid['directories'], true);
-				foreach($rdiddir as $k => $v)
+				if($rdid['context'] != $curctx)
 				{
-					$rdiddir[$k] = "directories.".$v;
+					if(!is_null($curctx))
+						$out['reversedid'][$curctx] = $curblok;
+					
+					$curctx  = $rdid['context'];
+					if(array_key_exists($out['reversedid'], $curctx))
+						$curblok = $out['reversedid'][$curctx];
+					else
+						$curblok = array();
 				}
-				$rdidout[$rdidid] = $rdiddir;
+
+				$dirblok = dwho_json::decode($rdid['directories'], true);
+				for($i = 0; $i < count($dirblok); $i++)
+					$dirblok[$i] = "directories." . $dirblok[$i];
+
+				foreach(explode(',', $rdid['extensions']) as $exten)
+					$curblok[$exten] = $dirblok;
 			}
-			$out['reversedid'] = $rdidout;
+
+			if(!is_null($curctx))
+				$out['reversedid'][$curctx] = $curblok;
 		}
 
 		# SHEETS

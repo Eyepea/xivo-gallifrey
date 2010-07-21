@@ -382,14 +382,15 @@ INSERT INTO `ctiprofiles` VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "se
 DROP TABLE IF EXISTS `ctireversedirectories`;
 CREATE TABLE `ctireversedirectories` (
  `id` int(10) unsigned auto_increment,
- `number` varchar(50),
+ `context` varchar(50),
+ `extensions` text,
  `directories` text NOT NULL,
  `description` text NOT NULL,
  `deletable` tinyint(1),
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctireversedirectories` VALUES(1,'default','["xivodir","internal"]','Répertoires XiVO',1);
+INSERT INTO `ctireversedirectories` VALUES(1,'*', '*', '["xivodir","internal"]','Répertoires XiVO',1);
 
 
 DROP TABLE IF EXISTS `ctisheetactions`;
@@ -1207,7 +1208,9 @@ CREATE INDEX `staticagent__idx__var_val` ON `staticagent`(`var_val`);
 
 INSERT INTO `staticagent` VALUES (1,0,0,0,'agents.conf','general','persistentagents','yes');
 INSERT INTO `staticagent` VALUES (2,0,0,0,'agents.conf','general','multiplelogin','yes');
-INSERT INTO `staticagent` VALUES (3,1,1000000,0,'agents.conf','agents','group',1);
+INSERT INTO `staticagent` VALUES (3,0,0,0,'agents.conf','general','recordagentcalls','no');
+INSERT INTO `staticagent` VALUES (4,0,0,0,'agents.conf','general','recordformat','wav');
+INSERT INTO `staticagent` VALUES (5,1,1000000,0,'agents.conf','agents','group',1);
 
 
 DROP TABLE IF EXISTS `staticiax`;

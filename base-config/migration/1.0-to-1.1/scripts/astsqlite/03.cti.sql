@@ -126,14 +126,15 @@ INSERT INTO ctiprofiles VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "sear
 
 CREATE TABLE ctireversedirectories (
  id integer unsigned,
- number varchar(50),
+ context varchar(50),
+ extensions  text NOT NULL,
  directories text NOT NULL,
  description text NOT NULL,
  deletable tinyint(1),
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctireversedirectories VALUES(1,'default','["xivodir","internal"]','Répertoires XiVO',1);
+INSERT INTO ctireversedirectories VALUES(1,'*', '*', '["xivodir","internal"]','Répertoires XiVO',1);
 
 
 CREATE TABLE ctisheetactions (

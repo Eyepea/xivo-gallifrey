@@ -127,14 +127,15 @@ INSERT INTO `ctiprofiles` VALUES(15,'[[ "parking", "dock", "fcms", "N/A" ],[ "se
 
 CREATE TABLE `ctireversedirectories` (
  `id` int(10) unsigned auto_increment,
- `number` varchar(50),
+ `context` varchar(50),
+ `extensions` text,
  `directories` text NOT NULL,
  `description` text NOT NULL,
  `deletable` tinyint(1),
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctireversedirectories` VALUES(1,'default','["xivodir","internal"]','Répertoires XiVO',1);
+INSERT INTO `ctireversedirectories` VALUES(1,'*', '*', '["xivodir","internal"]','Répertoires XiVO',1);
 
 
 CREATE TABLE `ctisheetactions` (
