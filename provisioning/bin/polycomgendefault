@@ -66,14 +66,14 @@ macaddr = args[0]
 logger.debug('macaddr = %s', macaddr)
 if not network.is_mac_address_valid(macaddr):
     logger.error('invalid mac address: %s', macaddr)
-    raise sys.exit(2)
+    sys.exit(2)
 macaddr = network.normalize_mac_address(macaddr).replace(':', '').lower()
 pathname = os.path.join(Pgc['tftproot'], 'Polycom', '%s-user.cfg' % macaddr)
 logger.debug('output file pathname = %s', pathname)
 
 if os.path.isfile(pathname):
     logger.debug('Configuration file %s already exist -- exiting', pathname)
-    raise sys.exit(0)
+    sys.exit(0)
 logger.info('About to write new default configuration file %s', pathname)
 f = open(pathname, 'w')
 try:

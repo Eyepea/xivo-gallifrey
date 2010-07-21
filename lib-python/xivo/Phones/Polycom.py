@@ -31,6 +31,7 @@ import time
 
 from xml.sax.saxutils import escape
 
+from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -154,6 +155,11 @@ class Polycom(PhoneVendorMixin):
         else:
             locale = self.DEFAULT_LOCALE
         language = self.POLYCOM_LOCALES[locale]
+        
+        if 'timezone' in provinfo:
+            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
+        else:
+            timezone = ''
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -161,6 +167,7 @@ class Polycom(PhoneVendorMixin):
                     provinfo,
                     { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
                       'language':               language,
+                      'timezone':               timezone
                     },
                     self.xml_escape,
                     clean_extension),
@@ -171,6 +178,40 @@ class Polycom(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
+        
+    @classmethod
+    def __format_tz_inform(cls, inform):
+        lines = []
+        lines.append('tcpIpApp.sntp.gmtOffset="%d"' % inform['utcoffset'].as_seconds)
+        if inform['dst'] is None:
+            lines.append('tcpIpApp.sntp.daylightSavings.enable="0"')
+        else:
+            lines.append('tcpIpApp.sntp.daylightSavings.enable="1"')
+            if inform['dst']['start']['day'].startswith('D'):
+                lines.append('tcpIpApp.sntp.daylightSavings.fixedDayEnable="1"')
+            else:
+                lines.append('tcpIpApp.sntp.daylightSavings.fixedDayEnable="0"')
+            lines.extend(cls.__format_dst_change('start', inform['dst']['start']))
+            lines.extend(cls.__format_dst_change('stop', inform['dst']['end']))
+        return '\n'.join(lines)
+            
+    @classmethod
+    def __format_dst_change(cls, suffix, dst_change):
+        lines = []
+        lines.append('tcpIpApp.sntp.daylightSavings.%s.month="%d"' % (suffix, dst_change['month']))
+        lines.append('tcpIpApp.sntp.daylightSavings.%s.time="%d"' % (suffix, dst_change['time'].as_hours))
+        if dst_change['day'].startswith('D'):
+            lines.append('tcpIpApp.sntp.daylightSavings.%s.date="%s"' % (suffix, dst_change['day'][1:]))
+        else:
+            week, weekday = dst_change['day'][1:].split('.')
+            lines.append('tcpIpApp.sntp.daylightSavings.%s.dayOfWeek="%s"' % (suffix, weekday))
+            if week == '5':
+                lines.append('tcpIpApp.sntp.daylightSavings.%s.dayOfWeek.lastInMonth="1"' % suffix)
+            else:
+                lines.append('tcpIpApp.sntp.daylightSavings.%s.dayOfWeek.lastInMonth="0"' % suffix)
+                lines.append('tcpIpApp.sntp.daylightSavings.%s.date="%d"' % (suffix, (int(week) - 1) * 7 + 1))
+        return lines
+        
 
     def do_reinitprov(self, provinfo):
         """

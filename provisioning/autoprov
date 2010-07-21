@@ -24,6 +24,7 @@ CONFIG_FILE         = "/etc/pf-xivo/provisioning.conf" # can be overridden by cm
 GETOPT_SHORTOPTS    = "b:l:dfc:p:h"
 PIDFILE             = "/var/run/autoprov.pid"
 TABLE               = 'phone'
+GEN_TABLE           = 'general'
 UF_TABLE            = 'userfeatures'
 SIP_TABLE           = 'usersip'
 FK_TABLE            = 'phonefunckey'
@@ -288,6 +289,7 @@ class SQLBackEnd:
             SIP_TABLE+".mailbox":        'mailbox',
             SIP_TABLE+".subscribemwi":   'subscribemwi',
             SIP_TABLE+".language":       'language',
+            UF_TABLE+".timezone":        'timezone',
         }
         confdico = self.sql_select_one(
             ("SELECT ${columns} "
@@ -305,6 +307,14 @@ class SQLBackEnd:
         confdico['name'] = name_from_first_last(confdico['firstname'],
                                                 confdico['lastname'])
         confdico['extensions'] = self.get_extensions()
+        if confdico['timezone'] is None or not confdico['timezone']:
+            generaldico = self.sql_select_one(
+                ("SELECT ${columns} "
+                 "FROM %s")
+                 % GEN_TABLE,
+                 ['timezone'],
+                 ())
+            confdico['timezone'] = generaldico['timezone']
 
         function_key_list = self.sql_select_all(
             ("SELECT ${columns} "

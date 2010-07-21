@@ -29,6 +29,7 @@ import logging
 import subprocess
 import math
 
+from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -59,11 +60,11 @@ class Aastra(PhoneVendorMixin):
                                       ('!', '+'))
     
     AASTRA_LOCALES = {
-        'de_DE': 'language: 1\nlanguage 1: lang_de.txt\ntone set: Germany\ninput language: German',
+        'de_DE': 'language: 1\nlanguage 1: i18n/lang_de.txt\ntone set: Germany\ninput language: German',
         'en_US': 'language: 0\ntone set: US\ninput language: English',
-        'es_ES': 'language: 1\nlanguage 1: lang_es.txt\ntone set: Europe\ninput language: Spanish',
-        'fr_FR': 'language: 1\nlanguage 1: lang_fr.txt\ntone set: France\ninput language: French',
-        'fr_CA': 'language: 1\nlanguage 1: lang_fr_ca.txt\ntone set: US\ninput language: French',
+        'es_ES': 'language: 1\nlanguage 1: i18n/lang_es.txt\ntone set: Europe\ninput language: Spanish',
+        'fr_FR': 'language: 1\nlanguage 1: i18n/lang_fr.txt\ntone set: France\ninput language: French',
+        'fr_CA': 'language: 1\nlanguage 1: i18n/lang_fr_ca.txt\ntone set: US\ninput language: French',
     }
 
     @classmethod
@@ -226,6 +227,11 @@ class Aastra(PhoneVendorMixin):
         else:
             locale = self.DEFAULT_LOCALE
         language = self.AASTRA_LOCALES[locale]
+        
+        if 'timezone' in provinfo:
+            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
+        else:
+            timezone = ''
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -233,7 +239,8 @@ class Aastra(PhoneVendorMixin):
                     provinfo,
                     { 'exten_pickup_prefix':    exten_pickup_prefix,
                       'function_keys':          function_keys_config_lines,
-                      'language':               language
+                      'language':               language,
+                      'timezone':               timezone,
                     },
                     format_extension=self.__format_extension),
                 cfg_filename,
@@ -243,6 +250,40 @@ class Aastra(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
+        
+    @classmethod
+    def __format_tz_inform(cls, inform):
+        lines = []
+        lines.append('time zone name: Custom')
+        lines.append('time zone minutes: %d' % -(inform['utcoffset'].as_minutes))
+        if inform['dst'] is None:
+            lines.append('dst config: 0')
+        else:
+            lines.append('dst config: 3')
+            lines.append('dst minutes: %d' % (min(inform['dst']['save'].as_minutes, 60)))
+            if inform['dst']['start']['day'].startswith('D'):
+                lines.append('dst [start|end] relative date: 0')
+            else:
+                lines.append('dst [start|end] relative date: 1')
+            lines.extend(cls.__format_dst_change('start', inform['dst']['start']))
+            lines.extend(cls.__format_dst_change('stop', inform['dst']['end']))
+        return '\n'.join(lines)
+    
+    @classmethod
+    def __format_dst_change(cls, suffix, dst_change):
+        lines = []
+        lines.append('dst %s month: %d' % (suffix, dst_change['month']))
+        lines.append('dst %s hour: %d' % (suffix, min(dst_change['time'].as_hours, 23)))
+        if dst_change['day'].startswith('D'):
+            lines.append('dst %s day: %s' % (suffix, dst_change['day'][1:]))
+        else:
+            week, weekday = dst_change['day'][1:].split('.')
+            if week == '5':
+                lines.append('dst %s week: -1' % suffix)
+            else:
+                lines.append('dst %s week: %s' % (suffix, week))
+            lines.append('dst %s day: %s' % (suffix, weekday))
+        return lines
 
     def do_reinitprov(self, provinfo):
         """
@@ -263,7 +304,7 @@ class Aastra(PhoneVendorMixin):
     @classmethod
     def get_phones(cls):
         "Report supported phone models for this vendor."
-        return tuple([(x[0], x[0]) for x in cls.AASTRA_MODELS])
+        return tuple((x[0], x[0]) for x in cls.AASTRA_MODELS)
 
     # Entry points for the AGI
 

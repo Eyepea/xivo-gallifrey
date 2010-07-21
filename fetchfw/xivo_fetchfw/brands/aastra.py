@@ -27,7 +27,7 @@ AASTRA_MODEL_STANDARDIZE = {'6751i':    '51i',
 
 def aastra_install_langs(firmware, xfile):
     zip_path = fetchfw.zip_extract_all('aastra-langs', xfile.path)
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra/i18n")
     
     fetchfw.makedirs(fw_dst_dir)
     

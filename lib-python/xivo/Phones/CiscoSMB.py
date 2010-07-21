@@ -1,6 +1,6 @@
 """Support for CiscoSMB SPA50XG phones for XIVO Configuration
 
-CiscoSMB SPA501G, SPA502G, SPA504G, SPA508G, SPA509G are supported.
+CiscoSMB SPA501G, SPA502G, SPA504G, SPA508G, SPA509G and SPA525G are supported.
 
 Copyright (C) 2010  Proformatique
 
@@ -31,6 +31,7 @@ import math
 
 from xml.sax.saxutils import escape
 
+from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -163,6 +164,11 @@ class CiscoSMB(PhoneVendorMixin):
             locale = self.DEFAULT_LOCALE
         language = self.CISCOSMB_LOCALES[locale]
         
+        if 'timezone' in provinfo:
+            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
+        else:
+            timezone = ''
+        
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
@@ -171,6 +177,7 @@ class CiscoSMB(PhoneVendorMixin):
                       'exten_pickup_prefix':    exten_pickup_prefix,
                       'function_keys':          function_keys_config_lines,
                       'language':               language,
+                      'timezone':               timezone,
                     },
                     self.xml_escape,
                     clean_extension),
@@ -181,6 +188,42 @@ class CiscoSMB(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
+    
+    @classmethod
+    def __format_tz_inform(cls, inform):
+        lines = []
+        hours, minutes = inform['utcoffset'].as_hms[:2]
+        lines.append('<Time_Zone ua="rw">GMT%+03d:%02d</Time_Zone>' % (hours, minutes))
+        # We need to substract 1 from the computed hour (bug in the SPA firmware?)
+        lines.append('<Time_Offset__HH_mm_ ua="rw">%d/%d</Time_Offset__HH_mm_>' % (hours - 1, minutes))
+        if inform['dst'] is None:
+            lines.append('<Daylight_Saving_Time_Enable ua="rw">no</Daylight_Saving_Time_Enable>')
+        else:
+            lines.append('<Daylight_Saving_Time_Enable ua="rw">yes</Daylight_Saving_Time_Enable>')
+            h, m, s = inform['dst']['save'].as_hms
+            lines.append('<Daylight_Saving_Time_Rule ua="rw">start=%s;end=%s;save=%d:%d:%s</Daylight_Saving_Time_Rule>' %
+                         (cls.__format_dst_change(inform['dst']['start']),
+                          cls.__format_dst_change(inform['dst']['end']),
+                          h, m, s,
+                          ))
+        return '\n'.join(lines)
+    
+    @classmethod
+    def __format_dst_change(cls, dst_change):
+        _day = dst_change['day']
+        if _day.startswith('D'):
+            day = _day[1:]
+            weekday = '0'
+        else:
+            week, weekday = _day[1:].split('.')
+            if week == '5':
+                day = '-1'
+            else:
+                day = (int(week) - 1) * 7 + 1
+        
+        h, m, s = dst_change['time'].as_hms
+        return ('%s/%s/%s/%s:%s:%s' %
+                (dst_change['month'], day, weekday, h, m, s))
 
     @classmethod
     def __format_function_keys(cls, funckey, model):

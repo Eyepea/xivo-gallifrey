@@ -28,6 +28,7 @@ import os
 import logging
 import subprocess
 
+from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
@@ -180,6 +181,11 @@ class Snom(PhoneVendorMixin):
                                                   self.SNOM_LOCALES[locale][0],
                                                   self.SNOM_LOCALES[locale][1])
 
+        if 'timezone' in provinfo:
+            timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
+        else:
+            timezone = ''
+        
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
@@ -188,6 +194,7 @@ class Snom(PhoneVendorMixin):
                       'http_pass':          self.SNOM_COMMON_HTTP_PASS,
                       'function_keys':      function_keys_config_lines,
                       'language':           language,
+                      'timezone':           timezone,
                     },
                     format_extension=clean_extension),
                 xml_filename,
@@ -197,7 +204,32 @@ class Snom(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, xml_filename)
+        
+    @classmethod
+    def __format_tz_inform(cls, inform):
+        lines = []
+        lines.append('<timezone perm="R"></timezone>')
+        lines.append('<utc_offset perm="RW">%+d</utc_offset>' % inform['utcoffset'].as_seconds)
+        if inform['dst'] is None:
+            lines.append('<dst perm="RW"></dst>')
+        else:
+            lines.append('<dst perm="RW">%d %s %s</dst>' % 
+                         (inform['dst']['save'].as_seconds,
+                          cls.__format_dst_change(inform['dst']['start']),
+                          cls.__format_dst_change(inform['dst']['end'])))
+        return '\n'.join(lines)
 
+    @classmethod
+    def __format_dst_change(cls, dst_change):
+        fmted_time = '%02d:%02d:%02d' % tuple(dst_change['time'].as_hms)
+        day = dst_change['day']
+        if day.startswith('D'):
+            return '%02d.%02d %s' % (int(day[1:]), dst_change['month'], fmted_time)
+        else:
+            week, weekday = map(int, day[1:].split('.'))
+            weekday = tzinform.week_start_on_monday(weekday)
+            return '%02d.%02d.%02d %s' % (dst_change['month'], week, weekday, fmted_time)
+    
     # Introspection entry points
 
     @classmethod
