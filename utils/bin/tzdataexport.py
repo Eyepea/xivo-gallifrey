@@ -475,6 +475,7 @@ if __name__ == '__main__':
     import sys
     import tarfile
     import tempfile
+    import time
     
     STD_SOURCE_FILES = [
         "africa",
@@ -490,11 +491,10 @@ if __name__ == '__main__':
     ]
     
     p = optparse.OptionParser(usage='%prog [options] FILE...')
-    p.add_option('-o', action='store', dest='outfile', metavar='OFILE')
-    p.add_option('-s', action='store_true', dest='std', default=False)
-    p.add_option('-t', action='store', dest='tarfile', metavar='TFILE')
+    p.add_option('-o', action='store', dest='outfile', metavar='OFILE', help='write the result to OFILE')
+    p.add_option('-s', action='store_true', dest='std', default=False, help='use the standard tz source files name (africa, asia, ...) as FILEs')
+    p.add_option('-t', action='store', dest='tarfile', metavar='TFILE', help='look for FILEs into the [gz|bz2] tarfile TFILE')
     p.add_option('-v', action='count', dest='verbose', help='Verbose mode.')
-    # The tool expect to contains the following files: %s' % ', '.join(STD_SOURCE_FILES)
     opt, args = p.parse_args()
     
     if opt.verbose == 1:
@@ -502,11 +502,6 @@ if __name__ == '__main__':
     elif opt.verbose > 1:
         logger.setLevel(logging.DEBUG)
 
-    if opt.outfile is None:
-        out = sys.stdout
-    else:
-        out = open(opt.outfile, 'w')
-    
     if opt.std:
         args.extend(STD_SOURCE_FILES)
     
@@ -528,8 +523,14 @@ if __name__ == '__main__':
             logger.error('error: "%s" is not a file' % file)
             sys.exit(1)
     
+    if opt.outfile is None:
+        out = sys.stdout
+    else:
+        out = open(opt.outfile, 'w')
+    
     try:
         model = create_model_from_files(args)
+        out.write('# This file was automatically generated on %s by the tzdataexport tool\n' % time.strftime('%Y-%m-%d'))
         export_model_to_text_file(out, model)
     finally:
         if out is not sys.stdout:

@@ -89,9 +89,10 @@ class TextTimezoneInfoDB(object):
         try:
             self._db = {}
             for line in fobj:
-                name, offset, dst_rule = line.rstrip().split()
-                self._db[name] = {'utcoffset': Time(int(offset)),
-                                  'dst': self._parse_dst_rule(dst_rule)}
+                if line and not line.startswith('#'):
+                    name, offset, dst_rule = line.rstrip().split()
+                    self._db[name] = {'utcoffset': Time(int(offset)),
+                                      'dst': self._parse_dst_rule(dst_rule)}
         finally:
             fobj.close()
 
