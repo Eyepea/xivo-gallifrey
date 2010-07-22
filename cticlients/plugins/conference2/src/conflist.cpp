@@ -1,35 +1,22 @@
 #include "conflist.h"
 
-ConfList::ConfList(XletConference *parent)
-    : QWidget(), manager(parent)
-{
-    QVBoxLayout *layout = new QVBoxLayout(parent);
-    QHBoxLayout *hBox = new QHBoxLayout();
-    ConfListView *view = new ConfListView(this, new ConfListModel());
-
-    view->setStyleSheet("QTableView { border: none; background:transparent; color:black; }");
-    view->verticalHeader()->hide();
-
-    hBox->addStretch(1);
-    hBox->addWidget(view, 4);
-    hBox->addStretch(1);
-
-    layout->addLayout(hBox);
-    setLayout(layout);
-}
-
-void ConfList::openConfRoom()
-{
-    manager->openConfRoom(sender()->property("id").toString());
-}
-
 ConfListModel::ConfListModel()
+    : QAbstractTableModel()
 {
-    startTimer(1000);
+    b_engine->tree()->onChange("confrooms", this,
+        SLOT(confRoomsChange(const QString &, DStoreEvent)));
 }
 
-void ConfListModel::timerEvent(QTimerEvent *)
+void ConfListModel::confRoomsChange(const QString &, DStoreEvent)
 {
+    QVariantMap roomList = b_engine->eVM("confrooms");
+
+    int row = 0;
+    if (roomList.size() != m_row2id.size()) {
+        foreach(QString roomId, roomList.keys()) {
+            m_row2id.insert(row++, roomId);
+        }
+    }
     reset();
 }
 
@@ -40,7 +27,7 @@ Qt::ItemFlags ConfListModel::flags(const QModelIndex &) const
 
 int ConfListModel::rowCount(const QModelIndex&) const
 {
-    return b_engine->tree()->extractVMap("confrooms/*").size();
+    return b_engine->eVM("confrooms").size();
 }
 
 int ConfListModel::columnCount(const QModelIndex&) const
@@ -48,7 +35,9 @@ int ConfListModel::columnCount(const QModelIndex&) const
     return NB_COL;
 }
 
-QVariant ConfListModel::data(const QModelIndex &index, int role) const
+QVariant
+ConfListModel::data(const QModelIndex &index,
+                    int role) const
 {
     if (role != Qt::DisplayRole) {
         if (role == Qt::TextAlignmentRole)
@@ -61,29 +50,33 @@ QVariant ConfListModel::data(const QModelIndex &index, int role) const
     if (m_row2id.contains(row))
         row = m_row2id[row].toInt();
 
+    QString room = QString("confrooms/%0/").arg(row);
     switch (col) {
         case ID:
-            return b_engine->tree()->extractVariant(QString("confrooms/%0/id").arg(row));
+            return b_engine->eV(room + "id");
         case NUMBER:
-            return b_engine->tree()->extractVariant(QString("confrooms/%0/number").arg(row));
+            return b_engine->eV(room + "number");
         case NAME:
-            return b_engine->tree()->extractVariant(QString("confrooms/%0/name").arg(row));
+            return b_engine->eV(room + "name");
         case PIN_REQUIRED:
-            return b_engine->tree()->extractVariant(
-                        QString("confrooms/%0/pin").arg(row));
+            return b_engine->eV(room + "pin");
         case MODERATED:
-            return b_engine->tree()->extractVariant(
-                        QString("confrooms/%0/moderated").arg(row))
-                        .toBool() ? tr("Yes") : tr("No") ;
+            return b_engine->eV(room + "moderated").toBool() ?
+                       tr("Yes") : tr("No");
+        case MEMBER_COUNT:
+            return b_engine->eVM(room + "in").size();
         default:
             break;
     }
     return QVariant();
 }
 
-QVariant ConfListModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant
+ConfListModel::headerData(int section,
+                          Qt::Orientation orientation,
+                          int role) const
 {
-     if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole)
         return QVariant();
     
     if (orientation == Qt::Horizontal) {
@@ -107,25 +100,22 @@ QVariant ConfListModel::headerData(int section, Qt::Orientation orientation, int
     return QVariant();
 }
 
-
 void ConfListModel::sort(int column, Qt::SortOrder order)
 {
-    QList<QPair<int, QString> > toSort;
-
     struct {
         static bool ascending(const QPair<int, QString> &a,
                               const QPair<int, QString> &b) {
             return QString::localeAwareCompare(a.second, b.second) < 0 ?
-                                               true :
-                                               false;
+                                               true : false;
         }
         static bool descending(const QPair<int, QString> &a,
-                                 const QPair<int, QString> &b) {
+                               const QPair<int, QString> &b) {
             return QString::localeAwareCompare(a.second, b.second) < 0 ?
-                                               false :
-                                               true;
+                                               false : true;
         }
-    } sorting;
+    } sFun;
+
+    QList<QPair<int, QString> > toSort;
 
     int i, e;
     for (i=0,e=rowCount(QModelIndex());i<e;i++) {
@@ -134,8 +124,8 @@ void ConfListModel::sort(int column, Qt::SortOrder order)
     }
 
     qSort(toSort.begin(), toSort.end(), (order == Qt::AscendingOrder) ? 
-                                         sorting.ascending :
-                                         sorting.descending);
+                                         sFun.ascending :
+                                         sFun.descending);
 
     for (i=0;i<e;i++) {
         m_row2id.insert(i, QString::number(toSort[i].first));
@@ -151,13 +141,12 @@ ConfListView::ConfListView(QWidget *parent, ConfListModel *model)
     setModel(model);
     verticalHeader()->hide();
     horizontalHeader()->setResizeMode(QHeaderView::Stretch);
-    setStyleSheet("QTableView { border: none; background:transparent; color:black; }");
+    setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
     hideColumn(0);
 
     connect(this, SIGNAL(clicked(const QModelIndex &)),
             this, SLOT(onViewClick(const QModelIndex &)));
 }
-
 
 void ConfListView::onViewClick(const QModelIndex &model)
 {
@@ -168,6 +157,11 @@ void ConfListView::onViewClick(const QModelIndex &model)
     if (roomId != "") {
         if (lastPressed&Qt::LeftButton) {
             b_engine->pasteToDial(roomNumber);
+            QTimer *timer = new QTimer(this);
+            timer->setSingleShot(true);
+            timer->setProperty("id", roomId);
+            connect(timer, SIGNAL(timeout()), parentWidget(), SLOT(openConfRoom()));
+            timer->start(10);
         } else {
             QMenu *menu = new QMenu(this);
 
@@ -188,4 +182,28 @@ void ConfListView::mousePressEvent(QMouseEvent *event)
 {
     lastPressed = event->button();
     QTableView::mousePressEvent(event);
+}
+
+
+ConfList::ConfList(XletConference *parent)
+    : QWidget(), manager(parent)
+{
+    QVBoxLayout *vBox = new QVBoxLayout(this);
+    QHBoxLayout *hBox = new QHBoxLayout();
+    ConfListView *view = new ConfListView(this, new ConfListModel());
+
+    view->setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
+    view->verticalHeader()->hide();
+
+    hBox->addStretch(1);
+    hBox->addWidget(view, 4);
+    hBox->addStretch(1);
+
+    vBox->addLayout(hBox);
+    setLayout(vBox);
+}
+
+void ConfList::openConfRoom()
+{
+    manager->openConfRoom(sender()->property("id").toString());
 }
