@@ -18,8 +18,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$sysconfd    = &$_XOBJ->get_module('sysconfd');
-$content     = $sysconfd->request_get('/commonconf_apply');
+#$sysconfd    = &$_XOBJ->get_module('sysconfd');
+#$content     = $sysconfd->request_get('/commonconf_apply');
+$commonconf    = &$_XOBJ->get_module('commonconf');
+$commonconf->generate();
+$content     = $commonconf->apply();
 $status      = $sysconfd->last_status_code();
 
 if($status != 200)
@@ -31,7 +34,7 @@ if($status != 200)
 
 $content = str_replace("\n", "<br/>\n", $content);
 
-$_TPL->set_var('status',$sysconfd->last_status_code());
+$_TPL->set_var('status',$status);
 $_TPL->set_var('info' , $content);
 
 $menu = &$_TPL->get_module('menu');

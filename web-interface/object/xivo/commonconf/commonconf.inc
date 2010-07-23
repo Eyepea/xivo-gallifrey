@@ -221,7 +221,12 @@ class xivo_object_commonconf extends xivo_object_abstract
     function apply()
     {
         return $this->_sysconfd->request_get('/commonconf_apply');
-	}
+    }
+    
+    function last_status_code()
+    {
+        return $this->_sysconfd->last_status_code();
+    }
 }
 
 ?>
