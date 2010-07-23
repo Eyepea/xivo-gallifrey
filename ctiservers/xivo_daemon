@@ -206,7 +206,7 @@ class manage_connection:
         closemenow = True
         
         if requester_ip not in daemon.ip_reverse_webi:
-            connid.sendall('%s:KO <NOT ALLOWED>\n' % XIVO_CLI_WEBI_HEADER)
+            connid.sendall('%s:KO <NOT ALLOWED FROM %s>\n' % (XIVO_CLI_WEBI_HEADER, requester_ip))
             return closemenow
         astid = daemon.ip_reverse_webi[requester_ip]
         
@@ -1027,7 +1027,7 @@ class xivo_daemon:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             self.cconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
         xivoconf_general = self.cconf.read_section('general', 'general')
-        
+
         # loads the general configuration
         self.commandset = self.cconf.xivoconf_json['main']['commandset']
         for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:

@@ -31,12 +31,11 @@ log = logging.getLogger('agentlist')
 
 class AgentList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = {
-            'keywords' : ['firstname', 'lastname', 'number', 'password',
-                'context', 'ackcall', 'wrapuptime'],
-            'name' : 'agents',
-            'action' : 'getagentslist',
-            'urloptions' : (1, 4, True) }
+        self.anylist_properties = { 'keywords' : ['firstname', 'lastname', 'number', 'password',
+                                                  'context', 'ackcall', 'wrapuptime'],
+                                    'name' : 'agents',
+                                    'action' : 'getagentslist',
+                                    'urloptions' : (1, 4, True) }
         AnyList.__init__(self, newurls)
         return
 

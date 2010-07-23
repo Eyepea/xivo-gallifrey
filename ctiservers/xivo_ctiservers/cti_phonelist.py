@@ -32,11 +32,10 @@ log = logging.getLogger('phonelist')
 
 class PhoneList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = {
-            'keywords' : [],
-            'name' : 'phones',
-            'action' : 'getphoneslist',
-            'urloptions' : (1, 12, False) }
+        self.anylist_properties = { 'keywords' : [],
+                                    'name' : 'phones',
+                                    'action' : 'getphoneslist',
+                                    'urloptions' : (1, 12, False) }
         AnyList.__init__(self, newurls)
         return
 
