@@ -23,7 +23,7 @@
 $commonconf    = &$_XOBJ->get_module('commonconf');
 $commonconf->generate();
 $content     = $commonconf->apply();
-$status      = $sysconfd->last_status_code();
+$status      = $commonconf->last_status_code();
 
 if($status != 200)
 {
