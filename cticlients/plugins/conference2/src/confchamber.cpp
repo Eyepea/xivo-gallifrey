@@ -1,7 +1,7 @@
 #include "confchamber.h"
 
 ConfChamberModel::ConfChamberModel(const QString &id)
-    : QAbstractTableModel(), m_id(id)
+    : QAbstractTableModel(), m_admin(0), m_id(id)
 {
     b_engine->tree()->onChange(QString("confrooms/%0").arg(id), this,
         SLOT(confRoomChange(const QString &, DStoreEvent)));
@@ -11,6 +11,18 @@ ConfChamberModel::ConfChamberModel(const QString &id)
 
 void ConfChamberModel::timerEvent(QTimerEvent *)
 {
+    QVariantMap  adminList = 
+        b_engine->eVM(QString("confrooms/%0/in[admin=@1]").arg(m_id));
+
+    foreach(QString id, adminList.keys()) {
+        if (adminList[id].toMap()["user-id"].toString() ==  b_engine->xivoUserId()) {
+            m_admin = 1;
+        }
+    }
+
+    if (!m_admin) {
+    }
+
     reset();
 }
 
@@ -32,8 +44,36 @@ void ConfChamberModel::extractRow2IdMap()
     reset();
 }
 
-void ConfChamberModel::sort(int, Qt::SortOrder)
+void ConfChamberModel::sort(int column, Qt::SortOrder order)
 {
+    struct {
+        static bool ascending(const QPair<int, QString> &a,
+                              const QPair<int, QString> &b) {
+            return QString::localeAwareCompare(a.second, b.second) < 0 ?
+                                               true : false;
+        }
+        static bool descending(const QPair<int, QString> &a,
+                               const QPair<int, QString> &b) {
+            return QString::localeAwareCompare(a.second, b.second) < 0 ?
+                                               false : true;
+        }
+    } sFun;
+
+    QList<QPair<int, QString> > toSort;
+
+    int i, e;
+    for (i=0,e=rowCount(QModelIndex());i<e;i++) {
+        toSort.append(QPair<int, QString>(index(i, ID).data().toInt(),
+                                          index(i, column).data().toString()));
+    }
+
+    qSort(toSort.begin(), toSort.end(), (order == Qt::AscendingOrder) ? 
+                                         sFun.ascending :
+                                         sFun.descending);
+
+    for (i=0;i<e;i++) {
+        m_row2id.insert(i, QString::number(toSort[i].first));
+    }
     reset();
 }
 
@@ -52,16 +92,41 @@ QVariant
 ConfChamberModel::data(const QModelIndex &index,
                        int role) const
 {
-    if (role != Qt::DisplayRole) {
-        if (role == Qt::TextAlignmentRole)
-            return Qt::AlignCenter;
-        return QVariant();
-    }
-
     int row = index.row(), col = index.column();
     QString rowId;
 
     rowId = m_row2id[row];
+
+    if (role != Qt::DisplayRole) {
+        if (role == Qt::TextAlignmentRole) {
+            return Qt::AlignCenter;
+        } else if (role == Qt::DecorationRole) {
+            if (col == ACTION_KICK) {
+                return QPixmap(":images/cancel.png").scaledToHeight(16,
+                               Qt::SmoothTransformation);
+            } else if (col == ACTION_ALLOW_IN) {
+                return QPixmap(":images/add.png").scaledToHeight(16,
+                               Qt::SmoothTransformation);
+            } else if (col == ACTION_TALK_TO) {
+                return QPixmap(":in/speak.png").scaledToHeight(16,
+                               Qt::SmoothTransformation);
+            } else if (col == ACTION_MUTE) {
+                return QPixmap(":in/mute.png").scaledToHeight(16,
+                               Qt::SmoothTransformation);
+            }
+        } else if (role == Qt::ToolTipRole) {
+            if (col == ACTION_KICK) {
+                return tr("Kick");
+            } else if (col == ACTION_ALLOW_IN) {
+                return tr("Allow in");
+            } else if (col == ACTION_TALK_TO) {
+                return tr("Talk to");
+            } else if (col == ACTION_MUTE) {
+                return tr("Mute");
+            }
+        }
+        return QVariant();
+    }
 
     QString in = QString("confrooms/%0/in/%1/").arg(m_id).arg(rowId);
     switch (col) {
@@ -69,6 +134,17 @@ ConfChamberModel::data(const QModelIndex &index,
             return b_engine->eV(in + "id");
         case NUMBER:
             return b_engine->eV(in + "phonenum");
+        case ADMIN:
+            return (b_engine->eV(in + "admin") != QVariant()) ? tr("yes") : tr("no");
+        case NAME:
+        {
+            QString name = b_engine->eV(QString("users/*[id=%0user-id]").arg(in))
+                                       .toMap()["fullname"].toString();
+            if (name.isEmpty()) {
+                return tr("nobody");
+            }
+            return name;
+        }
         case SINCE:
             return QDateTime::fromTime_t(QDateTime::currentDateTime().toTime_t() -
                                          b_engine->eV(in + "time-start").toDouble()).toUTC()
@@ -99,17 +175,33 @@ ConfChamberModel::headerData(int section,
         } else if (section == ADMIN) {
             return QVariant(tr("Admin"));
         } else if (section == ACTION_KICK) {
-            return QVariant(tr("Kick"));
+            return "K";
+        } else if (section == ACTION_ALLOW_IN) {
+            return "A";
+        } else if (section == ACTION_TALK_TO) {
+            return "T";
         } else if (section == ACTION_MUTE) {
-            return QVariant(tr("Mute"));
+            return "M";
         }
     }
 
     return QVariant();
 }
 
-Qt::ItemFlags ConfChamberModel::flags(const QModelIndex &) const
+Qt::ItemFlags ConfChamberModel::flags(const QModelIndex &index) const
 {
+    int row = index.row(), col = index.column();
+
+    if (m_admin) {
+        if ((col == ACTION_MUTE) || (col == ACTION_KICK) ||
+            (col == ACTION_ALLOW_IN) || (col == ACTION_TALK_TO)) {
+            return Qt::ItemIsEnabled;
+        }
+    }
+
+    //if (col == ACTION_MUTE) {
+    //} 
+
     return Qt::NoItemFlags;
 }
 
@@ -119,8 +211,24 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
 {
     setSortingEnabled(true);
     setModel(model);
+    setShowGrid(0);
     verticalHeader()->hide();
-    horizontalHeader()->setResizeMode(QHeaderView::Stretch);
+    horizontalHeader()->setMovable(true);
+    horizontalHeader()->setStretchLastSection(true);
+
+
+    int ActionCol[] = { ConfChamberModel::ACTION_MUTE,
+                        ConfChamberModel::ACTION_TALK_TO,
+                        ConfChamberModel::ACTION_ALLOW_IN,
+                        ConfChamberModel::ACTION_KICK };
+    int i;
+    for(i=0;i<(int)(sizeof(ActionCol)/sizeof(ActionCol[0]));i++) {
+        setColumnWidth(ActionCol[i], 18);
+        horizontalHeader()->setResizeMode(ActionCol[i], QHeaderView::Fixed);
+    }
+
+    setColumnWidth(ConfChamberModel::ADMIN, 40);
+    horizontalHeader()->setResizeMode(ConfChamberModel::ADMIN, QHeaderView::Fixed);
     setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
     hideColumn(0);
 
@@ -148,7 +256,7 @@ ConfChamber::ConfChamber(const QString &id)
     view->verticalHeader()->hide();
 
     hBox->addStretch(1);
-    hBox->addWidget(view, 4);
+    hBox->addWidget(view, 8);
     hBox->addStretch(1);
 
     vBox->addLayout(hBox);

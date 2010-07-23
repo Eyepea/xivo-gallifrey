@@ -807,7 +807,7 @@ void addUpdateUserInTree(DStore *tree, const QVariantMap &uinfo)
 
 void addUpdateConfMemberInTree(DStore *tree, const QVariantMap &cinfo)
 {
-    QString id = cinfo["uniqueid"].toString();
+    QString id = cinfo["details"].toMap()["usernum"].toString();
     QString confId = cinfo["meetmeid"].toString();
     QString path = QString("confrooms/%0/in/%1").arg(confId).arg(id);
     QVariantMap info;
@@ -816,6 +816,12 @@ void addUpdateConfMemberInTree(DStore *tree, const QVariantMap &cinfo)
         info["phonenum"] = cinfo["details"].toMap()["phonenum"];
         info["time-start"] = cinfo["details"].toMap()["time_start"];
         info["user-id"] = cinfo["details"].toMap()["userid"].toString().remove(QRegExp("[^/]*/"));
+        info["authed"] = cinfo["details"].toMap()["authed"].toBool();
+        if (id == tree->extractVariant(QString("confrooms/%0/admin-id")
+                                       .arg(confId)).toString()) {
+            info["admin"] = true;
+
+        }
         tree->populate(path ,info);
     } else if (cinfo["action"] == "leave") {
         tree->rmPath(path);
@@ -836,6 +842,8 @@ void addUpdateConfRoomInTree(DStore *tree, const QVariantMap &cinfo)
         info["pin"] = cinfo["pin"];
         info["in"] = QVariantMap();
         info["number"] = cinfo["roomnumber"];
+        info["admin-id"] = cinfo["adminnum"];
+
         tree->populate(QString("confrooms/%0").arg(id), info);
 
         QVariantMap userIn = cinfo["uniqueids"].toMap();
@@ -845,6 +853,8 @@ void addUpdateConfRoomInTree(DStore *tree, const QVariantMap &cinfo)
             userToInsert["meetmeid"] = id;
             userToInsert["action"] = "join";
             userToInsert["uniqueid"] = uniqueId;
+
+            
             addUpdateConfMemberInTree(tree, userToInsert);
         }
 
