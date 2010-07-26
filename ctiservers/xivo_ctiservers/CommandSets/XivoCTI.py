@@ -707,20 +707,16 @@ class XivoCTICommand(BaseCommand):
                     self.capas[name].setservices(value)
                 elif prop == 'preferences':
                     self.capas[name].setguisettings(value)
-
-        for var, val in self.xivoconf.iteritems():
-            if var.find('-') > 0 and val:
-                [name, prop] = var.split('-', 1)
-                if prop == 'presence':
-                    self.capas[name].setpresenceid(val)
-                    if val not in self.presence_sections:
-                        self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
+                elif prop == 'presence':
+                    self.capas[name].setpresenceid(value)
+                    if value not in self.presence_sections and value[10:] in allconf.xivoconf_json['presences']:
+                        self.presence_sections[value] = cti_presence.Presence(allconf.xivoconf_json['presences'][value[10:]])
                 elif prop == 'watchedpresence':
-                    self.capas[name].setwatchedpresenceid(val)
-                    if val not in self.presence_sections:
-                        self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
+                    self.capas[name].setwatchedpresenceid(value)
+                    if value not in self.presence_sections and value[10:] in allconf.xivoconf_json['presences']:
+                        self.presence_sections[value] = cti_presence.Presence(allconf.xivoconf_json['presences'][value[10:]])
                 else:
-                    log.warning('set_options unknown prop %s (%s)' % (prop, val))
+                    log.warning('set_options unknown property (%s = %s) for xlet %s' % (prop, value, name))
 
         for v, vv in self.lconf.xivoconf_json.get('phonehints').iteritems():
             if len(vv) > 1:
@@ -2511,39 +2507,39 @@ class XivoCTICommand(BaseCommand):
                 # useful in order to avoid internal presence keyword states to occur (postcall, incomingcall, ...)
                 return
             presenceactions = self.presence_sections[presenceid].actions(status)
-            for paction in presenceactions:
+            for actionname, paction in presenceactions.iteritems():
                 params = paction.split('|')
                 services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
                                          'enableunc', 'enablebusy', 'enablerna']
-                if params[0] == 'queueadd' and len(params) > 2 and anum:
-                    self.__ami_execute__(astid, params[0], params[1], agent_channel, params[2])
-                elif params[0] == 'queueremove' and len(params) > 1 and anum:
-                    self.__ami_execute__(astid, params[0], params[1], agent_channel)
-                elif params[0] == 'queuepause' and len(params) > 1 and anum:
-                    self.__ami_execute__(astid, 'queuepause', params[1], agent_channel, 'true')
-                elif params[0] == 'queueunpause' and len(params) > 1 and anum:
-                    self.__ami_execute__(astid, 'queuepause', params[1], agent_channel, 'false')
-                elif params[0] == 'queuepause_all' and anum:
+                if actionname == 'queueadd' and len(params) > 1 and anum:
+                    self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1])
+                elif actionname == 'queueremove' and len(params) > 0 and anum:
+                    self.__ami_execute__(astid, actionname, params[0], agent_channel)
+                elif actionname == 'queuepause' and len(params) > 0 and anum:
+                    self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
+                elif actionname == 'queueunpause' and len(params) > 0 and anum:
+                    self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
+                elif actionname == 'queuepause_all' and anum:
                     agent_id = self.__find_agentid_by_agentnum__(astid, anum)
                     if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
                         for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
                             if qv.get('Paused') == '0':
                                 self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
-                elif params[0] == 'queueunpause_all' and anum:
+                elif actionname == 'queueunpause_all' and anum:
                     agent_id = self.__find_agentid_by_agentnum__(astid, anum)
                     if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
                         for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
                             if qv.get('Paused') == '1':
                                 self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
                 # features-related actions
-                elif params[0] in services_actions_list and len(params) > 1:
-                    if params[1] == 'false':
+                elif actionname in services_actions_list and len(params) > 0:
+                    if params[0] == 'false':
                         booltonum = '0'
                     else:
                         booltonum = '1'
                     rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
-                        params[0],
-                        booltonum)
+                                                      actionname,
+                                                      booltonum)
                     self.__send_msg_to_cti_client__(userinfo, rep)
         except Exception:
             log.exception('(__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
@@ -5320,8 +5316,8 @@ class XivoCTICommand(BaseCommand):
                     duinfo = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
                     icapaid = uinfo.get('capaid')
                     statedetails = {'color' : 'grey',
-                        'longname' : PRESENCE_UNKNOWN,
-                        'stateid' : 'xivo_unknown'}
+                                    'longname' : PRESENCE_UNKNOWN,
+                                    'stateid' : 'xivo_unknown'}
                     if icapaid and icapaid in self.capas:
                         presenceid = self.capas[uinfo.get('capaid')].presenceid
                         if presenceid in self.presence_sections:
@@ -5329,19 +5325,19 @@ class XivoCTICommand(BaseCommand):
                                 statedetails = self.presence_sections[presenceid].displaydetails[uinfo.get('state')]
                             elif uinfo.get('state') != 'xivo_unknown':
                                 log.warning('%s : %s not in details for %s'
-                                    % (duinfo, uinfo.get('state'), presenceid))
+                                            % (duinfo, uinfo.get('state'), presenceid))
                         else:
                             if presenceid != 'none':
                                 log.warning('%s : presenceid=%s not in presence_sections'
-                                    % (duinfo, presenceid))
+                                            % (duinfo, presenceid))
                     elif icapaid:
                         log.warning('%s : capaid=%s not in capas'
-                            % (duinfo, icapaid))
+                                    % (duinfo, icapaid))
 
                     senduinfo = {}
                     uinfo_args_list = ['astid', 'user', 'company', 'fullname', 'simultcalls',
-                        'context', 'phonenum', 'mobilenum', 'agentid',
-                        'techlist', 'mwi', 'xivo_userid']
+                                       'context', 'phonenum', 'mobilenum', 'agentid',
+                                       'techlist', 'mwi', 'xivo_userid']
                     for kw in uinfo_args_list:
                         senduinfo[kw] = uinfo.get(kw)
                     senduinfo['statedetails'] = statedetails

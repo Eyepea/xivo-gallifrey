@@ -31,30 +31,19 @@ class Presence:
         self.defaultstate = 'available'
         if config is not  None:
             for stateid, stateprops in config.iteritems():
-                splitprops = stateprops.split(',')
-                if len(splitprops) > 3:
-                    longname = splitprops[0]
-                    allowednext = splitprops[1]
-                    action = splitprops[2]
-                    color = splitprops[3]
+                longname = stateprops.get('display')
+                allowednexts = stateprops.get('status')
+                actions = stateprops.get('actions')
+                color = stateprops.get('color')
 
-                    if len(allowednext) > 0:
-                        allowednexts = allowednext.split(':')
-                    else:
-                        allowednexts = []
-                    if len(action) > 0:
-                        actions = action.split(':')
-                    else:
-                        actions = []
-
-                    self.details.update( { stateid :
-                        { 'allowednexts' : allowednexts,
-                            'actions' : actions}
-                        } )
-                    self.displaydetails[stateid] = {'longname' : longname,
-                        'color' : color,
-                        'stateid' : stateid}
-                    self.states.append(stateid)
+                self.details.update( { stateid :
+                                       { 'allowednexts' : allowednexts,
+                                         'actions' : actions}
+                                       } )
+                self.displaydetails[stateid] = {'longname' : longname,
+                                                'color' : color,
+                                                'stateid' : stateid}
+                self.states.append(stateid)
         # to add : actions associated with status : change queue / remove or pause from queue
         return
 

@@ -80,7 +80,6 @@ class Config:
                                                       asterisk_config,
                                                       self.xivoconf_json[asterisk_server][asterisk_config])
 
-                    debug_add_section(self.xivoconf, 'xivocti')
                     for profile, profdef in self.xivoconf_json['xivocti']['profiles'].iteritems():
                         if profdef['xlets']:
                             for xlet_attr in profdef['xlets']:
@@ -90,17 +89,6 @@ class Config:
                                     del xlet_attr[2]
                                 if xlet_attr[1] == "grid" :
                                     del xlet_attr[2]
-                        self.xivoconf.set('xivocti', profile + "-presence", profdef['presence'] )
-
-                    for presence_list_name, presence_list in self.xivoconf_json["presences"].iteritems():
-                        debug_add_section(self.xivoconf, 'presences.' + presence_list_name)
-                        for presence_name, presence in presence_list.iteritems():
-                            formatted_action = ""
-                            for action_name, action_value in presence['actions'].iteritems():
-                                formatted_action += '|'.join([str(action_name), str(action_value)]) + ":"
-                            formatted_action = formatted_action[:-1]
-                            presence_value = "%s,%s,%s,%s" % ( presence['display'], ':'.join(presence['status']), formatted_action,presence['color']) 
-                            self.xivoconf.set('presences.' + presence_list_name, presence_name, presence_value)
 
                     for context_name, contextdef in self.xivoconf_json["contexts"].iteritems():
                         debug_add_section(self.xivoconf, 'contexts.' + context_name)
