@@ -78,8 +78,8 @@ ProvGeneralConf = {
     'connect_ipv4':             "127.0.0.1",
     'connect_port':             8666,
 
-    'use_dhcpd_leases':         0,
-    'scan_ifaces_prefix':       "eth",
+    'use_dhcpd_leases':         1,
+    'scan_ifaces_prefix':       "eth,vlan",
     'arping_cmd':               "sudo /usr/sbin/arping",
     'arping_sleep_us':          150000,
 

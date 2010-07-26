@@ -847,7 +847,7 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
         datalength = int(self.headers['Content-Length'])
         readbytes = 0
         if not datalength:
-            return {}
+            self.posted = {}
         line = self.rfile.readline()
         while line and line.strip() and readbytes < datalength:
             lines.append(tuple(line.strip().split('=', 1)))
