@@ -579,15 +579,7 @@ endif;
 				    'default'	=> $element['autokill']['default']),
 			      $element['autokill']['value']),
 
-/*
-		$form->checkbox(array('desc'	=> $this->bbf('fm_requirecalltoken'),
-				      'name'	=> 'requirecalltoken',
-				      'labelid'	=> 'requirecalltoken',
-				      'help'	=> $this->bbf('hlp_fm_requirecalltoken'),
-				      'checked'	=> $this->get_var('info','requirecalltoken','var_val'),
-				      'default'	=> $element['requirecalltoken']['default'])),
-*/
-        $form->text(array('desc'	=> $this->bbf('fm_calltokenoptional'),
+		$form->text(array('desc'	=> $this->bbf('fm_calltokenoptional'),
 				  'name'	=> 'calltokenoptional',
 				  'labelid'	=> 'calltokenoptional',
 				  'size'	=> 25,
