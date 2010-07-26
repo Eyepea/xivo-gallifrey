@@ -159,7 +159,7 @@ class Config:
                         for sheet_name in sheetdef:
                             if sheetdef[sheet_name]:
                                 add_sheet_display_section(self,
-                                                          "sheets.displays." + sheet_type + "." + sheet_name,
+                                                          'sheets.displays.%s.%s' % (sheet_type, sheet_name),
                                                           sheetdef[sheet_name])
 
         elif urilist.find(':') >= 0:
