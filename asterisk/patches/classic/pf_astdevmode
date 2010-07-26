@@ -1,7 +1,7 @@
-Index: asterisk-1.4.33/main/channel.c
+Index: asterisk-1.4.34/main/channel.c
 ===================================================================
---- asterisk-1.4.33.orig/main/channel.c	2010-06-22 11:24:40.000000000 +0200
-+++ asterisk-1.4.33/main/channel.c	2010-06-22 11:26:55.000000000 +0200
+--- asterisk-1.4.34.orig/main/channel.c	2010-07-26 12:36:13.377423881 -0400
++++ asterisk-1.4.34/main/channel.c	2010-07-26 12:38:14.827427357 -0400
 @@ -2677,6 +2677,7 @@
  	case AST_CONTROL_ANSWER:
  	case AST_CONTROL_HANGUP:

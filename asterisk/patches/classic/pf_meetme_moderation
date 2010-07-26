@@ -1,7 +1,7 @@
-Index: asterisk-1.4.33/apps/app_meetme.c
+Index: asterisk-1.4.34/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.33.orig/apps/app_meetme.c	2010-06-22 11:24:23.000000000 +0200
-+++ asterisk-1.4.33/apps/app_meetme.c	2010-06-22 11:27:12.000000000 +0200
+--- asterisk-1.4.34.orig/apps/app_meetme.c	2010-07-26 12:36:13.277425150 -0400
++++ asterisk-1.4.34/apps/app_meetme.c	2010-07-26 12:36:13.587426315 -0400
 @@ -81,9 +81,13 @@
  #define DEFAULT_AUDIO_BUFFERS  32
  
@@ -956,7 +956,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  		dispose_conf(conf);
  		conf = NULL;
  	} else
-@@ -2909,7 +3323,7 @@
+@@ -2910,7 +3324,7 @@
  								/* Pin correct */
  								allowretry = 0;
  								if (!ast_strlen_zero(cnf->pinadmin) && !strcasecmp(pin, cnf->pinadmin)) 
@@ -965,7 +965,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  								/* Run the conference */
  								res = conf_run(chan, cnf, confflags.flags, optargs);
  								break;
-@@ -3135,6 +3549,172 @@
+@@ -3136,6 +3550,172 @@
  	return 0;
  }
  
@@ -1138,7 +1138,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  static int meetmemute(struct mansession *s, const struct message *m, int mute)
  {
  	struct ast_conference *conf;
-@@ -3254,6 +3834,7 @@
+@@ -3255,6 +3835,7 @@
                                        "Channel: %s\r\n"
                                        "Uniqueid: %s\r\n"
                                        "Admin: %s\r\n"
@@ -1146,7 +1146,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
                                        "Role: %s\r\n"
                                        "MarkedUser: %s\r\n"
                                        "Muted: %s\r\n"
-@@ -3268,6 +3849,7 @@
+@@ -3269,6 +3850,7 @@
                                        user->chan->name,
                                        user->chan->uniqueid,
                                        user->userflags & CONFFLAG_ADMIN ? "Yes" : "No",
@@ -1154,7 +1154,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
                                        user->userflags & CONFFLAG_MONITOR ? "Listen only" : user->userflags & CONFFLAG_TALKER ? "Talk only" : "Talk and listen",
                                        user->userflags & CONFFLAG_MARKEDUSER ? "Yes" : "No",
                                        user->adminflags & ADMINFLAG_MUTED ? "By admin" : user->adminflags & ADMINFLAG_SELFMUTED ? "By self" : "No",
-@@ -5113,6 +5695,9 @@
+@@ -5114,6 +5696,9 @@
  	res = ast_manager_unregister("MeetmeMute");
  	res |= ast_manager_unregister("MeetmeUnmute");
  	res |= ast_manager_unregister("MeetmeList");
@@ -1164,7 +1164,7 @@ Index: asterisk-1.4.33/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -5142,6 +5727,14 @@
+@@ -5143,6 +5728,14 @@
  				    action_meetmeunmute, "Unmute a Meetme user");
  	res |= ast_manager_register2("MeetmeList", EVENT_FLAG_CALL,
                                       action_meetmelist, "List participants in a conference", mandescr_meetmelist);

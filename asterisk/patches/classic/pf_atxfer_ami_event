@@ -8,10 +8,10 @@ SrcUniqueid:
 DstChannel:
 DstUniqueid:
 
-Index: asterisk-1.4.31/res/res_features.c
+Index: asterisk-1.4.34/res/res_features.c
 ===================================================================
---- asterisk-1.4.31.orig/res/res_features.c	2010-05-20 16:24:09.000000000 +0200
-+++ asterisk-1.4.31/res/res_features.c	2010-05-20 16:24:18.000000000 +0200
+--- asterisk-1.4.34.orig/res/res_features.c	2010-07-26 12:36:13.407426310 -0400
++++ asterisk-1.4.34/res/res_features.c	2010-07-26 12:38:45.357424640 -0400
 @@ -1008,6 +1008,16 @@
  			return -1;
  		return FEATURE_RETURN_SUCCESS;

@@ -6,11 +6,11 @@
         There are 4 Rename AMI events that can be sent :
         - added a Where identifier for each
 
-Index: asterisk-1.4.33/main/channel.c
+Index: asterisk-1.4.34/main/channel.c
 ===================================================================
---- asterisk-1.4.33.orig/main/channel.c	2010-06-22 11:26:55.000000000 +0200
-+++ asterisk-1.4.33/main/channel.c	2010-06-22 11:28:14.000000000 +0200
-@@ -3925,7 +3925,12 @@
+--- asterisk-1.4.34.orig/main/channel.c	2010-07-26 12:36:13.467426149 -0400
++++ asterisk-1.4.34/main/channel.c	2010-07-26 12:36:13.667426641 -0400
+@@ -3944,7 +3944,12 @@
  
  void ast_change_name(struct ast_channel *chan, char *newname)
  {
@@ -24,7 +24,7 @@ Index: asterisk-1.4.33/main/channel.c
  	ast_string_field_set(chan, name, newname);
  }
  
-@@ -4098,10 +4103,20 @@
+@@ -4117,10 +4122,20 @@
  
  	/* Mangle the name of the clone channel */
  	ast_string_field_set(clone, name, masqn);
@@ -48,7 +48,7 @@ Index: asterisk-1.4.33/main/channel.c
  
  	/* Swap the technologies */	
  	t = original->tech;
-@@ -4190,7 +4205,12 @@
+@@ -4209,7 +4224,12 @@
  	snprintf(zombn, sizeof(zombn), "%s<ZOMBIE>", orig);
  	/* Mangle the name of the clone channel */
  	ast_string_field_set(clone, name, zombn);

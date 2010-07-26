@@ -10,10 +10,10 @@ init script. After that, it can safely go upstream.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.30/contrib/scripts/safe_asterisk
+Index: asterisk-1.4.34/contrib/scripts/safe_asterisk
 ===================================================================
---- asterisk-1.4.30.orig/contrib/scripts/safe_asterisk	2010-03-16 11:59:37.000000000 +0100
-+++ asterisk-1.4.30/contrib/scripts/safe_asterisk	2010-03-16 11:59:51.000000000 +0100
+--- asterisk-1.4.34.orig/contrib/scripts/safe_asterisk	2010-07-26 12:36:13.097426407 -0400
++++ asterisk-1.4.34/contrib/scripts/safe_asterisk	2010-07-26 12:36:13.107425372 -0400
 @@ -15,6 +15,7 @@
  SLEEPSECS=4
  ASTSBINDIR=__ASTERISK_SBIN_DIR__

@@ -16,8 +16,10 @@ svn cat http://svncommunity.digium.com/svn/russell/func_devstate-1.4/func_devsta
 
  -- Faidon Liambotis <paravoid@debian.org>
 
---- /dev/null
-+++ b/funcs/func_devstate.c
+Index: asterisk-1.4.34/funcs/func_devstate.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ asterisk-1.4.34/funcs/func_devstate.c	2010-07-26 12:36:13.157425766 -0400
 @@ -0,0 +1,228 @@
 +/*
 + * Asterisk -- An open source telephony toolkit.

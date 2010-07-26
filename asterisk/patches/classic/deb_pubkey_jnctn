@@ -12,10 +12,10 @@ Forwarded as a note to #10811.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.32/keys/jnctn.pub
+Index: asterisk-1.4.34/keys/jnctn.pub
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.32/keys/jnctn.pub	2010-06-04 16:07:00.000000000 +0200
++++ asterisk-1.4.34/keys/jnctn.pub	2010-07-26 12:36:13.137426400 -0400
 @@ -0,0 +1,6 @@
 +-----BEGIN PUBLIC KEY-----
 +MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWaDv4190BpeL5K+Yuq5Q7+vPs
@@ -23,11 +23,11 @@ Index: asterisk-1.4.32/keys/jnctn.pub
 +3Ilu//eX8ph8Wu+Oxs/ymi/hzKm+Cd6aty94zYuqiegc0KdrjvU5TLQAkIQpiB6k
 +CvuIm0R0XXQjj3R7LwIDAQAB
 +-----END PUBLIC KEY-----
-Index: asterisk-1.4.32/Makefile
+Index: asterisk-1.4.34/Makefile
 ===================================================================
---- asterisk-1.4.32.orig/Makefile	2010-06-04 16:06:54.000000000 +0200
-+++ asterisk-1.4.32/Makefile	2010-06-04 16:07:00.000000000 +0200
-@@ -482,8 +482,7 @@
+--- asterisk-1.4.34.orig/Makefile	2010-07-26 12:36:13.087426372 -0400
++++ asterisk-1.4.34/Makefile	2010-07-26 12:36:13.137426400 -0400
+@@ -488,8 +488,7 @@
  	mkdir -p $(DESTDIR)$(ASTDATADIR)/firmware
  	mkdir -p $(DESTDIR)$(ASTDATADIR)/firmware/iax
  	mkdir -p $(DESTDIR)$(ASTMANDIR)/man8

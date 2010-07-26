@@ -1,8 +1,8 @@
-Index: asterisk-1.4.33/channels/chan_sip.c
+Index: asterisk-1.4.34/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.33.orig/channels/chan_sip.c	2010-06-22 11:27:01.000000000 +0200
-+++ asterisk-1.4.33/channels/chan_sip.c	2010-06-22 11:27:03.000000000 +0200
-@@ -15723,10 +15723,16 @@
+--- asterisk-1.4.34.orig/channels/chan_sip.c	2010-07-26 12:36:13.497426099 -0400
++++ asterisk-1.4.34/channels/chan_sip.c	2010-07-26 12:36:13.517426233 -0400
+@@ -15717,10 +15717,16 @@
  		}
  
  		if (target.chan2) {
@@ -22,7 +22,7 @@ Index: asterisk-1.4.33/channels/chan_sip.c
  			/* Notify the first other party that they are connected to someone else assuming that target.chan1
  			   has progressed far enough through the dialplan to have it's called party information set. */
  			if (current->chan2)
-@@ -15735,11 +15741,13 @@
+@@ -15729,11 +15735,13 @@
  			/* We can't indicate to the called channel directly so we force the masquerade to complete
  			   and queue and update to be read and passed-through */
  			ast_channel_lock(target.chan1);

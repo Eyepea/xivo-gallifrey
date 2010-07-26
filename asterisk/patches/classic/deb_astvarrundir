@@ -5,11 +5,11 @@ dropping uid/gid.
 
  -- Mark Purcell <msp@debian.org>
 
-Index: asterisk-1.4.32/Makefile
+Index: asterisk-1.4.34/Makefile
 ===================================================================
---- asterisk-1.4.32.orig/Makefile	2010-06-04 16:06:46.000000000 +0200
-+++ asterisk-1.4.32/Makefile	2010-06-04 16:06:52.000000000 +0200
-@@ -131,7 +131,7 @@
+--- asterisk-1.4.34.orig/Makefile	2010-07-26 12:36:13.057426228 -0400
++++ asterisk-1.4.34/Makefile	2010-07-26 12:39:49.177425439 -0400
+@@ -132,7 +132,7 @@
    ASTSBINDIR=$(sbindir)
    ASTSPOOLDIR=$(localstatedir)/spool/asterisk
    ASTLOGDIR=$(localstatedir)/log/asterisk

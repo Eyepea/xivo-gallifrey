@@ -7,10 +7,10 @@
 	The date language is appropriately set in the main body of
 	voicemail-issued e-mails.
 
-Index: asterisk-1.4.33/apps/app_voicemail.c
+Index: asterisk-1.4.34/apps/app_voicemail.c
 ===================================================================
---- asterisk-1.4.33.orig/apps/app_voicemail.c	2010-05-11 19:22:07.000000000 +0200
-+++ asterisk-1.4.33/apps/app_voicemail.c	2010-06-22 11:27:06.000000000 +0200
+--- asterisk-1.4.34.orig/apps/app_voicemail.c	2010-06-23 14:40:28.000000000 -0400
++++ asterisk-1.4.34/apps/app_voicemail.c	2010-07-26 12:36:13.537426172 -0400
 @@ -65,6 +65,9 @@
  #include <sys/types.h>
  #include <sys/mman.h>
@@ -32,7 +32,7 @@ Index: asterisk-1.4.33/apps/app_voicemail.c
  static char emaildateformat[32] = "%A, %B %d, %Y at %r";
  
  
-@@ -3324,7 +3331,22 @@
+@@ -3325,7 +3332,22 @@
  	fprintf(p, "Date: %s" ENDL, date);
  
  	/* Set date format for voicemail mail */
@@ -55,7 +55,7 @@ Index: asterisk-1.4.33/apps/app_voicemail.c
  
  	if (*fromstring) {
  		struct ast_channel *ast;
-@@ -8563,6 +8585,14 @@
+@@ -8564,6 +8586,14 @@
  			ast_copy_string(emaildateformat, emaildateformatstr, sizeof(emaildateformat));
  		}
  

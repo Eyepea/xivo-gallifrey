@@ -2,10 +2,10 @@ Backport of asterisk 1.6 feature that Bridges together two channels already in t
 
  -- Jon Webster <jon@elephantoutlook.com>
 
-Index: asterisk-1.4.32/res/res_features.c
+Index: asterisk-1.4.34/res/res_features.c
 ===================================================================
---- asterisk-1.4.32.orig/res/res_features.c	2010-06-04 16:08:35.000000000 +0200
-+++ asterisk-1.4.32/res/res_features.c	2010-06-04 16:08:44.000000000 +0200
+--- asterisk-1.4.34.orig/res/res_features.c	2010-07-26 12:36:13.477426203 -0400
++++ asterisk-1.4.34/res/res_features.c	2010-07-26 12:36:13.547425939 -0400
 @@ -221,6 +221,7 @@
  	struct ast_bridge_config bconfig;
  	struct ast_channel *chan;
