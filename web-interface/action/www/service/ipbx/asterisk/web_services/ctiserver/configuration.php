@@ -354,7 +354,7 @@ switch($act)
 				}
 
 				$out['main']['asterisklist'][] = $hostname;
-				$out['main']['userlists'][] = $json . 'pbx_settings/users';
+				$out['main']['userlists'][] = $json . 'pbx_settings/users' . '?astid=' . $hostname;
 				$out[$hostname] = array(
 					'ipaddress' => $list[$v]['host'],
 					'ipaddress_webi' => $list[$v]['webi'],
