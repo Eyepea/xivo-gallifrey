@@ -252,7 +252,8 @@ class manage_connection:
                         log.info('%s : WEBI requested a <%s> with actionid %s (%s)' % (astid, stripped_usefulmsg, actionid, connid))
 
                         waiting_actionid[actionid] = connid
-                        waiting_actionid_timer[actionid] = threading.Timer(5, manage_connection.callback_timer_main, (daemon,('webirequest', actionid)))
+                        waiting_actionid_timer[actionid] = threading.Timer(5, manage_connection.callback_timer_main,
+                                                                           (daemon, ('webirequest', actionid)))
                         waiting_actionid_timer[actionid].start()
                     except Exception, exc:
                         log.error('(%s) WEBI command exec <%s> : (client %s) : %s'
@@ -795,36 +796,38 @@ class manage_connection:
         log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
         thisthread.setName(tname + '-' + '-'.join(args[1]))
         daemon.tqueue.put(thisthread)
-        os.write(pipe_queued_threads_main[1], thisthread.getName())
+        os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
         return
     
     @staticmethod
     def checkqueue_main(daemon):
-        buf = os.read(pipe_queued_threads_main[0], 1024)
+        buf = os.read(daemon.pipe_queued_threads_main[0], 1024)
         log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, daemon.tqueue.qsize()))
         while daemon.tqueue.qsize() > 0:
             thisthread = daemon.tqueue.get()
-            action = thisthread.args[0]
-            if action == 'ipbxup':
-                # check whether the AMI is already connected,
-                # and connects if needed
-                astid = thisthread.args[1]
-                manage_connection.update_amisocks(astid, daemon)
-            elif action == 'webirequest':
-                # checks whether the given actionid is still ongoing and closes
-                # the related WEBI request then
-                actionid = thisthread.args[1]
-                if actionid in waiting_actionid and actionid in waiting_actionid_timer:
-                    conn_to_close = waiting_actionid[actionid]
-                    del daemon.fdlist_established[conn_to_close]
-                    conn_to_close.close()
-                    del waiting_actionid[actionid]
-                    del waiting_actionid_timer[actionid]
-                    log.info('closing the WEBI connection %s for the request %s' % (conn_to_close, actionid))
-                else:
-                    log.warning('the actionid %s has gone' % actionid)
+            if len(thisthread.args) > 1 and len(thisthread.args[1]) > 1:
+                action = thisthread.args[1][0]
+                if action == 'ipbxup':
+                    # check whether the AMI is already connected,
+                    # and connects if needed
+                    astid = thisthread.args[1][1]
+                    manage_connection.update_amisocks(astid, daemon)
+                elif action == 'webirequest':
+                    # checks whether the given actionid is still ongoing and closes
+                    # the related WEBI request then
+                    actionid = thisthread.args[1][1]
+                    if actionid in waiting_actionid and actionid in waiting_actionid_timer:
+                        conn_to_close = waiting_actionid[actionid]
+                        del daemon.fdlist_established[conn_to_close]
+                        conn_to_close.close()
+                        del waiting_actionid[actionid]
+                        del waiting_actionid_timer[actionid]
+                        log.info('closing the WEBI connection %s for the request %s' % (conn_to_close, actionid))
+                    else:
+                        log.warning('the actionid %s has gone' % actionid)
+            else:
+                log.warning('malformed tqueue : not enough arguments in %s' % thisthread.args)
         return
-
 
 
 
@@ -865,7 +868,9 @@ class xivo_daemon:
         self.configs = {}
         self.xdname = None
         self.tqueue = Queue.Queue()
-        
+        self.pipe_queued_threads_commandclass = None
+        self.pipe_queued_threads_main = None
+
         while True:
             try:
                 self.main_loop()
@@ -1065,9 +1070,10 @@ class xivo_daemon:
             userlists = xivoconf_general['userlists'].split(',')
 
         socket.setdefaulttimeout(float(socktimeout))
-        
-        self.pipe_queued_threads_commandclass = os.pipe()
-        self.pipe_queued_threads_main = os.pipe()
+
+        if not self.pipe_queued_threads_commandclass and not self.pipe_queued_threads_main:
+            self.pipe_queued_threads_commandclass = os.pipe()
+            self.pipe_queued_threads_main = os.pipe()
 
         self.amilist = xivo_ami.AMIList()
         if self.commandset in xivo_commandsets.CommandClasses:
@@ -1079,10 +1085,9 @@ class xivo_daemon:
             log.warning('# STARTING %s : no such commandset <%s>' % (xdname, self.commandset))
             
         self.xdname = self.commandclass.xdname
-        
-        
+
         log.info('# STARTING %s / svn:%s / %d' % (self.xdname, self.commandclass.version(), self.nreload))
-        
+
         self.update_readconf()
         self.commandclass.set_userlist_urls(userlists)
         self.commandclass.set_contextlist(self.directorylist)
@@ -1335,7 +1340,8 @@ class xivo_daemon:
                             log.info('UDP %s <%s> %s => %s' % (kind, data.strip(), sockparams, astid))
                             if astid in self.configs:
                                 # scheduling astid's AMI reconnection
-                                k = threading.Timer(2, manage_connection.callback_timer_main, (daemon, ('ipbxup', astid)))
+                                k = threading.Timer(2, manage_connection.callback_timer_main,
+                                                    (self, ('ipbxup', astid)))
                                 k.start()
                         else:
                             log.warning('unknown kind %s received' % kind)
@@ -1477,9 +1483,9 @@ class xivo_daemon:
                             log.exception('[pipe_queued_threads_commandclass]')
 
                     # }
-                    elif pipe_queued_threads_main[0] == sel_i: # {
+                    elif self.pipe_queued_threads_main[0] == sel_i: # {
                         try:
-                            checkqueue_main(self)
+                            manage_connection.checkqueue_main(self)
                         except Exception:
                             log.exception('[pipe_queued_threads_main]')
 
