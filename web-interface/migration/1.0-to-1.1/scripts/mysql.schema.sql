@@ -8,9 +8,9 @@ ALTER TABLE `server` ADD COLUMN `ami_port`  smallint unsigned NOT NULL       AFT
 ALTER TABLE `server` ADD COLUMN `webi`      varchar(255) NOT NULL DEFAULT '' AFTER `description`;
 
 UPDATE `server` SET
-	`webi`      = '127.0.0.1' AND
-	`ami_port`  = 5038        AND
-	`ami_login` = 'xivouser'  AND
+	`webi`      = '127.0.0.1',
+	`ami_port`  = 5038,
+	`ami_login` = 'xivouser',
 	`ami_pass`  = 'xivouser';
 
 INSERT IGNORE INTO `server` VALUES(1,'xivo','localhost',443,1,0,1271070538,'','127.0.0.1',5038,'xivouser','xivouser');
