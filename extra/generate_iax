@@ -1,0 +1,59 @@
+#!/usr/bin/python
+__version__ = "$Revision: 5525 $ $Date: 2009-03-03 12:30:31 +0100 (Tue, 03 Mar 2009) $"
+__license__ = """
+    Copyright (C) 2006-2009  Proformatique <technique@proformatique.com>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+import sys
+from xivo import OrderedConf
+from xivo import xivo_helpers
+
+cursor = xivo_helpers.db_connect().cursor()
+
+cursor.query("SELECT ${columns} FROM staticiax "
+             "WHERE commented = 0 ",
+             ('var_name', 'var_val'))
+res = cursor.fetchall()
+
+print "[general]"
+for r in res:
+    if r['var_name'] not in ('allow','disallow'):
+        print r['var_name'] + " = " + r['var_val'] 
+    if r['var_name'] == 'allow' and r['var_val'] != None:
+        print "disallow = all"
+        for c in r['var_val'].split(','):
+            print "allow = " + str(c)
+print "\n\n"
+
+cursor.query("SELECT ${columns} FROM useriax WHERE commented = 0 ",
+             ('name','type','username','secret','dbsecret','context','language','accountcode','amaflags','mailbox','callerid','fullname',
+              'cid_number','trunk','auth','encryption','maxauthreq','inkeys','outkey','adsi','transfer','codecpriority','jitterbuffer',
+              'sendani','qualify','qualifysmoothing','qualifyfreqok','qualifyfreqnotok','timezone','disallow','allow','mohinterpret',
+              'mohsuggest','deny','permit','defaultip','sourceaddress','setvar','host','port','mask','regexten','peercontext','ipaddr',
+              'regseconds','protocol', 'requirecalltoken'))
+res = cursor.fetchall()
+
+for k in res:
+    print "\n"
+    print "[%s]" % k['name']
+    for k, v in k.iteritems():
+        if v not in ('',None) and k not in ('regseconds','name','ipaddr','allow','disallow'):
+            print k + " = " + str(v)
+        if k == 'allow' and v != None:
+            print "disallow = all"
+            for c in v.split(','):
+                print "allow = " + str(c)
+

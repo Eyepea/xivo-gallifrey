@@ -1,0 +1,10 @@
+                   -:| extra tools for XiVO system |:-
+
+* phonebook_csv_export.py: XiVO phonebook export in CSV format.
+  Use with --help option to see usage
+
+* generate_sip : xivo2asterisk sip configuration (non realtime mode)
+  see https://wiki.xivo.fr/index.php/SIP_Realtime_To_SIP_NonRealtime
+
+* generate_iax : xivo2asterisk iax configuration (non-realtion mode)
+  see https://wiki.xivo.fr/index.php/SIP_Realtime_To_SIP_NonRealtime
