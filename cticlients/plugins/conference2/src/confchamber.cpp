@@ -1,12 +1,13 @@
 #include "confchamber.h"
 
 ConfChamberModel::ConfChamberModel(const QString &id)
-    : QAbstractTableModel(), m_admin(0), m_id(id)
+    : QAbstractTableModel(), m_admin(0), m_id(id), m_view(NULL)
 {
     b_engine->tree()->onChange(QString("confrooms/%0").arg(id), this,
         SLOT(confRoomChange(const QString &, DStoreEvent)));
     extractRow2IdMap();
     startTimer(1000);
+    timerEvent(NULL);
 }
 
 void ConfChamberModel::timerEvent(QTimerEvent *)
@@ -20,10 +21,21 @@ void ConfChamberModel::timerEvent(QTimerEvent *)
         }
     }
 
-    if (!m_admin) {
-    }
-
     reset();
+}
+
+void ConfChamberModel::setView(ConfChamberView *v)
+{
+    m_view = v;
+
+    if (!m_admin) {
+        if (m_view) {
+            m_view->hideColumn(ACTION_KICK);
+            m_view->hideColumn(ACTION_ALLOW_IN);
+            m_view->hideColumn(ACTION_TALK_TO);
+        }
+
+    }
 }
 
 void ConfChamberModel::confRoomChange(const QString &path, DStoreEvent event)
@@ -165,7 +177,7 @@ ConfChamberModel::headerData(int section,
     
     if (orientation == Qt::Horizontal) {
         if (section == ID) {
-            return QVariant(tr("Channel ID"));
+            return QVariant(tr("ID"));
         } else if (section == NUMBER) {
             return QVariant(tr("Number"));
         } else if (section == NAME) {
@@ -199,10 +211,27 @@ Qt::ItemFlags ConfChamberModel::flags(const QModelIndex &index) const
         }
     }
 
-    //if (col == ACTION_MUTE) {
-    //} 
+    QString rowId;
+    rowId = m_row2id[row];
+    QString in = QString("confrooms/%0/in/%1/").arg(m_id).arg(rowId);
+
+    if (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId()) {
+        if (col == ACTION_MUTE) {
+            return Qt::ItemIsEnabled;
+        } 
+    }
 
     return Qt::NoItemFlags;
+}
+
+QString ConfChamberModel::row2participantId(int row) const
+{
+    return m_row2id[row];
+}
+
+QString ConfChamberModel::id() const
+{
+    return m_id;
 }
 
 
@@ -227,7 +256,7 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
         horizontalHeader()->setResizeMode(ActionCol[i], QHeaderView::Fixed);
     }
 
-    setColumnWidth(ConfChamberModel::ADMIN, 40);
+    setColumnWidth(ConfChamberModel::ADMIN, 60);
     horizontalHeader()->setResizeMode(ConfChamberModel::ADMIN, QHeaderView::Fixed);
     setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
     hideColumn(0);
@@ -236,12 +265,29 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
             this, SLOT(onViewClick(const QModelIndex &)));
 }
 
-void ConfChamberView::onViewClick(const QModelIndex &)
+void ConfChamberView::onViewClick(const QModelIndex &index)
 {
+    int row = index.row(), col = index.column();
+
+    QString roomId = static_cast<ConfChamberModel*>(model())->id();
+    QString castId = model()->index(row, ConfChamberModel::ID).data().toString();
+
+    switch (col) {
+        case ConfChamberModel::ACTION_MUTE:
+        case ConfChamberModel::ACTION_KICK:
+            b_engine->meetmeAction("MeetmeKick", castId + " " + roomId);
+            break;
+        case ConfChamberModel::ACTION_TALK_TO:
+        case ConfChamberModel::ACTION_ALLOW_IN:
+        default:
+            break;
+    }
 }
 
 void ConfChamberView::mousePressEvent(QMouseEvent *event)
 {
+    lastPressed = event->button();
+    QTableView::mousePressEvent(event);
 }
 
 
@@ -250,7 +296,9 @@ ConfChamber::ConfChamber(const QString &id)
 {
     QVBoxLayout *vBox = new QVBoxLayout(this);
     QHBoxLayout *hBox = new QHBoxLayout();
-    ConfChamberView *view = new ConfChamberView(this, new ConfChamberModel(id));
+    ConfChamberModel *model = new ConfChamberModel(id);
+    ConfChamberView *view = new ConfChamberView(this, model);
+    model->setView(view);
 
     view->setStyleSheet("ConfChamberView { border: none; background:transparent; color:black; }");
     view->verticalHeader()->hide();

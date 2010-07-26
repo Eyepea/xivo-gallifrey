@@ -387,6 +387,11 @@ void BaseEngine::stop()
 
         m_class_event_cb.clear();
     }
+    
+
+    m_tree.rmPath("statedetails");
+    m_tree.rmPath("users");
+    m_tree.rmPath("confrooms");
 
 }
 
@@ -472,8 +477,6 @@ bool BaseEngine::hasCapaFun(QString & capa)
 {
     return m_capafuncs.contains(capa);
 }
-
-
 
 /*! \brief gets m_capaxlets */
 const QStringList& BaseEngine::getCapaXlets() const
@@ -1441,8 +1444,9 @@ void BaseEngine::parseCommand(const QString &line)
 }
 
 /*! \brief send meetme command to the CTI server */
-void BaseEngine::meetmeAction(const QString & function, const QString & functionargs)
+void BaseEngine::meetmeAction(const QString &function, const QString &functionargs)
 {
+    qDebug() <<"meetmeAction" << function << " -- arg: " << functionargs;
     QVariantMap command;
     command["class"] = "meetme";
     command["direction"] = "xivoserver";
