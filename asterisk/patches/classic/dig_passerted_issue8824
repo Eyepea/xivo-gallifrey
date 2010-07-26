@@ -1435,7 +1435,7 @@ Index: asterisk-1.4.34/channels/chan_sip.c
 +		} else {
 +			reqprep(&req, p, SIP_UPDATE, 0, 1);
 +			add_rpid(&req, p);
-+			add_header(req, "Content-Length", 0);
++			add_header(&req, "Content-Length", 0);
 +			send_request(p, &req, XMIT_CRITICAL, p->ocseq);
 +		}
 +	} else {
