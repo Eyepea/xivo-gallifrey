@@ -82,8 +82,6 @@ class Config:
 
                     debug_add_section(self.xivoconf, 'xivocti')
                     for profile, profdef in self.xivoconf_json['xivocti']['profiles'].iteritems():
-                        self.xivoconf.set('xivocti', profile + "-funcs", ','.join(profdef['funcs']))
-                        xletlist = ""
                         if profdef['xlets']:
                             for xlet_attr in profdef['xlets']:
                                 if 'N/A' in xlet_attr:
@@ -92,14 +90,7 @@ class Config:
                                     del xlet_attr[2]
                                 if xlet_attr[1] == "grid" :
                                     del xlet_attr[2]
-                                xletlist += '-'.join(xlet_attr) + ","
-                            xletlist = xletlist[:-1]
-                        self.xivoconf.set('xivocti', profile + "-xlets", xletlist)
-                        self.xivoconf.set('xivocti', profile + "-funcs", ','.join(profdef['funcs']))
-                        self.xivoconf.set('xivocti', profile + "-appliname", profdef['appliname'] )
-                        self.xivoconf.set('xivocti', profile + "-maxgui", profdef['maxgui'] )
                         self.xivoconf.set('xivocti', profile + "-presence", profdef['presence'] )
-                        self.xivoconf.set('xivocti', profile + "-services", profdef['services'] )
 
                     for presence_list_name, presence_list in self.xivoconf_json["presences"].iteritems():
                         debug_add_section(self.xivoconf, 'presences.' + presence_list_name)

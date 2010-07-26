@@ -35,7 +35,6 @@ class Capabilities:
                      'chitchat', 'presence', 'database',
                      'switchboard']
 
-
     def __init__(self, allowed_xlets):
         self.capafuncs = []
         self.capadisps = []
@@ -57,14 +56,14 @@ class Capabilities:
         return
 
     def setxlets(self, capalist):
-        for capa in capalist:
-            detail = capa.split('-')
+        for detail in capalist:
+            capa = '-'.join(detail)
             if detail[0] in self.allowed_xlets.keys():
                 if capa not in self.capadisps:
                     self.capadisps.append(capa)
                 self.setfuncs(self.allowed_xlets[detail[0]])
         return
-
+    
     def setappliname(self, appliname):
         self.appliname = appliname
         return
@@ -84,22 +83,18 @@ class Capabilities:
         return
 
     def getguisettings(self):
-        guisettings = {}
-        if self.guiurl is not None:
-            try:
-                gui = urllib.urlopen(self.guiurl)
-                guisettings = cjson.decode(gui.read())
-                gui.close()
-            except Exception:
-                log.exception('problem when reading guisettings from %s' % self.guiurl)
-        return guisettings
+        return self.guisettings
 
-    def setguisettings(self, urlsettings):
-        self.guiurl = urlsettings
+    def setguisettings(self, guisettings):
+        if guisettings.has_key(''):
+            del guisettings['']
+        self.guisettings = guisettings
         return
 
     # maxgui's
     def setmaxgui(self, maxgui):
+        if maxgui == '':
+            maxgui = -1
         self.maxgui = int(maxgui)
         return
 

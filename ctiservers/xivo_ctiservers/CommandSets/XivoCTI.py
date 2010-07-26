@@ -690,24 +690,28 @@ class XivoCTICommand(BaseCommand):
     def set_options(self, xivoconf, allconf):
         self.xivoconf = xivoconf
         allowedxlets = self.__json2dict__(allconf.xivoconf_json['xivocti']['allowedxlets'])
+
+        for name, val in allconf.xivoconf_json['xivocti']['profiles'].iteritems():
+            if name not in self.capas:
+                self.capas[name] = cti_capas.Capabilities(allowedxlets)
+            for prop, value in val.iteritems():
+                if prop == 'xlets':
+                    self.capas[name].setxlets(value)
+                elif prop == 'funcs':
+                    self.capas[name].setfuncs(value)
+                elif prop == 'maxgui':
+                    self.capas[name].setmaxgui(value)
+                elif prop == 'appliname':
+                    self.capas[name].setappliname(value)
+                elif prop == 'services':
+                    self.capas[name].setservices(value)
+                elif prop == 'preferences':
+                    self.capas[name].setguisettings(value)
+
         for var, val in self.xivoconf.iteritems():
             if var.find('-') > 0 and val:
                 [name, prop] = var.split('-', 1)
-                if name not in self.capas:
-                    self.capas[name] = cti_capas.Capabilities(allowedxlets)
-                if prop == 'xlets':
-                    self.capas[name].setxlets(val.split(','))
-                elif prop == 'funcs':
-                    self.capas[name].setfuncs(val.split(','))
-                elif prop == 'maxgui':
-                    self.capas[name].setmaxgui(val)
-                elif prop == 'appliname':
-                    self.capas[name].setappliname(val)
-                elif prop == 'guisettings':
-                    self.capas[name].setguisettings(val)
-                elif prop == 'services':
-                    self.capas[name].setservices(val)
-                elif prop == 'presence':
+                if prop == 'presence':
                     self.capas[name].setpresenceid(val)
                     if val not in self.presence_sections:
                         self.presence_sections[val] = cti_presence.Presence(allconf.read_section('presence', val))
@@ -4991,10 +4995,10 @@ class XivoCTICommand(BaseCommand):
                             if nmsec > 0:
                                 rate = float(nbytes) / nmsec
                                 log.info('keepalive from user:%s (%d %d/%d = %.1f bytes/ms)'
-                                    % (userid, nsamples, nbytes, nmsec, rate))
+                                         % (userid, nsamples, nbytes, nmsec, rate))
                             else:
                                 log.info('keepalive from user:%s (%d %d/0 > %.1f bytes/ms)'
-                                    % (userid, nsamples, nbytes, float(nbytes)))
+                                         % (userid, nsamples, nbytes, float(nbytes)))
                                 
                     elif classcomm == 'logclienterror':
                         log.warning('shouldNotOccur from user:%s : %s : %s'
@@ -5003,19 +5007,19 @@ class XivoCTICommand(BaseCommand):
                     elif classcomm == 'faxsend':
                         if self.capas[capaid].match_funcs(ucapa, 'fax'):
                             newfax = cti_fax.Fax(userinfo,
-                                icommand.struct.get('size'),
-                                icommand.struct.get('number'),
-                                icommand.struct.get('hide'))
+                                                 icommand.struct.get('size'),
+                                                 icommand.struct.get('number'),
+                                                 icommand.struct.get('hide'))
                             self.faxes[newfax.reference] = newfax
                             tosend = { 'class' : 'faxsend',
-                                'tdirection' : 'upload',
-                                'fileid' : newfax.reference }
+                                       'tdirection' : 'upload',
+                                       'fileid' : newfax.reference }
                             repstr = self.__cjson_encode__(tosend)
                             
                     elif classcomm == 'endinit':
                         tosend = { 'class' : 'endinit' }
                         repstr = self.__cjson_encode__(tosend)
-                        
+
                     elif classcomm == 'availstate':
                         if self.capas[capaid].match_funcs(ucapa, 'presence'):
                             # updates the new status and sends it to other people
@@ -5941,24 +5945,24 @@ class XivoCTICommand(BaseCommand):
                 cstatus = self.presence_sections[wpid].countstatus(self.__counts__(astid, context, wpid))
 
             tosend = { 'class' : 'presence',
-                'company' : company,
-                'userid' : username,
-                'xivo_userid' : xivo_userid,
-                'astid' : astid,
-                'capapresence' : { 'state' : statedetails,
-                    'allowed' : allowed },
-                'presencecounter' : cstatus
-                }
+                       'company' : company,
+                       'userid' : username,
+                       'xivo_userid' : xivo_userid,
+                       'astid' : astid,
+                       'capapresence' : { 'state' : statedetails,
+                                          'allowed' : allowed },
+                       'presencecounter' : cstatus
+                       }
             self.__send_msg_to_cti_client__(userinfo, self.__cjson_encode__(tosend))
 
         tosend = { 'class' : 'presence',
-            'company' : company,
-            'userid' : username,
-            'xivo_userid' : xivo_userid,
-            'astid' : astid,
-            'capapresence' : { 'state' : statedetails },
-            'presencecounter' : cstatus
-            }
+                   'company' : company,
+                   'userid' : username,
+                   'xivo_userid' : xivo_userid,
+                   'astid' : astid,
+                   'capapresence' : { 'state' : statedetails },
+                   'presencecounter' : cstatus
+                   }
         self.__send_msg_to_cti_clients_except__([userinfo], self.__cjson_encode__(tosend), astid, context)
         return None
 
