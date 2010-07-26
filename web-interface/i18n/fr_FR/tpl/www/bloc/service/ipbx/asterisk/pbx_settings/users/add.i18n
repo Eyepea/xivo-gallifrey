@@ -1048,28 +1048,34 @@ Appel sortant
 
 ; softkey_event(offhookfeat)
 ; softkey_event(onhint)
+
+
 ; softkey_redial
-Rappel
+Rappel du dernier numéro
 
 ; softkey_newcall
 Nouvel appel
 
 ; softkey_cfwdall
-Transfert inconditionnel
+Activer/Désactiver le transfer d'appel inconditionnel 
 
 ; softkey_cfwdbusy
-Transfert sur occupation
+Activer/Désactiver le transfert sur occupation
 
 ; softkey_cfwdnoanswer
-Transfert sur non réponse
+Activer/Désactiver le transfert sur non réponse
 
 ; softkey_pickup
-Interception
+Intercepter d'un appel
 
 ; softkey_gpickup
+Intercepter un appel (d'un autre groupe d'interception)
+
 ; softkey_conflist
+Voir la liste des participants à la conférence
+
 ; softkey_dnd
-NPD
+Désactiver le mode NPD
 
 ; softkey_hold
 Mettre en attente
@@ -1081,7 +1087,11 @@ Raccrocher
 Parquer l'appel
 
 ; softkey_select
+Sélectionner une entrée du menu ou un appel
+
 ; softkey_idivert
+Renvoi immédiat vers la messagerie vocale
+
 ; softkey_resume
 Reprendre en appel en attente
 
@@ -1089,7 +1099,7 @@ Reprendre en appel en attente
 Transfert attendu
 
 ; softkey_dirtrfr
-Transfert direct
+Transfert direct (mise en relation de 2 appels)
 
 ; softkey_answer
 Répondre
@@ -1102,9 +1112,16 @@ Mode privé
 Conférence
 
 ; softkey_barge
+Intrusion dans la conversation (ligne partagée)
+
 ; softkey_cbarge
+Intrusion dans la conversation (ligne partagée, crée une conférence)
+
 ; softkey_conf
+Établir une conférence
+
 ; softkey_backjoin
+
 
 ; fm_protocol_requirecalltoken
 Validation des jetons d'appel :
