@@ -228,19 +228,19 @@ class QueueList(AnyList):
         AnyList.__init__(self, newurls)
 
         try:
-            self.stats = QueueStats(misc["conf"].xivoconf_json['main']['asterisk_queuestat_db'].replace("\\/","/"));
+            self.stats = QueueStats(misc["conf"].xc_json['main']['asterisk_queuestat_db'].replace("\\/","/"));
         except Exception:
             log.exception('could not access queuestats db')
             self.stats = None
-            
+
         return
-    
+
     queuelocationprops = ['Paused', 'Status', 'Membership', 'Penalty', 'LastCall', 'CallsTaken',
                           'Xivo-QueueMember-StateTime']
     queuestats = ['Abandoned', 'Max', 'Completed', 'ServiceLevel', 'Weight', 'Holdtime',
                   'Xivo-Join', 'Xivo-Link', 'Xivo-Lost', 'Xivo-Wait', 'Xivo-TalkingTime', 'Xivo-Rate',
                   'Calls']
-    
+
     def update(self):
         ret = AnyList.update(self)
         self.reverse_index = {}

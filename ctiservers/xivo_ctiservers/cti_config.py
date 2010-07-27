@@ -27,18 +27,12 @@ __author__    = 'Corentin Le Gall'
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
-import ConfigParser
 import logging
 import urllib2
 import sys
 import cjson
 
 log = logging.getLogger('cti_config')
-
-def debug_add_section(where, section_name):
-    where.add_section(section_name)
-    #print "LALALA ADDING SECTION %s" % section_name
-
 
 class Config:
     def __init__(self, urilist):
@@ -49,10 +43,9 @@ class Config:
                     self.kind = 'file'
                     response = urllib2.urlopen(urilist)
                     self.json_config = response.read()
-                    self.xivoconf_json = cjson.decode(self.json_config)
-                    self.xivoconf = ConfigParser.ConfigParser()
+                    self.xc_json = cjson.decode(self.json_config)
 
-                    for profile, profdef in self.xivoconf_json['xivocti']['profiles'].iteritems():
+                    for profile, profdef in self.xc_json['xivocti']['profiles'].iteritems():
                         if profdef['xlets']:
                             for xlet_attr in profdef['xlets']:
                                 if 'N/A' in xlet_attr:
@@ -61,69 +54,4 @@ class Config:
                                     del xlet_attr[2]
                                 if xlet_attr[1] == "grid" :
                                     del xlet_attr[2]
-
-                    def add_sheet_action_section(self, section_name, rest):
-                        debug_add_section(self.xivoconf, section_name)
-                        for key, v in rest.iteritems():
-                            if isinstance(v, list):
-                                self.xivoconf.set(section_name, key, ','.join(v))
-                            else:
-                                self.xivoconf.set(section_name, key, v)
-
-                    debug_add_section(self.xivoconf, 'sheet_events')
-                    for k, eventdef in self.xivoconf_json["sheets"]["events"].iteritems():
-                        if k == "custom":
-                            for csheet, customeventdef in eventdef.iteritems():
-                                self.xivoconf.set('sheet_events', csheet, customeventdef)
-                                if self.xivoconf_json["sheets"]["actions"][customeventdef]:
-                                    add_sheet_action_section(self,
-                                                             customeventdef,
-                                                             self.xivoconf_json["sheets"]["actions"][customeventdef])
-                        else:
-                            self.xivoconf.set('sheet_events', k, eventdef)
-                            if len(eventdef) and self.xivoconf_json["sheets"]["actions"][eventdef]:
-                                add_sheet_action_section(self,
-                                                         eventdef,
-                                                         self.xivoconf_json["sheets"]["actions"][eventdef])
-
-                    def add_sheet_display_section(self, section_name, rest):
-                        debug_add_section(self.xivoconf, section_name)
-                        for key, v in rest.iteritems():
-                            if isinstance(v, list):
-                                self.xivoconf.set(section_name, key, '|'.join(v))
-                            else:
-                                self.xivoconf.set(section_name, key, v)
-
-                    for sheet_type, sheetdef in self.xivoconf_json["sheets"]["displays"].iteritems():
-                        for sheet_name in sheetdef:
-                            if sheetdef[sheet_name]:
-                                add_sheet_display_section(self,
-                                                          'sheets.displays.%s.%s' % (sheet_type, sheet_name),
-                                                          sheetdef[sheet_name])
-
-        elif urilist.find(':') >= 0:
-            xconf = urilist.split(':')
-            if xconf[0] == 'file':
-                self.kind = 'file'
-                self.xivoconf = ConfigParser.ConfigParser()
-                self.xivoconf.readfp(open(xconf[1]))
-        else:
-            if len(urilist) > 0:
-                uris = urilist.split(',')
-                self.kind = 'file'
-                self.xivoconf = ConfigParser.ConfigParser()
-                for uri in uris:
-                    self.xivoconf.readfp(open(uri))
         return
-    
-    def read_section(self, type, sectionname):
-        v = {}
-        if self.kind == 'file':
-            try:
-                if sectionname in self.xivoconf.sections():
-                    for tk, tv in dict(self.xivoconf.items(sectionname)).iteritems():
-                        v[tk] = tv # tv.decode('utf8')
-            except Exception, e:
-                log.exception('kind=%s section=%s' % (self.kind, sectionname))
-                print e
-        return v

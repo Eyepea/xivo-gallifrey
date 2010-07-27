@@ -912,7 +912,7 @@ class xivo_daemon:
     # loads the configuration for each asterisk
     def load_asterisk_conf(self):   # {
         for astid in self.asterisklist:
-            xivoconf_asterisk = self.cconf.xivoconf_json[astid]
+            xivoconf_asterisk = self.cconf.xc_json[astid]
             if xivoconf_asterisk:
                 urllist = {}
                 ipaddress = '127.0.0.1'
@@ -1020,14 +1020,14 @@ class xivo_daemon:
         except Exception:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             self.cconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
-        xivoconf_general = self.cconf.xivoconf_json['main']
+        xivoconf_general = self.cconf.xc_json['main']
 
         # loads the general configuration
-        self.commandset = self.cconf.xivoconf_json['main']['commandset']
+        self.commandset = xivoconf_general['commandset']
         for func in ['CTI', 'WEBI', 'FAGI', 'INFO']:
             fieldname = 'incoming_tcp_%s' % func.lower()
-            if fieldname in self.cconf.xivoconf_json['main']:
-                bind_and_port = self.cconf.xivoconf_json['main'][fieldname]
+            if fieldname in xivoconf_general:
+                bind_and_port = xivoconf_general[fieldname]
                 if len(bind_and_port) > 1:
                     try:
                         incoming_tcp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
@@ -1035,8 +1035,8 @@ class xivo_daemon:
                         log.exception('%s definition' % fieldname)
         for func in ['ANNOUNCE']:
             fieldname = 'incoming_udp_%s' % func.lower()
-            if fieldname in self.cconf.xivoconf_json['main']:
-                bind_and_port = self.cconf.xivoconf_json['main'][fieldname]
+            if fieldname in xivoconf_general:
+                bind_and_port = xivoconf_general[fieldname]
                 if len(bind_and_port) > 1:
                     try:
                         incoming_udp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
@@ -1095,13 +1095,13 @@ class xivo_daemon:
         if parting_astid_context:
             self.commandclass.set_partings(parting_astid_context)
 
-        for contextname, contextdef in self.cconf.xivoconf_json['contexts'].iteritems():
+        for contextname, contextdef in self.cconf.xc_json['contexts'].iteritems():
             displaysection = contextdef['display']
-            self.contextlist.setdisplay(contextname, self.cconf.xivoconf_json['displays'][displaysection[9:]])
+            self.contextlist.setdisplay(contextname, self.cconf.xc_json['displays'][displaysection[9:]])
             for dr in contextdef['directories']:
                 try:
                     self.contextlist.update(contextname, dr,
-                                            self.cconf.xivoconf_json['directories'][dr[12:]])
+                                            self.cconf.xc_json['directories'][dr[12:]])
                 except Exception:
                     log.exception('unable to read directory config for %s' % dr)
 
@@ -1119,10 +1119,10 @@ class xivo_daemon:
         self.update_userlist = {}
         self.lastrequest_time = {}
         xivodaemonreload = False
-        
+
         log.info("the monitored asterisk's is/are : %s" % self.asterisklist)
         log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % self.xdname)
-        
+
         for astid in self.configs: # {
             try:
                 self.update_userlist[astid] = []

@@ -84,6 +84,10 @@ MONITORDIR = '/var/spool/asterisk/monitor'
 OTHER_DID_CONTEXTS = '*'
 OTHER_DID_EXTENS = '*'
 
+LENGTH_AGENT = 6
+LENGTH_PRESENCES = 10
+LENGTH_DIRECTORIES = 12
+
 # some default values to display
 CONTEXT_UNKNOWN = 'undefined_context'
 AGENT_NO_PHONENUMBER = 'N.A.'
@@ -678,12 +682,19 @@ class XivoCTICommand(BaseCommand):
     def set_cticonfig(self, allconf):
         self.lconf = allconf
         self.sheet_actions = {}
-        for where, sheetaction in allconf.read_section('sheet_events', 'sheet_events').iteritems():
+        for where, sheetaction in allconf.xc_json['sheets']['events'].iteritems():
             if sheetaction:
                 if where in self.sheet_allowed_events or where.startswith('custom-'):
-                    self.sheet_actions[where] = allconf.read_section('sheet_action', sheetaction)
+                    # XXX TODO : actually for custom sheets we are supposed to use a framework
+                    # with one more level, i.e. :
+                    # incomingdid -> xxx1
+                    # dial        -> xxx2
+                    # custom      -> custom1 -> xxx3
+                    #             -> custom2 -> xxx4
+                    # ... to be cross-checked with 'Custom' UserEvent handling
+                    self.sheet_actions[where] = allconf.xc_json['sheets']['actions'][sheetaction]
 
-        xivocticonf = allconf.xivoconf_json['xivocti']
+        xivocticonf = allconf.xc_json['xivocti']
 
         self.zipsheets = bool(int(xivocticonf.get('zipsheets', '1')))
         self.regupdates = xivocticonf.get('regupdates', {})
@@ -707,16 +718,16 @@ class XivoCTICommand(BaseCommand):
                     self.capas[name].setguisettings(value)
                 elif prop == 'presence':
                     self.capas[name].setpresenceid(value)
-                    if value not in self.presence_sections and value[10:] in allconf.xivoconf_json['presences']:
-                        self.presence_sections[value] = cti_presence.Presence(allconf.xivoconf_json['presences'][value[10:]])
+                    if value not in self.presence_sections and value[LENGTH_PRESENCES:] in allconf.xc_json['presences']:
+                        self.presence_sections[value] = cti_presence.Presence(allconf.xc_json['presences'][value[LENGTH_PRESENCES:]])
                 elif prop == 'watchedpresence':
                     self.capas[name].setwatchedpresenceid(value)
-                    if value not in self.presence_sections and value[10:] in allconf.xivoconf_json['presences']:
-                        self.presence_sections[value] = cti_presence.Presence(allconf.xivoconf_json['presences'][value[10:]])
+                    if value not in self.presence_sections and value[LENGTH_PRESENCES:] in allconf.xc_json['presences']:
+                        self.presence_sections[value] = cti_presence.Presence(allconf.xc_json['presences'][value[LENGTH_PRESENCES:]])
                 else:
                     log.warning('set_cticonfig unknown property (%s = %s) for xlet %s' % (prop, value, name))
 
-        for v, vv in allconf.xivoconf_json.get('phonehints').iteritems():
+        for v, vv in allconf.xc_json.get('phonehints').iteritems():
             if len(vv) > 1:
                 self.display_hints[v] = { 'longname' : vv[0],
                                           'color' : vv[1] }
@@ -1230,7 +1241,13 @@ class XivoCTICommand(BaseCommand):
         linestosend = []
         whichitem = actionopt.get(sheetkind)
         if whichitem is not None and len(whichitem) > 0:
-            for k, v in self.lconf.read_section('sheet_qtui', whichitem).iteritems():
+            idxes = whichitem.split('.')
+            z = self.lconf.xc_json
+            while idxes:
+                if z:
+                    z = z.get(idxes.pop(0))
+            if z:
+              for k, v in z.iteritems():
                 if v: # since WEBI config generates a default {'null' : ''} entry
                     try:
                         r = urllib.urlopen(v)
@@ -1247,11 +1264,17 @@ class XivoCTICommand(BaseCommand):
         linestosend = []
         whichitem = actionopt.get(sheetkind)
         if whichitem is not None and len(whichitem) > 0:
-            for k, v in self.lconf.read_section('sheet_action', whichitem).iteritems():
+            idxes = whichitem.split('.')
+            z = self.lconf.xc_json
+            while idxes:
+                if z:
+                    z = z.get(idxes.pop(0))
+            if z:
+              for k, v in z.iteritems():
                 try:
-                    vsplit = v.split('|')
+                    vsplit = v
                     if len(vsplit) == 4:
-                        [title, type, defaultval, sformat] = v.split('|')
+                        [title, type, defaultval, sformat] = v
                         basestr = sformat
                         for kk, vv in inputvars.iteritems():
                             if vv is None:
@@ -1278,7 +1301,7 @@ class XivoCTICommand(BaseCommand):
         if dirlist:
             dirs_to_lookup = []
             for dirname in dirlist:
-                ddef = self.lconf.xivoconf_json['directories'][dirname[12:]]
+                ddef = self.lconf.xc_json['directories'][dirname[LENGTH_DIRECTORIES:]]
                 if ddef:
                     dirs_to_lookup.append(dirname)
                     self.ctxlist.updatedir(dirname, ddef)
@@ -1350,7 +1373,7 @@ class XivoCTICommand(BaseCommand):
             itemdir['xivo-faxstatus'] = event.get('PhaseEString')
 
         elif where in ['agentlinked', 'agentunlinked']:
-            dstnum = event.get('Channel2')[6:]
+            dstnum = event.get('Channel2')[LENGTH_AGENT:]
             chan = event.get('Channel1')
             queuename = extraevent.get('xivo_queuename')
             itemdir['xivo-channel'] = chan
@@ -1440,7 +1463,7 @@ class XivoCTICommand(BaseCommand):
             capaids = None
             if 'capaids' in actionopt:
                 if actionopt['capaids']:
-                    capaids = actionopt['capaids'].split(',')
+                    capaids = actionopt['capaids']
                 else:
                     capaids = []
             if whoms is None:
@@ -1465,7 +1488,7 @@ class XivoCTICommand(BaseCommand):
 
             # 3) build recipient list
             if where in ['agentlinked', 'agentunlinked']:
-                dstnum = event.get('Channel2')[6:]
+                dstnum = event.get('Channel2')[LENGTH_AGENT:]
                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
             elif where == 'dial':
                 # define the receiver from the xivo-dstid data
@@ -1494,7 +1517,7 @@ class XivoCTICommand(BaseCommand):
                 for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'].iteritems():
                     # XXX sip/iax2/sccp @queue
                     if status.get('Paused') == '0':
-                        userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[6:]))
+                        userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[LENGTH_AGENT:]))
             elif where.startswith('custom-'):
                 pass
 
@@ -1611,11 +1634,14 @@ class XivoCTICommand(BaseCommand):
             dialplan_data['xivo-calleridnum'] = self.ulist_ng.keeplist[xuserid].get('phonenum')
             dialplan_data['xivo-calleridname'] = self.ulist_ng.keeplist[xuserid].get('fullname')
             try:
-                e = self.lconf.xivoconf_json['directories']['internal']
+                e = self.lconf.xc_json['directories']['internal']
                 for k, v in e.iteritems():
                     if k.startswith('field_'):
                         nk = 'db-%s' % k[6:]
-                        v2 = v
+                        if v:
+                            v2 = v[0]
+                        else:
+                            v2 = ''
                         for kk, vv in self.ulist_ng.keeplist[xuserid].iteritems():
                             pattern = '{internal-%s}' % kk
                             if v2.find(pattern) >= 0:
@@ -1640,7 +1666,7 @@ class XivoCTICommand(BaseCommand):
         #  'mycontext':{'*':[]}}
 
         if calleridnum.isdigit(): # reverse only if digits
-            reversedid_defs = self.lconf.xivoconf_json.get('reversedid')
+            reversedid_defs = self.lconf.xc_json.get('reversedid')
             if reversedid_defs:
                 if didcontext in reversedid_defs:
                     dids = reversedid_defs.get(didcontext)
@@ -1666,7 +1692,7 @@ class XivoCTICommand(BaseCommand):
             else:
                 log.warning('__did__ (lookup for %s) : no match for reversedid configuration'
                             % calleridnum)
-                
+
         # agi_callington : 0x10, 0x11 : 16 (internat ?), 17 (00 + internat ?)
         #                  0x20, 0x21 : 32 (06, 09), 33 (02, 04)
         #                  0x41       : 65 (3 chiffres)
@@ -1923,7 +1949,7 @@ class XivoCTICommand(BaseCommand):
                         agent_channel = 'Agent/' + line[3]
                     else:
                         agent_channel = line[3]
-                    if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
+                    if agent_channel.startswith('Agent/') and len(agent_channel) > LENGTH_AGENT:
                         if agent_channel not in self.last_agents[astid]:
                             self.last_agents[astid][agent_channel] = {}
                         self.last_agents[astid][agent_channel][qaction] = qdate
@@ -1932,7 +1958,7 @@ class XivoCTICommand(BaseCommand):
                         pass
                 if qaction in ['UNPAUSE', 'PAUSE', 'ADDMEMBER', 'REMOVEMEMBER', 'AGENTCALLED', 'CONNECT']:
                     agent_channel = line[3]
-                    if agent_channel.startswith('Agent/') and len(agent_channel) > 6:
+                    if agent_channel.startswith('Agent/') and len(agent_channel) > LENGTH_AGENT:
                         if qname not in self.last_queues[astid]:
                             self.last_queues[astid][qname] = {}
                         if agent_channel not in self.last_queues[astid][qname]:
@@ -2227,7 +2253,7 @@ class XivoCTICommand(BaseCommand):
 
         if chan2.startswith('Agent/'):
             # 'onlineincoming' for the agent
-            agent_number = chan2[6:]
+            agent_number = chan2[LENGTH_AGENT:]
             status = 'onlineincoming'
             for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                 self.__update_availstate__(uinfo, status)
@@ -2436,7 +2462,7 @@ class XivoCTICommand(BaseCommand):
             self.__sheet_alert__('unlink', astid, self.uniqueids[astid][uid1]['context'], event, {}, chan2)
 
         if chan2.startswith('Agent/'):
-            agent_number = chan2[6:]
+            agent_number = chan2[LENGTH_AGENT:]
             agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
             thisagent = self.weblist['agents'][astid].keeplist[agent_id]
             thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
@@ -3319,7 +3345,7 @@ class XivoCTICommand(BaseCommand):
 
         queuecontext = self.weblist[queueorgroup][astid].getcontext(queueid)
         if agent_channel.startswith('Agent/'):
-            agent_number = agent_channel[6:]
+            agent_number = agent_channel[LENGTH_AGENT:]
             if astid in self.weblist['agents']:
                 log.info('%s ami_agentcalled (agent) %s %s' % (astid, queuename, agent_channel))
                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
@@ -3374,7 +3400,7 @@ class XivoCTICommand(BaseCommand):
         log.info('%s ami_agentconnect : %s' % (astid, event))
         agent_channel = event.get('Member')
         if agent_channel.startswith('Agent/'):
-            agent_number = agent_channel[6:]
+            agent_number = agent_channel[LENGTH_AGENT:]
             if astid in self.weblist['agents']:
                 agent_id = self.weblist['agents'][astid].reverse_index.get(agent_number)
                 thisagent = self.weblist['agents'][astid].keeplist[agent_id]
@@ -3536,7 +3562,7 @@ class XivoCTICommand(BaseCommand):
         if location.startswith('Agent/'):
             if self.weblist['agents'].has_key(astid):
                 # watchout : for 'Agent/@2' locations (agent groups), this might fail
-                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                agent_id = self.weblist['agents'][astid].reverse_index.get(location[LENGTH_AGENT:])
                 if agent_id:
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     context_member = thisagent.get('context')
@@ -3565,7 +3591,7 @@ class XivoCTICommand(BaseCommand):
 
         if location.startswith('Agent/'):
             # watchout : for 'Agent/@2' locations (agent groups), this might fail
-            self.weblist['agents'][astid].queuememberadded(queueid, queueorgroup, location[6:], event)
+            self.weblist['agents'][astid].queuememberadded(queueid, queueorgroup, location[LENGTH_AGENT:], event)
             self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberadded')
             tosend = { 'class' : 'agents',
                        'function' : 'sendlist',
@@ -3596,7 +3622,7 @@ class XivoCTICommand(BaseCommand):
         if location.startswith('Agent/'):
             # watchout : for 'Agent/@2' locations (agent groups), this might fail
             if self.weblist['agents'].has_key(astid):
-                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                agent_id = self.weblist['agents'][astid].reverse_index.get(location[LENGTH_AGENT:])
                 if agent_id:
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     context_member = thisagent.get('context')
@@ -3620,7 +3646,7 @@ class XivoCTICommand(BaseCommand):
 
         if location.startswith('Agent/'):
             # watchout : for 'Agent/@2' locations (agent groups), this might fail
-            self.weblist['agents'][astid].queuememberremoved(queueid, queueorgroup, location[6:], event)
+            self.weblist['agents'][astid].queuememberremoved(queueid, queueorgroup, location[LENGTH_AGENT:], event)
             self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberremoved')
             tosend = { 'class' : 'agents',
                        'function' : 'sendlist',
@@ -3655,7 +3681,7 @@ class XivoCTICommand(BaseCommand):
         if location.startswith('Agent/'):
             if self.weblist['agents'].has_key(astid):
                 # watchout : for 'Agent/@2' locations (agent groups), this might fail
-                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                agent_id = self.weblist['agents'][astid].reverse_index.get(location[LENGTH_AGENT:])
                 if agent_id:
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     context_member = thisagent.get('context')
@@ -3687,7 +3713,7 @@ class XivoCTICommand(BaseCommand):
 
         if location.startswith('Agent/'):
             # watchout : for 'Agent/@2' locations (agent groups), this might fail
-            if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
+            if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[LENGTH_AGENT:], event):
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberstatus')
                 tosend = { 'class' : 'agents',
                            'function' : 'sendlist',
@@ -3768,7 +3794,7 @@ class XivoCTICommand(BaseCommand):
         if location.startswith('Agent/'):
             if self.weblist['agents'].has_key(astid):
                 # watchout : for 'Agent/@2' locations (agent groups), this might fail
-                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                agent_id = self.weblist['agents'][astid].reverse_index.get(location[LENGTH_AGENT:])
                 if agent_id:
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     context_member = thisagent.get('context')
@@ -3797,7 +3823,7 @@ class XivoCTICommand(BaseCommand):
 
         if location.startswith('Agent/'):
             # watchout : for 'Agent/@2' locations (agent groups), this might fail
-            if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
+            if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[LENGTH_AGENT:], event):
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuememberpaused')
                 qorg = '%s_by_agent' % queueorgroup
                 tosend = { 'class' : 'agents',
@@ -3860,7 +3886,7 @@ class XivoCTICommand(BaseCommand):
         if location.startswith('Agent/'):
             if self.weblist['agents'].has_key(astid):
                 # watchout : for 'Agent/@2' locations (agent groups), this might fail
-                agent_id = self.weblist['agents'][astid].reverse_index.get(location[6:])
+                agent_id = self.weblist['agents'][astid].reverse_index.get(location[LENGTH_AGENT:])
                 if agent_id:
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     context_member = thisagent.get('context')
@@ -3878,7 +3904,7 @@ class XivoCTICommand(BaseCommand):
         if location.startswith('Agent/'):
             self.weblist[queueorgroup][astid].queuememberupdate(queueid, location, event)
             # watchout : for 'Agent/@2' locations (agent groups), this might fail
-            if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[6:], event):
+            if self.weblist['agents'][astid].queuememberupdate(queueid, queueorgroup, location[LENGTH_AGENT:], event):
                 self.__peragent_queue_summary__(astid, queueorgroup, agent_id, 'ami_queuemember')
                 tosend = { 'class' : 'agents',
                            'function' : 'sendlist',
