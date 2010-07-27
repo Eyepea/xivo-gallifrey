@@ -49,36 +49,8 @@ class Config:
                     self.kind = 'file'
                     response = urllib2.urlopen(urilist)
                     self.json_config = response.read()
-
                     self.xivoconf_json = cjson.decode(self.json_config)
-
                     self.xivoconf = ConfigParser.ConfigParser()
-                    debug_add_section(self.xivoconf, 'general')
-
-                    for k, v in self.xivoconf_json["main"].iteritems():
-                        if isinstance(v, list):
-                            if k not in ['incoming_tcp_fagi', 'incoming_tcp_cti',
-                                         'incoming_tcp_info', 'incoming_tcp_webi',
-                                         'incoming_udp_announce']:
-                                self.xivoconf.set('general', k, ','.join(v))
-                        elif v is not None:
-                            self.xivoconf.set('general', k, v)
-
-                    urllist_params_list = ['urllist_phonebook', 'urllist_voicemail', 'urllist_trunks',
-                                           'urllist_agents', 'urllist_queues', 'urllist_groups',
-                                           'urllist_phones', 'urllist_incomingcalls', 'urllist_meetme']
-                    for asterisk_server in self.xivoconf_json['main']['asterisklist']:
-                        debug_add_section(self.xivoconf, asterisk_server)
-                        for asterisk_config in self.xivoconf_json[asterisk_server]:
-                            if self.xivoconf_json[asterisk_server][asterisk_config]:
-                                if asterisk_config in urllist_params_list:
-                                    self.xivoconf.set(asterisk_server,
-                                                      asterisk_config,
-                                                      ','.join(self.xivoconf_json[asterisk_server][asterisk_config]))
-                                else:
-                                    self.xivoconf.set(asterisk_server,
-                                                      asterisk_config,
-                                                      self.xivoconf_json[asterisk_server][asterisk_config])
 
                     for profile, profdef in self.xivoconf_json['xivocti']['profiles'].iteritems():
                         if profdef['xlets']:

@@ -864,7 +864,7 @@ class xivo_daemon:
         signal.signal(signal.SIGHUP, self.sighandler_reload)
         
         self.nreload = 0
-        self.directorylist = xivo_contexts.Contexts()
+        self.contextlist = xivo_contexts.Contexts()
         self.configs = {}
         self.xdname = None
         self.tqueue = Queue.Queue()
@@ -900,7 +900,6 @@ class xivo_daemon:
         log.warning('(sighandler_reload) signal %s (atq = %s) received : reloads' % (signum, self.askedtoquit))
         self.askedtoquit = False
 
-    
     def update_readconf(self):
         log.info('reparsing config file(s)')
         try:
@@ -909,13 +908,12 @@ class xivo_daemon:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             lconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
         self.commandclass.set_cticonfig(lconf)
-        self.commandclass.set_options(self.cconf.read_section('commandset', self.commandset), self.cconf)
 
     # loads the configuration for each asterisk
     def load_asterisk_conf(self):   # {
         for astid in self.asterisklist:
-            xivoconf_asterisk = self.cconf.read_section('ipbx', astid)
-            if len(xivoconf_asterisk) > 0:
+            xivoconf_asterisk = self.cconf.xivoconf_json[astid]
+            if xivoconf_asterisk:
                 urllist = {}
                 ipaddress = '127.0.0.1'
                 ipaddress_webi = '127.0.0.1'
@@ -923,17 +921,15 @@ class xivo_daemon:
                 ami_login = 'xivouser'
                 ami_pass = 'xivouser'
                 cdr_db_uri = userfeatures_db_uri = None
-                realm = 'asterisk'
                 parkingnumber = '700'
                 faxcallerid = 'faxcallerid'
-                linkestablished = ''
                 aoriginate = 'AOriginate'
                 url_queuelog = None
-                
+
                 for listname in self.commandclass.weblist.keys():
                     fieldname = 'urllist_%s' % listname
                     if fieldname in xivoconf_asterisk:
-                        urllist[listname] = xivoconf_asterisk[fieldname].split(',')
+                        urllist[listname] = xivoconf_asterisk[fieldname]
                     else:
                         urllist[listname] = []
                 if 'url_queuelog' in xivoconf_asterisk:
@@ -946,8 +942,6 @@ class xivo_daemon:
                     parkingnumber = int(xivoconf_asterisk['parkingnumber'])
                 if 'faxcallerid' in xivoconf_asterisk:
                     faxcallerid = int(xivoconf_asterisk['faxcallerid'])
-                if 'linkestablished' in xivoconf_asterisk:
-                    linkestablished = xivoconf_asterisk['linkestablished']
                 if 'ami_port' in xivoconf_asterisk:
                     ami_port = int(xivoconf_asterisk['ami_port'])
                 if 'ami_login' in xivoconf_asterisk:
@@ -958,13 +952,11 @@ class xivo_daemon:
                     userfeatures_db_uri = xivoconf_asterisk['userfeatures_db_uri']
                 if 'cdr_db_uri' in xivoconf_asterisk:
                     cdr_db_uri = xivoconf_asterisk['cdr_db_uri']
-                if 'realm' in xivoconf_asterisk:
-                    realm = xivoconf_asterisk['realm']
                 if 'aoriginate' in xivoconf_asterisk:
                     aoriginate = xivoconf_asterisk['aoriginate']
-                    
+
                 capafeatures = []
-                
+
                 self.configs[astid] = xivo_astcfg.AsteriskConfig(astid,
                                                                  ipaddress,
                                                                  ipaddress_webi,
@@ -974,21 +966,19 @@ class xivo_daemon:
                                                                  userfeatures_db_uri,
                                                                  capafeatures,
                                                                  cdr_db_uri,
-                                                                 realm,
                                                                  parkingnumber,
                                                                  faxcallerid,
-                                                                 linkestablished,
                                                                  aoriginate)
-                
+
                 for ilist in self.commandclass.weblist.keys():
                     self.commandclass.set_urllist(astid, ilist, urllist[ilist])
-                    
+
                 t1 = time.time()
                 self.commandclass.read_queuelog(astid, url_queuelog)
                 t2 = time.time()
-                
+
                 log.info('%s spent %f seconds to read queuelog file' % (astid, t2 - t1))
-                
+
                 if ipaddress not in self.ip_reverse_sht:
                     self.ip_reverse_sht[ipaddress] = astid
                 else:
@@ -999,7 +989,7 @@ class xivo_daemon:
                 else:
                     log.warning('WARNING - IP address (WEBI) already exists for asterisk <%s> - can not set it for <%s>' %
                                 (self.ip_reverse_webi[ipaddress_webi], astid))
-                    
+
                 self.save_for_next_packet_events[astid] = ''
     # }
     
@@ -1021,16 +1011,16 @@ class xivo_daemon:
         self.asterisklist = []
         userlists = []
         ctilog = None
-        
+
         self.userinfo_by_requester = {}
         self.userinfo_current = {}
-        
+
         try:
             self.cconf = cti_config.Config(XIVO_CONF_FILE)
         except Exception:
             log.warning('could not access to normal config file %s, switching to default' % XIVO_CONF_FILE)
             self.cconf = cti_config.Config(XIVO_CONF_FILE_DEFAULT)
-        xivoconf_general = self.cconf.read_section('general', 'general')
+        xivoconf_general = self.cconf.xivoconf_json['main']
 
         # loads the general configuration
         self.commandset = self.cconf.xivoconf_json['main']['commandset']
@@ -1052,7 +1042,7 @@ class xivo_daemon:
                         incoming_udp_ports.append('%d:%s:%s' % (int(bind_and_port[1]), func, bind_and_port[0]))
                     except Exception:
                         log.exception('%s definition' % fieldname)
-                        
+
         self.extraconn = xivoconf_general.get('extraconn', '')
         self.updates_period = int(xivoconf_general.get('updates_period', '60'))
         ctilog = xivoconf_general.get('ctilog_db_uri')
@@ -1062,9 +1052,9 @@ class xivo_daemon:
         prefixfile = xivoconf_general.get('prefixfile')
         parting_astid_context = xivoconf_general.get('parting_astid_context')
         if 'asterisklist' in xivoconf_general:
-            self.asterisklist = xivoconf_general['asterisklist'].split(',')
+            self.asterisklist = xivoconf_general['asterisklist']
         if 'userlists' in xivoconf_general:
-            userlists = xivoconf_general['userlists'].split(',')
+            userlists = xivoconf_general['userlists']
 
         socket.setdefaulttimeout(float(socktimeout))
 
@@ -1080,14 +1070,14 @@ class xivo_daemon:
         else:
             self.commandclass = xivo_commandsets.BaseCommand()
             log.warning('# STARTING %s : no such commandset <%s>' % (xdname, self.commandset))
-            
+
         self.xdname = self.commandclass.xdname
 
         log.info('# STARTING %s / svn:%s / %d' % (self.xdname, self.commandclass.version(), self.nreload))
 
         self.update_readconf()
         self.commandclass.set_userlist_urls(userlists)
-        self.commandclass.set_contextlist(self.directorylist)
+        self.commandclass.set_contextlist(self.contextlist)
         self.commandclass.set_configs(self.configs)
         self.commandclass.set_ctilog(ctilog)
         self.commandclass.set_logintimeout(logintimeout)
@@ -1107,11 +1097,11 @@ class xivo_daemon:
 
         for contextname, contextdef in self.cconf.xivoconf_json['contexts'].iteritems():
             displaysection = contextdef['display']
-            self.directorylist.setdisplay(contextname, self.cconf.xivoconf_json['displays'][displaysection[9:]])
+            self.contextlist.setdisplay(contextname, self.cconf.xivoconf_json['displays'][displaysection[9:]])
             for dr in contextdef['directories']:
                 try:
-                    self.directorylist.update(contextname, dr,
-                                              self.cconf.xivoconf_json['directories'][dr[12:]])
+                    self.contextlist.update(contextname, dr,
+                                            self.cconf.xivoconf_json['directories'][dr[12:]])
                 except Exception:
                     log.exception('unable to read directory config for %s' % dr)
 

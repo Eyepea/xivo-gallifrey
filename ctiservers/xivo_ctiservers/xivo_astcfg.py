@@ -61,10 +61,8 @@ class AsteriskConfig:
         userfeatures_db_uri = None,
         capafeatures = [],
         cdr_db_uri = None,
-        realm = 'asterisk',
         parkingnumber = '700',
         faxcallerid = 'faxcallerid',
-        linkestablished = '',
         aoriginate = 'AOriginate'
         ):
 
@@ -75,10 +73,8 @@ class AsteriskConfig:
             self.ami_login = ami_login
             self.ami_pass = ami_pass
             self.capafeatures = capafeatures
-            self.realm = realm
             self.parkingnumber = parkingnumber
             self.faxcallerid = faxcallerid
-            self.linkestablished = linkestablished
             self.aoriginate = aoriginate
 
             self.userfeatures_db_conn = None

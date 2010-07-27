@@ -610,19 +610,8 @@ class XivoCTICommand(BaseCommand):
 
     def set_partings(self, parting_astid_context):
         if parting_astid_context:
-            partings = parting_astid_context.split(',')
-            self.parting_astid = ('astid' in partings)
-            self.parting_context = ('context' in partings)
-        return
-
-    def set_cticonfig(self, lconf):
-        self.lconf = lconf
-
-        self.sheet_actions = {}
-        for where, sheetaction in lconf.read_section('sheet_events', 'sheet_events').iteritems():
-            if sheetaction:
-                if where in self.sheet_allowed_events or where.startswith('custom-'):
-                    self.sheet_actions[where] = lconf.read_section('sheet_action', sheetaction)
+            self.parting_astid = ('astid' in parting_astid_context)
+            self.parting_context = ('context' in parting_astid_context)
         return
 
     def set_ctilog(self, ctilog):
@@ -686,12 +675,21 @@ class XivoCTICommand(BaseCommand):
             log.exception('__json2dict__ json decode %s' % urlvalue)
         return ret
 
+    def set_cticonfig(self, allconf):
+        self.lconf = allconf
+        self.sheet_actions = {}
+        for where, sheetaction in allconf.read_section('sheet_events', 'sheet_events').iteritems():
+            if sheetaction:
+                if where in self.sheet_allowed_events or where.startswith('custom-'):
+                    self.sheet_actions[where] = allconf.read_section('sheet_action', sheetaction)
 
-    def set_options(self, xivoconf, allconf):
-        self.xivoconf = xivoconf
-        allowedxlets = self.__json2dict__(allconf.xivoconf_json['xivocti']['allowedxlets'])
+        xivocticonf = allconf.xivoconf_json['xivocti']
 
-        for name, val in allconf.xivoconf_json['xivocti']['profiles'].iteritems():
+        self.zipsheets = bool(int(xivocticonf.get('zipsheets', '1')))
+        self.regupdates = xivocticonf.get('regupdates', {})
+        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'])
+
+        for name, val in xivocticonf['profiles'].iteritems():
             if name not in self.capas:
                 self.capas[name] = cti_capas.Capabilities(allowedxlets)
             for prop, value in val.iteritems():
@@ -716,14 +714,14 @@ class XivoCTICommand(BaseCommand):
                     if value not in self.presence_sections and value[10:] in allconf.xivoconf_json['presences']:
                         self.presence_sections[value] = cti_presence.Presence(allconf.xivoconf_json['presences'][value[10:]])
                 else:
-                    log.warning('set_options unknown property (%s = %s) for xlet %s' % (prop, value, name))
+                    log.warning('set_cticonfig unknown property (%s = %s) for xlet %s' % (prop, value, name))
 
-        for v, vv in self.lconf.xivoconf_json.get('phonehints').iteritems():
+        for v, vv in allconf.xivoconf_json.get('phonehints').iteritems():
             if len(vv) > 1:
                 self.display_hints[v] = { 'longname' : vv[0],
                                           'color' : vv[1] }
-        if 'required_client_version' in self.xivoconf:
-            self.required_client_version = int(self.xivoconf['required_client_version'])
+        if 'required_client_version' in xivocticonf:
+            self.required_client_version = int(xivocticonf['required_client_version'])
         return
 
     def set_configs(self, configs):
@@ -743,7 +741,7 @@ class XivoCTICommand(BaseCommand):
             if listname in self.weblistprops:
                 cf = self.weblistprops[listname]['classfile']
                 cn = self.weblistprops[listname]['classname']
-                self.weblist[listname][astid] = getattr(cf, cn)(urllist, { 'conf': self.lconf })
+                self.weblist[listname][astid] = getattr(cf, cn)(urllist, { 'conf' : self.lconf })
                 self.weblist[listname][astid].setcommandclass(self)
             if listname == 'phones':
                 # XXX
@@ -1501,7 +1499,6 @@ class XivoCTICommand(BaseCommand):
                 pass
 
             # 4) format message and send
-            dozip = bool(int(self.xivoconf.get('zipsheets', '1')))
             xmlstring = xmlustring.encode('utf8')
             # build the json message
             tosend = { 'class' : 'sheet',
@@ -1509,11 +1506,11 @@ class XivoCTICommand(BaseCommand):
                        'function' : 'displaysheet',
                        'channel' : channel,
                        'astid' : astid,
-                       'compressed' : dozip
+                       'compressed' : self.zipsheets
                        }
             if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
                 tosend['entries'] = [ entry.todict() for entry in self.sheetmanager[astid].get_sheet(channel).entries ]
-            if dozip:
+            if self.zipsheets:
                 ulen = len(xmlstring)
                 # prepend the uncompressed length in big endian
                 # to the zlib compressed string to meet Qt qUncompress() function expectations
@@ -5291,16 +5288,15 @@ class XivoCTICommand(BaseCommand):
         """
         try:
             ntime = time.localtime()
-            thour = ntime[3]
-            tmin = ntime[4]
-            if 'regupdate' in self.xivoconf:
-                regactions = self.xivoconf['regupdate'].split(';')
-                if len(regactions) == 3 and thour == int(regactions[0]) and tmin < int(regactions[1]):
-                    log.info('(%2d h %2d min) => %s' % (thour, tmin, regactions[2]))
-                    if regactions[2] == 'logoutagents':
+            t_hour = ntime[3]
+            t_min = ntime[4]
+            for actid, actdef in self.regupdates.iteritems():
+                if t_hour == int(actdef.get('hour')) and t_min < int(actdef.get('min')):
+                    log.info('(%2d h %2d min) => %s' % (t_hour, t_min, actdef.get('action')))
+                    if actdef.get('action') == 'logoutagents':
                         self.logout_all_agents()
                 else:
-                    log.info('(%2d h %2d min) => no action' % (thour, tmin))
+                    log.info('(%2d h %2d min) => no action' % (t_hour, t_min))
         except Exception:
             log.exception('(regular update)')
         return
