@@ -193,11 +193,11 @@ class Thomson(PhoneVendorMixin):
     THOMSON_SPEC_TXT_BASENAME = None
     
     THOMSON_LOCALES = {
-        'de_DE': (3, 'DE'),
-        'en_US': (0, 'US'),
-        'es_ES': (2, 'ES'),
-        'fr_FR': (1, 'FR'),
-        'fr_CA': (1, 'US'),
+        'de_DE': ('3', 'DE'),
+        'en_US': ('0', 'US'),
+        'es_ES': ('2', 'ES'),
+        'fr_FR': ('1', 'FR'),
+        'fr_CA': ('1', 'US'),
     }
     
     THOMSON_TZ_MAP = _gen_tz_map()
@@ -260,15 +260,15 @@ class Thomson(PhoneVendorMixin):
     def __generate(self, provinfo):
         model = self.phone['model'].upper()
         macaddr = self.phone['macaddr'].replace(":", "").upper()
-
+        phonetype = "ST"
+        if self.phone['model'] == "tb30s":
+            phonetype = ""
+        
         try:
             txt_template_specific_path = os.path.join(self.THOMSON_COMMON_DIR, macaddr + "-template.cfg")
             log.debug("Trying phone specific template %r", txt_template_specific_path)
             txt_template_file = open(txt_template_specific_path)
         except IOError, (errno, errstr):
-            phonetype = "ST"
-            if self.phone['model'] == "tb30s":
-                phonetype = "TB"
             txt_template_common_path = os.path.join(self.THOMSON_COMMON_DIR, "templates", phonetype + model + "_template.txt")
 
             if not os.access(txt_template_common_path, os.R_OK):
@@ -303,7 +303,7 @@ class Thomson(PhoneVendorMixin):
             timezone = provinfo['timezone']
         else:
             timezone = self.DEFAULT_TIMEZONE
-        zonenum = self.__tz_name_to_num(timezone)
+        zonenum = str(self.__tz_name_to_num(timezone))
 
 # THOMSON BUG #1
 # provinfo['number'] is volontarily not set in "TEL1Number" because Thomson
