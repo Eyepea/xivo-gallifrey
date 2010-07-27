@@ -53,9 +53,9 @@ if($act == 'liststatus')
 						   $this->bbf('toolbar_opt_add'),
 						   'id="toolbar-bt-add"
 						border="0"'),
-				'service/ipbx/cti_settings/presences',
-			    array('act' => 'addstatus',
-				      'idpresences' => $idpresences),
+				'cti/presences',
+				array('act'   => 'addstatus',
+				'idpresences' => $idpresences),
 				null,
 				$this->bbf('toolbar_opt_add'));
 }
