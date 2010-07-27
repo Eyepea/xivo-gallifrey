@@ -66,6 +66,29 @@ class Aastra(PhoneVendorMixin):
         'fr_FR': 'language: 1\nlanguage 1: i18n/lang_fr.txt\ntone set: France\ninput language: French',
         'fr_CA': 'language: 1\nlanguage 1: i18n/lang_fr_ca.txt\ntone set: US\ninput language: French',
     }
+    
+    AASTRA_DICT = {
+        'en': {
+            'dict_voicemail':  'Voicemail',
+            'dict_forward_unc': 'Unconditional forward',
+            'dict_dnd': 'D.N.D',
+            'dict_local_directory': 'Directory',
+            'dict_callers': 'Callers',
+            'dict_services': 'Services',
+            'dict_pickup': 'Call pickup',
+            'dict_remote_directory': 'Directory',
+        },
+        'fr': {
+            'dict_voicemail':  'Messagerie',
+            'dict_forward_unc': 'Renvoi inconditionnel',
+            'dict_dnd': 'N.P.D',
+            'dict_local_directory': 'Repertoire',
+            'dict_callers': 'Appels',
+            'dict_services': 'Services',
+            'dict_pickup': 'Interception',
+            'dict_remote_directory': 'Annuaire',
+        },
+    }
 
     @classmethod
     def setup(cls, config):
@@ -232,16 +255,20 @@ class Aastra(PhoneVendorMixin):
             timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
         else:
             timezone = ''
+            
+        xvars = {
+            'exten_pickup_prefix':    exten_pickup_prefix,
+            'function_keys':          function_keys_config_lines,
+            'language':               language,
+            'timezone':               timezone,
+        }
+        xvars.update(self.__get_lang_dict(locale))
 
         txt = xivo_config.txtsubst(
                 template_lines,
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
-                    { 'exten_pickup_prefix':    exten_pickup_prefix,
-                      'function_keys':          function_keys_config_lines,
-                      'language':               language,
-                      'timezone':               timezone,
-                    },
+                    xvars,
                     format_extension=self.__format_extension),
                 cfg_filename,
                 'utf8')
@@ -250,6 +277,17 @@ class Aastra(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
+        
+    @classmethod
+    def __get_lang_dict(cls, locale):
+        lang_code = cls.__langage_code_from_locale(locale)
+        if lang_code not in cls.AASTRA_DICT:
+            lang_code = cls.__langage_code_from_locale(cls.DEFAULT_LOCALE)
+        return cls.AASTRA_DICT[lang_code]
+        
+    @classmethod
+    def __langage_code_from_locale(cls, locale):
+        return locale.split('_', 1)[0]
         
     @classmethod
     def __format_tz_inform(cls, inform):
