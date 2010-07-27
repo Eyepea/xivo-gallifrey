@@ -285,7 +285,6 @@ switch($act)
 		$out['main']['updates_period'] = $load_inf[0]['updates_period'];
 		$out['main']['logintimeout'] = $load_inf[0]['login_timeout'];
 		$out['main']['asterisklist'] = array();
-		$out['main']['contextlist'] = $ctxlist;
 		$out['main']['userlists'] = array();
 		$out['main']['parting_astid_context'] = array();
 		$out['main']['asterisk_queuestat_db'] = $db_queuelogger;
