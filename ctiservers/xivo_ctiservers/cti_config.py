@@ -90,27 +90,6 @@ class Config:
                                 if xlet_attr[1] == "grid" :
                                     del xlet_attr[2]
 
-                    for context_name, contextdef in self.xivoconf_json["contexts"].iteritems():
-                        debug_add_section(self.xivoconf, 'contexts.' + context_name)
-                        self.xivoconf.set('contexts.' + context_name, "display", contextdef['display'])
-                        self.xivoconf.set('contexts.' + context_name, "directories", ','.join(contextdef['directories']))
-                        self.xivoconf.set('contexts.' + context_name, "contextname", context_name)
-
-                    for display_name, displaydef in self.xivoconf_json["displays"].iteritems():
-                        kname = 'displays.' + display_name
-                        debug_add_section(self.xivoconf, kname)
-                        for k, v in displaydef.iteritems():
-                            self.xivoconf.set(kname, k, '|'.join(v))
-
-                    for directory_name, directorydef in self.xivoconf_json["directories"].iteritems():
-                        kname = 'directories.' + directory_name
-                        debug_add_section(self.xivoconf, kname)
-                        for k, v in directorydef.iteritems():
-                            if isinstance(v, list):
-                                self.xivoconf.set(kname, k, ','.join(v))
-                            else:
-                                self.xivoconf.set(kname, k, unicode(v))
-
                     def add_sheet_action_section(self, section_name, rest):
                         debug_add_section(self.xivoconf, section_name)
                         for key, v in rest.iteritems():

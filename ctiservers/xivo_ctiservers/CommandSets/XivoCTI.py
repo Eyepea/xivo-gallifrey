@@ -1279,8 +1279,8 @@ class XivoCTICommand(BaseCommand):
         itemdir = {}
         if dirlist:
             dirs_to_lookup = []
-            for dirname in dirlist.split(','):
-                ddef = self.lconf.read_section('directory', dirname)
+            for dirname in dirlist:
+                ddef = self.lconf.xivoconf_json['directories'][dirname[12:]]
                 if ddef:
                     dirs_to_lookup.append(dirname)
                     self.ctxlist.updatedir(dirname, ddef)
@@ -1614,7 +1614,7 @@ class XivoCTICommand(BaseCommand):
             dialplan_data['xivo-calleridnum'] = self.ulist_ng.keeplist[xuserid].get('phonenum')
             dialplan_data['xivo-calleridname'] = self.ulist_ng.keeplist[xuserid].get('fullname')
             try:
-                e = self.lconf.read_section('directory_internal', 'directories.internal')
+                e = self.lconf.xivoconf_json['directories']['internal']
                 for k, v in e.iteritems():
                     if k.startswith('field_'):
                         nk = 'db-%s' % k[6:]
@@ -5394,6 +5394,10 @@ class XivoCTICommand(BaseCommand):
         phoneid = userinfo.get('phoneid')
         repstr = {}
 
+        if not self.configs[astid].userfeatures_db_conn:
+            log.warning('__build_features_get__ : no userfeatures_db_conn set for %s' % astid)
+            return
+
         cursor = self.configs[astid].userfeatures_db_conn.cursor()
         params = [srcnum, phoneid, context]
         query = 'SELECT ${columns} FROM userfeatures WHERE number = %s AND name = %s AND context = %s'
@@ -5422,7 +5426,7 @@ class XivoCTICommand(BaseCommand):
 
                 if len(resenable) > 0 and len(resdest) > 0:
                     repstr[key] = { 'enabled' : bool(resenable[0][0]),
-                        'number' : resdest[0][0] }
+                                    'number' : resdest[0][0] }
                 else:
                     log.warning('%s __build_features_get__ : nobody matches (%s %s)'
                                 % (astid, key, params))
@@ -5444,6 +5448,11 @@ class XivoCTICommand(BaseCommand):
         context = userinfo.get('context')
         srcnum = userinfo.get('phonenum')
         phoneid = userinfo.get('phoneid')
+
+        if not self.configs[astid].userfeatures_db_conn:
+            log.warning('__build_features_put__ : no userfeatures_db_conn set for %s' % astid)
+            return
+
         try:
             query = 'UPDATE userfeatures SET ' + key + ' = %s WHERE number = %s AND name = %s AND context = %s'
             params = [value, srcnum, phoneid, context]
@@ -5463,9 +5472,9 @@ class XivoCTICommand(BaseCommand):
             repstr = {}
             log.exception('features_put id=%s %s %s' % (userid, key, value))
         tosend = { 'class' : 'features',
-            'function' : 'put',
-            'userid' : userid,
-            'payload' : repstr }
+                   'function' : 'put',
+                   'userid' : userid,
+                   'payload' : repstr }
         return self.__cjson_encode__(tosend)
 
 
@@ -5985,7 +5994,7 @@ class XivoCTICommand(BaseCommand):
         for itemdir in fulllist:
             myitems = []
             for k in self.ctxlist.display_items[ctx]:
-                [title, type, defaultval, sformat] = self.ctxlist.displays[ctx][k].split('|')
+                [title, type, defaultval, sformat] = self.ctxlist.displays[ctx][k]
                 basestr = sformat
                 for k, v in itemdir.iteritems():
                     try:
@@ -6191,8 +6200,8 @@ class XivoCTICommand(BaseCommand):
                 cursor = conn.cursor()
                 sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
                 cursor.query(sqlrequest,
-                    tuple(z.match_direct),
-                    None)
+                             tuple(z.match_direct),
+                             None)
                 results = cursor.fetchall()
                 conn.close()
             except Exception:
@@ -6208,7 +6217,7 @@ class XivoCTICommand(BaseCommand):
                 fullstatlist.append(futureline)
         else:
             log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                % (dbkind, dirname))
+                        % (dbkind, dirname))
 
         if reversedir:
             display_reverse = z.display_reverse
@@ -6349,11 +6358,11 @@ class XivoCTICommand(BaseCommand):
                     calleridsolved = dialplan_data.get('dbr-display')
                 else:
                     log.warning('%s handle_fagi %s no dialplan_data received yet'
-                        % (astid, function))
+                                % (astid, function))
                     calleridsolved = None
             else:
                 log.warning('%s handle_fagi %s no such uniqueid received yet : %s %s'
-                    % (astid, function, uniqueid, channel))
+                            % (astid, function, uniqueid, channel))
                 calleridsolved = None
 
             calleridnum  = fastagi.env['agi_callerid']

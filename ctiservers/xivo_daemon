@@ -1019,7 +1019,6 @@ class xivo_daemon:
         incoming_tcp_ports = []
         incoming_udp_ports = []
         self.asterisklist = []
-        contextlist = []
         userlists = []
         ctilog = None
         
@@ -1064,8 +1063,6 @@ class xivo_daemon:
         parting_astid_context = xivoconf_general.get('parting_astid_context')
         if 'asterisklist' in xivoconf_general:
             self.asterisklist = xivoconf_general['asterisklist'].split(',')
-        if 'contextlist' in xivoconf_general:
-            contextlist = xivoconf_general['contextlist'].split(',')
         if 'userlists' in xivoconf_general:
             userlists = xivoconf_general['userlists'].split(',')
 
@@ -1094,7 +1091,7 @@ class xivo_daemon:
         self.commandclass.set_configs(self.configs)
         self.commandclass.set_ctilog(ctilog)
         self.commandclass.set_logintimeout(logintimeout)
-        
+
         if self.apnoeafile:
             try:
                 e = open(self.apnoeafile, 'r')
@@ -1107,33 +1104,25 @@ class xivo_daemon:
             self.commandclass.read_internatprefixes(prefixfile)
         if parting_astid_context:
             self.commandclass.set_partings(parting_astid_context)
-            
-        for ctx in contextlist:
-            xivoconf_context = self.cconf.read_section('context', ctx)
-            if len(xivoconf_context) > 0:
-                if 'contextname' in xivoconf_context:
-                    contextname = xivoconf_context['contextname']
-                if 'display' in xivoconf_context:
-                    displaysection = xivoconf_context['display']
-                    self.directorylist.setdisplay(contextname, self.cconf.read_section('displayitem', displaysection))
-                if 'directories' in xivoconf_context:
-                    directories = xivoconf_context['directories'].split(',')
-                    for dr in directories:
-                        try:
-                            xivoconf_dir = self.cconf.read_section('directory', dr)
-                            self.directorylist.update(contextname, dr, xivoconf_dir)
-                        except Exception:
-                            log.exception('unable to read directory config for %s' % dr)
+
+        for contextname, contextdef in self.cconf.xivoconf_json['contexts'].iteritems():
+            displaysection = contextdef['display']
+            self.directorylist.setdisplay(contextname, self.cconf.xivoconf_json['displays'][displaysection[9:]])
+            for dr in contextdef['directories']:
+                try:
+                    self.directorylist.update(contextname, dr,
+                                              self.cconf.xivoconf_json['directories'][dr[12:]])
+                except Exception:
+                    log.exception('unable to read directory config for %s' % dr)
+
         self.save_for_next_packet_events = {}
         self.ip_reverse_webi = {}
         self.ip_reverse_sht = {}
-        
-        
+
         self.load_asterisk_conf()
-        
-        
+
         self.outsock = self.commandclass.extrasock(self.extraconn)
-        
+
         self.fdlist_established = {}
         self.fdlist_listen_cti = {}
         self.fdlist_udp_cti = {}

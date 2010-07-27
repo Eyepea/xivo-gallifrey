@@ -27,6 +27,10 @@ __author__    = 'Corentin Le Gall'
 Asterisk Contexts.
 """
 
+import logging
+
+log = logging.getLogger('xivo_contexts')
+
 class Contexts:
     def __init__(self):
         self.ctxlist = {}
@@ -46,7 +50,7 @@ class Contexts:
         self.display_items[ctxname].sort()
         self.display_header[ctxname] = []
         for k in self.display_items[ctxname]:
-            [title, type, defaultval, format] = self.displays[ctxname][k].split('|')
+            [title, type, defaultval, format] = self.displays[ctxname][k]
             self.display_header[ctxname].append(title)
         return
 
@@ -79,22 +83,23 @@ class Directory:
 
     def setProps(self, xivoconf_local):
         self.fkeys = {}
-        for field in xivoconf_local:
+        for field, value in xivoconf_local.iteritems():
             if field.startswith('field_'):
                 keyword = field.split('_')[1]
-                self.fkeys['db-%s' % keyword] = xivoconf_local[field].split(',')
+                self.fkeys['db-%s' % keyword] = value
             elif field in 'uri':
-                self.uri = xivoconf_local[field]
+                self.uri = value
             elif field == 'name':
-                self.name = xivoconf_local[field]
+                self.name = value
             elif field == 'delimiter':
-                self.delimiter = xivoconf_local[field]
+                self.delimiter = value
             elif field == 'dir_db_sqltable':
-                self.sqltable = xivoconf_local[field]
+                self.sqltable = value
             elif field == 'display_reverse':
-                self.display_reverse = xivoconf_local[field]
+                if value:
+                    self.display_reverse = value[0]
             elif field == 'match_direct':
-                self.match_direct = str(xivoconf_local[field]).split(',')
+                self.match_direct = value
             elif field == 'match_reverse':
-                self.match_reverse = str(xivoconf_local[field]).split(',')
+                self.match_reverse = value
         return
