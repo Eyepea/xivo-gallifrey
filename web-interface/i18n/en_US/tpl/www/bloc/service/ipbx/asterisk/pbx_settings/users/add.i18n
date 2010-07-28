@@ -990,6 +990,8 @@ No softkeys
 On hook
 
 ; softkey_event(connected)
+Connected
+
 ; softkey_event(onhold)
 On hold
 
@@ -1002,11 +1004,14 @@ Off hook
 ; softkey_event(conntrans)
 ; softkey_event(digitsfoll)
 ; softkey_event(connconf)
+In Conference
+
 ; softkey_event(ringout)
 Outgoing call
 
 ; softkey_event(offhookfeat)
 ; softkey_event(onhint)
+
 ; softkey_redial
 Redial
 

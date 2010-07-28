@@ -1031,18 +1031,24 @@ Aucunes actions associées
 Raccroché
 
 ; softkey_event(connected)
+En ligne
+
 ; softkey_event(onhold)
 En attente
 
 ; softkey_event(ringin)
-Sonnerie
+Sonne
 
 ; softkey_event(offhook)
-En ligne
+Décroché
 
 ; softkey_event(conntrans)
 ; softkey_event(digitsfoll)
+Entre des chiffres supplémentaires
+
 ; softkey_event(connconf)
+En conférence
+
 ; softkey_event(ringout)
 Appel sortant
 
@@ -1057,22 +1063,22 @@ Rappel du dernier numéro
 Nouvel appel
 
 ; softkey_cfwdall
-Activer/Désactiver le transfer d'appel inconditionnel 
+Activer/Désactiver le renvoi d'appel inconditionnel 
 
 ; softkey_cfwdbusy
-Activer/Désactiver le transfert sur occupation
+Activer/Désactiver le renvoi d'appel sur occupation
 
 ; softkey_cfwdnoanswer
-Activer/Désactiver le transfert sur non réponse
+Activer/Désactiver le renvoi d'appel sur non réponse
 
 ; softkey_pickup
-Intercepter d'un appel
+Intercepter un appel
 
 ; softkey_gpickup
-Intercepter un appel (d'un autre groupe d'interception)
+Intercepter un appel (autre groupe d'interception)
 
 ; softkey_conflist
-Voir la liste des participants à la conférence
+Voir la liste des participants de la conférence
 
 ; softkey_dnd
 Désactiver le mode NPD
@@ -1096,7 +1102,7 @@ Renvoi immédiat vers la messagerie vocale
 Reprendre en appel en attente
 
 ; softkey_transfer
-Transfert attendu
+Transfert indirect
 
 ; softkey_dirtrfr
 Transfert direct (mise en relation de 2 appels)
