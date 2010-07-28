@@ -52,6 +52,6 @@ class Config:
                                     xlet_attr.remove('N/A')
                                 if ('tab' or 'tabber') in xlet_attr:
                                     del xlet_attr[2]
-                                if xlet_attr[1] == "grid" :
+                                if xlet_attr[1] == 'grid':
                                     del xlet_attr[2]
         return

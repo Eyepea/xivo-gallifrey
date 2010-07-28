@@ -5733,33 +5733,37 @@ class XivoCTICommand(BaseCommand):
                 for agentid in agentids:
                     # XXX capas
                     if agentid.get('kind') == 'agent':
-                        agentitem = self.weblist['agents'][agentid.get('astid')].keeplist.get(agentid.get('id'))
-                        for queueid in queueids:
+                        astid = agentid.get('astid')
+                        aids = agentid.get('id')
+                        for aid in aids:
+                          agentitem = self.weblist['agents'][astid].keeplist.get(aid)
+                          for queueid in queueids:
                             # XXX capas
-                            if queueid.get('kind') in ['queue', 'group'] and agentid.get('astid') == queueid.get('astid'):
-                                qid = queueid.get('id')
-                                queueitem = self.weblist['queues'][queueid.get('astid')].keeplist.get(qid)
+                            if queueid.get('kind') in ['queue', 'group'] and astid == queueid.get('astid'):
+                                qids = queueid.get('id')
+                                if not isinstance(qids, list):
+                                    qids = [qids]
+                                for qid in qids:
+                                    queueitem = self.weblist['queues'][astid].keeplist.get(qid)
+                                    agentnumber = agentitem.get('number')
+                                    queuename = queueitem.get('queuename')
 
-                                astid = agentid.get('astid')
-                                agentnumber = agentitem.get('number')
-                                queuename = queueitem.get('queuename')
-
-                                if actionname == 'agentjoinqueue':
-                                    self.__ami_execute__(astid, 'queueadd', queuename,
-                                        'Agent/%s' % agentnumber, pausestatus)
-                                elif actionname == 'agentleavequeue':
-                                    self.__ami_execute__(astid, 'queueremove', queuename,
-                                        'Agent/%s' % agentnumber)
-                                elif actionname == 'agentpausequeue':
-                                    qv = agentitem.get('queues_by_agent').get(qid)
-                                    if qv.get('Paused') == '0':
-                                        self.__ami_execute__(astid, 'queuepause', queuename,
-                                            'Agent/%s' % agentnumber, 'true')
-                                elif actionname == 'agentunpausequeue':
-                                    qv = agentitem.get('queues_by_agent').get(qid)
-                                    if qv.get('Paused') == '1':
-                                        self.__ami_execute__(astid, 'queuepause', queuename,
-                                            'Agent/%s' % agentnumber, 'false')
+                                    if actionname == 'agentjoinqueue':
+                                        self.__ami_execute__(astid, 'queueadd', queuename,
+                                                             'Agent/%s' % agentnumber, pausestatus)
+                                    elif actionname == 'agentleavequeue':
+                                        self.__ami_execute__(astid, 'queueremove', queuename,
+                                                             'Agent/%s' % agentnumber)
+                                    elif actionname == 'agentpausequeue':
+                                        qv = agentitem.get('queues_by_agent').get(qid)
+                                        if qv and qv.get('Paused') == '0':
+                                            self.__ami_execute__(astid, 'queuepause', queuename,
+                                                                 'Agent/%s' % agentnumber, 'true')
+                                    elif actionname == 'agentunpausequeue':
+                                        qv = agentitem.get('queues_by_agent').get(qid)
+                                        if qv and qv.get('Paused') == '1':
+                                            self.__ami_execute__(astid, 'queuepause', queuename,
+                                                                 'Agent/%s' % agentnumber, 'false')
             elif actionname in ['agentlogin', 'agentlogout']:
                 agentphonenumber = args.get('agentphonenumber')
                 agentids = self.__mergelist__(userinfo, args.get('agentids').split(','))
