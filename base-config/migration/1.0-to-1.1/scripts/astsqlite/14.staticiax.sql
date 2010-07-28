@@ -3,13 +3,14 @@ INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','requirecalltoken'
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','0.0.0.0');
 
 UPDATE OR IGNORE staticiax SET
-  language   = 'fr_FR'
+  var_val   = 'fr_FR'
 WHERE
-  language != 'en' AND
-  language NOT NULL;
+  var_name = 'language' AND
+  var_val != 'en';
 
 UPDATE OR IGNORE staticiax SET
-  language  = 'en_US'
+  var_val  = 'en_US'
 WHERE
-  language  = 'en';
+  var_name = 'language' AND
+  var_val  = 'en';
 

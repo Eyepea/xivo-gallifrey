@@ -1,13 +1,12 @@
 
 UPDATE OR IGNORE usersip SET
-  var_val   = 'fr_FR'
+  language   = 'fr_FR'
 WHERE
-  var_name = 'language' AND
-  var_val != 'en';
+  language != 'en' AND
+  language NOT NULL;
 
 UPDATE OR IGNORE usersip SET
-  var_val  = 'en_US'
+  language  = 'en_US'
 WHERE
-  var_name = 'language' AND
-  var_val  = 'en';
+  language  = 'en';
 
