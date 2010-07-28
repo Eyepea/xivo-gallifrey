@@ -108,6 +108,7 @@ ConfChamberModel::data(const QModelIndex &index,
     QString rowId;
 
     rowId = m_row2id[row];
+    QString in = QString("confrooms/%0/in/%1/").arg(m_id).arg(rowId);
 
     if (role != Qt::DisplayRole) {
         if (role == Qt::TextAlignmentRole) {
@@ -117,14 +118,23 @@ ConfChamberModel::data(const QModelIndex &index,
                 return QPixmap(":images/cancel.png").scaledToHeight(16,
                                Qt::SmoothTransformation);
             } else if (col == ACTION_ALLOW_IN) {
-                return QPixmap(":images/add.png").scaledToHeight(16,
-                               Qt::SmoothTransformation);
+                if (!b_engine->eV(in + "authed").toBool()) {
+                    return QPixmap(":images/add.png").scaledToHeight(16,
+                                   Qt::SmoothTransformation);
+                } else {
+                    return QVariant();
+                }
             } else if (col == ACTION_TALK_TO) {
                 return QPixmap(":in/speak.png").scaledToHeight(16,
                                Qt::SmoothTransformation);
             } else if (col == ACTION_MUTE) {
-                return QPixmap(":in/mute.png").scaledToHeight(16,
-                               Qt::SmoothTransformation);
+                if (m_admin) {
+                    return QPixmap(":in/mute.png").scaledToHeight(16, Qt::SmoothTransformation);
+                } else if (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId()) {
+                    return QPixmap(":in/mute.png").scaledToHeight(16, Qt::SmoothTransformation);
+                } else {
+                    return QVariant();
+                }
             }
         } else if (role == Qt::ToolTipRole) {
             if (col == ACTION_KICK) {
@@ -140,7 +150,6 @@ ConfChamberModel::data(const QModelIndex &index,
         return QVariant();
     }
 
-    QString in = QString("confrooms/%0/in/%1/").arg(m_id).arg(rowId);
     switch (col) {
         case ID:
             return b_engine->eV(in + "id");
@@ -157,9 +166,15 @@ ConfChamberModel::data(const QModelIndex &index,
             }
             return name;
         }
+        case ACTION_ALLOW_IN:
+            if (b_engine->eV(in + "authed").toBool()) {
+                return QString::fromUtf8("✓");
+            }
+            break;
         case SINCE:
             return QDateTime::fromTime_t(QDateTime::currentDateTime().toTime_t() -
-                                         b_engine->eV(in + "time-start").toDouble()).toUTC()
+                                         b_engine->eV(in + "time-start").toDouble() - 
+                                         b_engine->timeDeltaServerClient()).toUTC() 
                                          .toString("hh:mm:ss");
         default:
             break;
@@ -204,21 +219,27 @@ Qt::ItemFlags ConfChamberModel::flags(const QModelIndex &index) const
 {
     int row = index.row(), col = index.column();
 
-    if (m_admin) {
-        if ((col == ACTION_MUTE) || (col == ACTION_KICK) ||
-            (col == ACTION_ALLOW_IN) || (col == ACTION_TALK_TO)) {
-            return Qt::ItemIsEnabled;
-        }
-    }
-
     QString rowId;
     rowId = m_row2id[row];
     QString in = QString("confrooms/%0/in/%1/").arg(m_id).arg(rowId);
 
-    if (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId()) {
-        if (col == ACTION_MUTE) {
+    if (m_admin) {
+        if (col == ACTION_KICK) {
             return Qt::ItemIsEnabled;
-        } 
+        }
+        if (((col == ACTION_ALLOW_IN) || (col == ACTION_TALK_TO))
+              && (!b_engine->eV(in + "authed").toBool())) {
+            return Qt::ItemIsEnabled;
+        }
+        if ( (col == ACTION_MUTE) && (b_engine->eV(in + "mute").toBool())) {
+            return Qt::ItemIsEnabled;
+        }
+    } else {
+        if (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId()) {
+            if (col == ACTION_MUTE) {
+                return Qt::ItemIsEnabled;
+            } 
+        }
     }
 
     return Qt::NoItemFlags;
@@ -258,7 +279,11 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
 
     setColumnWidth(ConfChamberModel::ADMIN, 60);
     horizontalHeader()->setResizeMode(ConfChamberModel::ADMIN, QHeaderView::Fixed);
-    setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
+    setStyleSheet("ConfListView {"
+                      "border: none;"
+                      "background:transparent;"
+                      "color:black;"
+                  "}");
     hideColumn(0);
 
     connect(this, SIGNAL(clicked(const QModelIndex &)),
@@ -272,13 +297,34 @@ void ConfChamberView::onViewClick(const QModelIndex &index)
     QString roomId = static_cast<ConfChamberModel*>(model())->id();
     QString castId = model()->index(row, ConfChamberModel::ID).data().toString();
 
+    QString in = QString("confrooms/%0/in/%1/").arg(roomId).arg(castId);
+
+    if (!(static_cast<ConfChamberModel*>(model())->isAdmin() ||
+          b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId())) {
+        return;
+    }
+
     switch (col) {
         case ConfChamberModel::ACTION_MUTE:
+            if (b_engine->eV(in + "mute").toBool()) {
+                b_engine->meetmeAction("unmute", castId + " " + roomId);
+            } else {
+                b_engine->meetmeAction("mute", castId + " " + roomId);
+            }
+            break;
         case ConfChamberModel::ACTION_KICK:
-            b_engine->meetmeAction("MeetmeKick", castId + " " + roomId);
+            if (!b_engine->eV(in + "authed").toBool()) {
+                b_engine->meetmeAction("MeetmeKick", castId + " " + roomId);
+            } else {
+                b_engine->meetmeAction("kick", castId + " " + roomId);
+            }
             break;
         case ConfChamberModel::ACTION_TALK_TO:
+            b_engine->meetmeAction("MeetmeTalk", castId + " " + roomId);
+            break;
         case ConfChamberModel::ACTION_ALLOW_IN:
+            b_engine->meetmeAction("MeetmeAccept", castId + " " + roomId);
+            break;
         default:
             break;
     }
@@ -292,15 +338,45 @@ void ConfChamberView::mousePressEvent(QMouseEvent *event)
 
 
 ConfChamber::ConfChamber(const QString &id)
-    : QWidget()
+    : QWidget(), m_id(id)
 {
     QVBoxLayout *vBox = new QVBoxLayout(this);
+    setLayout(vBox);
     QHBoxLayout *hBox = new QHBoxLayout();
     ConfChamberModel *model = new ConfChamberModel(id);
+    QPushButton *roomPause = new QPushButton(tr("&pause the conference"), this);
+    QLabel *redondant = new QLabel(
+        tr(" Conference room ") +
+        b_engine->eV(QString("confrooms/%0/name").arg(id)).toString() + " (" +
+        b_engine->eV(QString("confrooms/%0/number").arg(id)).toString() + ") "
+        );
+
+
+
+    roomPause->setProperty("state", true);
+    hBox->addStretch(1);
+    hBox->addWidget(redondant,6);
+    hBox->addWidget(roomPause,2);
+    hBox->addStretch(1);
+    if (!model->isAdmin()) {
+        roomPause->hide();
+        hBox->setStretch(1, 8);
+    }
+    vBox->addLayout(hBox);
+
+    hBox = new QHBoxLayout();
+    connect(roomPause, SIGNAL(clicked()), this, SLOT(pauseConf()));
+
     ConfChamberView *view = new ConfChamberView(this, model);
     model->setView(view);
 
-    view->setStyleSheet("ConfChamberView { border: none; background:transparent; color:black; }");
+
+    view->setStyleSheet("ConfChamberView {"
+                            "border: none;"
+                            "background:transparent;"
+                            "color:black;"
+                        "}");
+
     view->verticalHeader()->hide();
 
     hBox->addStretch(1);
@@ -308,5 +384,19 @@ ConfChamber::ConfChamber(const QString &id)
     hBox->addStretch(1);
 
     vBox->addLayout(hBox);
-    setLayout(vBox);
+
+}
+
+void ConfChamber::pauseConf()
+{
+    QPushButton *button = static_cast<QPushButton*>(sender());
+    bool confPaused = button->property("state").toBool();
+
+    if (confPaused) {
+        button->setText(tr("&restart the conference"));
+    } else {
+        button->setText(tr("&pause the conference"));
+    }
+    button->setProperty("state", !confPaused);
+    b_engine->meetmeAction("MeetmePause", m_id + " " + (confPaused? "on" : "off"));
 }

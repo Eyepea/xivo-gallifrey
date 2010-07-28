@@ -4937,43 +4937,31 @@ class XivoCTICommand(BaseCommand):
                                         % (function, castid, uniqueid))
 
                             elif function in ['MeetmePause']:
-                                castid = argums[0]
-                                confno = argums[1]
-                                status = argums[2]
-                                if castid in self.uniqueids:
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
-                                    self.__ami_execute__(castid, 'sendcommand',
-                                        function, [('Meetme', '%s' % (confno)),
-                                            ('status', '%s' % (status))])
+                                confno = argums[0]
+                                status = argums[1]
+                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                self.__ami_execute__(astid, 'sendcommand',
+                                                     function, [('Meetme', '%s' % (confno)),
+                                                                ('status', '%s' % (status))])
 
                             elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                usernum = argums[2]
-                                adminnum = argums[3]
-                                if castid in self.uniqueids:
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
-                                    if userid == meetmeref['adminid']:
-                                        self.__ami_execute__(castid, 'sendcommand',
-                                                             function, [('Meetme', '%s' % (confno)), 
-                                                                        ('Usernum', '%s' % (usernum)),
-                                                                        ('Adminnum', '%s' % (adminnum))])
-                            elif function in ['kick', 'mute', 'unmute'] and len(argums) > 2:
+                                adminnum = self.weblist['meetme'][astid].keeplist[confno]['adminnum']
+                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                self.__ami_execute__(astid, 'sendcommand',
+                                                     function, [('Meetme', '%s' % (roomname)),
+                                                                ('Usernum', '%s' % (castid)),
+                                                                ('Adminnum', '%s' % (adminnum))])
+                            
+                            elif function in ['kick', 'mute', 'unmute']:
                                 castid = argums[0]
-                                confno = argums[1]
-                                usernum = argums[2]
-                                uniqueid = argums[3]
-                                if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
-                                    channel = self.uniqueids[castid][uniqueid]['channel']
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
-                                    if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
-                                        if userid == meetmeref['adminid'] or userid == meetmeref['uniqueids'][uniqueid]['userid']:
-                                            self.__ami_execute__(castid, 'sendcommand',
-                                                                 'Command', [('Command', 'meetme %s %s %s'
-                                                                              % (function, confno, usernum))])
-                                else:
-                                    log.warning('(%s) either astid %s or uniqueid %s is unknown'
-                                        % (function, castid, uniqueid))
+                                confno = argums[1]          
+                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                self.__ami_execute__(astid, 'sendcommand',
+                                                            'Command', [('Command', 'meetme %s %s %s' %
+                                                                        (function, roomname, castid))])
+
                             elif function == 'getlist':
                                 fullstat = {}
                                 for iastid, v in self.weblist['meetme'].iteritems():

@@ -85,7 +85,9 @@ ConfListModel::data(const QModelIndex &index,
             }
             if (time != 0) {
                 displayed = 
-                    QDateTime::fromTime_t(QDateTime::currentDateTime().toTime_t() - time)
+                    QDateTime::fromTime_t(QDateTime::currentDateTime().toTime_t() -
+                                          b_engine->timeDeltaServerClient() -
+                                          time)
                                          .toUTC().toString("hh:mm:ss");
             }
 
@@ -220,7 +222,11 @@ ConfList::ConfList(XletConference *parent)
     QHBoxLayout *hBox = new QHBoxLayout();
     ConfListView *view = new ConfListView(this, new ConfListModel());
 
-    view->setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
+    view->setStyleSheet("ConfListView {"
+                            "border: none;"
+                            "background:transparent;"
+                            "color:black;"
+                        "}");
     view->verticalHeader()->hide();
 
     hBox->addStretch(1);

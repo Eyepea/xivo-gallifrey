@@ -2,9 +2,11 @@
 #define _CONFERENCE2_CONFCHAMBER_H_
 #include <QWidget>
 #include <QDebug>
+#include <QLabel>
 #include <QAbstractTableModel>
 #include <QTableView>
 #include <QModelIndex>
+#include <QPushButton>
 #include <QVBoxLayout>
 #include <QMouseEvent>
 #include <QMap>
@@ -27,6 +29,7 @@ class ConfChamberModel : public QAbstractTableModel
         void setView(ConfChamberView *m_view);
         QString id() const;
         QString row2participantId(int) const;
+        int isAdmin() { return m_admin; };
     private slots:
         void confRoomChange(const QString &path, DStoreEvent event);
     protected:
@@ -66,6 +69,10 @@ class ConfChamber : public QWidget
 
     public:
         ConfChamber(const QString &id);
+    public slots:
+        void pauseConf();
+    private:
+        QString m_id;
 };
 
 #endif
