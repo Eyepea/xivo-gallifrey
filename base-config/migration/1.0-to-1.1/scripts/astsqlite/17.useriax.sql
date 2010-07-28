@@ -125,14 +125,13 @@ DROP TABLE useriax_tmp;
 
 
 UPDATE OR IGNORE useriax SET
-  var_val   = 'fr_FR'
+  language   = 'fr_FR'
 WHERE
-  var_name = 'language' AND
-  var_val != 'en';
+  language != 'en' AND
+  language NOT NULL;
 
 UPDATE OR IGNORE useriax SET
-  var_val  = 'en_US'
+  language  = 'en_US'
 WHERE
-  var_name = 'language' AND
-  var_val  = 'en';
+  language  = 'en';
 
