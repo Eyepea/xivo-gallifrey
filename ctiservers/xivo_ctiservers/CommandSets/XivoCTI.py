@@ -2944,9 +2944,9 @@ class XivoCTICommand(BaseCommand):
                 if self.origapplication[astid][actionid]['origapplication'] == 'ChanSpy' and reason == '4':
                     agent_id = self.origapplication[astid][actionid]['origapplication-data']['spied-agentid']
                     tosend = { 'class' : 'agentlisten',
-                        'astid' : astid,
-                        'agentid' : agent_id,
-                        'status' : 'started' }
+                               'astid' : astid,
+                               'agentid' : agent_id,
+                               'status' : 'started' }
                     self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                 del self.origapplication[astid][actionid]
@@ -3217,9 +3217,9 @@ class XivoCTICommand(BaseCommand):
             if agent_id:
                 thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                 tosend = { 'class' : 'agents',
-                    'function' : 'sendlist',
-                    'payload' : { astid : { agent_id : thisagent } }
-                    }
+                           'function' : 'sendlist',
+                           'payload' : { astid : { agent_id : thisagent } }
+                           }
                 # self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
                 # astid, thisagent.get('context'))
 
@@ -3295,8 +3295,8 @@ class XivoCTICommand(BaseCommand):
             if agent_id:
                 thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                 thisagent['agentstats'].update({'status': 'AGENT_LOGGEDOFF',
-                    'agent_phone_number' : agentphonenumber,
-                    'agent_phone_context' : context})
+                                                'agent_phone_number' : agentphonenumber,
+                                                'agent_phone_context' : context})
                 # it looks like such events are sent even when the agent is not logged in,
                 # as replies to agentlogoff
                 if 'Xivo-ReceivedCalls' in thisagent['agentstats']:
@@ -6254,8 +6254,8 @@ class XivoCTICommand(BaseCommand):
         # check capas !
         try:
             function = fastagi.env['agi_network_script']
-            uniqueid = fastagi.get_variable('UNIQUEID')
-            channel = fastagi.get_variable('CHANNEL')
+            uniqueid = fastagi.env['agi_uniqueid']
+            channel  = fastagi.env['agi_channel']
 
             context = fastagi.get_variable('XIVO_REAL_CONTEXT')
             log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'

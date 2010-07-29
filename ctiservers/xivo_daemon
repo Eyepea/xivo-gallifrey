@@ -562,14 +562,15 @@ class manage_connection:
             nocolon = []
             for myline in evt.split('\r\n'):
                 if myline.find('\n') < 0:
-                    myfieldvalue = myline.split(': ', 1)
-                    if len(myfieldvalue) == 2:
-                        this_event[myfieldvalue[0]] = myfieldvalue[1]
-                    else:
-                        if myline.startswith('Asterisk Call Manager'):
-                            log.info('%s : %s' % (astid, myline))
+                    if myline != '--END COMMAND--': # occurs when requesting "module reload xxx.so" for instance
+                        myfieldvalue = myline.split(': ', 1)
+                        if len(myfieldvalue) == 2:
+                            this_event[myfieldvalue[0]] = myfieldvalue[1]
                         else:
-                            log.warning('%s unable to parse %s' % (astid, myline))
+                            if myline.startswith('Asterisk Call Manager'):
+                                log.info('%s : %s' % (astid, myline))
+                            else:
+                                log.warning('%s unable to parse %s' % (astid, myline))
                 else:
                     nocolon.append(myline)
 
