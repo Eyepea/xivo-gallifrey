@@ -105,7 +105,7 @@ class Snom(PhoneVendorMixin):
             exten = value['exten']
 
             if value.get('supervision'):
-                xtype = "blf"
+                xtype = "dest"
             else:
                 xtype = "speed"
 
