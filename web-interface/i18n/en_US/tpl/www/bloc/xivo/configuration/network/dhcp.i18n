@@ -13,6 +13,9 @@ Pool end:
 ; fm_interfaces
 Extra network interfaces:
 
+; help_interfaces
+DHCP server listen by default on the VoIP network interface. You can add supplementary interfaces on which DHCP server will listen too.
+
 ; ipaddr(callback)
 Invalid IP address
 
