@@ -935,7 +935,7 @@ class XivoCTICommand(BaseCommand):
                                                 'context' :    mitem.get('context'),
                                                 'pin' :        mitem.get('pin'),
                                                 'pinadmin' :   mitem.get('pinadmin'),
-                                                'adminid' : None,
+                                                'moderated' :  mitem.get('admin_moderationmode'),
                                                 'adminnum' : None,
                                                 'uniqueids' : {}
                                                 }
@@ -4270,16 +4270,10 @@ class XivoCTICommand(BaseCommand):
             userid = '%s' % uinfo.get('xivo_userid')
         else:
             userid = ''
-        if 'adminlist' not in meetmeref:
-            meetmeref['adminlist'] = []
+
         if isadmin:
-            meetmeref['adminid'] = userid
             meetmeref['adminnum'] = usernum
             
-            # supporting several ids in one conference room
-            if userid not in meetmeref['adminlist']:
-                meetmeref['adminlist'].append(userid)
-                
         meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                              'mutestatus' : 'off',
                                              'recordstatus' : 'off',
@@ -4323,16 +4317,6 @@ class XivoCTICommand(BaseCommand):
         else:
             userid = ''
 
-        # supporting several ids in one conference room
-        if userid in meetmeref['adminlist']:
-            meetmeref['adminlist'].remove(userid)
-
-        if userid == meetmeref['adminid']:
-            if len(meetmeref['adminlist']) > 0:
-                meetmeref['adminid'] = meetmeref['adminlist'][0]
-            else:
-                meetmeref['adminid'] = ''
-
         if uniqueid not in meetmeref['uniqueids']:
             log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
                 % (astid, uniqueid, channel, confno))
@@ -4342,8 +4326,6 @@ class XivoCTICommand(BaseCommand):
                                  'astid' : astid,
                                  'meetmeid' : meetmeid,
                                  'uniqueid' : uniqueid,
-                                 'adminid' : meetmeref['adminid'],
-                                 'adminlist' : meetmeref['adminlist'],
                                  'details' : meetmeref['uniqueids'][uniqueid] }
                    }
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
@@ -4405,9 +4387,6 @@ class XivoCTICommand(BaseCommand):
         if meetmeref is None:
             log.warning('%s ami_meetmelist : unable to find room %s' % (astid, confno))
             return
-
-        if 'adminlist' not in meetmeref:
-            meetmeref['adminlist'] = []
 
         if uniqueid not in meetmeref['uniqueids']:
             phoneid = self.__phoneid_from_channel__(astid, channel)

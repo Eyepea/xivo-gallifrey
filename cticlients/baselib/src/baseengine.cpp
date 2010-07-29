@@ -826,12 +826,11 @@ void addUpdateConfMemberInTree(DStore *tree, const QVariantMap &cinfo)
     } else if (cinfo["action"] == "leave") {
         tree->rmPath(path);
     } else if (cinfo["action"] == "changeroompausedstate") {
-        qDebug() << cinfo;
         path = QString("confrooms/%0").arg(confId);
         info["paused"] = cinfo["paused"];
         tree->populate(path ,info);
     } else {
-        qDebug() << "uninterceot action " << cinfo["action"];
+        qDebug() << "unknown meetme action: " << cinfo["action"];
     }
  
 
@@ -849,6 +848,7 @@ void addUpdateConfRoomInTree(DStore *tree, const QVariantMap &cinfo)
         info["pin"] = cinfo["pin"];
         info["in"] = QVariantMap();
         info["number"] = cinfo["roomnumber"];
+        info["moderated"] = cinfo["moderated"];
 
         tree->populate(QString("confrooms/%0").arg(id), info);
 

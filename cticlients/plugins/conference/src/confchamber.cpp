@@ -1,7 +1,8 @@
 #include "confchamber.h"
 
 ConfChamberModel::ConfChamberModel(QObject *parent, const QString &id)
-    : QAbstractTableModel(parent), m_admin(0), m_id(id), m_view(NULL)
+    : QAbstractTableModel(parent), m_admin(0),
+      m_authed(0), m_id(id), m_view(NULL)
 {
     b_engine->tree()->onChange(QString("confrooms/%0").arg(id), this,
         SLOT(confRoomChange(const QString &, DStoreEvent)));
@@ -14,7 +15,9 @@ void ConfChamberModel::timerEvent(QTimerEvent *)
 {
     QString req = QString("confrooms/%0/in[user-id=@%1]").arg(m_id)
                                                          .arg(b_engine->xivoUserId());
-    m_admin = b_engine->eV(req).toMap()["admin"].toBool();
+    QVariantMap self = b_engine->eV(req).toMap();
+    m_admin = self["admin"].toBool();
+    m_authed = self["authed"].toBool();
     updateView();
     reset();
 }
@@ -96,6 +99,10 @@ void ConfChamberModel::sort(int column, Qt::SortOrder order)
 
 int ConfChamberModel::rowCount(const QModelIndex&) const
 {
+    QString room = QString("confrooms/%0/").arg(m_id);
+    if ((b_engine->eV(room + "moderated").toInt()) && (!m_authed))
+        return 0;
+
     return b_engine->eVM(QString("confrooms/%0/in").arg(m_id)).size();
 }
 
@@ -132,9 +139,8 @@ ConfChamberModel::data(const QModelIndex &index,
                 return QPixmap(":in/speak.png").scaledToHeight(16,
                                Qt::SmoothTransformation);
             } else if (col == ACTION_MUTE) {
-                if (m_admin) {
-                    return QPixmap(":in/mute.png").scaledToHeight(16, Qt::SmoothTransformation);
-                } else if (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId()) {
+                if ((m_admin) ||
+                    (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId())) {
                     return QPixmap(":in/mute.png").scaledToHeight(16, Qt::SmoothTransformation);
                 } else {
                     return QVariant();
@@ -144,11 +150,23 @@ ConfChamberModel::data(const QModelIndex &index,
             if (col == ACTION_KICK) {
                 return tr("Kick");
             } else if (col == ACTION_ALLOW_IN) {
+                if (b_engine->eV(in + "authed").toBool()) {
+                    return tr("User already authed");
+                }
                 return tr("Allow in");
             } else if (col == ACTION_TALK_TO) {
+                if (b_engine->eV(in + "authed").toBool()) {
+                    return tr("User already authed");
+                }
                 return tr("Talk to");
             } else if (col == ACTION_MUTE) {
-                return tr("Mute");
+                if ((m_admin) ||
+                    (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId())) {
+                    if (b_engine->eV(in + "mute").toBool()) {
+                        return tr("Unmute");
+                    }
+                    return tr("Mute");
+                }
             }
         }
         return QVariant();
@@ -349,7 +367,7 @@ ConfChamber::ConfChamber(const QString &id)
     QVBoxLayout *vBox = new QVBoxLayout(this);
     setLayout(vBox);
     QHBoxLayout *hBox = new QHBoxLayout();
-    ConfChamberModel *model = new ConfChamberModel(this, id);
+    m_model = new ConfChamberModel(this, id);
     QPushButton *roomPause = new QPushButton(tr("&pause the conference"), this);
     QLabel *redondant = new QLabel(
         tr(" Conference room ") +
@@ -364,7 +382,7 @@ ConfChamber::ConfChamber(const QString &id)
     hBox->addWidget(redondant,6);
     hBox->addWidget(roomPause,2);
     hBox->addStretch(1);
-    if (!model->isAdmin()) {
+    if (!m_model->isAdmin()) {
         roomPause->hide();
         hBox->setStretch(1, 8);
     }
@@ -373,8 +391,8 @@ ConfChamber::ConfChamber(const QString &id)
     hBox = new QHBoxLayout();
     connect(roomPause, SIGNAL(clicked()), this, SLOT(pauseConf()));
 
-    ConfChamberView *view = new ConfChamberView(this, model);
-    model->setView(view);
+    ConfChamberView *view = new ConfChamberView(this, m_model);
+    m_model->setView(view);
 
 
     view->setStyleSheet("ConfChamberView {"
@@ -391,6 +409,34 @@ ConfChamber::ConfChamber(const QString &id)
 
     vBox->addLayout(hBox);
 
+
+
+    QString room = QString("confrooms/%0/").arg(m_id);
+    if ((b_engine->eV(room + "moderated").toInt()) && 
+        (!m_model->isAuthed())) {
+        QTimer *timer = new QTimer(this);
+        timer->setSingleShot(true);
+        connect(timer, SIGNAL(timeout()), this, SLOT(allowedIn()));
+
+        timer->start(100);
+        m_moderatedRoom = new QLabel(tr("This room is moderated. You can't"
+                                        " see any participant, until an admin allow you in."), this);
+        hBox = new QHBoxLayout();
+        hBox->addStretch(1);
+        hBox->addWidget(m_moderatedRoom, 8);
+        hBox->addStretch(1);
+
+        vBox->addLayout(hBox);
+    }
+}
+
+void ConfChamber::allowedIn()
+{
+    if (m_model->isAuthed()) {
+        m_moderatedRoom->hide();
+        static_cast<QTimer*>(sender())->stop();
+    }
+
 }
 
 void ConfChamber::pauseConf()
@@ -399,9 +445,9 @@ void ConfChamber::pauseConf()
     bool confPaused = button->property("state").toBool();
 
     if (confPaused) {
-        button->setText(tr("&restart the conference"));
+        button->setText(tr("&Restart the conference"));
     } else {
-        button->setText(tr("&pause the conference"));
+        button->setText(tr("&Pause the conference"));
     }
     button->setProperty("state", !confPaused);
     b_engine->meetmeAction("MeetmePause", m_id + " " + (confPaused? "on" : "off"));

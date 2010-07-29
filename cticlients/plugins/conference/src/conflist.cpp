@@ -68,7 +68,7 @@ ConfListModel::data(const QModelIndex &index,
         case PIN_REQUIRED:
             return b_engine->eV(room + "pin");
         case MODERATED:
-            return b_engine->eV(room + "admin-id").toInt() ?
+            return b_engine->eV(room + "moderated").toInt() ?
                        tr("Yes") : tr("No");
         case MEMBER_COUNT:
             return b_engine->eVM(room + "in").size();

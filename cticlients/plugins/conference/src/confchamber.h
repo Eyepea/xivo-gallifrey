@@ -3,6 +3,7 @@
 #include <QWidget>
 #include <QDebug>
 #include <QLabel>
+#include <QTimer>
 #include <QAbstractTableModel>
 #include <QTableView>
 #include <QModelIndex>
@@ -30,6 +31,7 @@ class ConfChamberModel : public QAbstractTableModel
         QString id() const;
         QString row2participantId(int) const;
         int isAdmin() { return m_admin; };
+        int isAuthed() { return m_authed; };
     private slots:
         void confRoomChange(const QString &path, DStoreEvent event);
     protected:
@@ -43,7 +45,8 @@ class ConfChamberModel : public QAbstractTableModel
         QVariant data(const QModelIndex&, int) const;
         QVariant headerData(int , Qt::Orientation, int) const;
         Qt::ItemFlags flags(const QModelIndex &) const;
-        int m_admin;
+        bool m_admin;
+        bool m_authed;
         QString m_id;
         ConfChamberView *m_view;
         QMap<int, QString> m_row2id;
@@ -72,8 +75,11 @@ class ConfChamber : public QWidget
         ConfChamber(const QString &id);
     public slots:
         void pauseConf();
+        void allowedIn();
     private:
         QString m_id;
+        ConfChamberModel *m_model;
+        QLabel *m_moderatedRoom;
 };
 
 #endif
