@@ -142,7 +142,7 @@ def main():
         else:
             tokens = ua.split()
             if tokens and tokens[0].lower() == 'cisco':
-                if len(tokens) == 3 and tokens[3].lower() == 'ge':
+                if len(tokens) == 3 and tokens[2].lower() == 'ge':
                     ua = "Cisco-cp%sg-ge/8.0" % tokens[1]
                 else:
                     ua = "Cisco-cp%sg/8.0" % tokens[1]
