@@ -134,13 +134,18 @@ def main():
         macaddr = network.normalize_mac_address(macaddr)
 
         ipv4 = sip_uri
-        # ua is set by sccp asterisk channel in the form "Cisco 7960", and 
-        # xivo-config lib requires it like "Cisco-cp7960g/8.0"
+        # ua is set by sccp asterisk channel in the form "Cisco 7960"/"Cisco 7941 GE",
+        # and xivo-config lib requires it like "Cisco-cp7960g/8.0"
         # added special fixe for cisco sccp softphone
         if ua == 'Cisco IP Communicator':
-                ua = 'Cisco-CIPC/8.0'
+            ua = 'Cisco-CIPC/8.0'
         else:
-                ua   = ua.replace(' ', '-cp') + 'g/8.0'
+            tokens = ua.split()
+            if tokens and tokens[0].lower() == 'cisco':
+                if len(tokens) == 3 and tokens[3].lower() == 'ge':
+                    ua = "Cisco-cp%sg-ge/8.0" % tokens[1]
+                else:
+                    ua = "Cisco-cp%sg/8.0" % tokens[1]
 
     # Get Phone description (if we are able to handle this vendor...)
     phone_desc = xivo_config.phone_desc_by_ua(ua) # XXX, agitb.handler)
