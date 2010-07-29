@@ -213,7 +213,7 @@ class Yealink(PhoneVendorMixin):
         else:
             week, weekday = map(int, dst_change['day'][1:].split('.'))
             weekday = tzinform.week_start_on_monday(weekday)
-            return '%d/%d/%d/%d' % (dst_change['month'], week, weekday, dst_change['time'].as_hour)
+            return '%d/%d/%d/%d' % (dst_change['month'], week, weekday, dst_change['time'].as_hours)
 
     @classmethod
     def __format_function_keys(cls, funckey, model, exten_pickup_prefix):
