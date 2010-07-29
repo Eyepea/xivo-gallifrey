@@ -81,7 +81,7 @@ def outgoing_user_set_features(agi, cursor, args):
         if callerid == 'anonymous':
             agi.appexec('SetCallerPres', 'prohib')
 
-    if callrecord and objects.FeatureList(agi, cursor).callrecord:
+    if callrecord and objects.ExtenFeatures(agi, cursor).callrecord:
         # BUGBUG the context is missing in the filename TODO use ids
         callrecordfile = "user-%s-%s-%s.wav" % (srcnum, orig_dstnum, int(time.time()))
     else:
