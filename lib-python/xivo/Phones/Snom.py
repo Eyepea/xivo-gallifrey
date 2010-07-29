@@ -105,11 +105,11 @@ class Snom(PhoneVendorMixin):
             exten = value['exten']
 
             if value.get('supervision'):
-                xtype = "dest"
+                xtype = "blf"
             else:
                 xtype = "speed"
 
-            fk_config_lines.append("<fkey idx=\"%01d\" perm=\"RO\": %s <sip:%s@%s></fkey>" % (int(key)-1, xtype, exten, cls.ASTERISK_IPV4))
+            fk_config_lines.append("<fkey idx=\"%01d\" context=\"active\" perm=\"\">%s <sip:%s@%s></fkey>" % (int(key)-1, xtype, exten, cls.ASTERISK_IPV4))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
