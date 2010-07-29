@@ -252,7 +252,7 @@ if not xfeatures['vmusermsg'].get('commented', 1):
         "n,Gosub(xivo-pickup,0,1)",
         "n,VoiceMailMain(${XIVO_MAILBOX}@${XIVO_MAILBOX_CONTEXT}|${XIVO_VMMAIN_OPTIONS})",
         "n,Hangup()"):
-        cfeatures.append("_%s.," % (vmusermsgexten + line))
+        cfeatures.append("_%s,%s" % (vmusermsgexten, line))
 
 for x in ('busy', 'rna', 'unc'):
     fwdtype = "fwd%s" % x
