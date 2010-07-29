@@ -23,19 +23,19 @@ UPDATE extensions SET
 		appdata = 'feature_forward|busy|${EXTEN:3}'
 	WHERE
 		context = 'xivo-features' AND
-		exten   = '_*23';
+		exten   = '_*23.';
 
 UPDATE extensions SET
 		appdata = 'feature_forward|rna|${EXTEN:3}'
 	WHERE
 		context = 'xivo-features' AND
-		exten   = '_*22';
+		exten   = '_*22.';
 
 UPDATE extensions SET
 		appdata = 'feature_forward|unc|${EXTEN:3}'
 	WHERE
 		context = 'xivo-features' AND
-		exten   = '_*21';
+		exten   = '_*21.';
 
 UPDATE extensions SET
 		appdata = 'callrecord',
