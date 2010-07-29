@@ -102,7 +102,7 @@ INSERT INTO meetmefeatures SELECT
 	 0,																										-- closeconfdurationexceeded
 	 0,																										-- nbuserstartdeductduration
 	 0,																										-- timeannounceclose
-	 0,																										-- maxuser
+	 NULL,																								-- maxuser
 	 NULL,																								-- startdate
 	 NULL,																								-- emailfrom
 	 NULL,																								-- emailfromname
