@@ -815,21 +815,24 @@ void addUpdateConfMemberInTree(DStore *tree, const QVariantMap &cinfo)
     QString path = QString("confrooms/%0/in/%1").arg(confId).arg(id);
     QVariantMap info;
 
-    if ((cinfo["action"] == "join") || (cinfo["action"] == "mutestatus")) {
+    if ((cinfo["action"] == "join") || (cinfo["action"] == "mutestatus")||(cinfo["action"] == "auth")) {
         info["id"] = id;
         info["phonenum"] = cinfo["details"].toMap()["phonenum"];
         info["time-start"] = cinfo["details"].toMap()["time_start"];
-        info["user-id"] = cinfo["details"].toMap()["userid"].toString().remove(QRegExp("[^/]*/"));
+        info["user-id"] = cinfo["details"].toMap()["userid"].toString();
         info["authed"] = cinfo["details"].toMap()["authed"].toBool();
         info["mute"] = (cinfo["details"].toMap()["mutestatus"].toString() == "on");
-        if (id == tree->extractVariant(QString("confrooms/%0/admin-id")
-                                       .arg(confId)).toString()) {
-            info["admin"] = true;
-
-        }
+        info["admin"] = cinfo["details"].toMap()["admin"].toBool();
         tree->populate(path ,info);
     } else if (cinfo["action"] == "leave") {
         tree->rmPath(path);
+    } else if (cinfo["action"] == "changeroompausedstate") {
+        qDebug() << cinfo;
+        path = QString("confrooms/%0").arg(confId);
+        info["paused"] = cinfo["paused"];
+        tree->populate(path ,info);
+    } else {
+        qDebug() << "uninterceot action " << cinfo["action"];
     }
  
 
@@ -847,7 +850,6 @@ void addUpdateConfRoomInTree(DStore *tree, const QVariantMap &cinfo)
         info["pin"] = cinfo["pin"];
         info["in"] = QVariantMap();
         info["number"] = cinfo["roomnumber"];
-        info["admin-id"] = cinfo["adminnum"];
 
         tree->populate(QString("confrooms/%0").arg(id), info);
 
@@ -1050,44 +1052,15 @@ void BaseEngine::parseCommand(const QString &line)
             if (function == "sendlist") {
                 QVariantMap map1 = datamap["payload"].toMap();
                 foreach(QString astid, map1.keys()) {
-                    m_meetme.clear();
                     QVariantMap map2 = map1[astid].toMap();
                     foreach(QString meetmeid, map2.keys()) {
                         QVariantMap map3 = map2[meetmeid].toMap();
                         addUpdateConfRoomInTree(&m_tree, map3);
-                        if(!meetmeid.isEmpty()) {
-                            if (m_meetme.contains(meetmeid) == false) {
-                                m_meetme[meetmeid] = new MeetmeInfo();
-                            }
-                            m_meetme[meetmeid]->setProperties(astid, map3);
-                        }
                     }
                 }
-                emit meetmeInit(m_timesrv);
-            }
-            else if (function == "update") {
+            } else if (function == "update") {
                 QVariantMap map = datamap["payload"].toMap();
-                QString astid = map["astid"].toString();
-                QString meetmeid = map["meetmeid"].toString();
-                QString action = map["action"].toString();
-                QString uniqueid = map["uniqueid"].toString();
-                if (m_meetme.contains(meetmeid))
-                    m_meetme[meetmeid]->update(map);
-                emit meetmeEvent(m_timesrv, action, astid, meetmeid, uniqueid);
                 addUpdateConfMemberInTree(&m_tree, map);
-            } else if (function == "add") {
-                QVariantMap command;
-                command["class"] = "meetme";
-                command["direction"] = "xivoserver";
-                command["function"] = "getlist";
-                sendJsonCommand(command);
-                QString astid = datamap["astid"].toString();
-                QStringList meetmeids = datamap["deltalist"].toStringList();
-                qDebug() << "meetme" << "add" << astid << meetmeids;
-            } else if (function == "del") {
-                QString astid = datamap["astid"].toString();
-                QStringList meetmeids = datamap["deltalist"].toStringList();
-                qDebug() << "meetme" << "del" << astid << meetmeids;
             }
         } else if (thisclass == "serverdown") {
             qDebug() << thisclass << datamap["mode"].toString();

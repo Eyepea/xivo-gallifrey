@@ -935,7 +935,6 @@ class XivoCTICommand(BaseCommand):
                                                 'context' :    mitem.get('context'),
                                                 'pin' :        mitem.get('pin'),
                                                 'pinadmin' :   mitem.get('pinadmin'),
-                                                
                                                 'adminid' : None,
                                                 'adminnum' : None,
                                                 'uniqueids' : {}
@@ -4268,7 +4267,7 @@ class XivoCTICommand(BaseCommand):
             
         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
         if uinfo:
-            userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+            userid = '%s' % uinfo.get('xivo_userid')
         else:
             userid = ''
         if 'adminlist' not in meetmeref:
@@ -4286,6 +4285,7 @@ class XivoCTICommand(BaseCommand):
                                              'recordstatus' : 'off',
                                              'time_start' : time.time(),
                                              'userid' : userid,
+                                             'admin' : isadmin,
                                              'fullname' : calleridname,
                                              'phonenum' : calleridnum,
                                              'authed' : authed }
@@ -4296,9 +4296,6 @@ class XivoCTICommand(BaseCommand):
                    'payload' : { 'action' : 'join',
                                  'astid' : astid,
                                  'meetmeid' : meetmeid,
-                                 'adminnum' : meetmeref['adminnum'],
-                                 'adminid' : meetmeref['adminid'],
-                                 'adminlist' : meetmeref['adminlist'],
                                  'uniqueid' : uniqueid,
                                  'details' : meetmeref['uniqueids'][uniqueid],
                                  'authed' : authed }
@@ -4402,6 +4399,7 @@ class XivoCTICommand(BaseCommand):
         pseudochan = event.get('PseudoChan')
         calleridnum = event.get('CallerIDNum')
         calleridname = event.get('CallerIDName')
+        authed = (event.get('NoAuthed') == 'No')
 
         (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
         if meetmeref is None:
@@ -4415,18 +4413,19 @@ class XivoCTICommand(BaseCommand):
             phoneid = self.__phoneid_from_channel__(astid, channel)
             uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
             if uinfo:
-                userid = '%s/%s' % (uinfo.get('astid'), uinfo.get('xivo_userid'))
+                userid = '%s' % uinfo.get('xivo_userid')
             else:
                 userid = ''
+
             if isadmin:
-                meetmeref['adminid'] = userid
-                # supporting several ids in one conference room
-                if userid not in meetmeref['adminlist']:
-                    meetmeref['adminlist'].append(userid)
+                meetmeref['adminnum'] = usernum
+
             meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                                  'mutestatus' : mutestatus,
                                                  'recordstatus' : recordstatus,
                                                  'userid' : userid,
+                                                 'authed' : authed,
+                                                 'admin' : isadmin,
                                                  'fullname' : calleridname,
                                                  'phonenum' : calleridnum }
         else:
@@ -4941,7 +4940,7 @@ class XivoCTICommand(BaseCommand):
                                 status = argums[1]
                                 roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
                                 self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (confno)),
+                                                     function, [('Meetme', '%s' % (roomname)),
                                                                 ('status', '%s' % (status))])
 
                             elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:

@@ -36,6 +36,7 @@ class ConfChamberModel : public QAbstractTableModel
         void timerEvent(QTimerEvent *event);
     private:
         void extractRow2IdMap();
+        void updateView();
         void sort(int, Qt::SortOrder);
         int rowCount(const QModelIndex&) const;
         int columnCount(const QModelIndex&) const;

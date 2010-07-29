@@ -12,15 +12,10 @@ ConfChamberModel::ConfChamberModel(const QString &id)
 
 void ConfChamberModel::timerEvent(QTimerEvent *)
 {
-    QVariantMap  adminList = 
-        b_engine->eVM(QString("confrooms/%0/in[admin=@1]").arg(m_id));
-
-    foreach(QString id, adminList.keys()) {
-        if (adminList[id].toMap()["user-id"].toString() ==  b_engine->xivoUserId()) {
-            m_admin = 1;
-        }
-    }
-
+    QString req = QString("confrooms/%0/in[user-id=@%1]").arg(m_id)
+                                                         .arg(b_engine->xivoUserId());
+    m_admin = b_engine->eV(req).toMap()["admin"].toBool();
+    updateView();
     reset();
 }
 
@@ -28,15 +23,24 @@ void ConfChamberModel::setView(ConfChamberView *v)
 {
     m_view = v;
 
-    if (!m_admin) {
-        if (m_view) {
+    updateView();
+}
+
+void ConfChamberModel::updateView()
+{
+    if (m_view) {
+        if (!m_admin) {
             m_view->hideColumn(ACTION_KICK);
             m_view->hideColumn(ACTION_ALLOW_IN);
             m_view->hideColumn(ACTION_TALK_TO);
+        } else {
+            m_view->showColumn(ACTION_KICK);
+            m_view->showColumn(ACTION_ALLOW_IN);
+            m_view->showColumn(ACTION_TALK_TO);
         }
-
     }
 }
+
 
 void ConfChamberModel::confRoomChange(const QString &path, DStoreEvent event)
 {
@@ -156,7 +160,7 @@ ConfChamberModel::data(const QModelIndex &index,
         case NUMBER:
             return b_engine->eV(in + "phonenum");
         case ADMIN:
-            return (b_engine->eV(in + "admin") != QVariant()) ? tr("yes") : tr("no");
+            return (b_engine->eV(in + "admin").toBool()) ? tr("yes") : tr("no");
         case NAME:
         {
             QString name = b_engine->eV(QString("users/*[id=%0user-id]").arg(in))

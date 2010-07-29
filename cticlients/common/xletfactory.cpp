@@ -44,7 +44,6 @@
 #include "agentdetailspanel.h"
 #include "callcampaignpanel.h"
 #include "callstackwidget.h"
-#include "conferencepanel.h"
 #include "customerinfopanel.h"
 #include "datetimepanel.h"
 #include "dialpanel.h"
@@ -79,7 +78,6 @@ static const struct {
     { "agents"            ,newXLet<AgentsPanel>            },
     { "agentsnext"        ,newXLet<AgentsPanelNext>        },
     { "agentdetails"      ,newXLet<AgentdetailsPanel>      },
-    { "conference"        ,newXLet<ConferencePanel>        },
     { "customerinfo"      ,newXLet<CustomerInfoPanel>      },
     { "queues"            ,newXLet<QueuesPanel>            },
     { "queuedetails"      ,newXLet<QueuedetailsPanel>      },

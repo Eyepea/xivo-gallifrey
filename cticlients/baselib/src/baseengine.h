@@ -168,7 +168,6 @@ class BASELIB_EXPORT BaseEngine: public QObject
         const QHash<QString, QueueInfo *> queues() const { return m_queues; }; //!< Return the queues to any Xlet
         const QHash<QString, PhoneInfo *> phones() const { return m_phones; }; //!< Return the phones to any Xlet
         const QHash<QString, UserInfo *>  users() const { return m_users; };  //!< Return the users  to any Xlet
-        const QHash<QString, MeetmeInfo *>  meetme() const { return m_meetme; };  //!< Return the meetme  to any Xlet
         const QHash<QString, QHash<QString, ParkingInfo *> > parking() const { return m_parking; }; //!< Return the parking to any Xlet
         
     private:
@@ -233,7 +232,6 @@ class BASELIB_EXPORT BaseEngine: public QObject
         void featurePutIsOK();
         void monitorPeer(UserInfo *);
         void meetmeEvent(double, const QString &, const QString &, const QString &, const QString &);
-        void meetmeInit(double);
         void requestFileListResult(const QVariant &);
         void updatePresence(const QVariant &);
         void updateCounter(const QVariant &);
@@ -385,7 +383,6 @@ class BASELIB_EXPORT BaseEngine: public QObject
         QHash<QString, PhoneInfo *> m_phones;  //!< List of Phone informations
         QHash<QString, AgentInfo *> m_agents;  //!< List of Agent informations
         QHash<QString, QueueInfo *> m_queues;  //!< List of Queue informations
-        QHash<QString, MeetmeInfo *> m_meetme; //! List of Conference rooms
         QHash<QString, QHash<QString, ParkingInfo *> > m_parking; //! parking bays
 
         DStore m_tree;

@@ -256,7 +256,6 @@ void MainWidget::setAppearance(const QStringList &dockoptions)
 
     QStringList dockopts = dockoptions;
 
-    dockopts << "conf2-tab";
     foreach (QString dname, dockopts) {
         if(dname.size() > 0) {
             QStringList dopt = dname.split("-");
