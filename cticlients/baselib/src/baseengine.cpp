@@ -73,7 +73,7 @@ BaseEngine::BaseEngine(QSettings *settings,
       m_pendingkeepalivemsg(0), m_logfile(NULL),
       m_byte_counter(0), m_attempt_loggedin(false),
       m_rate_bytes(0), m_rate_msec(0), m_rate_samples(0),
-      m_forced_to_disconnect(false), m_tree(DStore())
+      m_forced_to_disconnect(false), m_tree(new DStore())
 {
     b_engine = this;
     settings->setParent(this);
@@ -389,9 +389,8 @@ void BaseEngine::stop()
     }
     
 
-    m_tree.rmPath("statedetails");
-    m_tree.rmPath("users");
-    m_tree.rmPath("confrooms");
+    delete m_tree;
+    m_tree = new DStore();
 
 }
 
@@ -523,7 +522,7 @@ void BaseEngine::updateCapaPresence(const QVariant & presence)
                 QVariantMap fill = crap[stateName].toMap();
                 fill["id"] = fill["stateid"];
                 fill.remove("stateid");
-                m_tree.populate(QString("statedetails/%0").arg(stateName),fill);
+                tree()->populate(QString("statedetails/%0").arg(stateName), fill);
             }
         } else if (field == "allowed") {
             QVariantMap map = presencemap[field].toMap();
@@ -534,12 +533,12 @@ void BaseEngine::updateCapaPresence(const QVariant & presence)
                 }
             }
 
-            m_tree.populate(QString("statedetails/%0/allowed")
+            tree()->populate(QString("statedetails/%0/allowed")
                             .arg(presencemap["state"].toMap()["stateid"].toString()),
                             fill);
         }
     }
-    qDebug() << DStoreNode::pp(*m_tree.root());
+    qDebug() << DStoreNode::pp(*tree()->root());
 }
 
 const QString & BaseEngine::getCapaApplication() const
@@ -1055,12 +1054,12 @@ void BaseEngine::parseCommand(const QString &line)
                     QVariantMap map2 = map1[astid].toMap();
                     foreach(QString meetmeid, map2.keys()) {
                         QVariantMap map3 = map2[meetmeid].toMap();
-                        addUpdateConfRoomInTree(&m_tree, map3);
+                        addUpdateConfRoomInTree(tree(), map3);
                     }
                 }
             } else if (function == "update") {
                 QVariantMap map = datamap["payload"].toMap();
-                addUpdateConfMemberInTree(&m_tree, map);
+                addUpdateConfMemberInTree(tree(), map);
             }
         } else if (thisclass == "serverdown") {
             qDebug() << thisclass << datamap["mode"].toString();
@@ -1125,7 +1124,7 @@ void BaseEngine::parseCommand(const QString &line)
                     //qDebug() << "-------------" << uinfo;
 
 
-                    addUpdateUserInTree(&m_tree, uinfo);
+                    addUpdateUserInTree(tree(), uinfo);
                         
                     
 

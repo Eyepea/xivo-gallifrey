@@ -1,6 +1,6 @@
 #include "conference.h"
 
-Q_EXPORT_PLUGIN2(xletconference2plugin, XLetConferencePlugin);
+Q_EXPORT_PLUGIN2(xletconferenceplugin, XLetConferencePlugin);
 
 ConfTab::ConfTab(QWidget *parent)
     : QTabWidget(parent)

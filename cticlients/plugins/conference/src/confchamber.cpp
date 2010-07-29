@@ -1,7 +1,7 @@
 #include "confchamber.h"
 
-ConfChamberModel::ConfChamberModel(const QString &id)
-    : QAbstractTableModel(), m_admin(0), m_id(id), m_view(NULL)
+ConfChamberModel::ConfChamberModel(QObject *parent, const QString &id)
+    : QAbstractTableModel(parent), m_admin(0), m_id(id), m_view(NULL)
 {
     b_engine->tree()->onChange(QString("confrooms/%0").arg(id), this,
         SLOT(confRoomChange(const QString &, DStoreEvent)));
@@ -241,7 +241,9 @@ Qt::ItemFlags ConfChamberModel::flags(const QModelIndex &index) const
     } else {
         if (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId()) {
             if (col == ACTION_MUTE) {
-                return Qt::ItemIsEnabled;
+                if (b_engine->eV(in + "mute").toBool()) {
+                    return Qt::ItemIsEnabled;
+                }
             } 
         }
     }
@@ -347,7 +349,7 @@ ConfChamber::ConfChamber(const QString &id)
     QVBoxLayout *vBox = new QVBoxLayout(this);
     setLayout(vBox);
     QHBoxLayout *hBox = new QHBoxLayout();
-    ConfChamberModel *model = new ConfChamberModel(id);
+    ConfChamberModel *model = new ConfChamberModel(this, id);
     QPushButton *roomPause = new QPushButton(tr("&pause the conference"), this);
     QLabel *redondant = new QLabel(
         tr(" Conference room ") +

@@ -20,7 +20,7 @@ class ConfChamberModel : public QAbstractTableModel
     Q_OBJECT
 
     public:
-        ConfChamberModel(const QString &);
+        ConfChamberModel(QObject *parent, const QString &);
         enum ColOrder {
             ID, ACTION_MUTE, ACTION_KICK,
             ACTION_TALK_TO, ACTION_ALLOW_IN, ADMIN,
