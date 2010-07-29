@@ -28,8 +28,12 @@ VoIP
 ; fm_networktype-opt(data)
 Data
 
+; help_networktype
+You must set *ONE* (and only one) VoIP interface
+
 ; fm_method
 Method:
+
 
 ; network_method(static)
 Static

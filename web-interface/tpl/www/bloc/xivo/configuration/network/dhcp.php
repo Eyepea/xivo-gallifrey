@@ -76,11 +76,12 @@ endif;
 				  )),
 
 		$form->text(array('desc'	=> $this->bbf('fm_interfaces'),
-				  'name'	=> 'extra_ifaces',
-				  'labelid'	=> 'extra_ifaces',
-				  'size'	=> 15,
-				  'default'	=> $element['dhcp']['interfaces']['default'],
-				  'value'	=> $this->get_var('info','extra_ifaces')));
+				  'name'    => 'extra_ifaces',
+				  'labelid' => 'extra_ifaces',
+				  'size'    => 15,
+				  'default' => $element['dhcp']['interfaces']['default'],
+				  'help'    => $this->bbf('help_interfaces'),
+				  'value'   => $this->get_var('info','extra_ifaces')));
 
 ?>
 </div>

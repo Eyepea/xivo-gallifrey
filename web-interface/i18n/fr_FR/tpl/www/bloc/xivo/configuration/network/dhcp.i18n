@@ -11,7 +11,7 @@ Adresse de départ (plage d'adressage) :
 Adresse de fin (plage d'adressage) : 
 
 ; fm_interfaces
-Interfaces réseau : 
+Interfaces réseau supplémentaires : 
 
 ; ipaddr(callback)
 L'adresse IP n'est pas valide

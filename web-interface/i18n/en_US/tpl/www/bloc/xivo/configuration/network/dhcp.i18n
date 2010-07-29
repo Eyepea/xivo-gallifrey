@@ -11,7 +11,7 @@ Pool start:
 Pool end:
 
 ; fm_interfaces
-Interfaces:
+Extra network interfaces:
 
 ; ipaddr(callback)
 Invalid IP address

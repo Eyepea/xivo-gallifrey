@@ -30,6 +30,9 @@ Informatique
 ; fm_networktype-opt(voip)
 VOIP
 
+; help_networktype
+Vous devez obligatoirement spécifier *UNE* interface de type VoIP (et une uniquement)
+
 ; fm_method
 Méthode :
 
