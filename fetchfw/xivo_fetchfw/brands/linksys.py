@@ -75,7 +75,7 @@ linksys_install_map = {
     'lsspa921_518':
         linksys_dblzip_metainstall_fw('spa941-5.1.8.zip', 'spa941-5-1-8.bin'),
     'lsspa901_515':
-        linksys_dblzip_metainstall_fw('spa901--5.1.5.zip', 'spa901-5-1-5.bin'),
+        linksys_zip_metainstall_fw('spa901-5-1-5.bin'),
     'lspap2t_516':
         linksys_zip_metainstall_fw('pap2t-5-1-6.bin'),
     'lsspa8000_613':

@@ -505,9 +505,9 @@ version: 5.1.5
 files: SPA901_Firmware.zip
 
 [SPA901_Firmware.zip]
-url: http://www.cisco.com/en/US/prod/voicesw/ps6788/phones/ps10033/ps10034/SPA901_Firmware.zip
-size: 3531905
-sha1sum: 0015dc9dd6d1a8d2e0ffe03915bf19f00787caf9
+url: http://download-sj.cisco.com/swc/esd/03/282414119/anon/spa901--5.1.5.zip
+size: 1607399
+sha1sum: 2cc6bfeb64812ca80a69cbe51296e3db2b68a491
 
 # Locales for Linksys SPA9x2 phones
 [lsspa9xx_locale_de]
