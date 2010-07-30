@@ -31,15 +31,20 @@ void ConfChamberModel::setView(ConfChamberView *v)
 
 void ConfChamberModel::updateView()
 {
+    static int actions[] = { ACTION_RECORD,
+                             ACTION_KICK,
+                             ACTION_ALLOW_IN,
+                             ACTION_TALK_TO };
+    int i;
     if (m_view) {
-        if (!m_admin) {
-            m_view->hideColumn(ACTION_KICK);
-            m_view->hideColumn(ACTION_ALLOW_IN);
-            m_view->hideColumn(ACTION_TALK_TO);
+        if (m_admin) {
+            for(i=sizeof(actions)/sizeof(actions[0]);i--;) {
+                m_view->showColumn(actions[i]);
+            }
         } else {
-            m_view->showColumn(ACTION_KICK);
-            m_view->showColumn(ACTION_ALLOW_IN);
-            m_view->showColumn(ACTION_TALK_TO);
+            for(i=sizeof(actions)/sizeof(actions[0]);i--;) {
+                m_view->hideColumn(actions[i]);
+            }
         }
     }
 }
@@ -159,6 +164,11 @@ ConfChamberModel::data(const QModelIndex &index,
                     return tr("User already authed");
                 }
                 return tr("Talk to");
+            } else if (col == ACTION_RECORD) {
+                if (b_engine->eV(in + "recorded").toBool()) {
+                    return tr("User already recorded");
+                }
+                return tr("Record conference untill this user leave");
             } else if (col == ACTION_MUTE) {
                 if ((m_admin) ||
                     (b_engine->eV(in + "user-id").toString() == b_engine->xivoUserId())) {
@@ -177,6 +187,8 @@ ConfChamberModel::data(const QModelIndex &index,
             return b_engine->eV(in + "id");
         case NUMBER:
             return b_engine->eV(in + "phonenum");
+        case ACTION_RECORD:
+            return (b_engine->eV(in + "recorded").toBool())? tr("yes") : tr("no");
         case ADMIN:
             return (b_engine->eV(in + "admin").toBool()) ? tr("yes") : tr("no");
         case NAME:
@@ -225,6 +237,8 @@ ConfChamberModel::headerData(int section,
             return QVariant(tr("Admin"));
         } else if (section == ACTION_KICK) {
             return "K";
+        } else if (section == ACTION_RECORD) {
+            return "R";
         } else if (section == ACTION_ALLOW_IN) {
             return "A";
         } else if (section == ACTION_TALK_TO) {
@@ -293,11 +307,12 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
 
     int ActionCol[] = { ConfChamberModel::ACTION_MUTE,
                         ConfChamberModel::ACTION_TALK_TO,
+                        ConfChamberModel::ACTION_RECORD,
                         ConfChamberModel::ACTION_ALLOW_IN,
                         ConfChamberModel::ACTION_KICK };
     int i;
     for(i=0;i<(int)(sizeof(ActionCol)/sizeof(ActionCol[0]));i++) {
-        setColumnWidth(ActionCol[i], 18);
+        setColumnWidth(ActionCol[i], 24);
         horizontalHeader()->setResizeMode(ActionCol[i], QHeaderView::Fixed);
     }
 
@@ -346,6 +361,16 @@ void ConfChamberView::onViewClick(const QModelIndex &index)
         case ConfChamberModel::ACTION_TALK_TO:
             b_engine->meetmeAction("MeetmeTalk", castId + " " + roomId);
             break;
+        case ConfChamberModel::ACTION_RECORD:
+            {
+            int status = !b_engine->eV(in + "recorded").toBool();
+            b_engine->tree()->populate(in + "recorded", status);
+
+            b_engine->meetmeAction("record", castId + " " +
+                                             roomId + " " +
+                                             ( status ? "stop" : "start"));
+            }
+            break;
         case ConfChamberModel::ACTION_ALLOW_IN:
             b_engine->meetmeAction("MeetmeAccept", castId + " " + roomId);
             break;
@@ -368,19 +393,17 @@ ConfChamber::ConfChamber(const QString &id)
     setLayout(vBox);
     QHBoxLayout *hBox = new QHBoxLayout();
     m_model = new ConfChamberModel(this, id);
-    QPushButton *roomPause = new QPushButton(tr("&pause the conference"), this);
+    QPushButton *roomPause = new QPushButton(tr("&Pause conference"), this);
     QLabel *redondant = new QLabel(
         tr(" Conference room ") +
         b_engine->eV(QString("confrooms/%0/name").arg(id)).toString() + " (" +
         b_engine->eV(QString("confrooms/%0/number").arg(id)).toString() + ") "
-        );
-
-
+    );
 
     roomPause->setProperty("state", true);
     hBox->addStretch(1);
-    hBox->addWidget(redondant,6);
-    hBox->addWidget(roomPause,2);
+    hBox->addWidget(redondant, 6);
+    hBox->addWidget(roomPause, 2);
     hBox->addStretch(1);
     if (!m_model->isAdmin()) {
         roomPause->hide();

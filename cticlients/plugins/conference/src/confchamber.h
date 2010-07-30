@@ -23,9 +23,9 @@ class ConfChamberModel : public QAbstractTableModel
     public:
         ConfChamberModel(QObject *parent, const QString &);
         enum ColOrder {
-            ID, ACTION_MUTE, ACTION_KICK,
-            ACTION_TALK_TO, ACTION_ALLOW_IN, ADMIN,
-            NUMBER, SINCE,  NAME, NB_COL
+            ID, ACTION_MUTE, ACTION_KICK, ACTION_TALK_TO,
+            ACTION_ALLOW_IN, ACTION_RECORD, ADMIN,
+            NUMBER, SINCE, NAME, NB_COL
         };
         void setView(ConfChamberView *m_view);
         QString id() const;

@@ -4405,6 +4405,7 @@ class XivoCTICommand(BaseCommand):
                                                  'mutestatus' : mutestatus,
                                                  'recordstatus' : recordstatus,
                                                  'userid' : userid,
+                                                 'channel' : channel,
                                                  'authed' : authed,
                                                  'admin' : isadmin,
                                                  'fullname' : calleridname,
@@ -4885,36 +4886,27 @@ class XivoCTICommand(BaseCommand):
                         function = icommand.struct.get('function')
                         argums = icommand.struct.get('functionargs')
                         if self.capas[capaid].match_funcs(ucapa, 'conference'):
-                            if function == 'record' and len(argums) > 3:
+                            if function == 'record' and len(argums) == 3 and \
+                                argums[2] in ['start' , 'stop']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                uniqueid = argums[3]
-                                if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
-                                    channel = self.uniqueids[castid][uniqueid]['channel']
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
-                                    if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
-                                        if userid == meetmeref['adminid']:
-                                            datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
-                                            meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'on'
-                                            self.__ami_execute__(castid, 'monitor', channel,
-                                                'cti-meetme-%s-%s' % (confno, datestring))
+                                command = argums[2]
+                                chan = ""
+                                validuid = ""
+                                for uid, info in self.weblist['meetme'][astid]. \
+                                                 keeplist[confno]['uniqueids'].iteritems():
+                                    if info['usernum'] == castid:
+                                        chan = info['channel']
+                                        validuid = uid
+                                        break 
+                            
+                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
+                                if argums[1] == "start":
+                                    self.__ami_execute__(astid, "monitor", chan,
+                                                         'cti-meetme-%s-%s' % (roomname, datestring))
                                 else:
-                                    log.warning('(%s) either astid %s or uniqueid %s is unknown'
-                                        % (function, castid, uniqueid))
-                            elif function == 'stoprecord' and len(argums) > 3:
-                                castid = argums[0]
-                                confno = argums[1]
-                                uniqueid = argums[3]
-                                if castid in self.uniqueids and uniqueid in self.uniqueids[castid]:
-                                    channel = self.uniqueids[castid][uniqueid]['channel']
-                                    (meetmeref, meetmeid) = self.weblist['meetme'][castid].byroomname(confno)
-                                    if meetmeref is not None and uniqueid in meetmeref['uniqueids']:
-                                        if userid == meetmeref['adminid']:
-                                            meetmeref['uniqueids'][uniqueid]['recordstatus'] = 'off'
-                                            self.__ami_execute__(castid, 'stopmonitor', channel)
-                                else:
-                                    log.warning('(%s) either astid %s or uniqueid %s is unknown'
-                                        % (function, castid, uniqueid))
+                                    self.__ami_execute__(astid, "stopmonitor", chan)
 
                             elif function in ['MeetmePause']:
                                 confno = argums[0]
