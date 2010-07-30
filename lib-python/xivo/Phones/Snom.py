@@ -108,8 +108,7 @@ class Snom(PhoneVendorMixin):
                 xtype = "dest"
             else:
                 xtype = "speed"
-
-            fk_config_lines.append("<fkey idx=\"%01d\" context=\"active\" perm=\"\">%s &lt;sip:%s@%s&gt;</fkey>" % (int(key)-1, xtype, exten, cls.ASTERISK_IPV4))
+            fk_config_lines.append('<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' % (int(key)-1, xtype, exten, cls.ASTERISK_IPV4))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
@@ -164,7 +163,19 @@ class Snom(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm.tmp")
+        # We need to create a file which contains only a link to another file if we want the
+        # configuration parameters to be applied with the correct priority... (i.e. we want
+        # the per-phone parameters to override the generic parameters)
+        redirect_file = open(os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm"), 'w')
+        redirect_file.write(
+"""\
+<?xml version="1.0" encoding="UTF-8" ?>
+<setting-files>
+  <file url="http://%s:8667/Snom/snom%s-%s.xml"/>
+</setting-files>
+""" % (self.ASTERISK_IPV4, model, macaddr))
+        redirect_file.close()
+        tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml.tmp")
         xml_filename = tmp_filename[:-4]
 
         function_keys_config_lines = \
@@ -175,11 +186,11 @@ class Snom(PhoneVendorMixin):
         else:
             locale = self.DEFAULT_LOCALE
         language = """\
-    <language perm="RW">%s</language>
-    <web_language perm="RW">%s</language>
-    <tone_scheme perm="RW">%s</tone_scheme>""" % (self.SNOM_LOCALES[locale][0],
-                                                  self.SNOM_LOCALES[locale][0],
-                                                  self.SNOM_LOCALES[locale][1])
+    <language perm="R">%s</language>
+    <web_language perm="R">%s</language>
+    <tone_scheme perm="R">%s</tone_scheme>""" % (self.SNOM_LOCALES[locale][0],
+                                                 self.SNOM_LOCALES[locale][0],
+                                                 self.SNOM_LOCALES[locale][1])
 
         if 'timezone' in provinfo:
             timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
@@ -209,11 +220,11 @@ class Snom(PhoneVendorMixin):
     def __format_tz_inform(cls, inform):
         lines = []
         lines.append('<timezone perm="R"></timezone>')
-        lines.append('<utc_offset perm="RW">%+d</utc_offset>' % inform['utcoffset'].as_seconds)
+        lines.append('<utc_offset perm="R">%+d</utc_offset>' % inform['utcoffset'].as_seconds)
         if inform['dst'] is None:
-            lines.append('<dst perm="RW"></dst>')
+            lines.append('<dst perm="R"></dst>')
         else:
-            lines.append('<dst perm="RW">%d %s %s</dst>' % 
+            lines.append('<dst perm="R">%d %s %s</dst>' % 
                          (inform['dst']['save'].as_seconds,
                           cls.__format_dst_change(inform['dst']['start']),
                           cls.__format_dst_change(inform['dst']['end'])))
