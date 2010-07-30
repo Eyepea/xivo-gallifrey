@@ -23,6 +23,7 @@
     <user_realname idx="1" perm="!">guest</user_realname>
     <user_server_type idx="1" perm="R">Default</user_server_type>
     <vlan_id perm="R">#XIVO_VOIP_VLAN_ID#</vlan_id>
+    <mwi_dialtone perm="R">normal</mwi_dialtone> 
 
     <!-- http://wiki.snom.com/Interoperability/PBX/Asterisk-->
     <call_completion perm="R">off</call_completion>
