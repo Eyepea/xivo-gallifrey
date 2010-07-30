@@ -246,7 +246,7 @@ class Linksys(PhoneVendorMixin):
 
     @classmethod
     def __format_function_keys(cls, funckey, model):
-        if model not in ('spa942', 'spa962'):
+        if model not in ('spa941', 'spa942', 'spa962'):
             return ""
 
         sorted_keys = funckey.keys()
