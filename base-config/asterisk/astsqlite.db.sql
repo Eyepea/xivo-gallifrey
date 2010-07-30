@@ -1204,7 +1204,6 @@ INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','pingtime',20);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','lagrqtime',10);
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','nochecksums','no');
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','autokill','yes');
-INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','requirecalltoken','no');
 -- warning: asterisk crash if set to NULL value
 INSERT INTO staticiax VALUES (NULL,0,0,0,'iax.conf','general','calltokenoptional','0.0.0.0');
 
