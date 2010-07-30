@@ -577,6 +577,7 @@ class XivoCTICommand(BaseCommand):
                        'capaservices' : self.capas[capaid].capaservices,
                        'presencecounter' : cstatus
                        }
+
             repstr = self.__cjson_encode__(tosend)
             # if 'features' in capa_user:
             # repstr += ';capas_features:%s' %(','.join(configs[astid].capafeatures))
@@ -1168,21 +1169,22 @@ class XivoCTICommand(BaseCommand):
     def __send_msg_to_cti_client__(self, userinfo, strupdate):
         """send a string (terminate with a newline character) to a user"""
         wassent = False
-        try:
-            t0 = time.time()
-            if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
-                if not userinfo['login']['connection'].toClose:
-                    mysock = userinfo['login']['connection']
-                    mysock.sendall(strupdate + '\n')
-                    wassent = True
-        except ClientConnection.CloseException, cexc:
-            # an error happened on the socket so it should be closed
-            t1 = time.time()
-            dispuserid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
-            log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f cexc=%s'
-                % (dispuserid, len(strupdate), (t1 - t0), cexc))
-            if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
-                userinfo['login']['connection'].toClose = True
+        if strupdate:
+            try:
+                t0 = time.time()
+                if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
+                    if not userinfo['login']['connection'].toClose:
+                        mysock = userinfo['login']['connection']
+                        mysock.sendall(strupdate + '\n')
+                        wassent = True
+            except ClientConnection.CloseException, cexc:
+                # an error happened on the socket so it should be closed
+                t1 = time.time()
+                dispuserid = '%s/%s' % (userinfo.get('astid'), userinfo.get('xivo_userid'))
+                log.exception('(__send_msg_to_cti_client__) userinfo(astid/xivo_userid)=%s len=%d timespent=%f cexc=%s'
+                              % (dispuserid, len(strupdate), (t1 - t0), cexc))
+                if userinfo and 'login' in userinfo and 'connection' in userinfo['login']:
+                    userinfo['login']['connection'].toClose = True
         return wassent
 
     def __check_astid_context__(self, userinfo, astid, context):
@@ -1471,7 +1473,7 @@ class XivoCTICommand(BaseCommand):
             #    log.warning('%s __sheet_alert__ : whom field for %s action has not been defined'
             #                % (astid, where))
             #    return
-            log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, time.asctime(), channel))
+            log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, channel, capaids))
 
             # 1) build sheet     (or we could get it from sheet manager)
             if channel is not None:
@@ -1582,7 +1584,7 @@ class XivoCTICommand(BaseCommand):
 
                 else:
                     log.warning('__sheet_alert__ (%s) : unknown destination <%s> in <%s>'
-                        % (astid, whom, where))
+                                % (astid, whom, where))
                 # send to clients
                 lstsent = []
                 for uinfo in uinfostosend:
@@ -1595,7 +1597,7 @@ class XivoCTICommand(BaseCommand):
                     self.sheetmanager[astid].addviewingusers(channel, lstsent)
                 if lstsent:
                     log.info('%s (whom=%s, where=%s) %d sheet(s) sent to %s'
-                        % (astid, whom, where, nsent, lstsent))
+                             % (astid, whom, where, nsent, lstsent))
         return
 
     def __dialplan_fill_src__(self, dialplan_data):
