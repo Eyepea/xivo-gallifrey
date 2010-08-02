@@ -256,7 +256,11 @@ class Linksys(PhoneVendorMixin):
             value   = funckey[key]
             exten   = value['exten']
             key     = int(key)
-            label   = Linksys.xml_escape(value.get('label', exten))
+            if 'label' in value and value['label'] is not None:
+                label = value['label']
+            else:
+                label = exten
+            label = Linksys.xml_escape(label)
 
             if value.get('supervision'):
                 blf = "+blf"

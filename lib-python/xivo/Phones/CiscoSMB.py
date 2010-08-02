@@ -234,7 +234,11 @@ class CiscoSMB(PhoneVendorMixin):
             value   = funckey[key]
             exten   = value['exten']
             key     = int(key)
-            label   = CiscoSMB.xml_escape(value.get('label', exten))
+            if 'label' in value and value['label'] is not None:
+                label = value['label']
+            else:
+                label = exten
+            label = CiscoSMB.xml_escape(label)
 
             if value.get('supervision'):
                 blf = "+blf"

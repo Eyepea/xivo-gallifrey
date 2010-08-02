@@ -156,44 +156,75 @@ class Aastra(PhoneVendorMixin):
 
         return exten
 
-    @staticmethod
-    def __format_function_keys(funckey, model):
+    @classmethod
+    def __format_expmod(cls, keynum):
+        # XXX you get a weird behavior if you have more than 1 M670i expansion module.
+        # For example, if you have a 6757i and you want to set the first key of the
+        # second module, you'll have to pick, in the xivo web interface, the key number
+        # 91 (30 phone softkeys + 60 M675i expansion module keys + 1) instead of 67.
+        # That's because the Aastras support more than one type of expansion module, and they
+        # don't have the same number of keys. Since we don't know which one the phone is actually
+        # using, we pick the one with the most keys, so every expansion module can be fully
+        # used, but this leave a weird behavior for multi-expansion setup when smaller
+        # expansion module are used....
+        if keynum <= 180:
+            return "expmod%d key%d" % ((keynum - 1) // 60 + 1, (keynum - 1) % 60 + 1)
+        return None
+        
+    @classmethod
+    def __get_keytype_from_model_and_keynum(cls, model, keynum):
+        if model in ("6730i", "6731i"):
+            if keynum <= 8:
+                return "prgkey%d" % keynum
+        elif model in ("6753i"):
+            if keynum <= 6:
+                return "prgkey%d" % keynum
+            else:
+                return cls.__format_expmod(keynum - 6)
+        elif model in ("6755i"):
+            if keynum <= 6:
+                return "prgkey%d" % keynum
+            else:
+                keynum -= 6
+                if keynum <= 6:
+                    return "softkey%d" % keynum
+                else:
+                    return cls.__format_expmod(keynum - 6)
+        elif model in ("6757i"):
+            # The 57i has 6 'top keys' and 6 'bottom keys'. 10 functions are programmable for
+            # the top keys and 20 are for the bottom keys.
+            if keynum <= 10:
+                return "topsoftkey%d" % keynum
+            else:
+                keynum -= 10
+                if keynum <= 20:
+                    return "softkey%d" % keynum
+                else:
+                    return cls.__format_expmod(keynum - 20)
+        return None
+    
+    @classmethod
+    def __format_function_keys(cls, funckey, model):
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
-        unit = 1
         for key in sorted_keys:
-            value = funckey[key]
-            exten = value['exten']
-
-            key = int(key)
-
-            if key <= 6:
-                if model in ('57i', '6757i'):
-                    keytype = "topsoft"
+            keytype = cls.__get_keytype_from_model_and_keynum(model, int(key))
+            if keytype is not None:
+                value = funckey[key]
+                exten = value['exten']
+                if value.get('supervision'):
+                    xtype = "blf"
                 else:
-                    keytype = "prg"
-            elif key > 12:
-                key -= 12
-                unit = int(math.ceil(float(key) / 60))
-                key %= 60
-
-                if key == 0:
-                    key = 60
-
-                keytype = "expmod%d " % unit
-            else:
-                keytype = "soft"
-
-            if value.get('supervision'):
-                xtype = "blf"
-            else:
-                xtype = "speeddial"
-
-            fk_config_lines.append("%skey%d type: %s" % (keytype, key, xtype))
-            fk_config_lines.append("%skey%d label: %s" % (keytype, key, value.get('label', exten)))
-            fk_config_lines.append("%skey%d value: %s" % (keytype, key, exten))
-            fk_config_lines.append("%skey%d line: 1" % (keytype, key))
+                    xtype = "speeddial"
+                if 'label' in value and value['label'] is not None:
+                    label = value['label']
+                else:
+                    label = exten
+                fk_config_lines.append("%s type: %s" % (keytype, xtype))
+                fk_config_lines.append("%s label: %s" % (keytype, label))
+                fk_config_lines.append("%s value: %s" % (keytype, exten))
+                fk_config_lines.append("%s line: 1" % (keytype,))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
