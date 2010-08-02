@@ -903,17 +903,17 @@ url: http://fox.snom.com/config/snomlang-8.2.35.tgz
 size: 736848
 sha1sum: 1d100b026f2ff5cf5678f5728123de5e1cb327be
 
-# Thomson ST2022 4.68
-[thst2022_468]
+# Thomson ST2022 4.69
+[thst2022_469]
 brand: Thomson
 model: ST2022
-version: 4.68
-files: ST2022_SG_v4.68_Release_Package.zip
+version: 4.69
+files: ST2022_SG_v4.69_SED_Release_Package.zip
 
-[ST2022_SG_v4.68_Release_Package.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6712
-size: 7885268
-sha1sum: ac4ac77b82905af195e2c7e045131abdc524afd8
+[ST2022_SG_v4.69_SED_Release_Package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6957
+size: 6057065
+sha1sum: 278f981d50ad0a09623db381883569d18c7b7697
 
 # Thomson ST2030 2.69
 [thst2030_269]
@@ -986,6 +986,18 @@ files: 2.50.0.50.rom
 url: http://www.yealink.com/download/firmware/Yealink%20SIP-T28(P)%20V50%20Firmware-2.50.0.50.zip
 size: 6644890
 sha1sum: 66be3d5003f56d94ce4ea809929d91777873d6a1
+
+# SIP Vandal Resistant Substation
+[zenitel_sipst]
+brand: Zenitel
+model: SIP Vandal Resistant Substation
+version: 01.10.3.4
+files: A100G80200.01_10_3_4.zip
+
+[A100G80200.01_10_3_4.zip]
+url: https://alphasupport.zenitel.com/alphawiki/downloads/A100G80200.01_10_3_4.zip
+size: 5003951
+sha1sum: 304c2037491f9ab2c75a89ad0791460cfd08a0d4
 
 ###
 ### Cards Firmwares starting from here ###
