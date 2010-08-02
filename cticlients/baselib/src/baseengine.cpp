@@ -36,6 +36,8 @@
 #include <QDebug>
 #include <QDir>
 #include <QTcpSocket>
+#include <QLocale>
+#include <QTranslator>
 
 #include "JsonToVariant.h"
 #include "VariantToJson.h"
@@ -64,9 +66,10 @@ BASELIB_EXPORT BaseEngine *b_engine;
 static CtiConn *m_ctiConn;
 
 
-BaseEngine::BaseEngine(QSettings *settings,
+BaseEngine::BaseEngine(QApplication *_app,
+                       QSettings *settings,
                        const QString &osInfo)
-    : QObject(NULL),
+    : QObject(NULL), app(_app),
       m_serverhost(""), m_ctiport(0),
       m_userid(""), m_useridopt(""), m_company(""), m_password(""), m_agentphonenumber(""),
       m_sessionid(""), m_state(ENotLogged),
@@ -2260,4 +2263,12 @@ void BaseEngine::registerClassEvent(const QString &class_event,
     e_call->udata = udata;
 
     m_class_event_cb.insert(class_event, e_call);
+}
+
+void BaseEngine::registerTranslation(const QString &path)
+{
+    QString locale = QLocale::system().name();
+    QTranslator *translator = new QTranslator;
+    translator->load(path.arg(locale));
+    app->installTranslator(translator);
 }

@@ -139,7 +139,7 @@ int main(int argc, char ** argv)
 #endif
     qDebug() << "main() osname=" << info_osname << "locale=" << locale;
     
-    BaseEngine *engine = new BaseEngine(settings, info_osname);
+    BaseEngine *engine = new BaseEngine(&app, settings, info_osname);
 
     MainWidget main(engine);
     app.setActivationWindow(&main);

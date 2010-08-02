@@ -47,6 +47,7 @@
 #include <QVariant>
 #include <QVariantMap>
 #include <QTimerEvent>
+#include <QApplication>
 
 
 class Xlet;
@@ -81,7 +82,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
         //! Enum for BaseEngine state logged/not logged
         typedef enum {ENotLogged, ELogged } EngineState;
 
-        BaseEngine(QSettings *, const QString &); //! Constructor
+        BaseEngine(QApplication *_app, QSettings *, const QString &); //! Constructor
         ~BaseEngine(); //! Destructor
         
         QSettings* getSettings(); 
@@ -169,6 +170,8 @@ class BASELIB_EXPORT BaseEngine: public QObject
         const QHash<QString, PhoneInfo *> phones() const { return m_phones; }; //!< Return the phones to any Xlet
         const QHash<QString, UserInfo *>  users() const { return m_users; };  //!< Return the users  to any Xlet
         const QHash<QString, QHash<QString, ParkingInfo *> > parking() const { return m_parking; }; //!< Return the parking to any Xlet
+
+        void registerTranslation(const QString &path);
         
     private:
         int callClassEventCallback(QString className, const QVariantMap &map);
@@ -294,6 +297,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
         
         // Class Members
         
+        QApplication *app;
         // Parameters given by the User at Login time
         QString m_serverhost;           //!< Host to the login server
         quint16 m_ctiport;              //!< TCP port to connect to server

@@ -21,7 +21,7 @@ int ConfTab::addClosableTab(QWidget *w, const QString &title)
 
     QPushButton *p = new QPushButton("X");
     p->setFlat(true);
-    p->setMaximumSize(12,20);
+    p->setMaximumSize(12, 20);
     p->setFocusPolicy(Qt::NoFocus);
     p->setProperty("index", index);
     connect(p, SIGNAL(clicked()), this, SLOT(closeTab()));
@@ -51,6 +51,7 @@ void ConfTab::showConfRoom(const QString &id)
 
 XLet* XLetConferencePlugin::newXLetInstance(QWidget *parent)
 {
+    b_engine->registerTranslation(":/conference_%1");
     return new XletConference(parent);
 }
 

@@ -2,5 +2,6 @@
 <qresource>
 	<file>in/speak.png</file>
 	<file>in/mute.png</file>
+	<file>conference_fr.qm</file>
 </qresource>
 </RCC>
