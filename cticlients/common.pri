@@ -3,7 +3,7 @@ XIVOVER = 1.1
 SVNVER = $$system(LANG= svn info | sed -n \"s/Revision: //p\")
 DATEBUILD = $$system(LANG= date)
 
-CONFIG += debug
+#CONFIG += debug
 
 # take care of inferior(s) system(s) {
 
