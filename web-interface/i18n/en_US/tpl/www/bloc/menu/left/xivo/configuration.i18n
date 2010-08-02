@@ -63,3 +63,9 @@ Reload Config
 
 ; mn_left_controlsystem-ha 
 Reload HA
+
+; controlsystem_commonconf_confirm
+Are you sure you want to apply the changes ?
+
+; controlsystem_ha_confirm
+Are you sure you want to apply the HA configuration ?

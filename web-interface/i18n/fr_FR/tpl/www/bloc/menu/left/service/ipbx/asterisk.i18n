@@ -1,4 +1,3 @@
-
 ; mn_left_name
 IPBX
 
@@ -151,4 +150,3 @@ Etes-vous certain de vouloir redémarrer ?
 
 ; controlsystem_ipbxrestart_confirm
 Etes-vous certain de vouloir redémarrer %s ?
-
