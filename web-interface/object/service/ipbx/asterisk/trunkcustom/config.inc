@@ -58,7 +58,7 @@ $array['filter']['context'] = array('set' => false,
 							XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION,
 							XIVO_SRE_IPBX_AST_CONTEXT_ZONEMESSAGES)));
 $array['filter']['interface'] = array('regexp' => '/^[a-z0-9#\*\.\/_@:\-\$\{\}]+$/i','minlen' => 1,'maxlen' => 128);
-$array['filter']['intfsuffix'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-z0-9#\*\.\/_@:\-\$\{\}]+$/i','maxlen' => 32);
+$array['filter']['intfsuffix'] = array('set' => false,'chk' => 2,'regexp' => '/^[a-zA-Z0-9#\*\.\/_@:\-\$\{\}]+$/i','maxlen' => 32);
 $array['filter']['commented'] = array('bool' => true);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);

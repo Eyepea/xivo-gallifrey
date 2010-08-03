@@ -63,9 +63,6 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
 
-		if(isset($arr['intfsuffix']) === true)
-			$arr['intfsuffix'] = strtolower($arr['intfsuffix']);
-
 		return(parent::add($arr,$id));
 	}
 
@@ -79,9 +76,6 @@ class xivo_service_asterisk_trunkcustom extends xivo_service_asterisk_abstract
 
 		if(isset($arr['name']) === true)
 			$arr['name'] = strtolower($arr['name']);
-
-		if(isset($arr['intfsuffix']) === true)
-			$arr['intfsuffix'] = strtolower($arr['intfsuffix']);
 
 		return(parent::edit($id,$arr,$disable));
 	}
