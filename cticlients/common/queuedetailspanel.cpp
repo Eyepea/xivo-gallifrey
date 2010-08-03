@@ -60,7 +60,7 @@ QueuedetailsPanel::QueuedetailsPanel(QWidget * parent)
     m_queuelegend_callstaken = new QLabel(tr("Calls\nTaken"), this);
     m_queuelegend_lastcall = new QLabel(tr("Last\nCall"), this);
     m_queuelegend_penalty = new QLabel(tr("Penalty"), this);
-    m_gridlayout->setRowStretch( 100, 1 );
+    m_gridlayout->setRowStretch(100, 1);
     m_gridlayout->addWidget(m_queuedescription, 0, 0);
     m_gridlayout->addWidget(m_queuelegend_agentid, 1, 0);
     m_gridlayout->addWidget(m_queuelegend_status, 1, 2);

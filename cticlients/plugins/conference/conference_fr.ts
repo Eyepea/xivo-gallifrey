@@ -65,24 +65,29 @@
     <message>
         <location filename="src/confchamber.cpp" line="176"/>
         <source>Unmute</source>
-        <translation type="unfinished"></translation>
+        <translation>Laisser la parole</translation>
     </message>
     <message>
         <location filename="src/confchamber.cpp" line="178"/>
         <source>Mute</source>
-        <translation>Faire taire</translation>
+        <translation>Rendre muet</translation>
     </message>
     <message>
         <location filename="src/confchamber.cpp" line="191"/>
         <location filename="src/confchamber.cpp" line="193"/>
-        <source>yes</source>
-        <translation>oui</translation>
+        <source>Yes</source>
+        <oldsource>yes</oldsource>
+        <translation>Oui</translation>
     </message>
     <message>
         <location filename="src/confchamber.cpp" line="191"/>
         <location filename="src/confchamber.cpp" line="193"/>
+        <source>No</source>
+        <translation>Non</translation>
+    </message>
+    <message>
         <source>no</source>
-        <translation>non</translation>
+        <translation type="obsolete">non</translation>
     </message>
     <message>
         <location filename="src/confchamber.cpp" line="199"/>
@@ -118,47 +123,53 @@
 <context>
     <name>ConfListModel</name>
     <message>
-        <location filename="src/conflist.cpp" line="72"/>
+        <location filename="src/conflist.cpp" line="70"/>
+        <location filename="src/conflist.cpp" line="73"/>
         <source>Yes</source>
         <translation>Oui</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="72"/>
+        <location filename="src/conflist.cpp" line="70"/>
+        <location filename="src/conflist.cpp" line="73"/>
         <source>No</source>
         <translation>Non</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="112"/>
+        <location filename="src/conflist.cpp" line="113"/>
         <source>Room UID</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="114"/>
+        <location filename="src/conflist.cpp" line="115"/>
         <source>Number</source>
         <translation>Numéro</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="116"/>
+        <location filename="src/conflist.cpp" line="117"/>
         <source>Name</source>
         <translation>Nom</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="118"/>
-        <source>pin code</source>
-        <translation>Code pin</translation>
+        <location filename="src/conflist.cpp" line="119"/>
+        <source>Pin code</source>
+        <translation>Code Pin</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="120"/>
+        <source>pin code</source>
+        <translation type="obsolete">Code pin</translation>
+    </message>
+    <message>
+        <location filename="src/conflist.cpp" line="121"/>
         <source>Member count</source>
         <translation>Membres</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="122"/>
+        <location filename="src/conflist.cpp" line="123"/>
         <source>Moderated</source>
         <translation>Modéré</translation>
     </message>
     <message>
-        <location filename="src/conflist.cpp" line="124"/>
+        <location filename="src/conflist.cpp" line="125"/>
         <source>Started since</source>
         <translation>Commencée depuis</translation>
     </message>
@@ -166,7 +177,7 @@
 <context>
     <name>ConfListView</name>
     <message>
-        <location filename="src/conflist.cpp" line="198"/>
+        <location filename="src/conflist.cpp" line="199"/>
         <source>Get in room %1 (%2)</source>
         <translation>Rentrer dans la chambre de conférence %1 ( %2 )</translation>
     </message>
@@ -174,12 +185,12 @@
 <context>
     <name>XletConference</name>
     <message>
-        <location filename="src/conference.cpp" line="65"/>
+        <location filename="src/conference.cpp" line="61"/>
         <source>Conference</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="src/conference.cpp" line="71"/>
+        <location filename="src/conference.cpp" line="67"/>
         <source>Conference room list</source>
         <translation>Liste des chambres de conférence</translation>
     </message>

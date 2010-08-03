@@ -119,7 +119,6 @@ class QueuesPanel : public XLet
         static void eatQueuesStats_t(const QVariantMap &p, void *udata) {
             ((QueuesPanel*)udata)->eatQueuesStats(p);
         };
-
         bool showMoreQueueDetailButton() { return m_showMore; };
         bool showNumber() { return m_showNumber; };
 

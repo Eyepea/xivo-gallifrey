@@ -66,6 +66,7 @@ class ConfList : public QWidget
         ConfList(XletConference *parent);
     private slots:
         void openConfRoom();
+        void phoneConfRoom();
     private:
         XletConference *manager;
 };

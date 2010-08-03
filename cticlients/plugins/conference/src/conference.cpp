@@ -29,11 +29,13 @@ int ConfTab::addClosableTab(QWidget *w, const QString &title)
     return index;
 }
 
-void ConfTab::showConfRoom(const QString &id)
+void ConfTab::showConfRoom(const QString &id, bool force)
 {
     if (!m_id2index.contains(id)) {
-        if (b_engine->eVM(QString("confrooms/%0/in").arg(id)).size() == 0)
+        if ((!force) && 
+            (b_engine->eVM(QString("confrooms/%0/in").arg(id)).size() == 0)) {
             return ;
+        }
 
         QString roomName = b_engine->eV(
                                 QString("confrooms/%0/name").arg(id)).toString();
@@ -68,7 +70,7 @@ XletConference::XletConference(QWidget *parent)
     vLayout->addWidget(m_tab);
 }
 
-void XletConference::openConfRoom(const QString &id)
+void XletConference::openConfRoom(const QString &id, bool force)
 {
-    m_tab->showConfRoom(id);
+    m_tab->showConfRoom(id, force);
 }

@@ -560,9 +560,10 @@ void QueueRow::setLayoutColumnWidth(QGridLayout *layout, int nbStat)
     layout->setColumnMinimumWidth(2, 25);  // queue move
     layout->setColumnMinimumWidth(3, 100); // queue busy
     layout->setColumnMinimumWidth(4, 100); // queue longest waiting time
+
     int i;
     for(i=0;i<nbStat;i++) {
-        layout->setColumnMinimumWidth(i+5, 60);
+        layout->setColumnMinimumWidth(i+5, 70);
     }
 }
 
@@ -872,12 +873,12 @@ QWidget* QueueRow::makeTitleRow(QueuesPanel *parent)
 
     label = new QLabel(row);
     label->setText(tr("Busy"));
-    label->setFixedSize(100, 20);
+    label->setFixedSize(100, 30);
     label->setAlignment(Qt::AlignCenter);
     layout->addWidget(label, 1, col++);
 
     label = new QLabel(row);
-    label->setFixedSize(100, 20);
+    label->setFixedSize(100, 30);
     label->setText(tr("Longest Wait"));
     label->setAlignment(Qt::AlignCenter);
     layout->addWidget(label, 1, col++);

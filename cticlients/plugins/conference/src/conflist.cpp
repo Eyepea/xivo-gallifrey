@@ -66,7 +66,8 @@ ConfListModel::data(const QModelIndex &index,
         case NAME:
             return b_engine->eV(room + "name");
         case PIN_REQUIRED:
-            return b_engine->eV(room + "pin");
+            return b_engine->eV(room + "pin").toString().isEmpty() ? 
+                       tr("No") : tr("Yes");
         case MODERATED:
             return b_engine->eV(room + "moderated").toInt() ?
                        tr("Yes") : tr("No");
@@ -115,7 +116,7 @@ ConfListModel::headerData(int section,
         } else if (section == NAME) {
             return QVariant(tr("Name"));
         } else if (section == PIN_REQUIRED) {
-            return QVariant(tr("pin code"));
+            return QVariant(tr("Pin code"));
         } else if (section == MEMBER_COUNT) {
             return QVariant(tr("Member count"));
         } else if (section == MODERATED) {
@@ -201,6 +202,8 @@ void ConfListView::onViewClick(const QModelIndex &model)
             action->setProperty("id", roomId);
             connect(action, SIGNAL(triggered(bool)),
                     parentWidget(), SLOT(openConfRoom()));
+            connect(action, SIGNAL(triggered(bool)),
+                    parentWidget(), SLOT(phoneConfRoom()));
 
             menu->addAction(action);
             menu->exec(QCursor::pos());
@@ -230,11 +233,20 @@ ConfList::ConfList(XletConference *parent)
     view->verticalHeader()->hide();
 
     hBox->addStretch(1);
-    hBox->addWidget(view, 4);
+    hBox->addWidget(view, 8);
     hBox->addStretch(1);
 
     vBox->addLayout(hBox);
     setLayout(vBox);
+}
+
+void ConfList::phoneConfRoom()
+{
+    QString roomId = sender()->property("id").toString();
+    QString roomNumber = b_engine->eV(QString("confrooms/%0/number").arg(roomId)).toString();
+
+    b_engine->actionCall("originate", "user:special:me", "ext:" + roomNumber);
+    manager->openConfRoom(roomId, true);
 }
 
 void ConfList::openConfRoom()

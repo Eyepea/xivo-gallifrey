@@ -188,9 +188,9 @@ ConfChamberModel::data(const QModelIndex &index,
         case NUMBER:
             return b_engine->eV(in + "phonenum");
         case ACTION_RECORD:
-            return (b_engine->eV(in + "recorded").toBool())? tr("yes") : tr("no");
+            return (b_engine->eV(in + "recorded").toBool())? tr("Yes") : tr("No");
         case ADMIN:
-            return (b_engine->eV(in + "admin").toBool()) ? tr("yes") : tr("no");
+            return (b_engine->eV(in + "admin").toBool()) ? tr("Yes") : tr("No");
         case NAME:
         {
             QString name = b_engine->eV(QString("users/*[id=%0user-id]").arg(in))

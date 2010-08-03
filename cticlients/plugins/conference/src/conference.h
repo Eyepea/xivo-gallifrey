@@ -23,7 +23,7 @@ class ConfTab : public QTabWidget
     public:
         ConfTab(QWidget *parent);
         int addClosableTab(QWidget *w, const QString &title);
-        void showConfRoom(const QString &id);
+        void showConfRoom(const QString &id, bool force);
 
     private slots:
         void closeTab();
@@ -40,7 +40,7 @@ class XletConference : public XLet
         XletConference(QWidget *parent=0);
 
     public slots:
-        void openConfRoom(const QString &id);
+        void openConfRoom(const QString &id, bool force=false);
 
     private:
         ConfTab *m_tab;
