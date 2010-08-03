@@ -6013,8 +6013,7 @@ class XivoCTICommand(BaseCommand):
         if searchpattern == '':
             return []
 
-        dbkind = z.uri.split(':')[0]
-        if dbkind in ['ldap', 'ldaps']:
+        if z.dbkind in ['ldap', 'ldaps']:
             selectline = []
             ldapattrib = []
             for fname in z.match_direct:
@@ -6057,7 +6056,7 @@ class XivoCTICommand(BaseCommand):
             except Exception:
                 log.exception('ldaprequest (directory)')
 
-        elif dbkind == 'file':
+        elif z.dbkind == 'file':
             f = urllib.urlopen(z.uri)
             n = 0
             if reversedir:
@@ -6095,7 +6094,7 @@ class XivoCTICommand(BaseCommand):
             elif n == 1:
                 log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
 
-        elif dbkind == 'phonebook':
+        elif z.dbkind == 'phonebook':
             if reversedir:
                 matchkeywords = z.match_reverse
             else:
@@ -6119,7 +6118,7 @@ class XivoCTICommand(BaseCommand):
                                     futureline[keyw] = v[dbkey]
                         fullstatlist.append(futureline)
 
-        elif dbkind == 'http':
+        elif z.dbkind == 'http':
             if not reversedir:
                 fulluri = z.uri
                 # add an ending slash if needed
@@ -6173,7 +6172,7 @@ class XivoCTICommand(BaseCommand):
                 else:
                     fullstatlist = []
 
-        elif dbkind in ['sqlite', 'mysql']:
+        elif z.dbkind in ['sqlite', 'mysql']:
             if searchpattern == '*':
                 whereline = ''
             else:
@@ -6205,7 +6204,7 @@ class XivoCTICommand(BaseCommand):
                 fullstatlist.append(futureline)
         else:
             log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                        % (dbkind, dirname))
+                        % (z.dbkind, dirname))
 
         if reversedir:
             display_reverse = z.display_reverse

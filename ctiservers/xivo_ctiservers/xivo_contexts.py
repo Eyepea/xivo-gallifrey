@@ -74,7 +74,7 @@ class Directory:
     def __init__(self):
         self.uri = ''
         self.delimiter = ';'
-        self.sqltable = ''
+        self.sqltable = 'UNDEFINED'
         self.name = '(noname)'
         self.display_reverse = '{db-fullname}'
         self.match_direct = []
@@ -88,13 +88,16 @@ class Directory:
                 keyword = field.split('_')[1]
                 self.fkeys['db-%s' % keyword] = value
             elif field in 'uri':
+                self.dbkind = value.split(':')[0]
                 self.uri = value
+                if self.dbkind.find('sql') >= 0:
+                    if value.find('?table=') > 0:
+                        self.uri = value.split('?table=')[1]
+                        self.sqltable = value.split('?table=')[1]
             elif field == 'name':
                 self.name = value
             elif field == 'delimiter':
                 self.delimiter = value
-            elif field == 'dir_db_sqltable':
-                self.sqltable = value
             elif field == 'display_reverse':
                 if value:
                     self.display_reverse = value[0]
