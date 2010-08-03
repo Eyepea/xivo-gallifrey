@@ -1,7 +1,7 @@
 XIVOVER = 1.1
 
 SVNVER = $$system(LANG= svn info | sed -n \"s/Revision: //p\")
-DATEBUILD = $$system(LANG= date)
+DATEBUILD = $$system(LANG= date +%Y-%m-%dT%H:%M:%S)
 
 #CONFIG += debug
 
