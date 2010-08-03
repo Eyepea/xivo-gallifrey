@@ -13,15 +13,17 @@
 #include <QMap>
 #include <QHeaderView>
 
+#include "conference.h"
 #include "baseengine.h"
 class ConfChamberView;
+class ConfTab;
 
 class ConfChamberModel : public QAbstractTableModel
 {
     Q_OBJECT
 
     public:
-        ConfChamberModel(QObject *parent, const QString &);
+        ConfChamberModel(ConfTab *t, QObject *parent, const QString &);
         enum ColOrder {
             ID, ACTION_MUTE, ACTION_KICK, ACTION_TALK_TO,
             ACTION_ALLOW_IN, ACTION_RECORD, ADMIN,
@@ -45,6 +47,7 @@ class ConfChamberModel : public QAbstractTableModel
         QVariant data(const QModelIndex&, int) const;
         QVariant headerData(int , Qt::Orientation, int) const;
         Qt::ItemFlags flags(const QModelIndex &) const;
+        ConfTab *m_tab;
         bool m_admin;
         bool m_authed;
         QString m_id;
@@ -72,7 +75,7 @@ class ConfChamber : public QWidget
     Q_OBJECT
 
     public:
-        ConfChamber(const QString &id);
+        ConfChamber(ConfTab *tab, const QString &id);
     public slots:
         void pauseConf();
         void allowedIn();

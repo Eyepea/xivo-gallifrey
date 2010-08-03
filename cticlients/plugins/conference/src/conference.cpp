@@ -7,9 +7,15 @@ ConfTab::ConfTab(QWidget *parent)
 {
 }
 
-void ConfTab::closeTab()
+void ConfTab::closeTab(const QString &id)
 {
-    int index = sender()->property("index").toInt();
+    int index;
+
+    if (id.isNull()) {
+        index = sender()->property("index").toInt();
+    } else {
+        index = m_id2index.value(id);
+    }
 
     m_id2index.remove(m_id2index.key(index));
     removeTab(index);
@@ -43,7 +49,7 @@ void ConfTab::showConfRoom(const QString &id, bool force)
                                 QString("confrooms/%0/number").arg(id)).toString();
 
         int index = \
-            addClosableTab(new ConfChamber(id),
+            addClosableTab(new ConfChamber(this, id),
                            QString("%0 (%1)").arg(roomName).arg(roomNumber));
 
         m_id2index.insert(id, index);

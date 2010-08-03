@@ -31,7 +31,7 @@
  * $Date$
  */
 
-#include "dstore.h"
+#include "dstore_private.h"
 
 DStoreCallback::DStoreCallback(QObject* _on, const char *_slot)
     : on(_on)

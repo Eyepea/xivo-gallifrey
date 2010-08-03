@@ -1,7 +1,7 @@
 #include "confchamber.h"
 
-ConfChamberModel::ConfChamberModel(QObject *parent, const QString &id)
-    : QAbstractTableModel(parent), m_admin(0),
+ConfChamberModel::ConfChamberModel(ConfTab *tab, QObject *parent, const QString &id)
+    : QAbstractTableModel(parent), m_tab(tab), m_admin(0),
       m_authed(0), m_id(id), m_view(NULL)
 {
     b_engine->tree()->onChange(QString("confrooms/%0").arg(id), this,
@@ -52,6 +52,11 @@ void ConfChamberModel::updateView()
 
 void ConfChamberModel::confRoomChange(const QString &path, DStoreEvent event)
 {
+    if (event == NODE_REMOVED) {
+        if (b_engine->eV(path + "/user-id").toString() == b_engine->xivoUserId()) {
+            m_tab->closeTab(m_id);
+        }
+    }
     extractRow2IdMap();
 }
 
@@ -386,13 +391,13 @@ void ConfChamberView::mousePressEvent(QMouseEvent *event)
 }
 
 
-ConfChamber::ConfChamber(const QString &id)
+ConfChamber::ConfChamber(ConfTab *tab, const QString &id)
     : QWidget(), m_id(id)
 {
     QVBoxLayout *vBox = new QVBoxLayout(this);
     setLayout(vBox);
     QHBoxLayout *hBox = new QHBoxLayout();
-    m_model = new ConfChamberModel(this, id);
+    m_model = new ConfChamberModel(tab, this, id);
     QPushButton *roomPause = new QPushButton(tr("&Pause conference"), this);
     QLabel *redondant = new QLabel(
         tr(" Conference room ") +

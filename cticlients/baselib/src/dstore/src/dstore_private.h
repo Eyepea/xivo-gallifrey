@@ -11,4 +11,17 @@ struct ParserRet {
     int count;
 };
 
+// INTERNAL (structure to manage callback on QObject)
+class DStoreCallback
+{
+    public:
+        DStoreCallback(QObject *on, const char *slot);
+        ~DStoreCallback();
+        void call(const QString &path, DStoreEvent event);
+
+    private:
+        QObject *on;
+        char *slot;
+};
+
 #endif

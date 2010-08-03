@@ -151,6 +151,10 @@ void DStore::rmPath(const QString &path)
     QStringList traverseList = sanitize(path).split("/");
     QString baseName = traverseList.takeLast();
 
+    if (!m_blockSignal) {
+        dynamicInvocation(path, NODE_REMOVED);
+    }
+
     if (node) {
         if (node->parent()) {
             node->parent()->remove(baseName);
@@ -160,10 +164,6 @@ void DStore::rmPath(const QString &path)
         } else {
             static_cast<VNode*>(node)->destroy(this, 1);
         }
-    }
-
-    if (!m_blockSignal) {
-        dynamicInvocation(path, NODE_REMOVED);
     }
 }
 

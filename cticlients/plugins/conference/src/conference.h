@@ -25,8 +25,8 @@ class ConfTab : public QTabWidget
         int addClosableTab(QWidget *w, const QString &title);
         void showConfRoom(const QString &id, bool force);
 
-    private slots:
-        void closeTab();
+    public slots:
+        void closeTab(const QString &id=QString());
     private:
         QMap<QString, int> m_id2index;
 };

@@ -356,9 +356,9 @@ void MainWidget::createActions()
     m_quitact->setProperty("stopper", "quit");
     m_quitact->setStatusTip(tr("Close the application"));
     connect(m_quitact, SIGNAL(triggered()),
-             m_engine, SLOT(stop()));
+            m_engine, SLOT(stop()));
     connect(m_quitact, SIGNAL(triggered()),
-             qApp, SLOT(quit()));
+            qApp, SLOT(quit()));
     
     if(m_withsystray) {
         m_systraymin = new QAction(tr("To S&ystray"), this);
@@ -404,8 +404,9 @@ void MainWidget::createActions()
 
 void MainWidget::checksAvailState()
 {
-    if(m_avact.contains(m_engine->getAvailState()))
+    if(m_avact.contains(m_engine->getAvailState())) {
         m_avact[m_engine->getAvailState()]->setChecked(true);
+    }
 }
 
 void MainWidget::createMenus()
@@ -481,10 +482,10 @@ void MainWidget::createSystrayIcon()
  */
 void MainWidget::showConfDialog()
 {
-    ConfigWidget config(m_engine);
-    connect(&config, SIGNAL(confUpdated()),
-             this, SLOT(confUpdated()));
-    config.exec();
+    ConfigWidget *config = new ConfigWidget();
+    connect(config, SIGNAL(confUpdated()),
+            this, SLOT(confUpdated()));
+    config->exec();
 }
 
 void MainWidget::confUpdated()
