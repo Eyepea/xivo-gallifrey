@@ -35,13 +35,10 @@ import logging
 import os
 import random
 import re
-import socket
 import sha
 import string
-import sys
 import threading
 import time
-import types
 import urllib
 import zlib
 import struct
@@ -50,7 +47,6 @@ from xivo_ctiservers import cti_capas
 from xivo_ctiservers import cti_fax
 from xivo_ctiservers import cti_presence
 from xivo_ctiservers import cti_userlist
-from xivo_ctiservers import cti_urllist
 
 from xivo_ctiservers import cti_agentlist
 from xivo_ctiservers import cti_queuelist
@@ -486,8 +482,8 @@ class XivoCTICommand(BaseCommand):
             else:
                 userinfo['state'] = 'xivo_unknown'
 
-            self.__presence_action__(userinfo['astid'],
-                                     self.__agentnum__(userinfo),
+            self.__presence_action__(userinfo.get('astid'),
+                                     userinfo.get('agentid'),
                                      userinfo)
 
             self.capas[capaid].conn_inc()
@@ -719,11 +715,15 @@ class XivoCTICommand(BaseCommand):
                     self.capas[name].setguisettings(value)
                 elif prop == 'presence':
                     self.capas[name].setpresenceid(value)
-                    if value not in self.presence_sections and value[LENGTH_PRESENCES:] in allconf.xc_json['presences']:
+                    if value in self.presence_sections:
+                        del self.presence_sections[value]
+                    if value[LENGTH_PRESENCES:] in allconf.xc_json['presences']:
                         self.presence_sections[value] = cti_presence.Presence(allconf.xc_json['presences'][value[LENGTH_PRESENCES:]])
                 elif prop == 'watchedpresence':
                     self.capas[name].setwatchedpresenceid(value)
-                    if value not in self.presence_sections and value[LENGTH_PRESENCES:] in allconf.xc_json['presences']:
+                    if value in self.presence_sections:
+                        del self.presence_sections[value]
+                    if value[LENGTH_PRESENCES:] in allconf.xc_json['presences']:
                         self.presence_sections[value] = cti_presence.Presence(allconf.xc_json['presences'][value[LENGTH_PRESENCES:]])
                 else:
                     log.warning('set_cticonfig unknown property (%s = %s) for xlet %s' % (prop, value, name))
@@ -2258,7 +2258,7 @@ class XivoCTICommand(BaseCommand):
             status = 'onlineincoming'
             for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                 self.__update_availstate__(uinfo, status)
-                self.__presence_action__(astid, agent_number, uinfo)
+                self.__presence_action__(astid, uinfo.get('agentid'), uinfo)
 
             # To identify which queue a call comes from, we match a previous AMI Leave event,
             # that involved the same channel as the one catched here.
@@ -2298,9 +2298,8 @@ class XivoCTICommand(BaseCommand):
                 status = 'onlineoutgoing'
                 self.__update_availstate__(uinfo, status)
                 agent_id = uinfo.get('agentid')
-                ag = self.__agentnum__(uinfo)
-                if ag:
-                    self.__presence_action__(astid, ag, uinfo)
+                if agent_id:
+                    self.__presence_action__(astid, agent_id, uinfo)
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
                     thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'phonelink',
@@ -2327,9 +2326,8 @@ class XivoCTICommand(BaseCommand):
                 status = 'onlineincoming'
                 self.__update_availstate__(uinfo, status)
                 agent_id = uinfo.get('agentid')
-                ag = self.__agentnum__(uinfo)
-                if ag:
-                    self.__presence_action__(astid, ag, uinfo)
+                if agent_id:
+                    self.__presence_action__(astid, agent_id, uinfo)
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
                     thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'phonelink',
@@ -2483,7 +2481,7 @@ class XivoCTICommand(BaseCommand):
             status = 'postcall'
             for uinfo in self.__find_userinfos_by_agentnum__(astid, agent_number):
                 self.__update_availstate__(uinfo, status)
-                self.__presence_action__(astid, agent_number, uinfo)
+                self.__presence_action__(astid, uinfo.get('agentid'), uinfo)
 
             if chan1 in self.queues_channels_list[astid]:
                 qname = self.queues_channels_list[astid][chan1]
@@ -2501,9 +2499,8 @@ class XivoCTICommand(BaseCommand):
                 status = 'postcall'
                 self.__update_availstate__(uinfo, status)
                 agent_id = uinfo.get('agentid')
-                ag = self.__agentnum__(uinfo)
-                if ag:
-                    self.__presence_action__(astid, ag, uinfo)
+                if agent_id:
+                    self.__presence_action__(astid, agent_id, uinfo)
                     thisagent = self.weblist['agents'][astid].keeplist[agent_id]
                     thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
                     thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : {} })
@@ -2519,10 +2516,9 @@ class XivoCTICommand(BaseCommand):
                                                      astid, thisagent.get('context'))
         return
 
-    def __presence_action__(self, astid, anum, userinfo):
+    def __presence_action__(self, astid, agent_id, userinfo):
         capaid = userinfo.get('capaid')
         status = userinfo.get('state')
-        agent_channel = 'Agent/%s' % anum
         try:
             if capaid not in self.capas:
                 return
@@ -2531,31 +2527,37 @@ class XivoCTICommand(BaseCommand):
                 # useful in order to avoid internal presence keyword states to occur (postcall, incomingcall, ...)
                 return
             presenceactions = self.presence_sections[presenceid].actions(status)
+            services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
+                                     'enableunc', 'enablebusy', 'enablerna']
+            queues_actions_list = ['queueadd', 'queueremove', 'queuepause', 'queueunpause',
+                                   'queuepause_all', 'queueunpause_all']
             for actionname, paction in presenceactions.iteritems():
                 params = paction.split('|')
-                services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
-                                         'enableunc', 'enablebusy', 'enablerna']
-                if actionname == 'queueadd' and len(params) > 1 and anum:
-                    self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1])
-                elif actionname == 'queueremove' and len(params) > 0 and anum:
-                    self.__ami_execute__(astid, actionname, params[0], agent_channel)
-                elif actionname == 'queuepause' and len(params) > 0 and anum:
-                    self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
-                elif actionname == 'queueunpause' and len(params) > 0 and anum:
-                    self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
-                elif actionname == 'queuepause_all' and anum:
-                    agent_id = self.__find_agentid_by_agentnum__(astid, anum)
+
+                # queues-related actions
+                if actionname in queues_actions_list:
                     if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
-                        for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                            if qv.get('Paused') == '0':
-                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
-                elif actionname == 'queueunpause_all' and anum:
-                    agent_id = self.__find_agentid_by_agentnum__(astid, anum)
-                    if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
-                        for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                            if qv.get('Paused') == '1':
-                                self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
-                # features-related actions
+                        agent_number = self.weblist['agents'][astid].keeplist[agent_id].get('number')
+                        agent_channel = 'Agent/%s' % agent_number
+
+                        if actionname == 'queueadd' and len(params) > 1:
+                            self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%d' % agent_id)
+                        elif actionname == 'queueremove' and len(params) > 0:
+                            self.__ami_execute__(astid, actionname, params[0], agent_channel)
+                        elif actionname == 'queuepause' and len(params) > 0:
+                            self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
+                        elif actionname == 'queueunpause' and len(params) > 0:
+                            self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
+                        elif actionname == 'queuepause_all':
+                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                if qv.get('Paused') == '0':
+                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
+                        elif actionname == 'queueunpause_all':
+                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                if qv.get('Paused') == '1':
+                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
+
+                # services-related actions
                 elif actionname in services_actions_list and len(params) > 0:
                     if params[0] == 'false':
                         booltonum = '0'
@@ -2566,7 +2568,7 @@ class XivoCTICommand(BaseCommand):
                                                       booltonum)
                     self.__send_msg_to_cti_client__(userinfo, rep)
         except Exception:
-            log.exception('(__presence_action__) %s %s %s %s' % (astid, anum, capaid, status))
+            log.exception('(__presence_action__) %s %s %s %s' % (astid, agent_id, capaid, status))
         return
 
     def __ami_execute__(self, astid, *args):
@@ -5003,7 +5005,7 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].match_funcs(ucapa, 'presence'):
                             # updates the new status and sends it to other people
                             repstr = self.__update_availstate__(userinfo, icommand.struct.get('availstate'))
-                            self.__presence_action__(astid, self.__agentnum__(userinfo), userinfo)
+                            self.__presence_action__(astid, userinfo.get('agentid'), userinfo)
                             self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
 
                     elif classcomm == 'featuresget':
@@ -5710,7 +5712,7 @@ class XivoCTICommand(BaseCommand):
 
                                     if actionname == 'agentjoinqueue':
                                         self.__ami_execute__(astid, 'queueadd', queuename,
-                                                             'Agent/%s' % agentnumber, pausestatus)
+                                                             'Agent/%s' % agentnumber, pausestatus, 'agent-%s' % aid)
                                     elif actionname == 'agentleavequeue':
                                         self.__ami_execute__(astid, 'queueremove', queuename,
                                                              'Agent/%s' % agentnumber)

@@ -93,7 +93,7 @@ GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=']
 debug_mode = False
 
 def parse_command_line():
-    global XIVO_CONF_FILE, PIDFILE, debug_mode
+    global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, debug_mode
     for opt, arg in getopt.getopt( sys.argv[1:], GETOPT_SHORTOPTS, GETOPT_LONGOPTS)[0]:
         if opt == '-c':
             XIVO_CONF_FILE = arg
@@ -105,11 +105,6 @@ def parse_command_line():
             LOGFILENAME = arg
 
 parse_command_line()
-
-# XIVO lib-python modules imports
-from xivo import anysql
-from xivo.BackSQL import backmysql
-from xivo.BackSQL import backsqlite
 
 # XIVO CTI modules
 from xivo_agid import fastagi
@@ -886,7 +881,7 @@ class xivo_daemon:
     # \param frame frame
     # \return none
     def sighandler(self, signum, frame):
-        log.warning('(sighandler) signal %s (atq = %s) received : quits' % (signum, self.askedtoquit))
+        log.warning('(sighandler) signal %s lineno %s (atq = %s) received : quits' % (signum, frame.f_lineno, self.askedtoquit))
         for t in filter(lambda x: x.getName() != 'MainThread', threading.enumerate()):
             print '--- living thread <%s>' % (t.getName())
             t._Thread__stop()
@@ -898,7 +893,7 @@ class xivo_daemon:
     # \param frame frame
     # \return none
     def sighandler_reload(self, signum, frame):
-        log.warning('(sighandler_reload) signal %s (atq = %s) received : reloads' % (signum, self.askedtoquit))
+        log.warning('(sighandler_reload) signal %s lineno %s (atq = %s) received : reloads' % (signum, frame.f_lineno, self.askedtoquit))
         self.askedtoquit = False
 
     def update_readconf(self):
@@ -1119,7 +1114,6 @@ class xivo_daemon:
         self.fdlist_udp_cti = {}
         self.update_userlist = {}
         self.lastrequest_time = {}
-        xivodaemonreload = False
 
         log.info("the monitored asterisk's is/are : %s" % self.asterisklist)
         log.info('# STARTING %s # (1/2) AMI socket connections + fetch Web Services' % self.xdname)
@@ -1209,7 +1203,7 @@ class xivo_daemon:
                     writefds.append(iconn)
             [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [], self.updates_period)
         # }
-        except Exception, exc:  # {
+        except Exception:  # {
             log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
             log.warning('(select) self.askedtoquit=%s fdlist_full=%s' % (self.askedtoquit, self.fdlist_full))
             log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % self.fdlist_established)
@@ -1272,6 +1266,9 @@ class xivo_daemon:
                         del self.fdlist_established[sel_o]
 
                     self.commandclass.disconnected(sel_o)
+
+            if sels_e:
+                log.warning('got some sels_e %s' % sels_e)
 
             if sels_i:  # {
                 for sel_i in sels_i: # {

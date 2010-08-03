@@ -6,7 +6,7 @@ from distutils.core import setup
 
 setup(name='xivo_daemon',
       version='1.0',
-      description='XIVO CTI Server Daemon',
+      description='XiVO CTI Server Daemon',
       author='Proformatique',
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',

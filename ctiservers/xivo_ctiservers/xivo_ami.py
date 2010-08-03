@@ -94,7 +94,7 @@ class AMIClass:
                     towritefields.append('%s: %s' % (name, value))
                 except Exception:
                     log.exception('(sendcommand build %s : %s = %s (%r))'
-                        % (action, name, value, value))
+                                  % (action, name, value, value))
             if self.actionid:
                 towritefields.append('ActionId: %s' % self.actionid)
             towritefields.append('\r\n')
@@ -163,13 +163,13 @@ class AMIClass:
             ret = self.sendcommand('QueueStatus', [])
         else:
             ret = self.sendcommand('QueueStatus',
-                [('Queue', queue)])
+                                   [('Queue', queue)])
         return ret
     # \brief Requesting an ExtensionState.
     def sendextensionstate(self, exten, context):
         ret = self.sendcommand('ExtensionState',
-            [('Exten', exten),
-                ('Context', context)])
+                               [('Exten', exten),
+                                ('Context', context)])
         return ret
     def sendparkedcalls(self):
         ret = self.sendcommand('ParkedCalls', [])
@@ -233,14 +233,14 @@ class AMIClass:
             ret = False
             if self.events:
                 ret = self.sendcommand('login',
-                    [('Username', self.loginname),
-                        ('Secret', self.password),
-                        ('Events', 'on')])
+                                       [('Username', self.loginname),
+                                        ('Secret', self.password),
+                                        ('Events', 'on')])
             else:
                 ret = self.sendcommand('login',
-                    [('Username', self.loginname),
-                        ('Secret', self.password),
-                        ('Events', 'off')])
+                                       [('Username', self.loginname),
+                                        ('Secret', self.password),
+                                        ('Events', 'off')])
             return ret
         except self.AMIError:
             return False
@@ -251,7 +251,7 @@ class AMIClass:
     def execclicommand(self, command):
         # special procession for cli commands.
         self.sendcommand('Command',
-            [('Command', command)])
+                         [('Command', command)])
         resp = []
         for i in (1, 2):
             str = self.fileobj.readline()
@@ -270,7 +270,7 @@ class AMIClass:
         try:
             log.info('%s : hanging up %s as requested' % (self.astid, channel))
             self.sendcommand('Hangup',
-                [('Channel', channel)])
+                             [('Channel', channel)])
             ret += 1
         except self.AMIError:
             pass
@@ -281,7 +281,7 @@ class AMIClass:
             try:
                 log.info('%s : hanging up %s (peer) as requested' % (self.astid, channel_peer))
                 self.sendcommand('Hangup',
-                    [('Channel', channel_peer)])
+                                 [('Channel', channel_peer)])
                 ret += 2
             except self.AMIError:
                 pass
@@ -293,11 +293,11 @@ class AMIClass:
         try:
             if chan is None:
                 ret = self.sendcommand('Setvar', [('Variable', var),
-                    ('Value', val)])
+                                                  ('Value', val)])
             else:
                 ret = self.sendcommand('Setvar', [('Channel', chan),
-                    ('Variable', var),
-                    ('Value', val)])
+                                                  ('Variable', var),
+                                                  ('Value', val)])
         except self.AMIError:
             ret = False
         except Exception:
@@ -430,7 +430,7 @@ class AMIClass:
     def extensionstate(self, extension, context):
         try:
             ret = self.sendcommand('ExtensionState', [('Exten', extension),
-                ('Context', context)])
+                                                      ('Context', context)])
             return ret
         except self.AMIError:
             return False
@@ -441,9 +441,9 @@ class AMIClass:
     def agentcallbacklogin(self, agentnum, extension, context, ackcall):
         try:
             ret = self.sendcommand('AgentCallbackLogin', [('Agent', agentnum),
-                ('Context', context),
-                ('Exten', extension),
-                ('AckCall' , ackcall)])
+                                                          ('Context', context),
+                                                          ('Exten', extension),
+                                                          ('AckCall' , ackcall)])
             return ret
         except self.AMIError:
             return False
@@ -461,13 +461,14 @@ class AMIClass:
             return False
 
     # \brief Adds a Queue
-    def queueadd(self, queuename, interface, paused):
+    def queueadd(self, queuename, interface, paused, skills):
         try:
             # it looks like not specifying Paused is the same as setting it to false
             ret = self.sendcommand('QueueAdd', [('Queue', queuename),
-                ('Interface', interface),
-                ('Penalty', '1'),
-                ('Paused', paused)])
+                                                ('Interface', interface),
+                                                ('Penalty', '1'),
+                                                ('Paused', paused),
+                                                ('Skills', skills)])
             return ret
         except self.AMIError:
             return False
@@ -478,7 +479,7 @@ class AMIClass:
     def queueremove(self, queuename, interface):
         try:
             ret = self.sendcommand('QueueRemove', [('Queue', queuename),
-                ('Interface', interface)])
+                                                   ('Interface', interface)])
         except self.AMIError:
             ret = False
         except Exception:
@@ -489,8 +490,8 @@ class AMIClass:
     def queuepause(self, queuename, interface, paused):
         try:
             ret = self.sendcommand('QueuePause', [('Queue', queuename),
-                ('Interface', interface),
-                ('Paused', paused)])
+                                                  ('Interface', interface),
+                                                  ('Paused', paused)])
         except self.AMIError:
             ret = False
         except Exception:
@@ -513,9 +514,9 @@ class AMIClass:
     def monitor(self, channel, filename):
         try:
             ret = self.sendcommand('Monitor',
-                [('Channel', channel),
-                    ('File', filename),
-                    ('Mix', 'true')])
+                                   [('Channel', channel),
+                                    ('File', filename),
+                                    ('Mix', 'true')])
         except self.AMIError:
             ret = False
         except Exception:
@@ -526,7 +527,7 @@ class AMIClass:
     def stopmonitor(self, channel):
         try:
             ret = self.sendcommand('StopMonitor',
-                [('Channel', channel)])
+                                   [('Channel', channel)])
         except self.AMIError:
             ret = False
         except Exception:
@@ -537,7 +538,7 @@ class AMIClass:
     def getvar(self, channel, varname):
         try:
             ret = self.sendcommand('Getvar', [('Channel', channel),
-                ('Variable', varname)])
+                                              ('Variable', varname)])
         except self.AMIError:
             ret = False
         except Exception:
@@ -568,9 +569,9 @@ class AMIClass:
             return False
         try:
             ret = self.sendcommand('Atxfer', [('Channel', channel),
-                ('Exten', extension),
-                ('Context', context),
-                ('Priority', '1')])
+                                              ('Exten', extension),
+                                              ('Context', context),
+                                              ('Priority', '1')])
             return ret
         except self.AMIError:
             return False
@@ -582,14 +583,14 @@ class AMIClass:
         # src will ring first, and dst will ring when src responds
         try:
             ret = self.sendcommand('Originate', [('Channel', 'Local/%s@%s' % (number, context)),
-                ('CallerID', callerid),
-                ('Variable', 'FAXDIR=%s' % faxdir),
-                ('Variable', 'FAXID=%s' % faxid),
-                ('Variable', 'XIVO_USERID=%s' % userid),
-                ('Context', 'macro-txfax'),
-                ('Exten', 's'),
-                ('ActionID', reference),
-                ('Priority', '1')])
+                                                 ('CallerID', callerid),
+                                                 ('Variable', 'FAXDIR=%s' % faxdir),
+                                                 ('Variable', 'FAXID=%s' % faxid),
+                                                 ('Variable', 'XIVO_USERID=%s' % userid),
+                                                 ('Context', 'macro-txfax'),
+                                                 ('Exten', 's'),
+                                                 ('ActionID', reference),
+                                                 ('Priority', '1')])
             return ret
         except self.AMIError:
             return False
@@ -626,16 +627,16 @@ class AMIList:
             amicl.sendcommand(
                 'Command',
                 [('Command', 'core show version'),
-                    ('ActionID' ,
-                        '%s-%s' % (''.join(random.sample(__alphanums__, 10)),
-                            hex(int(time.time())))
-                        )
-                    ]
+                 ('ActionID' ,
+                  '%s-%s' % (''.join(random.sample(__alphanums__, 10)),
+                             hex(int(time.time())))
+                  )
+                 ]
                 )
             self.request_initvalues(astid)
         else:
             log.info('%s AMI : already connected %s'
-                % (astid, self.ami[astid]))
+                     % (astid, self.ami[astid]))
             self.request_initvalues(astid)
         return
 
@@ -695,7 +696,7 @@ class AMIList:
             conn_ami = self.ami.get(astid)
             if conn_ami is None:
                 log.warning('ami (command %s) : <%s> in list but not connected - wait for the next update ?'
-                    % (command, astid))
+                            % (command, astid))
             else:
                 try:
                     actionid = ''.join(random.sample(__alphanums__, 10))
@@ -705,5 +706,5 @@ class AMIList:
                     log.exception('AMI command %s on <%s>' % (command, astid))
         else:
             log.warning('ami (command %s) : %s not in list - wait for the next update ?'
-                % (command, astid))
+                        % (command, astid))
         return actionid
