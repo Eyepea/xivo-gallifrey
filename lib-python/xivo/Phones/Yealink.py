@@ -48,7 +48,7 @@ class Yealink(PhoneVendorMixin):
     YEALINK_MACADDR_PREFIX = ('1:00:15:65',)
 
     YEALINK_COMMON_HTTP_USER = "admin"
-    YEALINK_COMMON_HTTP_PASS = ""
+    YEALINK_COMMON_HTTP_PASS = "admin"
 
     YEALINK_COMMON_DIR = None
 
@@ -56,6 +56,14 @@ class Yealink(PhoneVendorMixin):
         'inband':   '0',
         'rfc2833':  '1',
         'info':     '2'
+    }
+    
+    YEALINK_LOCALES = {
+        'de_DE': ('German', 'Germany'),
+        'en_US': ('English', 'United States'),
+        'es_ES': ('Spanish', 'Spain'),
+        'fr_FR': ('French', 'France'),
+        'fr_CA': ('French', 'United States'),
     }
 
     @classmethod
@@ -165,6 +173,13 @@ class Yealink(PhoneVendorMixin):
 
         function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'], model, exten_pickup_prefix)
+                
+        if 'language' in provinfo and provinfo['language'] in self.YEALINK_LOCALES:
+            locale = provinfo['language']
+        else:
+            locale = self.DEFAULT_LOCALE
+        language = self.__format_language(self.YEALINK_LOCALES[locale][0])
+        country = "Country = %s" % self.YEALINK_LOCALES[locale][0]
         
         if 'timezone' in provinfo:
             timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
@@ -178,6 +193,8 @@ class Yealink(PhoneVendorMixin):
                     { 'user_dtmfmode':  self.YEALINK_DTMF.get(provinfo['dtmfmode'], '2'),
                       'mac_fake_md5':   self.__generate_fake_md5(model, macaddr),
                       'function_keys':  function_keys_config_lines,
+                      'language':       language,
+                      'country':        country,
                       'timezone':       timezone,
                     },
                     clean_extension),
@@ -188,6 +205,10 @@ class Yealink(PhoneVendorMixin):
         tmp_file.writelines(txt)
         tmp_file.close()
         os.rename(tmp_filename, cfg_filename)
+        
+    @classmethod
+    def __format_language(cls, lang):
+        return "WebLanguage = %s\nActiveWebLanguage = %s" % (lang, lang)
         
     @classmethod
     def __format_tz_inform(cls, inform):
@@ -224,17 +245,35 @@ class Yealink(PhoneVendorMixin):
         sorted_keys.sort()
         fk_config_lines = []
 
+        unused_keys = set(n for n in xrange(1, 11))
         for key in sorted_keys:
+            # XXX keys between 11 and 16 for the T28 and between 11 and 13 for the T26
+            # are not handled really well. Those keys correspond to the line keys. I'm
+            # leaving this as is right now, hoping that Yealink will eventually makes
+            # the provisioning more robust and more documented (and up to date)... 
             value   = funckey[key]
             exten   = value['exten']
+            if value.get('supervision'):
+                type = "blf"
+                dktype = "16"
+            else:
+                type = ""
+                dktype = "13"
 
+            unused_keys.discard(int(key))
             fk_config_lines.append("[ memory%s ]" % key)
             fk_config_lines.append("path = /config/vpPhone/vpPhone.ini")
-            fk_config_lines.append("type = blf")
+            fk_config_lines.append("type = %s" % type)
             fk_config_lines.append("Line = 0")
             fk_config_lines.append("Value = %s" % exten)
-            fk_config_lines.append("DKtype = 16")
+            fk_config_lines.append("DKtype = %s" % dktype)
             fk_config_lines.append("PickupValue = %s%s\n" % (exten_pickup_prefix, exten))
+        for key in unused_keys:
+            fk_config_lines.append("[ memory%s ]" % key)
+            fk_config_lines.append("path = /config/vpPhone/vpPhone.ini")
+            fk_config_lines.append("Line = 0")
+            fk_config_lines.append("Value = ")
+            fk_config_lines.append("DKtype = 0")
 
         return "\n".join(fk_config_lines)
 
