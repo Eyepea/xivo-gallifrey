@@ -3025,6 +3025,10 @@ class XivoCTICommand(BaseCommand):
             elif application == 'WaitMusicOnHold':
                 log.info('%s ami_newexten %s : %s %s %s %s'
                          % (astid, application, uniqueid, event.get('AppData'), event.get('Context'), event.get('Extension')))
+            elif application == 'AGI':
+                # meeting point 2 : here we should be able to execute the actions we wanted in "meeting point 1"
+                # print astid, event.get('Channel'), time.time(), event.get('Context'), event.get('Priority'), event.get('AppData'), event.get('Uniqueid')
+                pass
             # elif application == 'Queue': # to know how much seconds were requested
             # log.info('%s ami_newexten %s : %s %s'
             # % (astid, application, uniqueid, event.get('AppData').split('|')))
@@ -6040,7 +6044,7 @@ class XivoCTICommand(BaseCommand):
 
                 if ldapid.l is not None:
                     results = ldapid.getldap('(|%s)' % ''.join(selectline),
-                        ldapattrib)
+                                             ldapattrib)
                 if results is not None:
                     for result in results:
                         futureline = {'xivo-directory' : z.name}
@@ -6251,6 +6255,9 @@ class XivoCTICommand(BaseCommand):
             function = fastagi.env['agi_network_script']
             uniqueid = fastagi.env['agi_uniqueid']
             channel  = fastagi.env['agi_channel']
+
+            # meeting point 1 : here we should wait for "meeting point 2" to have occurred before being handled
+            # astid, fastagi.env['agi_channel'], time.time(), fastagi.env['agi_context'], fastagi.env['agi_priority'], fastagi.env['agi_request'], fastagi.env['agi_uniqueid']
 
             context = fastagi.get_variable('XIVO_REAL_CONTEXT')
             log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
