@@ -31,16 +31,17 @@
  * $Date$
  */
 
+#include <QApplication>
+#include <QDate>
 #include <QDebug>
 #include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QLabel>
 #include <QFileDialog>
-#include <QApplication>
 #include <QFileInfo>
-#include <QSettings>
+#include <QLabel>
 #include <QMessageBox>
+#include <QPushButton>
+#include <QSettings>
+#include <QVBoxLayout>
 
 #include "baseengine.h"
 #include "mylocaldirpanel.h"
@@ -112,6 +113,7 @@ MyLocalDirPanel::MyLocalDirPanel(QWidget * parent)
     m_table->setSortingEnabled(true);
     vlayout->addWidget(m_table);
     QFile file(getSaveFile());
+    file.copy(getBackupFile());
     loadFromFile(file);
 
     // connects signals/slots with engine
@@ -123,7 +125,7 @@ MyLocalDirPanel::MyLocalDirPanel(QWidget * parent)
  */
 MyLocalDirPanel::~MyLocalDirPanel()
 {
-    qDebug() << "MyLocalDirPanel::~MyLocalDirPanel()";
+    // qDebug() << "MyLocalDirPanel::~MyLocalDirPanel()";
     QFile file(getSaveFile());
     saveToFile( file );
 }
@@ -132,11 +134,22 @@ MyLocalDirPanel::~MyLocalDirPanel()
  */
 QString MyLocalDirPanel::getSaveFile() const
 {
-    qDebug() << "MyLocalDirPanel::getSaveFile()" << qApp->applicationDirPath() << b_engine->getSettings()->fileName();
-    //QDir dir( qApp->applicationDirPath() );
+    // qDebug() << "MyLocalDirPanel::getSaveFile()" << qApp->applicationDirPath() << b_engine->getSettings()->fileName();
+    // QDir dir( qApp->applicationDirPath() );
     QFileInfo fi( b_engine->getSettings()->fileName() );
     QDir dir( fi.canonicalPath() );
     return dir.absoluteFilePath("localdir.csv");
+}
+
+/*! \brief get the backup file
+ */
+QString MyLocalDirPanel::getBackupFile() const
+{
+    // qDebug() << "MyLocalDirPanel::getSaveFile()" << qApp->applicationDirPath() << b_engine->getSettings()->fileName();
+    // QDir dir( qApp->applicationDirPath() );
+    QFileInfo fi( b_engine->getSettings()->fileName() );
+    QDir dir( fi.canonicalPath() );
+    return dir.absoluteFilePath(QString("localdir_backup.%1.csv").arg(QDate::currentDate().toString("yyyy.MM.dd")));
 }
 
 /*! open the dialog box used to enter a new contact
@@ -145,9 +158,8 @@ void MyLocalDirPanel::openNewContactDialog()
 {
     ContactDialog dialog;
     int r = dialog.exec();
-    //qDebug() << r;
-    if(r)
-    {
+    // qDebug() << r;
+    if(r) {
         bool saveSorting = m_table->isSortingEnabled();
         m_table->setSortingEnabled( false );
         int row = m_table->rowCount();
@@ -181,9 +193,9 @@ void MyLocalDirPanel::importContacts()
 {
     //qDebug() << "MyLocalDirPanel::importContacts()";
     QString fileName = QFileDialog::getOpenFileName(this,
-                         tr("Open Contacts File"),
-                         QString(),
-                         tr("Comma Separated Value (*.csv)"));
+                                                    tr("Open Contacts File"),
+                                                    QString(),
+                                                    tr("Comma Separated Value (*.csv)"));
     if(fileName.isEmpty())
         return;
     QFile file(fileName);
@@ -196,11 +208,10 @@ void MyLocalDirPanel::importContacts()
  */
 void MyLocalDirPanel::exportContacts()
 {
-    //qDebug() << "MyLocalDirPanel::exportContacts()";
+    // qDebug() << "MyLocalDirPanel::exportContacts()";
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Contacts File"),
                                                     QString(),
                                                     tr("Comma Separated Value (*.csv)"));
-    qDebug() << fileName;
     if(fileName.isEmpty())
         return;
     QFile file(fileName);

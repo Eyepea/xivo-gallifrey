@@ -72,9 +72,9 @@ class MyLocalDirPanel : public XLet
         void saveToFile(QFile & file);
         int findCol(QStringList, QStringList);
         QString getSaveFile() const;
-        ExtendedTableWidget *m_table;  //!< Table widget to display contacts
-        SearchDialog *m_searchBox;  //!< Search dialog box
+        QString getBackupFile() const;
+        ExtendedTableWidget * m_table;  //!< Table widget to display contacts
+        SearchDialog * m_searchBox;  //!< Search dialog box
 };
 
 #endif /* __MYLOCALDIRPANEL_H__ */
-
