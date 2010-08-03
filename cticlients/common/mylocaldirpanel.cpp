@@ -189,8 +189,8 @@ void MyLocalDirPanel::exportContacts()
 {
     //qDebug() << "MyLocalDirPanel::exportContacts()";
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save Contacts File"),
-                         QString(),
-                         tr("Comma Separated Value (*.csv)"));
+                                                    QString(),
+                                                    tr("Comma Separated Value (*.csv)"));
     qDebug() << fileName;
     if(fileName.isEmpty())
         return;
@@ -204,20 +204,19 @@ void MyLocalDirPanel::exportContacts()
  */
 void MyLocalDirPanel::saveToFile(QFile & file)
 {
-    QChar separator = QChar(',');
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
         return;
     CsvStream out(&file);
     // write header line
     out << ( QStringList()
-             << tr("First Name")
-             << tr("Last Name")
-             << tr("Phone Number")
-             << tr("Email Address")
-             << tr("Company")
-             << tr("Fax Number")
-             << tr("Mobile Number")
-            );
+             << "firstname"
+             << "lastname"
+             << "phonenumber"
+             << "emailaddress"
+             << "company"
+             << "faxnumber"
+             << "mobilenumber"
+             );
     // write all entries
     for(int i = 0; i < m_table->rowCount(); i++)
     {
@@ -237,55 +236,53 @@ void MyLocalDirPanel::saveToFile(QFile & file)
 
 void MyLocalDirPanel::loadFromFile(QFile & file)
 {
-    //QChar separator = QChar(',');
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
         return;
 
     CsvStream in(&file);
-    //QString headerLine = in.readLine();
-    //if(headerLine.isEmpty())
-    //    return;
     bool saveSorting = m_table->isSortingEnabled();
-    //QStringList headers = headerLine.split(separator);
-    //if(headers.count() == 1)
-    //{
-    //    separator = QChar(';');
-    //    headers = headerLine.split(separator);
-    //}
+
     QStringList headers = in.readRecords();
     int firstNameCol = findCol(headers, QStringList()
-                                        << tr("First Name")
-                                        << QString("First Name") );
+                               << "firstname"
+                               << tr("First Name")
+                               << QString("First Name") );
     int lastNameCol = findCol(headers, QStringList()
-                                        << tr("Last Name")
-                                        << QString("Last Name") );
+                              << "lastname"
+                              << tr("Last Name")
+                              << QString("Last Name") );
     int maxCol = qMax(firstNameCol, lastNameCol);
     int phonenumberCol = findCol(headers, QStringList()
-                                        << tr("Phone Number")
-                                        << QString("Phone Number")
-                                        << tr("Number")
-                                        << QString("Number") );
+                                 << "phonenumber"
+                                 << tr("Phone Number")
+                                 << QString("Phone Number")
+                                 << tr("Number")
+                                 << QString("Number") );
     maxCol = qMax(maxCol, phonenumberCol);
     int emailCol = findCol(headers, QStringList()
-                                    << tr("Email Address")
-                                    << tr("E-mail Address")
-                                    << tr("Email")
-                                    << QString("Email Address")
-                                    << QString("E-mail Address")
-                                    << QString("Email")
-                                    << QString("Primary Email") );
+                           << "emailaddress"
+                           << tr("Email Address")
+                           << tr("E-mail Address")
+                           << tr("Email")
+                           << QString("Email Address")
+                           << QString("E-mail Address")
+                           << QString("Email")
+                           << QString("Primary Email") );
     maxCol = qMax(maxCol, emailCol);
     int companyCol = findCol(headers, QStringList()
-                                      << tr("Company")
-                                      << QString("Company") );
+                             << "company"
+                             << tr("Company")
+                             << QString("Company") );
     maxCol = qMax(maxCol, companyCol);
     int faxnumberCol = findCol(headers, QStringList()
+                               << "faxnumber"
                                << tr("Fax Number")
                                << tr("Fax")
                                << QString("Fax Number")
                                << QString("Fax") );
     maxCol = qMax(maxCol, faxnumberCol);
     int mobilenumberCol = findCol(headers, QStringList()
+                                  << "mobilenumber"
                                   << tr("Mobile Number")
                                   << tr("Mobile")
                                   << QString("Mobile Number")
@@ -399,8 +396,9 @@ void  MyLocalDirPanel::removeAllContacts()
 {
     int ret;
     ret = QMessageBox::warning(this, tr("Removing all contacts"),
-                         tr("Removing all contacts.\nAre you sure ?"),
-                         QMessageBox::Yes|QMessageBox::No);
+                               tr("Removing all contacts.\n"
+                                  "Are you sure ?"),
+                               QMessageBox::Yes|QMessageBox::No);
     if(ret == QMessageBox::Yes) {
         //m_table->clearContents(); // doesnt resize the table (remove rows)
         // remove all rows 1 by 1 until none left.
@@ -409,4 +407,3 @@ void  MyLocalDirPanel::removeAllContacts()
         }
     }
 }
-
