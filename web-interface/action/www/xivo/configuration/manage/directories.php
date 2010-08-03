@@ -52,7 +52,7 @@ switch($act)
 						$uri .= ":".$_QR['password'];
 					if($_QR['user'] != '')
 						$uri .= "@";
-					$uri .= $_QR['host'] . ":" .$_QR['port'] . "/" .$_QR['dbname'];
+					$uri .= $_QR['host'] . ":" .$_QR['port'] . "/" .$_QR['dbname'] . "?table=" . $_QR['tablename'];
 
 					break;
 				}
@@ -128,8 +128,8 @@ switch($act)
 						$uri .= ":".$_QR['password'];
 					if($_QR['user'] != '')
 						$uri .= "@";
-					$uri .= $_QR['host'] . ":" .$_QR['port'] . "/" .$_QR['dbname'];
-
+					$uri .= $_QR['host'] . ":" .$_QR['port'] . "/" .$_QR['dbname'] . "?table=" . $_QR['tablename'];
+#var_dump($uri);
 					break;
 				}
 				case 3:
