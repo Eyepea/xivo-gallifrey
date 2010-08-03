@@ -2541,7 +2541,7 @@ class XivoCTICommand(BaseCommand):
                         agent_channel = 'Agent/%s' % agent_number
 
                         if actionname == 'queueadd' and len(params) > 1:
-                            self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%d' % agent_id)
+                            self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%s' % agent_id)
                         elif actionname == 'queueremove' and len(params) > 0:
                             self.__ami_execute__(astid, actionname, params[0], agent_channel)
                         elif actionname == 'queuepause' and len(params) > 0:
