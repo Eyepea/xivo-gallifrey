@@ -50,6 +50,15 @@
 #include "searchdialog.h"
 #include "csvstream.h"
 
+QStringList contacts_index = ( QStringList()
+                               << "firstname"
+                               << "lastname"
+                               << "phonenumber"
+                               << "emailaddress"
+                               << "company"
+                               << "faxnumber"
+                               << "mobilenumber" );
+
 /*! \brief Constructor
  */
 MyLocalDirPanel::MyLocalDirPanel(QWidget * parent)
@@ -98,7 +107,7 @@ MyLocalDirPanel::MyLocalDirPanel(QWidget * parent)
     columnNames.append(tr("Company"));
     columnNames.append(tr("Fax Number"));
     columnNames.append(tr("Mobile Number"));
-    m_table->setColumnCount(7);
+    m_table->setColumnCount(contacts_index.size());
     m_table->setHorizontalHeaderLabels(columnNames);
     m_table->setSortingEnabled(true);
     vlayout->addWidget(m_table);
@@ -208,20 +217,13 @@ void MyLocalDirPanel::saveToFile(QFile & file)
         return;
     CsvStream out(&file);
     // write header line
-    out << ( QStringList()
-             << "firstname"
-             << "lastname"
-             << "phonenumber"
-             << "emailaddress"
-             << "company"
-             << "faxnumber"
-             << "mobilenumber"
-             );
+    out << contacts_index;
+    
     // write all entries
     for(int i = 0; i < m_table->rowCount(); i++)
     {
         QStringList records;
-        for(int j = 0; j < 7; j++)
+        for(int j = 0; j < contacts_index.size(); j++)
         {
             QTableWidgetItem * item = m_table->item(i, j);
             QString text;
