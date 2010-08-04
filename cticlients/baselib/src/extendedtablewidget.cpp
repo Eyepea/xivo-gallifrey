@@ -32,6 +32,7 @@
  */
 
 #include <QDebug>
+#include <QMessageBox>
 
 #include "extendedtablewidget.h"
 #include "xivoconsts.h"
@@ -240,7 +241,12 @@ void ExtendedTableWidget::sendMail()
 void ExtendedTableWidget::remove()
 {
     int _row = sender()->property("rowNumber").toInt();
-    removeRow(_row);
+    int ret = QMessageBox::warning(this, tr("Removing this contact"),
+                                   tr("Removing this contact.\n"
+                                      "Are you sure ?"),
+                                   QMessageBox::Yes|QMessageBox::No);
+    if(ret == QMessageBox::Yes)
+        removeRow(_row);
 }
 
 void ExtendedTableWidget::dtransfer()

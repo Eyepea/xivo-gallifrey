@@ -1024,13 +1024,13 @@ void MainWidget::about()
                        "<br>" +
                        "(" + tr("Config File Location : ") + m_settings->fileName() + ")" +
                        "<hr>"
-                       "Copyright (C) 2007-2010  <a href=http://www.proformatique.com><b>Proformatique</b></a>"
+                       "Copyright (C) 2007-2010 <a href=http://www.proformatique.com><b>Proformatique</b></a>"
                        "<br>"
                        "10 bis, rue Lucien VOILIN 92800 Puteaux FRANCE"
                        "<p>"
                        "<b>" + tr("E-mail : ") + "</b><a href=mailto:technique@proformatique.com>technique@proformatique.com</a><br>"
                        "<b>" + tr("Phone : ") + "</b>(+33 / 0) 1.41.38.99.60<br>" +
-                       "<b>" + tr("Authors : ") + "</b>Thomas Bernard, Corentin Le Gall" +
+                       "<b>" + tr("Authors : ") + "</b>Ralph Aug&eacute;, Thomas Bernard, Corentin Le Gall" +
                        "<hr>"
                        "<b>" + tr("License : ") + "</b>" +
                        "<a href=http://www.gnu.org/licenses/gpl-3.0-standalone.html>GNU General Public License v3</a><br>"

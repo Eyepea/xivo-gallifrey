@@ -413,7 +413,7 @@ void  MyLocalDirPanel::removeAllContacts()
                                   "Are you sure ?"),
                                QMessageBox::Yes|QMessageBox::No);
     if(ret == QMessageBox::Yes) {
-        //m_table->clearContents(); // doesnt resize the table (remove rows)
+        //m_table->clearContents(); // doesn't resize the table (remove rows)
         // remove all rows 1 by 1 until none left.
         while(m_table->rowCount() > 0) {
             m_table->removeRow( 0 );
