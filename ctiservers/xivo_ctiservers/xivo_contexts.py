@@ -92,7 +92,7 @@ class Directory:
                 self.uri = value
                 if self.dbkind.find('sql') >= 0:
                     if value.find('?table=') > 0:
-                        self.uri = value.split('?table=')[1]
+                        self.uri = value.split('?table=')[0]
                         self.sqltable = value.split('?table=')[1]
             elif field == 'name':
                 self.name = value
