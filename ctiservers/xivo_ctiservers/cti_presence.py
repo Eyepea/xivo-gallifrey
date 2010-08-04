@@ -77,4 +77,6 @@ class Presence:
         if status is not None and status in self.details:
             w = self.details[status]
             return w['actions']
-        return []
+        else:
+            log.warning('status <%s> is None or not in detailed definitions' % status)
+            return {}
