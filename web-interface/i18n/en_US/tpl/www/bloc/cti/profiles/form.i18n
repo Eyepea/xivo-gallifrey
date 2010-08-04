@@ -29,19 +29,19 @@ Presence:
 Services
 
 ; cti-profiles_funcs
-Fonctions
+Functions
 
 ; col_preferences-name
-Preference
+Preference name
 
 ; col_preferences-args
-Preference params
+Preference value
 
 ; col_preferences-add
 Add
 
 ; no_preferences
-No preferences
+No preference
 
 ; col_xlets-name
 Xlet
@@ -71,8 +71,7 @@ Add
 No Xlet
 
 ; cmt_profiles_appliname
-a more explicit name
+A more understandable name
 
 ; cmt_profiles_maxgui
 Put -1 for no limit
-

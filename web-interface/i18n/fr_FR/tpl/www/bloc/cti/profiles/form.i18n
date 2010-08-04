@@ -32,10 +32,10 @@ Services
 Fonctions
 
 ; col_preferences-name
-Préférence
+Nom de la préférence
 
 ; col_preferences-args
-Paramètre préférence
+Valeur de la préférence
 
 ; col_preferences-add
 Ajouter
@@ -68,7 +68,7 @@ Numero
 &nbsp;Défil&nbsp;
 
 ; no_xlets
-Aucun Xlet configuré
+Aucune Xlet configurée
 
 ; cmt_profiles_appliname
 Un nom plus compréhensible
