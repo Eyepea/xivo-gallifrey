@@ -31,6 +31,8 @@
  * $Date$
  */
 
+#include <QDateTime>
+
 #include <baseengine.h>
 #include <logwidget.h>
 
@@ -93,13 +95,16 @@ QVariant LogWidgetModel::data(const QModelIndex &a, int role) const
 {
     int row, column; row = a.row(); column = a.column();
 
-    if (role==Qt::DisplayRole) {
+    if (role == Qt::DisplayRole) {
         if (((history[mode].toList().count()) &&
              ((history[mode].toList()).value(row).toMap().count()))) {
             if (column == 0) {
                 return ((history[mode].toList()).value(row).toMap())["fullname"]; 
             } else if (column == 1) {
-                return ((history[mode].toList()).value(row).toMap())["ts"]; 
+                QString qsd = ((history[mode].toList()).value(row).toMap())["ts"].toString();
+                QDateTime qdt = QDateTime::fromString(qsd, Qt::ISODate);
+                QString qsf = qdt.toString(Qt::DefaultLocaleLongDate); // Qt::DefaultLocaleShortDate
+                return qsf;
             } else if (column == 2) {
                 int duration = ((history[mode].toList()).value(row).toMap())["duration"].toInt();
                 int sec =   ( duration % 60);
