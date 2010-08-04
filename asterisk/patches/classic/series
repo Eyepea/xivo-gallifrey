@@ -23,6 +23,7 @@ pf_fastagi_args
 dig_pickup_issue5014-1.4
 pf_manager_dtmf
 pf_manager_atxfer
+pf_astdevmode
 pf_manager_misc
 
 pf_macro_loop_verbose
@@ -40,7 +41,6 @@ pf_atxfer_cid_display
 
 pf_agentcalled_event
 pf_magic_pickupmark
-pf_astdevmode
 pf_atxfer_ami_event
 pf_sip_fix_masquerade
 pf_sip_fix_local_attended

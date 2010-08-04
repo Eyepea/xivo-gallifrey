@@ -2248,9 +2248,9 @@ Index: asterisk-1.4.34/main/channel.c
  	if ((fd = chan->alertpipe[0]) > -1)
  		close(fd);
 @@ -2661,6 +2676,7 @@
- 	case AST_CONTROL_TAKEOFFHOOK:
  	case AST_CONTROL_ANSWER:
  	case AST_CONTROL_HANGUP:
+ 	case AST_CONTROL_ATXFERCMD:
 +	case AST_CONTROL_CONNECTEDLINE:
  		return 0;
  
