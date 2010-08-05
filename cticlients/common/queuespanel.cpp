@@ -47,6 +47,7 @@
 #include "queueinfo.h"
 
 
+QList<int> QueueRow::m_colWidth = QList<int>();
 static QStringList statItems;  //!< list of stats items which are reported for each queue
 static QStringList statsOfDurationType;
 
@@ -133,7 +134,8 @@ QueuesPanel::QueuesPanel(QWidget *parent)
     QWidget *ListWidget = new QWidget(this);
     m_layout = new QVBoxLayout(ListWidget);
     m_layout->setSpacing(0);
-    m_layout->addWidget(QueueRow::makeTitleRow(this));
+    m_titleRow = QueueRow::makeTitleRow(this);
+    m_layout->addWidget(m_titleRow);
 
     xletLayout->addWidget(ListWidget);
     xletLayout->insertStretch(-1, 1);
@@ -156,6 +158,13 @@ QueuesPanel::QueuesPanel(QWidget *parent)
 
     b_engine->registerClassEvent("queuestats", QueuesPanel::eatQueuesStats_t, this);
     updateLongestWaitWidgets();
+    QTimer::singleShot(0, this, SLOT(display()));
+}
+
+void QueuesPanel::display()
+{
+    show();
+    QueueRow::getLayoutColumnsWidth(static_cast<QGridLayout*>(m_titleRow->layout()));
 }
 
 void QueuesPanel::eatQueuesStats(const QVariantMap &p)
@@ -563,7 +572,19 @@ void QueueRow::setLayoutColumnWidth(QGridLayout *layout, int nbStat)
 
     int i;
     for(i=0;i<nbStat;i++) {
-        layout->setColumnMinimumWidth(i+5, 70);
+        if (m_colWidth[i]!=-1) {
+            layout->setColumnMinimumWidth(i+5, m_colWidth[i]);
+        } else {
+            layout->setColumnMinimumWidth(i+5, 55);
+        }
+    }
+}
+
+void QueueRow::getLayoutColumnsWidth(QGridLayout *layout)
+{
+    int i;
+    for(i=0;i<m_colWidth.size();i++) {
+        m_colWidth[i] = layout->itemAtPosition(1, i+5)->widget()->width();
     }
 }
 
@@ -768,6 +789,7 @@ QWidget* QueueRow::makeTitleRow(QueuesPanel *parent)
     row->setLayout(layout);
     QLabel *label;
     QSpacerItem *spacer;
+    m_colWidth.clear();
 
     static struct {
         QString hashname;
@@ -891,6 +913,7 @@ QWidget* QueueRow::makeTitleRow(QueuesPanel *parent)
         label->setStyleSheet(detailCss);
         label->setToolTip(stats_detail[i].tooltip);
         layout->addWidget(label, 1, col++);
+        m_colWidth.append(-1);
     }
     setLayoutColumnWidth(layout, nelem(stats_detail));
 

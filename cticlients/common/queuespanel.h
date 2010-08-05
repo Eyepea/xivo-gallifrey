@@ -91,6 +91,7 @@ class QueueRow : public QWidget {
         void updateName();
 
         static QWidget* makeTitleRow(QueuesPanel *parent);
+        static void getLayoutColumnsWidth(QGridLayout *layout);
         static void setLayoutColumnWidth(QGridLayout *layout, int nbStat);
 
     private:
@@ -104,6 +105,7 @@ class QueueRow : public QWidget {
         QGridLayout *m_layout;
         const QueueInfo *qinfo;
         QueuesPanel *xlet;
+        static QList<int> m_colWidth;
 
 };
 
@@ -141,6 +143,7 @@ class QueuesPanel : public XLet
         void updateLongestWaitWidgets();
         void askForQueueStats();
         void queueClicked();
+        void display();
 
     private:
         bool m_showMore;
@@ -148,6 +151,7 @@ class QueuesPanel : public XLet
         QueuesPanelConfigure *m_configureWindow;
         
         QVBoxLayout *m_layout;
+        QWidget *m_titleRow;
         QHash<QString, QueueRow *> m_queueList;
 };
 
