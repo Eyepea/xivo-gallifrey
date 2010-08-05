@@ -168,6 +168,7 @@ $array['cti/displays']           = 'cti/index.php/displays/';
 $array['cti/contexts']           = 'cti/index.php/contexts/';
 $array['cti/sheetactions']       = 'cti/index.php/sheetactions/';
 $array['cti/sheetevents']        = 'cti/index.php/sheetevents/';
+$array['cti/restart']            = 'cti/index.php/restart/';
 
 
 $array['service/ipbx/json/restricted/ctiserver/configuration'] = 'service/ipbx/json.php/restricted/ctiserver/configuration/';

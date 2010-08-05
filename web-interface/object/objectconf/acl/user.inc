@@ -80,16 +80,17 @@ $array['tree']['service']['ipbx']['control_system']['restart'] = true;
 
 // cti
 $array['tree']['service']['cti'] = array();
-$array['tree']['service']['cti']['general'] = true;
-$array['tree']['service']['cti']['presences'] = true;
-$array['tree']['service']['cti']['phonehints'] = true;
-$array['tree']['service']['cti']['profiles'] = true;
-$array['tree']['service']['cti']['directories'] = true;
+$array['tree']['service']['cti']['general']            = true;
+$array['tree']['service']['cti']['presences']          = true;
+$array['tree']['service']['cti']['phonehints']         = true;
+$array['tree']['service']['cti']['profiles']           = true;
+$array['tree']['service']['cti']['directories']        = true;
 $array['tree']['service']['cti']['reversedirectories'] = true;
-$array['tree']['service']['cti']['displays'] = true;
-$array['tree']['service']['cti']['contexts'] = true;
-$array['tree']['service']['cti']['sheetactions'] = true;
-$array['tree']['service']['cti']['sheetevents'] = true;
+$array['tree']['service']['cti']['displays']           = true;
+$array['tree']['service']['cti']['contexts']           = true;
+$array['tree']['service']['cti']['sheetactions']       = true;
+$array['tree']['service']['cti']['sheetevents']        = true;
+$array['tree']['service']['cti']['restart']            = true;
 
 
 // monitoring

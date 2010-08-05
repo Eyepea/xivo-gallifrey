@@ -31,3 +31,9 @@ Fiches : Actions
 ; mn_left_ctisettings-sheetevents
 Fiches : Événements
 
+; mn_left_ctisettings-restart
+Redémarrer le serveur CTI
+
+; ctisettings_restart_confirm
+Êtes-vous sûr de vouloir appliquer le serveur CTI ?
+
