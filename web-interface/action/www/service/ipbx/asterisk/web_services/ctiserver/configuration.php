@@ -45,6 +45,10 @@ switch($act)
 		$ctiphonehints = &$ipbx->get_module('ctiphonehints');
 		$ctirdid = &$ipbx->get_module('ctireversedirectories');
 
+		$ldapfilter = &$ipbx->get_module('ldapfilter');
+		xivo::load_class('xivo_ldapserver',XIVO_PATH_OBJECT,null,false);
+		$ldapserver = new xivo_ldapserver();
+
 		// load database settings
 		// 1. xivo
 		$config  = dwho::load_init(XIVO_PATH_CONF.DWHO_SEP_DIR.'cti.ini');
@@ -126,8 +130,28 @@ switch($act)
 
 			foreach($load_directories as $dir)
 			{
+				$uri = $dir['uri'];
+				if(strpos($uri, 'ldapfilter://') === 0)
+				{
+					if(is_null($filterid = $ldapfilter->get_primary(array('name'=> substr($uri, 13)))))
+						continue;
+					
+					$filter   = $ldapfilter->get($filterid);
+					$server   = $ldapserver->get($filter['ldapserverid']);
+
+					// formatting ldap uri
+					$uri  = sprintf("%s://%s:%s@%s:%s/%s???%s",
+						($server['securitylayer'] == 'ssl' ? 'ldaps' : 'ldap'),
+						$filter['user'],
+						$filter['passwd'],
+						$server['host'],
+						$server['port'],
+						$filter['basedn'],
+						$filter['filter']);
+				}
+			
 				$dirid = $dir['name'];
-				$dirout[$dirid]['uri'] = $dir['uri'];
+				$dirout[$dirid]['uri'] = $uri;
 				$dirout[$dirid]['delimiter'] = $dir['delimiter'];
 				$dirout[$dirid]['name'] = $dir['description'];
 				$dirout[$dirid]['match_direct'] = dwho_json::decode($dir['match_direct'], true) == false ? array() : dwho_json::decode($dir['match_direct'], true);
