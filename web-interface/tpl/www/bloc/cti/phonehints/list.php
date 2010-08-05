@@ -82,9 +82,7 @@ $page = $url->pager($pager['pages'],
 						 'checked'	=> false,
 						 'paragraph'	=> false));?>
 		</td>
-		<td class="txt-left curpointer"
-		    title="<?=dwho_alttitle($ref['ctiphonehints']['number']);?>"
-		    onclick="location.href = dwho.dom.node.lastchild(this);"> 
+		<td class="txt-left" title="<?=dwho_alttitle($ref['ctiphonehints']['number']);?>">
 <?php
 			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"');
 ?>
