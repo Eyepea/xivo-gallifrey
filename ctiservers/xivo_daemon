@@ -440,7 +440,7 @@ class manage_connection:
                 elif usefulmsg.startswith('reverse '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
-                        dirnames = command_args[1]
+                        dirnames = command_args[1].split(',')
                         numbers = command_args[2:]
                         for number in numbers:
                             reverses = daemon.commandclass.findreverse(dirnames, number)

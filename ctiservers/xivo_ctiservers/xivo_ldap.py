@@ -27,6 +27,8 @@ __author__    = 'Corentin Le Gall'
 LDAP class.
 """
 
+# http://www.ietf.org/rfc/rfc2255.txt
+
 import ldap
 import logging
 from xivo import urisup
@@ -36,10 +38,10 @@ log = logging.getLogger('ldap')
 ## \class xivo_ldap
 class xivo_ldap:
     def __init__(self, iuri):
-        self.iuri   = iuri
-        self.l      = None
-        self.uri    = None
-        self.dbname = None
+        self.iuri    = iuri
+        self.ldapopj = None
+        self.uri     = None
+        self.dbname  = None
 
         try:
             log.info('LDAP URI requested: %r', iuri)
@@ -88,43 +90,43 @@ class xivo_ldap:
                 ldapquery = {}
 
             self.uri = "%s://%s:%s" % (uri_scheme, ldaphost, ldapport)
-            self.l = ldap.initialize(self.uri)
+            self.ldapobj = ldap.initialize(self.uri)
 
             if ldapquery.has_key('protocol_version'):
-                self.l.set_option(ldap.OPT_PROTOCOL_VERSION,
-                                  int(ldapquery.get('protocol_version')))
+                self.ldapobj.set_option(ldap.OPT_PROTOCOL_VERSION,
+                                        int(ldapquery.get('protocol_version')))
 
             if ldapquery.has_key('network_timeout'):
-                self.l.set_option(ldap.OPT_NETWORK_TIMEOUT,
-                                  float(ldapquery.get('network_timeout')))
+                self.ldapobj.set_option(ldap.OPT_NETWORK_TIMEOUT,
+                                        float(ldapquery.get('network_timeout')))
 
             if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
-                self.l.start_tls_s()
+                self.ldapobj.start_tls_s()
 
-            self.l.simple_bind_s(ldapuser, ldappass)
+            self.ldapobj.simple_bind_s(ldapuser, ldappass)
         except ldap.LDAPError, exc:
-            log.exception('__init__: ldap.LDAPError (%r, %r, %r)', self.l, iuri, exc)
-            self.l = None
+            log.exception('__init__: ldap.LDAPError (%r, %r, %r)', self.ldapobj, iuri, exc)
+            self.ldapobj = None
             
     def getldap(self, xfilter, attrib):
-        if self.l is None:
+        if self.ldapobj is None:
             self.__init__(self.iuri)
 
         try:
-            result = self.l.search_s(self.dbname,
-                                     ldap.SCOPE_SUBTREE,
-                                     xfilter,
-                                     attrib)
+            result = self.ldapobj.search_s(self.dbname,
+                                           ldap.SCOPE_SUBTREE,
+                                           xfilter,
+                                           attrib)
             return result
         except (AttributeError, ldap.LDAPError), exc1:
             # display exc1 since sometimes the error stack looks too long for the logfile
-            log.exception('getldap: ldap.LDAPError (%r, %r, %r) retrying to connect', self.l, self.uri, exc1)
+            log.exception('getldap: ldap.LDAPError (%r, %r, %r) retrying to connect', self.ldapobj, self.uri, exc1)
             self.__init__(self.iuri)
             try:
-                result = self.l.search_s(self.dbname,
-                                         ldap.SCOPE_SUBTREE,
-                                         xfilter,
-                                         attrib)
+                result = self.ldapobj.search_s(self.dbname,
+                                               ldap.SCOPE_SUBTREE,
+                                               xfilter,
+                                               attrib)
                 return result
             except ldap.LDAPError, exc2:
-                log.exception('getldap: ldap.LDAPError (%r, %r, %r) could not reconnect', self.l, self.uri, exc2)
+                log.exception('getldap: ldap.LDAPError (%r, %r, %r) could not reconnect', self.ldapobj, self.uri, exc2)

@@ -23,6 +23,10 @@ __author__    = 'Corentin Le Gall'
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
+log = logging.getLogger('presence')
+
 class Presence:
     def __init__(self, config):
         self.details = {}

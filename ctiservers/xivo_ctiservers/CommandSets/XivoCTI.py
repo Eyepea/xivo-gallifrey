@@ -1553,6 +1553,10 @@ class XivoCTICommand(BaseCommand):
                         if not capaids or uinfo.get('capaid') in capaids:
                             uinfostosend.append(uinfo)
 
+                elif whom == 'group':
+                    # all the members of the group
+                    pass
+
                 elif whom == 'subscribe':
                     for uinfo in self.ulist_ng.keeplist.itervalues():
                         if capaids is None or uinfo.get('capaid') in capaids:
@@ -6043,16 +6047,29 @@ class XivoCTICommand(BaseCommand):
 
             try:
                 results = None
-                if z.uri in self.ldapids:
-                    ldapid = self.ldapids[z.uri]
-                else:
+                if z.uri not in self.ldapids:
+                    # first connection to ldap, or after failure
                     ldapid = xivo_ldap.xivo_ldap(z.uri)
-                    if ldapid.l is not None:
+                    if ldapid.ldapobj is not None:
                         self.ldapids[z.uri] = ldapid
+                else:
+                    # retrieve the connection already setup, if not yet deleted
+                    ldapid = self.ldapids[z.uri]
+                    if ldapid.ldapobj is None:
+                        del self.ldapids[z.uri]
 
-                if ldapid.l is not None:
-                    results = ldapid.getldap('(|%s)' % ''.join(selectline),
-                                             ldapattrib)
+                # at this point, either we have a successful ldapid.ldapobj value, with self.ldapids[z.uri] = ldapid
+                #                either ldapid.ldapobj is None, and z.uri not in self.ldapids
+
+                if ldapid.ldapobj is not None:
+                    # if the ldapid had already been defined and setup, the failure would occur here
+                    try:
+                        results = ldapid.getldap('(|%s)' % ''.join(selectline),
+                                                 ldapattrib)
+                    except Exception:
+                        ldapid.ldapobj = None
+                        del self.ldapids[z.uri]
+
                 if results is not None:
                     for result in results:
                         futureline = {'xivo-directory' : z.name}
