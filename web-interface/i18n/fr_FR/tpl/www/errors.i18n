@@ -25,3 +25,6 @@ Valeur du champ trop courte
 
 ; error(maximumlength)
 Valeur du champ trop longue
+
+; error(out of interval)
+Valeur du champ hors limites
