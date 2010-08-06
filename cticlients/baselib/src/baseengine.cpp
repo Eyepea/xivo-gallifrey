@@ -66,10 +66,9 @@ BASELIB_EXPORT BaseEngine *b_engine;
 static CtiConn *m_ctiConn;
 
 
-BaseEngine::BaseEngine(QApplication *_app,
-                       QSettings *settings,
+BaseEngine::BaseEngine(QSettings *settings,
                        const QString &osInfo)
-    : QObject(NULL), app(_app),
+    : QObject(NULL),
       m_serverhost(""), m_ctiport(0),
       m_userid(""), m_useridopt(""), m_company(""), m_password(""), m_agentphonenumber(""),
       m_sessionid(""), m_state(ENotLogged),
@@ -2270,5 +2269,5 @@ void BaseEngine::registerTranslation(const QString &path)
     QString locale = QLocale::system().name();
     QTranslator *translator = new QTranslator;
     translator->load(path.arg(locale));
-    app->installTranslator(translator);
+    qApp->installTranslator(translator);
 }

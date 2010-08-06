@@ -82,7 +82,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
         //! Enum for BaseEngine state logged/not logged
         typedef enum {ENotLogged, ELogged } EngineState;
 
-        BaseEngine(QApplication *_app, QSettings *, const QString &); //! Constructor
+        BaseEngine(QSettings *, const QString &); //! Constructor
         ~BaseEngine(); //! Destructor
         
         QSettings* getSettings(); 
@@ -296,8 +296,6 @@ class BASELIB_EXPORT BaseEngine: public QObject
         void clearQueueList();
         
         // Class Members
-        
-        QApplication *app;
         // Parameters given by the User at Login time
         QString m_serverhost;           //!< Host to the login server
         quint16 m_ctiport;              //!< TCP port to connect to server
