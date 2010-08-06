@@ -101,7 +101,7 @@ static const struct {
  * Find and initialize plugins directory,
  * populate the m_xlets hash table.
  */
-XLetFactory::XLetFactory(QObject * parent)
+XLetFactory::XLetFactory(QObject *parent)
     : QObject(parent),
       m_pluginsDir(qApp->applicationDirPath()),
       m_pluginsDirFound(false)
@@ -119,15 +119,14 @@ XLetFactory::XLetFactory(QObject * parent)
         }
     }
 #else
-    if (m_pluginsDir.cd("../Resources/plugins")) {
-        m_pluginsDirFound = true;
-    } else {
-        qDebug() << "cannot find plugins directory";
+    QString pluginDirPath = qApp->applicationDirPath() + "/../Resources/plugins";
+    m_pluginsDirFound = m_pluginsDir.cd(pluginDirPath);
+    if (!m_pluginsDirFound) {
+        qDebug() << "cannot find plugins directory (tryed: " << m_pluginsDirFound << ")";
     }
 #endif
 
     uint i;
-
     // populate the m_xlets hash table
     for(i=0;i<(sizeof(xlets)/sizeof(xlets[0]));i++) {
         m_xlets.insert(QString(xlets[i].name),xlets[i].construct);

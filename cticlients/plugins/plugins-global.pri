@@ -6,6 +6,7 @@ unix:CONFIG  += plugin
 
 INCLUDEPATH += ../../baselib/src
 DESTDIR      = ../../bin/plugins
+macx:DESTDIR = ../../bin/xivoclient.app/Contents/Resources/plugin
 LIBS        += -L../../bin/
 
 unix:LIBS   += -lxivoclientbaselib
