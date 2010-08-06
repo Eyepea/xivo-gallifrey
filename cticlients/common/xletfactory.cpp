@@ -122,7 +122,7 @@ XLetFactory::XLetFactory(QObject *parent)
     QString pluginDirPath = qApp->applicationDirPath() + "/../Resources/plugins";
     m_pluginsDirFound = m_pluginsDir.cd(pluginDirPath);
     if (!m_pluginsDirFound) {
-        qDebug() << "cannot find plugins directory (tryed: " << m_pluginsDirFound << ")";
+        qDebug() << "cannot find plugins directory (tryed: " << pluginDirPath << ")";
     }
 #endif
 
