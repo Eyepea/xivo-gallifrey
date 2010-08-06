@@ -838,33 +838,29 @@ void addUpdateConfMemberInTree(DStore *tree, const QVariantMap &cinfo)
 
 }
 
-void addUpdateConfRoomInTree(DStore *tree, const QVariantMap &cinfo)
+void addUpdateConfRoomInTree(DStore *tree,
+                             const QString &id,
+                             const QVariantMap &cinfo)
 {
-    if (tree->extractVMap(QString("confrooms[name=@%0]").arg(cinfo["roomname"].toString()))
-                          .size() == 0) {
-
-        int id = tree->extractVMap(QString("confrooms")).size() + 1;
-        QVariantMap info;
-        info["id"] = id;
-        info["name"] = cinfo["roomname"];
-        info["pin"] = cinfo["pin"];
-        info["in"] = QVariantMap();
-        info["number"] = cinfo["roomnumber"];
-        info["moderated"] = cinfo["moderated"];
-
-        tree->populate(QString("confrooms/%0").arg(id), info);
-
-        QVariantMap userIn = cinfo["uniqueids"].toMap();
-        foreach (QString uniqueId , userIn.keys()) {
-            QVariantMap userToInsert;
-            userToInsert["details"] = userIn[uniqueId].toMap();
-            userToInsert["meetmeid"] = id;
-            userToInsert["action"] = "join";
-            userToInsert["uniqueid"] = uniqueId;
-
-            addUpdateConfMemberInTree(tree, userToInsert);
-        }
-
+    QVariantMap info;
+    info["id"] = id;
+    info["name"] = cinfo["roomname"];
+    info["pin"] = cinfo["pin"];
+    info["in"] = QVariantMap();
+    info["number"] = cinfo["roomnumber"];
+    info["moderated"] = cinfo["moderated"];
+    
+    tree->populate(QString("confrooms/%0").arg(id), info);
+    
+    QVariantMap userIn = cinfo["uniqueids"].toMap();
+    foreach (QString uniqueId , userIn.keys()) {
+        QVariantMap userToInsert;
+        userToInsert["details"] = userIn[uniqueId].toMap();
+        userToInsert["meetmeid"] = id;
+        userToInsert["action"] = "join";
+        userToInsert["uniqueid"] = uniqueId;
+    
+        addUpdateConfMemberInTree(tree, userToInsert);
     }
 }
 
@@ -1056,7 +1052,7 @@ void BaseEngine::parseCommand(const QString &line)
                     QVariantMap map2 = map1[astid].toMap();
                     foreach(QString meetmeid, map2.keys()) {
                         QVariantMap map3 = map2[meetmeid].toMap();
-                        addUpdateConfRoomInTree(tree(), map3);
+                        addUpdateConfRoomInTree(tree(), meetmeid, map3);
                     }
                 }
             } else if (function == "update") {
