@@ -87,8 +87,9 @@ BasePeerWidget::BasePeerWidget(UserInfo *ui)
     m_maxWidthWanted = 200;
     if (b_engine->enabledFunction("switchboard")) {
         m_maxWidthWanted = b_engine->getGuiOptions("merged_gui").value("maxwidthwanted").toInt();
-        if (m_maxWidthWanted < 50)
+        if (m_maxWidthWanted < 50) {
             m_maxWidthWanted = 200;
+        }
     }
     setMaximumWidth(m_maxWidthWanted);
     setAcceptDrops(true);

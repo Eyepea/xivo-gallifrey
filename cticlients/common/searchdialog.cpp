@@ -45,6 +45,6 @@ SearchDialog::SearchDialog(QWidget * parent)
         = new QDialogButtonBox(QDialogButtonBox::Cancel | QDialogButtonBox::Ok);
     connect(buttonBox, SIGNAL(accepted()), this, SIGNAL(findNext()));
     connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
-    layout->addRow( buttonBox );
+    layout->addRow(buttonBox);
 }
 

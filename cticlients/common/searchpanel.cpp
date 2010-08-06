@@ -69,7 +69,8 @@ SearchPanel::SearchPanel(QWidget *parent)
     scrollarea->setWidget(widget);
     QVBoxLayout *scrollarealayout = new QVBoxLayout(widget);
     m_peerlayout = new QGridLayout;
-    m_peerlayout->setSpacing(10);
+    m_peerlayout->setMargin(0);
+    m_peerlayout->setSpacing(6);
     scrollarealayout->addLayout(m_peerlayout);
     scrollarealayout->addStretch(1);
     vlayout->addWidget(scrollarea);
@@ -79,8 +80,10 @@ SearchPanel::SearchPanel(QWidget *parent)
     // connect signal/slots
     connect(b_engine, SIGNAL(userUpdated(UserInfo *)),
             this, SLOT(updateUser(UserInfo *)));
-    connect(b_engine, SIGNAL(updatePeerAgent(double, const QString &, const QString &, const QVariant &)),
-            this, SLOT(updatePeerAgent(double, const QString &, const QString &, const QVariant &)));
+    connect(b_engine, SIGNAL(updatePeerAgent(double, const QString &,
+                                             const QString &, const QVariant &)),
+            this, SLOT(updatePeerAgent(double, const QString &,
+                                       const QString &, const QVariant &)));
     connect(b_engine, SIGNAL(peersReceived()),
             this, SLOT(updateDisplay()));
     connect(this, SIGNAL(askCallerIds()),
@@ -141,7 +144,6 @@ void SearchPanel::updateDisplay()
             (peeritem->userinfo()->phoneNumber().contains(m_searchpattern))) &&
             (naff < m_maxdisplay)) {
             if (peerwidget == NULL) {
-                // qDebug() << "SearchPanel::affTextChanged()" << peeritem->userinfo() << peeritem->userinfo()->termstatus();
                 peerwidget = new PeerWidget(peeritem->userinfo());
                 peeritem->setWidget(peerwidget);
                 peeritem->updateDisplayedStatus();
@@ -150,11 +152,6 @@ void SearchPanel::updateDisplay()
                 m_peerlayout->addWidget(peerwidget,
                         naff / m_ncolumns,
                         naff % m_ncolumns);
-                // m_peerlayout->addWidget(peerwidget,
-                // naff / m_ncolumns,
-                // naff % m_ncolumns,
-                // Qt::AlignCenter);
-                // peerwidget->setMinimumSize(QSize(150, 60));
 
                 naff++;
                 peerwidget->show();
@@ -174,7 +171,7 @@ void SearchPanel::updateDisplay()
  */
 void SearchPanel::updateUser(UserInfo *ui)
 {
-    const QString & userid = ui->userid();
+    const QString &userid = ui->userid();
     PeerItem *peeritem = NULL;
 
     if (m_peerhash.contains(userid)) {
@@ -187,9 +184,9 @@ void SearchPanel::updateUser(UserInfo *ui)
 }
 
 void SearchPanel::updatePeerAgent(double,
-                                  const QString & id,
-                                  const QString & what,
-                                  const QVariant & statuslist)
+                                  const QString &id,
+                                  const QString &what,
+                                  const QVariant &statuslist)
 {
     // qDebug() << "SearchPanel::updatePeerAgent()";
     if (m_peerhash.contains(id)) {
@@ -204,7 +201,7 @@ void SearchPanel::updatePeerAgent(double,
 
 /*! \brief remove on peer
  */
-void SearchPanel::removePeer(const QString & ext)
+void SearchPanel::removePeer(const QString &ext)
 {
     // qDebug() << "SearchPanel::removePeer()" << ext;
     if (m_peerhash.contains(ext)) {
