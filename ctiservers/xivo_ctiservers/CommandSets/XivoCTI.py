@@ -5665,7 +5665,7 @@ class XivoCTICommand(BaseCommand):
                 if kind == 'user':
                     props['id'] = uinfo.get('xivo_userid')
                 elif kind == 'agent':
-                    props['id'] = uinfo.get('agentid')
+                    props['id'] = [uinfo.get('agentid')]
                 else:
                     log.warning('__cutid__ : no id defined for %s' % fullid)
         else:
@@ -5748,10 +5748,11 @@ class XivoCTICommand(BaseCommand):
                 for agentid in agentids:
                     # XXX capas
                     if agentid.get('kind') == 'agent':
-                        if actionname == 'agentlogin':
-                            self.__login_agent__(agentid.get('astid'), agentid.get('id'), agentphonenumber)
-                        else:
-                            self.__logout_agent__(agentid.get('astid'), agentid.get('id'))
+                        for aid in agentid.get('id'):
+                            if actionname == 'agentlogin':
+                                self.__login_agent__(agentid.get('astid'), aid, agentphonenumber)
+                            else:
+                                self.__logout_agent__(agentid.get('astid'), aid)
                     else:
                         log.warning('attempt to log something that is not an agent')
 
@@ -5887,8 +5888,8 @@ class XivoCTICommand(BaseCommand):
             try:
                 cursor = cfg.cdr_db_conn.cursor()
                 columns = ('calldate', 'clid', 'src', 'dst', 'dcontext', 'channel', 'dstchannel',
-                    'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
-                    'accountcode', 'uniqueid', 'userfield')
+                           'lastapp', 'lastdata', 'duration', 'billsec', 'disposition', 'amaflags',
+                           'accountcode', 'uniqueid', 'userfield')
                 likestring = '%s/%s-%%' %(techno, phoneid)
                 orderbycalldate = "ORDER BY calldate DESC LIMIT %s" % nlines
                 datecond = ''
