@@ -71,21 +71,20 @@ const QString extraspace("  ");
  * The geometry is restored from settings.
  * engine object ownership is taken
  */
-MainWidget::MainWidget(BaseEngine * engine,
-                       QWidget * parent)
-    : QMainWindow(parent),
-      m_engine(engine), m_systrayIcon(0),
+MainWidget::MainWidget(BaseEngine *engine)
+    : QMainWindow(NULL),
+      m_systrayIcon(0),
       m_icon_transp(":/images/xivo-login.png"),
       m_icon_red(":/images/xivoicon-red.png"),
       m_icon_green(":/images/xivoicon-green.png"),
       m_icon_black(":/images/xivoicon-black.png")
 {
     m_xletfactory = new XLetFactory(this);
-    m_engine->setParent(this); // take ownership of the engine object
+    b_engine->setParent(this); // take ownership of the engine object
     m_appliname = "Client";
     m_withsystray = true;
     
-    m_settings = m_engine->getSettings();
+    m_settings = b_engine->getSettings();
     QPixmap redsquare(":/images/disconnected.png");
     statusBar();        // This creates the status bar.
     m_status = new QLabel(this);
@@ -102,13 +101,13 @@ MainWidget::MainWidget(BaseEngine * engine,
     if (m_withsystray && QSystemTrayIcon::isSystemTrayAvailable())
         createSystrayIcon();
     
-    connect(m_engine, SIGNAL(logged()),
+    connect(b_engine, SIGNAL(logged()),
             this, SLOT(engineStarted()));
-    connect(m_engine, SIGNAL(delogged()),
+    connect(b_engine, SIGNAL(delogged()),
             this, SLOT(engineStopped()));
-    connect(m_engine, SIGNAL(emitTextMessage(const QString &)),
+    connect(b_engine, SIGNAL(emitTextMessage(const QString &)),
             statusBar(), SLOT(showMessage(const QString &)));
-    connect(m_engine, SIGNAL(emitMessageBox(const QString &)),
+    connect(b_engine, SIGNAL(emitMessageBox(const QString &)),
             this, SLOT(showMessageBox(const QString &)),
             Qt::QueuedConnection);
     
@@ -141,8 +140,8 @@ MainWidget::MainWidget(BaseEngine * engine,
     m_login_layout->setRowStretch(6, 1);
     
     if(m_settings->value("display/logtofile", false).toBool())
-        m_engine->setLogFile(m_settings->value("display/logfilename", "XiVO_Client.log").toString());
-    m_engine->logAction("application started on " + m_engine->osname());
+        b_engine->setLogFile(m_settings->value("display/logfilename", "XiVO_Client.log").toString());
+    b_engine->logAction("application started on " + b_engine->osname());
     
     m_xivobg = new QLabel();
     m_xivobg->setPixmap(QPixmap(":/images/xivoicon.png"));
@@ -157,26 +156,26 @@ MainWidget::MainWidget(BaseEngine * engine,
     m_login_layout->addWidget(m_lab3, 4, 0, Qt::AlignRight);
     
     m_qlab1 = new QLineEdit();
-    m_qlab1->setText(m_engine->userId());
+    m_qlab1->setText(b_engine->userId());
     m_login_layout->addWidget(m_qlab1, 2, 1);
     m_qlab2 = new QLineEdit();
-    m_qlab2->setText(m_engine->password());
+    m_qlab2->setText(b_engine->password());
     m_qlab2->setEchoMode(QLineEdit::Password);
     m_login_layout->addWidget(m_qlab2, 3, 1);
     m_qlab3 = new QLineEdit();
-    m_qlab3->setText(m_engine->agentphonenumber());
+    m_qlab3->setText(b_engine->agentphonenumber());
     m_login_layout->addWidget(m_qlab3, 4, 1);
     
     m_ack = new QPushButton("OK");
     m_login_layout->addWidget(m_ack, 2, 2, Qt::AlignLeft);
     m_kpass = new QCheckBox(tr("Keep Password"));
-    m_kpass->setCheckState((m_engine->keeppass() == 2) ? Qt::Checked : Qt::Unchecked);
+    m_kpass->setCheckState((b_engine->keeppass() == 2) ? Qt::Checked : Qt::Unchecked);
     m_login_layout->addWidget(m_kpass, 3, 2, Qt::AlignLeft);
     m_loginkind = new QComboBox();
     m_loginkind->addItem(QString(tr("No Agent")));
     m_loginkind->addItem(QString(tr("Agent (unlogged)")));
     m_loginkind->addItem(QString(tr("Agent (logged)")));
-    m_loginkind->setCurrentIndex(m_engine->loginkind());
+    m_loginkind->setCurrentIndex(b_engine->loginkind());
     m_login_layout->addWidget(m_loginkind, 4, 2, Qt::AlignLeft);
     
     loginKindChanged(m_loginkind->currentIndex());
@@ -195,12 +194,12 @@ MainWidget::MainWidget(BaseEngine * engine,
     m_launchDateTime = QDateTime::currentDateTime();
     
     showLogin();
-    if((m_withsystray && (m_engine->systrayed() == false)) || (! m_withsystray))
+    if((m_withsystray && (b_engine->systrayed() == false)) || (! m_withsystray))
         show();
     setFocusPolicy(Qt::StrongFocus);
 
     connect(this, SIGNAL(pasteToDialPanel(const QString &)),
-            m_engine, SIGNAL(pasteToDialPanel(const QString &)));
+            b_engine, SIGNAL(pasteToDialPanel(const QString &)));
 }
 
 /*! \brief Destructor
@@ -211,7 +210,7 @@ MainWidget::~MainWidget()
 {
     // qDebug() << "MainWidget::~MainWidget()";
     savePositions();
-    m_engine->logAction("application quit");
+    b_engine->logAction("application quit");
 }
 
 #ifndef Q_WS_WIN
@@ -260,7 +259,7 @@ void MainWidget::setAppearance(const QStringList &dockoptions)
         if(dname.size() > 0) {
             QStringList dopt = dname.split("-");
             QString wname = dopt[0];
-            if((wname == "customerinfo") && (! m_engine->checkedFunction(wname)))
+            if((wname == "customerinfo") && (! b_engine->checkedFunction(wname)))
                 continue;
             m_allnames.append(wname);
             m_dockoptions[wname] = "";
@@ -295,8 +294,8 @@ void MainWidget::clearAppearance()
 
 void MainWidget::config_and_start()
 {
-    m_engine->setKeepPass(m_kpass->checkState());
-    m_engine->config_and_start(m_qlab1->text(),
+    b_engine->setKeepPass(m_kpass->checkState());
+    b_engine->config_and_start(m_qlab1->text(),
                                m_qlab2->text(),
                                m_qlab3->text());
 }
@@ -309,13 +308,13 @@ void MainWidget::logintextChanged(const QString & logintext)
 void MainWidget::loginKindChanged(int index)
 {
     // qDebug() << "MainWidget::loginKindChanged()" << index;
-    m_engine->setLoginKind(index);
+    b_engine->setLoginKind(index);
     if(index == 0) {
         m_lab3->hide();
         m_qlab3->hide();
     }
     
-    if(m_engine->showagselect()) {
+    if(b_engine->showagselect()) {
         if(index > 0) {
             m_lab3->show();
             m_qlab3->show();
@@ -356,7 +355,7 @@ void MainWidget::createActions()
     m_quitact->setProperty("stopper", "quit");
     m_quitact->setStatusTip(tr("Close the application"));
     connect(m_quitact, SIGNAL(triggered()),
-            m_engine, SLOT(stop()));
+            b_engine, SLOT(stop()));
     connect(m_quitact, SIGNAL(triggered()),
             qApp, SLOT(quit()));
     
@@ -381,13 +380,13 @@ void MainWidget::createActions()
     m_connectact = new QAction(tr("&Connect"), this);
     m_connectact->setStatusTip(tr("Connect to the server"));
     connect(m_connectact, SIGNAL(triggered()),
-            m_engine, SLOT(start()));
+            b_engine, SLOT(start()));
     
     m_disconnectact = new QAction(tr("&Disconnect"), this);
     m_disconnectact->setProperty("stopper", "disconnect");
     m_disconnectact->setStatusTip(tr("Disconnect from the server"));
     connect(m_disconnectact, SIGNAL(triggered()),
-            m_engine, SLOT(stop()));
+            b_engine, SLOT(stop()));
     
     m_connectact->setEnabled(true);
     m_disconnectact->setEnabled(false);
@@ -396,7 +395,7 @@ void MainWidget::createActions()
     m_availgrp = new QActionGroup(this);
     m_availgrp->setExclusive(true);
     
-    connect(m_engine, SIGNAL(changesAvailChecks()),
+    connect(b_engine, SIGNAL(changesAvailChecks()),
             this, SLOT(checksAvailState()));
     
     checksAvailState();
@@ -404,8 +403,8 @@ void MainWidget::createActions()
 
 void MainWidget::checksAvailState()
 {
-    if(m_avact.contains(m_engine->getAvailState())) {
-        m_avact[m_engine->getAvailState()]->setChecked(true);
+    if(m_avact.contains(b_engine->getAvailState())) {
+        m_avact[b_engine->getAvailState()]->setChecked(true);
     }
 }
 
@@ -423,7 +422,7 @@ void MainWidget::createMenus()
 
     m_avail = menuBar()->addMenu(tr("&Availability"));
     m_avail->setEnabled(false);
-    connect(m_engine, SIGNAL(availAllowChanged(bool)),
+    connect(b_engine, SIGNAL(availAllowChanged(bool)),
              m_avail, SLOT(setEnabled(bool)));
 
     m_helpmenu = menuBar()->addMenu(tr("&Help"));
@@ -491,11 +490,11 @@ void MainWidget::showConfDialog()
 void MainWidget::confUpdated()
 {
     // qDebug() << "MainWidget::confUpdated()";
-    m_qlab1->setText(m_engine->userId());
-    m_qlab2->setText(m_engine->password());
-    m_qlab3->setText(m_engine->agentphonenumber());
-    m_kpass->setCheckState((m_engine->keeppass() == 2) ? Qt::Checked : Qt::Unchecked);
-    m_loginkind->setCurrentIndex(m_engine->loginkind());
+    m_qlab1->setText(b_engine->userId());
+    m_qlab2->setText(b_engine->password());
+    m_qlab3->setText(b_engine->agentphonenumber());
+    m_kpass->setCheckState((b_engine->keeppass() == 2) ? Qt::Checked : Qt::Unchecked);
+    m_loginkind->setCurrentIndex(b_engine->loginkind());
     loginKindChanged(m_loginkind->currentIndex()); // Hide or Show the phone number
 }
 
@@ -608,7 +607,7 @@ void MainWidget::updatePresence(const QVariant & presence)
                 m_avact[avstate]->setProperty("availstate", avstate);
                 m_avact[avstate]->setEnabled(false);
                 connect(m_avact[avstate], SIGNAL(triggered()),
-                        m_engine, SLOT(setAvailability()));
+                        b_engine, SLOT(setAvailability()));
                 m_availgrp->addAction(m_avact[avstate]);
             }
         }
@@ -627,13 +626,13 @@ void MainWidget::updatePresence(const QVariant & presence)
         }
     }
     if(presencemap.contains("state")) {
-        m_engine->setAvailState(presencemap["state"].toMap()["stateid"].toString(), true);
+        b_engine->setAvailState(presencemap["state"].toMap()["stateid"].toString(), true);
     }
 }
 
 void MainWidget::clearPresence()
 {
-    QVariantMap presence = m_engine->getCapaPresence();
+    QVariantMap presence = b_engine->getCapaPresence();
     if(presence.contains("names")) {
         QMapIterator<QString, QVariant> capapres(presence["names"].toMap());
         while (capapres.hasNext()) {
@@ -641,7 +640,7 @@ void MainWidget::clearPresence()
             QString avstate = capapres.key();
             if(m_avact.contains(avstate)) {
                 disconnect(m_avact[avstate], SIGNAL(triggered()),
-                            m_engine, SLOT(setAvailability()));
+                            b_engine, SLOT(setAvailability()));
                 m_availgrp->removeAction(m_avact[avstate]);
                 delete m_avact[avstate];
             }
@@ -658,11 +657,11 @@ void MainWidget::clearPresence()
  */
 void MainWidget::engineStarted()
 {
-    setAppearance(m_engine->getCapaXlets());
+    setAppearance(b_engine->getCapaXlets());
     
-    m_appliname = tr("Client (%1 profile)").arg(m_engine->getCapaApplication());
+    m_appliname = tr("Client (%1 profile)").arg(b_engine->getCapaApplication());
     
-    connect(m_engine, SIGNAL(updatePresence(const QVariant &)),
+    connect(b_engine, SIGNAL(updatePresence(const QVariant &)),
             this, SLOT(updatePresence(const QVariant &)));
     updateAppliName();
     hideLogin();
@@ -722,7 +721,7 @@ void MainWidget::engineStarted()
     // set status icon to green
     QPixmap greensquare(":/images/connected.png");
     m_status->setPixmap(greensquare);
-    m_engine->logAction("connection started");
+    b_engine->logAction("connection started");
 }
 
 void MainWidget::setSystrayIcon(const QString & def)
@@ -829,7 +828,7 @@ void MainWidget::engineStopped()
     clearAppearance();
     m_appliname = "Client";
     updateAppliName();
-    m_engine->logAction("connection stopped");
+    b_engine->logAction("connection stopped");
 }
 
 void MainWidget::savePositions() const
@@ -867,11 +866,6 @@ void MainWidget::customerInfoPopup(const QString & msgtitle,
                                    QSystemTrayIcon::Information,
                                    5000);
     }
-    
-    // focus on the customerinfo tab
-//    if(m_tabnames.contains("customerinfo") && m_engine->checkedFunction("customerinfo") && options.contains("f"))
-//        if (m_cinfo_index > -1)
-//            m_tabwidget->setCurrentIndex(m_cinfo_index);
     
     // to be customisable, if the user wants the window to popup
     if(options.contains("p")) {

@@ -23,10 +23,6 @@ class ConfListModel : public QAbstractTableModel
 
     public:
         ConfListModel();
-        enum ColOrder {
-            ID, NAME, NUMBER, PIN_REQUIRED, MODERATED,
-            MEMBER_COUNT, STARTED_SINCE, NB_COL
-        };
 
     private slots:
         void confRoomsChange(const QString &path, DStoreEvent event);

@@ -16,6 +16,8 @@ class XletConference;
 #include "conflist.h"
 #include "confchamber.h"
 
+Q_DECLARE_METATYPE(QWidget*);
+
 class ConfTab : public QTabWidget
 {
     Q_OBJECT
@@ -24,11 +26,11 @@ class ConfTab : public QTabWidget
         ConfTab(QWidget *parent);
         int addClosableTab(QWidget *w, const QString &title);
         void showConfRoom(const QString &id, bool force);
+        int indexOf(QWidget *w) { return QTabWidget::indexOf(w); };
+        int indexOf(const QString &id);
 
     public slots:
         void closeTab(const QString &id=QString());
-    private:
-        QMap<QString, int> m_id2index;
 };
 
 

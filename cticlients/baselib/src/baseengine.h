@@ -401,5 +401,6 @@ class BASELIB_EXPORT BaseEngine: public QObject
 };
 
 extern BASELIB_EXPORT BaseEngine *b_engine;
+#define nelem(x)    static_cast<int>(sizeof(x)/sizeof(x)[0])
 
 #endif /* __BASEENGINE_H__ */

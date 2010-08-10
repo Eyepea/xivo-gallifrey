@@ -1,5 +1,12 @@
 #include "conflist.h"
 
+enum ColOrder {
+    ID, NAME, NUMBER, PIN_REQUIRED, MODERATED,
+    MEMBER_COUNT, STARTED_SINCE, NB_COL
+};
+
+static QVariant COL_TITLE[NB_COL];
+
 ConfListModel::ConfListModel()
     : QAbstractTableModel()
 {
@@ -7,6 +14,13 @@ ConfListModel::ConfListModel()
         SLOT(confRoomsChange(const QString &, DStoreEvent)));
 
     startTimer(1000);
+    COL_TITLE[ID] = tr("Room UID");
+    COL_TITLE[NUMBER] = tr("Number");
+    COL_TITLE[NAME] = tr("Name");
+    COL_TITLE[PIN_REQUIRED] = tr("Pin code");
+    COL_TITLE[MEMBER_COUNT] = tr("Member count");
+    COL_TITLE[MODERATED] = tr("Moderated");
+    COL_TITLE[STARTED_SINCE] = tr("Started since");
 }
 
 void ConfListModel::timerEvent(QTimerEvent *)
@@ -109,21 +123,7 @@ ConfListModel::headerData(int section,
         return QVariant();
     
     if (orientation == Qt::Horizontal) {
-        if (section == ID) {
-            return QVariant(tr("Room UID"));
-        } else if (section == NUMBER) {
-            return QVariant(tr("Number"));
-        } else if (section == NAME) {
-            return QVariant(tr("Name"));
-        } else if (section == PIN_REQUIRED) {
-            return QVariant(tr("Pin code"));
-        } else if (section == MEMBER_COUNT) {
-            return QVariant(tr("Member count"));
-        } else if (section == MODERATED) {
-            return QVariant(tr("Moderated"));
-        } else if (section == STARTED_SINCE) {
-            return QVariant(tr("Started since"));
-        }
+        return COL_TITLE[section];
     }
 
     return QVariant();
@@ -172,7 +172,11 @@ ConfListView::ConfListView(QWidget *parent, ConfListModel *model)
     verticalHeader()->hide();
     horizontalHeader()->setResizeMode(QHeaderView::Stretch);
     horizontalHeader()->setMovable(true);
-    setStyleSheet("ConfListView { border: none; background:transparent; color:black; }");
+    setStyleSheet("ConfListView {"
+                    "border: none;"
+                    "background: transparent;"
+                    "color:black;"
+                  "}");
     hideColumn(0);
 
     connect(this, SIGNAL(clicked(const QModelIndex &)),
@@ -181,9 +185,9 @@ ConfListView::ConfListView(QWidget *parent, ConfListModel *model)
 
 void ConfListView::onViewClick(const QModelIndex &model)
 {
-    QString roomId = model.sibling(model.row(), ConfListModel::ID).data().toString();
-    QString roomName = model.sibling(model.row(), ConfListModel::NAME).data().toString();
-    QString roomNumber = model.sibling(model.row(), ConfListModel::NUMBER).data().toString();
+    QString roomId = model.sibling(model.row(), ID).data().toString();
+    QString roomName = model.sibling(model.row(), NAME).data().toString();
+    QString roomNumber = model.sibling(model.row(), NUMBER).data().toString();
 
     if (roomId != "") {
         if (lastPressed&Qt::LeftButton) {

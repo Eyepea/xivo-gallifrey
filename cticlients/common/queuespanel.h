@@ -84,7 +84,7 @@ class QueueRow : public QWidget {
 
     public:
         QueueRow(const QueueInfo *info, QueuesPanel *xlet);
-        void update();
+        void updateRow();
         void updateSliceStat(const QString &stat, const QString &value);
         void updateLongestWaitWidget(int display, uint greenlevel, uint orangelevel);
         void updateBusyWidget();

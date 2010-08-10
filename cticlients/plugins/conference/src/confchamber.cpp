@@ -1,5 +1,13 @@
 #include "confchamber.h"
 
+enum ColOrder {
+    ID, ACTION_MUTE, ACTION_KICK, ACTION_TALK_TO,
+    ACTION_ALLOW_IN, ACTION_RECORD, ADMIN,
+    NUMBER, SINCE, NAME, NB_COL
+};
+
+static QVariant COL_TITLE[NB_COL];
+
 ConfChamberModel::ConfChamberModel(ConfTab *tab, QObject *parent, const QString &id)
     : QAbstractTableModel(parent), m_tab(tab), m_admin(0),
       m_authed(0), m_id(id), m_view(NULL)
@@ -9,6 +17,17 @@ ConfChamberModel::ConfChamberModel(ConfTab *tab, QObject *parent, const QString 
     extractRow2IdMap();
     startTimer(1000);
     timerEvent(NULL);
+
+    COL_TITLE[ID] = tr("ID");
+    COL_TITLE[NUMBER] = tr("Number");
+    COL_TITLE[NAME] = tr("Name");
+    COL_TITLE[SINCE] = tr("Since");
+    COL_TITLE[ADMIN] = tr("Admin");
+    COL_TITLE[ACTION_KICK] = tr("K");
+    COL_TITLE[ACTION_RECORD] = tr("R");
+    COL_TITLE[ACTION_ALLOW_IN] = tr("A");
+    COL_TITLE[ACTION_TALK_TO] = tr("T");
+    COL_TITLE[ACTION_MUTE] = tr("M");
 }
 
 void ConfChamberModel::timerEvent(QTimerEvent *)
@@ -38,17 +57,16 @@ void ConfChamberModel::updateView()
     int i;
     if (m_view) {
         if (m_admin) {
-            for(i=sizeof(actions)/sizeof(actions[0]);i--;) {
+            for(i=nelem(actions);i--;) {
                 m_view->showColumn(actions[i]);
             }
         } else {
-            for(i=sizeof(actions)/sizeof(actions[0]);i--;) {
+            for(i=nelem(actions);i--;) {
                 m_view->hideColumn(actions[i]);
             }
         }
     }
 }
-
 
 void ConfChamberModel::confRoomChange(const QString &path, DStoreEvent event)
 {
@@ -230,27 +248,7 @@ ConfChamberModel::headerData(int section,
         return QVariant();
     
     if (orientation == Qt::Horizontal) {
-        if (section == ID) {
-            return QVariant(tr("ID"));
-        } else if (section == NUMBER) {
-            return QVariant(tr("Number"));
-        } else if (section == NAME) {
-            return QVariant(tr("Name"));
-        } else if (section == SINCE) {
-            return QVariant(tr("Since"));
-        } else if (section == ADMIN) {
-            return QVariant(tr("Admin"));
-        } else if (section == ACTION_KICK) {
-            return "K";
-        } else if (section == ACTION_RECORD) {
-            return "R";
-        } else if (section == ACTION_ALLOW_IN) {
-            return "A";
-        } else if (section == ACTION_TALK_TO) {
-            return "T";
-        } else if (section == ACTION_MUTE) {
-            return "M";
-        }
+        return COL_TITLE[section];
     }
 
     return QVariant();
@@ -310,19 +308,19 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
     horizontalHeader()->setStretchLastSection(true);
 
 
-    int ActionCol[] = { ConfChamberModel::ACTION_MUTE,
-                        ConfChamberModel::ACTION_TALK_TO,
-                        ConfChamberModel::ACTION_RECORD,
-                        ConfChamberModel::ACTION_ALLOW_IN,
-                        ConfChamberModel::ACTION_KICK };
+    int ActionCol[] = { ACTION_MUTE,
+                        ACTION_TALK_TO,
+                        ACTION_RECORD,
+                        ACTION_ALLOW_IN,
+                        ACTION_KICK };
     int i;
-    for(i=0;i<(int)(sizeof(ActionCol)/sizeof(ActionCol[0]));i++) {
+    for(i=0;i<nelem(ActionCol);i++) {
         setColumnWidth(ActionCol[i], 24);
         horizontalHeader()->setResizeMode(ActionCol[i], QHeaderView::Fixed);
     }
 
-    setColumnWidth(ConfChamberModel::ADMIN, 60);
-    horizontalHeader()->setResizeMode(ConfChamberModel::ADMIN, QHeaderView::Fixed);
+    setColumnWidth(ADMIN, 60);
+    horizontalHeader()->setResizeMode(ADMIN, QHeaderView::Fixed);
     setStyleSheet("ConfListView {"
                       "border: none;"
                       "background:transparent;"
@@ -332,6 +330,28 @@ ConfChamberView::ConfChamberView(QWidget *parent, ConfChamberModel *model)
 
     connect(this, SIGNAL(clicked(const QModelIndex &)),
             this, SLOT(onViewClick(const QModelIndex &)));
+
+    QHeaderView *h = horizontalHeader();
+    connect(h, SIGNAL(sectionClicked(int)),
+            this, SLOT(sectionHeaderClicked(int)));
+}
+
+void ConfChamberView::sectionHeaderClicked(int index)
+{
+    int nonSortable[] = { ACTION_MUTE,
+                          ACTION_TALK_TO,
+                          ACTION_RECORD,
+                          ACTION_ALLOW_IN,
+                          ACTION_KICK };
+    int i;
+    for(i=0;i<nelem(nonSortable);i++) {
+        if (nonSortable[i] == index) {
+            setSortingEnabled(false);
+            return ;
+        }
+    }
+
+    setSortingEnabled(true);
 }
 
 void ConfChamberView::onViewClick(const QModelIndex &index)
@@ -339,7 +359,7 @@ void ConfChamberView::onViewClick(const QModelIndex &index)
     int row = index.row(), col = index.column();
 
     QString roomId = static_cast<ConfChamberModel*>(model())->id();
-    QString castId = model()->index(row, ConfChamberModel::ID).data().toString();
+    QString castId = model()->index(row, ID).data().toString();
 
     QString in = QString("confrooms/%0/in/%1/").arg(roomId).arg(castId);
 
@@ -349,24 +369,24 @@ void ConfChamberView::onViewClick(const QModelIndex &index)
     }
 
     switch (col) {
-        case ConfChamberModel::ACTION_MUTE:
+        case ACTION_MUTE:
             if (b_engine->eV(in + "mute").toBool()) {
                 b_engine->meetmeAction("unmute", castId + " " + roomId);
             } else {
                 b_engine->meetmeAction("mute", castId + " " + roomId);
             }
             break;
-        case ConfChamberModel::ACTION_KICK:
+        case ACTION_KICK:
             if (!b_engine->eV(in + "authed").toBool()) {
                 b_engine->meetmeAction("MeetmeKick", castId + " " + roomId);
             } else {
                 b_engine->meetmeAction("kick", castId + " " + roomId);
             }
             break;
-        case ConfChamberModel::ACTION_TALK_TO:
+        case ACTION_TALK_TO:
             b_engine->meetmeAction("MeetmeTalk", castId + " " + roomId);
             break;
-        case ConfChamberModel::ACTION_RECORD:
+        case ACTION_RECORD:
             {
             int status = !b_engine->eV(in + "recorded").toBool();
             b_engine->tree()->populate(in + "recorded", status);
@@ -376,7 +396,7 @@ void ConfChamberView::onViewClick(const QModelIndex &index)
                                              ( status ? "stop" : "start"));
             }
             break;
-        case ConfChamberModel::ACTION_ALLOW_IN:
+        case ACTION_ALLOW_IN:
             b_engine->meetmeAction("MeetmeAccept", castId + " " + roomId);
             break;
         default:
@@ -404,6 +424,7 @@ ConfChamber::ConfChamber(ConfTab *tab, const QString &id)
         b_engine->eV(QString("confrooms/%0/name").arg(id)).toString() + " (" +
         b_engine->eV(QString("confrooms/%0/number").arg(id)).toString() + ") "
     );
+    setProperty("id", id);
 
     roomPause->setProperty("state", true);
     hBox->addStretch(1);

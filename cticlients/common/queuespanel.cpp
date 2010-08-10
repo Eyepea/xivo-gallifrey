@@ -239,7 +239,7 @@ void QueuesPanel::newQueueList(const QStringList &qsl)
                 m_layout->addWidget(m_queueList[queueId]);
                 updateLongestWaitWidgets();
             } else {
-                m_queueList.value(queueId)->update();
+                m_queueList.value(queueId)->updateRow();
             }
         }
     }
@@ -559,7 +559,7 @@ QueueRow::QueueRow(const QueueInfo *qInfo, QueuesPanel *parent)
     m_layout->setColumnStretch(col, 1);
 
     setMaximumHeight(30);
-    update();
+    updateRow();
 }
 
 void QueueRow::setLayoutColumnWidth(QGridLayout *layout, int nbStat)
@@ -661,7 +661,7 @@ void QueueRow::updateLongestWaitWidget(int display, uint greenlevel, uint orange
     }
 }
 
-void QueueRow::update()
+void QueueRow::updateRow()
 {
     QVariantMap queueStats = qinfo->properties()["queuestats"].toMap();
     QString queueName = qinfo->queueName();
@@ -724,7 +724,7 @@ void QueueRow::update()
     foreach (QString agentname, queueagents.keys()) {
         QVariantMap qaprops = queueagents[agentname].toMap();
         if ((qaprops["Status"].toString() == "3") || (qaprops["Status"].toString() == "1")) {
-            nagents ++;
+            nagents++;
         }
     }
     if (m_infoList.contains("Xivo-Conn"))
@@ -735,12 +735,13 @@ void QueueRow::update()
     foreach (QString agentname, queueagents.keys()) {
         QVariantMap qaprops = queueagents[agentname].toMap();
         if ((qaprops["Status"].toString() == "3") && (qaprops["Paused"].toString() == "0")) {
-            nagents ++;
+            nagents++;
         }
     }
 
-    if (m_infoList.contains("Xivo-Talking"))
+    if (m_infoList.contains("Xivo-Talking")) {
         m_infoList["Xivo-Talking"]->setText(QString::number(nagents));
+    }
 
     QVariantMap properties = qinfo->properties();
     QVariantMap channel_list = properties["channels"].toMap();
@@ -765,8 +766,6 @@ void QueueRow::update()
 
     updateName();
     updateBusyWidget();
-
-
 }
 
 void QueueRow::updateName()
@@ -855,11 +854,9 @@ QWidget* QueueRow::makeTitleRow(QueuesPanel *parent)
                "(Number of calls answered) (%)") }
     };
 
-#undef nelem
-#define nelem(x)    (sizeof (x)/sizeof (x)[0])
     int i;
     if (statItems.empty()) {
-        for (i=0;(uint)i<nelem(stats_detail);i++) {
+        for (i=0;i<nelem(stats_detail);i++) {
             statItems << stats_detail[i].hashname;
         }
 
@@ -906,7 +903,7 @@ QWidget* QueueRow::makeTitleRow(QueuesPanel *parent)
     layout->addWidget(label, 1, col++);
 
     QString detailCss = "QLabel { background-color:#666; }";
-    for (i=0;(uint)i<nelem(stats_detail);i++) {
+    for (i=0;i<nelem(stats_detail);i++) {
         label = new QLabel(row);
         label->setText(stats_detail[i].name);
         label->setAlignment(Qt::AlignCenter);

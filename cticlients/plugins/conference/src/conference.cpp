@@ -12,13 +12,11 @@ void ConfTab::closeTab(const QString &id)
     int index;
 
     if (id.isNull()) {
-        index = sender()->property("index").toInt();
-    } else {
-        index = m_id2index.value(id);
+        QWidget *tab;
+        tab = sender()->property("index").value<QWidget*>();
+        index = indexOf(tab);
+        removeTab(index);
     }
-
-    m_id2index.remove(m_id2index.key(index));
-    removeTab(index);
 }
 
 int ConfTab::addClosableTab(QWidget *w, const QString &title)
@@ -29,7 +27,7 @@ int ConfTab::addClosableTab(QWidget *w, const QString &title)
     p->setFlat(true);
     p->setMaximumSize(12, 20);
     p->setFocusPolicy(Qt::NoFocus);
-    p->setProperty("index", index);
+    p->setProperty("index", qVariantFromValue(w));
     connect(p, SIGNAL(clicked()), this, SLOT(closeTab()));
     tabBar()->setTabButton(index, QTabBar::RightSide, p);
     return index;
@@ -37,24 +35,34 @@ int ConfTab::addClosableTab(QWidget *w, const QString &title)
 
 void ConfTab::showConfRoom(const QString &id, bool force)
 {
-    if (!m_id2index.contains(id)) {
+    int index;
+    if ((index = indexOf(id)) == -1) {
         if ((!force) && 
             (b_engine->eVM(QString("confrooms/%0/in").arg(id)).size() == 0)) {
             return ;
         }
 
-        QString roomName = b_engine->eV(
-                                QString("confrooms/%0/name").arg(id)).toString();
-        QString roomNumber = b_engine->eV(
-                                QString("confrooms/%0/number").arg(id)).toString();
+        QString roomName = \
+            b_engine->eV(QString("confrooms/%0/name").arg(id)).toString();
+        QString roomNumber = \
+            b_engine->eV(QString("confrooms/%0/number").arg(id)).toString();
 
-        int index = \
-            addClosableTab(new ConfChamber(this, id),
-                           QString("%0 (%1)").arg(roomName).arg(roomNumber));
-
-        m_id2index.insert(id, index);
+        index = addClosableTab(new ConfChamber(this, id),
+                               QString("%0 (%1)").arg(roomName).arg(roomNumber));
     }
-    setCurrentIndex(m_id2index.value(id));
+    setCurrentIndex(index);
+}
+
+int ConfTab::indexOf(const QString &id)
+{
+    int i, e;
+    for(i=1,
+        e=count();i<e;i++) {
+        if (widget(i)->property("id").toString() == id) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 XLet* XLetConferencePlugin::newXLetInstance(QWidget *parent)

@@ -73,125 +73,119 @@ class XLetFactory;
 class MainWidget : public QMainWindow
 {
     Q_OBJECT
-public:
-    //! Constructor
-    MainWidget(BaseEngine *,
-               QWidget * parent=0);
-    //! Destructor
-    virtual ~MainWidget();
 
-    void setAppearance(const QStringList &);        //!< dock options
-    void clearAppearance();
-public slots:
-    void dispurl(const QUrl &url);
-    void customerInfoPopup(const QString &,
-                           const QHash<QString, QString> &,
-                           const QString &);
-    void setSystrayIcon(const QString &);
-private slots:
+    public:
+        MainWidget(BaseEngine *);
+        ~MainWidget();
+
+        void setAppearance(const QStringList &);  //!< dock options
+        void clearAppearance();
+    public slots:
+        void dispurl(const QUrl &url);
+        void customerInfoPopup(const QString &, const QHash<QString, QString> &, const QString &);
+        void setSystrayIcon(const QString &);
+    private slots:
 #ifndef Q_WS_WIN
-    void clipselection();
-    void clipdata();
+        void clipselection();
+        void clipdata();
 #endif
-    void showConfDialog();
-    void showLogin();
-    void hideLogin();
-    void engineStopped();
-    void engineStarted();
-    void systrayActivated(QSystemTrayIcon::ActivationReason);
-    void systrayMsgClicked();
-    void checksAvailState();
-    void about();
-    void showCredits();
-    void config_and_start();
-    void logintextChanged(const QString &);
-    void loginKindChanged(int);
-    void confUpdated();
-    void updatePresence(const QVariant &);
-    void showMessageBox(const QString &);
-    void showWidgetOnTop(QWidget *);
-signals:
-    void functionKeyPressed(int);
-    void pasteToDialPanel(const QString &);
-protected:
-    void showEvent(QShowEvent *);        //!< Catch show events
-    void hideEvent(QHideEvent *);        //!< Catch hide events
-    void closeEvent(QCloseEvent *);
-    void changeEvent(QEvent *);
-    void keyPressEvent(QKeyEvent *);
-    void addPanel(const QString &, const QString &, QWidget *);
-    void removePanel(const QString &, QWidget *);
-private:
-    void createActions();        //!< Create Actions (for menus)
-    void createMenus();                //!< Create Menus
-    void createSystrayIcon();        //!< Create the systray Icon and its menu
-    void savePositions() const;
-    void updateAppliName();
-    void clearPresence();
-        
-    BaseEngine * m_engine;        //!< Engine
-    QSystemTrayIcon * m_systrayIcon;        //!< System Tray Icon
-    QIcon m_icon_transp;        //!< Icon Objects
-    QIcon m_icon_red;
-    QIcon m_icon_green;
-    QIcon m_icon_black;
-    QStackedWidget * m_central_widget; //!< central widget
-    QWidget * m_wid;        //!< "Main" Widget
-    QWidget * m_login_widget;   //!< Central Widget for login
-    QGridLayout * m_login_layout;   //!< layout for login widget
-        
-    // Widgets for Xlets
-    QTabWidget * m_tabwidget;        //!< Area to display messages, services and histories
-    //QHash<QString, XLet *> m_xlet;
-    QSet<XLet *> m_xletlist;
+        void showConfDialog();
+        void showLogin();
+        void hideLogin();
+        void engineStopped();
+        void engineStarted();
+        void systrayActivated(QSystemTrayIcon::ActivationReason);
+        void systrayMsgClicked();
+        void checksAvailState();
+        void about();
+        void showCredits();
+        void config_and_start();
+        void logintextChanged(const QString &);
+        void loginKindChanged(int);
+        void confUpdated();
+        void updatePresence(const QVariant &);
+        void showMessageBox(const QString &);
+        void showWidgetOnTop(QWidget *);
+    signals:
+        void functionKeyPressed(int);
+        void pasteToDialPanel(const QString &);
+    protected:
+        void showEvent(QShowEvent *);  //!< Catch show events
+        void hideEvent(QHideEvent *);  //!< Catch hide events
+        void closeEvent(QCloseEvent *);
+        void changeEvent(QEvent *);
+        void keyPressEvent(QKeyEvent *);
+        void addPanel(const QString &, const QString &, QWidget *);
+        void removePanel(const QString &, QWidget *);
+    private:
+        void createActions();  //!< Create Actions (for menus)
+        void createMenus();  //!< Create Menus
+        void createSystrayIcon();  //!< Create the systray Icon and its menu
+        void savePositions() const;
+        void updateAppliName();
+        void clearPresence();
 
-    QLabel * m_xivobg;
+        QSystemTrayIcon *m_systrayIcon;  //!< System Tray Icon
+        QIcon m_icon_transp;  //!< Icon Objects
+        QIcon m_icon_red;
+        QIcon m_icon_green;
+        QIcon m_icon_black;
+        QStackedWidget *m_central_widget;  //!< central widget
+        QWidget *m_wid;  //!< "Main" Widget
+        QWidget *m_login_widget;  //!< Central Widget for login
+        QGridLayout *m_login_layout;  //!< layout for login widget
 
-    bool m_presence;
+        // Widgets for Xlets
+        QTabWidget *m_tabwidget;        //!< Area to display messages, services and histories
+        QSet<XLet *> m_xletlist;
 
-    QString m_appliname;
-    QHash<QString, QString> m_dockoptions;
-    QStringList m_docknames;
-    QStringList m_gridnames;
-    QStringList m_tabnames;
-    QStringList m_allnames;
+        QLabel *m_xivobg;
 
-    bool m_withsystray;
+        bool m_presence;
 
-    QHash<QString, QDockWidget *> m_docks;
+        QString m_appliname;
+        QHash<QString, QString> m_dockoptions;
+        QStringList m_docknames;
+        QStringList m_gridnames;
+        QStringList m_tabnames;
+        QStringList m_allnames;
 
-    // actions :
-    QAction * m_cfgact;                //!< Configuration Action
-    QAction * m_quitact;                //!< Quit Action
-    QAction * m_connectact;                //!< "Connect" Action
-    QAction * m_disconnectact;        //!< "Disconnect" Action
-    QAction * m_systraymin;                //!< "Go to systray" action
-    QAction * m_systraymax;                //!< "Go to systray" action
-    QActionGroup * m_availgrp;        //!< Availability action group
+        bool m_withsystray;
 
-    QGridLayout * m_gridlayout;
-    QLabel * m_lab1;
-    QLabel * m_lab2;
-    QLabel * m_lab3;
-    QLineEdit * m_qlab1;
-    QLineEdit * m_qlab2;
-    QLineEdit * m_qlab3;
-    QPushButton * m_ack;
-    QCheckBox * m_kpass;
-    QComboBox * m_loginkind;
+        QHash<QString, QDockWidget *> m_docks;
 
-    QMenu * m_avail;                //!< Availability submenu
-    QHash<QString, QAction *> m_avact;        //!< Actions
-    QLabel * m_status;        //!< status indicator
+        // actions :
+        QAction *m_cfgact;  //!< Configuration Action
+        QAction *m_quitact;  //!< Quit Action
+        QAction *m_connectact;  //!< "Connect" Action
+        QAction *m_disconnectact;  //!< "Disconnect" Action
+        QAction *m_systraymin;  //!< "Go to systray" action
+        QAction *m_systraymax;  //!< "Go to systray" action
+        QActionGroup *m_availgrp;  //!< Availability action group
 
-    QMenu * m_filemenu;
-    QMenu * m_helpmenu;
+        QGridLayout *m_gridlayout;
+        QLabel *m_lab1;
+        QLabel *m_lab2;
+        QLabel *m_lab3;
+        QLineEdit *m_qlab1;
+        QLineEdit *m_qlab2;
+        QLineEdit *m_qlab3;
+        QPushButton *m_ack;
+        QCheckBox *m_kpass;
+        QComboBox *m_loginkind;
 
-    QDateTime m_launchDateTime;
-    QSettings * m_settings;
+        QMenu *m_avail;  //!< Availability submenu
+        QHash<QString, QAction *>m_avact;  //!< Actions
+        QLabel *m_status;  //!< status indicator
 
-    QClipboard * m_clipboard;
-    XLetFactory * m_xletfactory;
+        QMenu *m_filemenu;
+        QMenu *m_helpmenu;
+
+        QDateTime m_launchDateTime;
+        QSettings *m_settings;
+
+        QClipboard *m_clipboard;
+        XLetFactory *m_xletfactory;
 };
 
 #endif

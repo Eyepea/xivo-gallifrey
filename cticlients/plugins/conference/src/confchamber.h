@@ -24,11 +24,6 @@ class ConfChamberModel : public QAbstractTableModel
 
     public:
         ConfChamberModel(ConfTab *t, QObject *parent, const QString &);
-        enum ColOrder {
-            ID, ACTION_MUTE, ACTION_KICK, ACTION_TALK_TO,
-            ACTION_ALLOW_IN, ACTION_RECORD, ADMIN,
-            NUMBER, SINCE, NAME, NB_COL
-        };
         void setView(ConfChamberView *m_view);
         QString id() const;
         QString row2participantId(int) const;
@@ -45,7 +40,7 @@ class ConfChamberModel : public QAbstractTableModel
         int rowCount(const QModelIndex&) const;
         int columnCount(const QModelIndex&) const;
         QVariant data(const QModelIndex&, int) const;
-        QVariant headerData(int , Qt::Orientation, int) const;
+        QVariant headerData(int, Qt::Orientation, int) const;
         Qt::ItemFlags flags(const QModelIndex &) const;
         ConfTab *m_tab;
         bool m_admin;
@@ -64,6 +59,7 @@ class ConfChamberView : public QTableView
         ConfChamberView(QWidget *parent, ConfChamberModel *model);
     private slots:
         void onViewClick(const QModelIndex &);
+        void sectionHeaderClicked(int);
     protected:
         virtual void mousePressEvent(QMouseEvent *event);
     private:

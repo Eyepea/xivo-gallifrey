@@ -126,9 +126,9 @@ XLetFactory::XLetFactory(QObject *parent)
     }
 #endif
 
-    uint i;
+    int i;
     // populate the m_xlets hash table
-    for(i=0;i<(sizeof(xlets)/sizeof(xlets[0]));i++) {
+    for(i=0;i<nelem(xlets);i++) {
         m_xlets.insert(QString(xlets[i].name),xlets[i].construct);
     }
 }
@@ -156,7 +156,7 @@ XLet* XLetFactory::newXLet(const QString &id, QWidget *topwindow) const
         QString fileName = "lib" + id + "plugin.so";
 #endif
 #ifdef Q_WS_MAC
-        QString fileName = "lib" + id + "plugin.dylib"; // TODO : check for correctness
+        QString fileName = "lib" + id + "plugin.dylib";
 #endif
         qDebug() << "Trying to load plugin" << fileName << m_pluginsDir.absoluteFilePath(fileName);
         QPluginLoader pluginLoader(m_pluginsDir.absoluteFilePath(fileName));

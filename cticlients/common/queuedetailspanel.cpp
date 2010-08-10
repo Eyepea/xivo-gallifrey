@@ -211,16 +211,12 @@ void QueuedetailsPanel::updatePanel()
         }
 }
 
-/*! \brief 
- */
 void QueuedetailsPanel::setAgentLookProps(const QString & agentid)
 {
     m_agent_more[agentid]->setIconSize(QSize(10, 10));
     m_agent_more[agentid]->setIcon(QIcon(":/images/add.png"));
 }
 
-/*! \brief 
- */
 void QueuedetailsPanel::setAgentProps(const QString & agentid, const AgentInfo * ainfo)
 {
     m_agent_labels[agentid]->setText(QString("%1 (%2)").arg(ainfo->fullname()).arg(ainfo->agentNumber()));
@@ -297,13 +293,13 @@ void QueuedetailsPanel::fillAgent(int ii, const QString & agentid)
 {
     int m_linenum = 3;
     int colnum = 0;
-    m_gridlayout->addWidget( m_agent_labels[agentid], ii + m_linenum, colnum++, Qt::AlignLeft );
-    m_gridlayout->addWidget( m_agent_more[agentid], ii + m_linenum, colnum++, Qt::AlignCenter );
-    m_gridlayout->addWidget( m_agent_join_status[agentid], ii + m_linenum, colnum++, Qt::AlignLeft );
-    m_gridlayout->addWidget( m_agent_pause_status[agentid], ii + m_linenum, colnum++, Qt::AlignLeft );
-    m_gridlayout->addWidget( m_agent_callstaken[agentid], ii + m_linenum, colnum++, Qt::AlignRight );
-    m_gridlayout->addWidget( m_agent_lastcall[agentid], ii + m_linenum, colnum++, Qt::AlignRight );
-    m_gridlayout->addWidget( m_agent_penalty[agentid], ii + m_linenum, colnum++, Qt::AlignRight );
+    m_gridlayout->addWidget(m_agent_labels[agentid], ii + m_linenum, colnum++, Qt::AlignLeft);
+    m_gridlayout->addWidget(m_agent_more[agentid], ii + m_linenum, colnum++, Qt::AlignCenter);
+    m_gridlayout->addWidget(m_agent_join_status[agentid], ii + m_linenum, colnum++, Qt::AlignLeft);
+    m_gridlayout->addWidget(m_agent_pause_status[agentid], ii + m_linenum, colnum++, Qt::AlignLeft);
+    m_gridlayout->addWidget(m_agent_callstaken[agentid], ii + m_linenum, colnum++, Qt::AlignRight);
+    m_gridlayout->addWidget(m_agent_lastcall[agentid], ii + m_linenum, colnum++, Qt::AlignRight);
+    m_gridlayout->addWidget(m_agent_penalty[agentid], ii + m_linenum, colnum++, Qt::AlignRight);
 }
 
 /*! \brief 
