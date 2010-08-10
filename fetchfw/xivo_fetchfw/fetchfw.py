@@ -41,6 +41,7 @@ from xivo_fetchfw import brands as brand_modules
 CONFIG_FILE = '/etc/pf-xivo/fetchfw.conf'
 CONFIG_SECTION_GENERAL = 'general'
 CONFIG_SECTION_CISCO = 'cisco'
+CONFIG_SECTION_ZENITEL = 'zenitel'
 
 TFTP_PATH = None            # modified by _init()
 KFW_PATH = None             # modified by _init()
@@ -63,6 +64,8 @@ BRANDS = {}
 
 # (name -> object) dictionary.
 FIRMWARES = {}
+
+OPENER = urllib2.build_opener()
 
 
 class RemoteFile(object):
@@ -88,12 +91,7 @@ class RemoteFile(object):
 
     def open_src(self):
         """ Returns a file-like object on the original source. """
-        
-        if PROXY_URL:
-            thisproxy = urllib2.ProxyHandler({"http" : PROXY_URL})
-            opener = urllib2.build_opener(thisproxy)
-            return opener.open(self.url)
-        return urllib2.urlopen(self.url)
+        return OPENER.open(self.url)
     
     def fetch(self):
         """
@@ -415,11 +413,23 @@ def _init():
     FIRMWARES_DB_PATH = config.get(CONFIG_SECTION_GENERAL, 'firmwares_db_path')
     if config.has_option(CONFIG_SECTION_GENERAL, 'proxy_url'):
         PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'proxy_url')
+        OPENER.add_handler(urllib2.ProxyHandler({"http" : PROXY_URL}))
 
-    if config.has_option(CONFIG_SECTION_CISCO, 'username'):
+    if config.has_option(CONFIG_SECTION_CISCO, 'username') and \
+       config.has_option(CONFIG_SECTION_CISCO, 'password'):
         CISCO_USER = config.get(CONFIG_SECTION_CISCO, 'username')
         CISCO_PASS = config.get(CONFIG_SECTION_CISCO, 'password')
 
+    if config.has_option(CONFIG_SECTION_ZENITEL, 'username') and \
+       config.has_option(CONFIG_SECTION_ZENITEL, 'password'):
+        pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
+        pwd_manager.add_password(None,
+                                 'https://alphasupport.zenitel.com/alphawiki/',
+                                 config.get(CONFIG_SECTION_ZENITEL, 'username'),
+                                 config.get(CONFIG_SECTION_ZENITEL, 'password'))
+        basic_auth = urllib2.HTTPBasicAuthHandler(pwd_manager)
+        OPENER.add_handler(basic_auth)
+    
     makedirs(TMP_PATH)
 
 

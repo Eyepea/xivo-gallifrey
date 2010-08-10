@@ -988,7 +988,7 @@ size: 6644890
 sha1sum: 66be3d5003f56d94ce4ea809929d91777873d6a1
 
 # SIP Vandal Resistant Substation
-[zenitel_sipst]
+[zenitel_ipst]
 brand: Zenitel
 model: SIP Vandal Resistant Substation
 version: 01.10.3.4

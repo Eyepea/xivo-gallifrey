@@ -20,6 +20,7 @@ __license__ = """
 """
 
 import optparse
+import urllib2
 from xivo_fetchfw import fetchfw
 
 fetchfw.load()
@@ -56,6 +57,8 @@ def install_firmware(fw_name):
         fetchfw.die("Invalid cisco.com credentials: see %s" % fetchfw.CONFIG_FILE)
     except fetchfw.WeakCiscoCredentialsError:
         fetchfw.die("Your cisco.com credentials doesn't give you access to this software")
+    except urllib2.HTTPError, e:
+        fetchfw.die(str(e) + ". See %s" % fetchfw.CONFIG_FILE)
 
 parser = optparse.OptionParser()
 parser.add_option("-s", action = "store_true", dest = "search",
