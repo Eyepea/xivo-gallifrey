@@ -43,7 +43,8 @@ class Ha(jsoncore.JsonCore):
             safe_init=self.safe_init)
         http_json_server.register(self.status   , CMD_R , name='ha_status')
         http_json_server.register(self.apply    , CMD_R , name='ha_apply')
-        
+        http_json_server.register(self.stop     , CMD_R , name='ha_stop')
+
     def safe_init(self, options):
         super(Ha, self).safe_init(options)
         
@@ -82,6 +83,28 @@ class Ha(jsoncore.JsonCore):
         self.log.debug('** apply HA changes **')
         out = ["** apply HA changes **"]
         
+        """
+            case #1: HA not starter (ha_master_uname == '')
+              we cannot stand if we have another HA node
+              : HA configuration is applied
+
+            case #2: we are not master node
+              : configuration not applied
+
+            case #3: slave nodes are not stopped
+              : configuration not applied
+        """
+
+        master = ocf.ha_node_uname(ocf.ha_uuid())
+        if ocf.ha_master_uname() is not None and master != ocf.ha_master_uname():
+            out.append('Changes not applied: current node MUST be master node')
+            raise HttpReqError(500, "can't apply ha changes")
+
+        for slave in ocf.ha_nodes_uname_except(master):
+            if ocf.ha_node_status(slave) == 'active':
+                out.append('Changes not applied: slave node \'%s\' is active' % slave)
+                raise HttpReqError(500, "can't apply ha changes")
+
         try:
             #1. stop heartbeat
             self._exec('stopping heartbeat', ['/etc/init.d/heartbeat', 'stop'], out)
@@ -131,7 +154,20 @@ class Ha(jsoncore.JsonCore):
             raise HttpReqError(500, "can't apply ha changes")
 
         return "\n".join(out)
+
+    def stop(self, args, options):
+        out = ["** stopping HA **"]
+        self.log.debug(out[0])
         
+        try:
+            #1. stop heartbeat
+            self._exec('stopping heartbeat', ['/etc/init.d/heartbeat', 'stop'], out)
+        except OSError, e:
+            traceback.print_exc()
+            raise HttpReqError(500, "Can't stop ha")
+
+        return "\n".join(out)
+
     def status(self, args, options):
         master = ocf.ha_master_uname()
         myself = ocf.ha_node_uname(ocf.ha_uuid())

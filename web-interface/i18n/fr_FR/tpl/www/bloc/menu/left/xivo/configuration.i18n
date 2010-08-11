@@ -64,8 +64,14 @@ Appliquer les modifications système
 ; mn_left_controlsystem-ha
 Appliquer la configuration HA
 
+; mn_left_controlsystem-ha_stop
+Arrêter la HA
+
 ; controlsystem_commonconf_confirm
 Êtes-vous sûr de vouloir appliquer les modifications ?
 
 ; controlsystem_ha_confirm
 Êtes-vous sûr de vouloir appliquer la configuration HA ?
+
+; controlsystem_ha_stop_confirm
+Êtes-vous sûr de vouloir arrêter la HA ?

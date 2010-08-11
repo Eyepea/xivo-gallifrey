@@ -118,6 +118,15 @@ $dhtml = &$this->get_module('dhtml');
 						       '\'));"'
 			    );?>
 			</dd>
+			<dd id="mn-controlsystem--ha_stop">
+				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha_stop'),
+						   'xivo/configuration/controlsystem/ha_stop',
+						   null,
+						   'onclick="return(confirm(\''.
+						       $dhtml->escape($this->bbf('controlsystem_ha_stop_confirm')).
+						       '\'));"'
+			    );?>
+			</dd>
 			<dd id="mn-controlsystem--ha">
 				<?=$url->href_html($this->bbf('mn_left_controlsystem-ha'),
 						   'xivo/configuration/controlsystem/ha',

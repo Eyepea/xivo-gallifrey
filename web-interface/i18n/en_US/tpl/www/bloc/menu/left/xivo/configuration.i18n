@@ -64,8 +64,14 @@ Reload Config
 ; mn_left_controlsystem-ha 
 Reload HA
 
+; mn_left_controlsystem-ha_stop
+Stop HA
+
 ; controlsystem_commonconf_confirm
 Are you sure you want to apply the changes ?
 
 ; controlsystem_ha_confirm
 Are you sure you want to apply the HA configuration ?
+
+; controlsystem_ha_stop_confirm
+Are you sure you want to stop HA ?
