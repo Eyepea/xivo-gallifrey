@@ -41,6 +41,7 @@
 #include <QSettings>
 #include <QSystemTrayIcon>
 #include <QWidget>
+#include <QResizeEvent>
 
 #include "xlet.h"
 #include "directorypanel.h"
@@ -75,7 +76,7 @@ class MainWidget : public QMainWindow
     Q_OBJECT
 
     public:
-        MainWidget(BaseEngine *);
+        MainWidget();
         ~MainWidget();
 
         void setAppearance(const QStringList &);  //!< dock options
@@ -108,13 +109,12 @@ class MainWidget : public QMainWindow
         void showWidgetOnTop(QWidget *);
     signals:
         void functionKeyPressed(int);
-        void pasteToDialPanel(const QString &);
     protected:
-        void showEvent(QShowEvent *);  //!< Catch show events
-        void hideEvent(QHideEvent *);  //!< Catch hide events
-        void closeEvent(QCloseEvent *);
-        void changeEvent(QEvent *);
-        void keyPressEvent(QKeyEvent *);
+        virtual void hideEvent(QHideEvent *);  //!< Catch hide events
+        virtual void closeEvent(QCloseEvent *);
+        virtual void resizeEvent(QResizeEvent *);
+        virtual void keyPressEvent(QKeyEvent *);
+
         void addPanel(const QString &, const QString &, QWidget *);
         void removePanel(const QString &, QWidget *);
     private:
@@ -130,7 +130,17 @@ class MainWidget : public QMainWindow
         QIcon m_icon_red;
         QIcon m_icon_green;
         QIcon m_icon_black;
-        QStackedWidget *m_central_widget;  //!< central widget
+        QPixmap m_pixmap_disconnected;
+        QPixmap m_pixmap_connected;
+        QString m_appliname;
+        bool m_withsystray;
+        QSettings *m_settings;
+        XLetFactory *m_xletfactory;
+
+        QLabel *m_status;  //!< status indicator
+        QStackedWidget *m_centralWidget;  //!< central widget
+        QDockWidget *m_resizingHelper;
+
         QWidget *m_wid;  //!< "Main" Widget
         QWidget *m_login_widget;  //!< Central Widget for login
         QGridLayout *m_login_layout;  //!< layout for login widget
@@ -143,14 +153,12 @@ class MainWidget : public QMainWindow
 
         bool m_presence;
 
-        QString m_appliname;
         QHash<QString, QString> m_dockoptions;
         QStringList m_docknames;
         QStringList m_gridnames;
         QStringList m_tabnames;
         QStringList m_allnames;
 
-        bool m_withsystray;
 
         QHash<QString, QDockWidget *> m_docks;
 
@@ -176,16 +184,13 @@ class MainWidget : public QMainWindow
 
         QMenu *m_avail;  //!< Availability submenu
         QHash<QString, QAction *>m_avact;  //!< Actions
-        QLabel *m_status;  //!< status indicator
 
         QMenu *m_filemenu;
         QMenu *m_helpmenu;
 
         QDateTime m_launchDateTime;
-        QSettings *m_settings;
 
         QClipboard *m_clipboard;
-        XLetFactory *m_xletfactory;
 };
 
 #endif

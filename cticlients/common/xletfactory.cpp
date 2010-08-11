@@ -68,9 +68,9 @@ XLet* newXLet(QWidget *parent)
     return new T(parent);
 }
 
-/*! \brief list of XLets */
+/*! \brief list of built-in XLets */
 static const struct {
-    const char * name;
+    const char *name;
     const newXLetProto construct;
 } xlets[] = {
     { "history"           ,newXLet<LogWidget>              },
@@ -107,7 +107,7 @@ XLetFactory::XLetFactory(QObject *parent)
       m_pluginsDirFound(false)
 {
 #ifndef Q_WS_MAC
-    if(m_pluginsDir.cd("plugins")) {
+    if (m_pluginsDir.cd("plugins")) {
         // if there is a plugins dir next to where, the application remain
         m_pluginsDirFound = true;
     } else {
@@ -128,7 +128,7 @@ XLetFactory::XLetFactory(QObject *parent)
 
     int i;
     // populate the m_xlets hash table
-    for(i=0;i<nelem(xlets);i++) {
+    for (i=0;i<nelem(xlets);i++) {
         m_xlets.insert(QString(xlets[i].name),xlets[i].construct);
     }
 }
@@ -146,9 +146,9 @@ XLet* XLetFactory::newXLet(const QString &id, QWidget *topwindow) const
 {
     XLet *xlet = 0;
     newXLetProto construct = m_xlets.value(id);
-    if(construct) {
+    if (construct) {
         xlet = construct(topwindow);
-    } else if(m_pluginsDirFound) {
+    } else if (m_pluginsDirFound) {
 #ifdef Q_WS_WIN
         QString fileName = id + "plugin.dll";
 #endif
@@ -164,7 +164,7 @@ XLet* XLetFactory::newXLet(const QString &id, QWidget *topwindow) const
 
         if (plugin) {
             XLetInterface *xleti = qobject_cast<XLetInterface *>(plugin);
-            if(xleti) {
+            if (xleti) {
                 xlet = xleti->newXLetInstance(topwindow);
             } else {
                 qDebug() << "failed to cast plugin loaded to XLetInterface";

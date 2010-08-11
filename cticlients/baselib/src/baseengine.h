@@ -225,7 +225,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
         void delogged();  //!< signal emitted when the state becomes ENotLogged
         void availAllowChanged(bool);            //!< signal
         void emitTextMessage(const QString &);   //!< message to be displayed to the user.
-        void pasteToDialPanel(const QString &);  //!< send the number to the dial panel
+        void pasteToDialPanel(const QString &);  //!< the dial panel intercept this signal if he exist
         void parkingEvent(const QString &,
                           const QString &,
                           const QString &,

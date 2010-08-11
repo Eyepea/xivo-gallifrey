@@ -63,34 +63,35 @@
 #include "xivoconsts.h"
 #include "xletfactory.h"
 
-const QString extraspace("  ");
-
 /*! \brief Constructor
  *
  * Construct the Widget with all subwidgets.
  * The geometry is restored from settings.
  * engine object ownership is taken
  */
-MainWidget::MainWidget(BaseEngine *engine)
+MainWidget::MainWidget()
     : QMainWindow(NULL),
       m_systrayIcon(0),
       m_icon_transp(":/images/xivo-login.png"),
       m_icon_red(":/images/xivoicon-red.png"),
       m_icon_green(":/images/xivoicon-green.png"),
-      m_icon_black(":/images/xivoicon-black.png")
+      m_icon_black(":/images/xivoicon-black.png"),
+      m_pixmap_disconnected(QPixmap(":/images/disconnected.png")
+                            .scaledToHeight(18, Qt::SmoothTransformation)),
+      m_pixmap_connected(QPixmap(":/images/connected.png")
+                         .scaledToHeight(18, Qt::SmoothTransformation)),
+      m_appliname("Client"),
+      m_withsystray(true),
+      m_settings(b_engine->getSettings()),
+      m_xletfactory(new XLetFactory(this)),
+      m_status(new QLabel(this)),
+      m_centralWidget(new QStackedWidget(this)),
+      m_resizingHelper(0)
 {
-    m_xletfactory = new XLetFactory(this);
     b_engine->setParent(this); // take ownership of the engine object
-    m_appliname = "Client";
-    m_withsystray = true;
-    
-    m_settings = b_engine->getSettings();
-    QPixmap redsquare(":/images/disconnected.png");
-    statusBar();        // This creates the status bar.
-    m_status = new QLabel(this);
-    m_status->setPixmap(redsquare);
+    m_status->setPixmap(m_pixmap_disconnected);
+
     statusBar()->addPermanentWidget(m_status);
-    statusBar()->clearMessage();
     
     setWindowTitle(QString("XiVO %1").arg(m_appliname));
     setDockOptions(QMainWindow::AllowNestedDocks);
@@ -98,6 +99,7 @@ MainWidget::MainWidget(BaseEngine *engine)
     
     createActions();
     createMenus();
+
     if (m_withsystray && QSystemTrayIcon::isSystemTrayAvailable())
         createSystrayIcon();
     
@@ -123,24 +125,24 @@ MainWidget::MainWidget(BaseEngine *engine)
     resize(500, 440);
     restoreGeometry(m_settings->value("display/mainwingeometry").toByteArray());
     
-    m_central_widget = new QStackedWidget(this);
-    setCentralWidget(m_central_widget);
+    setCentralWidget(m_centralWidget);
     
-    m_wid = new QWidget(m_central_widget);
-    m_central_widget->addWidget(m_wid);
+    m_wid = new QWidget(m_centralWidget);
+    m_centralWidget->addWidget(m_wid);
     m_gridlayout = new QGridLayout(m_wid);
     
-    m_login_widget = new QWidget(m_central_widget);
+    m_login_widget = new QWidget(m_centralWidget);
     m_login_widget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-    m_central_widget->addWidget(m_login_widget);
+    m_centralWidget->addWidget(m_login_widget);
     m_login_layout = new QGridLayout(m_login_widget);
     m_login_layout->setRowStretch(0, 1);
     m_login_layout->setColumnStretch(0, 1);
     m_login_layout->setColumnStretch(2, 1);
     m_login_layout->setRowStretch(6, 1);
     
-    if(m_settings->value("display/logtofile", false).toBool())
+    if (m_settings->value("display/logtofile", false).toBool()) {
         b_engine->setLogFile(m_settings->value("display/logfilename", "XiVO_Client.log").toString());
+    }
     b_engine->logAction("application started on " + b_engine->osname());
     
     m_xivobg = new QLabel();
@@ -194,12 +196,10 @@ MainWidget::MainWidget(BaseEngine *engine)
     m_launchDateTime = QDateTime::currentDateTime();
     
     showLogin();
-    if((m_withsystray && (b_engine->systrayed() == false)) || (! m_withsystray))
+    if ((m_withsystray && (b_engine->systrayed() == false)) || (! m_withsystray)) {
         show();
+    }
     setFocusPolicy(Qt::StrongFocus);
-
-    connect(this, SIGNAL(pasteToDialPanel(const QString &)),
-            b_engine, SIGNAL(pasteToDialPanel(const QString &)));
 }
 
 /*! \brief Destructor
@@ -208,7 +208,6 @@ MainWidget::MainWidget(BaseEngine *engine)
  */
 MainWidget::~MainWidget()
 {
-    // qDebug() << "MainWidget::~MainWidget()";
     savePositions();
     b_engine->logAction("application quit");
 }
@@ -216,11 +215,8 @@ MainWidget::~MainWidget()
 #ifndef Q_WS_WIN
 void MainWidget::clipselection()
 {
-    //qDebug() << "BaseEngine::clipselection()" << m_clipboard->text(QClipboard::Selection);
-    // statusBar()->showMessage("selected : " + m_clipboard->text(QClipboard::Selection));
-    
     QString selected = m_clipboard->text(QClipboard::Selection);
-    pasteToDialPanel(selected);
+    b_engine->pasteToDial(selected);
     
     // X11 : when a pattern is selected on (seemingly) any KDE(QT) application on Linux
     // X11 (non-KDE) : we don't get the signal, but the data can be retrieved anyway (the question "when ?" remains)
@@ -237,15 +233,14 @@ void MainWidget::clipselection()
 
 void MainWidget::clipdata()
 {
-    //qDebug() << "BaseEngine::clipdata()" << m_clipboard->text(QClipboard::Clipboard);
-    // statusBar()->showMessage("data : " + m_clipboard->text(QClipboard::Clipboard));
-    
-    pasteToDialPanel(m_clipboard->text(QClipboard::Clipboard));
+    b_engine->pasteToDial(m_clipboard->text(QClipboard::Clipboard));
     
     // WIN : we fall here in any Ctrl-C/Ctrl-X/"copy"/... action
     // X11 : same actions, on (seemingly) any KDE(QT) application
-    // X11 (non-KDE) : we don't get the signal, but the data can be retrieved anyway (the question "when ?" remains)
-    // X11 (non-KDE) : however, the xclipboard application seems to be able to catch such signals ...
+    // X11 (non-KDE) : we don't get the signal, but the data can 
+    //                 be retrieved anyway (the question "when ?" remains)
+    //                 however, the xclipboard application seems to be 
+    //                 able to catch such signals ...
 }
 #endif
 
@@ -331,7 +326,7 @@ void MainWidget::loginKindChanged(int index)
  */
 void MainWidget::showLogin()
 {
-    m_central_widget->setCurrentWidget(m_login_widget);
+    m_centralWidget->setCurrentWidget(m_login_widget);
     m_login_widget->show();
 }
 
@@ -340,7 +335,7 @@ void MainWidget::showLogin()
 void MainWidget::hideLogin()
 {
     m_login_widget->hide();
-    m_central_widget->setCurrentWidget(m_wid);
+    m_centralWidget->setCurrentWidget(m_wid);
 }
 
 void MainWidget::createActions()
@@ -412,8 +407,9 @@ void MainWidget::createMenus()
 {
     m_filemenu = menuBar()->addMenu("&XiVO Client"); // + m_appliname too heavy
     m_filemenu->addAction(m_cfgact);
-    if(m_withsystray)
+    if(m_withsystray) {
         m_filemenu->addAction(m_systraymin);
+    }
     m_filemenu->addSeparator();
     m_filemenu->addAction(m_connectact);
     m_filemenu->addAction(m_disconnectact);
@@ -434,9 +430,9 @@ void MainWidget::createMenus()
 void MainWidget::updateAppliName()
 {
     setWindowTitle(QString("XiVO %1").arg(m_appliname));
-    if(m_withsystray && m_systrayIcon)
+    if (m_withsystray && m_systrayIcon) {
         m_systrayIcon->setToolTip(QString("XiVO %1").arg(m_appliname));
-    // m_filemenu->setTitle("&XiVO Client");
+    }
 }
 
 /*! \brief create and show the system tray icon
@@ -562,7 +558,7 @@ void MainWidget::showWidgetOnTop(QWidget * widget)
         m_tabwidget->setCurrentWidget(widget);
 }
 
-void MainWidget::addPanel(const QString & name, const QString & title, QWidget * widget)
+void MainWidget::addPanel(const QString &name, const QString &title, QWidget *widget)
 {
     if(m_docknames.contains(name)) {
         qDebug() << "MainWidget::addPanel() (dock)" << name << m_dockoptions[name];
@@ -578,23 +574,23 @@ void MainWidget::addPanel(const QString & name, const QString & title, QWidget *
         m_docks[name]->setAllowedAreas(Qt::BottomDockWidgetArea); // restrain the area to Bottom region
         m_docks[name]->setObjectName(name); // compulsory to allow a proper state's saving
         addDockWidget(Qt::BottomDockWidgetArea, m_docks[name]);
-        m_docks[name]->setWidget(widget);
-        m_docks[name]->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
         m_docks[name]->hide();
+        m_docks[name]->setWidget(widget);
     } else if (m_gridnames.contains(name)) {
-        qDebug() << "MainWidget::addPanel() (grid)" << name << m_dockoptions[name] << title << m_dockoptions[name].toInt() ;
+        qDebug() << "MainWidget::addPanel() (grid)" << name << m_dockoptions[name] << title << m_dockoptions[name].toInt();
         m_gridlayout->addWidget(widget, m_dockoptions[name].toInt(), 0);
     } else if (m_tabnames.contains(name)) {
         qDebug() << "MainWidget::addPanel() (tab) " << name << m_dockoptions[name] << m_tabwidget->count() << title;
+        QString tabTitle = "  " + title + "  ";
         if (m_dockoptions[name].size() > 0) {
-            m_tabwidget->insertTab(m_dockoptions[name].toInt(), widget, extraspace + title + extraspace);
+            m_tabwidget->insertTab(m_dockoptions[name].toInt(), widget, tabTitle);
         } else {
-            m_tabwidget->addTab(widget, extraspace + title + extraspace);
+            m_tabwidget->addTab(widget, tabTitle);
         }
     }
 }
 
-void MainWidget::updatePresence(const QVariant & presence)
+void MainWidget::updatePresence(const QVariant &presence)
 {
     // qDebug() << "MainWidget::updatePresence()" << presence;
     QVariantMap presencemap = presence.toMap();
@@ -702,15 +698,21 @@ void MainWidget::engineStarted()
     qDebug() << "MainWidget::engineStarted() : the xlets have been created";
     m_tabwidget->setCurrentIndex(m_settings->value("display/lastfocusedtab").toInt());
     
-    foreach (QString dname, m_docknames) {
-        if(m_docks.value(dname))
-            m_docks.value(dname)->show();
-        else
-            qDebug() << "dock" << dname << "not there";
-    }
-    
-    // restore settings, especially for Docks' positions
     restoreState(m_settings->value("display/mainwindowstate").toByteArray());
+
+    foreach (QString name, m_docks.keys()) {
+        m_docks[name]->show();
+    }
+
+    if ((m_resizingHelper == 0)&&(m_docks.size())) {
+        // we gonna resize this widget in resizeEvent
+        // to force the mainWindow dockArea expand instead of the centralWidget
+        m_resizingHelper =  new QDockWidget(this);
+        m_resizingHelper->setFixedWidth(1);
+        addDockWidget(Qt::BottomDockWidgetArea, m_resizingHelper);
+        m_resizingHelper->show(); // not a no-op, show is needed, to force Qt to calc 
+        m_resizingHelper->hide(); // the widget size!
+    }
     
     if(m_withsystray && m_systrayIcon)
         setSystrayIcon("xivo-transp");
@@ -718,32 +720,31 @@ void MainWidget::engineStarted()
     statusBar()->showMessage(tr("Connected"));
     m_connectact->setEnabled(false);
     m_disconnectact->setEnabled(true);
-    // set status icon to green
-    QPixmap greensquare(":/images/connected.png");
-    m_status->setPixmap(greensquare);
+    m_status->setPixmap(m_pixmap_connected);
     b_engine->logAction("connection started");
 }
 
 void MainWidget::setSystrayIcon(const QString & def)
 {
     QIcon icon;
-    if(def == "xivo-transp")
+    if(def == "xivo-transp") {
         icon = m_icon_transp;
-    else if(def == "xivo-red")
+    } else if(def == "xivo-red") {
         icon = m_icon_red;
-    else if(def == "xivo-green")
+    } else if(def == "xivo-green") {
         icon = m_icon_green;
-    else if(def == "xivo-black")
+    } else if(def == "xivo-black") {
         icon = m_icon_black;
-    else {
+    } else {
         int psize = 16;
         QPixmap square(psize, psize);
         square.fill(def);
         icon = QIcon(square);
     }
     
-    if(m_systrayIcon)
+    if(m_systrayIcon) {
         m_systrayIcon->setIcon(icon);
+    }
     setWindowIcon(icon);
 }
 
@@ -752,9 +753,6 @@ void MainWidget::removePanel(const QString & name, QWidget * widget)
 //    qDebug() << "MainWidget::removePanel" << name << widget;
     if(m_docknames.contains(name)) {
         removeDockWidget(m_docks[name]);
-        //delete widget;
-        //delete m_docks[name]; // seems to "delete widget", also
-        //widget->deleteLater();
         m_docks[name]->deleteLater();
         m_docks.remove(name);
     }
@@ -764,8 +762,6 @@ void MainWidget::removePanel(const QString & name, QWidget * widget)
             qDebug() << "removing tab" << name << thisindex;
             m_tabwidget->removeTab(thisindex);
         }
-        //widget->deleteLater();
-        //delete widget;
     }
     if(m_gridnames.contains(name)) {
         //m_gridlayout->removeWidget(widget);
@@ -784,15 +780,10 @@ void MainWidget::engineStopped()
     // qDebug() << "MainWidget::engineStopped()";
     m_settings->setValue("display/mainwindowstate", saveState());
     if (m_tabwidget->currentIndex() > -1) {
-        // qDebug() << m_tabwidget->currentIndex();
         m_settings->setValue("display/lastfocusedtab", m_tabwidget->currentIndex());
-        // qDebug() << m_tabwidget->tabText(m_tabwidget->currentIndex());
     }
     
     foreach (QString dname, m_docknames) {
-//        if(m_docks.contains(dname)) {
-//            m_docks.value(dname)->hide();
-//        }
         removePanel(dname, m_docks.value(dname));
     }
     clearPresence();
@@ -821,9 +812,7 @@ void MainWidget::engineStopped()
     statusBar()->showMessage(tr("Disconnected"));
     m_connectact->setEnabled(true);
     m_disconnectact->setEnabled(false);
-    // set status icon to red
-    QPixmap redsquare(":/images/disconnected.png");
-    m_status->setPixmap(redsquare);
+    m_status->setPixmap(m_pixmap_disconnected);
 
     clearAppearance();
     m_appliname = "Client";
@@ -835,6 +824,26 @@ void MainWidget::savePositions() const
 {
     // qDebug() << "MainWidget::savePositions()";
     m_settings->setValue("display/mainwingeometry", saveGeometry());
+}
+
+void MainWidget::resizeEvent(QResizeEvent *ev)
+{
+    int oldWH = ev->oldSize().height();
+    int wh = ev->size().height();
+    if (m_resizingHelper) {
+        int diff  = wh - oldWH;
+        if (oldWH < wh) {
+            m_resizingHelper->show();
+            int newH = m_resizingHelper->size().height() + diff;
+            m_resizingHelper->setFixedHeight(newH);
+            resize(ev->size());
+            m_resizingHelper->hide();
+        } else {
+            int newH = m_resizingHelper->size().height() + diff;
+            m_resizingHelper->setFixedHeight(newH);
+            resize(ev->size());
+        }
+    }
 }
 
 /*!
@@ -875,16 +884,6 @@ void MainWidget::customerInfoPopup(const QString & msgtitle,
     }
 }
 
-void MainWidget::showEvent(QShowEvent *event)
-{
-    // qDebug() << "MainWidget::showEvent()";
-    event->accept();
-    // << "spontaneous =" << event->spontaneous()
-    // << "isMinimized =" << isMinimized()
-    // << "isVisible ="   << isVisible()
-    // << "isActiveWindow =" << isActiveWindow();
-}
-
 void MainWidget::hideEvent(QHideEvent *event)
 {
     // called when minimized
@@ -896,22 +895,17 @@ void MainWidget::hideEvent(QHideEvent *event)
     // << "isActiveWindow =" << isActiveWindow();
 
 #ifdef Q_WS_MAC
-    if (event->spontaneous())
+    if (event->spontaneous()) {
         event->ignore();
+    }
     setVisible(false);
 #else
-    if (event->spontaneous())
+    if (event->spontaneous()) {
         event->ignore();
-    else
+    } else {
         event->accept();
+    }
 #endif
-
-    // #ifndef Q_WS_MAC
-    //          if (QSystemTrayIcon::isSystemTrayAvailable()) {
-    //                 qDebug() << "MainWidget::hideEvent() setVisible(false)";
-    //                  setVisible(false);
-    //         }
-    // #endif
 }
 
 /*! \brief Catch the Close event
@@ -942,42 +936,11 @@ void MainWidget::closeEvent(QCloseEvent *event)
     event->ignore();
 }
 
-void MainWidget::changeEvent(QEvent * /* event */)
-{
-    // qDebug() << "MainWidget::changeEvent()";
-    //qDebug() << "MainWidget::changeEvent() eventtype=" << event->type();
-    //if (event->type() == 105)
-    //        event->accept();
-    //event->ignore();
-}
-
 void MainWidget::keyPressEvent(QKeyEvent * event)
 {
-#if 0
-    if((event->key() >= Qt::Key_F1) && (event->key() <= Qt::Key_F35))
-        qDebug() << QString("MainWidget::keyPressEvent() F%1").arg(event->key() - Qt::Key_F1 + 1);
-    else if(event->key() == Qt::Key_Up)
-        qDebug() << "MainWidget::keyPressEvent() Up";
-    else if(event->key() == Qt::Key_Down)
-        qDebug() << "MainWidget::keyPressEvent() Down";
-    if(((event->key() >= Qt::Key_F1) && (event->key() <= Qt::Key_F35))
-       || (event->key() == Qt::Key_Up)
-       || (event->key() == Qt::Key_Down))
-#endif
-        functionKeyPressed(event->key());
+    functionKeyPressed(event->key());
 }
 
-#if 0
-bool MainWidget::event(QEvent *event)
-{
-    qDebug() << "MainWidget::event() eventtype=" << event->type();
-    event->accept();
-    //if (event->type() == 105)
-    //        event->accept();
-    //event->ignore();
-    return true;
-}
-#endif
 
 /*! \brief Displays the about box
  *
