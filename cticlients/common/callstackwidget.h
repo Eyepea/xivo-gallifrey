@@ -80,7 +80,6 @@ class CallStackWidget : public XLet
 
     signals:
         //! originate, transfer & atxfer signals
-        void actionCall(const QString &, const QString &, const QString & dst = "");
         void changeTitle(const QString &);  //!< change Title
         void monitorPeerRequest(const QString &);  //!< send the userid of the new monitored peer
 

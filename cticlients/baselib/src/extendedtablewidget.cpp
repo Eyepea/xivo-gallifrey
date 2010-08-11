@@ -202,14 +202,14 @@ void ExtendedTableWidget::dropEvent(QDropEvent *event)
         QString channel_from = QString::fromAscii(event->mimeData()->data(CHANNEL_MIMETYPE));
         if(event->mimeData()->hasFormat(CHANNEL_MIMETYPE)) {
             event->acceptProposedAction();
-            emit actionCall("transfer",
-                            "chan:" + userid_from + ":" + channel_from,
-                            "ext:" + item->text());
+            b_engine->actionCall("transfer",
+                                 "chan:" + userid_from + ":" + channel_from,
+                                 "ext:" + item->text());
         } else if(event->mimeData()->hasFormat(PEER_MIMETYPE)) {
             event->acceptProposedAction();
-            emit actionCall("originate",
-                            "user:" + userid_from,
-                            "ext:" + item->text());
+            b_engine->actionCall("originate",
+                                 "user:" + userid_from,
+                                 "ext:" + item->text());
         } else {
             event->ignore();
         }
@@ -223,9 +223,9 @@ void ExtendedTableWidget::dialNumber()
     QString number = sender()->property("number").toString();
     if(!number.isEmpty())
     {
-        emit actionCall("originate",
-                        "user:special:me",
-                        "ext:" + number);
+        b_engine->actionCall("originate",
+                             "user:special:me",
+                             "ext:" + number);
     }
 }
 
@@ -255,9 +255,9 @@ void ExtendedTableWidget::dtransfer()
     QString number = sender()->property("number").toString();
     if( !chan.isEmpty() && !number.isEmpty() )
     {
-        emit actionCall("transfer",
-                        "chan:special:me:" + chan,
-                        "ext:" + number); 
+        b_engine->actionCall("transfer",
+                             "chan:special:me:" + chan,
+                             "ext:" + number); 
     }
 }
 
@@ -267,8 +267,8 @@ void ExtendedTableWidget::itransfer()
     QString number = sender()->property("number").toString();
     if( !chan.isEmpty() && !number.isEmpty() )
     {
-        emit actionCall("atxfer",
-                        "chan:special:me:" + chan,
-                        "ext:" + number); 
+        b_engine->actionCall("atxfer",
+                             "chan:special:me:" + chan,
+                             "ext:" + number); 
     }
 }

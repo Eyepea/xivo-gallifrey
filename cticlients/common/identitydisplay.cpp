@@ -140,9 +140,6 @@ IdentityDisplay::IdentityDisplay(QWidget * parent)
             this, SLOT(setUserInfo(const UserInfo *)));
     connect(b_engine, SIGNAL(localUserInfoDefined(const UserInfo *)),
             m_phone, SLOT(setUserInfo(const UserInfo *)));
-
-    connect(m_phone, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-            b_engine, SLOT(actionCall(const QString &, const QString &, const QString &)));
 }
 
 void IdentityDisplay::setupIcons()

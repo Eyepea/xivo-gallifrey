@@ -64,9 +64,6 @@ class MyLocalDirPanel : public XLet
         void findNext();
         void removeAllContacts();
 
-    signals:
-        void actionCall(const QString &, const QString &, const QString &);
-
     private:
         void loadFromFile(QFile & file);
         void saveToFile(QFile & file);

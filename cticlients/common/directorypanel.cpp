@@ -42,18 +42,18 @@ DirectoryPanel::DirectoryPanel(QWidget *parent)
 {
     setTitle(tr("Directory"));
     setAccessibleName(tr("Directory Panel"));
-    QVBoxLayout * vlayout = new QVBoxLayout(this);
+    QVBoxLayout *vlayout = new QVBoxLayout(this);
     vlayout->setMargin(0);
-    QLabel * titleLbl = new QLabel(tr("Di&rectory"), this);
+    QLabel *titleLbl = new QLabel(tr("Di&rectory"), this);
     vlayout->addWidget(titleLbl, 0, Qt::AlignCenter);
-    QHBoxLayout * hlayout = new QHBoxLayout();
+    QHBoxLayout *hlayout = new QHBoxLayout();
     m_searchText = new ExtendedLineEdit(this);
     titleLbl->setBuddy(m_searchText);
     connect(m_searchText, SIGNAL(returnPressed()),
             this, SLOT(startSearch()));
     hlayout->addWidget(m_searchText);
     m_searchButton = new QPushButton(tr("Search"), this);
-    connect( m_searchButton, SIGNAL(clicked()),
+    connect(m_searchButton, SIGNAL(clicked()),
              this, SLOT(startSearch()));
     hlayout->addWidget(m_searchButton);
     vlayout->addLayout(hlayout);
@@ -62,8 +62,6 @@ DirectoryPanel::DirectoryPanel(QWidget *parent)
             this, SLOT(itemClicked(QTableWidgetItem *)));
     connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
             this, SLOT(itemDoubleClicked(QTableWidgetItem *)));
-    connect(m_table, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-            this, SIGNAL(actionCall(const QString &, const QString &, const QString &)));
         
     vlayout->addWidget(m_table);
     setAcceptDrops(true);
@@ -73,16 +71,14 @@ DirectoryPanel::DirectoryPanel(QWidget *parent)
     setFocusProxy(m_searchText);
 
     // connect signal/slots
-    connect( this, SIGNAL(searchDirectory(const QString &)),
-             b_engine, SLOT(searchDirectory(const QString &)) );
-    connect( b_engine, SIGNAL(directoryResponse(const QStringList &, const QStringList &)),
-             this, SLOT(setSearchResponse(const QStringList &, const QStringList &)) );
-    connect( this, SIGNAL(copyNumber(const QString &)),
-             b_engine, SIGNAL(pasteToDialPanel(const QString &)) );
-    connect( b_engine, SIGNAL(delogged()),
-             this, SLOT(stop()) );
-    connect( this, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-             b_engine, SLOT(actionCall(const QString &, const QString &, const QString &)) );
+    connect(this, SIGNAL(searchDirectory(const QString &)),
+            b_engine, SLOT(searchDirectory(const QString &)) );
+    connect(b_engine, SIGNAL(directoryResponse(const QStringList &, const QStringList &)),
+            this, SLOT(setSearchResponse(const QStringList &, const QStringList &)) );
+    connect(this, SIGNAL(copyNumber(const QString &)),
+            b_engine, SIGNAL(pasteToDialPanel(const QString &)) );
+    connect(b_engine, SIGNAL(delogged()),
+            this, SLOT(stop()) );
 }
 
 /*! \brief does nothing for the moment */
@@ -115,8 +111,7 @@ void DirectoryPanel::itemDoubleClicked(QTableWidgetItem * item)
     //qDebug() << item << item->text();
     // check if the string is a number
     if( m_re_number.exactMatch(item->text()) ) {
-        //qDebug() << "dialing" << item->text();
-        emit actionCall("originate", "user:special:me", "ext:" + item->text()); // Call
+        b_engine->actionCall("originate", "user:special:me", "ext:" + item->text()); // Call
     }
         
     if(item && item->text().contains("@")) {

@@ -69,9 +69,6 @@ class StatusPanel : public XLet
         void clicked();
         void updateUser(UserInfo *);
 
-    signals:
-        void actionCall(const QString &, const QString &src="", const QString &dst="");
-
     private:
         void updateLine(const QString &, const QStringList &);
         void newCall(const QString &);
@@ -81,8 +78,8 @@ class StatusPanel : public XLet
         QString getPeerChan(const QString &chan) const;
         void removeLine(const QString &);
         
-        QGridLayout * m_glayout;
-        QLabel * m_lbl;
+        QGridLayout *m_glayout;
+        QLabel *m_lbl;
         
         QHash<QString, QFrame *> m_vlinesl;
         QHash<QString, QFrame *> m_vlinesr;

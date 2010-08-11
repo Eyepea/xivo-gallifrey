@@ -114,9 +114,9 @@ void BasePeerWidget::dial()
 {
     // qDebug() << "PeerWidget::dial()" << m_ui->userid() << sender();
     if (m_ui) {
-        emit actionCall("originate", "user:special:me", "user:" + m_ui->userid());
+        b_engine->actionCall("originate", "user:special:me", "user:" + m_ui->userid());
     } else {
-        emit actionCall("originate", "user:special:me", "ext:" + m_number);
+        b_engine->actionCall("originate", "user:special:me", "ext:" + m_number);
     }
 }
 
@@ -125,13 +125,13 @@ void BasePeerWidget::dial()
 void BasePeerWidget::peerdial()
 {
     if (m_ui) {
-        emit actionCall("originate",
-                        "user:" + m_ui->userid(),
-                        "ext:" + sender()->property("number").toString());
+        b_engine->actionCall("originate",
+                             "user:" + m_ui->userid(),
+                             "ext:" + sender()->property("number").toString());
     } else {
-        emit actionCall("originate",
-                        "ext:" + m_number,
-                        "ext:" + sender()->property("number").toString());
+        b_engine->actionCall("originate",
+                             "ext:" + m_number,
+                             "ext:" + sender()->property("number").toString());
     }
 }
 
@@ -142,8 +142,8 @@ void BasePeerWidget::peerdial()
 void BasePeerWidget::hangup()
 {
     if (m_ui) {
-        emit actionCall("hangup",
-                        "chan:" + m_ui->userid() + ":" + sender()->property("thischannel").toString());
+        b_engine->actionCall("hangup",
+                             "chan:" + m_ui->userid() + ":" + sender()->property("thischannel").toString());
     }
 }
 
@@ -154,9 +154,9 @@ void BasePeerWidget::hangup()
 void BasePeerWidget::intercept()
 {
     if (m_ui) {
-        emit actionCall("transfer",
-                        "chan:" + m_ui->userid() + ":" + sender()->property("peerchannel").toString(),
-                        "user:special:me");
+        b_engine->actionCall("transfer",
+                             "chan:" + m_ui->userid() + ":" + sender()->property("peerchannel").toString(),
+                             "user:special:me");
    }
 }
  
@@ -179,13 +179,13 @@ void BasePeerWidget::transfer()
 {
     const UserInfo *ui = b_engine->getXivoClientUser();
     if (m_ui) {
-        emit actionCall("transfer",
-                        "chan:" + ui->userid() + ":" + sender()->property("peerchannel").toString(),
-                        "user:" + m_ui->userid());
+        b_engine->actionCall("transfer",
+                             "chan:" + ui->userid() + ":" + sender()->property("peerchannel").toString(),
+                             "user:" + m_ui->userid());
     } else {
-        emit actionCall("transfer",
-                        "chan:" + ui->userid() + ":" + sender()->property("peerchannel").toString(),
-                        "ext:" + m_number);
+        b_engine->actionCall("transfer",
+                             "chan:" + ui->userid() + ":" + sender()->property("peerchannel").toString(),
+                             "ext:" + m_number);
     }
 }
 
@@ -195,13 +195,13 @@ void BasePeerWidget::itransfer()
 {
     const UserInfo *ui = b_engine->getXivoClientUser();
     if (m_ui) {
-        emit actionCall("atxfer",
-                        "chan:" + ui->userid() + ":" + sender()->property("thischannel").toString(),
-                        "user:" + m_ui->userid());
+        b_engine->actionCall("atxfer",
+                             "chan:" + ui->userid() + ":" + sender()->property("thischannel").toString(),
+                             "user:" + m_ui->userid());
     } else {
-        emit actionCall("atxfer",
-                        "chan:" + ui->userid() + ":" + sender()->property("thischannel").toString(),
-                        "ext:" + m_number);
+        b_engine->actionCall("atxfer",
+                             "chan:" + ui->userid() + ":" + sender()->property("thischannel").toString(),
+                             "ext:" + m_number);
     }
 }
 
@@ -211,9 +211,9 @@ void BasePeerWidget::parkcall()
 {
     QString chan = sender()->property("thischannel").toString();
     if (m_ui) {
-        emit actionCall("transfer",
-                        "chan:" + m_ui->userid() + ":" + chan,
-                        "ext:special:parkthecall");
+        b_engine->actionCall("transfer",
+                             "chan:" + m_ui->userid() + ":" + chan,
+                             "ext:special:parkthecall");
     }
 }
 
@@ -223,9 +223,9 @@ void BasePeerWidget::vmtransfer()
 {
     if (m_ui) {
         const UserInfo *ui = b_engine->getXivoClientUser();
-        emit actionCall("transfer",
-                        "chan:" + ui->userid() + ":" + sender()->property("peerchannel").toString(),
-                        "voicemail:" + m_ui->userid());
+        b_engine->actionCall("transfer",
+                             "chan:" + ui->userid() + ":" + sender()->property("peerchannel").toString(),
+                             "voicemail:" + m_ui->userid());
     }
 }
 
@@ -260,9 +260,9 @@ void BasePeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
                             to = "ext:" + m_number;
                         }
                         // Initiate an indirect transfer.
-                        emit actionCall("atxfer",
-                                        "chan:special:me:" + comm["thischannel"].toString(),
-                                        to);
+                        b_engine->actionCall("atxfer",
+                                             "chan:special:me:" + comm["thischannel"].toString(),
+                                             to);
                         return;
                     }
                 }
@@ -279,18 +279,18 @@ void BasePeerWidget::mouseDoubleClickEvent(QMouseEvent *event)
                     //qDebug() << pi->phoneid() << ts << comm;
                     const QString status = comm["status"].toString();
                     if (status == CHAN_STATUS_RINGING) {
-                        emit actionCall("transfer",
-                                        "chan:" + m_ui->userid() + ":" + comm["peerchannel"].toString(),
-                                        "user:special:me");
+                        b_engine->actionCall("transfer",
+                                             "chan:" + m_ui->userid() + ":" + comm["peerchannel"].toString(),
+                                             "user:special:me");
                         return;
                     }
                 }
             }
         }
         if ((subwidgetkind == "mobile") && (m_ui != NULL)) {
-            emit actionCall("originate",
-                            "user:special:me",
-                            QString("ext:%1").arg(m_ui->mobileNumber()));
+            b_engine->actionCall("originate",
+                                 "user:special:me",
+                                 QString("ext:%1").arg(m_ui->mobileNumber()));
         } else {
             // just dial the person
             dial();
@@ -674,22 +674,22 @@ void BasePeerWidget::dropEvent(QDropEvent *event)
             // transfer the call to the peer "to"
             if (event->mimeData()->hasFormat(CHANNEL_MIMETYPE)) {
                 event->acceptProposedAction();
-                actionCall("transfer", "chan:" + userid_from + ":" + channel_from, to); // Call
+                b_engine->actionCall("transfer", "chan:" + userid_from + ":" + channel_from, to); // Call
 
             } else if (event->mimeData()->hasFormat(PEER_MIMETYPE)) {
                 event->acceptProposedAction();
                 if (b_engine->enabledFunction("switchboard")) {
-                    actionCall("originate", "user:" + userid_from, to); // Call
+                    b_engine->actionCall("originate", "user:" + userid_from, to);
                 }
             } else if (event->mimeData()->hasFormat(NUMBER_MIMETYPE)) {
                 event->acceptProposedAction();
-                actionCall("originate", to, "ext:" + event->mimeData()->text());
+                b_engine->actionCall("originate", to, "ext:" + event->mimeData()->text());
             }
             break;
         case Qt::MoveAction:
             // can be reached with the shift button
             event->acceptProposedAction();
-            actionCall("atxfer", "chan:" + userid_from + ":" + channel_from, to); 
+            b_engine->actionCall("atxfer", "chan:" + userid_from + ":" + channel_from, to); 
             break;
         default:
             qDebug() << "PeerWidget::dropEvent() Unrecognized action" << event->proposedAction();

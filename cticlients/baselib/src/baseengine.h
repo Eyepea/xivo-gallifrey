@@ -184,7 +184,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
         void powerEvent(const QString &);
         //! set m_availstate
         void setAvailState(const QString &, bool);
-        void actionCall(const QString &, const QString &, const QString &);
+        void actionCall(const QString &, const QString &src="", const QString &dst="");
         
         void searchDirectory(const QString &);
         void textEdited(const QString &);

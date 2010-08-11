@@ -71,7 +71,6 @@ class DirectoryPanel : public XLet
     signals:
         void searchDirectory(const QString &);  //! start a search
         void copyNumber(const QString &);
-        void actionCall(const QString &, const QString &, const QString &);
 
     private slots:
         void startSearch();

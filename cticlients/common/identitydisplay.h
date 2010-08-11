@@ -77,7 +77,6 @@ class IdentityDisplay : public XLet
         void setAvailState(const QString &, bool);
         void changeWatchedAgent(const QString &, bool);
         void setSystrayIcon(const QString &);
-        void actionCall(const QString &, const QString &, const QString &dst = "");  //!< to hangup
 
     private:
         void svcSummary();

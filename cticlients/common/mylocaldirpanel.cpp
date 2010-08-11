@@ -98,8 +98,6 @@ MyLocalDirPanel::MyLocalDirPanel(QWidget * parent)
 
     m_table = new ExtendedTableWidget;
     m_table->setEditable( true );
-    connect( m_table, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-             this, SIGNAL(actionCall(const QString &, const QString &, const QString &)) );
     QStringList columnNames;
     columnNames.append(tr("First Name"));
     columnNames.append(tr("Last Name"));

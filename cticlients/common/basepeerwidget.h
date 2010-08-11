@@ -75,7 +75,6 @@ class BasePeerWidget : public QWidget
         bool event(QEvent *e);
 
     signals:
-        void actionCall(const QString &, const QString &, const QString &dst = ""); //! originate, transfer, etc...
         void removeFromPanel(); //! hide the widget from the containing window
     protected slots:
         void dial();

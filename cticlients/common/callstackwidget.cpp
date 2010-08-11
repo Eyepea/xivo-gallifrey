@@ -58,15 +58,15 @@ CallStackWidget::CallStackWidget(QWidget * parent)
     toplayout->addWidget(scrollarea);
 
     // connect signals/slots
-    connect( b_engine, SIGNAL(userUpdated(UserInfo *)),
-             this, SLOT(updateUser(UserInfo *)) );
-    connect( this, SIGNAL(changeTitle(const QString &)),
-             titleLabel, SLOT(setText(const QString &)) );
-                
-    connect( this, SIGNAL(monitorPeerRequest(const QString &)),
-             b_engine, SLOT(monitorPeerRequest(const QString &)) );
-    connect( b_engine, SIGNAL(monitorPeer(UserInfo *)),
-             this, SLOT(monitorPeer(UserInfo *)) );
+    connect(b_engine, SIGNAL(userUpdated(UserInfo *)),
+            this, SLOT(updateUser(UserInfo *)));
+    connect(this, SIGNAL(changeTitle(const QString &)),
+            titleLabel, SLOT(setText(const QString &)));
+               
+    connect(this, SIGNAL(monitorPeerRequest(const QString &)),
+            b_engine, SLOT(monitorPeerRequest(const QString &)));
+    connect(b_engine, SIGNAL(monitorPeer(UserInfo *)),
+            this, SLOT(monitorPeer(UserInfo *)));
                 
     connectDials();
 }
@@ -89,21 +89,21 @@ void CallStackWidget::updateUser(UserInfo * ui)
  */
 void CallStackWidget::hupchan(const QString & hangupchan)
 {
-    actionCall("hangup", "chan:" + m_monitored_ui->userid() + ":" + hangupchan); // Call
+    b_engine->actionCall("hangup", "chan:" + m_monitored_ui->userid() + ":" + hangupchan); // Call
 }
 
 /*! \brief transfers the channel to a number
  */
 void CallStackWidget::transftonumberchan(const QString & chan)
 {
-    actionCall("transfer", "chan:" + m_monitored_ui->userid() + ":" + chan, "ext:special:dialxlet"); // Call
+    b_engine->actionCall("transfer", "chan:" + m_monitored_ui->userid() + ":" + chan, "ext:special:dialxlet"); // Call
 }
 
 /*! \brief transfers the channel to a number
  */
 void CallStackWidget::parkcall(const QString & chan)
 {
-    actionCall("transfer", "chan:" + m_monitored_ui->userid() + ":" + chan, "ext:special:parkthecall"); // Call
+    b_engine->actionCall("transfer", "chan:" + m_monitored_ui->userid() + ":" + chan, "ext:special:parkthecall"); // Call
 }
 
 /*! \brief update display according to call list
@@ -119,16 +119,14 @@ void CallStackWidget::updateDisplay()
     //QStringList activeChannels;  // list of active channels to be displayed
     QStringList activeUids;
 
-    if(m_monitored_ui)
-    {
-        foreach(const QString phone, m_monitored_ui->phonelist())
-        {
+    if (m_monitored_ui) {
+        foreach (const QString phone, m_monitored_ui->phonelist()) {
             const PhoneInfo * pi = m_monitored_ui->getPhoneInfo(phone);
-            if( !pi )
+            if (!pi) {
                 continue;
+            }
             QMapIterator<QString, QVariant> it = QMapIterator<QString, QVariant>( pi->comms() );
-            while( it.hasNext() )
-            {
+            while (it.hasNext()) {
                 it.next();
                 QMap<QString, QVariant> map = it.value().toMap();
                 //qDebug() << it.key() << map;
@@ -148,18 +146,16 @@ void CallStackWidget::updateDisplay()
                 QString calleridname = map["calleridname"].toString();
                 //qDebug() << "CallStackWidget::updateDisplay()" << it.key() << channelme << "status" << status;
                 // dont display hangup channels !
-                if(status == CHAN_STATUS_HANGUP)
+                if (status == CHAN_STATUS_HANGUP) {
                     continue;
+                }
                 //activeChannels << channelme;
                 activeUids << it.key();
 //                qDebug() << "CallStackWidget::updateDisplay() adding/updating" << channelme;
-                if( m_affhash.contains( /*channelme*/it.key() ) )
-                {
-                    m_affhash[it.key()/*channelme*/]->updateWidget( status, ts, channelpeer,
-                                                                    callerid, calleridname, pi);
-                }
-                else
-                {
+                if (m_affhash.contains(/*channelme*/it.key())) {
+                    m_affhash[it.key()/*channelme*/]->updateWidget(status, ts, channelpeer,
+                                                                   callerid, calleridname, pi);
+                } else {
                     callwidget = new CallWidget(m_monitored_ui,
                                                 channelme,
                                                 status,
@@ -169,12 +165,12 @@ void CallStackWidget::updateDisplay()
                                                 calleridname,
                                                 this,
                                                 pi);
-                    connect( callwidget, SIGNAL(doHangUp(const QString &)),
-                             this, SLOT(hupchan(const QString &)) );
-                    connect( callwidget, SIGNAL(doTransferToNumber(const QString &)),
-                             this, SLOT(transftonumberchan(const QString &)) );
-                    connect( callwidget, SIGNAL(doParkCall(const QString &)),
-                             this, SLOT(parkcall(const QString &)) );
+                    connect(callwidget, SIGNAL(doHangUp(const QString &)),
+                            this, SLOT(hupchan(const QString &)));
+                    connect(callwidget, SIGNAL(doTransferToNumber(const QString &)),
+                            this, SLOT(transftonumberchan(const QString &)));
+                    connect(callwidget, SIGNAL(doParkCall(const QString &)),
+                            this, SLOT(parkcall(const QString &)));
                     m_layout->insertWidget(m_layout->count() - 1, callwidget,
                                            0, Qt::AlignTop);
                     m_affhash[it.key()/*channelme*/] = callwidget;
@@ -188,11 +184,9 @@ void CallStackWidget::updateDisplay()
 //    qDebug() << "CallStackWidget::updateDisplay() m_affhash" << m_affhash.keys();
     // remove old channels
 //    foreach(const QString chan, m_affhash.keys())
-    foreach(const QString uid, m_affhash.keys())
-    {
+    foreach (const QString uid, m_affhash.keys()) {
 //        if( !activeChannels.contains( chan ) )
-        if( !activeUids.contains( uid ) )
-        {
+        if( !activeUids.contains(uid)) {
             //qDebug() << "CallStackWidget::updateDisplay() removing" << chan;
             //m_affhash.take( chan )->deleteLater();
             qDebug() << "CallStackWidget::updateDisplay() removing" << uid;
@@ -203,11 +197,10 @@ void CallStackWidget::updateDisplay()
 
 /*! \brief filter events based on the mimetype
  */
-void CallStackWidget::dragEnterEvent(QDragEnterEvent * event)
+void CallStackWidget::dragEnterEvent(QDragEnterEvent *event)
 {
     // qDebug() << "CallStackWidget::dragEnterEvent()" << event->mimeData()->formats();
-    if (event->mimeData()->hasFormat(USERID_MIMETYPE))
-    {
+    if (event->mimeData()->hasFormat(USERID_MIMETYPE)) {
         event->acceptProposedAction();
     }
 }
@@ -236,7 +229,7 @@ void CallStackWidget::monitorPeer(UserInfo * ui)
  */
 void CallStackWidget::dropEvent(QDropEvent * event)
 {
-    if(!event->mimeData()->hasFormat(USERID_MIMETYPE)) {
+    if (!event->mimeData()->hasFormat(USERID_MIMETYPE)) {
         event->ignore();
         return;
     }

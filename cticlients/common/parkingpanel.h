@@ -60,18 +60,10 @@ class ParkingPanel : public XLet
 
     public slots:
         void setGuiOptions(const QVariantMap &) {};
-        void parkingEvent(const QString &,
-                          const QString &,
-                          const QString &,
-                          const QVariant &);
+        void parkingEvent(const QString &, const QString &, const QString &, const QVariant &);
     private slots:
         void itemClicked(QTableWidgetItem *);
         void itemDoubleClicked(QTableWidgetItem *);
-    signals:
-        void copyNumber(const QString &);
-        void actionCall(const QString &,
-                        const QString &,
-                        const QString &);
     private:
         ExtendedTableWidget *m_table;  //!< Table
         int m_timerid;  //!< id of the timer

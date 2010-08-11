@@ -70,7 +70,6 @@ class DialPanel : public XLet
 
     signals:
         void textEdited(const QString &);   //!< text has changed
-        void actionCall(const QString &, const QString &, const QString &);  //!< originates a number
 
     private:
         QLabel *m_lbl;             //!< label

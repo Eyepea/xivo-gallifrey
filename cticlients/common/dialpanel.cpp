@@ -84,8 +84,6 @@ DialPanel::DialPanel(QWidget *parent)
             this, SLOT(setNumberToDial(const QString &)));
     connect(this, SIGNAL(textEdited(const QString &)),
             b_engine, SLOT(textEdited(const QString &)));
-    connect(this, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-            b_engine, SLOT(actionCall(const QString &, const QString &, const QString &)));
 }
 
 /*! \brief fills the input field
@@ -137,7 +135,7 @@ void DialPanel::dropEvent(QDropEvent * event)
         ext.remove(QRegExp("[\\s\\.]")); // remove spaces and full stop characters
         if(ext.length() == 0)        // do nothing if the string is empty
             return;
-        emit actionCall("originate", "user:" + originator, "ext:" + m_input->lineEdit()->text()); // Call
+        b_engine->actionCall("originate", "user:" + originator, "ext:" + m_input->lineEdit()->text());
         m_input->insertItem(0, ext); // add to history
         // remove the older items related to the same number
         for(int i=1; i<m_input->count(); ) {
@@ -164,7 +162,7 @@ void DialPanel::inputValidated()
         if(ext.length() == 0) {  // do nothing if the string is empty
             return;
         }
-        emit actionCall("originate", "user:special:me", "ext:" + ext); // Call
+        b_engine->actionCall("originate", "user:special:me", "ext:" + ext);
         m_input->insertItem(0, ext); // add to history
         // remove the older items related to the same number
         for(int i=1; i<m_input->count(); ) {

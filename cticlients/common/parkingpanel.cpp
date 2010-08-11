@@ -69,9 +69,6 @@ ParkingPanel::ParkingPanel(QWidget *parent)
             this, SLOT(itemClicked(QTableWidgetItem *)));
     connect(m_table, SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
             this, SLOT(itemDoubleClicked(QTableWidgetItem *)) );
-    // forward SIGNAL
-    connect(m_table, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-            this, SIGNAL(actionCall(const QString &, const QString &, const QString &)) );
     vlayout->addWidget( m_table, 0 );
     m_table->resizeColumnsToContents();
     m_timerid = 0;
@@ -180,9 +177,10 @@ void ParkingPanel::itemClicked(QTableWidgetItem * item)
     QString astid      = m_table->item(rown, 0)->data(Qt::UserRole+0).toString();
     QString parkingbay = m_table->item(rown, 0)->data(Qt::UserRole+1).toString();
     //qDebug() << "ParkingPanel::itemClicked" << rown << astid << placenum;
-    if(b_engine && b_engine->getXivoClientUser() &&
-       (astid == b_engine->getXivoClientUser()->astid()))
-        emit copyNumber(parkingbay);
+    if (((b_engine) && (b_engine->getXivoClientUser())) &&
+         (astid == b_engine->getXivoClientUser()->astid())) {
+        b_engine->pasteToDial(parkingbay);
+    }
 }
 
 void ParkingPanel::itemDoubleClicked(QTableWidgetItem * item)
@@ -192,15 +190,16 @@ void ParkingPanel::itemDoubleClicked(QTableWidgetItem * item)
     QString parkingbay = m_table->item(rown, 0)->data(Qt::UserRole+1).toString();
     //qDebug() << "ParkingPanel::itemDoubleClicked" << rown << astid << placenum;
     if(b_engine && b_engine->getXivoClientUser() &&
-       (astid == b_engine->getXivoClientUser()->astid()))
-        emit actionCall("originate", "user:special:me", "ext:" + parkingbay); // Call
+       (astid == b_engine->getXivoClientUser()->astid())) {
+        b_engine->actionCall("originate", "user:special:me", "ext:" + parkingbay);
+    }
 }
 
 void ParkingPanel::timerEvent(QTimerEvent * event)
 {
     int timerId = event->timerId();
     if (timerId == m_timerid) {
-        for(int i = 0; i < m_table->rowCount(); i++) {
+        for (int i = 0; i < m_table->rowCount(); i++) {
             QTableWidgetItem * item = m_table->takeItem(i, 1);
             QString astid      = m_table->item(i, 0)->data(Qt::UserRole+0).toString();
             QString parkingbay = m_table->item(i, 0)->data(Qt::UserRole+1).toString();
