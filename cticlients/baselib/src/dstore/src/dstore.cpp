@@ -342,6 +342,25 @@ void DStore::onChange(const QString &path, QObject *target, const char *slot)
                           new DStoreCallback(target, cb.toAscii().constData()));
 }
 
+void DStore::unregisterAllCb(QObject *on)
+{
+    int i, e;
+    QList<QPair<QString, DStoreCallback*> > listToRemove;
+
+    foreach (QString cb, m_callbackList.keys()) {
+        QList<DStoreCallback*> list = m_callbackList.values(cb);
+        for (i=0,e=list.size();i<e;i++) {
+            if (on == list[i]->on()) {
+                listToRemove.append(QPair<QString, DStoreCallback*>(cb, list[i]));
+            }
+        }
+    }
+
+    for (i=0, e=listToRemove.size();i<e;i++) {
+        m_callbackList.remove(listToRemove[i].first, listToRemove[i].second);
+    }
+}
+
 void DStore::dynamicInvocation(const QString &path, DStoreEvent event)
 {
     QString triggerPath = sanitize(path);

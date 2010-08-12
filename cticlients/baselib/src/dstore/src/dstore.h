@@ -255,6 +255,7 @@ class BASELIB_EXPORT DStore
         void onChange(const QString &path, QObject *receiver, const char *method);
         
 
+        void unregisterAllCb(QObject *on);
 
         void filter(int op, const QString &path, const QVariantList &value);
         void filter(int op, const QString &path, const QVariant &value=QVariant());

@@ -23,7 +23,8 @@ class ConfChamberModel : public QAbstractTableModel
     Q_OBJECT
 
     public:
-        ConfChamberModel(ConfTab *t, QObject *parent, const QString &);
+        ConfChamberModel(ConfTab *t, QWidget *parent, const QString &);
+        ~ConfChamberModel();
         void setView(ConfChamberView *m_view);
         QString id() const;
         QString row2participantId(int) const;
@@ -43,6 +44,7 @@ class ConfChamberModel : public QAbstractTableModel
         QVariant headerData(int, Qt::Orientation, int) const;
         Qt::ItemFlags flags(const QModelIndex &) const;
         ConfTab *m_tab;
+        QWidget *m_parent;
         bool m_admin;
         bool m_authed;
         QString m_id;
@@ -71,7 +73,7 @@ class ConfChamber : public QWidget
     Q_OBJECT
 
     public:
-        ConfChamber(ConfTab *tab, const QString &id);
+        ConfChamber(QWidget *parent, ConfTab *tab, const QString &id);
     public slots:
         void pauseConf();
         void allowedIn();

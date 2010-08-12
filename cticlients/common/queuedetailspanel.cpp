@@ -52,7 +52,7 @@ QueuedetailsPanel::QueuedetailsPanel(QWidget * parent)
 {
     setTitle( tr("Agents of a Queue") );
     m_gridlayout = new QGridLayout(this);
-    
+
     m_queuedescription = new QLabel(this);
     m_queuelegend_agentid = new QLabel(tr("Agent"), this);
     m_queuelegend_status = new QLabel(tr("Status"), this);
@@ -68,7 +68,7 @@ QueuedetailsPanel::QueuedetailsPanel(QWidget * parent)
     m_gridlayout->addWidget(m_queuelegend_callstaken, 1, 4);
     m_gridlayout->addWidget(m_queuelegend_lastcall, 1, 5);
     m_gridlayout->addWidget(m_queuelegend_penalty, 1, 6);
-    m_gridlayout->setColumnStretch( 7, 1 );
+    m_gridlayout->setColumnStretch(7, 1);
     m_gridlayout->setVerticalSpacing(0);
     m_queuelegend_agentid->hide();
     m_queuelegend_status->hide();
@@ -76,17 +76,15 @@ QueuedetailsPanel::QueuedetailsPanel(QWidget * parent)
     m_queuelegend_callstaken->hide();
     m_queuelegend_lastcall->hide();
     m_queuelegend_penalty->hide();
-    
+
     // connect signals/slots to engine
     connect(b_engine, SIGNAL(newAgentList(const QStringList &)),
             this, SLOT(newAgentList(const QStringList &)) );
     connect(b_engine, SIGNAL(newQueueList(const QStringList &)),
             this, SLOT(newQueueList(const QStringList &)) );
-    
+
     connect(b_engine, SIGNAL(changeWatchedQueueSignal(const QString &)),
             this, SLOT(monitorThisQueue(const QString &)) );
-    connect(this, SIGNAL(changeWatchedAgent(const QString &, bool)),
-            b_engine, SLOT(changeWatchedAgentSlot(const QString &, bool)) );
 }
 
 /*! \brief 
@@ -112,7 +110,7 @@ void QueuedetailsPanel::newAgentList(const QStringList &)
 void QueuedetailsPanel::monitorThisQueue(const QString & queueid)
 {
     // qDebug() << "QueuedetailsPanel::monitorThisQueue" << queueid;
-    if(b_engine->queues().contains(queueid)) {
+    if (b_engine->queues().contains(queueid)) {
         m_monitored_queueid = queueid;
         clearPanel();
         updatePanel();
@@ -138,7 +136,7 @@ void QueuedetailsPanel::clearPanel()
         delete m_agent_lastcall[q];
     foreach(QString q, m_agent_penalty.keys())
         delete m_agent_penalty[q];
-    
+
     m_agent_labels.clear();
     m_agent_more.clear();
     m_agent_join_status.clear();
@@ -161,8 +159,8 @@ void QueuedetailsPanel::updatePanel()
     QVariantMap properties = qinfo->properties();
     QVariant queuestats = properties["queuestats"];
     QVariantMap agentstats = properties["agents_in_queue"].toMap();
-    
-    if(! b_engine->agents().isEmpty()) {
+
+    if (! b_engine->agents().isEmpty()) {
         m_queuelegend_agentid->show();
         m_queuelegend_status->show();
         m_queuelegend_paused->show();
@@ -170,45 +168,46 @@ void QueuedetailsPanel::updatePanel()
         m_queuelegend_lastcall->show();
         m_queuelegend_penalty->show();
     }
-    
+
     int i = 0;
     QHashIterator<QString, AgentInfo *> iter = QHashIterator<QString, AgentInfo *>(b_engine->agents());
-    while( iter.hasNext() )
-        {
-            iter.next();
-            AgentInfo * ainfo = iter.value();
-            QString agentid = iter.key();
-            
-            bool isnewagent = false;
-            if(! m_agent_more.contains(agentid))
-                isnewagent = true;
-            
-            if(isnewagent) {
-                m_agent_labels[agentid] = new QLabel(this);
-                m_agent_more[agentid] = new QPushButton(this);
-                m_agent_join_status[agentid] = new QLabel(this);
-                m_agent_pause_status[agentid] = new QLabel(this);
-                m_agent_callstaken[agentid] = new QLabel(this);
-                m_agent_lastcall[agentid] = new QLabel(this);
-                m_agent_penalty[agentid] = new QLabel(this);
-                
-                m_agent_join_status[agentid]->setProperty("Status", "undefined");
-                m_agent_pause_status[agentid]->setProperty("Paused", "undefined");
-                
-                fillAgent(i, agentid);
-            }
-            
-            setAgentLookProps(agentid);
-            setAgentProps(agentid, ainfo);
-            QString agentname = "Agent/" + ainfo->agentNumber();
-            if(qinfo->astid() == ainfo->astid()) {
-                setAgentQueueProps(agentid, agentstats[agentname]);
-            }
-            
-            if(isnewagent)
-                setAgentQueueSignals(agentid);
-            i ++;
+    while (iter.hasNext()) {
+        iter.next();
+        AgentInfo *ainfo = iter.value();
+        QString agentid = iter.key();
+
+        bool isnewagent = false;
+        if (! m_agent_more.contains(agentid))
+            isnewagent = true;
+
+        if (isnewagent) {
+            m_agent_labels[agentid] = new QLabel(this);
+            m_agent_more[agentid] = new QPushButton(this);
+            m_agent_join_status[agentid] = new QLabel(this);
+            m_agent_pause_status[agentid] = new QLabel(this);
+            m_agent_callstaken[agentid] = new QLabel(this);
+            m_agent_lastcall[agentid] = new QLabel(this);
+            m_agent_penalty[agentid] = new QLabel(this);
+
+            m_agent_join_status[agentid]->setProperty("Status", "undefined");
+            m_agent_pause_status[agentid]->setProperty("Paused", "undefined");
+
+            fillAgent(i, agentid);
         }
+
+        setAgentLookProps(agentid);
+        setAgentProps(agentid, ainfo);
+        QString agentname = "Agent/" + ainfo->agentNumber();
+        if(qinfo->astid() == ainfo->astid()) {
+            setAgentQueueProps(agentid, agentstats[agentname]);
+        }
+
+        if(isnewagent) {
+            setAgentQueueSignals(agentid);
+        }
+
+        i++;
+    }
 }
 
 void QueuedetailsPanel::setAgentLookProps(const QString & agentid)
@@ -224,30 +223,26 @@ void QueuedetailsPanel::setAgentProps(const QString & agentid, const AgentInfo *
     // qDebug() << "QueuedetailsPanel::setAgentProps" << agentid << ainfo->properties()["agentstats"].toMap()["loggedintime"].toInt();
 }
 
-/*! \brief 
- */
 void QueuedetailsPanel::setAgentQueueSignals(const QString & agentid)
 {
     m_agent_more[agentid]->setProperty("agentid", agentid);
-    connect( m_agent_more[agentid], SIGNAL(clicked()),
-             this, SLOT(agentClicked()));
+    connect(m_agent_more[agentid], SIGNAL(clicked()),
+            this, SLOT(agentClicked()));
 }
 
-/*! \brief 
- */
 void QueuedetailsPanel::setAgentQueueProps(const QString & agentid, const QVariant & qv)
 {
     QString oldsstatus = m_agent_join_status[agentid]->property("Status").toString();
     QString oldpstatus = m_agent_pause_status[agentid]->property("Paused").toString();
-    
+
     QString pstatus = qv.toMap()["Paused"].toString();
     QString sstatus = qv.toMap()["Status"].toString();
     QString dynstatus = qv.toMap()["Membership"].toString();
-    
+
     QueueAgentStatus * qas = new QueueAgentStatus();
     qas->update(dynstatus, sstatus, pstatus);
-    
-    if(sstatus != oldsstatus) {
+
+    if (sstatus != oldsstatus) {
         QPixmap square(12, 12);
         square.fill(qas->display_status_color());
         m_agent_join_status[agentid]->setPixmap(square);
@@ -258,18 +253,19 @@ void QueuedetailsPanel::setAgentQueueProps(const QString & agentid, const QVaria
         m_agent_join_status[agentid]->setProperty("Status", sstatus);
     }
     
-    if(pstatus != oldpstatus) {
+    if (pstatus != oldpstatus) {
         m_agent_pause_status[agentid]->setText(qas->display_status_paused());
         m_agent_pause_status[agentid]->setProperty("Paused", pstatus);
     }
     
-    if(qv.toMap().contains("CallsTaken"))
+    if (qv.toMap().contains("CallsTaken")) {
         m_agent_callstaken[agentid]->setText(qv.toMap()["CallsTaken"].toString());
-    else
+    } else {
         m_agent_callstaken[agentid]->setText("0");
-    
+    }
+
     delete qas;
-    
+
     QString slastcall = "-";
     if(qv.toMap().contains("LastCall")) {
         QDateTime lastcall;
@@ -280,11 +276,12 @@ void QueuedetailsPanel::setAgentQueueProps(const QString & agentid, const QVaria
         }
     }
     m_agent_lastcall[agentid]->setText(slastcall);
-    
-    if(qv.toMap().contains("Penalty"))
+
+    if(qv.toMap().contains("Penalty")) {
         m_agent_penalty[agentid]->setText(qv.toMap()["Penalty"].toString());
-    else
+    } else {
         m_agent_penalty[agentid]->setText("0");
+    }
 }
 
 /*! \brief 
@@ -302,26 +299,9 @@ void QueuedetailsPanel::fillAgent(int ii, const QString & agentid)
     m_gridlayout->addWidget(m_agent_penalty[agentid], ii + m_linenum, colnum++, Qt::AlignRight);
 }
 
-/*! \brief 
- */
-void QueuedetailsPanel::update()
-{
-    // qDebug() << "QueuedetailsPanel::update()";
-    // UserInfo * ui = b_engine->findUserFromPhone(m_monitored_astid, agent_channel);
-}
-
-/*! \brief emit changeWatchedAgent signal
- */
 void QueuedetailsPanel::agentClicked()
 {
     // qDebug() << "QueuedetailsPanel::agentClicked()" << sender()->property("agentid");
     QString agentid = sender()->property("agentid").toString();
-    emit changeWatchedAgent(agentid, true);
-}
-
-/*! \brief 
- */
-void QueuedetailsPanel::timerEvent(QTimerEvent *)
-{
-    // qDebug() << "QueuedetailsPanel::timerEvent()";
+    b_engine->changeWatchedAgentSlot(agentid, true);
 }

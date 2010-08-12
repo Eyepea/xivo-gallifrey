@@ -60,12 +60,6 @@ class QueuedetailsPanel : public XLet
     public:
         QueuedetailsPanel(QWidget *parent=0);
 
-    signals:
-        void changeWatchedAgent(const QString &, bool); //!< select an agent to watch
-
-    protected:
-        void timerEvent(QTimerEvent *);
-
     public slots:
         void newAgentList(const QStringList &);
         void newQueueList(const QStringList &);
@@ -77,18 +71,13 @@ class QueuedetailsPanel : public XLet
     private:
         void clearPanel();
         void updatePanel();
-        void update();
         void setAgentLookProps(const QString &);
         void setAgentQueueProps(const QString &, const QVariant &);
         void setAgentProps(const QString &, const AgentInfo *);
         void setAgentQueueSignals(const QString &);
         void fillAgent(int, const QString &);
         
-        double m_timesrv;
-        QDateTime m_timeclt;
-        
-        const UserInfo * m_ui;    //!< user info
-        QGridLayout * m_gridlayout; //!< Layout
+        QGridLayout *m_gridlayout; //!< Layout
         
         QString m_monitored_queueid;  //!< queue id
         QLabel *m_queuelegend_agentid; //!< "Agent" label

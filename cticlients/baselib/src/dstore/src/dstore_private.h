@@ -18,10 +18,11 @@ class DStoreCallback
         DStoreCallback(QObject *on, const char *slot);
         ~DStoreCallback();
         void call(const QString &path, DStoreEvent event);
+        QObject* on() { return m_on; }
 
     private:
-        QObject *on;
-        char *slot;
+        QObject *m_on;
+        char *m_slot;
 };
 
 #endif

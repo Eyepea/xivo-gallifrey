@@ -30,7 +30,7 @@ class ConfTab : public QTabWidget
         int indexOf(const QString &id);
 
     public slots:
-        void closeTab(const QString &id=QString());
+        void closeTab(QWidget *w=0);
 };
 
 
@@ -43,6 +43,8 @@ class XletConference : public XLet
 
     public slots:
         void openConfRoom(const QString &id, bool force=false);
+    private slots:
+        void checkJoiningPeople(const QString &room, DStoreEvent e);
 
     private:
         ConfTab *m_tab;

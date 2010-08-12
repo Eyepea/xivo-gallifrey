@@ -7,16 +7,17 @@ ConfTab::ConfTab(QWidget *parent)
 {
 }
 
-void ConfTab::closeTab(const QString &id)
+void ConfTab::closeTab(QWidget *w)
 {
     int index;
 
-    if (id.isNull()) {
-        QWidget *tab;
-        tab = sender()->property("index").value<QWidget*>();
-        index = indexOf(tab);
-        removeTab(index);
+    if (!w) {
+        w = sender()->property("index").value<QWidget*>();
     }
+
+    index = indexOf(w);
+    removeTab(index);
+    w->deleteLater();
 }
 
 int ConfTab::addClosableTab(QWidget *w, const QString &title)
@@ -47,7 +48,7 @@ void ConfTab::showConfRoom(const QString &id, bool force)
         QString roomNumber = \
             b_engine->eV(QString("confrooms/%0/number").arg(id)).toString();
 
-        index = addClosableTab(new ConfChamber(this, id),
+        index = addClosableTab(new ConfChamber(this, this, id),
                                QString("%0 (%1)").arg(roomName).arg(roomNumber));
     }
     setCurrentIndex(index);
@@ -82,9 +83,23 @@ XletConference::XletConference(QWidget *parent)
     m_tab = new ConfTab(this);
     m_tab->addTab(new ConfList(this), tr("Conference room list"));
     vLayout->addWidget(m_tab);
+
+    b_engine->tree()->onChange(QString("confrooms"), this,
+        SLOT(checkJoiningPeople(const QString &, DStoreEvent)));
 }
 
 void XletConference::openConfRoom(const QString &id, bool force)
 {
     m_tab->showConfRoom(id, force);
+}
+
+void XletConference::checkJoiningPeople(const QString &room, DStoreEvent event)
+{
+    if (event == NODE_POPULATED) {
+        QRegExp re = QRegExp("confrooms/([^/]+)/in/[0-9]+");
+        if (re.exactMatch(room) &&
+            b_engine->eVM(room)["user-id"].toString() == b_engine->xivoUserId()) {
+            openConfRoom(re.cap(1));
+        }
+    }
 }

@@ -8,8 +8,8 @@ enum ColOrder {
 
 static QVariant COL_TITLE[NB_COL];
 
-ConfChamberModel::ConfChamberModel(ConfTab *tab, QObject *parent, const QString &id)
-    : QAbstractTableModel(parent), m_tab(tab), m_admin(0),
+ConfChamberModel::ConfChamberModel(ConfTab *tab, QWidget *parent, const QString &id)
+    : QAbstractTableModel(parent), m_tab(tab), m_parent(parent), m_admin(0), 
       m_authed(0), m_id(id), m_view(NULL)
 {
     b_engine->tree()->onChange(QString("confrooms/%0").arg(id), this,
@@ -28,6 +28,11 @@ ConfChamberModel::ConfChamberModel(ConfTab *tab, QObject *parent, const QString 
     COL_TITLE[ACTION_ALLOW_IN] = tr("A");
     COL_TITLE[ACTION_TALK_TO] = tr("T");
     COL_TITLE[ACTION_MUTE] = tr("M");
+}
+
+ConfChamberModel::~ConfChamberModel()
+{
+    b_engine->tree()->unregisterAllCb(this);
 }
 
 void ConfChamberModel::timerEvent(QTimerEvent *)
@@ -72,7 +77,7 @@ void ConfChamberModel::confRoomChange(const QString &path, DStoreEvent event)
 {
     if (event == NODE_REMOVED) {
         if (b_engine->eV(path + "/user-id").toString() == b_engine->xivoUserId()) {
-            m_tab->closeTab(m_id);
+            m_tab->closeTab(m_parent);
         }
     }
     extractRow2IdMap();
@@ -411,8 +416,8 @@ void ConfChamberView::mousePressEvent(QMouseEvent *event)
 }
 
 
-ConfChamber::ConfChamber(ConfTab *tab, const QString &id)
-    : QWidget(), m_id(id)
+ConfChamber::ConfChamber(QWidget *parent, ConfTab *tab, const QString &id)
+    : QWidget(parent), m_id(id)
 {
     QVBoxLayout *vBox = new QVBoxLayout(this);
     setLayout(vBox);
