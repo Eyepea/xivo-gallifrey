@@ -152,8 +152,6 @@ void CustomerInfoPanel::displayFiche(const QString & fichecontent, bool qtui, co
             this, SLOT(addToDataBase(const QString &)));
     connect(popup, SIGNAL(actionFromPopup(const QString &, const QVariant &)),
             this, SLOT(actionFromPopup(const QString &, const QVariant &)));
-    connect(popup, SIGNAL(actionCall(const QString &, const QString &, const QString &)),
-            b_engine, SLOT(actionCall(const QString &, const QString &, const QString &)));
     connect(popup, SIGNAL(newRemarkSubmitted(const QString &, const QString &)),
             b_engine, SLOT(sendNewRemark(const QString &, const QString &)));
     popup->feed(inputstream, qtui);

@@ -122,12 +122,6 @@ void SearchPanel::updateDisplay()
             peerwidget->hide();
             // originate
             // if switchboard : transfer, atxfer, hangup, intercept
-            disconnect(peerwidget, SIGNAL(actionCall(const QString &,
-                                                     const QString &,
-                                                     const QString &)),
-                       b_engine, SLOT(actionCall(const QString &,
-                                                 const QString &,
-                                                 const QString &)));
             peeritem->setWidget(NULL);
             peerwidget->deleteLater();
         }
@@ -156,12 +150,6 @@ void SearchPanel::updateDisplay()
                 naff++;
                 peerwidget->show();
                 // if switchboard : transfer, atxfer, hangup, intercept
-                connect(peerwidget, SIGNAL(actionCall(const QString &,
-                                                      const QString &,
-                                                      const QString &)),
-                        b_engine, SLOT(actionCall(const QString &,
-                                                  const QString &,
-                                                  const QString &)));
             }
         }
     }

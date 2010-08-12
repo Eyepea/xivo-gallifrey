@@ -67,8 +67,6 @@ CallStackWidget::CallStackWidget(QWidget * parent)
             b_engine, SLOT(monitorPeerRequest(const QString &)));
     connect(b_engine, SIGNAL(monitorPeer(UserInfo *)),
             this, SLOT(monitorPeer(UserInfo *)));
-                
-    connectDials();
 }
 
 /*! \brief update display if needed

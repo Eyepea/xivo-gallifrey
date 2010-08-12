@@ -113,9 +113,6 @@ MyLocalDirPanel::MyLocalDirPanel(QWidget * parent)
     QFile file(getSaveFile());
     file.copy(getBackupFile());
     loadFromFile(file);
-
-    // connects signals/slots with engine
-    connectDials();
 }
 
 

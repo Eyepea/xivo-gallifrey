@@ -116,7 +116,6 @@ IdentityDisplay::IdentityDisplay(QWidget * parent)
     setGuiOptions(b_engine->getGuiOptions("merged_gui"));
 
     // connect signals/slots
-    connectDials();
     connect(b_engine, SIGNAL(newAgentList(const QStringList &)),
             this, SLOT(newAgentList(const QStringList &)));
     

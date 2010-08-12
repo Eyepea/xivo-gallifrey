@@ -161,12 +161,6 @@ void SwitchBoardWindow::removePeerFromLayout()
         //savePositions();
         // this disconnect() step takes time, whether explicitly or implicitly,
         // so we should be careful to avoid too much connect's (anyway)
-        disconnect(peerwidget, SIGNAL(actionCall(const QString &,
-                                                 const QString &,
-                                                 const QString &)),
-                   b_engine, SLOT(actionCall(const QString &,
-                                             const QString &,
-                                             const QString &)));
         disconnect(peerwidget, SIGNAL(removeFromPanel()),
                    this, SLOT(removePeerFromLayout()));
         peerwidget->deleteLater();
@@ -273,12 +267,6 @@ void SwitchBoardWindow::removePeers(void)
             m_layout->removeWidget(peerwidget);
             // this disconnect() step takes time, whether explicitly or implicitly,
             // so we should be careful to avoid too much connect's (anyway)
-            disconnect(peerwidget, SIGNAL(actionCall(const QString &,
-                                                     const QString &,
-                                                     const QString &)),
-                       b_engine, SLOT(actionCall(const QString &,
-                                                 const QString &,
-                                                 const QString &)));
             disconnect(peerwidget, SIGNAL(removeFromPanel()),
                        this, SLOT(removePeerFromLayout()) );
             peerwidget->deleteLater();

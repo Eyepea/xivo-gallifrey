@@ -84,7 +84,6 @@ ParkingPanel::ParkingPanel(QWidget *parent)
                                     const QVariant &)));
     connect(this, SIGNAL(copyNumber(const QString &)),
             b_engine, SIGNAL(pasteToDialPanel(const QString &)));
-    connectDials();
 }
 
 /*! \brief add a message to the list
