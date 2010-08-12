@@ -114,6 +114,7 @@ $errdisplay = '';
 #							'id'			=> "it-softkey_".$softkey."_order[$i]",
 							'key'			=> false,
 							'empty'		=> false,
+							'label'   => false
 						),
 						$order);
 	 ?>
@@ -126,6 +127,7 @@ $errdisplay = '';
 							'key'			=> 'name',
 							'altkey'  => 'id',
 							'empty'		=> false,
+							'label'   => false
 						),
 						$softkeys);
 	 ?>
