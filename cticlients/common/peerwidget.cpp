@@ -203,6 +203,14 @@ void PeerWidget::setName(const QString &/*name*/)
     m_textlbl->setText(text);
 }
 
+bool PeerWidget::pOverMobileLbl(const QPoint &p)
+{
+    if (m_mobilelbl) {
+        return m_mobilelbl->rect().translated(m_mobilelbl->pos()).contains(p);
+    }
+    return false;
+}
+
 ChitchatButton::ChitchatButton(QWidget *parent, UserInfo **peerUi)
     : QPushButton(parent), m_ui(peerUi)
 {

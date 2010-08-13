@@ -66,23 +66,23 @@ class BASELIB_EXPORT UserInfo
         bool hasPhone(const QString &, const QString &);
         bool hasAgentNumber(const QString &, const QString &);
 
-        const QString & phoneNumber() const;
-        const QString & mobileNumber() const;
-        const QString & voicemailNumber() const;
-        const QString & fullname() const;
-        const QStringList & mwi() const;
-        const QString & userid() const;
-        const QString & ctilogin() const;
-        const QString & agentNumber() const;
-        const QString & agentid() const;
-        const QString & astid() const;
-        const QString & context() const;
+        const QString &phoneNumber() const;
+        const QString &mobileNumber() const;
+        const QString &voicemailNumber() const;
+        const QString &fullname() const;
+        const QStringList &mwi() const;
+        const QString &userid() const;
+        const QString &ctilogin() const;
+        const QString &agentNumber() const;
+        const QString &agentid() const;
+        const QString &astid() const;
+        const QString &context() const;
         int simultcalls() const { return m_simultcalls; };
 
-        const QHash<QString, QString> & availstate() const;
+        const QHash<QString, QString>& availstate() const;
         QList<QString> phonelist() const;
         const PhoneInfo * getPhoneInfo(const QString &) const;
-        void updatePhone( PhoneInfo * );
+        void updatePhone(PhoneInfo * );
         QList<QString> channelList() const;
         QString toString() const;
         int commsCount() const;

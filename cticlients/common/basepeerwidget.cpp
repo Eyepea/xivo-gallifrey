@@ -73,14 +73,10 @@ BasePeerWidget::BasePeerWidget(UserInfo *ui)
     connect(m_renameAction, SIGNAL(triggered()),
             this, SLOT(rename()));
     
-    m_dialAction = new QAction(tr("&Call"), this);
-    m_dialAction->setStatusTip(tr("Call this peer"));
-    connect(m_dialAction, SIGNAL(triggered()),
-            this, SLOT(dial()));
 
     m_interceptAction = new QAction(tr("&Intercept"), this);
     m_interceptAction->setStatusTip(tr("Intercept call"));
-    connect(m_dialAction, SIGNAL(triggered()),
+    connect(m_interceptAction, SIGNAL(triggered()),
             this, SLOT(intercept2()));
     
 
@@ -118,6 +114,11 @@ void BasePeerWidget::dial()
     } else {
         b_engine->actionCall("originate", "user:special:me", "ext:" + m_number);
     }
+}
+
+void BasePeerWidget::dialMobilePhone()
+{
+    b_engine->actionCall("originate", "user:special:me", "ext:" + m_ui->mobileNumber());
 }
 
 /*! \brief make this peer call the number
@@ -349,6 +350,8 @@ void BasePeerWidget::contextMenuEvent(QContextMenuEvent *event)
     const UserInfo *ui = b_engine->getXivoClientUser();
     // Construct and display the context menu
     QMenu contextMenu(this);
+    QAction *action;
+
     if (parentWidget()->metaObject()->className() == QString("SwitchBoardWindow")) {
         contextMenu.addAction(m_removeAction);
         contextMenu.addAction(m_renameAction);
@@ -356,7 +359,23 @@ void BasePeerWidget::contextMenuEvent(QContextMenuEvent *event)
     }
     // allow to dial everyone except me !
     if (ui != m_ui) {
-        contextMenu.addAction(m_dialAction);
+
+        action = new QAction("",this);
+        action->setStatusTip(tr("Call this peer"));
+
+        if (metaObject()->className() == QString("PeerWidget")) {
+            if (static_cast<PeerWidget*>(this)->pOverMobileLbl(event->pos())) {
+                action->setText(tr("&Call mobile"));
+                connect(action, SIGNAL(triggered()),
+                        this, SLOT(dialMobilePhone()));
+            }
+        }
+        if (action->text() == "") {
+            action->setText(tr("&Call"));
+            connect(action, SIGNAL(triggered()),
+                    this, SLOT(dial()));
+        }
+        contextMenu.addAction(action);
     }
     if (m_editable) {
         contextMenu.addAction(tr("&Edit"), this, SLOT(edit()));
@@ -407,8 +426,9 @@ void BasePeerWidget::contextMenuEvent(QContextMenuEvent *event)
         foreach (const QString phone, m_ui->phonelist()) {
             const PhoneInfo *pi = m_ui->getPhoneInfo(phone);
 
-            if (!pi)
-                continue;
+            if (!pi) {
+                continue ;
+            }
 
             const QMap<QString, QVariant> &comms = pi->comms();
 
