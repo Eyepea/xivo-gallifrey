@@ -53,11 +53,6 @@ class ServicePanel : public XLet
         ServicePanel(QWidget *parent=0);
         ~ServicePanel();
 
-    signals:
-        void chkoptChanged(const QString &, bool);
-        void forwardChanged(const QString &, bool, const QString &);
-        void askFeatures(); //!< need features to be updated !
-
     public slots:
         void setUserInfo(const UserInfo *);
         void setOpt(const QString &, bool);
