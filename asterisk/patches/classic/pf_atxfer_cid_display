@@ -8,20 +8,9 @@
 
 Index: asterisk-1.4.35/res/res_features.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_features.c	2010-08-16 08:48:20.000000000 -0400
-+++ asterisk-1.4.35/res/res_features.c	2010-08-16 08:53:41.142283716 -0400
-@@ -996,8 +996,9 @@
- 		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
- 	}
- 
-+	ast_log(LOG_DEBUG, "do_atxfer transferer(%s,%s) transferee(%s,%s)\n", transferer->cid.cid_num, transferer->cid.cid_name, transferee->cid.cid_num, transferee->cid.cid_name);//thomas
- 	l = strlen(xferto);
--        snprintf(xferto + l, sizeof(xferto) - l, "@%s", transfer_context);	/* append context */
-+	snprintf(xferto + l, sizeof(xferto) - l, "@%s", transfer_context);	/* append context */
- 	newchan = ast_feature_request_and_dial(transferer, "Local", ast_best_codec(transferer->nativeformats),
- 		xferto, atxfernoanswertimeout, &outstate, transferer->cid.cid_num, transferer->cid.cid_name, transferer->language);
- 	ast_indicate(transferer, -1);
-@@ -1029,6 +1030,7 @@
+--- asterisk-1.4.35.orig/res/res_features.c	2010-08-17 00:36:11.000000000 +0200
++++ asterisk-1.4.35/res/res_features.c	2010-08-17 00:36:48.000000000 +0200
+@@ -1030,6 +1030,7 @@
  			hangup_dont = 1;
  		}
  		res = ast_bridge_call(transferer, newchan, &bconfig);
@@ -29,7 +18,7 @@ Index: asterisk-1.4.35/res/res_features.c
  		if (hangup_dont) {
  			ast_set_flag(chan, AST_FLAG_BRIDGE_HANGUP_DONT);
  		}
-@@ -1149,9 +1151,24 @@
+@@ -1150,9 +1151,24 @@
  		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
  	}
  
@@ -54,7 +43,7 @@ Index: asterisk-1.4.35/res/res_features.c
  	return -1;	/* XXX meaning the channel is bridged ? */
  }
  
-@@ -1515,12 +1532,19 @@
+@@ -1516,12 +1532,19 @@
  	struct ast_channel *active_channel;
  	int res = 0, ready = 0;
  	
@@ -74,7 +63,7 @@ Index: asterisk-1.4.35/res/res_features.c
  		if (!ast_call(chan, data, timeout)) {
  			struct timeval started;
  			int x, len = 0;
-@@ -1669,6 +1693,9 @@
+@@ -1670,6 +1693,9 @@
  	if (outstate)
  		*outstate = state;
  

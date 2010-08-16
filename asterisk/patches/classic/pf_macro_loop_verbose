@@ -8,8 +8,8 @@
 
 Index: asterisk-1.4.35/apps/app_macro.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_macro.c	2010-08-16 08:48:11.602909660 -0400
-+++ asterisk-1.4.35/apps/app_macro.c	2010-08-16 08:48:17.522910376 -0400
+--- asterisk-1.4.35.orig/apps/app_macro.c	2010-08-16 23:19:27.000000000 +0200
++++ asterisk-1.4.35/apps/app_macro.c	2010-08-17 00:35:46.000000000 +0200
 @@ -234,7 +234,7 @@
  		sscanf(inhangupc, "%30d", &inhangup);
  

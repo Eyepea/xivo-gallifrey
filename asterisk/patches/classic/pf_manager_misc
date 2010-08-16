@@ -15,8 +15,8 @@
 
 Index: asterisk-1.4.35/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_dial.c	2010-07-09 12:04:21.000000000 -0400
-+++ asterisk-1.4.35/apps/app_dial.c	2010-08-16 08:46:38.672907945 -0400
+--- asterisk-1.4.35.orig/apps/app_dial.c	2010-08-16 23:19:28.000000000 +0200
++++ asterisk-1.4.35/apps/app_dial.c	2010-08-17 00:35:33.000000000 +0200
 @@ -407,16 +407,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -51,8 +51,8 @@ Index: asterisk-1.4.35/apps/app_dial.c
  static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
 Index: asterisk-1.4.35/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_meetme.c	2010-07-12 16:34:51.000000000 -0400
-+++ asterisk-1.4.35/apps/app_meetme.c	2010-08-16 08:46:38.672907945 -0400
+--- asterisk-1.4.35.orig/apps/app_meetme.c	2010-08-16 23:19:28.000000000 +0200
++++ asterisk-1.4.35/apps/app_meetme.c	2010-08-17 00:35:33.000000000 +0200
 @@ -1897,11 +1897,22 @@
  
  	if (!sent_event) {
@@ -203,8 +203,8 @@ Index: asterisk-1.4.35/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.35/main/manager.c
 ===================================================================
---- asterisk-1.4.35.orig/main/manager.c	2010-08-16 08:46:35.332910071 -0400
-+++ asterisk-1.4.35/main/manager.c	2010-08-16 08:46:38.672907945 -0400
+--- asterisk-1.4.35.orig/main/manager.c	2010-08-16 23:23:53.000000000 +0200
++++ asterisk-1.4.35/main/manager.c	2010-08-17 00:35:33.000000000 +0200
 @@ -1638,49 +1638,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -302,8 +302,8 @@ Index: asterisk-1.4.35/main/manager.c
  		if (!all)
 Index: asterisk-1.4.35/res/res_features.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_features.c	2010-08-16 08:46:35.332910071 -0400
-+++ asterisk-1.4.35/res/res_features.c	2010-08-16 08:46:38.672907945 -0400
+--- asterisk-1.4.35.orig/res/res_features.c	2010-08-17 00:32:44.000000000 +0200
++++ asterisk-1.4.35/res/res_features.c	2010-08-17 00:35:33.000000000 +0200
 @@ -423,7 +423,7 @@
  {
  	struct ast_context *con;
@@ -363,7 +363,7 @@ Index: asterisk-1.4.35/res/res_features.c
  
  	if (peer && adsipark && ast_adsi_available(peer)) {
  		adsi_announce_park(peer, pu->parkingexten);	/* Only supports parking numbers */
-@@ -2277,15 +2293,17 @@
+@@ -2278,15 +2294,17 @@
  static void post_manager_event(const char *s, char *parkingexten, struct ast_channel *chan)
  {
  	manager_event(EVENT_FLAG_CALL, s,
@@ -390,7 +390,7 @@ Index: asterisk-1.4.35/res/res_features.c
  }
  
  static char *callback_dialoptions(struct ast_flags *features_callee, struct ast_flags *features_caller, char *options, size_t len)
-@@ -2620,15 +2638,21 @@
+@@ -2621,15 +2639,21 @@
  			ast_log(LOG_WARNING, "Whoa, no parking context?\n");
  
  		manager_event(EVENT_FLAG_CALL, "UnParkedCall",
@@ -423,8 +423,8 @@ Index: asterisk-1.4.35/res/res_features.c
  	}
 Index: asterisk-1.4.35/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.35.orig/channels/chan_sip.c	2010-08-16 08:37:56.752909694 -0400
-+++ asterisk-1.4.35/channels/chan_sip.c	2010-08-16 08:46:38.682909206 -0400
+--- asterisk-1.4.35.orig/channels/chan_sip.c	2010-08-16 23:19:28.000000000 +0200
++++ asterisk-1.4.35/channels/chan_sip.c	2010-08-17 00:35:33.000000000 +0200
 @@ -15572,6 +15572,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
@@ -493,8 +493,8 @@ Index: asterisk-1.4.35/channels/chan_sip.c
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
 Index: asterisk-1.4.35/main/channel.c
 ===================================================================
---- asterisk-1.4.35.orig/main/channel.c	2010-08-16 08:46:37.012909622 -0400
-+++ asterisk-1.4.35/main/channel.c	2010-08-16 08:46:38.682909206 -0400
+--- asterisk-1.4.35.orig/main/channel.c	2010-08-17 00:35:32.000000000 +0200
++++ asterisk-1.4.35/main/channel.c	2010-08-17 00:35:33.000000000 +0200
 @@ -1014,6 +1014,12 @@
  		chan->_softhangup |= AST_SOFTHANGUP_DEV;
  		ast_channel_unlock(chan);
@@ -629,8 +629,8 @@ Index: asterisk-1.4.35/main/channel.c
  
 Index: asterisk-1.4.35/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_queue.c	2010-07-06 09:52:28.000000000 -0400
-+++ asterisk-1.4.35/apps/app_queue.c	2010-08-16 08:46:38.682909206 -0400
+--- asterisk-1.4.35.orig/apps/app_queue.c	2010-08-16 23:19:28.000000000 +0200
++++ asterisk-1.4.35/apps/app_queue.c	2010-08-17 00:35:33.000000000 +0200
 @@ -654,17 +654,19 @@
  				}
  
@@ -931,8 +931,8 @@ Index: asterisk-1.4.35/apps/app_queue.c
  		ao2_unlock(q);
 Index: asterisk-1.4.35/res/res_agi.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_agi.c	2010-08-16 08:37:55.992910240 -0400
-+++ asterisk-1.4.35/res/res_agi.c	2010-08-16 08:46:38.682909206 -0400
+--- asterisk-1.4.35.orig/res/res_agi.c	2010-08-16 23:19:28.000000000 +0200
++++ asterisk-1.4.35/res/res_agi.c	2010-08-17 00:35:33.000000000 +0200
 @@ -414,6 +414,7 @@
  	/* ANI/DNIS */
  	fdprintf(fd, "agi_callerid: %s\n", S_OR(chan->cid.cid_num, "unknown"));
