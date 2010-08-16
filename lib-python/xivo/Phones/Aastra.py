@@ -176,6 +176,11 @@ class Aastra(PhoneVendorMixin):
         if model in ("6730i", "6731i"):
             if keynum <= 8:
                 return "prgkey%d" % keynum
+        elif model in ("6739i"):
+            if keynum <= 55:
+                return "softkey%d" % keynum
+            else:
+                return cls.__format_expmod(keynum - 55)
         elif model in ("6753i"):
             if keynum <= 6:
                 return "prgkey%d" % keynum
