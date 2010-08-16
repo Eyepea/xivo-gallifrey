@@ -41,6 +41,23 @@ class xivo_service_asterisk_queuemember extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
-}
 
+	function add($arr,$id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$arr['skills'] = $arr['usertype'].'-'.$arr['userid'];
+		return(parent::add($arr,$id));
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$arr['skills'] = $arr['usertype'].'-'.$arr['userid'];
+		return(parent::edit($id,$arr,$disable));
+	}
+}
 ?>
