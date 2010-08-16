@@ -40,6 +40,27 @@ class xivo_service_asterisk_sccpline extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function add($arr, $id=0)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$arr['vmnum'] = '*98';
+		
+		return(parent::add($arr,$id));
+	}
+
+	function edit($id,$arr,$disable=null)
+	{
+		if(is_array($arr) === false)
+			return(false);
+
+		$arr['vmnum'] = '*98';
+		
+		return(parent::edit($id,$arr,$disable));
+	}
+
 }
 
 ?>
