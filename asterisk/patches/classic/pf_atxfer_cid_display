@@ -6,11 +6,11 @@
 
     Fix some callerid displaying during ATXFER.
 
-Index: asterisk-1.4.34/res/res_features.c
+Index: asterisk-1.4.35/res/res_features.c
 ===================================================================
---- asterisk-1.4.34.orig/res/res_features.c	2010-07-26 12:36:13.377423881 -0400
-+++ asterisk-1.4.34/res/res_features.c	2010-07-26 12:38:55.647425952 -0400
-@@ -994,8 +994,9 @@
+--- asterisk-1.4.35.orig/res/res_features.c	2010-08-16 08:48:20.000000000 -0400
++++ asterisk-1.4.35/res/res_features.c	2010-08-16 08:53:41.142283716 -0400
+@@ -996,8 +996,9 @@
  		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
  	}
  
@@ -21,15 +21,15 @@ Index: asterisk-1.4.34/res/res_features.c
  	newchan = ast_feature_request_and_dial(transferer, "Local", ast_best_codec(transferer->nativeformats),
  		xferto, atxfernoanswertimeout, &outstate, transferer->cid.cid_num, transferer->cid.cid_name, transferer->language);
  	ast_indicate(transferer, -1);
-@@ -1018,6 +1019,7 @@
- 		ast_set_flag(&(bconfig.features_caller), AST_FEATURE_DISCONNECT);
- 		ast_set_flag(&(bconfig.features_callee), AST_FEATURE_DISCONNECT);
+@@ -1029,6 +1030,7 @@
+ 			hangup_dont = 1;
+ 		}
  		res = ast_bridge_call(transferer, newchan, &bconfig);
 +		ast_log(LOG_DEBUG, "do_atxfer ast_bridge_call(%s, %s, ...) returned %d\n", transferer->name, newchan->name, res);
- 		if (newchan->_softhangup || !transferer->_softhangup) {
- 			ast_hangup(newchan);
- 			if (ast_stream_and_wait(transferer, xfersound, transferer->language, ""))
-@@ -1134,9 +1136,24 @@
+ 		if (hangup_dont) {
+ 			ast_set_flag(chan, AST_FLAG_BRIDGE_HANGUP_DONT);
+ 		}
+@@ -1149,9 +1151,24 @@
  		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
  	}
  
@@ -54,7 +54,7 @@ Index: asterisk-1.4.34/res/res_features.c
  	return -1;	/* XXX meaning the channel is bridged ? */
  }
  
-@@ -1499,12 +1516,19 @@
+@@ -1515,12 +1532,19 @@
  	struct ast_channel *active_channel;
  	int res = 0, ready = 0;
  	
@@ -74,7 +74,7 @@ Index: asterisk-1.4.34/res/res_features.c
  		if (!ast_call(chan, data, timeout)) {
  			struct timeval started;
  			int x, len = 0;
-@@ -1653,6 +1677,9 @@
+@@ -1669,6 +1693,9 @@
  	if (outstate)
  		*outstate = state;
  

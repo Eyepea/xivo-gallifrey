@@ -2,10 +2,10 @@ astgenkey should generate a private key that is not world-readable.
 
 Upstream bug: http://bugs.digium.com/view.php?id=12373
 
-Index: asterisk-1.4.34/contrib/scripts/astgenkey
+Index: asterisk-1.4.35/contrib/scripts/astgenkey
 ===================================================================
---- asterisk-1.4.34.orig/contrib/scripts/astgenkey	2006-02-14 14:14:15.000000000 -0500
-+++ asterisk-1.4.34/contrib/scripts/astgenkey	2010-07-26 12:36:13.177426029 -0400
+--- asterisk-1.4.35.orig/contrib/scripts/astgenkey	2010-08-16 08:37:28.592282877 -0400
++++ asterisk-1.4.35/contrib/scripts/astgenkey	2010-08-16 08:37:54.582909818 -0400
 @@ -47,7 +47,10 @@
  rm -f ${KEY}.key ${KEY}.pub
  

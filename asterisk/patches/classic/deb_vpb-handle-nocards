@@ -4,10 +4,10 @@ Of course, a fix for the code was needed to bail-out on cards=0 :-)
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.34/channels/chan_vpb.cc
+Index: asterisk-1.4.35/channels/chan_vpb.cc
 ===================================================================
---- asterisk-1.4.34.orig/channels/chan_vpb.cc	2009-11-05 14:14:25.000000000 -0500
-+++ asterisk-1.4.34/channels/chan_vpb.cc	2010-07-26 12:36:13.167426526 -0400
+--- asterisk-1.4.35.orig/channels/chan_vpb.cc	2010-08-16 08:37:28.972910571 -0400
++++ asterisk-1.4.35/channels/chan_vpb.cc	2010-08-16 08:37:53.772910011 -0400
 @@ -2739,7 +2739,13 @@
  	v = ast_variable_browse(cfg, "general");
  	while (v){
@@ -23,10 +23,10 @@ Index: asterisk-1.4.34/channels/chan_vpb.cc
  		} else if (strcasecmp(v->name, "indication") == 0) {
  			use_ast_ind = 1;
  			ast_log(LOG_NOTICE, "VPB driver using Asterisk Indication functions!\n");
-Index: asterisk-1.4.34/configs/vpb.conf.sample
+Index: asterisk-1.4.35/configs/vpb.conf.sample
 ===================================================================
---- asterisk-1.4.34.orig/configs/vpb.conf.sample	2006-09-11 12:41:49.000000000 -0400
-+++ asterisk-1.4.34/configs/vpb.conf.sample	2010-07-26 12:36:13.167426526 -0400
+--- asterisk-1.4.35.orig/configs/vpb.conf.sample	2010-08-16 08:37:28.982907854 -0400
++++ asterisk-1.4.35/configs/vpb.conf.sample	2010-08-16 08:37:53.772910011 -0400
 @@ -57,7 +57,7 @@
  type = v12pci
  ;type = v6pci

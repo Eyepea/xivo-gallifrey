@@ -1,11 +1,11 @@
 added Channel information to the AgentCalled Event.
 It will be usefull for the CTI server
 
-Index: asterisk-1.4.34/apps/app_queue.c
+Index: asterisk-1.4.35/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.34.orig/apps/app_queue.c	2010-07-26 12:36:13.357426184 -0400
-+++ asterisk-1.4.34/apps/app_queue.c	2010-07-26 12:38:41.477426616 -0400
-@@ -2066,6 +2066,7 @@
+--- asterisk-1.4.35.orig/apps/app_queue.c	2010-08-16 08:48:20.382908894 -0400
++++ asterisk-1.4.35/apps/app_queue.c	2010-08-16 08:53:49.563534415 -0400
+@@ -2075,6 +2075,7 @@
                                "AgentCalled: %s\r\n"
                                "AgentName: %s\r\n"
                                "ChannelCalling: %s\r\n"
@@ -13,7 +13,7 @@ Index: asterisk-1.4.34/apps/app_queue.c
                                "CallerID: %s\r\n"
                                "CallerIDName: %s\r\n"
                                "Queue: %s\r\n"
-@@ -2074,6 +2075,7 @@
+@@ -2083,6 +2084,7 @@
                                "Priority: %d\r\n"
                                "%s",
                                tmp->interface, tmp->member->membername, qe->chan->name,
