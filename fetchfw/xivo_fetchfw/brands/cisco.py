@@ -85,7 +85,7 @@ def cisco79xx_install_fw(firmware):
     distutils.dir_util.copy_tree(unzip_dir, fetchfw.TFTP_PATH)
 
 
-def cisco79xx_install_locale(xfile, user_locale):
+def cisco79xx_install_locale(xfile, user_locale, create_7905font_file):
     signed_path = xfile.path
     
     # 1. Unsign
@@ -106,14 +106,24 @@ def cisco79xx_install_locale(xfile, user_locale):
     src_base_dir = os.path.join(untar_dir2, 'usr', 'local', 'cm', 'tftp')
     src_dir = user_locale
     dest_dir = user_locale
+    locale_path = os.path.join(fetchfw.TFTP_PATH, 'Cisco/i18n', dest_dir)
     distutils.dir_util.copy_tree(os.path.join(src_base_dir, src_dir),
-                                 os.path.join(fetchfw.TFTP_PATH, 'Cisco/i18n', dest_dir))
+                                 locale_path)
+    # 5. Create an empty 7905-font.xml
+    if create_7905font_file:
+        path_7905font = os.path.join(locale_path, '7905-font.xml')
+        if not os.path.isfile(path_7905font):
+            f = open(path_7905font, 'w')
+            try:
+                f.write('<Glyphs></Glyphs>\n')
+            finally:
+                f.close()
 
 
-def cisco79xx_metainstall_locale(user_locale, network_locale):
+def cisco79xx_metainstall_locale(user_locale, network_locale, create_7905font_file=False):
     def aux(firmware):
-        cisco79xx_install_locale(firmware.remote_files[0], user_locale)
-        cisco79xx_install_locale(firmware.remote_files[1], network_locale)
+        cisco79xx_install_locale(firmware.remote_files[0], user_locale, create_7905font_file)
+        cisco79xx_install_locale(firmware.remote_files[1], network_locale, False)
     return aux
 
 
@@ -159,13 +169,13 @@ cisco_install_map = {
     'cisco7914_sccp_504':
         cisco79xx_install_fw,
     'cisco79xx_locale_de_DE':
-        cisco79xx_metainstall_locale('german_germany', 'germany'),
+        cisco79xx_metainstall_locale('german_germany', 'germany', True),
     'cisco79xx_locale_es_ES':
-        cisco79xx_metainstall_locale('spanish_spain', 'spain'),
+        cisco79xx_metainstall_locale('spanish_spain', 'spain', True),
     'cisco79xx_locale_fr_CA':
-        cisco79xx_metainstall_locale('french_france', 'canada'),
+        cisco79xx_metainstall_locale('french_france', 'canada', True),
     'cisco79xx_locale_fr_FR':
-        cisco79xx_metainstall_locale('french_france', 'france'),
+        cisco79xx_metainstall_locale('french_france', 'france', True),
     'ciscospa525_744':
         ciscospa5xx_metainstall_fw('spa525g-7-4-4.bin'),
     'ciscospa509_744':
