@@ -1,20 +1,21 @@
-Index: asterisk-chan-sccp-0~prerelease+svn1736/src/sccp_channel.c
+Index: asterisk-chan-sccp-0~prerelease+svn1737/src/sccp_channel.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1736.orig/src/sccp_channel.c	2010-08-14 15:21:49.000000000 -0400
-+++ asterisk-chan-sccp-0~prerelease+svn1736/src/sccp_channel.c	2010-08-16 10:10:43.622283740 -0400
-@@ -2418,6 +2418,7 @@
+--- asterisk-chan-sccp-0~prerelease+svn1737.orig/src/sccp_channel.c	2010-08-14 21:21:49.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1737/src/sccp_channel.c	2010-08-17 13:58:57.000000000 +0200
+@@ -2417,7 +2417,7 @@
+ 		sccp_log(1)(VERBOSE_PREFIX_3 "%s: Transfer confirmation destination on channel %s\n", d->id, astcDestinationRemote->name);
  		/* display the transferred CID info to destination */
  #ifdef CS_AST_CHANNEL_HAS_CID
- 		//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->cid.cid_name, astcSourceRemote->cid.cid_num);
-+		sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->lid.lid_name, astcSourceRemote->lid.lid_num);
+-		//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->cid.cid_name, astcSourceRemote->cid.cid_num);
++		//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->lid.lid_name, astcSourceRemote->lid.lid_num);
  		
  		
  		/* change callInfo on destination part */
-Index: asterisk-chan-sccp-0~prerelease+svn1736/src/sccp_pbx.c
+Index: asterisk-chan-sccp-0~prerelease+svn1737/src/sccp_pbx.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1736.orig/src/sccp_pbx.c	2010-08-16 04:54:48.000000000 -0400
-+++ asterisk-chan-sccp-0~prerelease+svn1736/src/sccp_pbx.c	2010-08-16 10:08:55.662284937 -0400
-@@ -242,19 +242,19 @@
+--- asterisk-chan-sccp-0~prerelease+svn1737.orig/src/sccp_pbx.c	2010-08-17 13:01:48.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1737/src/sccp_pbx.c	2010-08-17 13:57:56.000000000 +0200
+@@ -252,19 +252,19 @@
  		   enbloc dialed numbers (such as via 7970 enbloc dialing) if they match a certain pattern.
  		   This would help users dial from call history lists on other phones, which do not have enbloc dialing,
  		   when using shared lines. */
