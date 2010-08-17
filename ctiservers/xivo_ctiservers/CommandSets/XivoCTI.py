@@ -937,7 +937,7 @@ class XivoCTICommand(BaseCommand):
                                                 'pin' :        mitem.get('pin'),
                                                 'pinadmin' :   mitem.get('pinadmin'),
                                                 'moderated' :  mitem.get('admin_moderationmode'),
-                                                'adminnum' : None,
+                                                'adminnum' : [],
                                                 'uniqueids' : {}
                                                 }
             except Exception:
@@ -4287,7 +4287,7 @@ class XivoCTICommand(BaseCommand):
             userid = ''
 
         if isadmin:
-            meetmeref['adminnum'] = usernum
+            meetmeref['adminnum'].append(usernum)
             
         meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                              'mutestatus' : 'off',
@@ -4319,11 +4319,14 @@ class XivoCTICommand(BaseCommand):
         usernum = event.get('Usernum')
         
         (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+
         if meetmeref is None:
             log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, confno))
             return
         
         context = self.weblist['meetme'][astid].keeplist[meetmeid].get('context')
+        if meetmeref['adminnum'].count(usernum):
+            meetmeref['adminnum'].remove(usernum)
         
         phoneid = self.__phoneid_from_channel__(astid, channel)
         uinfo = self.__userinfo_from_phoneid__(astid, phoneid)
@@ -4412,7 +4415,7 @@ class XivoCTICommand(BaseCommand):
                 userid = ''
 
             if isadmin:
-                meetmeref['adminnum'] = usernum
+                meetmeref['adminnum'].append(usernum)
 
             meetmeref['uniqueids'][uniqueid] = { 'usernum' : usernum,
                                                  'mutestatus' : mutestatus,
@@ -4939,7 +4942,7 @@ class XivoCTICommand(BaseCommand):
                                 self.__ami_execute__(astid, 'sendcommand',
                                                      function, [('Meetme', '%s' % (roomname)),
                                                                 ('Usernum', '%s' % (castid)),
-                                                                ('Adminnum', '%s' % (adminnum))])
+                                                                ('Adminnum', '%s' % (adminnum[0]))])
                             
                             elif function in ['kick', 'mute', 'unmute']:
                                 castid = argums[0]
@@ -6049,7 +6052,7 @@ class XivoCTICommand(BaseCommand):
             try:
                 results = None
                 if z.uri not in self.ldapids:
-                    # first connection to ldap, or after failure
+                    #Â first connection to ldap, or after failure
                     ldapid = xivo_ldap.xivo_ldap(z.uri)
                     if ldapid.ldapobj is not None:
                         self.ldapids[z.uri] = ldapid

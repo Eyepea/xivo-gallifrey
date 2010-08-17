@@ -80,12 +80,14 @@ void ConfChamberModel::confRoomChange(const QString &path, DStoreEvent event)
             m_tab->closeTab(m_parent);
         }
     }
-    extractRow2IdMap();
+    QTimer::singleShot(0, this, SLOT(extractRow2IdMap()));
 }
 
 void ConfChamberModel::extractRow2IdMap()
 {
     QVariantMap roomInList = b_engine->eVM(QString("confrooms/%0/in").arg(m_id));
+
+    m_row2id.clear();
 
     int row = 0;
     if (roomInList.size() != m_row2id.size()) {

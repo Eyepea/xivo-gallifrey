@@ -32,10 +32,10 @@ class ConfChamberModel : public QAbstractTableModel
         int isAuthed() { return m_authed; };
     private slots:
         void confRoomChange(const QString &path, DStoreEvent event);
+        void extractRow2IdMap();
     protected:
         void timerEvent(QTimerEvent *event);
     private:
-        void extractRow2IdMap();
         void updateView();
         void sort(int, Qt::SortOrder);
         int rowCount(const QModelIndex&) const;
