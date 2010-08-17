@@ -15,8 +15,8 @@
 
 Index: asterisk-1.4.35/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_dial.c	2010-08-16 23:19:28.000000000 +0200
-+++ asterisk-1.4.35/apps/app_dial.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/apps/app_dial.c	2010-07-09 18:04:21.000000000 +0200
++++ asterisk-1.4.35/apps/app_dial.c	2010-08-17 11:00:53.000000000 +0200
 @@ -407,16 +407,21 @@
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
@@ -51,8 +51,8 @@ Index: asterisk-1.4.35/apps/app_dial.c
  static struct ast_channel *wait_for_answer(struct ast_channel *in, struct dial_localuser *outgoing, int *to, struct ast_flags *peerflags, int *sentringing, char *status, size_t statussize, int busystart, int nochanstart, int congestionstart, int priority_jump, int *result)
 Index: asterisk-1.4.35/apps/app_meetme.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_meetme.c	2010-08-16 23:19:28.000000000 +0200
-+++ asterisk-1.4.35/apps/app_meetme.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/apps/app_meetme.c	2010-07-12 22:34:51.000000000 +0200
++++ asterisk-1.4.35/apps/app_meetme.c	2010-08-17 11:04:47.000000000 +0200
 @@ -1897,11 +1897,22 @@
  
  	if (!sent_event) {
@@ -92,7 +92,7 @@ Index: asterisk-1.4.35/apps/app_meetme.c
  				      user->user_no,
  				      S_OR(user->chan->cid.cid_num, "<unknown>"),
  				      S_OR(user->chan->cid.cid_name, "<unknown>"),
-@@ -3295,6 +3308,85 @@
+@@ -3295,6 +3308,87 @@
  	return meetmemute(s, m, 0);
  }
  
@@ -111,6 +111,7 @@ Index: asterisk-1.4.35/apps/app_meetme.c
 +	char idText[80] = "";
 +	struct ast_conference *cnf;
 +	struct ast_conf_user *user;
++	struct ao2_iterator user_iter;
 +	int total = 0;
 +
 +	if (!ast_strlen_zero(actionid))
@@ -131,7 +132,8 @@ Index: asterisk-1.4.35/apps/app_meetme.c
 +			continue;
 +
 +		/* Show all the users */
-+		AST_LIST_TRAVERSE(&cnf->userlist, user, list) {
++		user_iter = ao2_iterator_init(cnf->usercontainer, 0);
++		while ((user = ao2_iterator_next(&user_iter))) {
 +			total++;
 +			astman_append(s,
 +                                      "Event: MeetmeList\r\n"
@@ -178,7 +180,7 @@ Index: asterisk-1.4.35/apps/app_meetme.c
  static void *recordthread(void *args)
  {
  	struct ast_conference *cnf = args;
-@@ -5122,6 +5214,7 @@
+@@ -5122,6 +5216,7 @@
  	ast_cli_unregister_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
  	res = ast_manager_unregister("MeetmeMute");
  	res |= ast_manager_unregister("MeetmeUnmute");
@@ -186,7 +188,7 @@ Index: asterisk-1.4.35/apps/app_meetme.c
  	res |= ast_unregister_application(app3);
  	res |= ast_unregister_application(app2);
  	res |= ast_unregister_application(app);
-@@ -5145,10 +5238,12 @@
+@@ -5145,10 +5240,12 @@
  	res |= load_config(0);
  
  	ast_cli_register_multiple(cli_meetme, ARRAY_LEN(cli_meetme));
@@ -203,8 +205,8 @@ Index: asterisk-1.4.35/apps/app_meetme.c
  	res |= ast_register_application(app, conf_exec, synopsis, descrip);
 Index: asterisk-1.4.35/main/manager.c
 ===================================================================
---- asterisk-1.4.35.orig/main/manager.c	2010-08-16 23:23:53.000000000 +0200
-+++ asterisk-1.4.35/main/manager.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/main/manager.c	2010-08-17 10:52:20.000000000 +0200
++++ asterisk-1.4.35/main/manager.c	2010-08-17 10:52:20.000000000 +0200
 @@ -1638,49 +1638,53 @@
  				elapsed_seconds = now.tv_sec - c->cdr->start.tv_sec;
  			}
@@ -302,8 +304,8 @@ Index: asterisk-1.4.35/main/manager.c
  		if (!all)
 Index: asterisk-1.4.35/res/res_features.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_features.c	2010-08-17 00:32:44.000000000 +0200
-+++ asterisk-1.4.35/res/res_features.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/res/res_features.c	2010-08-17 10:52:20.000000000 +0200
++++ asterisk-1.4.35/res/res_features.c	2010-08-17 11:00:53.000000000 +0200
 @@ -423,7 +423,7 @@
  {
  	struct ast_context *con;
@@ -423,8 +425,8 @@ Index: asterisk-1.4.35/res/res_features.c
  	}
 Index: asterisk-1.4.35/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.35.orig/channels/chan_sip.c	2010-08-16 23:19:28.000000000 +0200
-+++ asterisk-1.4.35/channels/chan_sip.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/channels/chan_sip.c	2010-08-17 10:52:20.000000000 +0200
++++ asterisk-1.4.35/channels/chan_sip.c	2010-08-17 11:00:56.000000000 +0200
 @@ -15572,6 +15572,19 @@
  	ast_set_flag(&transferer->flags[0], SIP_DEFER_BYE_ON_TRANSFER);	/* Delay hangup */
  
@@ -493,8 +495,8 @@ Index: asterisk-1.4.35/channels/chan_sip.c
  			ast_log(LOG_DEBUG, "%s transfer succeeded. Telling transferer.\n", p->refer->attendedtransfer? "Attended" : "Blind");
 Index: asterisk-1.4.35/main/channel.c
 ===================================================================
---- asterisk-1.4.35.orig/main/channel.c	2010-08-17 00:35:32.000000000 +0200
-+++ asterisk-1.4.35/main/channel.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/main/channel.c	2010-08-17 10:52:20.000000000 +0200
++++ asterisk-1.4.35/main/channel.c	2010-08-17 11:00:53.000000000 +0200
 @@ -1014,6 +1014,12 @@
  		chan->_softhangup |= AST_SOFTHANGUP_DEV;
  		ast_channel_unlock(chan);
@@ -629,8 +631,8 @@ Index: asterisk-1.4.35/main/channel.c
  
 Index: asterisk-1.4.35/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_queue.c	2010-08-16 23:19:28.000000000 +0200
-+++ asterisk-1.4.35/apps/app_queue.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/apps/app_queue.c	2010-07-06 15:52:28.000000000 +0200
++++ asterisk-1.4.35/apps/app_queue.c	2010-08-17 11:00:53.000000000 +0200
 @@ -654,17 +654,19 @@
  				}
  
@@ -931,8 +933,8 @@ Index: asterisk-1.4.35/apps/app_queue.c
  		ao2_unlock(q);
 Index: asterisk-1.4.35/res/res_agi.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_agi.c	2010-08-16 23:19:28.000000000 +0200
-+++ asterisk-1.4.35/res/res_agi.c	2010-08-17 00:35:33.000000000 +0200
+--- asterisk-1.4.35.orig/res/res_agi.c	2010-08-17 10:52:20.000000000 +0200
++++ asterisk-1.4.35/res/res_agi.c	2010-08-17 10:52:21.000000000 +0200
 @@ -414,6 +414,7 @@
  	/* ANI/DNIS */
  	fdprintf(fd, "agi_callerid: %s\n", S_OR(chan->cid.cid_num, "unknown"));
