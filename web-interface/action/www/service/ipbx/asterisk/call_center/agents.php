@@ -69,7 +69,12 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
+			{
+				// must reload app_queue (propagate skills)
+				$ipbx->discuss('module reload app_queue.so');
+
 				$_QRY->go($_TPL->url('service/ipbx/call_center/agents'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -171,7 +176,12 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
+			{
+				// must reload app_queue (propagate skills)
+				$ipbx->discuss('module reload app_queue.so');
+
 				$_QRY->go($_TPL->url('service/ipbx/call_center/agents'),$param);
+			}
 		}
 
 		dwho::load_class('dwho_sort');
