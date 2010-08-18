@@ -251,21 +251,21 @@ void MainWidget::setAppearance(const QStringList &dockoptions)
     QStringList dockopts = dockoptions;
 
     foreach (QString dname, dockopts) {
-        if(dname.size() > 0) {
+        if (dname.size() > 0) {
             QStringList dopt = dname.split("-");
             QString wname = dopt[0];
-            if((wname == "customerinfo") && (! b_engine->checkedFunction(wname)))
+            if ((wname == "customerinfo") && (! b_engine->checkedFunction(wname)))
                 continue;
             m_allnames.append(wname);
             m_dockoptions[wname] = "";
-            if(dopt.size() > 1) {
-                if(dopt[1] == "dock") {
+            if (dopt.size() > 1) {
+                if (dopt[1] == "dock") {
                     m_docknames.append(wname);
-                } else if(dopt[1] == "grid")
+                } else if (dopt[1] == "grid")
                     m_gridnames.append(wname);
-                else if(dopt[1] == "tab")
+                else if (dopt[1] == "tab")
                     m_tabnames.append(wname);
-                if(dopt.size() > 2)
+                if (dopt.size() > 2)
                     m_dockoptions[wname] = dopt[2];
             } else {
                 m_docknames.append(dname);

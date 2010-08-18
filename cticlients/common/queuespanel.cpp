@@ -702,14 +702,20 @@ void QueueRow::updateRow()
 
     int nagents;
 
+    QRegExp filter = QRegExp("Agent/[0-9]*");
+
     nagents = 0; // count the number of Available agents
-    foreach (QString agentname, queueagents.keys()) {
-        QVariantMap qaprops = queueagents[agentname].toMap();
-        if ((qaprops["Status"].toString() == "1") && (qaprops["Paused"].toString() == "0")) {
-            nagents++;
-            queueagents_list << agentname;
+    foreach (QString in, queueagents.keys()) {
+        if (filter.exactMatch(in)) {
+            QVariantMap qaprops = queueagents[in].toMap();
+            if ((qaprops["Status"].toString() == "1") &&
+                (qaprops["Paused"].toString() == "0")) {
+                nagents++;
+                queueagents_list << in;
+            }
         }
     }
+
     if (m_infoList.contains("Xivo-Avail")) {
         m_infoList["Xivo-Avail"]->setText(QString::number(nagents));
         if (nagents) {
@@ -721,9 +727,10 @@ void QueueRow::updateRow()
     }
 
     nagents = 0; // count the number of Connected agents
-    foreach (QString agentname, queueagents.keys()) {
+    foreach (QString agentname, queueagents_list) {
         QVariantMap qaprops = queueagents[agentname].toMap();
-        if ((qaprops["Status"].toString() == "3") || (qaprops["Status"].toString() == "1")) {
+        if ((qaprops["Status"].toString() == "3") ||
+            (qaprops["Status"].toString() == "1")) {
             nagents++;
         }
     }
@@ -732,7 +739,7 @@ void QueueRow::updateRow()
 
 
     nagents = 0; // count the number of Talking agents
-    foreach (QString agentname, queueagents.keys()) {
+    foreach (QString agentname, queueagents_list) {
         QVariantMap qaprops = queueagents[agentname].toMap();
         if ((qaprops["Status"].toString() == "3") && (qaprops["Paused"].toString() == "0")) {
             nagents++;
