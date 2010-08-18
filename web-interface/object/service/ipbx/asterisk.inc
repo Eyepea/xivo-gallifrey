@@ -826,7 +826,7 @@ class xivo_service_asterisk extends xivo_service_abstract
 		return(xivo_service_asterisk::valid_exten_number_in_interval($min,$number,$max));
 	}
 
-	function mk_callerid($calleridname,$calleridnum='')
+	function mk_callerid($calleridname,$calleridnum='', $protocol=XIVO_SRE_IPBX_AST_PROTO_SIP)
 	{
 		$calleridname = trim(preg_replace('/<[^<]*>$/','',trim(strval($calleridname))));
 		$calleridnum = strval($calleridnum);
@@ -837,10 +837,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 			&& substr($calleridname,-1) === '"')
 				$calleridname = substr($calleridname,1,-1);
 
-			$calleridname = '"'.str_replace('"','\"',str_replace('\"','"',$calleridname)).'"';
+			if($protocol == XIVO_SRE_IPBX_AST_PROTO_SCCP)
+				$calleridname = str_replace('"', '', $calleridname);
+			else
+				$calleridname = '"'.str_replace('"','\"',str_replace('\"','"',$calleridname)).'"';
 		}
 
-		if(preg_match('/^[0-9\*#]{1,40}$/',$calleridnum) === 1)
+		if(preg_match('/^[0-9\*#]{1,40}$/',$calleridnum) === 1 &&  $protocol != XIVO_SRE_IPBX_AST_PROTO_SCCP)
 			$calleridname .= ' <'.$calleridnum.'>';
 
 		return(trim($calleridname));

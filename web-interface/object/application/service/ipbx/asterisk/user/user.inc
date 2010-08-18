@@ -861,7 +861,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			$callerid = (string) $this->get_result_var('protocol','callerid');
-			$callerid = $this->_service->mk_callerid($callerid,$number);
+			$callerid = $this->_service->mk_callerid($callerid, $number, $protocolname); 
 			$this->_set_result_var('protocol','callerid',$callerid);
 
 			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
