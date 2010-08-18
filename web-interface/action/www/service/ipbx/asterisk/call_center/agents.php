@@ -69,12 +69,7 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
-			{
-				// must reload app_queue (propagate skills)
-				$ipbx->discuss('module reload app_queue.so');
-
 				$_QRY->go($_TPL->url('service/ipbx/call_center/agents'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -176,12 +171,7 @@ switch($act)
 				$result = $appagentgroup->get_result();
 			}
 			else
-			{
-				// must reload app_queue (propagate skills)
-				$ipbx->discuss('module reload app_queue.so');
-
 				$_QRY->go($_TPL->url('service/ipbx/call_center/agents'),$param);
-			}
 		}
 
 		dwho::load_class('dwho_sort');
@@ -364,6 +354,9 @@ switch($act)
 			else
 			{
 				$ipbx->discuss('module reload chan_agent.so');
+				// must reload app_queue (propagate skills)
+				$ipbx->discuss('module reload app_queue.so');
+
 				$ipbx->discuss('xivo[agentlist,update]');
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
@@ -504,6 +497,9 @@ switch($act)
 				$appqueue->agentskills_edit($_QR['id'], $queueskills);
 
 				$ipbx->discuss('module reload chan_agent.so');
+				// must reload app_queue (propagate skills)
+				$ipbx->discuss('module reload app_queue.so');
+
 				$ipbx->discuss('xivo[agentlist,update]');
 
 				$param['group'] = $appagent->get_result_var('agentfeatures','numgroup');
