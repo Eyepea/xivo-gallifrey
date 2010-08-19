@@ -67,7 +67,6 @@ class QUrl;
 class QStackedWidget;
 
 class BaseEngine;
-class XLetFactory;
 
 /*! \brief Main window class
  */
@@ -135,7 +134,6 @@ class MainWidget : public QMainWindow
         QString m_appliname;
         bool m_withsystray;
         QSettings *m_settings;
-        XLetFactory *m_xletfactory;
 
         QLabel *m_status;  //!< status indicator
         QStackedWidget *m_centralWidget;  //!< central widget

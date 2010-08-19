@@ -37,7 +37,7 @@
 #include <QHash>
 #include <QObject>
 #include <QVariant>
-#include "xlet.h"
+#include <xlet.h>
 
 class QContextMenuEvent;
 class QGridLayout;

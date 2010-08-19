@@ -83,7 +83,6 @@ MainWidget::MainWidget()
       m_appliname("Client"),
       m_withsystray(true),
       m_settings(b_engine->getSettings()),
-      m_xletfactory(new XLetFactory(this)),
       m_status(new QLabel(this)),
       m_centralWidget(new QStackedWidget(this)),
       m_resizingHelper(0)
@@ -678,7 +677,7 @@ void MainWidget::engineStarted()
     foreach (QString xletid, m_allnames) {
         if (! QStringList("tabber").contains(xletid)) {
             bool withscrollbar = m_dockoptions[xletid].contains("s");
-            XLet *xlet = m_xletfactory->newXLet(xletid, this);
+            XLet *xlet = XLetFactory::spawn(xletid, this);
             if (xlet) {
                 m_xletlist.insert(xlet);
                 xlet->doGUIConnects(this);

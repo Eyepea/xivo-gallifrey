@@ -34,7 +34,7 @@
 #ifndef __XLET_H__
 #define __XLET_H__
 
-#include "baselib_export.h"
+#include <baselib_export.h>
 #include <QVariantMap>
 #include <QWidget>
 #include <baseengine.h>
