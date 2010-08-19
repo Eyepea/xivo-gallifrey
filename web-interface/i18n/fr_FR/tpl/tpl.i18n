@@ -64,6 +64,12 @@ Oui
 ; fm_bool-opt(no)
 Non
 
+; fm_bool-opt(reject)
+Rejeté
+
+; fm_bool-opt(silent)
+Silencieux
+
 ; fm_success-save
 Le formulaire a bien été sauvegardé.
 

@@ -55,6 +55,12 @@ Yes
 ; fm_bool-opt(no)
 No
 
+; fm_bool-opt(reject)
+Reject
+
+; fm_bool-opt(silent)
+Silent
+
 ; fm_bt-save
 Save
 
