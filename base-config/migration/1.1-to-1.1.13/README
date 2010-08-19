@@ -1,0 +1,5 @@
+
+ = migration script from 1.1.* to 1.1.13 =
+ 
+* Update mysql/sqlite schema to fix ticket #1165 bug 
+ (database fields usersccp.mwilamp and usersccp.earlyrtp where to short)
