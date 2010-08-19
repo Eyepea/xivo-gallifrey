@@ -251,17 +251,29 @@ class SQLBackEnd:
         """
         if proto == TECH_SCCP:
             confdico = self.sql_select_one(
-                ("SELECT ${columns} FROM %s WHERE %s.protocol = %s AND %s.%s = %s")
+                ("SELECT ${columns} "
+                 "FROM %s "
+                 "WHERE %s.protocol = %s AND %s.%s = %s")
                 % (UF_TABLE, UF_TABLE, '%s', UF_TABLE, something_column, '%s'), 
-                ('id', 'protocolid'),
+                ('id', 'protocolid', 'timezone'),
                 (proto, something_content),
             )
 
             if not confdico:
                 return {'proto': proto, 'extensions': {}}
+            if confdico['timezone'] is None or not confdico['timezone']:
+                generaldico = self.sql_select_one(
+                    ("SELECT ${columns} "
+                     "FROM %s")
+                     % GEN_TABLE,
+                     ('timezone',),
+                     ())
+                confdico['timezone'] = generaldico['timezone']
 
             extrainfos = self.sql_select_one(
-                "SELECT ${columns} FROM usersccp, sccpline WHERE usersccp.defaultline = sccpline.id AND usersccp.id = %s",
+                "SELECT ${columns} "
+                "FROM usersccp, sccpline "
+                "WHERE usersccp.defaultline = sccpline.id AND usersccp.id = %s",
                 ('addons', 'language'),
                 (confdico['protocolid'],)
             )

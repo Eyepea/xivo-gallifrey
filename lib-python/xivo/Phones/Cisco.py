@@ -30,12 +30,80 @@ import subprocess
 import math
 import socket
 
+from xivo import tzinform
 from xivo import xivo_config
 from xivo.xivo_config import PhoneVendorMixin
 from xivo.xivo_helpers import clean_extension
 
 log = logging.getLogger("xivo.Phones.Cisco") # pylint: disable-msg=C0103
 
+
+_ZONE_MAP = {
+    'Etc/GMT+12': 'Dateline Standard Time',
+    'Pacific/Samoa': 'Samoa Standard Time ',
+    'US/Hawaii': 'Hawaiian Standard Time ',
+    'US/Alaska': 'Alaskan Standard/Daylight Time',
+    'US/Pacific': 'Pacific Standard/Daylight Time',
+    'US/Mountain': 'Mountain Standard/Daylight Time',
+    'Etc/GMT+7': 'US Mountain Standard Time',
+    'US/Central': 'Central Standard/Daylight Time',
+    'America/Mexico_City': 'Mexico Standard/Daylight Time',
+#    '': 'Canada Central Standard Time',
+#    '': 'SA Pacific Standard Time',
+    'US/Eastern': 'Eastern Standard/Daylight Time',
+    'Etc/GMT+5': 'US Eastern Standard Time',
+    'Canada/Atlantic': 'Atlantic Standard/Daylight Time',
+    'Etc/GMT+4': 'SA Western Standard Time',
+    'Canada/Newfoundland': 'Newfoundland Standard/Daylight Time',
+    'America/Sao_Paulo': 'South America Standard/Daylight Time',
+    'Etc/GMT+3': 'SA Eastern Standard Time',
+    'Etc/GMT+2': 'Mid-Atlantic Standard/Daylight Time',
+    'Atlantic/Azores': 'Azores Standard/Daylight Time',
+    'Europe/London': 'GMT Standard/Daylight Time',
+    'Etc/GMT': 'Greenwich Standard Time',
+#    'Europe/Belfast': 'W. Europe Standard/Daylight Time',
+#    '': 'GTB Standard/Daylight Time',
+    'Egypt': 'Egypt Standard/Daylight Time',
+    'Europe/Athens': 'E. Europe Standard/Daylight Time',
+#    'Europe/Rome': 'Romance Standard/Daylight Time',
+    'Europe/Paris': 'Central Europe Standard/Daylight Time',
+    'Africa/Johannesburg': 'South Africa Standard Time ',
+    'Asia/Jerusalem': 'Jerusalem Standard/Daylight Time',
+    'Asia/Riyadh': 'Saudi Arabia Standard Time',
+    'Europe/Moscow': 'Russian Standard/Daylight Time', # Russia covers 8 time zones.
+    'Iran': 'Iran Standard/Daylight Time',
+#    '': 'Caucasus Standard/Daylight Time',
+    'Etc/GMT-4': 'Arabian Standard Time',
+    'Asia/Kabul': 'Afghanistan Standard Time ',
+    'Etc/GMT-5': 'West Asia Standard Time',
+#    '': 'Ekaterinburg Standard Time',
+    'Asia/Calcutta': 'India Standard Time',
+    'Etc/GMT-6': 'Central Asia Standard Time ',
+    'Etc/GMT-7': 'SE Asia Standard Time',
+#    '': 'China Standard/Daylight Time', # China doesn't observe DST since 1991
+    'Asia/Taipei': 'Taipei Standard Time',
+    'Asia/Tokyo': 'Tokyo Standard Time',
+    'Australia/ACT': 'Cen. Australia Standard/Daylight Time',
+    'Australia/Brisbane': 'AUS Central Standard Time',
+#    '': 'E. Australia Standard Time',
+#    '': 'AUS Eastern Standard/Daylight Time',
+    'Etc/GMT-10': 'West Pacific Standard Time',
+    'Australia/Tasmania': 'Tasmania Standard/Daylight Time',
+    'Etc/GMT-11': 'Central Pacific Standard Time',
+    'Etc/GMT-12': 'Fiji Standard Time',
+#    '': 'New Zealand Standard/Daylight Time',
+}
+
+def _gen_tz_map():
+    result = {}
+    for tz_name, param_value in _ZONE_MAP.iteritems():
+        inform = tzinform.get_timezone_info(tz_name)
+        inner_dict = result.setdefault(inform['utcoffset'].as_minutes, {})
+        if not inform['dst']:
+            inner_dict[None] = param_value
+        else:
+            inner_dict[inform['dst']['as_string']] = param_value
+    return result
 
 class Cisco(PhoneVendorMixin):
 
@@ -88,6 +156,8 @@ class Cisco(PhoneVendorMixin):
             'networkLocale': 'canada'
         }
     }
+    
+    CISCO_TZ_MAP = _gen_tz_map()
 
     @classmethod
     def setup(cls, config):
@@ -111,30 +181,13 @@ class Cisco(PhoneVendorMixin):
                 s.connect(('127.0.0.1', 5004))
                 s.send('sccp reload')
                 s.close()
+                
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
+                s.connect(('127.0.0.1', 5004))
+                s.send('sccp restart SEP%s' % ''.join(self.phone['macaddr'].upper().split(':')))
+                s.close()
             except Exception:
                 log.exception("error when trying to reload chan_sccp")
-        
-        cnx_to = max_to = max(1, self.CURL_TO_S / 2)
-        try: # XXX: also check return values?
-
-            ## curl options
-            # -s                    -- silent
-            # -o /dev/null          -- dump result
-            # --connect-timeout 30  -- timeout after 30s
-            # --max-time 15         -- timeout after 15s when connected
-            # -retry 0              -- don't retry
-            subprocess.call([self.CURL_CMD,
-                             "--retry", "0",
-                             "--connect-timeout", str(cnx_to),
-                             "--max-time", str(max_to),
-                             "-s",
-                             "-o", "/dev/null",
-                             "-u", "%s:%s" % (user, passwd),
-			     "-d", "CMD=%s" % command,
-                             "http://%s/reboot.html" % self.phone['ipv4']],
-                            close_fds = True)
-        except OSError:
-            log.exception("error when trying to call curl")
 
     def do_reinit(self):
         """
@@ -237,6 +290,12 @@ class Cisco(PhoneVendorMixin):
  </userLocale>
  <networkLocale>Cisco/i18n/%(networkLocale)s</networkLocale>\
  """ % self.CISCO_LOCALES[locale]
+ 
+        if 'timezone' in provinfo:
+            timezone = provinfo['timezone']
+        else:
+            timezone = self.DEFAULT_TIMEZONE
+        timezone_value = self._timezone_name_to_value(timezone)
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -247,6 +306,7 @@ class Cisco(PhoneVendorMixin):
                       'function_keys':          function_keys_config_lines,
                       'addons':                 addons,
                       'language':               language,
+                      'timezone':               timezone_value,
                     },
                     clean_extension),
                 cfg_filename,
@@ -282,6 +342,33 @@ class Cisco(PhoneVendorMixin):
             #fk_config_lines.append('No supported')
 
         return "\n".join(fk_config_lines)
+    
+    @classmethod
+    def _timezone_name_to_value(cls, timezone):
+        inform = tzinform.get_timezone_info(timezone)
+        utcoffset_m = inform['utcoffset'].as_minutes
+        if utcoffset_m not in cls.CISCO_TZ_MAP:
+            # No UTC offset matching. Let's try finding one relatively close...
+            for supp_offset in (30, -30, 60, -60):
+                if utcoffset_m + supp_offset in cls.CISCO_TZ_MAP:
+                    utcoffset_m += supp_offset
+                    break
+            else:
+                return "Central Europe Standard/Daylight Time"
+            
+        dst_map = cls.CISCO_TZ_MAP[utcoffset_m]
+        if inform['dst']:
+            dst_key = inform['dst']['as_string']
+        else:
+            dst_key = None
+        if dst_key not in dst_map:
+            # No DST rules matching. Fallback on all-standard time or random
+            # DST rule in last resort...
+            if None in dst_map:
+                dst_key = None
+            else:
+                dst_key = dst_map.keys[0]
+        return dst_map[dst_key]
 
     def do_reinitprov(self, provinfo):
         """
