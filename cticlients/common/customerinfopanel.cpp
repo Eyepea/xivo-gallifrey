@@ -50,7 +50,6 @@ CustomerInfoPanel::CustomerInfoPanel(QWidget *parent)
             this, SLOT(addNewRemark(const QString &, const QVariantMap &)));
     connect(this, SIGNAL(actionFromFiche(const QVariant &)),
             b_engine, SLOT(actionFromFiche(const QVariant &)));
-    //connectDials();
 
     // qDebug() << "CustomerInfoPanel::CustomerInfoPanel()";
     QGridLayout * glayout = new QGridLayout(this);
