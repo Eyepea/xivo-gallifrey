@@ -1944,7 +1944,7 @@ CREATE TABLE `usersccp`
  `cfwdall` varchar(3),                 -- on, off, NULL
  `cfwdbusy` varchar(3),                -- on, off, NULL
  `cfwdnoanswer` varchar(3),            -- on, off, NULL
- `mwilamp` varchar(3),                 -- on, off, NULL
+ `mwilamp` varchar(5),                 -- on, off, wink, flash, blink, NULL
  `mwioncall` varchar(3),               -- on, off, NULL
  `dnd` varchar(6),                     -- on, off, NULL
  `pickupexten` varchar(3),             -- on, off, NULL
@@ -1957,7 +1957,7 @@ CREATE TABLE `usersccp`
  `trustphoneip` varchar(3),            -- yes, no, NULL
  `nat` varchar(3),                     -- on, off, NULL
  `directrtp` varchar(3),               -- on, off, NULL
- `earlyrtp` varchar(3),                -- on, off, NULL
+ `earlyrtp` varchar(7),                -- none, offhook, dial, ringout, NULL
  `private` varchar(3),                 -- on, off, NULL
  `privacy` varchar(4),                 -- on, off, full, NULL
  `protocol` varchar(4) NOT NULL DEFAULT 'sccp', -- required for join with userfeatures
