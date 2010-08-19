@@ -30,7 +30,7 @@ sqlite_migrate() {
 	fi
 
 	# backuping
-	cp -a "${ASTSQLITE_DB}" "${BACKUP_DIR}/${ASTSQLITE_DB_FILENAME}-pre-1.1.13-`date +%Y%m%d%H%M%S`"
+	cp -a "${ASTSQLITE_DB}" "${BACKUP_DIR}/${ASTSQLITE_DB_FILENAME}-pre-1.1.3-`date +%Y%m%d%H%M%S`"
 
 	echo "  . Upgrading SQLITE database schema..."
 	for FILE in `dirname $0`/sqlite/*.sql; do
@@ -51,7 +51,7 @@ mysql_migrate() {
 	echo "  . Upgrading MYSQL database schema... ";
 
 	# backuping
-	mysqldump --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} > "${BACKUP_DIR}/${DBNAME}-mysql.dump-pre-1.1.13-`date +%Y%m%d%H%M%S`";
+	mysqldump --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} > "${BACKUP_DIR}/${DBNAME}-mysql.dump-pre-1.1.3-`date +%Y%m%d%H%M%S`";
 	if [ $? != 0 ]; then
 		echo "  . Can't backup ${DBNAME} mysql database";
 		return 1;
