@@ -66,16 +66,10 @@ mysql_migrate() {
 
 
 
-if [ "$2" == "" ]; then
-	echo "Usage: $0 {sqlite|mysql|both}"
-	exit 1
-fi
-
 if [ "`whoami`" != "root" ]; then
 	echo "You need to be root to use this script..."
 	exit 1
 fi
-
 
 case $1 in
 	sqlite)
