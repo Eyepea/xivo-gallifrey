@@ -171,7 +171,7 @@ class MainWidget : public QMainWindow
         QAction *m_systraymax;  //!< "Go to systray" action
         QActionGroup *m_availgrp;  //!< Availability action group
 
-        QGridLayout *m_gridlayout;
+        QVBoxLayout *m_vL;
         QLabel *m_lab1;
         QLabel *m_lab2;
         QLabel *m_lab3;

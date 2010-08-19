@@ -40,6 +40,7 @@
 #include <QStyle>
 #include <QSysInfo>
 #include <QTranslator>
+#include <QLibraryInfo>
 
 #include "baseengine.h"
 #include "mainwidget.h"
@@ -111,7 +112,7 @@ int main(int argc, char ** argv)
     QStringList translationFiles = \
         (QStringList() << ":/xivoclient_%1"
                        << ":/baselib/baselib_%1"
-                       << ":/qt_%1");
+                       << QLibraryInfo::location(QLibraryInfo::TranslationsPath) + "/qt_%1" );
 
     int i;
     for(i=0;i<translationFiles.size();++i) {

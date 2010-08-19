@@ -129,7 +129,7 @@ MainWidget::MainWidget()
     
     m_wid = new QWidget(m_centralWidget);
     m_centralWidget->addWidget(m_wid);
-    m_gridlayout = new QGridLayout(m_wid);
+    m_vL = new QVBoxLayout(m_wid);
     
     m_login_widget = new QWidget(m_centralWidget);
     m_login_widget->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
@@ -304,13 +304,13 @@ void MainWidget::loginKindChanged(int index)
 {
     // qDebug() << "MainWidget::loginKindChanged()" << index;
     b_engine->setLoginKind(index);
-    if(index == 0) {
+    if (index == 0) {
         m_lab3->hide();
         m_qlab3->hide();
     }
     
-    if(b_engine->showagselect()) {
-        if(index > 0) {
+    if (b_engine->showagselect()) {
+        if (index > 0) {
             m_lab3->show();
             m_qlab3->show();
         }
@@ -354,7 +354,7 @@ void MainWidget::createActions()
     connect(m_quitact, SIGNAL(triggered()),
             qApp, SLOT(quit()));
     
-    if(m_withsystray) {
+    if (m_withsystray) {
         m_systraymin = new QAction(tr("To S&ystray"), this);
         m_systraymin->setStatusTip(tr("Enter the system tray"));
         connect(m_systraymin, SIGNAL(triggered()),
@@ -398,7 +398,7 @@ void MainWidget::createActions()
 
 void MainWidget::checksAvailState()
 {
-    if(m_avact.contains(b_engine->getAvailState())) {
+    if (m_avact.contains(b_engine->getAvailState())) {
         m_avact[b_engine->getAvailState()]->setChecked(true);
     }
 }
@@ -407,7 +407,7 @@ void MainWidget::createMenus()
 {
     m_filemenu = menuBar()->addMenu("&XiVO Client"); // + m_appliname too heavy
     m_filemenu->addAction(m_cfgact);
-    if(m_withsystray) {
+    if (m_withsystray) {
         m_filemenu->addAction(m_systraymin);
     }
     m_filemenu->addSeparator();
@@ -445,7 +445,7 @@ void MainWidget::createSystrayIcon()
     m_systrayIcon = new QSystemTrayIcon(this);
     setSystrayIcon("xivo-black");
     m_systrayIcon->setToolTip(QString("XiVO %1").arg(m_appliname));
-    QMenu * menu = new QMenu(QString("SystrayMenu"), this);
+    QMenu *menu = new QMenu(QString("SystrayMenu"), this);
     menu->addAction(m_cfgact);
     menu->addSeparator();
     menu->addMenu(m_avail);
@@ -554,20 +554,20 @@ void MainWidget::systrayMsgClicked()
  */
 void MainWidget::showWidgetOnTop(QWidget * widget)
 {
-    if(m_tabwidget)
+    if (m_tabwidget)
         m_tabwidget->setCurrentWidget(widget);
 }
 
 void MainWidget::addPanel(const QString &name, const QString &title, QWidget *widget)
 {
-    if(m_docknames.contains(name)) {
+    if (m_docknames.contains(name)) {
         qDebug() << "MainWidget::addPanel() (dock)" << name << m_dockoptions[name];
         QDockWidget::DockWidgetFeatures features = QDockWidget::NoDockWidgetFeatures;
-        if(m_dockoptions[name].contains("c"))
+        if (m_dockoptions[name].contains("c"))
             features |= QDockWidget::DockWidgetClosable;
-        if(m_dockoptions[name].contains("f"))
+        if (m_dockoptions[name].contains("f"))
             features |= QDockWidget::DockWidgetFloatable;
-        if(m_dockoptions[name].contains("m"))
+        if (m_dockoptions[name].contains("m"))
             features |= QDockWidget::DockWidgetMovable;
         m_docks[name] = new QDockWidget(title);
         m_docks[name]->setFeatures(features);
@@ -578,7 +578,8 @@ void MainWidget::addPanel(const QString &name, const QString &title, QWidget *wi
         m_docks[name]->setWidget(widget);
     } else if (m_gridnames.contains(name)) {
         qDebug() << "MainWidget::addPanel() (grid)" << name << m_dockoptions[name] << title << m_dockoptions[name].toInt();
-        m_gridlayout->addWidget(widget, m_dockoptions[name].toInt(), 0);
+        qDebug() << "inserting" << m_dockoptions[name].toInt();
+        m_vL->insertWidget(m_dockoptions[name].toInt(), widget);
     } else if (m_tabnames.contains(name)) {
         qDebug() << "MainWidget::addPanel() (tab) " << name << m_dockoptions[name] << m_tabwidget->count() << title;
         QString tabTitle = "  " + title + "  ";
@@ -594,10 +595,10 @@ void MainWidget::updatePresence(const QVariant &presence)
 {
     // qDebug() << "MainWidget::updatePresence()" << presence;
     QVariantMap presencemap = presence.toMap();
-    if(presencemap.contains("names")) {
+    if (presencemap.contains("names")) {
         foreach (QString avstate, presencemap["names"].toMap().keys()) {
             QString name = presencemap["names"].toMap()[avstate].toMap()["longname"].toString();
-            if(! m_avact.contains(avstate)) {
+            if (! m_avact.contains(avstate)) {
                 m_avact[avstate] = new QAction(name, this);
                 m_avact[avstate]->setCheckable(false);
                 m_avact[avstate]->setProperty("availstate", avstate);
@@ -609,19 +610,19 @@ void MainWidget::updatePresence(const QVariant &presence)
         }
         m_avail->addActions(m_availgrp->actions());
     }
-    if(presencemap.contains("allowed")) {
+    if (presencemap.contains("allowed")) {
         QMapIterator<QString, QVariant> capapres(presencemap["allowed"].toMap());
         while (capapres.hasNext()) {
             capapres.next();
             QString avstate = capapres.key();
             bool allow = capapres.value().toBool();
-            if(m_avact.contains(avstate)) {
+            if (m_avact.contains(avstate)) {
                 m_avact[avstate]->setCheckable(allow);
                 m_avact[avstate]->setEnabled(allow);
             }
         }
     }
-    if(presencemap.contains("state")) {
+    if (presencemap.contains("state")) {
         b_engine->setAvailState(presencemap["state"].toMap()["stateid"].toString(), true);
     }
 }
@@ -629,12 +630,12 @@ void MainWidget::updatePresence(const QVariant &presence)
 void MainWidget::clearPresence()
 {
     QVariantMap presence = b_engine->getCapaPresence();
-    if(presence.contains("names")) {
+    if (presence.contains("names")) {
         QMapIterator<QString, QVariant> capapres(presence["names"].toMap());
         while (capapres.hasNext()) {
             capapres.next();
             QString avstate = capapres.key();
-            if(m_avact.contains(avstate)) {
+            if (m_avact.contains(avstate)) {
                 disconnect(m_avact[avstate], SIGNAL(triggered()),
                             b_engine, SLOT(setAvailability()));
                 m_availgrp->removeAction(m_avact[avstate]);
@@ -665,16 +666,16 @@ void MainWidget::engineStarted()
     m_tabwidget = new QTabWidget(this);
     m_tabwidget->hide();
     
-    if(m_docknames.contains("tabber")) {
+    if (m_docknames.contains("tabber")) {
         m_tabwidget->show();
         addPanel("tabber", tr("Tabs"), m_tabwidget);
     }
-    if(m_gridnames.contains("tabber")) {
+    if (m_gridnames.contains("tabber")) {
         m_tabwidget->show();
-        m_gridlayout->addWidget(m_tabwidget, 1, 0);
+        m_vL->addWidget(m_tabwidget);
     }
     
-    foreach(QString xletid, m_allnames) {
+    foreach (QString xletid, m_allnames) {
         if (! QStringList("tabber").contains(xletid)) {
             bool withscrollbar = m_dockoptions[xletid].contains("s");
             XLet *xlet = m_xletfactory->newXLet(xletid, this);
@@ -714,7 +715,7 @@ void MainWidget::engineStarted()
         m_resizingHelper->hide(); // the widget size!
     }
     
-    if(m_withsystray && m_systrayIcon)
+    if (m_withsystray && m_systrayIcon)
         setSystrayIcon("xivo-transp");
     
     statusBar()->showMessage(tr("Connected"));
@@ -727,13 +728,13 @@ void MainWidget::engineStarted()
 void MainWidget::setSystrayIcon(const QString & def)
 {
     QIcon icon;
-    if(def == "xivo-transp") {
+    if (def == "xivo-transp") {
         icon = m_icon_transp;
-    } else if(def == "xivo-red") {
+    } else if (def == "xivo-red") {
         icon = m_icon_red;
-    } else if(def == "xivo-green") {
+    } else if (def == "xivo-green") {
         icon = m_icon_green;
-    } else if(def == "xivo-black") {
+    } else if (def == "xivo-black") {
         icon = m_icon_black;
     } else {
         int psize = 16;
@@ -742,7 +743,7 @@ void MainWidget::setSystrayIcon(const QString & def)
         icon = QIcon(square);
     }
     
-    if(m_systrayIcon) {
+    if (m_systrayIcon) {
         m_systrayIcon->setIcon(icon);
     }
     setWindowIcon(icon);
@@ -751,19 +752,19 @@ void MainWidget::setSystrayIcon(const QString & def)
 void MainWidget::removePanel(const QString & name, QWidget * widget)
 {
 //    qDebug() << "MainWidget::removePanel" << name << widget;
-    if(m_docknames.contains(name)) {
+    if (m_docknames.contains(name)) {
         removeDockWidget(m_docks[name]);
         m_docks[name]->deleteLater();
         m_docks.remove(name);
     }
-    if(m_tabnames.contains(name)) {
+    if (m_tabnames.contains(name)) {
         int thisindex = m_tabwidget->indexOf(widget);
         if (thisindex > -1) {
             qDebug() << "removing tab" << name << thisindex;
             m_tabwidget->removeTab(thisindex);
         }
     }
-    if(m_gridnames.contains(name)) {
+    if (m_gridnames.contains(name)) {
         //m_gridlayout->removeWidget(widget);
         //delete widget;
         //widget->deleteLater();
@@ -796,17 +797,17 @@ void MainWidget::engineStopped()
     }
     m_xletlist.clear();
     
-    if(m_docknames.contains("tabber")) {
+    if (m_docknames.contains("tabber")) {
         removePanel("tabber", m_tabwidget);
     }
-    if(m_gridnames.contains("tabber")) {
-        m_gridlayout->removeWidget(m_tabwidget);
+    if (m_gridnames.contains("tabber")) {
+        m_vL->removeWidget(m_tabwidget);
         m_tabwidget->deleteLater();
     }
     
     showLogin();
     
-    if(m_withsystray && m_systrayIcon)
+    if (m_withsystray && m_systrayIcon)
         setSystrayIcon("xivo-black");
     
     statusBar()->showMessage(tr("Disconnected"));
@@ -861,13 +862,13 @@ void MainWidget::customerInfoPopup(const QString & msgtitle,
     qDebug() << "MainWidget::customerInfoPopup()";
     // systray popup
     // to be customisable (yes or no)
-    if(m_withsystray && m_systrayIcon && options.contains("s") && (msgtitle.size() > 0)) {
+    if (m_withsystray && m_systrayIcon && options.contains("s") && (msgtitle.size() > 0)) {
         QStringList todisp;
         QStringList orders = msgs.keys();
         orders.sort();
         foreach (QString order, orders) {
             QString linetodisp = msgs[order];
-            if(! linetodisp.isEmpty())
+            if (! linetodisp.isEmpty())
                 todisp.append(linetodisp);
         }
         m_systrayIcon->showMessage(msgtitle,
@@ -877,7 +878,7 @@ void MainWidget::customerInfoPopup(const QString & msgtitle,
     }
     
     // to be customisable, if the user wants the window to popup
-    if(options.contains("p")) {
+    if (options.contains("p")) {
         setVisible(true);
         activateWindow();
         raise();
@@ -922,7 +923,7 @@ void MainWidget::closeEvent(QCloseEvent *event)
     // << "isMinimized =" << isMinimized()
     // << "isVisible ="   << isVisible()
     // << "isActiveWindow =" << isActiveWindow();
-    if(m_withsystray == false)
+    if (m_withsystray == false)
         return;
 
 #ifdef Q_WS_MAC
