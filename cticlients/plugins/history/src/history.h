@@ -34,35 +34,10 @@
 #ifndef __LOGWIDGET_H__
 #define __LOGWIDGET_H__
 
-#include <QDateTime>
-#include <QAbstractTableModel>
-#include <QTableView>
-#include <QVariant>
-#include <QHeaderView>
-#include <QList>
-#include <QDebug>
-#include <QMouseEvent>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLayoutItem>
-#include <QGroupBox>
-#include <QRadioButton>
-#include <QScrollArea>
-#include <QTabWidget>
-#include <QVBoxLayout>
-#include <QApplication>
-#include <QMenu>
-#include <QCursor>
+#include <QtGui>
 
-#include "xlet.h"
-#include <baseengine.h>
-
-class QVBoxLayout;
-class QRadioButton;
-
-class UserInfo;
-class LogWidgetModel;
-
+#include <xletinterface.h>
+#include <xlet.h>
 
 /*! \brief cdr model
  */
@@ -119,9 +94,9 @@ class LogWidgetModel : public QAbstractTableModel
 };
 
 /* class reason:
- *   You can't know which mouse button caused the onViewClick to be called
- *   through QApplication::mouseButtons or through filtering event from
- *   QTableView
+ *   You can't know which mouse button caused the onViewClick to be called.
+ *   QApplication::mouseButtons and filtering event from QTableView doesn't
+ *   look to work
  */
 class LogTableView : public QTableView
 {
@@ -153,6 +128,15 @@ class LogWidget : public XLet
 
     private:
         LogTableView *m_view;
+};
+
+class XLetHistoryPlugin : public QObject, XLetInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(XLetInterface)
+
+    public:
+        XLet* newXLetInstance(QWidget *parent=0);
 };
 
 #endif

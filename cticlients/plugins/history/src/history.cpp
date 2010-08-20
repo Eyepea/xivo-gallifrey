@@ -31,10 +31,16 @@
  * $Date$
  */
 
-#include <QDateTime>
-
 #include <baseengine.h>
-#include <logwidget.h>
+#include "history.h"
+
+Q_EXPORT_PLUGIN2(xlethistoryplugin, XLetHistoryPlugin);
+
+XLet* XLetHistoryPlugin::newXLetInstance(QWidget *parent)
+{
+    b_engine->registerTranslation(":/history_%1");
+    return new LogWidget(parent);
+}
 
 LogWidgetModel::LogWidgetModel(int initialMode)
     : QAbstractTableModel(NULL)
@@ -204,7 +210,7 @@ QRadioButton* buildRadioButton(QString text,
 {
     QRadioButton *build = new QRadioButton(text, groupBox);
 
-    build->setIcon(QIcon(QString(":/images/%0").arg(icon)));
+    build->setIcon(QIcon(QString(":/in/%0").arg(icon)));
     build->setProperty("mode", mode);
     build->setToolTip(build->text());
     hbox->addWidget(build);
@@ -243,10 +249,10 @@ LogWidget::LogWidget(QWidget *parent)
     
     hBox->addStretch(1);
 
-    buildRadioButton(tr("Sent calls"), "green_up.png",   0, groupBox, hBox, viewmodel)
+    buildRadioButton(tr("Sent calls"), "sent_call.png",   0, groupBox, hBox, viewmodel)
                     ->setChecked(true);
-    buildRadioButton(tr("Received calls"), "green_down.png", 1, groupBox, hBox, viewmodel);
-    buildRadioButton(tr("Missed calls"),   "red_down.png",   2, groupBox, hBox, viewmodel);
+    buildRadioButton(tr("Received calls"), "received_call.png", 1, groupBox, hBox, viewmodel);
+    buildRadioButton(tr("Missed calls"),   "missed_call.png",   2, groupBox, hBox, viewmodel);
 
     hBox->addStretch(1);
 

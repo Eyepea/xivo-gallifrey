@@ -51,7 +51,6 @@
 #include <directorypanel.h>
 #include <identitydisplay.h>
 #include <faxpanel.h>
-#include <logwidget.h>
 #include <mylocaldirpanel.h>
 #include <parkingpanel.h>
 #include <queuespanel.h>
@@ -76,7 +75,7 @@ static const struct {
     const char *name;
     const newXLetProto construct;
 } xlets[] = {
-    { "history"           ,newXLet<LogWidget>              },
+    //{ "history"           ,newXLet<LogWidget>              },
     { "identity"          ,newXLet<IdentityDisplay>        },
     { "agents"            ,newXLet<AgentsPanel>            },
     { "agentsnext"        ,newXLet<AgentsPanelNext>        },
