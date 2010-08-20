@@ -681,7 +681,7 @@ class XivoCTICommand(BaseCommand):
         self.sheet_actions = {}
         for where, sheetaction in allconf.xc_json['sheets']['events'].iteritems():
             if sheetaction:
-                if where in self.sheet_allowed_events or where.startswith('custom-'):
+                if where in self.sheet_allowed_events:
                     # XXX TODO : actually for custom sheets we are supposed to use a framework
                     # with one more level, i.e. :
                     # incomingdid -> xxx1
@@ -690,6 +690,10 @@ class XivoCTICommand(BaseCommand):
                     #             -> custom2 -> xxx4
                     # ... to be cross-checked with 'Custom' UserEvent handling
                     self.sheet_actions[where] = allconf.xc_json['sheets']['actions'][sheetaction]
+                elif where == 'custom':
+                    for customd, sheetaction_custom in sheetaction.iteritems():
+                        cdef = 'custom.%s' % customd
+                        self.sheet_actions[cdef] = allconf.xc_json['sheets']['actions'][sheetaction_custom]
 
         xivocticonf = allconf.xc_json['xivocti']
 
@@ -1428,7 +1432,7 @@ class XivoCTICommand(BaseCommand):
             itemdir['xivo-queuename'] = queuename
             itemdir['xivo-queueorgroup'] = where[8:] + 's'
 
-        elif where.startswith('custom-'):
+        elif where.startswith('custom.'):
             for fieldname in extraevent.keys():
                 if not itemdir.has_key(fieldname):
                     itemdir[fieldname] = extraevent[fieldname]
@@ -1519,7 +1523,7 @@ class XivoCTICommand(BaseCommand):
                     # XXX sip/iax2/sccp @queue
                     if status.get('Paused') == '0':
                         userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[LENGTH_AGENT:]))
-            elif where.startswith('custom-'):
+            elif where.startswith('custom.'):
                 pass
 
             # 4) format message and send
@@ -4120,7 +4124,7 @@ class XivoCTICommand(BaseCommand):
                     if self.uniqueids[astid][uniqueid].has_key('dialplan_data'):
                         dialplan_data = self.uniqueids[astid][uniqueid]['dialplan_data']
                         context = dialplan_data.get('xivo-context', CONTEXT_UNKNOWN)
-                        self.__sheet_alert__('custom-%s' % customname, astid, context, event, dialplan_data, channel)
+                        self.__sheet_alert__('custom.%s' % customname, astid, context, event, dialplan_data, channel)
 
         elif eventname == 'dialplan2cti':
             cti_varname = event.get('VARIABLE')
