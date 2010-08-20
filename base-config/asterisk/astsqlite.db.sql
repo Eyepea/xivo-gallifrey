@@ -428,7 +428,7 @@ CREATE TABLE ctisheetevents (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctisheetevents VALUES(1,'','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO ctisheetevents VALUES(1,'','','','','','','dial','','','{"example1": "custom1"}');
 
 
 DROP TABLE ctistatus;

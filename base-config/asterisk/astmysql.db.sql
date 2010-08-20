@@ -431,7 +431,7 @@ CREATE TABLE `ctisheetevents` (
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctisheetevents` VALUES(1,'','','','','','','dial','','','{"custom-example1": "custom1"}');
+INSERT INTO `ctisheetevents` VALUES(1,'','','','','','','dial','','','{"example1": "custom1"}');
 
 
 DROP TABLE IF EXISTS `ctistatus`;
