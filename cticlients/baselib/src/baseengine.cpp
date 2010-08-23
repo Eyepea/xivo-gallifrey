@@ -60,7 +60,7 @@
  */
 
 BASELIB_EXPORT BaseEngine *b_engine;
-
+static const QStringList CheckFunctions = (QStringList() << "presence" << "customerinfo");
 
 
 static CtiConn *m_ctiConn;
@@ -119,7 +119,7 @@ BaseEngine::~BaseEngine()
     clearQueueList();
 }
 
-QSettings * BaseEngine::getSettings()
+QSettings* BaseEngine::getSettings()
 {
     return m_settings;
 }

@@ -21,7 +21,6 @@ SOURCES     += src/dstore/src/*.cpp
 SOURCES     += $${JSON_JSONQT_DIR}/*.cpp
 
 DESTDIR     = ../bin
-DEFINES     += BASELIB_LIBRARY
 
 QT += network
 

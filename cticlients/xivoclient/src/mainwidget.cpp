@@ -950,7 +950,7 @@ void MainWidget::keyPressEvent(QKeyEvent * event)
 void MainWidget::about()
 {
     QString applicationVersion(XIVOVER);
-    QString fetchlastone = "<a href=http://downloads.xivo.fr/xivo_cti_client/"
+    QString fetchlastone = QString("<a href=http://downloads.xivo.fr/xivo_cti_client/") +
 #if defined(Q_WS_X11)
         "linux/debian"
 #elif defined(Q_WS_WIN)
@@ -973,7 +973,7 @@ void MainWidget::about()
                        "<b>" + tr("Version : ") + QString("</b>%1 (").arg(applicationVersion) +
                        "<b>svn : " + QString("</b>%1 - %2)<br>").arg(__current_client_version__,
                                                                      fetchlastone) +
-                       "(" + tr("Advised Server Version : ") + __required_server_version__ + ")"
+                       "(" + tr("Advised Server Version : ") + QString::number(SERVER_VERSION_REQUIRED) + ")"
                        "<br>" +
                        "(" + tr("Application Built on : ") + datebuild + ")"
                        "<br>" +
