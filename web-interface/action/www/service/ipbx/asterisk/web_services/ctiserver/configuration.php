@@ -376,8 +376,9 @@ switch($act)
 					$json = $url_scheme . '://' . $url_auth_host . '/service/ipbx/json.php/restricted/';
 				}
 
-				$out['main']['asterisklist'][] = $hostname;
-				$out['main']['userlists'][] = $json . 'pbx_settings/users' . '?astid=' . $hostname;
+                                $out['main']['asterisklist'][] = $hostname;
+                                $out['main']['userlists'][] = $json . 'pbx_settings/users' . '?astid=' . $hostname;
+                                $out['main']['ctilog_db_uri'] = $db_cti;
 				$out[$hostname] = array(
 					'ipaddress' => $list[$v]['host'],
 					'ipaddress_webi' => $list[$v]['webi'],
@@ -398,7 +399,6 @@ switch($act)
 					'ami_pass'            => $list[$v]['ami_pass'],
 					'cdr_db_uri'          => $db_ast,
 					'userfeatures_db_uri' => $db_ast,
-					'ctilog_db_uri'       => $db_cti,
 					'url_queuelog'        => 'file:' . $app->_serverfeatures->_sre->_ini['logfiles']['path'] . '/queue_log'
 				);
 			}
