@@ -1,21 +1,21 @@
-Index: asterisk-chan-sccp-0~prerelease+svn1747/src/sccp_channel.c
+Index: asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_channel.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1747.orig/src/sccp_channel.c	2010-08-18 18:11:14.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1747/src/sccp_channel.c	2010-08-18 18:14:18.000000000 +0200
-@@ -2368,7 +2368,7 @@
- 		sccp_log(1)(VERBOSE_PREFIX_3 "%s: Transfer confirmation destination on channel %s\n", d->id, astcDestinationRemote->name);
- 		/* display the transferred CID info to destination */
+--- asterisk-chan-sccp-0~prerelease+svn1790.orig/src/sccp_channel.c	2010-08-23 16:20:23.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_channel.c	2010-08-23 16:34:44.000000000 +0200
+@@ -2387,7 +2387,7 @@
+ 			sccp_log(1)(VERBOSE_PREFIX_3 "%s: Transfer confirmation destination on channel %s\n", d->id, astcDestinationRemote->name);
+ 			/* display the transferred CID info to destination */
  #ifdef CS_AST_CHANNEL_HAS_CID
--		//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->cid.cid_name, astcSourceRemote->cid.cid_num);
-+		//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->lid.lid_name, astcSourceRemote->lid.lid_num);
+-			//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->cid.cid_name, astcSourceRemote->cid.cid_num);
++			//sccp_channel_set_callingparty(cDestinationLocal, astcSourceRemote->lid.lid_name, astcSourceRemote->lid.lid_num);
  
  
- 		/* change callInfo on destination part */
-Index: asterisk-chan-sccp-0~prerelease+svn1747/src/sccp_pbx.c
+ 			/* change callInfo on destination part */
+Index: asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_pbx.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1747.orig/src/sccp_pbx.c	2010-08-18 12:31:06.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1747/src/sccp_pbx.c	2010-08-18 18:14:18.000000000 +0200
-@@ -252,19 +252,19 @@
+--- asterisk-chan-sccp-0~prerelease+svn1790.orig/src/sccp_pbx.c	2010-08-20 11:34:35.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_pbx.c	2010-08-23 16:34:28.000000000 +0200
+@@ -237,19 +237,19 @@
  		   enbloc dialed numbers (such as via 7970 enbloc dialing) if they match a certain pattern.
  		   This would help users dial from call history lists on other phones, which do not have enbloc dialing,
  		   when using shared lines. */
