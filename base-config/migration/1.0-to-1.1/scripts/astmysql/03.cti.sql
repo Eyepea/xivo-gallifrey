@@ -138,6 +138,7 @@ CREATE TABLE `ctireversedirectories` (
 INSERT INTO `ctireversedirectories` VALUES(1,'*', '*', '["xivodir","internal"]','Répertoires XiVO',1);
 
 
+DROP TABLE IF EXISTS `ctisheetactions`;
 CREATE TABLE `ctisheetactions` (
  `id` int(10) unsigned auto_increment,
  `name` varchar(50),
@@ -145,10 +146,10 @@ CREATE TABLE `ctisheetactions` (
  `context` varchar(50),
  `whom` varchar(50),
  `capaids` text NOT NULL,
- `sheet_info` varchar(50),
- `systray_info` varchar(50),
- `sheet_qtui` varchar(50),
- `action_info` varchar(50),
+ `sheet_info` text,
+ `systray_info` text,
+ `sheet_qtui` text,
+ `action_info` text,
  `focus` tinyint(1),
  `deletable` tinyint(1),
  PRIMARY KEY(`id`)
