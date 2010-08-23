@@ -8,7 +8,7 @@ cd $(dirname "$(pwd)/$0")
 
 function set_up_build_dir
 {
-if [ -n "${TARGET_SVN_VERSION}" ] ; then
+if [ "${TARGET_SVN_VERSION}" ] ; then
   ( cd ../ ; change-svn-wc-format.py . ${TARGET_SVN_VERSION} )
 fi
 
