@@ -1090,11 +1090,7 @@ void BaseEngine::parseCommand(const QString &line)
                 QString stateid = datamap.value("capapresence").toMap().value("state").toMap().value("stateid").toString();
                 QVariantMap changeme = m_guioptions.value("server_gui").toMap().value("autochangestate").toMap();
                 if(changeme.count() && (id == m_fullid)) {
-                    if(stateid == changeme["statesrc"].toString()) {
-                        // QTimer::singleShot() could be used.
-                        m_timerid_changestate = startTimer(changeme["seconds"].toInt() * 1000);
-                        m_changestate_newstate = changeme["statedst"].toString();
-                    } else if(changeme.contains(stateid)) {
+                    if(changeme.contains(stateid)) {
                         // if(stateid == changeme["statesrc"].toString()) {
                         m_timerid_changestate = startTimer(changeme[stateid].toMap()["delaymsec"].toInt());
                         m_changestate_newstate = changeme[stateid].toMap()["newstate"].toString();
