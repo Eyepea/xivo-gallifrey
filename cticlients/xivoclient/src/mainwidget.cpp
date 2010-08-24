@@ -712,6 +712,7 @@ void MainWidget::engineStarted()
         addDockWidget(Qt::BottomDockWidgetArea, m_resizingHelper);
         m_resizingHelper->show(); // not a no-op, show is needed, to force Qt to calc 
         m_resizingHelper->hide(); // the widget size!
+        removeDockWidget(m_resizingHelper);
     }
     
     if (m_withsystray && m_systrayIcon)
@@ -833,11 +834,13 @@ void MainWidget::resizeEvent(QResizeEvent *ev)
     if (m_resizingHelper) {
         int diff  = wh - oldWH;
         if (oldWH < wh) {
+            addDockWidget(Qt::BottomDockWidgetArea, m_resizingHelper);
             m_resizingHelper->show();
             int newH = m_resizingHelper->size().height() + diff;
             m_resizingHelper->setFixedHeight(newH);
             resize(ev->size());
             m_resizingHelper->hide();
+            removeDockWidget(m_resizingHelper);
         } else {
             int newH = m_resizingHelper->size().height() + diff;
             m_resizingHelper->setFixedHeight(newH);

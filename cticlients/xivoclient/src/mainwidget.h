@@ -34,39 +34,10 @@
 #ifndef __MAINWIDGET_H__
 #define __MAINWIDGET_H__
 
-#include <QDateTime>
-#include <QHash>
-#include <QSet>
-#include <QMainWindow>
-#include <QSettings>
-#include <QSystemTrayIcon>
-#include <QWidget>
-#include <QResizeEvent>
+#include <QtGui>
 
 #include "xlet.h"
 #include "directorypanel.h"
-
-class QAction;
-class QActionGroup;
-class QCheckBox;
-class QClipboard;
-class QCloseEvent;
-class QComboBox;
-class QDockWidget;
-class QEvent;
-class QGridLayout;
-class QKeyEvent;
-class QLabel;
-class QLineEdit;
-class QPushButton;
-class QScrollArea;
-class QSystemTrayIcon;
-class QTabWidget;
-class QWidget;
-class QUrl;
-class QStackedWidget;
-
-class BaseEngine;
 
 /*! \brief Main window class
  */
