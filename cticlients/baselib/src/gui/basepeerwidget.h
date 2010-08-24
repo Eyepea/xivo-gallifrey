@@ -34,18 +34,19 @@
 #ifndef __BASEPEERWIDGET_H__
 #define __BASEPEERWIDGET_H__
 
-#include <QWidget>
-#include <QList>
-#include <QMouseEvent>
-#include "chitchat.h"
-#include "baseengine.h"
+#include "baselib_export.h"
+
+#include <QtGui>
+
+#include <baseengine.h>
+#include <chitchat.h>
 
 class UserInfo;
 
 /*! \brief Abstract class for "Peer" Widgets
  *
  */
-class BasePeerWidget : public QWidget
+class BASELIB_EXPORT BasePeerWidget : public QWidget
 {
     Q_OBJECT
 

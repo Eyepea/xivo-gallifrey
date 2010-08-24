@@ -31,6 +31,7 @@
  * $Date$
  */
 
+#include "basepeerwidget.h"
 #include <QDebug>
 #include <QApplication>
 #include <QAction>
@@ -39,9 +40,6 @@
 #include <QInputDialog>
 #include <QSettings>
 #include "baseengine.h"
-#include "basepeerwidget.h"
-#include "userinfo.h"
-#include "phoneinfo.h"
 #include "xivoconsts.h"
 
 /*! \brief Constructor

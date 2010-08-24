@@ -46,15 +46,23 @@
 #include <QtColorPicker>
 #include <QMessageBox>
 
-#include "baseengine.h"
-#include "peerwidgetfactory.h"
-#include "peerslayout.h"
-#include "peeritem.h"
-#include "switchboardwindow.h"
-#include "userinfo.h"
-#include "xivoconsts.h"
-#include "externalphonedialog.h"
-#include "group.h"
+#include <baseengine.h>
+#include <peerwidgetfactory.h>
+#include <peerslayout.h>
+#include <peeritem.h>
+#include <switchboardwindow.h>
+#include <userinfo.h>
+#include <xivoconsts.h>
+#include <externalphonedialog.h>
+#include <group.h>
+
+Q_EXPORT_PLUGIN2(xletswitchboardplugin, XLetSwitchboardPlugin);
+
+XLet* XLetSwitchboardPlugin::newXLetInstance(QWidget *parent)
+{
+    b_engine->registerTranslation(":/switchboard_%1");
+    return new SwitchBoardWindow(parent);
+}
 
 /*! \brief constructor
  *

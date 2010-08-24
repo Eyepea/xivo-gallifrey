@@ -59,7 +59,6 @@
 #include <searchpanel.h>
 #include <servicepanel.h>
 #include <statuspanel.h>
-#include <switchboardwindow.h>
 
 /*! \brief template to return a new XLet */
 template <class T>
@@ -87,7 +86,6 @@ static const struct {
     { "datetime"          ,newXLet<DatetimePanel>          },
     { "dial"              ,newXLet<DialPanel>              },
     { "operator"          ,newXLet<StatusPanel>            },
-    { "switchboard"       ,newXLet<SwitchBoardWindow>      },
     { "parking"           ,newXLet<ParkingPanel>           },
     { "fax"               ,newXLet<FaxPanel>               },
     { "search"            ,newXLet<SearchPanel>            },

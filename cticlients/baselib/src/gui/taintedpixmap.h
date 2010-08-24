@@ -31,45 +31,23 @@
  * $Date$
  */
 
-#ifndef __BASICPEERWIDGET_H__
-#define __BASICPEERWIDGET_H__
+#ifndef __TAINTEDPIXMAP_H__
+#define __TAINTEDPIXMAP_H__
 
-#include <QColor>
-#include <QString>
-#include <QWidget>
+#include "baselib_export.h"
+#include <QtGui>
 
-#include "basepeerwidget.h"
-
-/*! \brief Simple widget to display a Peer
- * 
- * Only display the name of the user in a color rectangle
- * which gives the status of its telephone :
- * Green for available, blue for ringing, red for online.
- * More informations are given by the tool tip. */
-class BasicPeerWidget : public BasePeerWidget
+/*! \brief TaintedPixmap, taint a pixmap and put it in an hashtable for fast re-use
+ */
+class BASELIB_EXPORT TaintedPixmap : public QPixmap
 {
-    Q_OBJECT
-
     public:
-        BasicPeerWidget(UserInfo *);
-        void setAgentToolTip(const QString &, const QStringList &);
-        void setAgentState(const QString &color);
-        void updatePresence();
-        void updatePhonesStates();
-        void setName(const QString &name) { setText(name); };
-
-    protected:
-        void paintEvent(QPaintEvent *);
-
+        TaintedPixmap(const QString &, const QColor &);
+        QPixmap getPixmap();
     private:
-        void setText(const QString &);  //!< Set displayed text
+        static QHash<QString, QPixmap*> m_pixmap_cache;
 
-    private:
-        QString m_text;  //!< Text to display
-        QColor m_color;  //!< color
-        QColor m_presenceColor;  //!< color of presence indicator
-        int m_presenceSquareSize;  //!< size of the presence indicator
+        QString m_pixmap_hash;
 };
 
 #endif
-

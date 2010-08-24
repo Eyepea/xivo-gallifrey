@@ -34,13 +34,9 @@
 #ifndef __SWITCHBOARDWINDOW_H__
 #define __SWITCHBOARDWINDOW_H__
 
-#include <QHash>
-#include <QList>
-#include <QVariant>
-#include "xlet.h"
-
-class QGridLayout;
-class QMouseEvent;
+#include <QtGui>
+#include <xletinterface.h>
+#include <xlet.h>
 
 class PeerItem;
 class PeersLayout;
@@ -108,6 +104,15 @@ class SwitchBoardWindow : public XLet
 #define ERight    (ETop<<3)
 #define ELeft     (ETop<<4)
 #define EMove     (ETop<<5)
+};
+
+class XLetSwitchboardPlugin : public QObject, XLetInterface
+{
+    Q_OBJECT
+    Q_INTERFACES(XLetInterface)
+
+    public:
+        XLet* newXLetInstance(QWidget *parent=0);
 };
 
 #endif

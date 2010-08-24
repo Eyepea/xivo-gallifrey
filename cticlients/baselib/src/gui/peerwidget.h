@@ -34,11 +34,9 @@
 #ifndef __PEERWIDGET_H__
 #define __PEERWIDGET_H__
 
-#include <QHash>
-#include <QLabel>
-#include <QPixmap>
-#include <QPoint>
-#include <QPushButton>
+#include "baselib_export.h"
+
+#include <QtGui>
 
 #include "basepeerwidget.h"
 #include "taintedpixmap.h"
@@ -53,7 +51,7 @@ class ChitchatButton;
  *
  * Display Icons for the state and the peer name.
  */
-class PeerWidget : public BasePeerWidget
+class BASELIB_EXPORT PeerWidget : public BasePeerWidget
 {
     Q_OBJECT
 

@@ -31,50 +31,39 @@
  * $Date$
  */
 
-#ifndef __EXTENDEDTABLEWIDGET_H__
-#define __EXTENDEDTABLEWIDGET_H__
+#ifndef __EXTERNALPHONEPEERWIDGET_H__
+#define __EXTERNALPHONEPEERWIDGET_H__
 
 #include "baselib_export.h"
 
-#include <QTableWidget>
-#include <QContextMenuEvent>
-#include <QMouseEvent>
-#include <QDesktopServices>
-#include <QHeaderView>
-#include <QMenu>
-#include <QUrl>
+#include <QSize>
+#include "basepeerwidget.h"
 
-#include <baseengine.h>
-
-
-/*! \brief Table class inheriting QTableWidget with contextMenu added.
+/*! \brief Widget used to represent an external phone number
+ *
  */
-class BASELIB_EXPORT ExtendedTableWidget : public QTableWidget
+class BASELIB_EXPORT ExternalPhonePeerWidget : public BasePeerWidget
 {
     Q_OBJECT
 
     public:
-        ExtendedTableWidget(QWidget *parent=0);
-        ExtendedTableWidget(int rows, int columns, QWidget *parent=0);
-        void setEditable(bool editable) { m_editable = editable; };
+        ExternalPhonePeerWidget(const QString &, const QString &);
+        void setAgentToolTip(const QString &, const QStringList &) { };
+        void setAgentState(const QString &) { };
+        void updatePresence() { };
+        void updatePhonesStates() { };
+        void setName(const QString & name) { setText(name); };
+        void setText(const QString & text);
+        QString name() const { return m_text; };
+
+    public slots:
+        void edit();
 
     protected:
-        void contextMenuEvent(QContextMenuEvent *);
-        void dragEnterEvent(QDragEnterEvent *);
-        void dragMoveEvent(QDragMoveEvent *);
-        void dropEvent(QDropEvent *);
-        void mouseMoveEvent(QMouseEvent *);
-
-    private slots:
-        void dialNumber();
-        void sendMail();
-        void itransfer();
-        void dtransfer();
-        void remove();
+        void paintEvent(QPaintEvent *);
 
     private:
-        QRegExp m_re_number;  //!< regexp used to recognize phone numbers
-        bool m_editable;
+        QString m_text; //!< text displayed
 };
 
 #endif

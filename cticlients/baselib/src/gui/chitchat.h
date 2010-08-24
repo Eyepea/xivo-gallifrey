@@ -31,45 +31,65 @@
  * $Date$
  */
 
-#ifndef __PEERITEM_H__
-#define __PEERITEM_H__
+#ifndef __CHITCHAT_H__
+#define __CHITCHAT_H__
 
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QVariant>
+#include "baselib_export.h"
 
-#include "basicpeerwidget.h"
+#include <QtGui>
+#include <baseengine.h>
 
-class PeerWidget;
-class UserInfo;
 
-/*! \brief PeerItem object, linking to a PeerWidget
+class MessageEdit;
+
+
+/*! \brief open a chat window with another xivo user
  */
-class PeerItem
+class ChitChatWindow : public QWidget
 {
+    Q_OBJECT
+
     public:
-        PeerItem(UserInfo *);
-        PeerItem(const PeerItem &);
-        PeerItem();
+        static ChitChatWindow *chitchat_instance;
 
-        UserInfo * userinfo();
+        ChitChatWindow();
+        ChitChatWindow(const QString &);
+        
+        void sendMessage(const QString &message);
+        void addMessage(const QString &, const QString &, const QString &, const QString &);
+        void receiveMessage(const QVariantMap &message);
+        static void receiveMessage_t(const QVariantMap &message, void *udata) {
+            return ((ChitChatWindow*)udata)->receiveMessage(message);
+        };
 
-        void setWidget(BasePeerWidget * widget) { m_peerwidget = widget; };
-        BasePeerWidget * getWidget() { return m_peerwidget; };
-        void updateStatus();
-        void updateAgentStatus(const QVariant &);
-        void updateName(const QString &);
-        void updateDisplayedStatus();
-        void updateDisplayedName();
+    public slots:
+        void writeMessageTo();
+        void clearMessageHistory();
+
     private:
-        BasePeerWidget * m_peerwidget;  //!< related PeerWidget
+        QString m_userid;
+        static QHash<QString, ChitChatWindow*> m_chat_window_opened;
+        MessageEdit *m_message;
+        QTextEdit *m_message_history;
+        QTextCursor lastCursor;
+};
 
-        UserInfo * m_ui;  // Properties of each peer
-        QString m_vmstatus;
-        QVariant m_agentstatus;
-        QString m_pausestatus;
-        QStringList m_queuelist;
+
+class MessageEdit : public QTextEdit
+{
+    Q_OBJECT
+
+    public:
+        MessageEdit(ChitChatWindow *parent) : QTextEdit((QWidget*) parent) { m_dad = parent; };
+
+    public slots:
+        void sendMessage();
+
+    private:
+        ChitChatWindow *m_dad;
+
+    protected:
+        virtual void keyPressEvent(QKeyEvent * event);
 };
 
 #endif

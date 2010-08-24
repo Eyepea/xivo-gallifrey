@@ -31,35 +31,25 @@
  * $Date$
  */
 
-#ifndef __DETAILEDEXTERNALPHONEPEERWIDGET_H__
-#define __DETAILEDEXTERNALPHONEPEERWIDGET_H__
+#ifndef __SEARCHDIALOG_H__
+#define __SEARCHDIALOG_H__
 
-#include <QLabel>
-#include "basepeerwidget.h"
+#include "baselib_export.h"
+#include <QtGui>
 
-/*! \brief External phone widget for detailed switchboard display
- */
-class DetailedExternalPhonePeerWidget : public BasePeerWidget
+class BASELIB_EXPORT SearchDialog : public QDialog
 {
     Q_OBJECT
 
     public:
-        DetailedExternalPhonePeerWidget(const QString &, const QString &);
-        void setAgentToolTip(const QString &, const QStringList &) { };
-        void setAgentState(const QString &) { };
-        void updatePresence() { };
-        void updatePhonesStates() { };
-        void setName(const QString &name) { setText(name); };
-        void setText(const QString &text);
-        QString name() const { return m_textlbl->text(); };
+        SearchDialog(QWidget *parent=0);
+        QString text() const { return m_searchText->text(); };
 
-    public slots:
-        void edit();
+    signals:
+        void findNext();
 
     private:
-        QLabel *m_textlbl;         //!< text label
-        QLabel *m_lblphone;        //!< phone icon
-        QLabel *m_lblphonenum;     //!< phone number (text)
+        QLineEdit *m_searchText;
 };
 
 #endif

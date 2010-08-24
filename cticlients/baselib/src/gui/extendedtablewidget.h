@@ -31,26 +31,43 @@
  * $Date$
  */
 
-#ifndef __SEARCHDIALOG_H__
-#define __SEARCHDIALOG_H__
+#ifndef __EXTENDEDTABLEWIDGET_H__
+#define __EXTENDEDTABLEWIDGET_H__
 
-#include <QDialog>
-#include <QLineEdit>
+#include "baselib_export.h"
 
-class SearchDialog : public QDialog
+#include <QtGui>
+#include <baseengine.h>
+
+
+/*! \brief Table class inheriting QTableWidget with contextMenu added.
+ */
+class BASELIB_EXPORT ExtendedTableWidget : public QTableWidget
 {
     Q_OBJECT
 
     public:
-        SearchDialog(QWidget * parent=0);
-        QString text() const { return m_searchText->text(); };
+        ExtendedTableWidget(QWidget *parent=0);
+        ExtendedTableWidget(int rows, int columns, QWidget *parent=0);
+        void setEditable(bool editable) { m_editable = editable; };
 
-    signals:
-        void findNext();
+    protected:
+        void contextMenuEvent(QContextMenuEvent *);
+        void dragEnterEvent(QDragEnterEvent *);
+        void dragMoveEvent(QDragMoveEvent *);
+        void dropEvent(QDropEvent *);
+        void mouseMoveEvent(QMouseEvent *);
+
+    private slots:
+        void dialNumber();
+        void sendMail();
+        void itransfer();
+        void dtransfer();
+        void remove();
 
     private:
-        QLineEdit * m_searchText;
+        QRegExp m_re_number;  //!< regexp used to recognize phone numbers
+        bool m_editable;
 };
 
 #endif
-

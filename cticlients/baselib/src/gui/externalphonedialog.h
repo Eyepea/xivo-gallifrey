@@ -31,26 +31,28 @@
  * $Date$
  */
 
-#ifndef __TAINTEDPIXMAP_H__
-#define __TAINTEDPIXMAP_H__
+#ifndef __EXTERNALPHONEDIALOG_H__
+#define __EXTERNALPHONEDIALOG_H__
 
-#include <QPixmap>
-#include <QPainter>
-#include <QBitmap>
-#include <QHash>
+#include "baselib_export.h"
 
+#include <QtGui>
 
-/*! \brief TaintedPixmap, taint a pixmap and put it in an hashtable for fast re-use
+/*! \brief Dialog used to enter phone number and label
  */
-class TaintedPixmap : public QPixmap
+class BASELIB_EXPORT ExternalPhoneDialog : public QDialog
 {
-    public:
-        TaintedPixmap(const QString &, const QColor &);
-        QPixmap getPixmap();
-    private:
-        static QHash<QString, QPixmap*> m_pixmap_cache;
+    Q_OBJECT
 
-        QString m_pixmap_hash;
+    public:
+        ExternalPhoneDialog(QWidget *parent=0,const QString &number="",const QString &label="");
+
+        QString label() const { return m_label->text(); };  //! return text label
+        QString number() const { return m_number->text(); };  //! return phone number text
+
+    private:
+        QLineEdit *m_label;  //! widget for entering label
+        QLineEdit *m_number;  //! widget for entering phone number
 };
 
 #endif

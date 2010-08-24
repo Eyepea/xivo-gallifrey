@@ -31,53 +31,45 @@
  * $Date$
  */
 
+#ifndef __BASICPEERWIDGET_H__
+#define __BASICPEERWIDGET_H__
 
-#include "peerwidgetfactory.h"
-#include "basicpeerwidget.h"
-#include "peerwidget.h"
-#include "detailedexternalphonepeerwidget.h"
-#include "externalphonepeerwidget.h"
+#include "baselib_export.h"
 
-QString PeerWidgetFactory::getSwitchBoardEltType()
+#include <QtGui>
+
+#include "basepeerwidget.h"
+
+/*! \brief Simple widget to display a Peer
+ * 
+ * Only display the name of the user in a color rectangle
+ * which gives the status of its telephone :
+ * Green for available, blue for ringing, red for online.
+ * More informations are given by the tool tip. */
+class BASELIB_EXPORT BasicPeerWidget : public BasePeerWidget
 {
-    return b_engine->getGuiOptions("merged_gui").value("switchboard-elt-type").toString();
-}
+    Q_OBJECT
 
-/*! \brief return an "External phone" widget
- *
- * return an instance of ExternalPhonePeerWidget or DetailedExternalPhonePeerWidget
- * depending on the value of the "switchboard-elt-type" gui setting of the BaseEngine.
- */
-BasePeerWidget* PeerWidgetFactory::newExternalPhonePeerWidget(
-    const QString &label,
-    const QString &number)
-{
-    BasePeerWidget *w;
+    public:
+        BasicPeerWidget(UserInfo *);
+        void setAgentToolTip(const QString &, const QStringList &);
+        void setAgentState(const QString &color);
+        void updatePresence();
+        void updatePhonesStates();
+        void setName(const QString &name) { setText(name); };
 
-    if(getSwitchBoardEltType() == "small"){
-        w = new ExternalPhonePeerWidget(label, number);
-    }else{
-        w = new DetailedExternalPhonePeerWidget(label, number);
-    }
-    
-    return w;
-}
+    protected:
+        void paintEvent(QPaintEvent *);
 
-/*! \brief return an "Internal phone" widget
- *
- * return an instance of BasicPeerWidget or PeerWidget
- * depending on the value of the "switchboard-elt-type" gui setting of the BaseEngine.
- */
-BasePeerWidget* PeerWidgetFactory::newPeerWidget(UserInfo * ui)
-{
-    BasePeerWidget *w;
+    private:
+        void setText(const QString &);  //!< Set displayed text
 
-    if(getSwitchBoardEltType() == "small"){
-        w = new BasicPeerWidget(ui);
-    }else{
-        w = new PeerWidget(ui);
-    }
+    private:
+        QString m_text;  //!< Text to display
+        QColor m_color;  //!< color
+        QColor m_presenceColor;  //!< color of presence indicator
+        int m_presenceSquareSize;  //!< size of the presence indicator
+};
 
-    return w;
-}
+#endif
 

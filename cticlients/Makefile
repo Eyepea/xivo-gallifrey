@@ -58,6 +58,8 @@ distclean:
 	@make clean-xivoclient
 	@make clean-baselib
 	@make clean-plugins
+	@find . -name "moc_*" | xargs rm
+	@find . -name "*.o" | xargs rm
 
 clean-%:
 	@make -C $* distclean || true

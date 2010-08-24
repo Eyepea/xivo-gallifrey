@@ -31,27 +31,53 @@
  * $Date$
  */
 
-#ifndef __EXTERNALPHONEDIALOG_H__
-#define __EXTERNALPHONEDIALOG_H__
 
-#include <QDialog>
-#include <QLineEdit>
+#include "peerwidgetfactory.h"
+#include <basicpeerwidget.h>
+#include <peerwidget.h>
+#include <detailedexternalphonepeerwidget.h>
+#include <externalphonepeerwidget.h>
 
-/*! \brief Dialog used to enter phone number and label
- */
-class ExternalPhoneDialog : public QDialog
+QString PeerWidgetFactory::getSwitchBoardEltType()
 {
-    Q_OBJECT
+    return b_engine->getGuiOptions("merged_gui").value("switchboard-elt-type").toString();
+}
 
-    public:
-        ExternalPhoneDialog(QWidget *parent=0,const QString &number="",const QString &label="");
+/*! \brief return an "External phone" widget
+ *
+ * return an instance of ExternalPhonePeerWidget or DetailedExternalPhonePeerWidget
+ * depending on the value of the "switchboard-elt-type" gui setting of the BaseEngine.
+ */
+BasePeerWidget* PeerWidgetFactory::newExternalPhonePeerWidget(
+    const QString &label,
+    const QString &number)
+{
+    BasePeerWidget *w;
 
-        QString label() const { return m_label->text(); };  //! return text label
-        QString number() const { return m_number->text(); };  //! return phone number text
+    if(getSwitchBoardEltType() == "small"){
+        w = new ExternalPhonePeerWidget(label, number);
+    }else{
+        w = new DetailedExternalPhonePeerWidget(label, number);
+    }
+    
+    return w;
+}
 
-    private:
-        QLineEdit *m_label;  //! widget for entering label
-        QLineEdit *m_number;  //! widget for entering phone number
-};
+/*! \brief return an "Internal phone" widget
+ *
+ * return an instance of BasicPeerWidget or PeerWidget
+ * depending on the value of the "switchboard-elt-type" gui setting of the BaseEngine.
+ */
+BasePeerWidget* PeerWidgetFactory::newPeerWidget(UserInfo * ui)
+{
+    BasePeerWidget *w;
 
-#endif
+    if(getSwitchBoardEltType() == "small"){
+        w = new BasicPeerWidget(ui);
+    }else{
+        w = new PeerWidget(ui);
+    }
+
+    return w;
+}
+

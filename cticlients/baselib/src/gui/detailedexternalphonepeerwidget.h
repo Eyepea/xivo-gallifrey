@@ -31,73 +31,38 @@
  * $Date$
  */
 
-#ifndef __CHITCHAT_H__
-#define __CHITCHAT_H__
+#ifndef __DETAILEDEXTERNALPHONEPEERWIDGET_H__
+#define __DETAILEDEXTERNALPHONEPEERWIDGET_H__
 
-#include <QWidget>
-#include <QVariant>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
-#include <QTextEdit>
-#include <QHash>
-#include <QKeyEvent>
-#include <QScrollBar>
-#include <QDebug>
+#include "baselib_export.h"
 
-#include <baseengine.h>
+#include <QLabel>
+#include "basepeerwidget.h"
 
-
-class MessageEdit;
-
-
-/*! \brief open a chat window with another xivo user
+/*! \brief External phone widget for detailed switchboard display
  */
-class ChitChatWindow : public QWidget
+class BASELIB_EXPORT DetailedExternalPhonePeerWidget : public BasePeerWidget
 {
     Q_OBJECT
 
     public:
-        static ChitChatWindow *chitchat_instance;
-
-        ChitChatWindow();
-        ChitChatWindow(const QString &);
-        
-        void sendMessage(const QString &message);
-        void addMessage(const QString &, const QString &, const QString &, const QString &);
-        void receiveMessage(const QVariantMap &message);
-        static void receiveMessage_t(const QVariantMap &message, void *udata) {
-            return ((ChitChatWindow*)udata)->receiveMessage(message);
-        };
+        DetailedExternalPhonePeerWidget(const QString &, const QString &);
+        void setAgentToolTip(const QString &, const QStringList &) { };
+        void setAgentState(const QString &) { };
+        void updatePresence() { };
+        void updatePhonesStates() { };
+        void setName(const QString &name) { setText(name); };
+        void setText(const QString &text);
+        QString name() const { return m_textlbl->text(); };
 
     public slots:
-        void writeMessageTo();
-        void clearMessageHistory();
+        void edit();
 
     private:
-        QString m_userid;
-        static QHash<QString, ChitChatWindow*> m_chat_window_opened;
-        MessageEdit *m_message;
-        QTextEdit *m_message_history;
-        QTextCursor lastCursor;
-};
-
-
-class MessageEdit : public QTextEdit
-{
-    Q_OBJECT
-
-    public:
-        MessageEdit(ChitChatWindow *parent) : QTextEdit((QWidget*) parent) { m_dad = parent; };
-
-    public slots:
-        void sendMessage();
-
-    private:
-        ChitChatWindow *m_dad;
-
-    protected:
-        virtual void keyPressEvent(QKeyEvent * event);
+        QLabel *m_textlbl;         //!< text label
+        QLabel *m_lblphone;        //!< phone icon
+        QLabel *m_lblphonenum;     //!< phone number (text)
 };
 
 #endif
+

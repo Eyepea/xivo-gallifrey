@@ -31,37 +31,44 @@
  * $Date$
  */
 
-#ifndef __EXTERNALPHONEPEERWIDGET_H__
-#define __EXTERNALPHONEPEERWIDGET_H__
+#ifndef __PEERITEM_H__
+#define __PEERITEM_H__
 
-#include <QSize>
-#include "basepeerwidget.h"
+#include "baselib_export.h"
 
-/*! \brief Widget used to represent an external phone number
- *
+#include <QtGui>
+
+#include <basicpeerwidget.h>
+
+class PeerWidget;
+class UserInfo;
+
+/*! \brief PeerItem object, linking to a PeerWidget
  */
-class ExternalPhonePeerWidget : public BasePeerWidget
+class BASELIB_EXPORT PeerItem
 {
-    Q_OBJECT
-
     public:
-        ExternalPhonePeerWidget(const QString &, const QString &);
-        void setAgentToolTip(const QString &, const QStringList &) { };
-        void setAgentState(const QString &) { };
-        void updatePresence() { };
-        void updatePhonesStates() { };
-        void setName(const QString & name) { setText(name); };
-        void setText(const QString & text);
-        QString name() const { return m_text; };
+        PeerItem(UserInfo *);
+        PeerItem(const PeerItem &);
+        PeerItem();
 
-    public slots:
-        void edit();
+        UserInfo* userinfo();
 
-    protected:
-        void paintEvent(QPaintEvent *);
-
+        void setWidget(BasePeerWidget * widget) { m_peerwidget = widget; };
+        BasePeerWidget * getWidget() { return m_peerwidget; };
+        void updateStatus();
+        void updateAgentStatus(const QVariant &);
+        void updateName(const QString &);
+        void updateDisplayedStatus();
+        void updateDisplayedName();
     private:
-        QString m_text; //!< text displayed
+        BasePeerWidget *m_peerwidget;  //!< related PeerWidget
+
+        UserInfo *m_ui;  // Properties of each peer
+        QString m_vmstatus;
+        QVariant m_agentstatus;
+        QString m_pausestatus;
+        QStringList m_queuelist;
 };
 
 #endif
