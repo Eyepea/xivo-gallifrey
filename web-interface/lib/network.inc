@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-define('DWHO_NETWORK_RE_HOSTNAME','[a-zA-Z](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?');
+define('DWHO_NETWORK_RE_HOSTNAME','[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?');
 define('DWHO_NETWORK_RE_IPVFUTURE','v[\da-fA-F]+\.[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=:]+');
 
 define('DWHO_NETWORK_HOST_IPV4_DOTDEC',1);
