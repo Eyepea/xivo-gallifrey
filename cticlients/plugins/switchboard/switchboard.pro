@@ -7,4 +7,4 @@ TRANSLATIONS = switchboard_fr.ts
 
 TARGET      = $$qtLibraryTarget(switchboardplugin)
 
-#RESOURCES = res.qrc
+RESOURCES = res.qrc
