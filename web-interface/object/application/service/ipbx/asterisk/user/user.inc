@@ -2529,6 +2529,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
+
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 				continue;
 			}
 			else if(dwho_issa('incall',$arr) === false
@@ -2538,6 +2540,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				{
 					$r['lines'][$row] = 'error';
 					$r['total']['error']++;
+
+					dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 				}
 				else
 				{
@@ -2564,6 +2568,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
+
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 				continue;
 			}
 			else if($save === false)
@@ -2576,6 +2582,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
+				
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 				continue;
 			}
 
@@ -2586,6 +2594,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
+
+				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 			}
 			else
 			{
@@ -2618,6 +2628,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 					    $this->_conf['import']['field'])) === false
 		|| empty($data) === true)
 		{
+			dwho_logw('cannot parse csv file (maybe fields are not separated by | ?)', 'users import', '');
 			dwho_file::rm($fileinfo['tmp_name']);
 			return(false);
 		}
