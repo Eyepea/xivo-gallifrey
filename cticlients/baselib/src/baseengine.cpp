@@ -1066,8 +1066,8 @@ void BaseEngine::parseCommand(const QString &line)
             qDebug() << thisclass;
             
         } else if (thisclass == "directory") {
-            directoryResponse(datamap["headers"].toStringList(),
-                              datamap["resultlist"].toStringList());
+            emit directoryResponse(datamap["headers"].toStringList(),
+                                   datamap["resultlist"].toStringList());
             
         } else if (thisclass == "faxsend") {
             m_filedir = datamap["tdirection"].toString();
