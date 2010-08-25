@@ -71,16 +71,9 @@ switch($act)
 		&& dwho_issa('contexts',$_QR) === true)
 		{
 			if(array_key_exists('directories', $_QR))
-            {
-                $arr = array();
-                foreach($_QR['directories'] as $v)
-                {
-                    $arr[] = $diravail[$v];
-                }
-                $_QR['contexts']['directories'] = implode(',', $arr);
-            }
-            else
-                $_QR['contexts']['directories'] = '';
+        		        $_QR['contexts']['directories'] = implode(',', $_QR['directories']);
+			else
+		                $_QR['contexts']['directories'] = '';
 
 			$_QR['contexts']['deletable'] = 1;
 			$_QR['contexts']['display'] = $_QR['contexts-display'];
@@ -122,6 +115,7 @@ switch($act)
 		$order['name'] = SORT_ASC;
 		$pbxctxlist = $pbxctx->get_contexts_list(null, $order);
 		$dirlist = $dirs->get_directories_list();
+
 		$displist = $disps->get_displays_list();
 		$dispavail = array();
 		foreach($displist as $v)
@@ -153,16 +147,9 @@ switch($act)
 		&& dwho_issa('contexts',$_QR) === true)
 		{
 			if(array_key_exists('directories', $_QR))
-            {
-                $arr = array();
-                foreach($_QR['directories'] as $v)
-                {
-                    $arr[] = $diravail[$v];
-                }
-                $_QR['contexts']['directories'] = implode(',', $arr);
-            }
-            else
-                $_QR['contexts']['directories'] = '';
+		                $_QR['contexts']['directories'] = implode(',', $_QR['directories']);
+			else
+		                $_QR['contexts']['directories'] = '';
 
 			$_QR['contexts']['deletable'] = 1;
 			$_QR['contexts']['display'] = $_QR['contexts-display'];
