@@ -328,7 +328,7 @@ class xivo_libconfig_abstract
 		|| ($this->_filter === false && $this->_load_filter() === false) === true)
 			return(false);
 		else if($this->_chk_exists_cfg('filter',$key) === false)
-			return(null);
+			return $value;
 
 		return($this->_filter->chk_value($key,$value));
 	}

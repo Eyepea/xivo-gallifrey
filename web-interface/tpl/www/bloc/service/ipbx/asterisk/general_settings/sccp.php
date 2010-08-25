@@ -686,7 +686,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_callevents'),
 					'comment'	=> $this->bbf('cmt_fm_callevents'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','callevents','var_val'),
+					'selected'	=> $this->get_var('info','callevents','var_val'),
 					'default'	=> $element['callevents']['default']),$element['callevents']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_accountcode'),
@@ -737,7 +737,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_trustphoneip'),
 					'comment'	=> $this->bbf('cmt_fm_trustphoneip'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','trustphoneip','var_val'),
+					'selected'	=> $this->get_var('info','trustphoneip','var_val'),
 					'default'	=> $element['trustphoneip']['default']),$element['trustphoneip']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_earlyrtp'),
@@ -750,7 +750,8 @@ endif;
 					'comment'	=> $this->bbf('cmt_fm_earlyrtp'),
 					'required'	=> false,
 					'selected'	=> $this->get_var('info','earlyrtp','var_val'),
-					'default'	=> $element['earlyrtp']['default']),$element['earlyrtp']['value']),
+//					'default'	=> $element['earlyrtp']['default']
+),$element['earlyrtp']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_private'),
 					'name'		=> 'private',
@@ -761,7 +762,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_private'),
 					'comment'	=> $this->bbf('cmt_fm_private'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','private','var_val'),
+					'selected'	=> $this->get_var('info','private','var_val'),
 					'default'	=> $element['private']['default']),$element['private']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_mwilamp'),
@@ -773,8 +774,10 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_mwilamp'),
 					'comment'	=> $this->bbf('cmt_fm_mwilamp'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','mwilamp','var_val'),
-					'default'	=> $element['mwilamp']['default']),$element['mwilamp']['value']),
+					'selected'	=> $this->get_var('info','mwilamp','var_val'),
+					'default'	=> $element['mwilamp']['default']
+				),
+			$element['mwilamp']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_mwioncall'),
 					'name'		=> 'mwioncall',
@@ -785,7 +788,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_mwioncall'),
 					'comment'	=> $this->bbf('cmt_fm_mwioncall'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','mwioncall','var_val'),
+					'selected'	=> $this->get_var('info','mwioncall','var_val'),
 					'default'	=> $element['mwioncall']['default']),$element['mwioncall']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_blindtransferindication'),
@@ -818,7 +821,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_cfwdall'),
 					'comment'	=> $this->bbf('cmt_fm_cfwdall'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','cfwdall','var_val'),
+					'selected'	=> $this->get_var('info','cfwdall','var_val'),
 					'default'	=> $element['cfwdall']['default']),$element['cfwdall']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_cfwdbusy'),
@@ -830,7 +833,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_cfwdbusy'),
 					'comment'	=> $this->bbf('cmt_fm_cfwdbusy'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','cfwdbusy','var_val'),
+					'selected'	=> $this->get_var('info','cfwdbusy','var_val'),
 					'default'	=> $element['cfwdbusy']['default']),$element['cfwdbusy']['value']),
 
 		$form->select(array('desc'	=> $this->bbf('fm_cfwdnoanswer'),
@@ -842,7 +845,7 @@ endif;
 					'help'		=> $this->bbf('hlp_fm_cfwdnoanswer'),
 					'comment'	=> $this->bbf('cmt_fm_cfwdnoanswer'),
 					'required'	=> false,
-					'checked'	=> $this->get_var('info','cfwdnoanswer','var_val'),
+					'selected'	=> $this->get_var('info','cfwdnoanswer','var_val'),
 					'default'	=> $element['cfwdnoanswer']['default']),$element['cfwdnoanswer']['value']),
 
 		$form->text(array('desc'	=> $this->bbf('fm_devicetable'),

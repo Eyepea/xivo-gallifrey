@@ -219,6 +219,7 @@ $array['element']['trustphoneip']['value'] = array('no', 'yes');
 $array['element']['earlyrtp'] = array();
 $array['element']['earlyrtp']['default'] = 'none';
 $array['element']['earlyrtp']['value'] = array('none','offhook','dial','ringout');
+$array['element']['earlyrtp']['null'] = true;
 
 $array['element']['private'] = array();
 $array['element']['private']['default'] = 'on';
