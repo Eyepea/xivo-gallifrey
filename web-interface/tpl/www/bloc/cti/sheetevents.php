@@ -75,7 +75,7 @@ if(isset($error_js[0]) === true)
 				    'key'	=> false,
 				    'default'	=> $element['ctisheetevents']['unlink']['default'],
 			      	'selected' => $info['ctisheetevents']['unlink']),
-				$sheetactionslist);
+                                $sheetactionslist),
 
 		$form->select(array('desc'	=> $this->bbf('fm_sheetevents_agentlinked'),
 				    'name'	=> 'ctisheetevents[agentlinked]',
@@ -123,7 +123,7 @@ if(isset($error_js[0]) === true)
 				    'key'	=> false,
 				    'default'	=> $element['ctisheetevents']['faxreceived']['default'],
 			      	'selected' => $info['ctisheetevents']['faxreceived']),
-				$sheetactionslist),
+                                $sheetactionslist);
 
 		$type = 'custom';
 		$count = count($customs);
