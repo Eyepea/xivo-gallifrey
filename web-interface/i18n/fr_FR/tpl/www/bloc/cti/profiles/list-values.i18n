@@ -118,13 +118,13 @@ Agents (liste, next)
 Agents (detail)
 
 ; xlet-queues
-Queues (liste)
+Files d'attente (liste)
 
 ; xlet-queuedetails
-Queues (detail)
+Files d'attente (detail)
 
 ; xlet-queueentrydetails
-Queues (détail des entrées)
+Files d'attente (détail des entrées)
 
 ; xlet-calls
 Appels
@@ -148,7 +148,7 @@ Numéroteur
 Répertoire
 
 ; xlet-outlook
-Outlook
+Outlook (seulement Windows)
 
 ; xlet-fax
 Envoi de fax
@@ -169,7 +169,7 @@ Contacts
 Chambres de conférence
 
 ; xlet-operator
-Operateur
+Opérateur
 
 ; xlet-mylocaldir
 Mon répertoire local
