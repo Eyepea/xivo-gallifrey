@@ -14,25 +14,25 @@ Direct match:
 Match reverse directories:
 
 ; fm_directories_field_phone
-Field 'phone':
+'db-phone' variable:
 
 ; fm_directories_field_fullname
-Field 'fullname':
+'db-fullname' variable:
 
 ; fm_directories_field_company
-Field 'company':
+'db-company' variable:
 
 ; fm_directories_field_mail
-Field 'mail':
-
-; fm_directories_display_reverse
-Display Field comparison of reverse:
+'db-mail' variable:
 
 ; fm_directories_field_lastname
-Field 'lastname':
+'db-lastname' variable:
 
 ; fm_directories_field_firstname
-Champ 'firstname':
+'db-firstname' variable:
+
+; fm_directories_display_reverse
+Name displayed when solving the caller number (calleridnum):
 
 ; fm_description
 Description

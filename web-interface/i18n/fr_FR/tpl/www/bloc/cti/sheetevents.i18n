@@ -1,14 +1,23 @@
 ; title_content_name
 Fiches: Événements
 
+; fm_sheetevents_dial
+Numérotation (Dial):
+
+; fm_sheetevents_link
+Mise en relation (Link):
+
+; fm_sheetevents_unlink
+Fin de mise en relation (Unlink):
+
 ; fm_sheetevents_agentlinked
-Agent se connecte:
+Mise en relation pour Agent:
 
 ; fm_sheetevents_agentunlinked
-Agent se déconnecte:
+Fin de mise en relation pour Agent:
 
-; fm_sheetevents_faxreceived
-Réception fax:
+; fm_sheetevents_incomingdid
+Appel entrant (SDA):
 
 ; fm_sheetevents_incomingqueue
 File d'attente entrante:
@@ -16,17 +25,8 @@ File d'attente entrante:
 ; fm_sheetevents_incominggroup
 Groupe entrant:
 
-; fm_sheetevents_incomingdid
-Appel entrant:
-
-; fm_sheetevents_dial
-Numérotation:
-
-; fm_sheetevents_link
-Mise en relation:
-
-; fm_sheetevents_unlink
-Fin de mise en relation:
+; fm_sheetevents_faxreceived
+Réception fax:
 
 ; col_1
 Événement personnalisé
