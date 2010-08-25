@@ -1,5 +1,5 @@
 # vim: set fileencoding=utf-8 :
-# XIVO CTI Server
+# XiVO CTI Server
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
@@ -11,9 +11,9 @@ __author__    = 'Corentin Le Gall'
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# Alternatively, XIVO CTI Server is available under other licenses directly
+# Alternatively, XiVO CTI Server is available under other licenses directly
 # contracted with Pro-formatique SARL. See the LICENSE file at top of the
-# source tree or delivered in the installable package in which XIVO CTI Server
+# source tree or delivered in the installable package in which XiVO CTI Server
 # is distributed for more details.
 #
 # This program is distributed in the hope that it will be useful,
@@ -1160,7 +1160,7 @@ class XivoCTICommand(BaseCommand):
                     status = self.weblist['agents'][astid].keeplist[agentid]['agentstats']['status']
                     if status != 'AGENT_LOGGEDOFF':
                         log.warning('checkqueue : agent %s on %s was not properly logged off (%s %s)'
-                            % (agentnum, astid, tname, status))
+                                    % (agentnum, astid, tname, status))
                         self.__ami_execute__(astid, 'agentlogoff', agentnum)
                     del self.timerthreads_agentlogoff_retry[thisthread]
                     del thisthread
@@ -2635,27 +2635,27 @@ class XivoCTICommand(BaseCommand):
             vv = self.uniqueids[astid][uid]
             if chan == vv['channel']:
                 vv.update({'hangup' : chan,
-                    'time-hangup' : time.time()})
+                           'time-hangup' : time.time()})
             if 'context' in vv:
                 self.__sheet_alert__('hangup', astid, vv['context'], event)
             if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
                 agent_id = vv['origapplication-data']['spied-agentid']
                 tosend = { 'class' : 'agentlisten',
-                    'astid' : astid,
-                    'agentid' : agent_id,
-                    'status' : 'stopped' }
+                           'astid' : astid,
+                           'agentid' : agent_id,
+                           'status' : 'stopped' }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                    self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                 del vv['origapplication']
                 del vv['origapplication-data']
             if 'recorded' in vv:
                 agent_id = vv['recorded']
                 tosend = { 'class' : 'agentrecord',
-                    'astid' : astid,
-                    'agentid' : agent_id,
-                    'status' : 'stopped' }
+                           'astid' : astid,
+                           'agentid' : agent_id,
+                           'status' : 'stopped' }
                 self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                    self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                                 self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                 del vv['recorded']
         else:
             log.warning('%s HANGUP : uid %s has not been filled' % (astid, uid))
@@ -2664,7 +2664,7 @@ class XivoCTICommand(BaseCommand):
         trunkid = self.__trunkid_from_channel__(astid, chan)
 
         log.info('%s HANGUP (%s %s cause=%s (%s)) (phone trunk)=(%s %s) %s'
-            % (astid, uid, chan, cause, causetxt, phoneid, trunkid, self.uniqueids[astid][uid]))
+                 % (astid, uid, chan, cause, causetxt, phoneid, trunkid, self.uniqueids[astid][uid]))
 
         phidlist_hup = self.weblist['phones'][astid].ami_hangup(uid)
         tridlist_hup = self.weblist['trunks'][astid].ami_hangup(uid)
@@ -2684,7 +2684,8 @@ class XivoCTICommand(BaseCommand):
 
         phidlist_clear = self.weblist['phones'][astid].clear(uid)
         tridlist_clear = self.weblist['trunks'][astid].clear(uid)
-        log.info('%s HANGUP (%s %s) cleared phones and trunks = %s %s' % (astid, uid, chan, phidlist_clear, tridlist_clear))
+        log.info('%s HANGUP (%s %s) cleared phones and trunks = %s %s'
+                 % (astid, uid, chan, phidlist_clear, tridlist_clear))
         for pp in phidlist_clear:
             tosend = self.weblist['phones'][astid].status(pp)
             tosend['astid'] = astid
@@ -4277,7 +4278,7 @@ class XivoCTICommand(BaseCommand):
         
         if uniqueid in meetmeref['uniqueids']:
             log.warning('%s ami_meetmejoin : (%s) channel %s already in meetme %s'
-                % (astid, uniqueid, channel, confno))
+                        % (astid, uniqueid, channel, confno))
             
         phoneid = self.__phoneid_from_channel__(astid, channel)
         if phoneid:
@@ -4341,7 +4342,7 @@ class XivoCTICommand(BaseCommand):
 
         if uniqueid not in meetmeref['uniqueids']:
             log.warning('%s ami_meetmeleave : (%s) channel %s not in meetme %s'
-                % (astid, uniqueid, channel, confno))
+                        % (astid, uniqueid, channel, confno))
         tosend = { 'class' : 'meetme',
                    'function' : 'update',
                    'payload' : { 'action' : 'leave',
@@ -4353,7 +4354,7 @@ class XivoCTICommand(BaseCommand):
         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
         del meetmeref['uniqueids'][uniqueid]
         log.info('%s ami_meetmeleave : (%s) channel %s removed from meetme %s'
-            % (astid, uniqueid, channel, confno))
+                 % (astid, uniqueid, channel, confno))
         return
 
     def ami_meetmemute(self, astid, event):
@@ -4383,7 +4384,7 @@ class XivoCTICommand(BaseCommand):
             self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
         else:
             log.warning('%s ami_meetmemute : (%s) channel %s not in meetme %s'
-                % (astid, uniqueid, channel, confno))
+                        % (astid, uniqueid, channel, confno))
         return
 
     def ami_meetmetalking(self, astid, event):
@@ -4432,7 +4433,7 @@ class XivoCTICommand(BaseCommand):
                                                  'phonenum' : calleridnum }
         else:
             log.warning('%s ami_meetmelist : (%s) channel %s already in meetme %s'
-                % (astid, uniqueid, channel, confno))
+                        % (astid, uniqueid, channel, confno))
 
         # {'Talking': 'Not monitored', 'Admin': 'No', 'MarkedUser': 'No', 'Role': 'Talk and listen'}
         return
@@ -4447,7 +4448,8 @@ class XivoCTICommand(BaseCommand):
         calleridnum = event.get('CallerIDNum')
         calleridname = event.get('CallerIDName')
         link = event.get('Link')
-        log.debug('%s ami_status : %s, %s, %s, %s, %s, %s' % (astid, uniqueid, channel, appliname, calleridnum, calleridname, state))
+        log.debug('%s ami_status : %s, %s, %s, %s, %s, %s'
+                  % (astid, uniqueid, channel, appliname, calleridnum, calleridname, state))
 
         # warning : channel empty when appliname is 'VoiceMail'
         actionid = self.amilist.execute(astid, 'getvar', channel, 'MONITORED')
@@ -5003,7 +5005,7 @@ class XivoCTICommand(BaseCommand):
                                 
                     elif classcomm == 'logclienterror':
                         log.warning('shouldNotOccur from user:%s : %s : %s'
-                            % (userid, icommand.struct.get('classmethod'), icommand.struct.get('message')))
+                                    % (userid, icommand.struct.get('classmethod'), icommand.struct.get('message')))
 
                     elif classcomm == 'faxsend':
                         if self.capas[capaid].match_funcs(ucapa, 'fax'):
@@ -5196,7 +5198,7 @@ class XivoCTICommand(BaseCommand):
         if len(reply) > 0:
             # sha1sum = sha.sha(''.join(reply)).hexdigest()
             tosend = { 'class' : 'history',
-                'payload' : reply }
+                       'payload' : reply }
             return self.__cjson_encode__(tosend)
         else:
             return
@@ -5214,7 +5216,7 @@ class XivoCTICommand(BaseCommand):
                 userinfos.append(uinfo)
         if len(userinfos) > 1:
             log.warning('%s __find_userinfos_by_agentid__ : more than 1 user was found for agent id %s'
-                % (astid, agent_id))
+                        % (astid, agent_id))
         return userinfos
 
     def __find_userinfos_by_agentnum__(self, astid, agent_number):
@@ -5225,7 +5227,7 @@ class XivoCTICommand(BaseCommand):
                 userinfos.append(uinfo)
         if len(userinfos) > 1:
             log.warning('%s __find_userinfos_by_agentnum__ : more than 1 user was found for agent number %s'
-                % (astid, agent_number))
+                        % (astid, agent_number))
         return userinfos
 
     def __find_channel_by_agentnum__(self, astid, agent_number):
@@ -5259,7 +5261,7 @@ class XivoCTICommand(BaseCommand):
                         agentitem.get('context'), agentitem.get('ackcall'))
                 else:
                     log.warning('%s __login_agent__ your agentphonenumber %s is not a digit'
-                        % (astid, agentphonenumber))
+                                % (astid, agentphonenumber))
         return
 
     def __logout_agent__(self, astid, agent_id):
@@ -5274,11 +5276,11 @@ class XivoCTICommand(BaseCommand):
             # we could possibly delete agentitem['agentphonenumber'] here, but maybe not
             if agentnum:
                 self.__ami_execute__(astid, 'agentlogoff',
-                    agentnum)
+                                     agentnum)
                 agentlogoff_retry = threading.Timer(0.1, self.__callback_timer__, ('agentlogoff',))
                 agentlogoff_retry.start()
                 self.timerthreads_agentlogoff_retry[agentlogoff_retry] = {'astid' : astid,
-                    'agentnumber' : agentnum}
+                                                                          'agentnumber' : agentnum}
         return
 
 
@@ -6294,7 +6296,13 @@ class XivoCTICommand(BaseCommand):
 
             context = fastagi.get_variable('XIVO_REAL_CONTEXT')
             log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
-                     % (astid, function, context, uniqueid, channel))
+                     % (astid, function,
+                        context, uniqueid, channel))
+            log.info('handle_fagi %s : (%s) agi_callerid=%s agi_calleridani=%s agi_callingani2=%s'
+                     % (astid, function,
+                        fastagi.env.get('agi_callerid'),
+                        fastagi.env.get('agi_calleridani'),
+                        fastagi.env.get('agi_callingani2')))
         except Exception:
             log.exception('%s handle_fagi %s' % (astid, fastagi.env))
             return
@@ -6365,7 +6373,7 @@ class XivoCTICommand(BaseCommand):
                             lst.append('%s:%s' % (queuename, qprops['queuestats']['Holdtime']))
                         else:
                             log.warning('handle_fagi %s %s : no Holdtime defined in queuestats for %s'
-                                % (astid, function, queuename))
+                                        % (astid, function, queuename))
                     fastagi.set_variable('XIVO_QUEUEHOLDTIME', ','.join(lst))
             except Exception:
                 log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
@@ -6418,7 +6426,7 @@ class XivoCTICommand(BaseCommand):
                 cti_varname = fastagi.args[1]
             else:
                 log.warning('%s handle_fagi %s not enough arguments : %s'
-                    % (astid, function, fastagi.args))
+                            % (astid, function, fastagi.args))
                 return
             if self.uniqueids[astid].has_key(uniqueid):
                 uniqueiddefs = self.uniqueids[astid][uniqueid]
@@ -6428,15 +6436,15 @@ class XivoCTICommand(BaseCommand):
                         fastagi.set_variable(dp_varname, dialplan_data[cti_varname])
                     else:
                         log.warning('%s handle_fagi %s no such variable %s in dialplan data'
-                            % (astid, function, cti_varname))
+                                    % (astid, function, cti_varname))
                         ## XXX fastagi.set_variable(empty)
                 else:
                     log.warning('%s handle_fagi %s no dialplan_data received yet'
-                        % (astid, function))
+                                % (astid, function))
                     ## XXX fastagi.set_variable(not yet)
             else:
                 log.warning('%s handle_fagi %s no such uniqueid received yet : %s %s'
-                    % (astid, function, uniqueid, channel))
+                            % (astid, function, uniqueid, channel))
                 ## XXX fastagi.set_variable(not yet (uniqueid))
             return
 
