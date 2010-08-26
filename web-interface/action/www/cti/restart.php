@@ -18,8 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-$monitoring = &$_SRE->get('monitoring');
-$monitoring->restart_service('pf-xivo-cti-server');
+$sysconfd     = &$_XOBJ->get_module('sysconfd');
+$res          = $sysconfd->request_post'/services', array('pf-xivo-cti-server': 'restart'));
 
 $_QRY->go($_TPL->url('cti/general'));
 
