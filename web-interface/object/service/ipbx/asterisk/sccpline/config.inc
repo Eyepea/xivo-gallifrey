@@ -44,9 +44,6 @@ $array['element']['context']['default'] = '';
 $array['element']['regcontext'] = array();
 $array['element']['regcontext']['default'] = '';
 
-$array['element']['regexten'] = array();
-$array['element']['regexten']['default'] = '';
-
 $array['element']['incominglimit'] = array();
 $array['element']['incominglimit']['default'] = '';
 

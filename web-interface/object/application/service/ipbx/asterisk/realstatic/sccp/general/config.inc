@@ -43,10 +43,6 @@ $array['element']['regcontext'] = array();
 $array['element']['regcontext']['default'] = '';
 $array['element']['regcontext']['null'] = true;
 
-$array['element']['regexten'] = array();
-$array['element']['regexten']['default'] = '';
-$array['element']['regexten']['null'] = true;
-
 $array['element']['dateFormat'] = array();
 $array['element']['dateFormat']['default'] = 'D.M.Y';
 
@@ -328,7 +324,6 @@ $array['filter']['keepalive'] = array('key' => array(0,5,10,15,20,25,30,35,40,45
 $array['filter']['context'] = array('set' => false,'chk' => 2,
 				    'callback' => 'xivo_service_asterisk::chk_context',
 				    'callbackarg' => array(array(XIVO_SRE_IPBX_AST_CONTEXT_AUTHENTICATION)));
-$array['filter']['regexten'] = array('set' => false,'regexp' => '/^[a-z0-9]+$/i');
 $array['filter']['dateFormat'] = array('set' => false,'chk' => 5,'regexp' => '/^[-DMYA\/\.]+$/','maxlen' => 6);
 $array['filter']['bindaddr'] = array('set' => false,'chk' => 2,'callback' => 'dwho_network::valid_host',
 				     'callbackarg'	=> array((DWHO_NETWORK_HOST_IPV4_DOTDEC | DWHO_NETWORK_HOST_HOSTNAME)),

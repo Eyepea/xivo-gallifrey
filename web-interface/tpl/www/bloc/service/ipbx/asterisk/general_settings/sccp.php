@@ -187,16 +187,7 @@ if($context_list !== false):
 				    'default'	=> $element['regcontext']['default']),$context_list);
 endif;
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_regexten'),
-					'name'		=> 'regexten',
-					'labelid'	=> 'regexten',
-					'value'		=> $this->get_var('info','regexten','var_val'),
-					'help'		=> $this->bbf('hlp_fm_regexten'),
-					'comment'	=> $this->bbf('cmt_fm_regexten'),
-					'default'	=> $element['regexten']['default'],
-					'error'		=> $this->bbf_args('error',$this->get_var('error', 'regexten')) )),
-
-		$form->text(array('desc'	=> $this->bbf('fm_dateFormat'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_dateFormat'),
 					'name'		=> 'dateFormat',
 					'labelid'	=> 'dateFormat',
 					'value'		=> $this->get_var('info','dateFormat','var_val'),

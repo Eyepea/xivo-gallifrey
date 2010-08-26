@@ -90,14 +90,6 @@ Reg contexte:
 ; cmt_fm_regcontext
 Config asterisk: regcontext
 
-; fm_regexten
-Reg Exten:
-
-; hlp_fm_regexten
-
-; cmt_fm_regexten
-Config asterisk: regexten
-
 ; fm_dateFormat
 Format de la date:
 
