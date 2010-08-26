@@ -6295,14 +6295,20 @@ class XivoCTICommand(BaseCommand):
             # astid, fastagi.env['agi_channel'], time.time(), fastagi.env['agi_context'], fastagi.env['agi_priority'], fastagi.env['agi_request'], fastagi.env['agi_uniqueid']
 
             context = fastagi.get_variable('XIVO_REAL_CONTEXT')
-            log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s'
+
+            calleridnum = fastagi.env.get('agi_callerid')
+            calleridani = fastagi.env.get('agi_calleridani')
+            callingani2 = fastagi.env.get('agi_callingani2')
+
+            cidnumstrs = ['agi_callerid=%s' % calleridnum]
+            if calleridnum != calleridani:
+                cidnumstrs.append('agi_calleridani=%s' % calleridani)
+            if callingani2 != '0':
+                cidnumstrs.append('agi_callingani2=%s' % callingani2)
+
+            log.info('handle_fagi %s : (%s) context=%s uid=%s chan=%s %s'
                      % (astid, function,
-                        context, uniqueid, channel))
-            log.info('handle_fagi %s : (%s) agi_callerid=%s agi_calleridani=%s agi_callingani2=%s'
-                     % (astid, function,
-                        fastagi.env.get('agi_callerid'),
-                        fastagi.env.get('agi_calleridani'),
-                        fastagi.env.get('agi_callingani2')))
+                        context, uniqueid, channel, ' '.join(cidnumstrs)))
         except Exception:
             log.exception('%s handle_fagi %s' % (astid, fastagi.env))
             return
@@ -6400,7 +6406,6 @@ class XivoCTICommand(BaseCommand):
                             % (astid, function, uniqueid, channel))
                 calleridsolved = None
 
-            calleridnum  = fastagi.env['agi_callerid']
             calleridname = fastagi.env['agi_calleridname']
             if calleridsolved:
                 td = '%s handle_fagi %s : calleridsolved="%s"' % (astid, function, calleridsolved)
