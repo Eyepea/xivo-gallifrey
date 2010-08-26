@@ -45,7 +45,7 @@ class MessageEdit;
 
 /*! \brief open a chat window with another xivo user
  */
-class ChitChatWindow : public QWidget
+class BASELIB_EXPORT ChitChatWindow : public QWidget
 {
     Q_OBJECT
 
