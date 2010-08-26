@@ -200,11 +200,12 @@ void Popup::saveandclose()
     // qDebug() << "Popup::saveandclose()";
     QStringList qsl;
 
+/*
     QList<QLineEdit *> lineedits = m_sheetui_widget->findChildren<QLineEdit *>(QRegExp("^XIVOFORM-"));
     for(int i = 0; i < lineedits.count(); i++) {
         qsl.append(lineedits[i]->objectName() + ":" + lineedits[i]->text());
     }
-
+*/
     save(qsl.join(";"));
 
     close();

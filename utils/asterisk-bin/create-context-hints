@@ -80,6 +80,9 @@ if not config.has_section('template'):
     raise ValueError, "Template section doesn't exist"
 
 for (context,) in res:
+    if config.has_section('!%s' % context):
+        continue
+
     print "[" + context + "]"
 
     # Maybe a relation exists between hints and realtime TODO check
