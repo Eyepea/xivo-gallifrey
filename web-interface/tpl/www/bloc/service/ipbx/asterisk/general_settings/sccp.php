@@ -174,9 +174,29 @@ if($context_list !== false):
 					'comment'	=> $this->bbf('cmt_fm_context'),
 				    'selected'	=> $this->get_var('info','context','var_val'),
 				    'default'	=> $element['context']['default']),$context_list);
+
+	echo	$form->select(array('desc'	=> $this->bbf('fm_regcontext'),
+				    'name'		=> 'regcontext',
+				    'labelid'	=> 'regcontext',
+				    'empty'		=> true,
+				    'key'		=> 'identity',
+				    'altkey'	=> 'name',
+					'help'		=> $this->bbf('hlp_fm_regcontext'),
+					'comment'	=> $this->bbf('cmt_fm_regcontext'),
+				    'selected'	=> $this->get_var('info','regcontext','var_val'),
+				    'default'	=> $element['regcontext']['default']),$context_list);
 endif;
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_dateFormat'),
+	echo	$form->text(array('desc'	=> $this->bbf('fm_regexten'),
+					'name'		=> 'regexten',
+					'labelid'	=> 'regexten',
+					'value'		=> $this->get_var('info','regexten','var_val'),
+					'help'		=> $this->bbf('hlp_fm_regexten'),
+					'comment'	=> $this->bbf('cmt_fm_regexten'),
+					'default'	=> $element['regexten']['default'],
+					'error'		=> $this->bbf_args('error',$this->get_var('error', 'regexten')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_dateFormat'),
 					'name'		=> 'dateFormat',
 					'labelid'	=> 'dateFormat',
 					'value'		=> $this->get_var('info','dateFormat','var_val'),

@@ -82,6 +82,21 @@ Context:
 ; cmt_fm_context
 Asterisk config: context
 
+; fm_regcontext
+Reg Context:
+
+; hlp_fm_regcontext
+
+; cmt_fm_regcontext
+Asterisk config: regcontext
+
+; fm_regexten
+Reg Exten:
+
+; hlp_fm_regexten
+
+; cmt_fm_regexten
+Asterisk config: regexten
 
 ; fm_dateFormat
 Date Format:

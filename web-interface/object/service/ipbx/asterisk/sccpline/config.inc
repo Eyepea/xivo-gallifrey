@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
- 
+
 
 
 
@@ -40,6 +40,12 @@ $array['element']['description']['default'] = '';
 
 $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
+
+$array['element']['regcontext'] = array();
+$array['element']['regcontext']['default'] = '';
+
+$array['element']['regexten'] = array();
+$array['element']['regexten']['default'] = '';
 
 $array['element']['incominglimit'] = array();
 $array['element']['incominglimit']['default'] = '';
@@ -134,6 +140,8 @@ $array['filter']['description']                  = array('set' => false, 'chk'	=
 	'maxlen' => 512);
 $array['filter']['context']                      = array('set' => false, 'chk'	=> 2,
 	'callback' => 'xivo_service_asterisk::chk_context');
+$array['filter']['regexten']                     = array('set' => false,
+	'regexp' => '/^[a-z0-9]+$/i');
 $array['filter']['incominglimit']                = array('set' => false, 'chk'	=> 2,
 	'cast' => 'uint','between' => array(0,20));
 $array['filter']['transfer']                     = array('set' => false, 'chk'	=> 2,
