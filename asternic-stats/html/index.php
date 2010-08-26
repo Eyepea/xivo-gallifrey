@@ -62,7 +62,7 @@ $end_month = date('Y-m-d',$end_month_ts);
 
 // Get informations from XiVO in JSON
 $xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/users");
-$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/agents");
+$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/call_center/agents");
 
 $query = "SELECT queue FROM qname ORDER BY queue";
 $res = consulta_db($query,0,0);
@@ -88,7 +88,7 @@ foreach ($xivo_agent as $agents)
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 	<title>Asternic Call Center Stats</title>
-	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<style type="text/css" media="screen">@import "css/basic.css";</style>
 	<style type="text/css" media="screen">@import "css/tab.css";</style>
 	<style type="text/css" media="screen">@import "css/fixed-all.css";</style>
