@@ -63,6 +63,7 @@ mysql_migrate() {
 	fi
 
 	echo "Performing upgrade... ";
+	echo 'DROP INDEX `cdr__idx__dstchannel` ON `cdr`' | mysql --defaults-extra-file=/etc/mysql/debian.cnf --force ${DBNAME} 2>/dev/null;
 	for FILE in `dirname $0`/scripts/astmysql/*.sql; do
 		echo " $FILE";
 		mysql --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} < ${FILE};
