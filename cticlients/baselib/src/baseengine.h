@@ -172,7 +172,8 @@ class BASELIB_EXPORT BaseEngine: public QObject
         const QHash<QString, QHash<QString, ParkingInfo *> > parking() const { return m_parking; }; //!< Return the parking to any Xlet
 
         void registerTranslation(const QString &path);
-        
+        void sendUrlToBrowser(const QString &);
+
     private:
         int callClassEventCallback(QString className, const QVariantMap &map);
         QMultiHash<QString, e_callback* > m_class_event_cb;

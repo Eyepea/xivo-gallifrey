@@ -34,10 +34,14 @@
 #include <QCryptographicHash>
 #include <QDateTime>
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDir>
-#include <QTcpSocket>
+#include <QFileInfo>
 #include <QLocale>
+#include <QProcess>
+#include <QTcpSocket>
 #include <QTranslator>
+#include <QUrl>
 
 #include "JsonToVariant.h"
 #include "VariantToJson.h"
@@ -1375,6 +1379,13 @@ void BaseEngine::parseCommand(const QString &line)
             qDebug() << "m_counters"  << m_counters;
             qDebug() << "\n";
             
+            QString urltolaunch = m_guioptions["merged_gui"].toMap()["login.url"].toString();
+            if (! urltolaunch.isEmpty()) {
+                urltolaunch.replace("{xc-username}", m_userid);
+                urltolaunch.replace("{xc-password}", m_password);
+                this->sendUrlToBrowser(urltolaunch);
+            }
+            
             // XXXX m_capafuncs => config file
             // m_enabled_function's purposes are :
             // - to keep track of the user's true rights
@@ -2262,4 +2273,24 @@ void BaseEngine::registerTranslation(const QString &path)
     QTranslator *translator = new QTranslator;
     translator->load(path.arg(locale));
     qApp->installTranslator(translator);
+}
+
+void BaseEngine::sendUrlToBrowser(const QString & value)
+{
+    // qDebug() << "BaseEngine::sendUrlToBrowser()" << value;
+#ifdef Q_WS_WIN
+    QSettings settings("HKEY_CLASSES_ROOT\\HTTP\\shell\\open\\command", QSettings::NativeFormat);
+    QString command = settings.value(".").toString();
+    QRegExp rx("\"(.+)\"");
+    if (rx.indexIn(command) != -1)
+        command = rx.capturedTexts()[1];
+    QUrl url(value);
+    QFileInfo browserFileInfo(command);
+    if (browserFileInfo.fileName() == "iexplore.exe")
+        QProcess::startDetached(browserFileInfo.absoluteFilePath(), QStringList() << "-new" << url.toEncoded());
+    else
+        QDesktopServices::openUrl(url);
+#else
+    QDesktopServices::openUrl(QUrl(value));
+#endif
 }
