@@ -19,7 +19,7 @@
 #
 
 $sysconfd     = &$_XOBJ->get_module('sysconfd');
-$res          = $sysconfd->request_post'/services', array('pf-xivo-cti-server': 'restart'));
+$res          = $sysconfd->request_post('/services', array('pf-xivo-cti-server' => 'restart'));
 
 $_QRY->go($_TPL->url('cti/general'));
 
