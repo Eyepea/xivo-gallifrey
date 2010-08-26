@@ -421,6 +421,9 @@ void ConfChamberView::mousePressEvent(QMouseEvent *event)
 ConfChamber::ConfChamber(QWidget *parent, ConfTab *tab, const QString &id)
     : QWidget(parent), m_id(id)
 {
+    QString room = QString("confrooms/%0/").arg(m_id);
+    int moderated = b_engine->eV(room + "moderated").toInt();
+
     QVBoxLayout *vBox = new QVBoxLayout(this);
     setLayout(vBox);
     QHBoxLayout *hBox = new QHBoxLayout();
@@ -438,7 +441,7 @@ ConfChamber::ConfChamber(QWidget *parent, ConfTab *tab, const QString &id)
     hBox->addWidget(redondant, 6);
     hBox->addWidget(roomPause, 2);
     hBox->addStretch(1);
-    if (!m_model->isAdmin()) {
+    if (!m_model->isAdmin()||(!moderated)) {
         roomPause->hide();
         hBox->setStretch(1, 8);
     }
@@ -467,8 +470,7 @@ ConfChamber::ConfChamber(QWidget *parent, ConfTab *tab, const QString &id)
 
 
 
-    QString room = QString("confrooms/%0/").arg(m_id);
-    if ((b_engine->eV(room + "moderated").toInt()) && 
+    if ( moderated && 
         (!m_model->isAuthed())) {
         QTimer *timer = new QTimer(this);
         timer->setSingleShot(true);
