@@ -119,9 +119,6 @@ def _find_template_file(tplfilename, customtplfilename, newfilename):
     if os.access(customtplfilename, (os.F_OK | os.R_OK)):
         filename    = customtplfilename
         filestat    = os.stat(customtplfilename)
-    elif os.access(newfilename, (os.F_OK | os.R_OK)):
-        filename    = newfilename
-        filestat    = os.stat(newfilename)
     else:
         filename = tplfilename
         if os.access(tplfilename, (os.F_OK | os.R_OK)):
