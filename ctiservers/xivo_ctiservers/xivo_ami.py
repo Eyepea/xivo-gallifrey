@@ -673,6 +673,9 @@ class AMIList:
         return
 
     def fdlist(self):
+        for rk in self.rami.keys():
+            if not rk._sock:
+                del self.rami[rk]
         return self.rami.keys()
 
     def remove(self, astid):
