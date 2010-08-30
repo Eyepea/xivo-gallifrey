@@ -1348,21 +1348,13 @@ class XivoCTICommand(BaseCommand):
     def sendsheet(self, eventtype, astid, context):
         self.__sheet_alert__(eventtype, astid, context, {}, {}, None)
 
-    def __sheet_construct__(self, where, astid, context, event, extraevent):
-        actionopt = self.sheet_actions.get(where)
-        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
-                       '<profile>',
-                       '<user>']
-        itemdir = {'xivo-where' : where,
-                   'xivo-astid' : astid,
-                   'xivo-context' : context,
-                   'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
-                   'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())}
-        if actionopt.get('focus') == 'no':
-            linestosend.append('<internal name="nofocus"></internal>')
-        linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
-        linestosend.append('<internal name="context"><![CDATA[%s]]></internal>' % context)
-        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
+    def __sheet_fill__(self, where, astid, context, event, extraevent):
+        itemdir = { 'xivo-where' : where,
+                    'xivo-astid' : astid,
+                    'xivo-context' : context,
+                    'xivo-time' : time.strftime('%H:%M:%S', time.localtime()),
+                    'xivo-date' : time.strftime('%Y-%m-%d', time.localtime())
+                    }
 
         # fill a dict with the appropriate values + set the concerned users' list
         if where == 'outgoing':
@@ -1405,7 +1397,6 @@ class XivoCTICommand(BaseCommand):
             itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
 
         elif where == 'hangup':
-            # print where, event
             itemdir['xivo-channel'] = event.get('Channel')
             itemdir['xivo-uniqueid'] = event.get('Uniqueid')
             # find which userinfo's to contact ...
@@ -1414,7 +1405,6 @@ class XivoCTICommand(BaseCommand):
             for fieldname in extraevent.keys():
                 if not itemdir.has_key(fieldname):
                     itemdir[fieldname] = extraevent[fieldname]
-                # userinfos.append() : users matching the SDA ?
 
         elif where in ['incomingqueue', 'incominggroup']:
             clid = event.get('CallerID')
@@ -1436,6 +1426,20 @@ class XivoCTICommand(BaseCommand):
             for fieldname in extraevent.keys():
                 if not itemdir.has_key(fieldname):
                     itemdir[fieldname] = extraevent[fieldname]
+
+        return itemdir
+
+    def __sheet_construct_xml__(self, where, astid, context, itemdir):
+        actionopt = self.sheet_actions.get(where)
+        linestosend = ['<?xml version="1.0" encoding="utf-8"?>',
+                       '<profile>',
+                       '<user>']
+
+        if actionopt.get('focus') == 'no':
+            linestosend.append('<internal name="nofocus"></internal>')
+        linestosend.append('<internal name="astid"><![CDATA[%s]]></internal>' % astid)
+        linestosend.append('<internal name="context"><![CDATA[%s]]></internal>' % context)
+        linestosend.append('<internal name="kind"><![CDATA[%s]]></internal>' % where)
 
         if 'xivo-channel' in itemdir:
             linestosend.append('<internal name="channel"><![CDATA[%s]]></internal>'
@@ -1479,19 +1483,8 @@ class XivoCTICommand(BaseCommand):
             #    return
             log.info('%s __sheet_alert__ %s %s %s %s' % (astid, where, whoms, channel, capaids))
 
-            # 1) build sheet     (or we could get it from sheet manager)
-            if channel is not None:
-                self.__create_new_sheet__(astid, channel)
-            if False and channel is not None and astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
-                xmlustring = self.sheetmanager[astid].sheets[channel].sheet
-            else:
-                linestosend = self.__sheet_construct__(where, astid, context, event, extraevent)
-                xmlustring = ''.join(linestosend)
-                # 2) update sheet manager
-                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
-                    self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
 
-            # 3) build recipient list
+            # 1) build recipient list
             if where in ['agentlinked', 'agentunlinked']:
                 dstnum = event.get('Channel2')[LENGTH_AGENT:]
                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
@@ -1523,8 +1516,26 @@ class XivoCTICommand(BaseCommand):
                     # XXX sip/iax2/sccp @queue
                     if status.get('Paused') == '0':
                         userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[LENGTH_AGENT:]))
+            elif where in ['incomingdid']:
+                # users matching the SDA ?
+                pass
             elif where.startswith('custom.'):
                 pass
+
+
+            # 2) build sheet     (or we could get it from sheet manager)
+            if channel is not None:
+                self.__create_new_sheet__(astid, channel)
+            if False and channel is not None and astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                xmlustring = self.sheetmanager[astid].sheets[channel].sheet
+            else:
+                itemdir = self.__sheet_fill__(where, astid, context, event, extraevent)
+                linestosend = self.__sheet_construct_xml__(where, astid, context, itemdir)
+                xmlustring = ''.join(linestosend)
+                # 3) update sheet manager
+                if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
+                    self.sheetmanager[astid].setcustomersheet(channel, xmlustring)
+
 
             # 4) format message and send
             xmlstring = xmlustring.encode('utf8')
@@ -1547,6 +1558,7 @@ class XivoCTICommand(BaseCommand):
             else:
                 tosend['payload'] = base64.b64encode(xmlstring)
             jsonmsg = self.__cjson_encode__(tosend)
+
 
             # 5) send the payload to the appropriate people
             for whom in whoms.split(','):
