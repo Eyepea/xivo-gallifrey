@@ -1092,7 +1092,7 @@ void BaseEngine::parseCommand(const QString &line)
             // qDebug() << thisclass << m_users.size() << id;
             if(m_users.contains(id)) {
                 QString stateid = datamap.value("capapresence").toMap().value("state").toMap().value("stateid").toString();
-                QVariantMap changeme = m_guioptions.value("server_gui").toMap().value("autochangestate").toMap();
+                QVariantMap changeme = m_guioptions.value("server_gui").toMap().value("presence.autochangestate").toMap();
                 if(changeme.count() && (id == m_fullid)) {
                     if(changeme.contains(stateid)) {
                         // if(stateid == changeme["statesrc"].toString()) {
@@ -1379,7 +1379,7 @@ void BaseEngine::parseCommand(const QString &line)
             qDebug() << "m_counters"  << m_counters;
             qDebug() << "\n";
             
-            QString urltolaunch = m_guioptions["merged_gui"].toMap()["login.url"].toString();
+            QString urltolaunch = m_guioptions["merged_gui"].toMap()["loginwindow.url"].toString();
             if (! urltolaunch.isEmpty()) {
                 urltolaunch.replace("{xc-username}", m_userid);
                 urltolaunch.replace("{xc-password}", m_password);

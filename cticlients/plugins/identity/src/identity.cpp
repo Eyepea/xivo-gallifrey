@@ -164,15 +164,15 @@ void IdentityDisplay::setupIcons()
 
 void IdentityDisplay::setGuiOptions(const QVariantMap & optionsMap)
 {
-    if(optionsMap.contains("fontname") && optionsMap.contains("fontsize"))
-        m_gui_font = QFont(optionsMap["fontname"].toString(),
-                           optionsMap["fontsize"].toInt());
-    if(optionsMap.contains("iconsize"))
-        m_gui_buttonsize = optionsMap["iconsize"].toInt();
-    
-    m_agent->setAllowedActions(optionsMap["logagent"].toBool(),
-                               optionsMap["pauseagent"].toBool());
-    
+    if(optionsMap.contains("xlet.identity.fontname") && optionsMap.contains("xlet.identity.fontsize"))
+        m_gui_font = QFont(optionsMap["xlet.identity.fontname"].toString(),
+                           optionsMap["xlet.identity.fontsize"].toInt());
+    if(optionsMap.contains("xlet.identity.iconsize"))
+        m_gui_buttonsize = optionsMap["xlet.identity.iconsize"].toInt();
+
+    m_agent->setAllowedActions(optionsMap["xlet.identity.logagent"].toBool(),
+                               optionsMap["xlet.identity.pauseagent"].toBool());
+
     setFont(m_gui_font);
     
     m_loginkind = optionsMap["loginkind"].toUInt();

@@ -63,48 +63,44 @@ Database write permission
 
 
 
-; pref-logagent
-Agents (Dis)connection from "Identity" xlet
+; pref-loginwindow-url
+Url to send once connected
 
-; pref-pauseagent
-Agents pause/unpause from "Identity" xlet
+; pref-xlet-identity-logagent
+(Dis)Connect one's agent ("Identity" xlet)
 
-; pref-fontsize
-Xlets font size
+; pref-xlet-identity-pauseagent
+(Un)Pause one's agent ("Identity" xlet)
 
-; pref-fontname
-Xlets font
+; pref-xlet-agentsnext-fontname
+Font name ("Agent Groups" xlet)
 
-; pref-iconsize
-Xlets icon size
+; pref-xlet-agentsnext-fontsize
+Font size ("Agent groups" xlet)
 
-; pref-queues-statscolumns
-Displayed columns
+; pref-xlet-agentsnext-blinktime
+Blinking period ("Agent groups" xlet)
 
-; pref-noqueueaction
-Login & pause actions ("Agents detail" xlet)
+; pref-xlet-agentdetails-noqueueaction
+No action on queues by agents ("Agent details" xlet)
 
-; pref-autochangestate
-Automatic states transitions
+; pref-xlet-agentdetails-hideastid
+Hide the XiVO name ("Agent details" xlet)
 
-; pref-blinktime
-Blinktime
+; pref-xlet-agentdetails-hidecontext
+Hide the context name ("Agent details" xlet)
 
-; pref-supervisor
-Supervisor
+; pref-xlet-agents-fontname
+Font name ("Agents list" xlet)
 
-; pref-queues-showqueuenames
-Show queues name
+; pref-xlet-agents-fontsize
+Font size ("Agents list" xlet)
 
-; pref-queues-showqueues
-Show queues
+; pref-xlet-agents-iconsize
+Icons size ("Agents list" xlet)
 
-; pref-queues-shortlegends
-Show queues legend
-
-; pref-conference-allowrecord
-Allow conference room record
-
+; pref-presence-autochangestate
+Automatic transitions between presence states
 
 
 

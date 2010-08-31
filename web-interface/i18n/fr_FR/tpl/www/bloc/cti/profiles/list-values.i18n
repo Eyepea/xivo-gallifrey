@@ -63,48 +63,44 @@ Autoriser l'écriture dans la base de données
 
 
 
-; pref-logagent
-(Dé)connexion des agents depuis la xlet "Identité"
+; pref-loginwindow-url
+Url à émettre une fois le login effectué
 
-; pref-pauseagent
-Pause/Unpause des agents depuis la xlet "Identité"
+; pref-xlet-identity-logagent
+(Dé)Connexion des agents (xlet "Identité")
 
-; pref-fontsize
-Taille de la police dans les Xlets
+; pref-xlet-identity-pauseagent
+(Dé)Pause des agents (xlet "Identité")
 
-; pref-fontname
-Police des Xlets
+; pref-xlet-agentsnext-fontname
+Police de caractères (xlet "Groupes d'agents")
 
-; pref-iconsize
-Taille des icônes dans les Xlets
+; pref-xlet-agentsnext-fontsize
+Taille de la police de caractères (xlet "Groupes d'agents")
 
-; pref-queues-statscolumns
-Colonnes affichées
+; pref-xlet-agentsnext-blinktime
+Durée de clignotement (xlet "Groupes d'agents")
 
-; pref-noqueueaction
-Actions de connexion et pause dans la xlet "Détail agents"
+; pref-xlet-agentdetails-noqueueaction
+Pas d'action sur les files par les agents (xlet "Détails des agents")
 
-; pref-autochangestate
-Transitions automatiques entre les états
+; pref-xlet-agentdetails-hideastid
+Cacher le nom du XiVO (xlet "Détails des agents")
 
-; pref-blinktime
-Durée de clignotement
+; pref-xlet-agentdetails-hidecontext
+Cacher le nom du contexte (xlet "Détails des agents")
 
-; pref-supervisor
-Superviseur
+; pref-xlet-agents-fontname
+Police de caractères (xlet "Liste d'agents")
 
-; pref-queues-showqueuenames
-Afficher le nom des files d'attentes
+; pref-xlet-agents-fontsize
+Taille de la police de caractères (xlet "Liste d'agents")
 
-; pref-queues-showqueues
-Afficher les files d'attentes
+; pref-xlet-agents-iconsize
+Taille des icônes (xlet "Liste d'agents")
 
-; pref-queues-shortlegends
-Afficher la légende des files d'attente
-
-; pref-conference-allowrecord
-Autoriser l'enregistrement des chambres de conférence
-
+; pref-presence-autochangestate
+Transitions automatiques entre les états de présence
 
 
 
