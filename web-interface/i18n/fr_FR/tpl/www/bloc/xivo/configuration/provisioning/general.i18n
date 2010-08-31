@@ -1,0 +1,21 @@
+
+; title_content_name
+Approvisionnement
+
+; fld_registrar
+Registrar
+
+; fm_registrar_main
+serveur principal :  
+
+; fm_registrar_backup
+serveur de secours : 
+
+; fld_proxy
+Proxy
+
+; fm_proxy_main
+serveur principal : 
+
+; fm_proxy_backup
+serveur de secours : 

@@ -244,6 +244,9 @@ Sheets : Actions
 ; acl(service-cti-sheetevents)
 Sheets : Events
 
+; acl(service-cti-restart)
+CTI server restart
+
 ; acl(service-ipbx-pbx_settings)
 IPBX settings
 

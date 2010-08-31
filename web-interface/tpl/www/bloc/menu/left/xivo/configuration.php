@@ -108,6 +108,13 @@ $dhtml = &$this->get_module('dhtml');
 			</dd>
 		</dl>
 		<dl>
+			<dt><?=$this->bbf('mn_left_ti_provisioning');?></dt>
+			<dd id="mn-provisioning-general">
+				<?=$url->href_html($this->bbf('mn_left_provisioning-general'),
+						   'xivo/configuration/provisioning/general');?>
+			</dd>
+		</dl>
+		<dl>
 			<dt><?=$this->bbf('mn_left_ti_controlsystem');?></dt>
 			<dd id="mn-controlsystem--commonconf">
 				<?=$url->href_html($this->bbf('mn_left_controlsystem-commonconf'),

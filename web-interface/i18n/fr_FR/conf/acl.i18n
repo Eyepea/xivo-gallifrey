@@ -97,6 +97,9 @@ Fiches : Actions
 ; acl(service-cti-sheetevents)
 Fiches : Evènements
 
+; acl(service-cti-restart)
+Redémarrage du serveur CTI
+
 ; acl(service-ipbx-pbx_settings)
 Paramètres IPBX
 

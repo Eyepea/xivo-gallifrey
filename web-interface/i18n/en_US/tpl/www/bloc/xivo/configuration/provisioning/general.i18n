@@ -1,0 +1,21 @@
+
+; title_content_name
+Provisioning
+
+; fld_registrar
+Registrar
+
+; fm_registrar_main
+main server :  
+
+; fm_registrar_backup
+backup server : 
+
+; fld_proxy
+Proxy
+
+; fm_proxy_main
+main server : 
+
+; fm_proxy_backup
+backup server : 

@@ -51,8 +51,8 @@ class CommonConf(jsoncore.JsonCore):
    
     SECTIONS  = {
         '1. VoIP'       : ['xivo.voip.ifaces', 'xivo.voip.vlan.id',
-            'xivo_registrar_main_ip', 'xivo_registrar_backup_ip',
-            'xivo_proxy_main_up'    , 'xivo_proxy_backup_ip'
+            'xivo.registrar.main.ip', 'xivo.registrar.backup.ip',
+            'xivo.proxy.main.ip'    , 'xivo.proxy.backup.ip'
         ],
         '2. Network'    : [
             'xivo.hostname', 'xivo.domain', 'xivo.net4.ip', 

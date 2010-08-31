@@ -80,4 +80,8 @@ $array['dhcp'] = array();
 $array['dhcp']['table'] = 'dhcp';
 $array['dhcp']['primary'] = array('id' => '');
 
+$array['provisioning'] = array();
+$array['provisioning']['table'] = 'provisioning';
+$array['provisioning']['primary'] = array('id' => '');
+
 ?>

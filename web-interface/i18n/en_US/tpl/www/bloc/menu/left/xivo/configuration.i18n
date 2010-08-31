@@ -75,3 +75,9 @@ Are you sure you want to apply the HA configuration ?
 
 ; controlsystem_ha_stop_confirm
 Are you sure you want to stop HA ?
+
+; mn_left_ti_provisioning
+Provisioning
+
+; mn_left_provisioning-general
+General

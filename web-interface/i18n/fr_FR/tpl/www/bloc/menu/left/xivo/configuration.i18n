@@ -75,3 +75,9 @@ Arrêter la HA
 
 ; controlsystem_ha_stop_confirm
 Êtes-vous sûr de vouloir arrêter la HA ?
+
+; mn_left_ti_provisioning
+Approvisionnement
+
+; mn_left_provisioning-general
+Général

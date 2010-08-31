@@ -29,15 +29,17 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_mail       = false;
 	var $_netiface   = false;
 	var $_resolvconf = false;
+	var $_prov       = false;
 	
 	function xivo_object_commonconf(&$xobj)
 	{
 		$this->xivo_object_abstract(&$xobj);
 
-		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))    === false
-		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))        === false
-		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))  === false
-		|| ($this->_mail        = &$this->_xobj->get_module('mail'))        === false)
+		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))     === false
+		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))         === false
+		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
+		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
+		|| ($this->_prov        = &$this->_xobj->get_module('provisioning')) === false)
 			return(false);
 
 		return(true);
@@ -146,7 +148,7 @@ class xivo_object_commonconf extends xivo_object_abstract
 
             if($vlanid == 0 && $item['netinfo']['vlanif'])
                 $vlanid = intval($item['netiface']['vlanid']);
-                
+
             if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
                 $cidr_id = $i;
         }
@@ -213,7 +215,16 @@ class xivo_object_commonconf extends xivo_object_abstract
         $conf = array_merge($conf, array(
             'xivo.astdb'            => $db_ast,
             'xivo.xivodb'           => $db_xivo,
-        ));
+					));
+
+				//provisioning
+				$rawdata = $this->_prov->get(1);
+				$conf = array_merge($conf, array(
+						'xivo.registrar.main.ip'   => $rawdata['registrar_main'],
+            'xivo.registrar.backup.ip' => $rawdata['registrar_backup'],
+            'xivo.proxy.main.ip'       => $rawdata['proxy_main'],
+            'xivo.proxy.backup.ip'     => $rawdata['proxy_backup'],
+					));
 
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
 	}
