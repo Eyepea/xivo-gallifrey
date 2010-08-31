@@ -33,6 +33,9 @@ $array['element']['context']['default'] = '';
 $array['element']['whom'] = array();
 $array['element']['whom']['default'] = '';
 
+$array['element']['extrarequests'] = array();
+$array['element']['extrarequests']['default'] = '';
+
 $array['element']['capaids'] = array();
 $array['element']['capaids']['default'] = '';
 
@@ -61,6 +64,7 @@ $array['filter'] = array();
 $array['filter']['name'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^[[:alnum:]]+$/i');
 $array['filter']['context'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['whom'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
+$array['filter']['extrarequests'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['capaids'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['sheet_info'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');
 $array['filter']['systray_info'] 	= array('set' => false, 'chk' => 2, 'regexp' => '/^.*$/');

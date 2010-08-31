@@ -224,6 +224,7 @@ switch($act)
 				$qtui = "null";
 				$actid = $action['name'];
 				$actout[$actid]['whom'] = $action['whom'];
+				$actout[$actid]['extrarequests'] = $action['extrarequests'];
 				$actout[$actid]['focus'] = $action['focus'] == 1 ? "yes" : "no";
 				$actout[$actid]['contexts'] = dwho_json::decode($action['context'], true) == false ? array() : dwho_json::decode($action['context'], true);
 				$actout[$actid]['capaids'] = dwho_json::decode($action['capaids'], true) == false ? array() : dwho_json::decode($action['capaids'], true);

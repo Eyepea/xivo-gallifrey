@@ -53,6 +53,13 @@ endif;
 				  'default'	=> $element['sheetactions']['whom']['default'],
 				  'value'	=> $info['sheetactions']['whom']));
 
+        echo	$form->text(array('desc'	=> $this->bbf('fm_sheetactions_extrarequests'),
+				  'name'	=> 'sheetactions[extrarequests]',
+				  'labelid'	=> 'sheetactions-extrarequests',
+				  'size'	=> 15,
+				  'default'	=> $element['sheetactions']['extrarequests']['default'],
+				  'value'	=> $info['sheetactions']['extrarequests']));
+
 	echo    $form->checkbox(array('desc' => $this->bbf('fm_sheetactions_focus'),
 						'name' => 'sheetactions[focus]',
 						'labelid' => 'sheetactions_focus',

@@ -400,6 +400,7 @@ CREATE TABLE `ctisheetactions` (
  `description` text NOT NULL,
  `context` varchar(50),
  `whom` varchar(50),
+ `extrarequests` varchar(50),
  `capaids` text NOT NULL,
  `sheet_info` text,
  `systray_info` text,
