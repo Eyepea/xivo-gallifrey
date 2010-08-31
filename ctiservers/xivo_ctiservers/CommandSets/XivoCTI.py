@@ -57,6 +57,9 @@ from xivo_ctiservers import cti_voicemaillist
 from xivo_ctiservers import cti_incomingcalllist
 from xivo_ctiservers import cti_trunklist
 from xivo_ctiservers import cti_phonebook
+
+from xivo_ctiservers import cti_extrarequests
+
 from xivo_ctiservers.cti_sheetmanager import SheetManager
 
 from xivo_ctiservers import xivo_commandsets
@@ -1530,6 +1533,11 @@ class XivoCTICommand(BaseCommand):
                 xmlustring = self.sheetmanager[astid].sheets[channel].sheet
             else:
                 itemdir = self.__sheet_fill__(where, astid, context, event, extraevent)
+                if len(userinfos) == 1:
+                    itemdir['xivo-loginclient'] = userinfos[0].get('user')
+                if 'extrarequests' in actionopt and actionopt.get('extrarequests'):
+                    newitems = cti_extrarequests.getvariables(actionopt.get('extrarequests'), itemdir)
+                    itemdir.update(newitems)
                 linestosend = self.__sheet_construct_xml__(where, astid, context, itemdir)
                 xmlustring = ''.join(linestosend)
                 # 3) update sheet manager
@@ -5268,9 +5276,10 @@ class XivoCTICommand(BaseCommand):
             if agentnum and agentphonenumber:
                 if agentphonenumber.isdigit():
                     self.__ami_execute__(astid, 'agentcallbacklogin',
-                        agentnum,
-                        agentphonenumber,
-                        agentitem.get('context'), agentitem.get('ackcall'))
+                                         agentnum,
+                                         agentphonenumber,
+                                         agentitem.get('context'),
+                                         agentitem.get('ackcall'))
                 else:
                     log.warning('%s __login_agent__ your agentphonenumber %s is not a digit'
                                 % (astid, agentphonenumber))
