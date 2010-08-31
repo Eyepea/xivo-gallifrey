@@ -57,13 +57,12 @@ from xivo_ctiservers import cti_voicemaillist
 from xivo_ctiservers import cti_incomingcalllist
 from xivo_ctiservers import cti_trunklist
 from xivo_ctiservers import cti_phonebook
-
+from xivo_ctiservers import cti_directories
 from xivo_ctiservers import cti_extrarequests
 
 from xivo_ctiservers.cti_sheetmanager import SheetManager
 
 from xivo_ctiservers import xivo_commandsets
-from xivo_ctiservers import xivo_ldap
 from xivo_ctiservers.xivo_commandsets import BaseCommand
 from xivo_ctiservers.client_connection import ClientConnection
 from xivo import anysql
@@ -840,7 +839,7 @@ class XivoCTICommand(BaseCommand):
             self.save_memused = m2
         # check : agentnumber should be unique
         return
-    
+
     def set_userlist_urls(self, urls):
         self.ulist_ng.setandupdate(urls)
         return
@@ -1316,7 +1315,7 @@ class XivoCTICommand(BaseCommand):
             for dirname in dirs_to_lookup:
                 dirdef = self.ctxlist.dirlist[dirname]
                 try:
-                    y = self.__build_customers_bydirdef__(dirname, number, dirdef, True)
+                    y = cti_directories.findpattern(self, dirname, number, dirdef, True)
                 except Exception:
                     log.exception('(findreverse) %s %s %s' % (dirlist, dirname, number))
                     y = []
@@ -5799,16 +5798,17 @@ class XivoCTICommand(BaseCommand):
                     channels = destination.get('channels')
                     if channels:
                         aid = self.__ami_execute__(astid,
-                            'origapplication',
-                            'ChanSpy',
-                            '%s|q' % channels[0],
-                            'Local',
-                            source.get('userinfo').get('phonenum'),
-                            source.get('userinfo').get('context'))
-                        log.info('started listening on %s %s (id %s) aid = %s' % (astid, channels[0], args.get('destination'), aid))
+                                                   'origapplication',
+                                                   'ChanSpy',
+                                                   '%s|q' % channels[0],
+                                                   'Local',
+                                                   source.get('userinfo').get('phonenum'),
+                                                   source.get('userinfo').get('context'))
+                        log.info('started listening on %s %s (id %s) aid = %s'
+                                 % (astid, channels[0], args.get('destination'), aid))
                         self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
-                            'origapplication-data' : { 'spied-channel' : channels[0],
-                                'spied-agentid' : args.get('destination') } }
+                                                             'origapplication-data' : { 'spied-channel' : channels[0],
+                                                                                        'spied-agentid' : args.get('destination') } }
 
                 elif actionname == 'stoplisten':
                     channels = destination.get('channels')
@@ -5824,17 +5824,17 @@ class XivoCTICommand(BaseCommand):
                     channels = destination.get('channels')
                     for channel in channels:
                         aid = self.__ami_execute__(astid,
-                            'monitor',
-                            channel,
-                            'cti-monitor-%s-%s-%s' % (destination.get('kind'), datestring, destination.get('id')))
+                                                   'monitor',
+                                                   channel,
+                                                   'cti-monitor-%s-%s-%s' % (destination.get('kind'), datestring, destination.get('id')))
                         self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
                         log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
                         tosend = { 'class' : 'agentrecord',
-                            'astid' : astid,
-                            'agentid' : agent_id,
-                            'status' : 'started' }
+                                   'astid' : astid,
+                                   'agentid' : agent_id,
+                                   'status' : 'started' }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                            self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
                         if channel in self.channels[astid]:
                             uniqueid = self.channels[astid][channel]
                             self.uniqueids[astid][uniqueid].update({'recorded' : agent_id})
@@ -5843,16 +5843,16 @@ class XivoCTICommand(BaseCommand):
                     channels = destination.get('channels')
                     for channel in channels:
                         self.__ami_execute__(astid,
-                            'stopmonitor',
-                            channel)
+                                             'stopmonitor',
+                                             channel)
                         self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : False})
                         log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
                         tosend = { 'class' : 'agentrecord',
-                            'astid' : astid,
-                            'agentid' : agent_id,
-                            'status' : 'stopped' }
+                                   'astid' : astid,
+                                   'agentid' : agent_id,
+                                   'status' : 'stopped' }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid,
-                            self.weblist['agents'][astid].keeplist[agent_id].get('context'))
+                                                         self.weblist['agents'][astid].keeplist[agent_id].get('context'))
 
                         # monitor / record : meetme vs. agent
 
@@ -5866,8 +5866,8 @@ class XivoCTICommand(BaseCommand):
                         if uinfos:
                             ### find 'agentphonenumber' in agent structure, please
                             self.__ami_execute__(astid, 'transfer',
-                                chan,
-                                uinfos[0].get('agentphonenumber'), uinfos[0].get('context'))
+                                                 chan,
+                                                 uinfos[0].get('agentphonenumber'), uinfos[0].get('context'))
                             break
 
             elif actionname == 'answer':
@@ -5875,29 +5875,29 @@ class XivoCTICommand(BaseCommand):
                 for phoneid in phoneids:
                     # on Thomson, it answers on the last received call
                     ret = self.__ami_execute__(phoneid.get('astid'),
-                        'sendcommand',
-                        'Command',
-                        [('Command',
-                            'sip notify event-talk %s'
-                            % phoneid.get('userinfo').get('phonenum'))])
+                                               'sendcommand',
+                                               'Command',
+                                               [('Command',
+                                                 'sip notify event-talk %s'
+                                                 % phoneid.get('userinfo').get('phonenum'))])
 
             elif actionname == 'refuse':
                 channelids = self.__mergelist__(userinfo, args.get('channelids').split(','))
                 for channelid in channelids:
                     if channelid.get('channel') and channelid.get('userinfo'):
                         ret = self.__ami_execute__(channelid.get('astid'),
-                            'transfer',
-                            channelid.get('channel'),
-                            'BUSY',
-                            channelid.get('userinfo').get('context'))
+                                                   'transfer',
+                                                   channelid.get('channel'),
+                                                   'BUSY',
+                                                   channelid.get('userinfo').get('context'))
 
             elif actionname == 'hangup':
                 channelids = self.__mergelist__(userinfo, args.get('channelids').split(','))
                 for channelid in channelids:
                     if channelid.get('channel'):
                         ret = self.__ami_execute__(channelid.get('astid'),
-                            'hangup',
-                            channelid.get('channel'))
+                                                   'hangup',
+                                                   channelid.get('channel'))
 
             else:
                 log.warning('__ipbxaction__ unknown command %s' % actionname)
@@ -6018,7 +6018,7 @@ class XivoCTICommand(BaseCommand):
             for dirsec in dirlist:
                 dirdef = self.ctxlist.dirlist[dirsec]
                 try:
-                    y = self.__build_customers_bydirdef__(dirsec, searchpattern, dirdef, False)
+                    y = cti_directories.findpattern(self, dirsec, searchpattern, dirdef, False)
                     fulllist.extend(y)
                 except Exception:
                     log.exception('__build_customers__ (%s)' % dirsec)
@@ -6053,234 +6053,6 @@ class XivoCTICommand(BaseCommand):
             tosend = { 'class' : 'directory',
                        'emptyreason' : 'invalid_context' }
         return self.__cjson_encode__(tosend)
-
-    def __build_customers_bydirdef__(self, dirname, searchpattern, z, reversedir):
-        fullstatlist = []
-
-        if searchpattern == '':
-            return []
-
-        if z.dbkind in ['ldap', 'ldaps']:
-            selectline = []
-            ldapattrib = []
-            for fname in z.match_direct:
-                if searchpattern == '*':
-                    selectline.append("(%s=*)" % fname)
-                else:
-                    selectline.append("(%s=*%s*)" %(fname, searchpattern))
-
-            for listvalue in z.fkeys.itervalues():
-                for attrib in listvalue:
-                    if isinstance(attrib, unicode):
-                        ldapattrib.append(attrib.encode('utf8'))
-                    else:
-                        ldapattrib.append(attrib)
-
-            try:
-                results = None
-                if z.uri not in self.ldapids:
-                    # first connection to ldap, or after failure
-                    ldapid = xivo_ldap.xivo_ldap(z.uri)
-                    if ldapid.ldapobj is not None:
-                        self.ldapids[z.uri] = ldapid
-                else:
-                    # retrieve the connection already setup, if not yet deleted
-                    ldapid = self.ldapids[z.uri]
-                    if ldapid.ldapobj is None:
-                        del self.ldapids[z.uri]
-
-                # at this point, either we have a successful ldapid.ldapobj value, with self.ldapids[z.uri] = ldapid
-                #                either ldapid.ldapobj is None, and z.uri not in self.ldapids
-
-                if ldapid.ldapobj is not None:
-                    # if the ldapid had already been defined and setup, the failure would occur here
-                    try:
-                        results = ldapid.getldap('(|%s)' % ''.join(selectline),
-                                                 ldapattrib)
-                    except Exception:
-                        ldapid.ldapobj = None
-                        del self.ldapids[z.uri]
-
-                if results is not None:
-                    for result in results:
-                        futureline = {'xivo-directory' : z.name}
-                        for keyw, dbkeys in z.fkeys.iteritems():
-                            for dbkey in dbkeys:
-                                if futureline.get(keyw, '') != '':
-                                    break
-                                elif dbkey in result[1]:
-                                    futureline[keyw] = result[1][dbkey][0]
-                                elif keyw not in futureline:
-                                    futureline[keyw] = ''
-                        fullstatlist.append(futureline)
-            except Exception:
-                log.exception('ldaprequest (directory)')
-
-        elif z.dbkind == 'file':
-            f = urllib.urlopen(z.uri)
-            n = 0
-            if reversedir:
-                matchkeywords = z.match_reverse
-            else:
-                matchkeywords = z.match_direct
-            for line in f:
-                if n == 0:
-                    header = line
-                    headerfields = header.strip().split(z.delimiter)
-                    revindex = []
-                    for mr in matchkeywords:
-                        if mr in headerfields:
-                            revindex.append(headerfields.index(mr))
-                else:
-                    # ll = line.strip()
-                    ll = line.decode('utf8').strip()
-                    t = ll.split(z.delimiter)
-                    matchme = False
-                    for ri in revindex:
-                        if ri < len(t):
-                            if t[ri].lower().find(searchpattern.lower()) >= 0:
-                                matchme = True
-                    if matchme:
-                        # XXX problem when badly set delimiter + index()
-                        futureline = {'xivo-directory' : z.name}
-                        for keyw, dbkeys in z.fkeys.iteritems():
-                            for dbkey in dbkeys:
-                                idx = headerfields.index(dbkey)
-                                futureline[keyw] = t[idx]
-                        fullstatlist.append(futureline)
-                n += 1
-            if n == 0:
-                log.warning('WARNING : %s is empty' % z.uri)
-            elif n == 1:
-                log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
-
-        elif z.dbkind == 'phonebook':
-            if reversedir:
-                matchkeywords = z.match_reverse
-            else:
-                matchkeywords = z.match_direct
-            for iastid in self.weblist['phonebook'].keys():
-                for k, v in self.weblist['phonebook'][iastid].keeplist.iteritems():
-                    matchme = False
-                    for tmatch in matchkeywords:
-                        if v.has_key(tmatch):
-                            if reversedir:
-                                if v[tmatch].lstrip('0') == searchpattern.lstrip('0'):
-                                    matchme = True
-                            else:
-                                if searchpattern == '*' or v[tmatch].lower().find(searchpattern.lower()) >= 0:
-                                    matchme = True
-                    if matchme:
-                        futureline = {'xivo-directory' : z.name}
-                        for keyw, dbkeys in z.fkeys.iteritems():
-                            for dbkey in dbkeys:
-                                if dbkey in v.keys():
-                                    futureline[keyw] = v[dbkey]
-                        fullstatlist.append(futureline)
-
-        elif z.dbkind == 'http':
-            if not reversedir:
-                fulluri = z.uri
-                # add an ending slash if needed
-                if fulluri[8:].find('/') == -1:
-                    fulluri += '/'
-                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern.encode('utf-8')) for key in z.match_direct])
-                n = 0
-                try:
-                    f = urllib.urlopen(fulluri)
-                    # use f.info() to detect charset
-                    charset = 'utf-8'
-                    s = f.info().getheader('Content-Type')
-                    k = s.lower().find('charset=')
-                    if k >= 0:
-                        charset = s[k:].split(' ')[0].split('=')[1]                                    
-                    for line in f:
-                        if n == 0:
-                            header = line
-                            headerfields = header.strip().split(z.delimiter)
-                        else:
-                            ll = line.strip()
-                            if isinstance(ll, str): # dont try to decode unicode string.
-                                ll = ll.decode(charset)
-                            t = ll.split(z.delimiter)
-                            futureline = {'xivo-directory' : z.name}
-                            # XXX problem when badly set delimiter + index()
-                            for keyw, dbkeys in z.fkeys.iteritems():
-                                for dbkey in dbkeys:
-                                    idx = headerfields.index(dbkey)
-                                    futureline[keyw] = t[idx]
-                            fullstatlist.append(futureline)
-                        n += 1
-                    f.close()
-                except Exception:
-                    log.exception('__build_customers_bydirdef__ (http) %s' % fulluri)
-                if n == 0:
-                    log.warning('WARNING : %s is empty' % z.uri)
-                # we don't warn about "only one line" here since the filter has probably already been applied
-            else:
-                fulluri = z.uri
-                # add an ending slash if needed
-                if fulluri[8:].find('/') == -1:
-                    fulluri += '/'
-                fulluri += '?' + '&'.join([key + '=' + urllib.quote(searchpattern) for key in z.match_reverse])
-                f = urllib.urlopen(fulluri)
-                # TODO : use f.info() to detect charset
-                fsl = f.read().strip()
-                if fsl:
-                    fullstatlist = [ {'xivo-directory' : z.name,
-                                      'db-fullname' : fsl}]
-                else:
-                    fullstatlist = []
-
-        elif z.dbkind in ['sqlite', 'mysql']:
-            if searchpattern == '*':
-                whereline = ''
-            else:
-                # prevent SQL injection and make use of '*' wildcard possible
-                esc_searchpattern = searchpattern.replace("'", "\\'").replace('%', '\\%').replace('*', '%')
-                wl = ["%s LIKE '%%%s%%'" % (fname, esc_searchpattern) for fname in z.match_direct]
-                whereline = 'WHERE ' + ' OR '.join(wl)
-
-            results = []
-            try:
-                conn = anysql.connect_by_uri(str(z.uri))
-                cursor = conn.cursor()
-                sqlrequest = 'SELECT ${columns} FROM %s %s' % (z.sqltable, whereline)
-                cursor.query(sqlrequest,
-                             tuple(z.match_direct),
-                             None)
-                results = cursor.fetchall()
-                conn.close()
-            except Exception:
-                log.exception('sqlrequest for %s' % z.uri)
-
-            for result in results:
-                futureline = {'xivo-directory' : z.name}
-                for keyw, dbkeys in z.fkeys.iteritems():
-                    for dbkey in dbkeys:
-                        if dbkey in z.match_direct:
-                            n = z.match_direct.index(dbkey)
-                            futureline[keyw] = result[n]
-                fullstatlist.append(futureline)
-        else:
-            log.warning('wrong or no database method defined (%s) - please fill the uri field of the directory <%s> definition'
-                        % (z.dbkind, dirname))
-
-        if reversedir:
-            display_reverse = z.display_reverse
-            if fullstatlist:
-                for k, v in fullstatlist[0].iteritems():
-                    if isinstance(v, unicode):
-                        display_reverse = display_reverse.replace('{%s}' % k, v)
-                    elif isinstance(v, str):
-                        # decoding utf8 data as we know the DB is storing utf8 so some bug may lead this data to come here still utf8 encoded
-                        # in the future, this code could be removed, once we are sure encoding is properly handled "up there" (in sqlite client)
-                        display_reverse = display_reverse.replace('{%s}' % k, v.decode('utf8'))
-                    else:
-                        log.warning('__build_customers_bydirdef__ %s is neither unicode nor str' % k)
-                e = fullstatlist[0]
-                e.update({'dbr-display' : display_reverse})
-        return fullstatlist
 
     def __counts__(self, astid, context, presenceid):
         # input : presenceid, i.e. 'presence-xivo', 'presence-agent', ...

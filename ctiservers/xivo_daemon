@@ -137,7 +137,7 @@ class manage_connection:
         if requester in daemon.commandclass.transfers_ref:
             daemon.commandclass.transfer_addbuf(requester, msg)
             return
-        
+
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
             # remove tailing \r
@@ -156,7 +156,7 @@ class manage_connection:
                         # log.info('LOGIN(%s) %s : params %s' % (command.type, requester, loginparams))
                         uinfo = daemon.commandclass.manage_login(loginparams, command.type, daemon.userinfo_current.get(connid))
                         # log.info('LOGIN(%s) %s : uinfo  %s' % (command.type, requester, uinfo))
-                        
+
                         if isinstance(uinfo, str):
                             daemon.commandclass.loginko(loginparams, uinfo, connid)
                             log.info('TCP socket %s closed(loginko) on %s' % (daemon.fdlist_established[connid],
@@ -186,8 +186,8 @@ class manage_connection:
                                   % (command.name, command.type, requester))
             else:
                 connid.sendall('Unknown Command <%s>\n' % command.name)
-    
-    
+
+
     ## \brief Deals with requests from the UI clients.
     # \param connid connection identifier
     # \return none
@@ -199,12 +199,12 @@ class manage_connection:
         requester = '%s:%d' % connid.getpeername()
         requester_ip = connid.getpeername()[0]
         closemenow = True
-        
+
         if requester_ip not in daemon.ip_reverse_webi:
             connid.sendall('%s:KO <NOT ALLOWED FROM %s>\n' % (XIVO_CLI_WEBI_HEADER, requester_ip))
             return closemenow
         astid = daemon.ip_reverse_webi[requester_ip]
-        
+
         multimsg = msg.split(sep)
         for usefulmsgpart in multimsg:
             usefulmsg = usefulmsgpart.split('\r')[0]
@@ -258,8 +258,8 @@ class manage_connection:
                           % (astid, usefulmsg.strip(), requester, exc))
                 connid.sendall('%s:KO <Exception : %s>\n' % (XIVO_CLI_WEBI_HEADER, exc))
         return closemenow
-    
-    
+
+
     ## \brief Deals with requests from the UI clients.
     # \param connid connection identifier
     # \return none
@@ -508,7 +508,7 @@ class manage_connection:
             except Exception:
                 log.exception('INFO connection [%s] : KO when sending to %s'
                               % (usefulmsg, requester))
-    
+
     @staticmethod
     def manage_tcp_connections(daemon, sel_i, msg, kind):
         """
@@ -546,11 +546,11 @@ class manage_connection:
         if astid not in daemon.configs:
             log.info('%s : no such asterisk Id' % astid)
             return
-        
+
         full_idata = daemon.save_for_next_packet_events[astid] + idata
         evlist = full_idata.split('\r\n\r\n')
         daemon.save_for_next_packet_events[astid] = evlist.pop()
-        
+
         for evt in evlist:
             evt = evt.decode('utf8')
             this_event = {}
@@ -650,8 +650,8 @@ class manage_connection:
                 else:
                     log.warning('AMI %s Other : %s' % (astid, this_event))
             # }
-    
-    
+
+
     evfunction_to_method_name = {
         'Registry':             'ami_registry',
         'Dial':                 'ami_dial',
@@ -724,8 +724,8 @@ class manage_connection:
         'Atxfer':               'ami_atxfer',                   #
         'ActionRequest':        'ami_actionrequest',            #
     }
-    
-    
+
+
     @staticmethod
     def handle_ami_function(daemon, astid, evfunction, this_event):
         """
@@ -757,13 +757,13 @@ class manage_connection:
                 getattr(daemon.commandclass, manage_connection.evfunction_to_method_name[evfunction])(astid, this_event)
             else:
                 log.warning('%s AMI ... this event (%s) is not tracked : %s' % (astid, evfunction, this_event))
-                
+
         except Exception:
             log.exception('%s AMI / %s : event %s' % (astid, evfunction, this_event))
-    
-    
-    
-    
+
+
+
+
     @staticmethod
     def update_amisocks(astid, daemon):
         """
@@ -778,12 +778,12 @@ class manage_connection:
                                daemon.configs[astid].ami_pass)
             daemon.amilist.connect(astid)
             daemon.amilist.set_aoriginate(astid, daemon.configs[astid].aoriginate)
-    
+
         except Exception:
             log.exception('%s (update_amisocks) %s:%d' % (astid, daemon.configs[astid].remoteaddr, daemon.configs[astid].ami_port))
         return
-    
-    
+
+
     @staticmethod
     def callback_timer_main(*args):
         thisthread = threading.currentThread()
@@ -794,7 +794,7 @@ class manage_connection:
         daemon.tqueue.put(thisthread)
         os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
         return
-    
+
     @staticmethod
     def checkqueue_main(daemon):
         buf = os.read(daemon.pipe_queued_threads_main[0], 1024)
@@ -835,30 +835,30 @@ class xivo_daemon:
         # print sys.getdefaultencoding()
         logging.basicConfig(level=logging.INFO)
         #logging.basicConfig(level=logging.DEBUG)
-        
+
         global log
 
         log = logging.getLogger('main')
-        
+
         try:
             logfilehandler = RotatingFileHandler(LOGFILENAME)
             formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
                                           % LOGDAEMONNAME)
             logfilehandler.setFormatter(formatter)
             logging.getLogger('').addHandler(logfilehandler)
-        
+
         except Exception:
             log.exception('logfilehandler')
-        
+
         if not debug_mode:
             daemonize.daemonize()
-        
+
         daemonize.lock_pidfile_or_die(PIDFILE)
 
         signal.signal(signal.SIGINT, self.sighandler)
         signal.signal(signal.SIGTERM, self.sighandler)
         signal.signal(signal.SIGHUP, self.sighandler_reload)
-        
+
         self.nreload = 0
         self.contextlist = xivo_contexts.Contexts()
         self.configs = {}
@@ -875,7 +875,7 @@ class xivo_daemon:
                 # XXX this is a very naughty way, however, to handle that
                 log.exception('main loop has crashed ... retrying in 5 seconds ...')
                 time.sleep(5)
-                
+
     ## \brief Handler for catching signals (in the main thread)
     # \param signum signal number
     # \param frame frame
@@ -886,8 +886,8 @@ class xivo_daemon:
             print '--- living thread <%s>' % (t.getName())
             t._Thread__stop()
         self.askedtoquit = True
-    
-    
+
+
     ## \brief Handler for catching signals (in the main thread)
     # \param signum signal number
     # \param frame frame
@@ -988,10 +988,10 @@ class xivo_daemon:
 
                 self.save_for_next_packet_events[astid] = ''
     # }
-    
+
     def main_loop(self):    # {
         self.askedtoquit = False
-        
+
         self.time_start = time.localtime()
         if self.nreload == 0:
             log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Starting' %
@@ -1000,7 +1000,7 @@ class xivo_daemon:
             log.info('# STARTING XiVO CTI Server %s (pid %d) / svn:%s # (0/3) Reloading (%d)' %
                      (XIVOVERSION, os.getpid(), __revision__, self.nreload))
         self.nreload += 1
-        
+
         # global default definitions
         incoming_tcp_ports = []
         incoming_udp_ports = []
@@ -1124,14 +1124,14 @@ class xivo_daemon:
                 self.lastrequest_time[astid] = time.time()
                 manage_connection.update_amisocks(astid, self)
             except Exception:
-                log.exception('%s : failed while setting lists and sockets' % astid)        
-                
+                log.exception('%s : failed while setting lists and sockets' % astid)
+
             try:
                 self.commandclass.updates(astid) # all updates ...
             except Exception:
                 log.exception('%s : commandclass.updates()' % astid)
         # }
-        
+
         log.info('# STARTING %s # (2/2) listening sockets (CTI, WEBI, (F)AGI, INFO)' % self.xdname)
         # opens the listening socket for incoming (CTI, WEBI, (F)AGI, INFO) connections
         for portkind in incoming_tcp_ports:
@@ -1151,7 +1151,7 @@ class xivo_daemon:
             UIsock.bind((bind, int(port)))
             UIsock.listen(10)
             self.fdlist_listen_cti[UIsock] = '%s:%s' % (kind, nmax)
-            
+
         for portkind in incoming_udp_ports:
             pk = portkind.split(':')
             port = pk[0]
@@ -1168,7 +1168,7 @@ class xivo_daemon:
             UIsock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             UIsock.bind((bind, int(port)))
             self.fdlist_udp_cti[UIsock] = '%s:%s' % (kind, nmax)
-            
+
         # Main select() loop - Receive messages
         while not self.askedtoquit:
             self.select_step()
@@ -1190,7 +1190,7 @@ class xivo_daemon:
                     del self.fdlist_established[cn]
                     if cn in self.userinfo_by_requester:
                         del self.userinfo_by_requester[cn]
-            
+
             self.fdlist_full = self.fdlist_listen_cti.keys() + self.fdlist_udp_cti.keys() + self.fdlist_established.keys()
             self.fdlist_full.extend(self.amilist.fdlist())
             self.fdlist_full.append(self.pipe_queued_threads_commandclass[0])
@@ -1229,7 +1229,7 @@ class xivo_daemon:
                     os.close(s)
                 else:
                     s.close()
-                    
+
             if self.askedtoquit:
                 self.commandclass.reset('stop')
                 time_uptime = int(time.time() - time.mktime(self.time_start))
@@ -1395,7 +1395,7 @@ class xivo_daemon:
                                         closemenow = manage_connection.manage_tcp_connections(self, sel_i, msg, kind)
                                     except Exception:
                                         log.exception('handling %s (%s)' % (requester, kind))
-                                        
+
                                 else:
                                     if kind == 'CTI':
                                         if sel_i in self.userinfo_by_requester:
@@ -1473,7 +1473,7 @@ class xivo_daemon:
                             log.warning('commandclass.disconnlist : should disconnect %d users' % len(userdiscolist))
                             for userinfo in userdiscolist:
                                 log.warning('checkqueue return : will disconnect %s' % userinfo)
-                                if 'login' in userinfo and 'connection' in userinfo.get('login'): 
+                                if 'login' in userinfo and 'connection' in userinfo.get('login'):
                                     connid = userinfo.get('login')['connection']
                                     if connid in self.fdlist_established:
                                         del self.fdlist_established[connid]
@@ -1524,9 +1524,9 @@ class xivo_daemon:
                         self.commandclass.updates(astid) # all updates ...
                     except Exception:
                         log.exception('%s : commandclass.updates() (select timeout)' % astid)
-                        
+
                     self.lastrequest_time[astid] = time.time()
-                    
+
                     try:
                         if self.outsock is None:
                             self.outsock = self.commandclass.extrasock(self.extraconn)

@@ -58,7 +58,6 @@ class AMIClass:
         self.loginname = loginname
         self.password  = password
         self.events    = events
-        self.i = 1
         self.aorgcmd = 'AOriginate'
         self.actionid = None
         self.fileobj = None
@@ -183,15 +182,12 @@ class AMIClass:
     def printresponse_forever(self):
         while True:
             str = self.fileobj.readline()
-            self.i = self.i + 1
     # \brief Reads a part of a reply.
     def readresponsechunk(self):
         start = True
         list = []
         while True:
             str = self.fileobj.readline()
-            #print "--------------", self.i, len(str), str,
-            self.i = self.i + 1
             if start and str == '\r\n': continue
             start = False
             if str == '\r\n' or str == '': break
@@ -257,8 +253,6 @@ class AMIClass:
             str = self.fileobj.readline()
         while True:
             str = self.fileobj.readline()
-            #print self.i, len(str), str,
-            self.i = self.i + 1
             if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
                 break
             resp.append(str)

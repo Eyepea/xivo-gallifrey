@@ -73,12 +73,14 @@ class Contexts:
 class Directory:
     def __init__(self):
         self.uri = ''
-        self.delimiter = ';'
-        self.sqltable = 'UNDEFINED'
         self.name = '(noname)'
+
         self.display_reverse = '{db-fullname}'
         self.match_direct = []
         self.match_reverse = []
+
+        self.delimiter = ';'
+        self.sqltable = 'UNDEFINED'
         return
 
     def setProps(self, xivoconf_local):
