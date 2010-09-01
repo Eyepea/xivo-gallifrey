@@ -168,6 +168,11 @@ class CiscoSMB(PhoneVendorMixin):
             timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
         else:
             timezone = ''
+            
+        if self.PROXY_BACKUP:
+            backup_proxy = 'xivo_proxies:SRV=%s:5060:p=0|%s:5060:p=1' % (self.PROXY_MAIN, self.PROXY_BACKUP)
+        else:
+            backup_proxy = ''
         
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -178,6 +183,7 @@ class CiscoSMB(PhoneVendorMixin):
                       'function_keys':          function_keys_config_lines,
                       'language':               language,
                       'timezone':               timezone,
+                      'backup_proxy':           backup_proxy,
                     },
                     self.xml_escape,
                     clean_extension),

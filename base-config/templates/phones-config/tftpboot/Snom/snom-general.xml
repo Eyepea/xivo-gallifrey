@@ -18,7 +18,7 @@
     <user_active idx="1" perm="R">on</user_active>
     <user_dtmf_info idx="1" perm="R">on</user_dtmf_info>
     <user_idle_text idx="1" perm="R">guest</user_idle_text>
-    <user_host idx="1" perm="R">#XIVO_NET4_IP#</user_host>
+    <user_host idx="1" perm="R">#XIVO_PROXY_MAIN_IP#</user_host>
     <user_name idx="1" perm="R">guest</user_name>
     <user_pass idx="1" perm="R">guest</user_pass>
     <user_realname idx="1" perm="R">guest</user_realname>

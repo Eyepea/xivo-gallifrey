@@ -160,6 +160,21 @@ class Polycom(PhoneVendorMixin):
             timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
         else:
             timezone = ''
+        
+        if self.PROXY_BACKUP:
+            lines = []
+            lines.append('reg.1.server.2.address="%s"' % self.PROXY_BACKUP)
+            lines.append('reg.1.server.2.port="5060"')
+            lines.append('reg.1.server.2.transport="UDPOnly"')
+            lines.append('reg.1.server.2.expires="3600"')
+            if self.REGISTRAR_BACKUP and self.REGISTRAR_BACKUP == self.PROXY_BACKUP:
+                register = 1
+            else:
+                register = 0
+            lines.append('reg.1.server.2.register="%s"' % register)
+            backup_pbx = '\n'.join(lines)
+        else:
+            backup_pbx = ''
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -167,7 +182,8 @@ class Polycom(PhoneVendorMixin):
                     provinfo,
                     { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
                       'language':               language,
-                      'timezone':               timezone
+                      'timezone':               timezone,
+                      'backup_pbx':             backup_pbx,
                     },
                     self.xml_escape,
                     clean_extension),

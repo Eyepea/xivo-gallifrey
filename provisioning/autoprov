@@ -991,13 +991,13 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
                 raise BadRequest, "Unknown mode %s" % self.posted["mode"]
         except Exception, x:
             log.info("handle_prov(): action FAILED - phone %r - userinfo %r", phone, userinfo)
+            log.exception("error during provisioning")
             errcode = 500
             for t, rcode in ExceptToHTTP.iteritems():
                 if isinstance(x, t):
                     errcode = rcode
                     break
             self.full_xcept_sender(errcode)(''.join(traceback.format_exception(*sys.exc_info())))
-            log.exception("error during provisioning")
             return
         log.info("handle_prov(): provisioning OK for phone %r", phone)
         self.send_response_lines(('Ok',))

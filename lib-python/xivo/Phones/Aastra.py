@@ -292,11 +292,28 @@ class Aastra(PhoneVendorMixin):
         else:
             timezone = ''
             
+        if self.PROXY_BACKUP:
+            lines = []
+            lines.append('sip line1 backup proxy ip: %s' % self.PROXY_BACKUP)
+            lines.append('sip line1 backup proxy port: 5060')
+            backup_proxy = '\n'.join(lines)
+        else:
+            backup_proxy = ''
+        if self.REGISTRAR_BACKUP:
+            lines = []
+            lines.append('sip line1 backup registrar ip: %s' % self.REGISTRAR_BACKUP)
+            lines.append('sip line1 backup registrar port: 5060')
+            backup_registrar = '\n'.join(lines)
+        else:
+            backup_registrar = ''
+            
         xvars = {
             'exten_pickup_prefix':    exten_pickup_prefix,
             'function_keys':          function_keys_config_lines,
             'language':               language,
             'timezone':               timezone,
+            'backup_proxy':           backup_proxy,
+            'backup_registrar':       backup_registrar,
         }
         xvars.update(self.__get_lang_dict(locale))
 

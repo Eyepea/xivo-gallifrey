@@ -96,8 +96,12 @@ ProvGeneralConf = {
     'curl_to_s':                30,
     'telnet_to_s':              30,
     'templates_dir':            "/usr/share/pf-xivo-provisioning/files/",
-    'asterisk_ipv4':            "192.168.0.254",
-    'ntp_server_ipv4':          "192.168.0.254",
+    'asterisk_ipv4':            "0.0.0.0",
+    'ntp_server_ipv4':          "0.0.0.0",
+    'registrar_main':           "0.0.0.0",
+    'registrar_backup':         "0.0.0.0",
+    'proxy_main':               "0.0.0.0",
+    'proxy_backup':             "0.0.0.0",
 }
 Pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ("eth", "vlan", "dummy")
@@ -290,14 +294,23 @@ class PhoneVendorMixin(object):
     CURL_TO_S = None
     CURL_CMD = None
     ASTERISK_IPV4 = None
+    REGISTRAR_MAIN = None
+    REGISTRAR_BACKUP = None
+    PROXY_MAIN = None
+    PROXY_BACKUP = None
     TEMPLATES_DIR = None
     NTP_SERVER_IPV4 = None
     TFTPROOT = None
     DEFAULT_LOCALE = 'fr_FR'
     DEFAULT_TIMEZONE = 'Europe/Paris'
     PROVI_VARS = {'config':
-                        {'asterisk_ipv4':   None,
-                         'ntp_server_ipv4': None},
+                        {'asterisk_ipv4':       None,
+                         'ntp_server_ipv4':     None,
+                         'registrar_main':      None,
+                         'registrar_backup':    None,
+                         'proxy_main':          None,
+                         'proxy_backup':        None,
+                         },
                   'user':
                         {'display_name':    'name',
                          'dtmfmode':        'dtmfmode',
@@ -330,9 +343,22 @@ class PhoneVendorMixin(object):
         cls.TEMPLATES_DIR = config['templates_dir']
         cls.NTP_SERVER_IPV4 = config['ntp_server_ipv4']
         cls.TFTPROOT = config['tftproot']
+        def get_value_if_valid(value, default):
+            if value and value != '0.0.0.0':
+                return value
+            else:
+                return default
+        cls.REGISTRAR_MAIN = config['registrar_main']
+        cls.REGISTRAR_BACKUP = get_value_if_valid(config['registrar_backup'], None)
+        cls.PROXY_MAIN = config['proxy_main']
+        cls.PROXY_BACKUP = get_value_if_valid(config['proxy_backup'], None)
 
         cls.PROVI_VARS['config']['asterisk_ipv4'] = cls.ASTERISK_IPV4
         cls.PROVI_VARS['config']['ntp_server_ipv4'] = cls.NTP_SERVER_IPV4
+        cls.PROVI_VARS['config']['registrar_main'] = cls.REGISTRAR_MAIN
+        cls.PROVI_VARS['config']['registrar_backup'] = cls.REGISTRAR_BACKUP
+        cls.PROVI_VARS['config']['proxy_main'] = cls.PROXY_MAIN
+        cls.PROVI_VARS['config']['proxy_backup'] = cls.PROXY_BACKUP
 
     @classmethod
     def set_provisioning_variables(cls, provinfo, xvars, format_var=None, format_extension=None):
@@ -369,7 +395,7 @@ class PhoneVendorMixin(object):
                 xvars[key] = format_extension(provinfo['extensions'][value])
 
         return xvars
-
+    
     def __init__(self, phone):
         """
         Constructor.
