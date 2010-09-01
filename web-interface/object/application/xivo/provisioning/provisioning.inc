@@ -39,7 +39,6 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 	function get()
 	{
 		$data = $this->_prov->get(1);
-		var_dump($data);
 		return $data;
 	}
 
