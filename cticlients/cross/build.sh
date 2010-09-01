@@ -29,6 +29,7 @@ function make_the_build
 function fetch_built_files
 {
   cd ..
+  rm -rf bin
   echo "cd ${TEMPDIR}/workdir/ ; tar -zcf - bin/$1" | ssh -T ${TARGET_HOST} | \
   tar -zxvf -
 }
