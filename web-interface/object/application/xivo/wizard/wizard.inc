@@ -1488,6 +1488,33 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		return(true);
 	}
 
+	function set_default_provisioning_values()
+	{
+		if(dwho_issa('netiface',$this->_wizsess) === false)
+			return(false);
+
+		$netiface = $this->_wizsess['netiface'];
+
+		// save to database
+		$this->_load_xivo_dso();
+		$this->_load_ipbx_service();
+		$prov = &$this->_xobj->get_module('provisioning');
+
+		$data = $prov-get(1);
+		if(strlen($data['registrar_main']) == 0)
+			$data['registrar_main'] = $netiface['address'];
+		if(strlen($data['proxy_main']) == 0)
+			$data['proxy_main'] = $netiface['address'];
+
+		if(($data = $prov->chk_values($data)) === false)
+			return false;
+
+		if($prov->edit(1, $data) === false)
+			return false;
+
+		return(true);
+	}
+
 	function _commit_language($lang)
 	{
 		$this->_load_xivo_dso();
@@ -1646,6 +1673,8 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		if(!$this->_commit_language($this->_wizsess['welcome']['language'])
 		|| !$this->_commit_timezone())
 			return(false);
+
+		$this->set_default_provisioning_values();
 
 		// Generate commonconf file
 		$this->_load_xivo_dso();
