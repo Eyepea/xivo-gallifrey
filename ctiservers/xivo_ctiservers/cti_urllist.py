@@ -41,7 +41,7 @@ class UrlList:
     def __init__(self, url):
         self.list = {}
         self.url = url.replace('\\/', '/')
-        self.trueurl = url.split('?')
+        self.trueurl = self.url.split('?')
         self.urlmd5 = ''
         return
 
@@ -58,7 +58,7 @@ class UrlList:
                 elif kind in ['mysql', 'sqlite', 'ldap']:
                     log.warning('URL kind %s not supported yet' % kind)
                 elif kind in ['http', 'https']:
-                    request = '%s?sum=%s' % (self.url, self.urlmd5)
+                    request = '%s?sum=%s' % (self.trueurl[0], self.urlmd5)
                     urequest = urllib2.Request(request)
                     opener = urllib2.build_opener(DefaultErrorHandler)
                     f = opener.open(urequest)
