@@ -24,6 +24,7 @@ $dhtml = &$this->get_module('dhtml');
 
 $error = $this->get_var('error');
 $element = $this->get_var('element');
+
 $info = $this->get_var('info');
 $moh_list = $this->get_var('moh_list');
 $context_list = $this->get_var('context_list');
@@ -590,6 +591,7 @@ endif;
 						'id'			=> 'it-codec',
 						'multiple'	=> true,
 						'size'		=> 5,
+						'key'       => false,
 						'paragraph'	=> false,
 						'bbf'		=> 'ast_codec_name_type',
 						'bbfopt'		=> array('argmode' => 'paramvalue')),

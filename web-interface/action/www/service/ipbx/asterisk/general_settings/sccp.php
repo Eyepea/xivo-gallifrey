@@ -38,6 +38,9 @@ if(isset($_QR['fm_send']) === true)
 }
 
 $element = $appgeneralsccp->get_element();
+if(isset($info['allow']) === true
+&& dwho_has_len($info['allow'],'var_val') === true)
+	$info['allow']['var_val'] = explode(',',$info['allow']['var_val']);
 
 $dhtml = $_TPL->get_module('dhtml');
 $dhtml->set_js('js/dwho/submenu.js');
