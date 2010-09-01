@@ -1500,7 +1500,7 @@ class xivo_application_xivo_object_wizard extends xivo_application_xivo_object_a
 		$this->_load_ipbx_service();
 		$prov = &$this->_xobj->get_module('provisioning');
 
-		$data = $prov-get(1);
+		$data = $prov->get(1);
 		if(strlen($data['registrar_main']) == 0)
 			$data['registrar_main'] = $netiface['address'];
 		if(strlen($data['proxy_main']) == 0)
