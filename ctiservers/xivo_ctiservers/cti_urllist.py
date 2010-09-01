@@ -40,7 +40,7 @@ class DefaultErrorHandler(urllib2.HTTPDefaultErrorHandler):
 class UrlList:
     def __init__(self, url):
         self.list = {}
-        self.url = url
+        self.url = url.replace('\\/', '/')
         self.trueurl = url.split('?')
         self.urlmd5 = ''
         return

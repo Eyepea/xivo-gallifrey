@@ -701,7 +701,7 @@ class XivoCTICommand(BaseCommand):
 
         self.zipsheets = bool(int(xivocticonf.get('zipsheets', '1')))
         self.regupdates = xivocticonf.get('regupdates', {})
-        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'])
+        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'].replace('\\/', '/'))
 
         for name, val in xivocticonf['profiles'].iteritems():
             if name not in self.capas:
@@ -782,15 +782,15 @@ class XivoCTICommand(BaseCommand):
             t = open('/proc/%s/stat' % pid, 'r')
             u = t.read().strip().split()
             t.close()
-            # utime = int(u[13])
-            # ktime = int(u[14])
-            td = int(u[22])
+            # proc_pid_stat_utime = int(u[13])
+            # proc_pid_stat_stime = int(u[14])
+            proc_pid_stat_vsize = int(u[22])
             if where:
-                log.info('(%s) memory %d bytes' % (where, td))
+                log.info('(%s) memory %d bytes' % (where, proc_pid_stat_vsize))
         except:
             log.exception('getmem')
-            td = 0
-        return td
+            proc_pid_stat_vsize = 0
+        return proc_pid_stat_vsize
     
     def __update_itemlist__(self, listtorequest, astid):
         try:
@@ -5119,8 +5119,8 @@ class XivoCTICommand(BaseCommand):
                         fileid = ''.join(random.sample(__alphanums__, 10))
                         self.filestodownload[fileid] = filename
                         tosend = { 'class' : 'faxsend',
-                            'tdirection' : 'download',
-                            'fileid' : fileid }
+                                   'tdirection' : 'download',
+                                   'fileid' : fileid }
                         # return self.__cjson_encode__(tosend)
 
                     elif classcomm == 'actionfiche':

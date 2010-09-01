@@ -69,7 +69,7 @@ class AnyList:
                 self.anylist_properties['name'],
                 self.requested_list.keys()))
         return { 'add' : lstadd,
-            'del' : lstdel }
+                 'del' : lstdel }
 
     def setcommandclass(self, commandclass):
         self.commandclass = commandclass
