@@ -178,7 +178,13 @@ class xivo_service_asterisk_extensions extends xivo_service_asterisk_abstract
 		else if(isset($r['priority']) === false)
 			$r['priority'] = count($this->_exten[$id]) + 1;
 
-		$this->_exten[$id][] = $r;
+		if (defined('XIVO_ACTIF_ACTIF') === true
+                && $r['priority'] == 1
+                && $r['app'] == 'Macro'
+                && XIVO_ACTIF_ACTIF === 1)
+                        $r['priority'] = 2;
+
+		 $this->_exten[$id][] = $r;
 
 		return($id);
 	}
