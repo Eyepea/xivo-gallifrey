@@ -772,89 +772,89 @@ url: http://gigaset.siemens.com/chagall/2/chagall214_02.bin
 size: 1835008
 sha1sum: 41a2f7cf79c0a961aa2fa49e4bfd2549dd6f5d09
 
-# Snom 300 8.2.35
-[sn300_8235]
+# Snom 300
+[sn300_8418]
 brand: Snom
 model: 300
-version: 8.2.35
-files: snom300-8.2.35-SIP-f.bin snomlang-8.2.35.tgz
+version: 8.4.18
+files: snom300-8.4.18-SIP-f.bin snomlang-8.4.18.tgz
 
-[snom300-8.2.35-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom300-8.2.35-SIP-f.bin
-size: 3220444
-sha1sum: 3b92efbe8f7d035dd33a6c5e55acfe48d40f53d5
+[snom300-8.4.18-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom300-8.4.18-SIP-f.bin
+size: 3281780
+sha1sum: bc7151327a6422f4ccb61cd15947d3b17912c122
 
-# Snom 320 8.2.35
-[sn320_8235]
+# Snom 320
+[sn320_8418]
 brand: Snom
 model: 320
-version: 8.2.35
-files: snom320-8.2.35-SIP-f.bin snomlang-8.2.35.tgz
+version: 8.4.18
+files: snom320-8.4.18-SIP-f.bin snomlang-8.4.18.tgz
 
-[snom320-8.2.35-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom320-8.2.35-SIP-f.bin
-size: 3234204
-sha1sum: af7b97b624909251aa12bb4a9fb74f97a7c1d164
+[snom320-8.4.18-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom320-8.4.18-SIP-f.bin
+size: 3295360
+sha1sum: 50a15cc95af7997d2349c0a09148be04113914d9
 
-# Snom 360 8.2.35
-[sn360_8235]
+# Snom 360
+[sn360_8418]
 brand: Snom
 model: 360
-version: 8.2.35
-files: snom360-8.2.35-SIP-f.bin snomlang-8.2.35.tgz
+version: 8.4.18
+files: snom360-8.4.18-SIP-f.bin snomlang-8.4.18.tgz
 
-[snom360-8.2.35-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom360-8.2.35-SIP-f.bin
-size: 3281916
-sha1sum: 0d0d0ce9a8b20fe3b8aaf9a82b8f92d53cf3a25a
+[snom360-8.4.18-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom360-8.4.18-SIP-f.bin
+size: 3340496
+sha1sum: 71d3e3ffb4a799b2846068203c8cbf67d8007ec0
 
-# Snom 370 8.2.35
-[sn370_8235]
+# Snom 370
+[sn370_8418]
 brand: Snom
 model: 370
-version: 8.2.35
-files: snom370-8.2.35-SIP-f.bin
+version: 8.4.18
+files: snom370-8.4.18-SIP-f.bin
 
-[snom370-8.2.35-SIP-f.bin]
-url: http://provisioning.snom.com/download/fw/snom370-8.2.35-SIP-f.bin
-size: 4472004
-sha1sum: 84a600c5da8a70616a94c03f793ffe82d8abd76e
+[snom370-8.4.18-SIP-f.bin]
+url: http://provisioning.snom.com/download/fw/snom370-8.4.18-SIP-f.bin
+size: 4633584
+sha1sum: fc7fcb8b2bce7fe44d569208bc47f6be3f136c9a
 
-# Snom 820 8.2.35
-[sn820_8235]
+# Snom 820
+[sn820_8418]
 brand: Snom
 model: 820
-version: 8.2.35
-files: snom820-8.2.35-SIP-r.bin
+version: 8.4.18
+files: snom820-8.4.18-SIP-r.bin
 
-[snom820-8.2.35-SIP-r.bin]
-url: http://provisioning.snom.com/download/fw/snom820-8.2.35-SIP-r.bin
-size: 23744256
-sha1sum: ecbf8629c4561451c7a302ccf6729d030099631f
+[snom820-8.4.18-SIP-r.bin]
+url: http://provisioning.snom.com/download/fw/snom820-8.4.18-SIP-r.bin
+size: 31510688
+sha1sum: e24df5a42f7fb905cb54e5f1dea4e86c6bf1d956
 
-# Snom 821 8.4.4
-[sn821_844]
+# Snom 821
+[sn821_8418]
 brand: Snom
 model: 821
-version: 8.4.4
-files: snom821-8.4.4-SIP-r.bin
+version: 8.4.18
+files: snom821-8.4.18-SIP-r.bin
 
-[snom821-8.4.4-SIP-r.bin]
-url: http://provisioning.snom.com/download/fw/snom821-8.4.4-SIP-r.bin
-size: 20279456
-sha1sum: 75e30b608eca8236ce2498aa2bfa97a94045d8aa
+[snom821-8.4.18-SIP-r.bin]
+url: http://provisioning.snom.com/download/fw/snom821-8.4.18-SIP-r.bin
+size: 20767008
+sha1sum: 64b25c00e58a8cf5b4e3d689b6954cfe0a1f02f8
 
-# Snom 870 8.3.6
-[sn870_836]
+# Snom 870
+[sn870_8418]
 brand: Snom
 model: 870
-version: 8.3.6
-files: snom870-8.3.6-SIP-r.bin
+version: 8.4.18
+files: snom870-8.4.18-SIP-r.bin
 
-[snom870-8.3.6-SIP-r.bin]
-url: http://provisioning.snom.com/download/fw/snom870-8.3.6-SIP-r.bin
-size: 21718064
-sha1sum: 76d0f03efad0398926b3a0913eea619c8db0b615
+[snom870-8.4.18-SIP-r.bin]
+url: http://provisioning.snom.com/download/fw/snom870-8.4.18-SIP-r.bin
+size: 21887168
+sha1sum: f39b66bfc84d33b5e79d82947d5e8e6618adbfad
 
 # Snom m3 2.0.2
 [snm3_202]
@@ -898,10 +898,10 @@ size: 12526608
 sha1sum: 8c2eef5b0b68c1b0d9c9e3395f12e70585072b71
 
 # Common files for Snom 300/320/360
-[snomlang-8.2.35.tgz]
-url: http://fox.snom.com/config/snomlang-8.2.35.tgz
-size: 736848
-sha1sum: 1d100b026f2ff5cf5678f5728123de5e1cb327be
+[snomlang-8.4.18.tgz]
+url: http://fox.snom.com/config/snomlang-8.4.18.tgz
+size: 808338
+sha1sum: 9b403c1ee5e355e22e489c5604013ff5b01f420e
 
 # Thomson ST2022 4.69
 [thst2022_469]

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <firmware-settings>
-  <firmware perm="R">http://#XIVO_NET4_IP#:8667/Snom/firmware/snom821-8.4.4-SIP-r.bin</firmware>
+  <firmware perm="R">http://#XIVO_NET4_IP#:8667/Snom/firmware/snom821-8.4.18-SIP-r.bin</firmware>
 </firmware-settings>
