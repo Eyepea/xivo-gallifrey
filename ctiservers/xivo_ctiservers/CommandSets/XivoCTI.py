@@ -818,8 +818,7 @@ class XivoCTICommand(BaseCommand):
             
     def updates(self, astid, what = None):
         if what is None:
-            self.ulist_ng.update()
-            for itemname in self.weblist.keys():
+            for itemname in ['trunks', 'phonebook', 'voicemail', 'incomingcalls']:
                 self.__update_itemlist__(itemname, astid)
             self.askstatus(astid, self.weblist['phones'][astid].keeplist)
         else:
