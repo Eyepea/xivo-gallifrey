@@ -30,8 +30,8 @@ class log_event:
     # {
         ev['call_time_t'] = time.time()
 
-        sql = '''INSERT INTO "queue_info" ("call_time_t", "queue_name", ''' \
-                          '''"caller", "caller_uniqueid") ''' \
+        sql = '''INSERT INTO `queue_info` (`call_time_t`, `queue_name`, ''' \
+                          '''`caller`, `caller_uniqueid`) ''' \
               '''VALUES (%d, "%s", "%s", "%s");''' % \
               (ev['call_time_t'], ev['Queue'], ev['CallerID'], ev['Uniqueid'])
 
@@ -46,9 +46,9 @@ class log_event:
 
         ct = cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
         
-        sql = '''UPDATE "queue_info" '''\
-              '''SET "call_picker" = "%s", "hold_time" = %s '''\
-              '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' %\
+        sql = '''UPDATE `queue_info` '''\
+              '''SET `call_picker` = "%s", `hold_time` = %s '''\
+              '''WHERE `call_time_t` = %d and `caller_uniqueid` = "%s"; ''' %\
               (ev["Member"], ev["Holdtime"], ct, ev["Uniqueid"]);
 
         self.trace_event(ev, cache)
@@ -63,9 +63,9 @@ class log_event:
 
         ct = cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
 
-        sql = '''UPDATE "queue_info" ''' \
-              '''SET "talk_time" = %s ''' \
-              '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' % \
+        sql = '''UPDATE `queue_info` ''' \
+              '''SET `talk_time` = %s ''' \
+              '''WHERE `call_time_t` = %d and `caller_uniqueid` = "%s"; ''' % \
               (ev['TalkTime'], ct, ev['Uniqueid'])
 
         del cache[ev['Queue']][ev['Uniqueid']]
@@ -81,9 +81,9 @@ class log_event:
         hold_time = time.time() - cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
         ct = cache[ev['Queue']][ev['Uniqueid']]['call_time_t']
 
-        sql = '''UPDATE "queue_info" ''' \
-              '''SET "hold_time" = %d ''' \
-              '''WHERE "call_time_t" = %d and "caller_uniqueid" = "%s"; ''' % \
+        sql = '''UPDATE `queue_info` ''' \
+              '''SET `hold_time` = %d ''' \
+              '''WHERE `call_time_t` = %d and `caller_uniqueid` = "%s"; ''' % \
               (hold_time, ct, ev['Uniqueid'])
 
         if ev['Reason'] == "0":
