@@ -1,5 +1,6 @@
 #!/bin/sh
 
+cp -r ${BENDER_RESOURCE}/gpl.txt .
 cp -r ${BENDER_RESOURCE}/win32-shared-qt .
 cp -r ${BENDER_RESOURCE}/win32-shared-openssl .
 cp -r ${BENDER_RESOURCE}/xivoicon.ico .
@@ -228,5 +229,5 @@ VIAddVersionKey /LANG=\${LANG_ENGLISH} "LegalCopyright" "Â© Bender Bending RodrÃ
 !
 
 wine /woot/Unicode/makensis.exe installer.nsi
-cp ${TMPDIR}/xivoclient-inst.exe ${BUILT_DIR}/xivoclient-installer.exe
+cp xivoclient-inst.exe ${BUILT_DIR}/xivoclient-${XIVO_VERSION}-${SVN_VERSION}.exe
 
