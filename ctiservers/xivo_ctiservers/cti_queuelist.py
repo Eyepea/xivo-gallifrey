@@ -91,7 +91,7 @@ class QueueStats:
               hold_time < %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (queuename, param['window'], param['window'], param['xqos'], queuename))
+        self.cur.query(sql % (queuename, param['window'], param['window'], param['xqos'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f %%"))
 
     def __get_queue_holdtime(self, queuename, param):
@@ -107,7 +107,7 @@ class QueueStats:
               call_time_t > %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (param['window'], queuename))
+        self.cur.query(sql % (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
     def __get_queue_holdtime_max(self, queuename, param):
@@ -123,7 +123,7 @@ class QueueStats:
               call_time_t > %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (param['window'], queuename))
+        self.cur.query(sql % (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
     def __get_queue_talktime(self, queuename, param):
@@ -139,7 +139,7 @@ class QueueStats:
               call_time_t > %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (param['window'], queuename))
+        self.cur.query(sql % (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%.02f"))
 
     def __get_queue_lost(self, queuename, param):
@@ -156,7 +156,7 @@ class QueueStats:
               call_time_t > %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (param['window'], queuename))
+        self.cur.query(sql % (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
     def __get_queue_link(self, queuename, param):
@@ -173,7 +173,7 @@ class QueueStats:
               call_time_t > %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (param['window'], queuename))
+        self.cur.query(sql % (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
     def __get_queue_join(self, queuename, param):
@@ -188,7 +188,7 @@ class QueueStats:
         WHERE call_time_t > %d and
               queue_name = "%s"
         '''
-        self.cur.query(sql,None, (param['window'], queuename))
+        self.cur.query(sql % (param['window'], queuename))
         return self.__cache(queuename, cachekey, self.__format_result("%d", 0))
 
     def get_queue_stats(self, queuename, param):
