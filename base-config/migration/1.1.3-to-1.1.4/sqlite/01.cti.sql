@@ -5,7 +5,7 @@ UPDATE cticontexts SET directories = 'xivodir' WHERE
 
 UPDATE ctiprofiles SET maxgui = 5 WHERE id = 15;
 
-UPDATE ctireversedirectories SET `directories` = '["xivodir"]' WHERE
+UPDATE ctireversedirectories SET directories = '["xivodir"]' WHERE
 	id          = 1 AND
 	directories = '["xivodir","internal"]';
 
@@ -36,7 +36,7 @@ INSERT INTO ctisheetactions SELECT
  context,
  whom,
  '',
- capaids_text,
+ capaids,
  sheet_info,
  systray_info,
  sheet_qtui,
