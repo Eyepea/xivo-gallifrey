@@ -691,11 +691,21 @@ class XivoCTICommand(BaseCommand):
                     # custom      -> custom1 -> xxx3
                     #             -> custom2 -> xxx4
                     # ... to be cross-checked with 'Custom' UserEvent handling
-                    self.sheet_actions[where] = allconf.xc_json['sheets']['actions'][sheetaction]
+                    if sheetaction in allconf.xc_json['sheets']['actions']:
+                        self.sheet_actions[where] = allconf.xc_json['sheets']['actions'][sheetaction]
+                    else:
+                        log.warning('set_cticonfig : sheetaction %s in events but not in %s'
+                                    % (sheetaction,
+                                       allconf.xc_json['sheets']['actions'].keys()))
                 elif where == 'custom':
                     for customd, sheetaction_custom in sheetaction.iteritems():
-                        cdef = 'custom.%s' % customd
-                        self.sheet_actions[cdef] = allconf.xc_json['sheets']['actions'][sheetaction_custom]
+                        if sheetaction_custom in allconf.xc_json['sheets']['actions']:
+                            cdef = 'custom.%s' % customd
+                            self.sheet_actions[cdef] = allconf.xc_json['sheets']['actions'][sheetaction_custom]
+                        else:
+                            log.warning('set_cticonfig : sheetaction_custom %s in events but not in %s'
+                                        % (sheetaction_custom,
+                                           allconf.xc_json['sheets']['actions'].keys()))
 
         xivocticonf = allconf.xc_json['xivocti']
 
