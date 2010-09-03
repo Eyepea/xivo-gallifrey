@@ -35,29 +35,31 @@ def getvariables(fileuri, itemdir):
     k = urllib.urlopen(fileuri)
     json_c = k.read()
     k.close()
-    jc = cjson.decode(json_c)
+    jcs = cjson.decode(json_c)
     myret = {}
-    method = jc.get('method')
-    if method == 'xmlrpc':
-        accessdefs = jc.get('access')
-        if 'url' in accessdefs and accessdefs.get('url'):
-            nv = []
-            for mm in jc.get('inputs'):
-                for kk, vv in itemdir.iteritems():
-                    if vv is not None:
-                        if not isinstance(vv, list):
-                            mm = mm.replace('{%s}' % kk, vv)
-                nv.append(mm)
-            vardest = 'extra-%s' % jc.get('result')
 
-            basename = accessdefs.get('basename')
-            loginname = accessdefs.get('loginname')
-            xname = accessdefs.get('xname')
-            function = jc.get('function')
+    for jc in jcs:
+        method = jc.get('method')
+        if method == 'xmlrpc':
+            accessdefs = jc.get('access')
+            if 'url' in accessdefs and accessdefs.get('url'):
+                nv = []
+                for mm in jc.get('inputs'):
+                    for kk, vv in itemdir.iteritems():
+                        if vv is not None:
+                            if not isinstance(vv, list):
+                                mm = mm.replace('{%s}' % kk, vv)
+                    nv.append(mm)
+                vardest = 'extra-%s' % jc.get('result')
 
-            pp = xmlrpclib.ServerProxy(accessdefs.get('url'))
-            if pp:
-                myret[vardest] = pp.execute((basename), 1, loginname, xname, function, *nv)
+                basename = accessdefs.get('basename')
+                loginname = accessdefs.get('loginname')
+                xname = accessdefs.get('xname')
+                function = jc.get('function')
+
+                pp = xmlrpclib.ServerProxy(accessdefs.get('url'))
+                if pp:
+                    myret[vardest] = pp.execute((basename), 1, loginname, xname, function, *nv)
     else:
         log.warning('unknown method %s' % method)
     return myret
