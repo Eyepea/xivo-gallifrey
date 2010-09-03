@@ -44,28 +44,29 @@ def getvariables(fileuri, itemdir):
         method = jc.get('method')
         if method == 'xmlrpc':
             accessdefs = jc.get('access')
-            if 'url' in accessdefs and accessdefs.get('url'):
-                nv = []
-                for mm in jc.get('inputs'):
-                    for kk, vv in itemdir.iteritems():
-                        if vv is not None:
-                            if not isinstance(vv, list):
-                                mm = mm.replace('{%s}' % kk, vv)
-                    nv.append(mm)
-                vardest = 'extra-%s' % jc.get('result')
 
-                basename = accessdefs.get('basename')
-                loginname = accessdefs.get('loginname')
-                xname = accessdefs.get('xname')
-                function = jc.get('function')
+            nv = []
+            for mm in jc.get('inputs'):
+                for kk, vv in itemdir.iteritems():
+                    if vv is not None:
+                        if not isinstance(vv, list):
+                            mm = mm.replace('{%s}' % kk, vv)
+                nv.append(mm)
+            vardest = 'extra-%s' % jc.get('result')
 
-                try:
-                    pp = xmlrpclib.ServerProxy(accessdefs.get('url'))
-                    myret[vardest] = pp.execute((basename), 1, loginname, xname, function, *nv)
-                except Exception:
-                    log.exception('attempt to join %s' % accessdefs.get('url'))
+            url = accessdefs.get('url').replace('\/', '/')
+            basename = accessdefs.get('basename')
+            loginname = accessdefs.get('loginname')
+            password = accessdefs.get('password')
+            function = jc.get('function')
+
+            try:
+                pp = xmlrpclib.ServerProxy(url)
+                myret[vardest] = pp.execute((basename), 1, loginname, password, function, *nv)
+            except Exception:
+                log.exception('attempt to join %s' % url)
         else:
             log.warning('unknown method %s' % method)
     t2 = time.time()
-    log.info('spent %f s there' % (t2-t1))
+    log.info('time spent : %f s' % (t2 - t1))
     return myret

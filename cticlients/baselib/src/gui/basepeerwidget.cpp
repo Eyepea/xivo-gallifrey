@@ -158,7 +158,7 @@ void BasePeerWidget::intercept()
                              "user:special:me");
    }
 }
- 
+
 /*! \brief intercept a call
  *
  * \todo finish...

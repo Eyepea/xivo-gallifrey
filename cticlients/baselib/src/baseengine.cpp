@@ -1662,11 +1662,11 @@ void BaseEngine::actionCall(const QString & action,
                             const QString & dst)
 {
     qDebug() << "BaseEngine::actionCall()" << action << src << dst;
-    
+
     QVariantMap command;
     command["direction"] = "xivoserver";
     command["class"] = action;
-    
+
     if ((action == "originate") || (action == "transfer") || (action == "atxfer")) {
         command["source"] = src;
         if ((dst == "ext:special:dialxlet") && (! m_numbertodial.isEmpty()))
