@@ -26,6 +26,7 @@ __author__    = 'Corentin Le Gall'
 
 import cjson
 import logging
+import time
 import urllib
 import xmlrpclib
 
@@ -38,6 +39,7 @@ def getvariables(fileuri, itemdir):
     jcs = cjson.decode(json_c)
     myret = {}
 
+    t1 = time.time()
     for jc in jcs:
         method = jc.get('method')
         if method == 'xmlrpc':
@@ -57,9 +59,13 @@ def getvariables(fileuri, itemdir):
                 xname = accessdefs.get('xname')
                 function = jc.get('function')
 
-                pp = xmlrpclib.ServerProxy(accessdefs.get('url'))
-                if pp:
+                try:
+                    pp = xmlrpclib.ServerProxy(accessdefs.get('url'))
                     myret[vardest] = pp.execute((basename), 1, loginname, xname, function, *nv)
-    else:
-        log.warning('unknown method %s' % method)
+                except Exception:
+                    log.exception('attempt to join %s' % accessdefs.get('url'))
+        else:
+            log.warning('unknown method %s' % method)
+    t2 = time.time()
+    log.info('spent %f s there' % (t2-t1))
     return myret
