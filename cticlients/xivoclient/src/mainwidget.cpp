@@ -327,6 +327,7 @@ void MainWidget::showLogin()
 {
     m_centralWidget->setCurrentWidget(m_login_widget);
     m_login_widget->show();
+    m_resizingHelper = 0;
 }
 
 /*! \brief hide login widget and show "Main" window
