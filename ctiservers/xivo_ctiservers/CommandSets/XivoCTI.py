@@ -1537,10 +1537,10 @@ class XivoCTICommand(BaseCommand):
                 queuename = event.get('Queue')
                 if self.weblist['queues'][astid].hasqueue(queuename):
                     queueorgroup = 'queues'
-                    queueid = self.weblist['queues'][astid].reverse_index[queuename]
+                    queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
                 elif self.weblist['groups'][astid].hasqueue(queuename):
                     queueorgroup = 'groups'
-                    queueid = self.weblist['groups'][astid].reverse_index[queuename]
+                    queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
                 # find who are the queue members
                 for agent_channel, status in self.weblist[queueorgroup][astid].keeplist[queueid]['agents_in_queue'].iteritems():
                     # XXX sip/iax2/sccp @queue
@@ -3399,10 +3399,10 @@ class XivoCTICommand(BaseCommand):
 
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_agentcalled')
             return
@@ -3554,10 +3554,10 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queuecallerabandon')
             return
@@ -3580,10 +3580,10 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queueentry')
             return
@@ -3615,10 +3615,10 @@ class XivoCTICommand(BaseCommand):
         paused = event.get('Paused')
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queuememberadded')
             return
@@ -3675,10 +3675,10 @@ class XivoCTICommand(BaseCommand):
         location = event.get('Location')
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queuememberremoved')
             return
@@ -3734,10 +3734,10 @@ class XivoCTICommand(BaseCommand):
 
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queuememberstatus')
             return
@@ -3847,10 +3847,10 @@ class XivoCTICommand(BaseCommand):
 
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queuememberpaused')
             return
@@ -3911,10 +3911,10 @@ class XivoCTICommand(BaseCommand):
         queuename = event.get('Queue')
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queueparams')
             return
@@ -3940,10 +3940,10 @@ class XivoCTICommand(BaseCommand):
         location = event.get('Location')
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_queuemember')
             return
@@ -4663,10 +4663,10 @@ class XivoCTICommand(BaseCommand):
 
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_join')
             return
@@ -4714,10 +4714,10 @@ class XivoCTICommand(BaseCommand):
         # 1 timeout, 2 joinempty, 3 leaveempty, 6 full ... see app_queue.c
         if self.weblist['queues'][astid].hasqueue(queuename):
             queueorgroup = 'queues'
-            queueid = self.weblist['queues'][astid].reverse_index[queuename]
+            queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
         elif self.weblist['groups'][astid].hasqueue(queuename):
             queueorgroup = 'groups'
-            queueid = self.weblist['groups'][astid].reverse_index[queuename]
+            queueid = self.weblist['groups'][astid].reverse_index.get(queuename)
         else:
             self.__queuemismatch__(astid, queuename, 'ami_leave')
             return
@@ -6152,6 +6152,7 @@ class XivoCTICommand(BaseCommand):
                 if len(fastagi.args) > 0:
                     queuename = fastagi.args[0]
                     if self.weblist['queues'][astid].hasqueue(queuename):
+                        queueid = self.weblist['queues'][astid].reverse_index(queuename)
                         qprops = self.weblist['queues'][astid].keeplist[queueid]['agents_in_queue']
                         lst = []
                         for ag, agc in qprops.iteritems():
@@ -6178,6 +6179,7 @@ class XivoCTICommand(BaseCommand):
                 if len(fastagi.args) > 0:
                     queuename = fastagi.args[0]
                     if self.weblist['queues'][astid].hasqueue(queuename):
+                        queueid = self.weblist['queues'][astid].reverse_index(queuename)
                         qentries = self.weblist['queues'][astid].keeplist[queueid]['channels']
                         lst = []
                         for chan, chanprops in qentries.iteritems():
@@ -6192,8 +6194,9 @@ class XivoCTICommand(BaseCommand):
                 if len(fastagi.args) > 0:
                     queuename = fastagi.args[0]
                     if self.weblist['queues'][astid].hasqueue(queuename):
+                        queueid = self.weblist['queues'][astid].reverse_index(queuename)
                         fastagi.set_variable('XIVO_QUEUEHOLDTIME',
-                            self.weblist['queues'][astid].keeplist[queueid]['queuestats']['Holdtime'])
+                                             self.weblist['queues'][astid].keeplist[queueid]['queuestats']['Holdtime'])
                 else:
                     lst = []
                     for queuename, qprops in self.weblist['queues'][astid].keeplist.iteritems():
