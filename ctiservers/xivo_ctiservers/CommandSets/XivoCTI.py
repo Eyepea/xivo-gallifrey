@@ -837,6 +837,13 @@ class XivoCTICommand(BaseCommand):
         if what is None:
             return
 
+        signal_matches = { 'xivo[meetmelist,update]' : 'meetme',
+                           'xivo[queuelist,update]'  : 'queues',
+                           'xivo[grouplist,update]'  : 'groups',
+                           'xivo[agentlist,update]'  : 'agents',
+                           'xivo[userlist,update]'   : 'phones'
+                           }
+
         if what == 'all':
             self.ulist_ng.update()
             for itemname in self.weblist.keys():
@@ -845,18 +852,14 @@ class XivoCTICommand(BaseCommand):
         elif what == 'others':
             for itemname in ['trunks', 'phonebook', 'voicemail', 'incomingcalls']:
                 self.__update_itemlist__(itemname, astid)
-        else:
-            matches = { 'xivo[meetmelist,update]' : 'meetme',
-                        'xivo[queuelist,update]'  : 'queues',
-                        'xivo[grouplist,update]'  : 'groups',
-                        'xivo[agentlist,update]'  : 'agents',
-                        'xivo[userlist,update]'   : 'phones'
-                        }
-            itemname = matches.get(what)
+        elif what in signal_matches.keys():
+            itemname = signal_matches.get(what)
             self.__update_itemlist__(itemname, astid)
             if what == 'xivo[userlist,update]':
                 self.ulist_ng.update()
                 self.askstatus(astid, self.weblist['phones'][astid].keeplist)
+        else:
+            log.warning('updates %s %s : unmatched signal' % (astid, what))
 
         m2 = self.getmem()
         if m2 != self.save_memused:
@@ -1544,7 +1547,7 @@ class XivoCTICommand(BaseCommand):
                     if status.get('Paused') == '0':
                         userinfos.extend(self.__find_userinfos_by_agentnum__(astid, agent_channel[LENGTH_AGENT:]))
             elif where in ['incomingdid']:
-                # users matching the SDA ?
+                # users matching the SDA ?
                 pass
             elif where.startswith('custom.'):
                 pass

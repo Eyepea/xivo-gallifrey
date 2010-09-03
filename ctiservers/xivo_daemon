@@ -1510,7 +1510,7 @@ class xivo_daemon:
                                         listtorequest = self.update_userlist[astid].pop()
                                         self.commandclass.updates(astid, listtorequest)
                                 else:
-                                    self.commandclass.updates(astid, 'other') # signal-less updates ...
+                                    self.commandclass.updates(astid, 'others') # signal-less updates ...
                             except Exception:
                                 log.exception('%s : commandclass.updates() (computed timeout)' % astid)
                     # }
@@ -1521,7 +1521,7 @@ class xivo_daemon:
                           % (self.xdname, time.asctime()))
                 for astid in self.configs:
                     try:
-                        self.commandclass.updates(astid, 'other') # signal-less updates ...
+                        self.commandclass.updates(astid, 'others') # signal-less updates ...
                     except Exception:
                         log.exception('%s : commandclass.updates() (select timeout)' % astid)
 
