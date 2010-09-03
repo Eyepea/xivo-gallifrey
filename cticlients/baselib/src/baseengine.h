@@ -103,7 +103,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
         int loginkind();                        //!< loginkind to identify to the server
         void setLoginKind(const int);           //!< see loginkind()
         int keeppass();                         //!< keeppass to identify to the server
-        void setKeepPass(const int);            //!< see keeppass()
+        void setKeepPass(int);            //!< see keeppass()
         int showagselect();                     //!< showagselect to identify to the server
         void setShowAgentSelect(const int);     //!< see showagselect()
         const QString & password() const;       //!< password to identify to the sever
@@ -146,7 +146,7 @@ class BASELIB_EXPORT BaseEngine: public QObject
 
         void updateCapaPresence(const QVariant &);
         const QString& getCapaApplication() const;
-        void config_and_start(const QString &, const QString &, const QString &);
+        void configAndStart(const QString &, const QString &, const QString &);
         QString osname() const { return m_osname; };
         UserInfo* findUserFromPhone(const QString &, const QString &);
         UserInfo* findUserFromAgent(const QString &, const QString &);
