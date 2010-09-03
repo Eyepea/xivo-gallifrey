@@ -6152,7 +6152,7 @@ class XivoCTICommand(BaseCommand):
                 if len(fastagi.args) > 0:
                     queuename = fastagi.args[0]
                     if self.weblist['queues'][astid].hasqueue(queuename):
-                        queueid = self.weblist['queues'][astid].reverse_index(queuename)
+                        queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
                         qprops = self.weblist['queues'][astid].keeplist[queueid]['agents_in_queue']
                         lst = []
                         for ag, agc in qprops.iteritems():
@@ -6179,7 +6179,7 @@ class XivoCTICommand(BaseCommand):
                 if len(fastagi.args) > 0:
                     queuename = fastagi.args[0]
                     if self.weblist['queues'][astid].hasqueue(queuename):
-                        queueid = self.weblist['queues'][astid].reverse_index(queuename)
+                        queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
                         qentries = self.weblist['queues'][astid].keeplist[queueid]['channels']
                         lst = []
                         for chan, chanprops in qentries.iteritems():
@@ -6194,7 +6194,7 @@ class XivoCTICommand(BaseCommand):
                 if len(fastagi.args) > 0:
                     queuename = fastagi.args[0]
                     if self.weblist['queues'][astid].hasqueue(queuename):
-                        queueid = self.weblist['queues'][astid].reverse_index(queuename)
+                        queueid = self.weblist['queues'][astid].reverse_index.get(queuename)
                         fastagi.set_variable('XIVO_QUEUEHOLDTIME',
                                              self.weblist['queues'][astid].keeplist[queueid]['queuestats']['Holdtime'])
                 else:
