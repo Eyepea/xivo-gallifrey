@@ -19,3 +19,9 @@ serveur principal :
 
 ; fm_proxy_backup
 serveur de secours : 
+
+; fld_vlan
+VLAN Voix
+
+; fm_vlan_id
+id VLAN : 

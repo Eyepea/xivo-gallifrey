@@ -52,7 +52,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 				if($this->get_errnb() > 0)
             return false;
 
-        $keys = array('registrar_main', 'registrar_backup', 'proxy_main', 'proxy_backup');
+        $keys = array('registrar_main', 'registrar_backup', 'proxy_main', 'proxy_backup', 'vlan_id');
         foreach(array_keys($arr) as $key)
         {
             if(!in_array($key, $keys))

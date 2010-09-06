@@ -37,9 +37,9 @@ if(isset($_QR['fm_send']) === true)
 else
 { $info 		= $appprov->get(); }
 
-$_TPL->set_var('fm_save'	, $fm_save);
-$_TPL->set_var('info'		, $info);
-$_TPL->set_var('error'		, $error);
+$_TPL->set_var('fm_save' , $fm_save);
+$_TPL->set_var('info'    , $info);
+$_TPL->set_var('error'   , $error);
 
 $menu = &$_TPL->get_module('menu');
 $menu->set_top('top/user/'.$_USR->get_info('meta'));

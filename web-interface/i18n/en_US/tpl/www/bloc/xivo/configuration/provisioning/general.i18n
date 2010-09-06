@@ -19,3 +19,9 @@ main server :
 
 ; fm_proxy_backup
 backup server : 
+
+; fld_vlan
+Voice VLAN
+
+; fm_vlan_id
+VLAN id : 

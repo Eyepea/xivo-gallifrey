@@ -132,10 +132,10 @@ class xivo_object_commonconf extends xivo_object_abstract
         //  1. 1st vlan
         //  2. 1st voip iface
         //  3. voip ifaces list
-        $vlanid     = 0;        //0 means no vlan
+        //$vlanid     = 0;        //0 means no vlan
         $ifaces     = "";
         $cidr_id    = -1;
-        
+
         for($i = 0; $i < count($list); $i++)
         {
             $item = $list[$i];
@@ -146,16 +146,17 @@ class xivo_object_commonconf extends xivo_object_abstract
                 
             $ifaces .= $item['netiface']['ifname'] . ' ';
 
+						/*
             if($vlanid == 0 && $item['netinfo']['vlanif'])
                 $vlanid = intval($item['netiface']['vlanid']);
-
+						*/
             if($cidr_id < 0 && (!$onlystatic || strcmp($item['netinfo']['method'], 'static') == 0))
                 $cidr_id = $i;
         }
 
-        // no VOIP netiface defined
+				// no VOIP netiface defined
         if($cidr_id < 0)
-            return false;
+					return false;
 
         $net = array(
             'ipaddr'    => $list[$cidr_id]['netiface']['address'], 
@@ -195,7 +196,7 @@ class xivo_object_commonconf extends xivo_object_abstract
         
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
-            'xivo.voip.vlan.id'     => $vlanid,
+            //'xivo.voip.vlan.id'     => $vlanid,
             
             'xivo.net4.ip'          => $net['ipaddr'],
             'xivo.net4.netmask'     => $net['netmask'],
@@ -224,6 +225,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.registrar.backup.ip' => $rawdata['registrar_backup'],
             'xivo.proxy.main.ip'       => $rawdata['proxy_main'],
             'xivo.proxy.backup.ip'     => $rawdata['proxy_backup'],
+            'xivo.voip.vlan.id'        => intval($rawdata['vlan_id'])==0?null:intval($rawdata['vlan_id']),
 					));
 
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);

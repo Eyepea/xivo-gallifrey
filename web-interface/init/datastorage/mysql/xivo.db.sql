@@ -374,14 +374,15 @@ CREATE TABLE `ha_peer` (
 -- provisioning
 DROP TABLE IF EXISTS `provisioning`;
 CREATE TABLE `provisioning` (
- `id` tinyint(1) auto_increment,
+ `id` int(10) unsigned auto_increment,
  `registrar_main`   varchar(255) NOT NULL DEFAULT '',
  `registrar_backup` varchar(255) NOT NULL DEFAULT '',
  `proxy_main`       varchar(255) NOT NULL DEFAULT '',
  `proxy_backup`     varchar(255) NOT NULL DEFAULT '',
+ `vlan_id`					integer,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM;
 
-INSERT INTO `provisioning` VALUES(1, '', '', '', '');
+INSERT INTO `provisioning` VALUES(1, '', '', '', '', NULL);
 
 COMMIT;

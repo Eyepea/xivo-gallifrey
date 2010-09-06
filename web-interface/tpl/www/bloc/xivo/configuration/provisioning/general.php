@@ -95,6 +95,20 @@ endif;
     ));
 ?>
 </fieldset>
+
+<fieldset id="fld-vlan">
+	<legend><?=$this->bbf('fld_vlan');?></legend>
+<?php
+		echo $form->text(array('desc'	=> $this->bbf('fm_vlan_id'),
+				  'name'	  => 'vlan_id',
+					'labelid'	=> 'vlan_id',
+					'size'	  => 15,
+				  'default'	=> $element['dhcp']['vlan_id']['default'],
+				  'value'	  => $this->get_var('info','vlan_id'),
+				  'error'   => $this->bbf_args('error', $this->get_var('error', 'vlan_id'))
+    ));
+?>
+</fieldset>
 </div>
 <?php
 

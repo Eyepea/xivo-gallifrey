@@ -33,6 +33,8 @@ $array['element']['proxy_main']['default'] = '';
 $array['element']['proxy_backup'] = array();
 $array['element']['proxy_backup']['default'] = '';
 
+$array['element']['vlan_id'] = array();
+$array['element']['vlan_id']['default'] = '';
 
 ### filters ###
 $array['filter'] = array();
@@ -52,5 +54,10 @@ $array['filter']['proxy_main']	     = array('set'		=> false,
 $array['filter']['proxy_backup']	   = array('set'		=> false,
 				    'chk'		    => 2,
 				    'callback'		=> 'dwho_network::valid_host',
-				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+						'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+$array['filter']['vlan_id']          = array('set'    => false,
+	'chk'			=> 2,
+	'cast'    => 'uint',
+	'between' => array(1, 4094)
+					);
 ?>
