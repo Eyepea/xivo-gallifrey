@@ -65,7 +65,7 @@ INSERT INTO `meetmefeatures` SELECT
 	 `name`,
 	 `number`,
 	 `context`,
-	 NULL,																								-- admin_typefrom
+	 'none',																							-- admin_typefrom
 	 0,																										-- admin_internalid
 	 '',																									-- admin_externalid
 	 '',																									-- admin_identification
@@ -97,7 +97,7 @@ INSERT INTO `meetmefeatures` SELECT
 	 `record`,																							-- 
 	 0,																										-- talkerdetection
 	 0,																										-- noplaymsgfirstenter
-	 0,																										-- durationm
+	 NULL,																								-- durationm
 	 0,																										-- closeconfdurationexceeded
 	 0,																										-- nbuserstartdeductduration
 	 0,																										-- timeannounceclose
@@ -112,5 +112,18 @@ INSERT INTO `meetmefeatures` SELECT
  FROM `meetmefeatures_tmp`;
  
 DROP TABLE `meetmefeatures_tmp`;
+
+-- Meetme admin password:
+-- a meetme has a row in staticmeetme with:
+--    category = rooms
+--    var_name = conf
+--    var_val  = meetme name,pin,admin pin
+--
+-- If admin pin is not set, comma (,) is not present
+-- If admin pin is set, we must update corresponding row in meetmefeatures to set admin_typefrom value to 'undefined'
+
+UPDATE `meetmefeatures` SET `admin_typefrom` = 'undefined' WHERE `name` IN (
+	SELECT substring_index(`var_val`, ',',1) FROM `staticmeetme` WHERE `category` = 'rooms' AND `var_name` = 'conf' AND `var_val` RLIKE '^[^,]+,[^,]*,[^,]+$');
+
 
 

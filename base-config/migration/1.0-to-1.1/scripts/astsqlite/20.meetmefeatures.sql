@@ -66,7 +66,7 @@ INSERT INTO meetmefeatures SELECT
 	 name,
 	 number,
 	 context,
-	 NULL,																								-- admin_typefrom
+	 'none',																							-- admin_typefrom
 	 0,																										-- admin_internalid
 	 '',																									-- admin_externalid
 	 '',																									-- admin_identification
@@ -98,7 +98,7 @@ INSERT INTO meetmefeatures SELECT
 	 record,																							-- 
 	 0,																										-- talkerdetection
 	 0,																										-- noplaymsgfirstenter
-	 0,																										-- durationm
+	 NULL,																								-- durationm
 	 0,																										-- closeconfdurationexceeded
 	 0,																										-- nbuserstartdeductduration
 	 0,																										-- timeannounceclose
@@ -115,5 +115,4 @@ INSERT INTO meetmefeatures SELECT
  FROM meetmefeatures_tmp;
  
 DROP TABLE meetmefeatures_tmp;
-
 
