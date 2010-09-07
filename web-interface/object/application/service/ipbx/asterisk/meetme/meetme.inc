@@ -257,7 +257,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 		$confno = strtolower($this->get_result_var('meetmeroom','confno'));
 
 		$arr['meetmefeatures']['meetmeid'] = 0;
-		$arr['meetmefeatures']['name'] = $confno;
+		//$arr['meetmefeatures']['name'] = $confno;
 
 		$this->set_meetmefeatures($arr['meetmefeatures']);
 

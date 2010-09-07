@@ -43,14 +43,14 @@ endif;
 
 <div id="sb-part-first">
 <?php
-	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmeroom_confno'),
-				  'name'	=> 'meetmeroom[confno]',
-				  'labelid'	=> 'meetmeroom-confno',
+	echo	$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_name'),
+				  'name'	=> 'meetmefeatures[name]',
+				  'labelid'	=> 'meetmefeatures-name',
 				  'size'	=> 15,
-				  'default'	=> $element['meetmeroom']['confno']['default'],
-				  'value'	=> $info['meetmeroom']['confno'],
+				  'default'	=> $element['meetmefeatures']['name']['default'],
+				  'value'	=> $info['meetmefeatures']['name'],
 				  'error'	=> $this->bbf_args('error',
-					   $this->get_var('error','meetmeroom','confno')))),
+					   $this->get_var('error','meetmefeatures','name')))),
 
 		$form->text(array('desc'	=> $this->bbf('fm_meetmefeatures_number'),
 				  'name'	=> 'meetmefeatures[number]',
