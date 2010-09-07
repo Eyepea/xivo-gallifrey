@@ -1,8 +1,8 @@
-Index: asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_pbx.c
+Index: asterisk-chan-sccp-0~prerelease+svn1837/src/sccp_pbx.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1790.orig/src/sccp_pbx.c	2010-08-20 11:34:35.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_pbx.c	2010-08-23 16:34:28.000000000 +0200
-@@ -237,19 +237,19 @@
+--- asterisk-chan-sccp-0~prerelease+svn1837.orig/src/sccp_pbx.c	2010-09-04 18:14:16.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1837/src/sccp_pbx.c	2010-09-07 22:28:23.000000000 +0200
+@@ -243,19 +243,19 @@
  		   enbloc dialed numbers (such as via 7970 enbloc dialing) if they match a certain pattern.
  		   This would help users dial from call history lists on other phones, which do not have enbloc dialing,
  		   when using shared lines. */
@@ -12,19 +12,20 @@ Index: asterisk-chan-sccp-0~prerelease+svn1790/src/sccp_pbx.c
 -			strncpy(suffixedNumber, (const char*) ast->cid.cid_num, strlen(ast->cid.cid_num));
 -			suffixedNumber[strlen(ast->cid.cid_num)+0] = '#';
 -			suffixedNumber[strlen(ast->cid.cid_num)+1] = '\0';
+-			sccp_channel_set_callingparty(c, ast->cid.cid_name, suffixedNumber);
 +			strncpy(suffixedNumber, (const char*) ast->lid.lid_num, strlen(ast->lid.lid_num));
 +			suffixedNumber[strlen(ast->lid.lid_num)+0] = '#';
 +			suffixedNumber[strlen(ast->lid.lid_num)+1] = '\0';
- 			sccp_channel_set_callingparty(c, ast->cid.cid_name, suffixedNumber);
- 		}
- 		else
++			sccp_channel_set_callingparty(c, ast->lid.lid_name, suffixedNumber);
+ 		} else
 -			sccp_channel_set_callingparty(c, ast->cid.cid_name, ast->cid.cid_num);
-+			sccp_channel_set_callingparty(c, ast->cid.cid_name, ast->lid.lid_num);
++			sccp_channel_set_callingparty(c, ast->lid.lid_name, ast->lid.lid_num);
+ 			
  	}
  	else
  	{
 -		sccp_channel_set_callingparty(c, ast->cid.cid_name, ast->cid.cid_num);
 +		sccp_channel_set_callingparty(c, ast->lid.lid_name, ast->lid.lid_num);
  	}
- #else // CS_AST_CHANNEL_HAS_CID
- 	if (ast->callerid && (cidtmp = strdup(ast->callerid))) {
+ 	
+ 	/* check if we have an forwared call */
