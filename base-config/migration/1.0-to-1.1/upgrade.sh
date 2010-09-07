@@ -45,7 +45,7 @@ sqlite_migrate() {
 
 	# meetmefeatures - set correct admin_typefrom value when admin pin is set
 	for i in `sqlite /var/lib/asterisk/astsqlite "SELECT var_val FROM staticmeetme WHERE category = 'rooms' AND var_name = 'conf' AND var_val LIKE '%,%,%' AND var_val NOT LIKE '%,%,'"|cut	-d, -f1`; do 
-		sqlite /var/lib/asterisk/astsqlite "UPDATE meetmefeatures SET admin_typefrom='undefined' WHERE name='$i'";
+		sqlite /var/lib/asterisk/astsqlite "UPDATE meetmefeatures SET admin_typefrom='undefined' WHERE number='$i'";
 	done
 
 	echo "done !"

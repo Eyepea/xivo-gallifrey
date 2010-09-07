@@ -122,7 +122,7 @@ DROP TABLE `meetmefeatures_tmp`;
 -- If admin pin is not set, comma (,) is not present
 -- If admin pin is set, we must update corresponding row in meetmefeatures to set admin_typefrom value to 'undefined'
 
-UPDATE `meetmefeatures` SET `admin_typefrom` = 'undefined' WHERE `name` IN (
+UPDATE `meetmefeatures` SET `admin_typefrom` = 'undefined' WHERE `number` IN (
 	SELECT substring_index(`var_val`, ',',1) FROM `staticmeetme` WHERE `category` = 'rooms' AND `var_name` = 'conf' AND `var_val` RLIKE '^[^,]+,[^,]*,[^,]+$');
 
 
