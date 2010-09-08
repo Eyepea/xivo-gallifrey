@@ -334,7 +334,8 @@ class XivoCTICommand(BaseCommand):
             if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
                 if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
                     log.warning('lastlogout stopper=%s datetime=%s'
-                                % (loginparams['lastlogout-stopper'], loginparams['lastlogout-datetime']))
+                                % (loginparams['lastlogout-stopper'],
+                                   loginparams['lastlogout-datetime']))
             for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
                 if argum not in loginparams:
                     missings.append(argum)
@@ -361,7 +362,8 @@ class XivoCTICommand(BaseCommand):
             # user match
             userinfo = None
             if loginparams.get('userid'):
-                userinfo = self.ulist_ng.finduser(loginparams.get('userid'), loginparams.get('company'))
+                userinfo = self.ulist_ng.finduser(loginparams.get('userid'),
+                                                  loginparams.get('company'))
             if userinfo == None:
                 return 'user_not_found'
             userinfo['prelogin'] = {'cticlientos' : whatsmyos,
@@ -408,6 +410,7 @@ class XivoCTICommand(BaseCommand):
             capaid = loginparams.get('capaid')
             subscribe = loginparams.get('subscribe')
             lastconnwins = loginparams.get('lastconnwins')
+            loginkind = loginparams.get('loginkind')
 
             iserr = self.__check_capa_connection__(userinfo, capaid)
             if iserr is not None:
@@ -415,6 +418,8 @@ class XivoCTICommand(BaseCommand):
 
             self.__connect_user__(userinfo, state, capaid, lastconnwins)
 
+            if loginkind == 'agent':
+                userinfo['agentphonenumber'] = loginparams.get('agentphonenumber')
             if subscribe is not None:
                 userinfo['subscribe'] = 0
         else:
@@ -513,6 +518,8 @@ class XivoCTICommand(BaseCommand):
                     # make sure everything is sent before closing the connection
                     userinfo['login']['connection'].toClose = True
                 del userinfo['login']
+                if 'agentphonenumber' in userinfo:
+                    del userinfo['agentphonenumber']
                 userinfo['state'] = 'xivo_unknown'
                 self.__update_availstate__(userinfo, userinfo.get('state'))
                 # do not remove 'capaid' in order to keep track of it
@@ -5801,7 +5808,12 @@ class XivoCTICommand(BaseCommand):
                                                 self.__ami_execute__(astid, 'queuepause', queuename,
                                                                      'Agent/%s' % agentnumber, 'false')
             elif actionname in ['agentlogin', 'agentlogout']:
-                agentphonenumber = args.get('agentphonenumber')
+                if 'agentphonenumber' in args:
+                    agentphonenumber = args['agentphonenumber']
+                elif 'agentphonenumber' in userinfo:
+                    agentphonenumber = userinfo['agentphonenumber']
+                else:
+                    agentphonenumber = None
                 agentids = self.__mergelist__(userinfo, args.get('agentids').split(','))
                 for agentid in agentids:
                     # XXX capas

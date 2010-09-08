@@ -813,12 +813,13 @@ class manage_connection:
                     # the related WEBI request then
                     actionid = thisthread.args[1][1]
                     if actionid in waiting_actionid and actionid in waiting_actionid_timer:
+                        log.info('closing the WEBI connection %s for the request %s'
+                                 % (conn_to_close, actionid))
                         conn_to_close = waiting_actionid[actionid]
                         del daemon.fdlist_established[conn_to_close]
                         conn_to_close.close()
                         del waiting_actionid[actionid]
                         del waiting_actionid_timer[actionid]
-                        log.info('closing the WEBI connection %s for the request %s' % (conn_to_close, actionid))
                     else:
                         log.warning('the actionid %s has gone' % actionid)
             else:
