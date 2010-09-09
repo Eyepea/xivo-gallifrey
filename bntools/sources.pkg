@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://www.beronet.com/downloads/docs/berofos"
+TARBALL_PREFIX="bntools-"
+SRC_DIR_PREFIX="bntools-"
+PKG_NAME="bntools"
+DFSG_EXCLUDE_PATTERNS=

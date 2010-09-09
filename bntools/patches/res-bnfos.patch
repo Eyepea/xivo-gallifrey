@@ -1,0 +1,462 @@
+diff -rup bntools/bnfos/main.c bntools-patched/bnfos/main.c
+--- bntools/bnfos/main.c	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/bnfos/main.c	2010-08-17 15:09:43.274369000 -0400
+@@ -178,9 +178,34 @@ static int scanfunc(void *usr_data, cons
+   return BNFOS_RET_CONT;
+ }
+ 
++/* scanning callback function */
++static int simple_scanfunc(void *usr_data, const uint8_t mac[6],
++	     const uint8_t bl_vers_ma, const uint8_t bl_vers_mi,
++	     const uint8_t fw_vers_ma, const uint8_t fw_vers_mi, const uint8_t devmode,
++	     const struct in_addr address, const struct in_addr netmask,
++	     const struct in_addr gateway, const uint8_t phy_conf, const uint8_t phy_state,
++	     const uint8_t options, const uint16_t http_port) {
++  int i;
++  char buf[3];
++
++  for(i=0; i<6; i++) {
++    if (i) {
++      printf(":");
++	}
++	sprintf(buf, "%02hhx", mac[i]);
++	printf(buf);
++  }
++  printf(";%s", inet_ntoa(address));
++  printf(";%d.%d", fw_vers_ma, fw_vers_mi);
++  printf(";%s\n", (devmode ? "flash" : "operational"));
++
++  return BNFOS_RET_CONT;
++}
++
+ /* operation modes */
+ typedef enum {
+   MODE_SCAN = 0,
++  MODE_SSCAN,
+   MODE_NETCONF,
+   MODE_PING,
+   MODE_KICK,
+@@ -221,24 +246,24 @@ static struct {
+   uint ac;
+   int occ[MODE_NONE];
+ } shortopts[] = {
+-  {'m', "mac address of the device (notation: XX:XX:XX:XX:XX:XX)", NULL, "mac", AC_DEFAULT, {0, 3, 3, 3, 3, 3, 0, 0, 0}},
+-  {'h', "hostname or ip address of the device (default: 255.255.255.255)", NULL, "host", AC_DEFAULT, {2, 4, 4, 4, 4, 3, 3, 3, 3}},
+-  {'i', "ip address (default: 0.0.0.0)", NULL, "ip", AC_NETCONF, {0, 2, 0, 0, 0, 0, 0, 0, 0}},
+-  {'n', "netmask address", NULL, "netmask", AC_NETCONF, {0, 2, 0, 0, 0, 0, 0, 0, 0}},
+-  {'g', "gateway address (default: 0.0.0.0)", NULL, "gateway", AC_NETCONF, {0, 2, 0, 0, 0, 0, 0, 0, 0}},
+-  {'e', "ethernet phy configuration (values: 0=auto; 1=10mbit; 2=100mbit; default: 0)", NULL, "phy", AC_NETCONF, {0, 2, 0, 0, 0, 0, 0, 0, 0}},
+-  {'d', "enable dhcp (1=on; 0=off; default: 1)", NULL, "status", AC_NETCONF, {0, 2, 0, 0, 0, 0, 0, 0, 0}},
+-  {'a', "enable http auth (1=on; 0=off; default: 0)", NULL, "status", AC_NETCONF, {0, 2, 0, 0, 0, 0, 0, 0, 0}},
+-  {'p', "http port (default: 80)", NULL, "port", AC_DEFAULT|AC_NETCONF, {0, 2, 0, 0, 0, 0, 2, 2, 2}},
+-  {'u', "authentification data (notation: <username>:<password>)", NULL, "usrpwd", AC_DEFAULT, {0, 0, 0, 0, 0, 0, 2, 2, 2}},
+-  {'c', "continuous operation", NULL, NULL, AC_DEFAULT, {2, 0, 2, 2, 0, 0, 0, 2, 2}},
+-  {'b', "fork to background (implies -s)", NULL, NULL, AC_DEFAULT, {0, 0, 0, 2, 0, 0, 0, 0, 0}},
+-  {'w', "wait 'time' seconds between continuous operations (default: 2)", NULL, "time", AC_DEFAULT, {2, 0, 2, 2, 0, 0, 0, 2, 2}},
+-  {'t', "timeout in seconds (default: 3)", NULL, "sec", AC_DEFAULT, {2, 2, 2, 2, 0, 2, 2, 2, 2}},
+-  {'s', "enable syslog output", NULL, NULL, AC_DEFAULT, {2, 2, 2, 2, 2, 2, 2, 2, 2}},
+-  {'x', "write scan results to " CONFFILE, NULL, NULL, AC_DEFAULT, {2, 0, 0, 0, 0, 0, 0, 0, 0}},
+-  {'f', "load mac and/or ip address from " CONFFILE, NULL, "id", AC_DEFAULT, {0, 5, 5, 5, 5, 5, 5, 5, 5}},
+-  {0, NULL, NULL, NULL, 0, {0, 0, 0, 0, 0, 0, 0, 0, 0}},
++  {'m', "mac address of the device (notation: XX:XX:XX:XX:XX:XX)", NULL, "mac", AC_DEFAULT, {0, 0, 3, 3, 3, 3, 3, 0, 0, 0}},
++  {'h', "hostname or ip address of the device (default: 255.255.255.255)", NULL, "host", AC_DEFAULT, {2, 2, 4, 4, 4, 4, 3, 3, 3, 3}},
++  {'i', "ip address (default: 0.0.0.0)", NULL, "ip", AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 0, 0, 0}},
++  {'n', "netmask address", NULL, "netmask", AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 0, 0, 0}},
++  {'g', "gateway address (default: 0.0.0.0)", NULL, "gateway", AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 0, 0, 0}},
++  {'e', "ethernet phy configuration (values: 0=auto; 1=10mbit; 2=100mbit; default: 0)", NULL, "phy", AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 0, 0, 0}},
++  {'d', "enable dhcp (1=on; 0=off; default: 1)", NULL, "status", AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 0, 0, 0}},
++  {'a', "enable http auth (1=on; 0=off; default: 0)", NULL, "status", AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 0, 0, 0}},
++  {'p', "http port (default: 80)", NULL, "port", AC_DEFAULT|AC_NETCONF, {0, 0, 2, 0, 0, 0, 0, 2, 2, 2}},
++  {'u', "authentification data (notation: <username>:<password>)", NULL, "usrpwd", AC_DEFAULT, {0, 0, 0, 0, 0, 0, 0, 2, 2, 2}},
++  {'c', "continuous operation", NULL, NULL, AC_DEFAULT, {2, 2, 0, 2, 2, 0, 0, 0, 2, 2}},
++  {'b', "fork to background (implies -s)", NULL, NULL, AC_DEFAULT, {0, 0, 0, 0, 2, 0, 0, 0, 0, 0}},
++  {'w', "wait 'time' seconds between continuous operations (default: 2)", NULL, "time", AC_DEFAULT, {2, 2, 0, 2, 2, 0, 0, 0, 2, 2}},
++  {'t', "timeout in seconds (default: 3)", NULL, "sec", AC_DEFAULT, {2, 2, 2, 2, 2, 0, 2, 2, 2, 2}},
++  {'s', "enable syslog output", NULL, NULL, AC_DEFAULT, {2, 2, 2, 2, 2, 2, 2, 2, 2, 2}},
++  {'x', "write scan results to " CONFFILE, NULL, NULL, AC_DEFAULT, {2, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
++  {'f', "load mac and/or ip address from " CONFFILE, NULL, "id", AC_DEFAULT, {0, 0, 5, 5, 5, 5, 5, 5, 5, 5}},
++  {0, NULL, NULL, NULL, 0, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}},
+ };
+ 
+ /* corresponding getopts_long string */
+@@ -247,6 +272,7 @@ static struct {
+ /* mode descriptions */
+ const static char *longops_descr[MODE_NONE+1][2] = {
+   {"scan the network for devices", NULL},
++  {"like scan - but output in a simple 'mac;ip;fw;mode' format", NULL},
+   {"configure network parameters", NULL},
+   {"send ping request", NULL},
+   {"kick watchdog timer", NULL},
+@@ -261,6 +287,7 @@ const static char *longops_descr[MODE_NO
+ /* corresponding getopts_long struct */
+ const static struct option longopts[MODE_NONE+1] = {
+   {"scan", 0, NULL, 0},
++  {"sscan", 0, NULL, 0},
+   {"netconf", 0, NULL, 0},
+   {"ping", 0, NULL, 0},
+   {"kick", 0, NULL, 0},
+@@ -988,6 +1015,17 @@ int main(int argc, char **argv) {
+ 	break;
+       }
+ 
++    case MODE_SSCAN:
++      {
++  if (bnfos_scan(inet_ntoa(dev.address), simple_scanfunc, NULL) == BNFOS_RET_OK) {
++    ret = 0;
++  }
++  else {
++    ret = 1;
++  }
++  break;
++      }
++
+     case MODE_NETCONF:
+       if (bnfos_netconf(&dev, address, netmask, gateway, phy_conf, options, dev.port) == BNFOS_RET_OK) {
+ 	logmsg(LOG_NOTICE, "Setting network configuration succeeded!\n");
+diff -rup bntools/res_bnfos/cli.c bntools-patched/res_bnfos/cli.c
+--- bntools/res_bnfos/cli.c	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/cli.c	2010-08-17 15:09:43.274369000 -0400
+@@ -13,8 +13,28 @@
+ 
+ #include "res_bnfos.h"
+ #include "cli.h"
++#include "config.h"
+ #include "kick.h"
+ 
++static int bnfos_cli_reload(int fd, int argc, char *argv[]) {
++  if (argc > 2) {
++    return RESULT_SHOWUSAGE;
++  }
++
++  int i;
++  for (i = 0; i < bnfos_devnum; i++)
++    bnfos_kick_stop(bnfos_devices[i]);
++  bnfos_unload_config();
++
++  int err;
++  err = bnfos_load_config();
++  if (err) {
++    ast_log(LOG_ERROR, "Failed to load %s -- no device has been configured.", BNFOS_CFG);
++  }
++
++  return 0;
++}
++
+ static void bnfos_status(const int fd, struct res_bnfos_dev_t *dev) {
+   char buff[0x100];
+   int i;
+@@ -34,6 +54,9 @@ static void bnfos_status(const int fd, s
+ 
+   ast_cli(fd, " events_cmd = %s\n", dev->events_cmd);
+   ast_cli(fd, " last_event = %s\n", dev->last_event);
++
++  ast_cli(fd, " enable_wdog_on_start = %d\n", dev->enable_wdog_on_start);
++  ast_cli(fd, " relais_mode_on_start = %d\n", dev->relais_mode_on_start);
+ }
+ 
+ static void bnfos_start(const int fd, struct res_bnfos_dev_t *dev) {
+@@ -71,7 +94,7 @@ static int bnfos_cli_wdog(int fd, int ar
+ }
+ 
+ 
+-static int bnfos_scanfunc(void *usr_data, const char mac[6],
++static int bnfos_scanfunc(void *usr_data, const uint8_t mac[6],
+ 			  const uint8_t bl_vers_ma, const uint8_t bl_vers_mi,
+ 			  const uint8_t fw_vers_ma, const uint8_t fw_vers_mi, const uint8_t devmode,
+ 			  const struct in_addr address, const struct in_addr netmask,
+@@ -213,6 +236,13 @@ static char *complete_wdog_cmd(const cha
+ 
+ static struct ast_cli_entry bnfos_clis[] = {
+   {
++    {"bnfos", "reload", NULL},
++    bnfos_cli_reload,
++    "Reload the configuration file of the bnfos module",
++    "Usage: bnfos reload\n",
++    NULL,
++  },
++  {
+     {"bnfos", "status", NULL},
+     bnfos_cli_wdog,
+     "Shows the current status of the configured bero*fos devices.", 
+diff -rup bntools/res_bnfos/conf/bnfos.conf bntools-patched/res_bnfos/conf/bnfos.conf
+--- bntools/res_bnfos/conf/bnfos.conf	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/conf/bnfos.conf	2010-08-17 15:09:43.274369000 -0400
+@@ -6,8 +6,9 @@
+ ; The bero*fos's mac address (mandatory).
+ dev_mac=00:19:32:00:00:42
+ 
+-; Address to reach the bero*fos - only required on
+-; multihomed hosts (optional; default: 255.255.255.255).
++; Address to reach the bero*fos - required on multihomed hosts or if you use the
++; enable_wdog_on_start or relais_mode_on_start parameter (see below).
++; (optional; default: 255.255.255.255).
+ ;dev_ip=
+ 
+ ; Kick the watchdog every 5s (optional; default: 5).
+@@ -34,3 +35,22 @@ events_cmd=logger
+ ; Disables the processing after loading the res_bnfos module (optional; default: 0).
+ ; Could be enabled with 'bnfos start default' from the CLI later.
+ ;disabled=0
++
++; Enable the watchdog of the device when the heartbeat is started (i.e. after
++; the module is loaded for a device with disabled=0 or with 'bnfos start').
++; (optional; default: 0).
++;enable_wdog_on_start=0
++
++; Relais mode to set when the heartbeat is started
++;  -1 means don't set the relais mode (i.e. don't change the relais mode)
++;   0 means set the relais mode to 'A--D' (mode 0)
++;   1 means set the relais mode to 'A--B or A--B,C--D' (mode 1)
++; (optional; default: -1).
++;relais_mode_on_start=-1
++
++; Username/password (<username>:<password>) of the device. This is necessary if
++; you use enable_wdog_on_start and/or relais_mode_on_start. For example, if you
++; have set the admin password to 'adminpass', you would have 
++; 'user_pwd=admin:adminpass'.
++; (optional; default: '' (blank))
++;user_pwd=
+diff -rup bntools/res_bnfos/config.c bntools-patched/res_bnfos/config.c
+--- bntools/res_bnfos/config.c	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/config.c	2010-08-17 15:09:43.274369000 -0400
+@@ -56,7 +56,8 @@ int bnfos_load_config(void) {
+ 		if (dev)
+ 			free(dev);
+ 		dev = malloc(sizeof(struct res_bnfos_dev_t));
+-		dev->name = cat;
++		bnfos_dev_init(&dev->dev);
++		dev->name = strdup(cat);
+ 
+ 		BNFOS_CREAD_INT(kick_interval, 5);
+ 		if (dev->kick_interval<1) {
+@@ -71,7 +72,6 @@ int bnfos_load_config(void) {
+ 		}
+ 
+ 		{
+-			bnfos_dev_init(&dev->dev);
+ 			char *mac;
+ 			CONST_1_4 char *p = ast_variable_retrieve(cfg, cat, "dev_mac");
+ 			if (p)
+@@ -143,10 +143,33 @@ int bnfos_load_config(void) {
+ 				inet_aton("255.255.255.255", &dev->dev.address);
+ 		}
+ 
+-		dev->events_cmd = ast_variable_retrieve(cfg, cat, "events_cmd");
+-		if (dev->events_cmd && (strlen(dev->events_cmd)==0))
+-			dev->events_cmd = NULL;
++		{
++			CONST_1_4 char *p = ast_variable_retrieve(cfg, cat, "events_cmd");
++			if (!p || strlen(p) == 0)
++				dev->events_cmd = NULL;
++			else
++				dev->events_cmd = strdup(p);
++		}
++
++		BNFOS_CREAD_INT(enable_wdog_on_start, 0);
++		if (dev->enable_wdog_on_start < 0 || dev->enable_wdog_on_start > 1) {
++			ast_log(LOG_ERROR, "Value of 'enable_wdog_on_start' on device '%s' is invalid!\n", dev->name);
++			continue;
++		}
++
++		BNFOS_CREAD_INT(relais_mode_on_start, -1);
++		if (dev->relais_mode_on_start < -1 || dev->relais_mode_on_start > 1) {
++			ast_log(LOG_ERROR, "Value of 'relais_mode_on_start' on device '%s' is invalid!\n", dev->name);
++			continue;
++		}
+ 
++		{
++			CONST_1_4 char *p = ast_variable_retrieve(cfg, cat, "user_pwd");
++			if (!p || strlen(p) == 0)
++				dev->dev.usrpwd = NULL;
++			else
++				dev->dev.usrpwd = strdup(p);
++		}
+ 
+ 		bnfos_devnum++;
+ 		bnfos_devices = realloc(bnfos_devices, sizeof(struct res_bnfos_dev_t *)*bnfos_devnum);
+@@ -170,10 +193,9 @@ int bnfos_load_config(void) {
+ 	if (dev)
+ 		free(dev);
+ 
+-	if (bnfos_devnum)
+-		return 0;
++	ast_config_destroy(cfg);
+ 
+-	return -1;
++	return 0;
+ }
+ 
+ void bnfos_unload_config (void)
+@@ -183,9 +205,17 @@ void bnfos_unload_config (void)
+ 	if (!bnfos_devices)
+ 		return;
+ 
+-	for (i = 0; i < bnfos_devnum; ++i)
+-		if (bnfos_devices[i])
+-			free(bnfos_devices[i]);
++	for (i = 0; i < bnfos_devnum; ++i) {
++		if (bnfos_devices[i]) {
++		    free(bnfos_devices[i]->dev.usrpwd);
++		    bnfos_dev_destroy(&bnfos_devices[i]->dev);
++		    free(bnfos_devices[i]->name);
++		    free(bnfos_devices[i]->events_cmd);
++		    free(bnfos_devices[i]);
++		}
++	}
+ 
+ 	free(bnfos_devices);
++	bnfos_devices = NULL;
++	bnfos_devnum = 0;
+ }
+diff -rup bntools/res_bnfos/kick.c bntools-patched/res_bnfos/kick.c
+--- bntools/res_bnfos/kick.c	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/kick.c	2010-08-17 15:09:43.274369000 -0400
+@@ -14,6 +14,7 @@
+ #include "kick.h"
+ #include <errno.h>
+ #include <signal.h>
++#include <stdio.h>
+ #include <sys/wait.h>
+ 
+ static void bnfos_events_run(struct res_bnfos_dev_t *dev, char *event)
+@@ -95,16 +96,16 @@ void *bnfos_kicker(void *p)
+ 			if (bnfos_kick_wdog(&dev->dev) != BNFOS_RET_OK) {
+ 				ast_log(LOG_WARNING, "Failed to kick bero*fos '%s'!\n", dev->name);
+ 
+-				if (dev->last_event != BNFOS_EVENTS_WDOG_FAILED) {
++				if ((void *)dev->last_event != (void *)BNFOS_EVENTS_WDOG_FAILED) {
+ 					dev->last_event = BNFOS_EVENTS_WDOG_FAILED;
+ 					bnfos_events_run(dev, BNFOS_EVENTS_WDOG_FAILED);
+ 				}
+ 			}
+ 			else {
+-				if (dev->last_event == BNFOS_EVENTS_WDOG_FAILED)
++				if ((void *)dev->last_event == (void *)BNFOS_EVENTS_WDOG_FAILED)
+ 					ast_log(LOG_NOTICE, "bero*fos '%s' successfully kicked\n", dev->name);
+ 
+-				if (dev->last_event != BNFOS_EVENTS_WDOG_OK) {
++				if ((void *)dev->last_event != (void *)BNFOS_EVENTS_WDOG_OK) {
+ 					dev->last_event = BNFOS_EVENTS_WDOG_OK;
+ 					bnfos_events_run(dev, BNFOS_EVENTS_WDOG_OK);
+ 				}
+@@ -122,6 +123,34 @@ void bnfos_kick_start(struct res_bnfos_d
+ 
+ 	dev->running = 1;
+ 
++	if (dev->relais_mode_on_start != -1) {
++		bnfos_set_t set;
++		char *err;
++		char val[24];
++		sprintf(val, "%d", dev->relais_mode_on_start);
++		if (bnfos_key_set_prep(&set, BNFOS_KEY_MODE, val, &err) == BNFOS_RET_ERR) {
++			ast_log(LOG_WARNING, "Failed to set relais mode on start\n");
++		}
++		else {
++			if (bnfos_key_set_do(&dev->dev, &set) != BNFOS_RET_OK) {
++				ast_log(LOG_WARNING, "Failed to set relais mode on start\n");
++			}
++		}
++	}
++
++	if (dev->enable_wdog_on_start) {
++		bnfos_set_t set;
++		char *err;
++		if (bnfos_key_set_prep(&set, BNFOS_KEY_WDOG, "1", &err) == BNFOS_RET_ERR) {
++			ast_log(LOG_WARNING, "Failed to enable watchdog on start\n");
++		}
++		else {
++			if (bnfos_key_set_do(&dev->dev, &set) != BNFOS_RET_OK) {
++				ast_log(LOG_WARNING, "Failed to enable watchdog on start\n");
++			}
++		}
++	}
++
+ 	ast_pthread_create(&dev->kt, NULL, bnfos_kicker, dev);
+ }
+ 
+diff -rup bntools/res_bnfos/README bntools-patched/res_bnfos/README
+--- bntools/res_bnfos/README	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/README	2010-08-17 15:09:43.274369000 -0400
+@@ -29,6 +29,7 @@ unchanged for a start.
+ Asterisk CLI Commands
+ =====================
+ 
++bnfos reload             - Reload the configuration file.
+ bnfos scan               - Scans the network for bero*fos devices.
+ bnfos start [<fos_id>]   - Starts the bero*fos device timer for the given
+                            device. If you don't specify a <fos_id>, all
+diff -rup bntools/res_bnfos/res_bnfos.c bntools-patched/res_bnfos/res_bnfos.c
+--- bntools/res_bnfos/res_bnfos.c	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/res_bnfos.c	2010-08-17 15:09:43.274369000 -0400
+@@ -22,6 +22,7 @@
+ #include "config.h"
+ #include "kick.h"
+ #include "cli.h"
++#include <stdarg.h>
+ 
+ struct res_bnfos_dev_t **bnfos_devices = NULL;
+ int bnfos_devnum = 0;
+@@ -43,6 +44,25 @@ int bnfos_devnum = 0;
+   }						
+ #endif
+ 
++static void asterisk_log_handler(const int prio, const char *format, ...) {
++  va_list ap;
++  char message[1024];
++
++  va_start(ap, format);
++  vsprintf(message, format, ap);
++  va_end(ap);
++
++  // convert syslog priority number to asterisk log macro
++  if (prio <= 3)
++    ast_log(LOG_ERROR, message);
++  else if (prio == 4)
++    ast_log(LOG_WARNING, message);
++  else if (prio == 5 || prio == 6)
++    ast_log(LOG_NOTICE, message);
++  else
++    ast_log(LOG_DEBUG, message);
++}
++
+ __static__ int load_module (void) {
+ 
+ 	int err = 0;
+@@ -53,6 +73,7 @@ __static__ int load_module (void) {
+   }
+ 
+   bnfos_register_cli();
++  bnfos_log_sethandler(asterisk_log_handler);
+   err = bnfos_load_config();
+ 
+   if (err) {
+@@ -70,11 +91,10 @@ __static__ int unload_module (void) {
+   for (i=0; i<bnfos_devnum; i++)
+     bnfos_kick_stop(bnfos_devices[i]);
+ 
++  bnfos_unload_config();
+   bnfos_unregister_cli();
+-
+   bnfos_destroy();
+ 
+-  bnfos_unload_config();
+   return 0;
+ }
+ 
+diff -rup bntools/res_bnfos/res_bnfos.h bntools-patched/res_bnfos/res_bnfos.h
+--- bntools/res_bnfos/res_bnfos.h	2008-04-18 05:00:36.000000000 -0400
++++ bntools-patched/res_bnfos/res_bnfos.h	2010-08-17 15:09:43.274369000 -0400
+@@ -48,9 +48,12 @@ struct res_bnfos_dev_t {
+   pthread_t kt;
+   char *name;
+ 
+-  int running;
++  volatile int running;
+ 
+   char *last_event;
++
++  int enable_wdog_on_start;
++  int relais_mode_on_start;
+ };
+ 
+ extern struct res_bnfos_dev_t **bnfos_devices;
