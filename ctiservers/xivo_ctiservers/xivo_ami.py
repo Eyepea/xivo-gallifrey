@@ -312,7 +312,7 @@ class AMIClass:
 
     def origapplication(self, application, data, phoneproto, phonesrcname, phonesrcnum, context):
         try:
-            ret = self.sendcommand('Originate', [('Channel', phoneproto + '/' + phonesrcname),
+            ret = self.sendcommand('Originate', [('Channel', '%s/%s' % (phoneproto, phonesrcname)),
                                                  ('Context', context),
                                                  ('Priority', '1'),
                                                  ('Application', application),
@@ -334,7 +334,7 @@ class AMIClass:
         if len(ph) > 0 and phonedst not in __specialextensions__:
             return False
         try:
-            command_details = [('Channel', phoneproto + '/' + phonesrcname),
+            command_details = [('Channel', '%s/%s' % (phoneproto, phonesrcname)),
                                ('Exten', phonedst),
                                ('Context', locext),
                                ('Priority', '1'),
@@ -365,7 +365,7 @@ class AMIClass:
         if len(ph) > 0 and phonedst not in __specialextensions__:
             return False
         try:
-            command_details = [('Channel', phoneproto + '/' + phonesrcname),
+            command_details = [('Channel', '%s/%s' % (phoneproto, phonesrcname)),
                                ('Exten', phonedst),
                                ('Context', locext),
                                ('Priority', '1'),
@@ -396,7 +396,7 @@ class AMIClass:
         if len(ph) > 0 and phonedst not in __specialextensions__:
             return False
         try:
-            command_details = [('Channel', phoneproto + '/' + phonesrcname),
+            command_details = [('Channel', '%s/%s' % (phoneproto, phonesrcname)),
                                ('Exten', phonedst),
                                ('Context', locext),
                                ('Priority', '1'),
@@ -583,6 +583,7 @@ class AMIClass:
                                                  ('Variable', 'XIVO_USERID=%s' % userid),
                                                  ('Context', 'macro-txfax'),
                                                  ('Exten', 's'),
+                                                 ('Async', 'true'),
                                                  ('ActionID', reference),
                                                  ('Priority', '1')])
             return ret
