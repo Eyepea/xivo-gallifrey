@@ -134,10 +134,16 @@ void BaseEngine::loadSettings()
     //qDebug() << "BaseEngine::loadSettings()";
     m_systrayed = m_settings->value("display/systrayed", false).toBool();
     QString profile = m_settings->value("profile/lastused").toString();
+    m_profilename_write = "engine-" + profile;
 
-    m_profilename = "engine-" + profile;
+    QString settingsversion = m_settings->value("version/xivo", __xivo_version__).toString();
 
-    m_settings->beginGroup(m_profilename);
+    if (settingsversion == "1.0")
+        m_profilename_read = "engine";
+    else
+        m_profilename_read = "engine-" + profile;
+
+    m_settings->beginGroup(m_profilename_read);
         m_serverhost = m_settings->value("serverhost", "demo.xivo.fr").toString();
         m_ctiport    = m_settings->value("serverport", 5003).toUInt();
         
@@ -213,7 +219,7 @@ void BaseEngine::saveSettings()
     m_settings->setValue("version/svn", __current_client_version__);
     m_settings->setValue("display/systrayed", m_systrayed);
     
-    m_settings->beginGroup(m_profilename);
+    m_settings->beginGroup(m_profilename_write);
         m_settings->setValue("serverhost", m_serverhost);
         m_settings->setValue("serverport", m_ctiport);
         m_settings->setValue("userid", m_userid);
@@ -500,7 +506,7 @@ void BaseEngine::setGuiOption(const QString &arg, const QVariant &opt)
     m_guioptions[arg].clear();
     m_guioptions[arg] = opt;
 
-    m_settings->beginGroup(m_profilename);
+    m_settings->beginGroup(m_profilename_write);
         m_settings->beginGroup("user-gui");
             m_settings->setValue("guisettings", m_guioptions.value(arg));
         m_settings->endGroup();
@@ -556,7 +562,7 @@ void BaseEngine::setAvailState(const QString & newstate, bool comesFromServer)
     if (m_availstate != newstate) {
         m_availstate = newstate;
         //m_settings->setValue("engine/availstate", m_availstate);
-        m_settings->setValue(QString("%1/availstate").arg(m_profilename),
+        m_settings->setValue(QString("%1/availstate").arg(m_profilename_write),
                              m_availstate);
         if (comesFromServer)
             changesAvailChecks();
