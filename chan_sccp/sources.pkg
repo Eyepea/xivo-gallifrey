@@ -1,4 +1,4 @@
 DEST_PATH=tarballs
-SVN_URL="https://chan-sccp-b.svn.sourceforge.net/svnroot/chan-sccp-b/trunk"
+SVN_URL="https://chan-sccp-b.svn.sourceforge.net/svnroot/chan-sccp-b/branches/releases/v3"
 PKG_NAME="asterisk-chan-sccp"
 DFSG_EXCLUDE_PATTERNS=
