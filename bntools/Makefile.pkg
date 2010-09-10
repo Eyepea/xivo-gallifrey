@@ -11,7 +11,7 @@ DEB_PKG = "bntools"
 TARBALL_DIR := $(shell mktemp -d)
 
 VER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
-TARBALL_NAME = "bntools_$(ASTVER).orig.tar.gz"
+TARBALL_NAME = "bntools_$(VER).orig.tar.gz"
 UPSTREAM_VER = $(VER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
