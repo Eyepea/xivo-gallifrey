@@ -27,7 +27,7 @@ FW_PATHS = {
     },
 
     'ST2030': {
-        '2.69': os.path.join("ST2030_SG_v2[2].69_SED_Release_packag","Binary")
+        '2.72': os.path.join("ST2030_SG_V2[4].72_Release_Package","Binary")
     },
 
     'TB30': {

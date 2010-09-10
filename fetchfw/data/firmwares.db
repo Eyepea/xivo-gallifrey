@@ -915,17 +915,17 @@ url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6957
 size: 6057065
 sha1sum: 278f981d50ad0a09623db381883569d18c7b7697
 
-# Thomson ST2030 2.69
-[thst2030_269]
+# Thomson ST2030
+[thst2030_272]
 brand: Thomson
 model: ST2030
-version: 2.69
-files: ST2030_SG_v2.69_SED_Release_packag.zip
+version: 2.72
+files: ST2030_SG_V2.72_Release_Package.zip
 
-[ST2030_SG_v2.69_SED_Release_packag.zip]
-url: http://www.thomsonbroadbandpartner.com/getfile.php?id=6781
-size: 11100346
-sha1sum: ae06f9c7f94616b2093c3f76137b6b2c223d405c
+[ST2030_SG_V2.72_Release_Package.zip]
+url: http://www.thomsonbroadbandpartner.com/getfile.php?id=7233
+size: 4643993
+sha1sum: 65b5a6cf179cbe6214ff48d840405933081b2dd0
 
 # Thomson TB30 1.72
 [thtb30_172]
