@@ -11,90 +11,51 @@
 
   <script type="text/javascript" src="js/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="js/jquery.boxy.js"></script>
-  <script type="text/javascript" charset="utf-8">
-  /*
-    var XiVO_client_config = { orbited: { proto: "https", host: "192.168.0.252", port: 443 },
-                               XiVO_CTI_Server: { ip: "127.0.0.1", port: 5003 }};
-  */
-  </script>
   <script type="text/javascript" src="js/xivoclient.js" charset="utf-8"></script>
   <script type="text/javascript" src="js/xivoclient.widget.js" charset="utf-8"></script>
+  <script type="text/javascript" src="js/cookie.js" charset="utf-8"></script>
+  <script type="text/javascript" src="js/serialize.js" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
-
-  function createCookie(name,value,days) {
-    var expires;
-    if (days) {
-      var date = new Date();
-      date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-      expires = "; expires=" + date.toGMTString();
-    } else {
-      expires = "";
-    }
-    document.cookie = name + "=" + value + expires + "; path=/";
-  }
-
-  function readCookie(name) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    var c, i;
-
-    for(i=0;i<ca.length;i++) {
-      c = ca[i];
-      while (c.charAt(0)===' ') {
-        c = c.substring(1,c.length);
-      }
-      if (c.indexOf(nameEQ) === 0) {
-        return c.substring(nameEQ.length,c.length);
-      }
-    }
-    return null;
-  }
-  
-  function eraseCookie(name) {
-    createCookie(name,"",-1);
-  }
-
-
 
   var win_list = [];
 
   function naive_redispose()
   {
-    var i,i2,e,e2;
+    var i, i2, e, e2;
 
     var win_width = jQuery(document).width();
     var win_height = jQuery(document).height();
 
     var width_list = [];
 
-    for(i=0,e=win_list.length;i<e;i++) {
+    for (i=0, e=win_list.length;i<e;i++) {
       if (win_list[i].visible === true) {
-        width_list.push([win_list[i].boxy.width(),i,false]);
+        width_list.push([win_list[i].boxy.width(), i, false]);
       }
     }
 
-    width_list.sort(function (a,b) { return a[0]<=b[0]; });
+    width_list.sort(function (a, b) { return a[0]<=b[0]; });
 
     var x = 0, y = 0;
     var s = 1;
     var space = 25;
-    for(i=0,e=width_list.length;i<e;i++) {
+    for (i=0, e=width_list.length;i<e;i++) {
       x = space;
       y += space;
-      if (width_list[i][2]===false) {
+      if (width_list[i][2] === false) {
         var fill = x + width_list[i][0];
         var ymax = win_list[width_list[i][1]].boxy.height();
         if (y+ymax>$(document).height()) {
           y = 25;
         }
-        win_list[width_list[i][1]].moveTo(x,y);
+        win_list[width_list[i][1]].moveTo(x, y);
         width_list[i][2] = true;
-        for(i2=e-s;i2>i;i2--) {
+        for (i2=e-s;i2>i;i2--) {
           fill += width_list[i2][0]+space*2;
           if (fill < win_width) {
             var lwin_height=win_list[width_list[i2][1]].boxy.height();
             ymax = (ymax<lwin_height)?lwin_height:ymax;
-            win_list[width_list[i2][1]].moveTo(fill-width_list[i2][0],y+(ymax-lwin_height)/2);
+            win_list[width_list[i2][1]].moveTo(fill-width_list[i2][0], y+(ymax-lwin_height)/2);
             width_list[i2][2] = true;
             s += 1;
           } else {
@@ -106,72 +67,119 @@
     }
   }
 
-  function decorator(widget,win_title,size,is_resizable,is_closable)
+  // this function save "state" info, window size/position | login/pw in a cookie
+  var save_state;
+
+  (function() {
+    var update;
+
+    save_state = function()
+    {
+      if (!update) {
+        update = setInterval(function() {
+          create_cookie("xivoclient", JSON.stringify({ user: XiVOC.get_user(),
+                                                       pass: XiVOC.get_pass(),
+                                                       win: win_list.map(function (w) {
+                                                         var ret = {};
+                                                         ret[w.options.title] = [ w.getWindowSize(),
+                                                                                  w.getPosition() ];
+                                                         return ret;
+                                                       })}), 31);
+        }, 500);
+      }
+    }
+  })();
+
+  function load_state(restore_win_pos)
   {
-    var win = new Boxy(undefined,{title: win_title, closeable: (is_closable!==0), fixed: false,
-                                  resizable: is_resizable, closeText: is_closable,
-                                  moveRestriction: { top: 25 }});
+    var last = JSON.parse(read_cookie("xivoclient") || "{}");
+    var user = last.user;
+    var pass = last.pass
+    
+    if (user !== null) {
+      $('.login-widget-login', $('.login-widget')).attr({ value: user }).removeClass("widget-field-blured");
+    }
+    if (pass !== null) {
+      $('.login-widget-password', $('.login-widget'))[0].setAttribute("type", "password");
+      $('.login-widget-password', $('.login-widget')).attr({ value: pass }).removeClass("widget-field-blured");
+    }
+
+
+    // we must put back windows at their last positions
+    // unless we don't have the last window position info or if
+    // the last user is different than the one that just logged in
+    
+    if (((!restore_win_pos) || (last.win === undefined)) ||
+        (last.user !== XiVOC.get_user())) {
+      return ;
+    }
+
+    last.win.forEach(function (ob) {
+      for (var name in ob) {
+        win_list.forEach(function (w) {
+          if (w.options.title === name) {
+            w.setMinimumSize();
+            w.setWindowSize(ob[name][0]);
+            w.moveTo(ob[name][1]);
+          }
+        });
+      };
+    });
+  }
+
+  // this is the function responsible to add a decoration over every widget
+  function decorator(widget, win_title, size, is_resizable, is_closable)
+  {
+    var win = new Boxy(undefined, { title: win_title,
+                                    closeable: (is_closable !== false),
+                                    fixed: false,
+                                    resizable: is_resizable,
+                                    closeText: is_closable,
+                                    moveRestriction: { top: 25 }});
     win.setContent(widget);
     $(win.boxy).css(size);
 
     var win_width = jQuery(document).width();
     var win_height = jQuery(document).height();
 
-    
     win.centerX();
     win.centerY();
 
     if (is_closable) {
       var x = ( Math.random() * 100000 % ( win_width - parseInt(size.width, 10) )) ;
       var y = ( Math.random() * 100000 % ( win_height - (parseInt(size.height, 10) -30) )) + 30;
-      win.moveTo(x,y);
+      win.moveTo(x, y);
     }
-
 
     win_list.push(win);
 
     return win;
   }
 
-  function hideout(win,hint_redispose)
+  // this function is called after the login has disappeared
+  function hideout(win, hint_redispose)
   {
     win.hideAndUnload();
     if (hint_redispose) {
-      naive_redispose();
+      load_state(1);
+      save_state();
     }
   }
 
   function login_win() {
     XiVOH.call_me_asap(function () { return ((typeof Orbited !== "undefined") &&
                                              (typeof XiVOClient.prototype.loaded !== "undefined") &&
-                                             (XiVOCWidget.prototype.loaded === true)); },function () {
+                                             (XiVOCWidget.prototype.loaded === true)); }, function () {
 
-      XiVOC.spawn_widget('login',decorator,hideout);
-       
-      var user = readCookie("username");
-      var pass = readCookie("password");
-      
-      if (user !== null) {
-        $('.login-widget-login',$('.login-widget')).attr({ value: user }).removeClass("widget-field-blured");
-      }
-      if (pass !== null) {
-        $('.login-widget-password',$('.login-widget'))[0].setAttribute("type","password");
-        $('.login-widget-password',$('.login-widget')).attr({ value: pass }).removeClass("widget-field-blured");
-      }
+      XiVOC.spawn_widget('login', decorator, hideout);
+      load_state();
 
-      XiVOH.call_me_asap( function () { return $(".respawner-widget-root-menu").length !== 0 ; },function () {
-        $(".respawner-widget-root-menu").after(
-                           ( $("<a/>").attr({ 'href': "#", 'class': "respawner-widget-redispose" })
-                           ).click(naive_redispose)
-                        );
+      XiVOH.call_me_asap(function () { return $(".respawner-widget-root-menu").length !== 0 ; },
+                         function () {
+                           $(".respawner-widget-root-menu").after(
+                             ($("<a/>").attr({ 'href': "#", 'class': "respawner-widget-redispose" })).click(naive_redispose));
       });
-
-      XiVOH.call_me_asap(function () { return XiVOC.get_user() !== undefined; },function () {
-        createCookie("username",XiVOC.get_user(),1);
-        createCookie("password",XiVOC.get_pass(),1);
-      });
-
-    },100);
+    }, 100);
   }
 
   </script>

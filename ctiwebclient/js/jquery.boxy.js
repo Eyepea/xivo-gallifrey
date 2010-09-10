@@ -90,10 +90,10 @@ function Boxy(element, options) {
     if (this.options.center && Boxy._u(this.options.x, this.options.y)) {
         this.center();
     } else {
-        this.moveTo(
+        this.moveTo([
             Boxy._u(this.options.x) ? this.options.x : Boxy.DEFAULT_X,
             Boxy._u(this.options.y) ? this.options.y : Boxy.DEFAULT_Y
-        );
+        ]);
     }
     
     if (this.options.show) this.show();
@@ -129,7 +129,7 @@ jQuery.extend(Boxy, {
         draggable:              true,           // can this dialog be dragged?
         resizable:              true,           // can this dialog be resized?
         loosable:               false,          // can this dialog be unreachable? ( hidden somewhere )
-        moveRestriction:        {top:0},             // put some restriction on where this window got the right to go
+        moveRestriction:        {top:0},        // put some restriction on where this window got the right to go
         clone:                  false,          // clone content prior to insertion into dialog?
         actuator:               null,           // element which opened this dialog
         center:                 true,           // center dialog in viewport?
@@ -401,7 +401,12 @@ Boxy.prototype = {
     },
     
     // Move this dialog to some position, funnily enough
-    moveTo: function(x, y) {
+    moveTo: function(x,y) {
+        if (typeof x === "object") {
+          y = x[1];
+          x = x[0];
+        }
+
         this.moveToX(x).moveToY(y);
         return this;
     },
@@ -459,11 +464,50 @@ Boxy.prototype = {
     // Resize the content region to a specific size
     resize: function(width, height, after) {
         if (!this.visible) return;
+        if (typeof width === "object") {
+            after = height;
+            height = width[1];
+            width = width[0];
+        }
         var bounds = this._getBoundsForResize(width, height);
         this.boxy.css({left: bounds[0], top: bounds[1]});
         this.getContent().css({width: bounds[2], height: bounds[3]});
         if (after) after(this);
         return this;
+    },
+
+    // set the minimum size that the window can take
+    setMinimumSize: function(_width, _height) {
+        if ( _width === undefined )  {
+            if (this.minWidth === undefined) {
+                var currentSize = this.getWindowSize();
+                this.minWidth = currentSize[0];
+                this.minHeight = currentSize[1];
+            }
+        } else {
+            if (typeof _width === "object") {
+                _height = _width[1];
+                _width = _width[0];
+            }
+            this.minWidth = _width;
+            this.minHeight = _height;
+        }
+    },
+
+    // Set the the window _REAL_ size
+    setWindowSize: function(_width, _height) {
+        if (typeof _width === "object") {
+            _height = _width[1];
+            _width = _width[0];
+        }
+        this.boxy.css({width: _width, height: _height});
+        return this;
+    },
+
+    // Get the the window _REAL_ size
+    getWindowSize: function() {
+        return [ parseInt(this.boxy.css("width")),
+                 parseInt(this.boxy.css("height")) ];
     },
     
     // Tween the content region to a specific size
@@ -617,8 +661,7 @@ Boxy.prototype = {
                 var width = self.boxy.width();
                 var height = self.boxy.height();
 
-                if (self.minWidth === undefined) self.minWidth = width;
-                if (self.minHeight === undefined) self.minHeight = height;
+                self.setMinimumSize();
 
                 Boxy.resizing = [self, evt.pageX, evt.pageY, width, height];
 

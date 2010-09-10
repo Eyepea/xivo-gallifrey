@@ -556,7 +556,7 @@ XiVOClient.prototype.get_user_detail = function () {
   var user_list = this.get_user_list();
   var our_id = this.get_user_id();
   var user;
-  for( user in user_list) {
+  for(user in user_list) {
     if (user_list.hasOwnProperty(user)) {
       if (user_list[user].xivo_userid === our_id) {
         return user_list[user];

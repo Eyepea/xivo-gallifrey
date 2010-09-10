@@ -62,7 +62,7 @@ XiVOHelper.prototype.parse_num = function (text) {
 
 // @public method
 // @return DOM-element that self update
-XiVOClient.prototype.spawn_widget = function (kind,decorator,hidout) {
+XiVOClient.prototype.spawn_widget = function (kind,decorator,hideout) {
 
   if (this.widget === undefined) {
     this.widget = {};
@@ -70,7 +70,7 @@ XiVOClient.prototype.spawn_widget = function (kind,decorator,hidout) {
 
   decorator = (decorator !== undefined ) ? decorator : function (c) { return c; };
   this.decorator = decorator; // a decorator is a function that make apear a widget in a window or ...
-  this.hidout = hidout;
+  this.hideout = hideout;
   var widget = new XiVOCWidget(this,kind,decorator,hideout);
   if (widget.have_decoration()) {
     widget.win = decorator(widget.get_dom(),
