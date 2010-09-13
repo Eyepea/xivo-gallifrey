@@ -6,5 +6,6 @@ SUBDIRS  = xletweb \
            conference \
            history \
            switchboard \
-           identity
+           identity \
+           datetime
 win32:SUBDIRS += outlook

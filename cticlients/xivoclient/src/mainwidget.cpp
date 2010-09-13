@@ -823,7 +823,6 @@ void MainWidget::resizeEvent(QResizeEvent *ev)
         } else if (oldWH > wh) {
             int newH = m_resizingHelper->size().height() + diff;
             m_resizingHelper->setFixedHeight(newH);
-            resize(ev->size());
         }
     }
 }
