@@ -44,7 +44,7 @@ log = logging.getLogger('fax')
 
 class Fax:
     def __init__(self, uinfo, size, number, hide):
-        self.reference = ''.join(random.sample(__alphanums__, 10)) + "-" + hex(int(time.time()))
+        self.reference = ''.join(random.sample(__alphanums__, 10)) + '-' + hex(int(time.time()))
         self.size = size
         self.number = number.replace('.', '').replace(' ', '')
         self.hide = hide
@@ -59,8 +59,8 @@ class Fax:
         z = open(tmpfilepath, 'w')
         z.write(buffer)
         z.close()
-        log.info('size = %s (%d), number = %s, hide = %s'
-            % (self.size, len(buffer), self.number, self.hide))
+        log.info('(ref %s) size = %s (%d), number = %s, hide = %s'
+                 % (self.reference, self.size, len(buffer), self.number, self.hide))
         if self.hide != '0':
             callerid = 'anonymous'
 
@@ -69,16 +69,17 @@ class Fax:
         brieffile = ' '.join(comm.split()[0:2])
         if brieffile == 'PDF document,':
             pdf2fax_command = '%s -o %s %s' % (PDF2FAX, faxfilepath, tmpfilepath)
-            log.info('fax (ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
+            log.info('(ref %s) PDF to TIF(F) : %s' % (self.reference, pdf2fax_command))
             reply = 'ko;convert-pdftif'
             sysret = os.system(pdf2fax_command)
             ret = os.WEXITSTATUS(sysret)
             if ret != 0:
-                log.warning('fax (ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
-                    % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
+                log.warning('(ref %s) PDF to TIF(F) returned : %s (exitstatus = %s, stopsignal = %s)'
+                            % (self.reference, sysret, ret, os.WSTOPSIG(sysret)))
         else:
             reply = 'ko;filetype'
-            log.warning('fax (ref %s) the file received is a <%s> one : format not supported' % (self.reference, brieffile))
+            log.warning('(ref %s) the file received is a <%s> one : format not supported'
+                        % (self.reference, brieffile))
             ret = -1
 
         if ret == 0:
@@ -86,23 +87,23 @@ class Fax:
                 try:
                     reply = 'ko;AMI'
                     ret = ami.txfax(PATH_SPOOL_ASTERISK_FAX, filename,
-                        self.uinfo.get('xivo_userid'),
-                        callerid, self.number,
-                        self.uinfo.get('context'),
-                        self.reference)
+                                    self.uinfo.get('xivo_userid'),
+                                    callerid, self.number,
+                                    self.uinfo.get('context'),
+                                    self.reference)
                     if ret:
                         reply = 'queued;'
                 except Exception:
-                    log.exception('(fax handler - AMI)')
+                    log.exception('(ref %s) (fax handler - AMI)' % (self.reference))
             else:
                 reply = 'ko;exists-pathspool'
-                log.warning('directory %s does not exist - could not send fax ref %s'
-                    % (PATH_SPOOL_ASTERISK_FAX, self.reference))
+                log.warning('(ref %s) directory %s does not exist - could not send fax'
+                            % (self.reference, PATH_SPOOL_ASTERISK_FAX))
 
         # BUGFIX: myconn is undefined
         # filename is actually an identifier.
         # faxclients[filename] = myconn
 
         os.unlink(tmpfilepath)
-        log.info('fax (ref %s) removed %s (reply will be %s)' % (self.reference, tmpfilepath, reply))
+        log.info('(ref %s) removed %s (reply will be %s)' % (self.reference, tmpfilepath, reply))
         return reply
