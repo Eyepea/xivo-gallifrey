@@ -599,6 +599,18 @@ url: http://www.cisco.com/en/US/prod/voicesw/ps6788/vcallcon/ps10030/ps10032/SPA
 size: 3535794
 sha1sum: 947556fd4ccd089e76f41c954f66da63055ddfe9
 
+# Nortel IP 1220
+[nortelip1220_32]
+brand: Nortel
+model: IP Phone 1220
+version: 3.2
+files: SIP12x0e03.02.16.00.bin
+
+[SIP12x0e03.02.16.00.bin]
+url: http://support.nortel.com/go/main.jsp?cscat=SWDETAIL&id=1085463&poid=19422
+size: 3999622
+sha1sum: 5ae3853c30a0ef61ba3f66d382fcafc0706e529e
+
 # Polycom SoundPoint IP 301
 [pcspip301_316]
 brand: Polycom
