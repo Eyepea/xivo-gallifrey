@@ -786,13 +786,16 @@ class manage_connection:
 
     @staticmethod
     def callback_timer_main(*args):
-        thisthread = threading.currentThread()
-        daemon = args[0]
-        tname = thisthread.getName()
-        log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
-        thisthread.setName(tname + '-' + '-'.join(args[1]))
-        daemon.tqueue.put(thisthread)
-        os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
+        try:
+            thisthread = threading.currentThread()
+            daemon = args[0]
+            tname = thisthread.getName()
+            log.info('callback_timer_main (timer finished at %s) %s %s' % (time.asctime(), tname, args))
+            thisthread.setName(tname + '-' + '-'.join(args[1]))
+            daemon.tqueue.put(thisthread)
+            os.write(daemon.pipe_queued_threads_main[1], thisthread.getName())
+        except Exception:
+            log.exception('callback_timer_main %s' % args)
         return
 
     @staticmethod
@@ -1182,11 +1185,12 @@ class xivo_daemon:
             fdtodel = []
             for cn in self.fdlist_established.keys():
                 if isinstance(cn, ClientConnection):
-                    if cn.isClosed:
+                    if cn.isClosed and cn not in fdtodel:
                         fdtodel.append(cn)
                     if cn.toClose and not cn.need_sending():
                         cn.close()
-                        fdtodel.append(cn)
+                        if cn not in fdtodel:
+                            fdtodel.append(cn)
             if fdtodel:
                 log.warning('there are fd to delete : %s' % fdtodel)
                 for cn in fdtodel:
@@ -1208,10 +1212,14 @@ class xivo_daemon:
         # }
         except Exception:  # {
             log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
-            log.warning('(select) self.askedtoquit=%s fdlist_full=%s' % (self.askedtoquit, self.fdlist_full))
-            log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s' % self.fdlist_established)
-            log.warning('(select) current open TCP connections : (AMI) %s' % self.amilist.fdlist())
-            log.warning('(select) current open TCP connections : (OUT) %s' % self.outsock)
+            log.warning('(select) self.askedtoquit=%s fdlist_full=%s'
+                        % (self.askedtoquit, self.fdlist_full))
+            log.warning('(select) current open TCP connections : (CTI, WEBI, (F)AGI, INFO) %s'
+                        % self.fdlist_established)
+            log.warning('(select) current open TCP connections : (AMI) %s'
+                        % self.amilist.fdlist())
+            log.warning('(select) current open TCP connections : (OUT) %s'
+                        % self.outsock)
 
             if self.askedtoquit and self.apnoeafile:
                 try:
