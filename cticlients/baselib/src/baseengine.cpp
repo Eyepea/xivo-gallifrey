@@ -87,7 +87,7 @@ BaseEngine::BaseEngine(QSettings *settings,
     setOSInfos(osInfo);
     m_settings = settings;
     loadSettings();
-    
+
     // TCP connection with CTI Server
     m_ctiserversocket = new QTcpSocket(this);
     m_ctiConn = new CtiConn(m_ctiserversocket);
@@ -104,7 +104,7 @@ BaseEngine::BaseEngine(QSettings *settings,
             this, SLOT(filetransferSocketReadyRead()));
     connect(m_filetransfersocket, SIGNAL(connected()),
             this, SLOT(filetransferSocketConnected()));
-    
+
     if (m_autoconnect)
         start();
 }
@@ -138,6 +138,7 @@ void BaseEngine::loadSettings()
 
     QString settingsversion = m_settings->value("version/xivo", __xivo_version__).toString();
 
+    // this is used to make a migration from 1.0 to 1.1
     if (settingsversion == "1.0")
         m_profilename_read = "engine";
     else
@@ -146,7 +147,7 @@ void BaseEngine::loadSettings()
     m_settings->beginGroup(m_profilename_read);
         m_serverhost = m_settings->value("serverhost", "demo.xivo.fr").toString();
         m_ctiport    = m_settings->value("serverport", 5003).toUInt();
-        
+
         m_userid      = m_settings->value("userid").toString().trimmed();
         m_useridopt   = m_settings->value("useridopt").toString().trimmed();
         if (m_useridopt.size() > 0)
@@ -158,7 +159,7 @@ void BaseEngine::loadSettings()
         m_keeppass     = m_settings->value("keeppass", 0).toUInt();
         m_showagselect = m_settings->value("showagselect", 2).toUInt();
         m_agentphonenumber  = m_settings->value("agentphonenumber").toString();
-        
+
         m_autoconnect = m_settings->value("autoconnect", false).toBool();
         m_trytoreconnect = m_settings->value("trytoreconnect", false).toBool();
         m_trytoreconnectinterval = m_settings->value("trytoreconnectinterval", 20*1000).toUInt();
@@ -168,7 +169,7 @@ void BaseEngine::loadSettings()
 
         m_settings->beginGroup("user-gui");
             m_historysize = m_settings->value("historysize", 8).toUInt();
-            
+
             QString defaultguioptions;
             QFile defaultguioptions_file(":/common/guioptions.json");
             if (defaultguioptions_file.exists()) {
@@ -194,11 +195,19 @@ void BaseEngine::loadSettings()
             guisetting_map.insert("xlet_operator_keyatxferfinalize", QVariant(Qt::Key_F8));
             guisetting_map.insert("xlet_operator_keyatxfercancel"  , QVariant(Qt::Key_F9));
             data.setValue(guisetting_map);
-        
-            m_guioptions["client_gui"] = m_settings->value("guisettings", data);
-            m_loginkind = m_guioptions.value("client_gui").toMap().value("loginkind").toInt();
         m_settings->endGroup();
     m_settings->endGroup();
+
+    // this is used to make a migration from 1.0 to 1.1
+    if (settingsversion != "1.0")
+        m_settings->beginGroup(m_profilename_read);
+    m_settings->beginGroup("user-gui");
+    m_guioptions["client_gui"] = m_settings->value("guisettings", data);
+    m_settings->endGroup();
+    if (settingsversion != "1.0")
+        m_settings->endGroup();
+
+    m_loginkind = m_guioptions.value("client_gui").toMap().value("loginkind").toInt();
 
     m_settings->beginGroup("user-functions");
         foreach (QString function, CheckFunctions)
@@ -218,7 +227,7 @@ void BaseEngine::saveSettings()
     m_settings->setValue("version/xivo", __xivo_version__);
     m_settings->setValue("version/svn", __current_client_version__);
     m_settings->setValue("display/systrayed", m_systrayed);
-    
+
     m_settings->beginGroup(m_profilename_write);
         m_settings->setValue("serverhost", m_serverhost);
         m_settings->setValue("serverport", m_ctiport);
@@ -246,7 +255,6 @@ void BaseEngine::saveSettings()
         m_settings->endGroup();
     m_settings->endGroup();
 
-    
     m_settings->beginGroup("user-functions");
         foreach (QString function, CheckFunctions)
             m_settings->setValue(function, m_checked_function[function]);
@@ -338,10 +346,10 @@ void BaseEngine::powerEvent(const QString & eventinfo)
 void BaseEngine::start()
 {
     qDebug() << "BaseEngine::start()" << m_serverhost << m_checked_function;
-    
+
     // (In case the TCP sockets were attempting to connect ...) aborts them first
     m_ctiserversocket->abort();
-    
+
     connectSocket();
     m_byte_counter = 0;
     m_time.start();
@@ -364,15 +372,15 @@ void BaseEngine::stop()
         m_settings->setValue("lastlogout/datetime", QDateTime::currentDateTime().toString(Qt::ISODate));
         m_attempt_loggedin = false;
     }
-    
+
     m_ctiserversocket->flush();
     m_ctiserversocket->disconnectFromHost();
-    
+
     stopKeepAliveTimer();
     stopTryAgainTimer();
     setState(ENotLogged);
     m_sessionid = "";
-    
+
     clearUserList();
     clearPhoneList();
     clearAgentList();
@@ -396,7 +404,7 @@ void BaseEngine::stop()
 
         m_class_event_cb.clear();
     }
-    
+
 
     delete m_tree;
     m_tree = new DStore();
@@ -620,7 +628,7 @@ void BaseEngine::monitorPeerRequest(const QString & userid)
  */
 void BaseEngine::ctiSocketConnected()
 {
-    qDebug() << Q_FUNC_INFO; 
+    qDebug() << Q_FUNC_INFO;
     stopTryAgainTimer();
     /* do the login/identification */
     m_attempt_loggedin = false;
@@ -637,7 +645,7 @@ void BaseEngine::ctiSocketConnected()
     command["lastlogout-datetime"] = m_settings->value("lastlogout/datetime").toString();
     m_settings->remove("lastlogout/stopper");
     m_settings->remove("lastlogout/datetime");
-        
+
     sendJsonCommand(command);
 }
 
@@ -781,8 +789,8 @@ double BaseEngine::timeDeltaServerClient() const
     return (m_timeclt.toTime_t() - m_timesrv);
 }
 
-/* until cti protocol get changed the following function 
- * function are there to fill the tree manually 
+/* until cti protocol get changed the following function
+ * function are there to fill the tree manually
  * { */
 
 
@@ -791,7 +799,7 @@ void addMobilePhone(DStore *tree, const QString &userId, const QString &number)
     if (number.isEmpty())
         return ;
 
-    QVariantMap mobilePhoneList = 
+    QVariantMap mobilePhoneList =
         tree->extractVMap(QString("mobilephones/*[user-id=@%0]").arg(userId));
 
     if (mobilePhoneList.size() == 0) {
@@ -839,7 +847,7 @@ void addUpdateConfMemberInTree(DStore *tree, const QVariantMap &cinfo)
     } else {
         qDebug() << "unknown meetme action: " << cinfo["action"];
     }
- 
+
 
 }
 
@@ -854,9 +862,9 @@ void addUpdateConfRoomInTree(DStore *tree,
     info["in"] = QVariantMap();
     info["number"] = cinfo["roomnumber"];
     info["moderated"] = cinfo["moderated"];
-    
+
     tree->populate(QString("confrooms/%0").arg(id), info);
-    
+
     QVariantMap userIn = cinfo["uniqueids"].toMap();
     foreach (QString uniqueId , userIn.keys()) {
         QVariantMap userToInsert;
@@ -864,7 +872,7 @@ void addUpdateConfRoomInTree(DStore *tree,
         userToInsert["meetmeid"] = id;
         userToInsert["action"] = "join";
         userToInsert["uniqueid"] = uniqueId;
-    
+
         addUpdateConfMemberInTree(tree, userToInsert);
     }
 }
@@ -888,14 +896,14 @@ void BaseEngine::parseCommand(const QString &line)
         qDebug() << "BaseEngine::parseCommand() exception catched for" << line.trimmed();
         data = QVariant(QVariant::Invalid);
     }
-    
+
     if (! data.isValid())
         return;
-    
+
     QVariantMap datamap = data.toMap();
     QString direction = datamap["direction"].toString();
     QString function = datamap["function"].toString();
-    
+
     if (direction == "client") {
         QString thisclass = datamap["class"].toString();
         m_timesrv = datamap["timenow"].toDouble();
@@ -909,7 +917,7 @@ void BaseEngine::parseCommand(const QString &line)
         // << datamap["phoneid"].toString();
         if (thisclass == "callcampaign") {
             requestFileListResult(datamap["payload"]);
-            
+
         } else if (thisclass == "parkcall") {
             QString eventkind = datamap["eventkind"].toString();
             QString astid = datamap["astid"].toString();
@@ -925,7 +933,7 @@ void BaseEngine::parseCommand(const QString &line)
                 }
             }
             parkingEvent(eventkind, astid, parkingbay, datamap["payload"]);
-            
+
         } else if (thisclass == "sheet") {
             // TODO : use id better than just channel name
             qDebug() << "** sheet" << datamap;
@@ -987,10 +995,10 @@ void BaseEngine::parseCommand(const QString &line)
                 sendJsonCommand(command);
                 // qDebug() << thisclass << "add" << datamap["astid"].toString() << datamap["deltalist"].toStringList();
             }
-            
+
         } else if (thisclass == "groups") {
             // qDebug() << "___" << thisclass << datamap;
-            
+
         } else if (thisclass == "agents") {
             //qDebug() << "*** agents !!!" << function << line.length();
             if (function == "sendlist") {
@@ -1004,7 +1012,7 @@ void BaseEngine::parseCommand(const QString &line)
                 }
                 if (! kk.isEmpty())
                     emit newAgentList(kk);
-                
+
             } else if (function == "update") {
                 QStringList kk;
                 QMap<QString, QVariant> payload = datamap.value("payload").toMap();
@@ -1016,7 +1024,7 @@ void BaseEngine::parseCommand(const QString &line)
                 }
                 if (! kk.isEmpty())
                     emit newAgentList(kk);
-                
+
             } else if (function == "update-old") {
                 QVariant params = datamap["payload"];
                 QString action = params.toMap()["action"].toString();
@@ -1038,12 +1046,12 @@ void BaseEngine::parseCommand(const QString &line)
             } else if (function == "add") {
                 qDebug() << thisclass << "add" << datamap["astid"].toString() << datamap["deltalist"].toStringList();
             }
-            
+
         } else if (thisclass == "agentrecord") {
             statusRecord(datamap["astid"].toString(),
                          datamap["agentid"].toString(),
                          datamap["status"].toString());
-            
+
         } else if (thisclass == "agentlisten") {
             statusListen(datamap["astid"].toString(),
                          datamap["agentid"].toString(),
@@ -1066,27 +1074,27 @@ void BaseEngine::parseCommand(const QString &line)
             }
         } else if (thisclass == "serverdown") {
             qDebug() << thisclass << datamap["mode"].toString();
-            
+
         } else if (thisclass == "disconn") {
             qDebug() << thisclass;
-            
+
         } else if (thisclass == "directory") {
             emit directoryResponse(datamap["headers"].toStringList(),
                                    datamap["resultlist"].toStringList());
-            
+
         } else if (thisclass == "faxsend") {
             m_filedir = datamap["tdirection"].toString();
             m_fileid = datamap["fileid"].toString();
             m_filetransfersocket->connectToHost(m_serverhost, m_ctiport);
             qDebug() << m_filedir << m_fileid;
-            
+
         } else if (thisclass == "faxprogress") {
             ackFax(datamap["status"].toString(),
                    datamap["reason"].toString());
-            
+
         } else if (thisclass == "filelist") {
             serverFileList(datamap["filelist"].toStringList());
-            
+
         } else if (thisclass == "presence") {
             // QString id = datamap["company"].toString() + "/" + datamap["userid"].toString();
             QString id = datamap["astid"].toString() + "/" + datamap["xivo_userid"].toString();
@@ -1114,7 +1122,7 @@ void BaseEngine::parseCommand(const QString &line)
                     emit localUserInfoDefined(m_users[m_fullid]);
                 }
             }
-            
+
         } else if (thisclass == "users") {
             if (function == "sendlist") {
                 QVariantList listusers = datamap["payload"].toList();
@@ -1123,7 +1131,7 @@ void BaseEngine::parseCommand(const QString &line)
                     //qDebug() << "-------------" << uinfo;
 
                     addUpdateUserInTree(tree(), uinfo);
-                        
+
                     QString iduser = uinfo["astid"].toString() + "/" + uinfo["xivo_userid"].toString();
                     if (! m_users.contains(iduser)) {
                         m_users[iduser] = new UserInfo(iduser);
@@ -1134,13 +1142,13 @@ void BaseEngine::parseCommand(const QString &line)
                                                    uinfo["techlist"].toStringList(),
                                                    m_phones);
                     }
-                    
+
                     m_users[iduser]->setAvailState(uinfo["statedetails"]);
                     m_users[iduser]->setPhoneNumber(uinfo["phonenum"].toString());
                     m_users[iduser]->setMobileNumber(uinfo["mobilenum"].toString());
                     m_users[iduser]->setAgentId(uinfo["agentid"].toString());
                     m_users[iduser]->setContext(uinfo["context"].toString());
-                    
+
                     m_users[iduser]->setMWI(uinfo["mwi"].toStringList());
                     m_users[iduser]->setSimultCalls(uinfo["simultcalls"].toInt());
                     m_users[iduser]->setVoiceMailNumber(uinfo["voicemailnum"].toString());
@@ -1152,7 +1160,7 @@ void BaseEngine::parseCommand(const QString &line)
                                              uinfo["statedetails"]);
                     emit userUpdated(m_users[iduser]);
                 }
-                
+
                 peersReceived();
                 m_monitored_userid = m_fullid;
                 QString fullname_mine = "No One";
@@ -1161,7 +1169,7 @@ void BaseEngine::parseCommand(const QString &line)
                     emit localUserInfoDefined(m_users[m_fullid]);
                     emit updateCounter(m_counters);
                 }
-                
+
                 // Who do we monitor ?
                 // First look at the last monitored one
                 QString fullid_watched;
@@ -1200,14 +1208,14 @@ void BaseEngine::parseCommand(const QString &line)
                     }
                 }
             }
-            
+
         } else if (thisclass == "features") {
             if (function == "update") {
                 QVariantMap featuresupdate_map = datamap["payload"].toMap();
                 if (m_monitored_userid == datamap["userid"].toString())
                     foreach (QString featurekey, featuresupdate_map.keys())
                         initFeatureFields(featurekey, featuresupdate_map[featurekey]);
-                
+
             } else if (function == "get") {
                 QVariantMap featuresget_map = datamap["payload"].toMap();
                 if (m_monitored_userid == datamap["userid"].toString()) {
@@ -1217,7 +1225,7 @@ void BaseEngine::parseCommand(const QString &line)
                     }
                     emitTextMessage(tr("Received Services Data"));
                 }
-                
+
             } else if (function == "put") {
                 QVariantMap featuresput_map = datamap["payload"].toMap();
                 if (m_monitored_userid == datamap["userid"].toString()) {
@@ -1233,7 +1241,7 @@ void BaseEngine::parseCommand(const QString &line)
                     }
                 }
             }
-            
+
         } else if (thisclass == "phones") {
             if (function == "sendlist") {
                 QMap<QString, QVariant> payload = datamap["payload"].toMap();
@@ -1264,7 +1272,7 @@ void BaseEngine::parseCommand(const QString &line)
                 if (listpeers[2].toInt() > 0)
                     sendCommand("phones-add");
             }
-                        
+
         } else if (thisclass == "trunks") {
             // if (function == "update") {
             // QString astid = datamap["astid"].toString();
@@ -1274,12 +1282,12 @@ void BaseEngine::parseCommand(const QString &line)
             // callsUpdated();
             // }
             qDebug() << "BaseEngine::parseQVariantCommand()" << thisclass << "not yet supported";
-            
+
         } else if (thisclass == "login_id_ok") {
-            
+
             m_version_server = datamap["version"].toInt();
             m_xivover_server = datamap["xivoversion"].toString();
-            
+
             if (m_version_server < REQUIRED_SERVER_VERSION) {
                 stop();
                 popupError("version_server:" + QString::number(m_version_server) + ";" + QString::number(REQUIRED_SERVER_VERSION));
@@ -1293,11 +1301,11 @@ void BaseEngine::parseCommand(const QString &line)
                 command["hashedpassword"] = QString(res);
                 sendJsonCommand(command);
             }
-            
+
         } else if (thisclass == "loginko") {
             stop();
             popupError(datamap["errorstring"].toString());
-            
+
         } else if (thisclass == "login_pass_ok") {
             QStringList capas = datamap["capalist"].toStringList();
             QVariantMap command;
@@ -1314,7 +1322,7 @@ void BaseEngine::parseCommand(const QString &line)
                 } else
                     command["capaid"] = capas[0];
             }
-            
+
             switch(m_loginkind) {
             case 0:
                 command["loginkind"] = "user";
@@ -1326,14 +1334,14 @@ void BaseEngine::parseCommand(const QString &line)
                 command["agentphonenumber"] = m_agentphonenumber;
                 break;
             }
-            
+
             if (m_checked_function["presence"])
                 command["state"] = m_availstate;
             else
                 command["state"] = __nopresence__;
             command["lastconnwins"] = m_checked_lastconnwins;
             sendJsonCommand(command);
-            
+
         } else if (thisclass == "login_capas_ok") {
             //qDebug() << "login_capas_ok" << datamap.keys();
             m_astid = datamap["astid"].toString();
@@ -1347,7 +1355,7 @@ void BaseEngine::parseCommand(const QString &line)
             m_counters = datamap["presencecounter"];
             m_guioptions["server_gui"] = datamap["guisettings"];
             //qDebug() << "======== guisettings ======== " << datamap["guisettings"];
-            
+
             // Put the values of client_gui, then those of server_gui into merged_gui.
             // The first ones are overrided by the second ones.
             QVariantMap tmpa;
@@ -1363,7 +1371,7 @@ void BaseEngine::parseCommand(const QString &line)
             }
             tmpa["services"] = datamap["capaservices"];
             m_guioptions["merged_gui"] = tmpa;
-            
+
             QVariantMap tmp;
             QStringList todisp;
             m_checked_function["switchboard"] = true;
@@ -1372,7 +1380,7 @@ void BaseEngine::parseCommand(const QString &line)
                     todisp.append(function);
             tmp["functions"] = todisp;
             m_guioptions["server_funcs"] = tmp;
-            
+
             //qDebug() << "clientXlets" << XletList;
             qDebug() << "\n";
             qDebug() << "m_capaxlets" << m_capaxlets;
@@ -1380,14 +1388,14 @@ void BaseEngine::parseCommand(const QString &line)
             qDebug() << "m_appliname" << m_appliname;
             qDebug() << "m_counters"  << m_counters;
             qDebug() << "\n";
-            
+
             QString urltolaunch = m_guioptions["merged_gui"].toMap()["loginwindow.url"].toString();
             if (! urltolaunch.isEmpty()) {
                 urltolaunch.replace("{xc-username}", m_userid);
                 urltolaunch.replace("{xc-password}", m_password);
                 this->sendUrlToBrowser(urltolaunch);
             }
-            
+
             // XXXX m_capafuncs => config file
             // m_enabled_function's purposes are :
             // - to keep track of the user's true rights
@@ -1396,7 +1404,7 @@ void BaseEngine::parseCommand(const QString &line)
                     m_enabled_function[function] = true;
                 else
                     m_enabled_function[function] = false;
-            
+
             if (m_capafuncs.size() == 0) {
                 stop();
                 popupError("no_capability");
@@ -1496,11 +1504,11 @@ void BaseEngine::popupError(const QString & errorid)
         errormsg = tr("Your profile name <%1> is not defined.").arg(capainfo[1]);
     } else if (errorid.toLower() == "login_password") {
         errormsg = tr("You entered a wrong login / password.");
-    
+
     } else if (errorid.toLower() == "no_keepalive_from_server") {
         errormsg = tr("The XiVO CTI server on %1:%2 did not reply to the last keepalive.")
             .arg(m_serverhost).arg(m_ctiport);
-    
+
     } else if (errorid.toLower() == "connection_closed") {
         errormsg = tr("The XiVO CTI server on %1:%2 has just closed the connection.")
             .arg(m_serverhost).arg(m_ctiport);
@@ -1561,7 +1569,7 @@ void BaseEngine::popupError(const QString & errorid)
     } else if (errorid == "forcedisconnected") {
         errormsg = tr("You were forced to disconnect by the server.");
     }
-    
+
     // logs a message before sending any popup that would block
     emitTextMessage(tr("Error") + " : " + errormsg);
     if (!m_trytoreconnect || m_forced_to_disconnect)
@@ -1591,7 +1599,7 @@ void BaseEngine::ctiSocketReadyRead()
         m_byte_counter += data.size();
         // qDebug() << "BaseEngine::socketReadyRead() data.size() = " << data.size();
         QString line = QString::fromUtf8(data);
-            
+
         if (line.startsWith("<ui version=")) {
             // we get here when receiving a sheet as a Qt4 .ui form
             qDebug() << "BaseEngine::socketReadyRead() (Customer Info)" << line.size();
@@ -1792,7 +1800,7 @@ void BaseEngine::setLoginKind(const int loginkind)
         QVariantMap tmpqvm = m_guioptions.value("client_gui").toMap();
         tmpqvm["loginkind"] = loginkind;
         m_guioptions["client_gui"] = tmpqvm;
-        
+
         m_loginkind = loginkind;
     }
 }
@@ -2147,7 +2155,7 @@ void BaseEngine::keepLoginAlive()
         startTryAgainTimer();
         return;
     }
-    
+
     QVariantMap command;
     command["class"] = "keepalive";
     command["direction"] = "xivoserver";
