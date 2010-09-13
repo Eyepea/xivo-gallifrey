@@ -822,6 +822,8 @@ class manage_connection:
                         del waiting_actionid_timer[actionid]
                     else:
                         log.warning('the actionid %s has gone' % actionid)
+                else:
+                    log.warning('unknown action <%r>' % action)
             else:
                 log.warning('malformed tqueue : not enough arguments in %s' % thisthread.args)
         return
