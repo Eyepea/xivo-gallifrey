@@ -1,0 +1,22 @@
+Index: asterisk-chan-sccp-0~prerelease+svn1857/src/sccp_channel.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn1857.orig/src/sccp_channel.c	2010-09-13 16:27:48.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1857/src/sccp_channel.c	2010-09-13 16:28:07.000000000 +0200
+@@ -893,7 +893,7 @@
+ 		return;
+ 
+ 
+-	sccp_channel_lock(c);
++	//sccp_channel_lock(c);
+ 	d = c->device;
+ 
+ 	sccp_channel_updateChannelCapability(c);
+@@ -958,7 +958,7 @@
+ 	}
+ 	sccp_dev_send(c->device, r);
+ 	c->mediaStatus.receive = TRUE;
+-	sccp_channel_unlock(c);
++	//sccp_channel_unlock(c);
+ 
+ 	//sccp_channel_openMultiMediaChannel(c);
+ }
