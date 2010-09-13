@@ -31,27 +31,13 @@
  * $Date$
  */
 
-#include <QDebug>
-#include <QLabel>
-#include <QMouseEvent>
-#include <QPoint>
-#include <QPushButton>
-#include <QSettings>
-#include <QToolTip>
-#include <QPainter>
-#include <QInputDialog>
-#include <QColorDialog>
-#include <QMenu>
-#include <QDialogButtonBox>
+#include <switchboardwindow.h>
 #include <QtColorPicker>
-#include <QMessageBox>
 
 #include <baseengine.h>
 #include <peerwidgetfactory.h>
 #include <peerslayout.h>
 #include <peeritem.h>
-#include <switchboardwindow.h>
-#include <userinfo.h>
 #include <xivoconsts.h>
 #include <externalphonedialog.h>
 #include <group.h>
@@ -61,14 +47,14 @@ Q_EXPORT_PLUGIN2(xletswitchboardplugin, XLetSwitchboardPlugin);
 XLet* XLetSwitchboardPlugin::newXLetInstance(QWidget *parent)
 {
     b_engine->registerTranslation(":/switchboard_%1");
-    return new SwitchBoardWindow(parent);
+    return new XletSwitchBoard(parent);
 }
 
 /*! \brief constructor
  *
  * initialize layout, attributes, etc.
  */
-SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
+XletSwitchBoard::XletSwitchBoard(QWidget *parent)
     : XLet(parent), m_drawGrid(false),
       m_trace_box(false), m_group_to_resize(0)
 {
@@ -95,7 +81,7 @@ SwitchBoardWindow::SwitchBoardWindow(QWidget * parent)
 /*! 
  * Save the positions in the grid of the peer widgets.
  */
-SwitchBoardWindow::~SwitchBoardWindow()
+XletSwitchBoard::~XletSwitchBoard()
 {
     savePositions();
     saveGroups();
@@ -108,21 +94,21 @@ SwitchBoardWindow::~SwitchBoardWindow()
  * PeerItem is created if needed.
  * Display the PeerWidget if needed.
  */
-void SwitchBoardWindow::updateUser(UserInfo * ui)
+void XletSwitchBoard::updateUser(UserInfo *ui)
 {
-    //qDebug() << "SwitchBoardWindow::updateUser()" << ui->toString();
+    //qDebug() << "XletSwitchBoard::updateUser()" << ui->toString();
     QString userid = ui->userid();
     PeerItem *peeritem = NULL;
-    if(m_peerhash.contains(userid)){
+    if (m_peerhash.contains(userid)) {
         peeritem = m_peerhash.value(userid);
-    }else{
+    } else {
         peeritem = new PeerItem(ui);
         m_peerhash.insert(userid, peeritem);
-        QSettings * settings = b_engine->getSettings();
+        QSettings *settings = b_engine->getSettings();
         settings->beginGroup("layout");
         QPoint pos = settings->value(userid, QPoint(-1, -1)).toPoint();
         settings->endGroup();
-        if(pos.x() >= 0){
+        if (pos.x() >= 0) {
             addPeerWidget(peeritem, pos);
         }
     }
@@ -133,16 +119,16 @@ void SwitchBoardWindow::updateUser(UserInfo * ui)
 /*! \brief update agent status
  *
  */
-void SwitchBoardWindow::updatePeerAgent(double,
-                                        const QString & id,
-                                        const QString & what,
-                                        const QVariant & statuslist)
+void XletSwitchBoard::updatePeerAgent(double,
+                                      const QString &id,
+                                      const QString &what,
+                                      const QVariant &statuslist)
 {
-    // qDebug() << "SwitchBoardWindow::updatePeerAgent()";
-    if(m_peerhash.contains(id)) {
-        if(what == "agentstatus"){
+    // qDebug() << "XletSwitchBoard::updatePeerAgent()";
+    if (m_peerhash.contains(id)) {
+        if (what == "agentstatus") {
             m_peerhash.value(id)->updateAgentStatus(statuslist);
-        }else if(what == "imstatus"){
+        } else if (what == "imstatus") {
             m_peerhash.value(id)->updateStatus();
         }
     }
@@ -156,11 +142,11 @@ void SwitchBoardWindow::updatePeerAgent(double,
  *
  * \sa dropEvent()
  */
-void SwitchBoardWindow::removePeerFromLayout()
+void XletSwitchBoard::removePeerFromLayout()
 {
     const QString userid = sender()->property("userid" ).toString();
-    qDebug() << "SwitchBoardWindow::removePeerFromLayout" << userid << m_peerhash.keys();
-    if(m_peerhash.contains(userid)){
+    qDebug() << "XletSwitchBoard::removePeerFromLayout" << userid << m_peerhash.keys();
+    if (m_peerhash.contains(userid)) {
         PeerItem *peeritem = m_peerhash[userid];
         BasePeerWidget *peerwidget = peeritem->getWidget();
         m_layout->removeWidget(peerwidget);
@@ -174,26 +160,26 @@ void SwitchBoardWindow::removePeerFromLayout()
         peerwidget->deleteLater();
         peeritem->setWidget(NULL);
         update();
-    }else{
-        m_layout->removeWidget( static_cast<QWidget *>(sender()) );
+    } else {
+        m_layout->removeWidget(static_cast<QWidget *>(sender()));
         sender()->deleteLater();
     }
 }
 
 /*! \brief remove a group
  */
-void SwitchBoardWindow::removeGroup()
+void XletSwitchBoard::removeGroup()
 {
     int ret;
-    qDebug() << "removeGroup" << sender()->property( "group" );
-    Group *group = (Group *)(sender()->property( "group" ).value<void *>());
-    if(group){
+    qDebug() << "removeGroup" << sender()->property("group");
+    Group *group = (Group *)(sender()->property("group").value<void *>());
+    if (group) {
         ret = QMessageBox::question(this,
                 tr("Removing group %1").arg(group->name()),
                 tr("Removing group %1.\nAre you sure ?").arg(group->name()),
                 QMessageBox::Yes | QMessageBox::Cancel,
                 QMessageBox::Cancel);
-        if(ret == QMessageBox::Yes) {
+        if (ret == QMessageBox::Yes) {
             m_group_list.removeAll(group);
             group->deleteLater();
             update();
@@ -204,13 +190,13 @@ void SwitchBoardWindow::removeGroup()
 
 /*! \brief change a group color
  */
-void SwitchBoardWindow::changeGroupColor()
+void XletSwitchBoard::changeGroupColor()
 {
-    Group *group = (Group *)(sender()->property( "group" ).value<void *>());
-    if(group){
-        QColor newColor = QColorDialog::getColor( group->color(), this );
-        if(newColor.isValid()){
-            group->setColor( newColor );
+    Group *group = (Group *)(sender()->property("group").value<void *>());
+    if (group) {
+        QColor newColor = QColorDialog::getColor(group->color(), this);
+        if (newColor.isValid()) {
+            group->setColor(newColor);
             update();
             //saveGroups();
         }
@@ -219,15 +205,15 @@ void SwitchBoardWindow::changeGroupColor()
 
 /*! \brief change group name
  */
-void SwitchBoardWindow::changeGroupName()
+void XletSwitchBoard::changeGroupName()
 {    
-    Group *group = (Group *)(sender()->property( "group" ).value<void *>());
-    if(group){
+    Group *group = (Group *)(sender()->property("group" ).value<void *>());
+    if (group) {
         QString newName
             = QInputDialog::getText(this, tr("Edit group name"),
                                     tr("Name for group"), QLineEdit::Normal,
                                     group->name());
-        if(!newName.isEmpty()){
+        if (!newName.isEmpty()) {
             group->setName(newName);
             update();
         }
@@ -242,12 +228,12 @@ void SwitchBoardWindow::changeGroupName()
  * \sa updatePeer
  * \sa removePeers
  */
-void SwitchBoardWindow::removePeer(const QString & userid)
+void XletSwitchBoard::removePeer(const QString &userid)
 {
-    // qDebug() << "SwitchBoardWindow::removePeer()" << userid;
-    if(m_peerhash.contains(userid)) {
+    // qDebug() << "XletSwitchBoard::removePeer()" << userid;
+    if (m_peerhash.contains(userid)) {
         PeerItem *peeritem = m_peerhash.value(userid);
-        BasePeerWidget * peerwidget = peeritem->getWidget();
+        BasePeerWidget *peerwidget = peeritem->getWidget();
         m_layout->removeWidget(peerwidget);
         peerwidget->deleteLater();
         delete m_peerhash.take(userid);
@@ -262,16 +248,16 @@ void SwitchBoardWindow::removePeer(const QString & userid)
  *
  * \sa removePeer
  */
-void SwitchBoardWindow::removePeers(void)
+void XletSwitchBoard::removePeers(void)
 {
-    // qDebug() << "SwitchBoardWindow::removePeers()";
+    // qDebug() << "XletSwitchBoard::removePeers()";
     QHashIterator<QString, PeerItem *> peeriter(m_peerhash);
-    while(peeriter.hasNext()) {
+    while (peeriter.hasNext()) {
         peeriter.next();
         PeerItem *peeritem = peeriter.value();
         //PeerWidget * peerwidget = peeritem->getWidget();
         BasePeerWidget *peerwidget = peeritem->getWidget();
-        if(peerwidget != NULL) {
+        if (peerwidget != NULL) {
             m_layout->removeWidget(peerwidget);
             // this disconnect() step takes time, whether explicitly or implicitly,
             // so we should be careful to avoid too much connect's (anyway)
@@ -285,7 +271,7 @@ void SwitchBoardWindow::removePeers(void)
     update();
 }
 
-void SwitchBoardWindow::dragMoveEvent(QDragMoveEvent * event)
+void XletSwitchBoard::dragMoveEvent(QDragMoveEvent *event)
 {
     event->acceptProposedAction();
 }
@@ -295,11 +281,11 @@ void SwitchBoardWindow::dragMoveEvent(QDragMoveEvent * event)
  *
  * \sa dropEvent()
  */
-void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
+void XletSwitchBoard::dragEnterEvent(QDragEnterEvent *event)
 {
-    // qDebug() << "SwitchBoardWindow::dragEnterEvent()" << event->mimeData()->formats();
-    if(event->mimeData()->hasFormat(USERID_MIMETYPE) ||
-       event->mimeData()->hasFormat(NUMBER_MIMETYPE)){
+    // qDebug() << "XletSwitchBoard::dragEnterEvent()" << event->mimeData()->formats();
+    if (event->mimeData()->hasFormat(USERID_MIMETYPE) ||
+       event->mimeData()->hasFormat(NUMBER_MIMETYPE)) {
         event->acceptProposedAction();
     }
 }
@@ -311,16 +297,16 @@ void SwitchBoardWindow::dragEnterEvent(QDragEnterEvent * event)
  *
  * \sa dragEnterEvent()
  */
-void SwitchBoardWindow::dropEvent(QDropEvent * event)
+void XletSwitchBoard::dropEvent(QDropEvent *event)
 {
-    if(event->mimeData()->hasFormat(USERID_MIMETYPE)){
+    if (event->mimeData()->hasFormat(USERID_MIMETYPE)) {
         QString userid = event->mimeData()->data(USERID_MIMETYPE);
-        if(m_peerhash.contains(userid)){
+        if (m_peerhash.contains(userid)) {
             PeerItem *peeritem = m_peerhash[userid];
             BasePeerWidget *peerwidget = peeritem->getWidget();
-            if(peerwidget){
+            if (peerwidget) {
                 m_layout->setItemPosition(peerwidget, m_layout->getPosInGrid(event->pos()));
-            }else{
+            } else {
                 peerwidget = addPeerWidget(peeritem, m_layout->getPosInGrid(event->pos()));
             }
             updateGeometry();
@@ -328,10 +314,10 @@ void SwitchBoardWindow::dropEvent(QDropEvent * event)
             savePositions();
             update();
         }
-    }else if(event->mimeData()->hasFormat(NUMBER_MIMETYPE)){
+    } else if (event->mimeData()->hasFormat(NUMBER_MIMETYPE)) {
         QString number = event->mimeData()->data(NUMBER_MIMETYPE);
         BasePeerWidget *w = getExternalPhonePeerWidget(number);
-        if(w){
+        if (w) {
             m_layout->setItemPosition(w, m_layout->getPosInGrid(event->pos()));
             updateGeometry();
             event->acceptProposedAction();
@@ -343,16 +329,16 @@ void SwitchBoardWindow::dropEvent(QDropEvent * event)
 
 /** Return the "ExternalPhonePeerWidget" with a number if it already exists
  */
-BasePeerWidget* SwitchBoardWindow::getExternalPhonePeerWidget(const QString &number)
+BasePeerWidget* XletSwitchBoard::getExternalPhonePeerWidget(const QString &number)
 {
     int i;
-    for(i=0;i<m_layout->count();i++){
+    for (i=0;i<m_layout->count();i++) {
         QLayoutItem *item = m_layout->itemAt(i);
-        if((item) && (item->widget()) &&
+        if ((item) && (item->widget()) &&
            ((item->widget()->inherits("ExternalPhonePeerWidget")) ||
             (item->widget()->inherits("DetailedExternalPhonePeerWidget")))) {
             BasePeerWidget *w = static_cast<BasePeerWidget *>(item->widget());
-            if(number == w->number()){
+            if (number == w->number()) {
                 return w;
             }
         }
@@ -364,32 +350,32 @@ BasePeerWidget* SwitchBoardWindow::getExternalPhonePeerWidget(const QString &num
  *
  * Save the positions of all Peer Widgets to the settings.
  */
-void SwitchBoardWindow::savePositions() const
+void XletSwitchBoard::savePositions() const
 {
-    // qDebug() << "SwitchBoardWindow::savePositions()";
+    // qDebug() << "XletSwitchBoard::savePositions()";
     QSettings * settings = b_engine->getSettings();
     settings->beginGroup("layout");
     QHashIterator<QString, PeerItem *> it(m_peerhash);
-    while(it.hasNext()){
+    while (it.hasNext()) {
         it.next();
         const QString userid = it.key();
         PeerItem *peeritem = it.value();
-        if(peeritem->getWidget()){
+        if (peeritem->getWidget()) {
             settings->setValue(userid,
                                m_layout->getItemPosition(peeritem->getWidget()));
-        }else{
+        } else {
             settings->remove(userid);
         }
     }
 
     settings->beginWriteArray("externalphone");
     int i, index = 0;
-    for(i=0;i<m_layout->count();i++){
+    for (i=0;i<m_layout->count();i++) {
         QLayoutItem *item = m_layout->itemAt(i);
-        if((item) && (item->widget()) &&
+        if ((item) && (item->widget()) &&
             ((item->widget()->inherits("ExternalPhonePeerWidget")) ||
-             (item->widget()->inherits("DetailedExternalPhonePeerWidget")))){
-            BasePeerWidget * w = static_cast<BasePeerWidget *>( item->widget() );
+             (item->widget()->inherits("DetailedExternalPhonePeerWidget")))) {
+            BasePeerWidget *w = static_cast<BasePeerWidget *>(item->widget());
             settings->setArrayIndex(index++);
             settings->setValue("position", m_layout->getItemPosition(w));
             settings->setValue("name", w->name());
@@ -402,12 +388,12 @@ void SwitchBoardWindow::savePositions() const
 
 /*! \brief reload existings "external phones" widget from config
  */
-void SwitchBoardWindow::reloadExternalPhones()
+void XletSwitchBoard::reloadExternalPhones()
 {
     QSettings *settings = b_engine->getSettings();
     settings->beginGroup("layout");
     int i, size = settings->beginReadArray("externalphone");
-    for(i=0;i<size;i++){
+    for (i=0;i<size;i++) {
         settings->setArrayIndex(i);
         BasePeerWidget *pw
             = PeerWidgetFactory::newExternalPhonePeerWidget(settings->value("name").toString(),
@@ -426,14 +412,14 @@ void SwitchBoardWindow::reloadExternalPhones()
 /*!
  * update m_second_corner if needed
  */
-void SwitchBoardWindow::mouseMoveEvent(QMouseEvent * event)
+void XletSwitchBoard::mouseMoveEvent(QMouseEvent *event)
 {
-    if(m_trace_box){
+    if (m_trace_box) {
         // set second box corner
         m_second_corner = event->pos();
         // request redraw
         update();
-    }else if(m_group_to_resize){
+    } else if (m_group_to_resize) {
         QPoint delta = event->pos() - m_first_corner;
         QPoint deltaGrid = m_layout->getPosInGrid(delta);
 
@@ -441,17 +427,17 @@ void SwitchBoardWindow::mouseMoveEvent(QMouseEvent * event)
             return ;
 
         int updateNeeded = 0;
-        if(m_group_resize_mode == EMove) {
-            if(m_group_to_resize->move(m_group_list, m_layout, deltaGrid)){
+        if (m_group_resize_mode == EMove) {
+            if (m_group_to_resize->move(m_group_list, m_layout, deltaGrid)) {
                 updateNeeded = 1;
             }
-        }else if(m_group_resize_mode&(ETop|EBottom|ELeft|ERight)){
-            if(m_group_to_resize->resize(m_group_list, m_layout, deltaGrid, m_group_resize_mode)){
+        } else if (m_group_resize_mode&(ETop|EBottom|ELeft|ERight)) {
+            if (m_group_to_resize->resize(m_group_list, m_layout, deltaGrid, m_group_resize_mode)) {
                 updateNeeded = 1;
             }
         }
 
-        if (updateNeeded){
+        if (updateNeeded) {
             update();
             m_first_corner += m_layout->getPosFromGrid(deltaGrid);
         }
@@ -459,34 +445,34 @@ void SwitchBoardWindow::mouseMoveEvent(QMouseEvent * event)
         // rien de special, mais on change le curseur si est sur une zone
         // pour resizer un groupe
         Group *group = getGroup(m_layout->getPosInGrid(event->pos()));
-        if(group){
+        if (group) {
             QPoint topLeft = m_layout->getPosFromGrid(group->rect().topLeft());
             QPoint bottomRight = m_layout->getPosFromGrid(group->rect().bottomRight());
 
             int direction = 0;
-            if(event->pos().y() - topLeft.y() < 10){
+            if (event->pos().y() - topLeft.y() < 10) {
                 setCursor(QCursor(Qt::SizeVerCursor));
                 direction = ETop;
-            }else if(bottomRight.y() - event->pos().y() < 10){
+            } else if (bottomRight.y() - event->pos().y() < 10) {
                 setCursor(QCursor(Qt::SizeVerCursor));
                 direction = EBottom;
             }
 
-            if(event->pos().x() - topLeft.x() < 10){
-                if(direction&ETop){
+            if (event->pos().x() - topLeft.x() < 10) {
+                if (direction&ETop) {
                     setCursor(QCursor(Qt::SizeFDiagCursor));
-                }else if(direction&EBottom){
+                } else if (direction&EBottom) {
                     setCursor(QCursor(Qt::SizeBDiagCursor));
-                }else{
+                } else {
                     setCursor(QCursor(Qt::SizeHorCursor));
                 }
                 direction |= ELeft;
-            }else if(bottomRight.x() - event->pos().x() < 10){
-                if(direction&ETop){
+            } else if (bottomRight.x() - event->pos().x() < 10) {
+                if (direction&ETop) {
                     setCursor(QCursor(Qt::SizeBDiagCursor));
-                }else if (direction&EBottom){
+                } else if (direction&EBottom) {
                     setCursor(QCursor(Qt::SizeFDiagCursor));
-                }else{
+                } else {
                     setCursor(QCursor(Qt::SizeHorCursor));
                 }
                 direction |= ERight;
@@ -494,7 +480,7 @@ void SwitchBoardWindow::mouseMoveEvent(QMouseEvent * event)
             if (!direction) {
                 setCursor(QCursor(Qt::ArrowCursor));
             }
-        }else{
+        } else {
             setCursor(QCursor(Qt::ArrowCursor));
         }
     }
@@ -504,52 +490,52 @@ void SwitchBoardWindow::mouseMoveEvent(QMouseEvent * event)
  * starts to draw a new group
  * or to move/resize an existing group
  */
-void SwitchBoardWindow::mousePressEvent(QMouseEvent *event)
+void XletSwitchBoard::mousePressEvent(QMouseEvent *event)
 {
     // check which button was pressed
-    if(event->button() == Qt::LeftButton){
+    if (event->button() == Qt::LeftButton) {
         // check if there is a group under the cursor
         Group *group = getGroup(m_layout->getPosInGrid(event->pos()));
-        if(!group){
+        if (!group) {
             // start drawing a box for a new group
             m_first_corner = event->pos();
             m_second_corner = event->pos();
             m_trace_box = true;
-        }else{
+        } else {
             QPoint topLeft = m_layout->getPosFromGrid(group->rect().topLeft());
             QPoint bottomRight = m_layout->getPosFromGrid(group->rect().bottomRight());
             m_group_resize_mode = 0;
 
-            if(event->pos().y() - topLeft.y() < 10) {
+            if (event->pos().y() - topLeft.y() < 10) {
                 setCursor(QCursor(Qt::SizeVerCursor));
                 m_group_resize_mode |= ETop;
-            } else if(bottomRight.y() - event->pos().y() < 10) {
+            } else if (bottomRight.y() - event->pos().y() < 10) {
                 setCursor(QCursor(Qt::SizeVerCursor));
                 m_group_resize_mode |= EBottom;
             }
 
 
-            if(event->pos().x() - topLeft.x() < 10){
-                if(m_group_resize_mode&ETop){
+            if (event->pos().x() - topLeft.x() < 10) {
+                if (m_group_resize_mode&ETop) {
                     setCursor(QCursor(Qt::SizeFDiagCursor));
-                }else if (m_group_resize_mode&EBottom){
+                } else if (m_group_resize_mode&EBottom) {
                     setCursor(QCursor(Qt::SizeBDiagCursor));
-                }else{
+                } else {
                     setCursor(QCursor(Qt::SizeHorCursor));
                 }
                 m_group_resize_mode |= ELeft;
-            }else if(bottomRight.x() - event->pos().x() < 10){
-                if(m_group_resize_mode&ETop){
+            } else if (bottomRight.x() - event->pos().x() < 10) {
+                if (m_group_resize_mode&ETop) {
                     setCursor(QCursor(Qt::SizeBDiagCursor));
-                }else if (m_group_resize_mode&EBottom){
+                } else if (m_group_resize_mode&EBottom) {
                     setCursor(QCursor(Qt::SizeFDiagCursor));
-                }else{
+                } else {
                     setCursor(QCursor(Qt::SizeHorCursor));
                 }
                 m_group_resize_mode |= ERight;
             }
 
-            if(!m_group_resize_mode){
+            if (!m_group_resize_mode) {
                 setCursor(QCursor(Qt::SizeAllCursor));
                 m_group_resize_mode = EMove;
             }
@@ -560,14 +546,14 @@ void SwitchBoardWindow::mousePressEvent(QMouseEvent *event)
     }
 }
 
-void SwitchBoardWindow::mouseReleaseEvent(QMouseEvent *)
+void XletSwitchBoard::mouseReleaseEvent(QMouseEvent *)
 {
-    if(m_trace_box) {
+    if (m_trace_box) {
         QRect rect = QRect(m_first_corner, m_second_corner).normalized();
 
         QRect gridRect = m_layout->getGridRect(rect);
-        if((gridRect.top() != gridRect.bottom()) &&
-           (gridRect.right() != gridRect.left())){
+        if ((gridRect.top() != gridRect.bottom()) &&
+           (gridRect.right() != gridRect.left())) {
             QString name;
             QDialog dialog;
             dialog.setWindowTitle(tr("New group"));
@@ -587,9 +573,9 @@ void SwitchBoardWindow::mouseReleaseEvent(QMouseEvent *)
             connect(buttonbox, SIGNAL(rejected()),
                     &dialog, SLOT(reject()) );
             dialog.exec();
-            if(dialog.result() == QDialog::Accepted)
+            if (dialog.result() == QDialog::Accepted)
                 name = lineedit->text();
-            if(!name.isEmpty()){
+            if (!name.isEmpty()) {
                 Group *group = new Group(this);
                 group->setRect(gridRect);
                 group->setName(name);
@@ -601,8 +587,7 @@ void SwitchBoardWindow::mouseReleaseEvent(QMouseEvent *)
         m_trace_box = false;
         update();
     }
-    if( m_group_to_resize )
-    {
+    if (m_group_to_resize) {
         unsetCursor();
         m_group_to_resize = NULL;
     }
@@ -612,31 +597,31 @@ void SwitchBoardWindow::mouseReleaseEvent(QMouseEvent *)
  *
  * Draw graphical representation of groups
  */
-void SwitchBoardWindow::paintEvent(QPaintEvent *event)
+void XletSwitchBoard::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     int i;
-    if(m_drawGrid){
+    if (m_drawGrid) {
         painter.setBrush(Qt::NoBrush);
         painter.setPen(Qt::SolidLine);
         int widgetWidth = width(), widgetHeight = height();
         int rowWidth = m_layout->maxItemSize().width() + 2;
         int rowHeight = m_layout->maxItemSize().height() + 2;
 
-        for(i=rowWidth;i<widgetWidth;i+=rowWidth){
+        for (i=rowWidth;i<widgetWidth;i+=rowWidth) {
             painter.drawLine(i, 0, i, widgetHeight);
         }
-        for(i=rowHeight;i<widgetHeight;i+=rowHeight){
+        for (i=rowHeight;i<widgetHeight;i+=rowHeight) {
             painter.drawLine(0, i, widgetWidth, i);
         }
     }
-    for(i=0;i<m_group_list.size();i++) {
+    for (i=0;i<m_group_list.size();i++) {
         // draw the color rectangle
         const QRect &gridRect = m_group_list[i]->rect();
         QRect rect = QRect(m_layout->getPosFromGrid(gridRect.topLeft()),
                            m_layout->getPosFromGrid(gridRect.bottomRight()) - QPoint(1, 1) );
         // skip useless groups !
-        if(!event->region().contains(rect))
+        if (!event->region().contains(rect))
             continue;
         painter.setBrush(m_group_list[i]->color() );
         painter.setPen(Qt::NoPen);
@@ -648,13 +633,13 @@ void SwitchBoardWindow::paintEvent(QPaintEvent *event)
         painter.setPen(Qt::SolidLine);
         QFont font = this->font();
         font.setBold(true);
-        if(m_group_list[i]->color().value() < 128){
+        if (m_group_list[i]->color().value() < 128) {
             painter.setPen(QColor(0xcc, 0xcc, 0xcc));
         }
         painter.setFont(font);
         painter.drawText(rect, Qt::AlignTop | Qt::AlignHCenter, m_group_list[i]->name());
     }
-    if(m_trace_box) {
+    if (m_trace_box) {
         painter.setBrush(Qt::NoBrush);
         painter.setPen(Qt::DashLine);
         painter.drawRect(QRect(m_first_corner, m_second_corner));
@@ -663,14 +648,14 @@ void SwitchBoardWindow::paintEvent(QPaintEvent *event)
 
 /*! \brief show the context menu
  */
-void SwitchBoardWindow::contextMenuEvent(QContextMenuEvent *event)
+void XletSwitchBoard::contextMenuEvent(QContextMenuEvent *event)
 {
     // check if there is a group under the cursor
     Group *group = getGroup(m_layout->getPosInGrid(event->pos()));
 
     QMenu contextMenu(this);
     QAction *action;
-    if(group){
+    if (group) {
         action = contextMenu.addAction(tr("Remove group %1").arg(group->name()),
                                        this, SLOT(removeGroup()));
         action->setProperty("group", QVariant::fromValue((void *)group));
@@ -679,7 +664,7 @@ void SwitchBoardWindow::contextMenuEvent(QContextMenuEvent *event)
                                        this, SLOT(changeGroupColor()));
         action->setProperty("group", QVariant::fromValue((void *)group));
 
-        action = contextMenu.addAction(tr("Rename group %1").arg( group->name() ),
+        action = contextMenu.addAction(tr("Rename group %1").arg(group->name()),
                                        this, SLOT(changeGroupName())); 
         action->setProperty("group", QVariant::fromValue((void *)group));
     }
@@ -698,7 +683,7 @@ void SwitchBoardWindow::contextMenuEvent(QContextMenuEvent *event)
     contextMenu.exec(event->globalPos());
 }
 
-void SwitchBoardWindow::drawTheGrid(bool drawGrid)
+void XletSwitchBoard::drawTheGrid(bool drawGrid)
 {
     m_drawGrid = drawGrid;
     update();
@@ -708,13 +693,13 @@ void SwitchBoardWindow::drawTheGrid(bool drawGrid)
  *
  * Groups are saved into the settings "groups"
  */
-void SwitchBoardWindow::saveGroups() const
+void XletSwitchBoard::saveGroups() const
 {
     QSettings *settings = b_engine->getSettings();
     settings->beginGroup("groups");
     settings->beginWriteArray("groups");
     int i;
-    for(i= 0;i < m_group_list.size();i++){
+    for (i= 0;i < m_group_list.size();i++) {
         settings->setArrayIndex(i);
         settings->setValue("name", m_group_list[i]->name());
         settings->setValue("rect", m_group_list[i]->rect());
@@ -728,14 +713,14 @@ void SwitchBoardWindow::saveGroups() const
  *
  * Groups are loaded from the settings "groups"
  */
-void SwitchBoardWindow::reloadGroups()
+void XletSwitchBoard::reloadGroups()
 {
     m_group_list.clear();
     QSettings *settings = b_engine->getSettings();
     settings->beginGroup("groups");
     Group *group;
     int i, size = settings->beginReadArray("groups");
-    for(i=0;i<size;i++){
+    for (i=0;i<size;i++) {
         settings->setArrayIndex(i);
         group = new Group(this);
         group->setName(settings->value("name").toString());
@@ -749,12 +734,12 @@ void SwitchBoardWindow::reloadGroups()
 
 /*! \brief return the group under this position in the grid
  */
-Group* SwitchBoardWindow::getGroup(const QPoint &position) const
+Group* XletSwitchBoard::getGroup(const QPoint &position) const
 {
-    foreach(Group *group, m_group_list){
-        if((group->rect().contains(position)) &&
+    foreach(Group *group, m_group_list) {
+        if ((group->rect().contains(position)) &&
            (group->rect().right() != position.x()) &&
-           (group->rect().bottom() != position.y())){
+           (group->rect().bottom() != position.y())) {
             return group;
         }
     }
@@ -766,7 +751,7 @@ Group* SwitchBoardWindow::getGroup(const QPoint &position) const
  * create the object, connect signal/slots,
  * put in layout and update display
  */
-BasePeerWidget* SwitchBoardWindow::addPeerWidget(PeerItem *peeritem, const QPoint &pos)
+BasePeerWidget* XletSwitchBoard::addPeerWidget(PeerItem *peeritem, const QPoint &pos)
 {
     BasePeerWidget *peerwidget
         = PeerWidgetFactory::newPeerWidget(peeritem->userinfo());
@@ -781,24 +766,24 @@ BasePeerWidget* SwitchBoardWindow::addPeerWidget(PeerItem *peeritem, const QPoin
 
 /*! \brief Add an "external" user widget used to call
  */
-void SwitchBoardWindow::addPhoneNumberEntry()
+void XletSwitchBoard::addPhoneNumberEntry()
 {
     QPoint pos = sender()->property("pos" ).toPoint();
-    qDebug() << "SwitchBoardWindow::addPhoneNumberEntry()";
+    qDebug() << "XletSwitchBoard::addPhoneNumberEntry()";
     ExternalPhoneDialog dialog;
     int rDialog = dialog.exec();
-    if(rDialog && !dialog.number().isEmpty()){
+    if (rDialog && !dialog.number().isEmpty()) {
         QString label = dialog.label();
         QString number = dialog.number();
-        if(label.isEmpty()){
+        if (label.isEmpty()) {
             label = number;
         }
         // verifier tout d'abord qu'il n'y a pas deja une etiquette avec
         // le meme numero
-        if(getExternalPhonePeerWidget(number)){
+        if (getExternalPhonePeerWidget(number)) {
             QMessageBox::information(this, tr("Duplicate number"),
                 tr("Phone number %1 is already present in the switchboard panel.").arg(number));
-        }else{
+        } else {
             BasePeerWidget *peerwidget
                 = PeerWidgetFactory::newExternalPhonePeerWidget(label, number);
             connect(peerwidget, SIGNAL(removeFromPanel()),

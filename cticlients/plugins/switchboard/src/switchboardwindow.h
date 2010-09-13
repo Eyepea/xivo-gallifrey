@@ -48,13 +48,13 @@ class Group;
  *
  * This widget use a PeersLayout to display PeerItems in a grid.
  */
-class SwitchBoardWindow : public XLet
+class XletSwitchBoard : public XLet
 {
     Q_OBJECT
 
     public:
-        SwitchBoardWindow(QWidget *parent=0);
-        ~SwitchBoardWindow();
+        XletSwitchBoard(QWidget *parent=0);
+        ~XletSwitchBoard();
 
     protected:
         void mousePressEvent(QMouseEvent *);
