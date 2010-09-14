@@ -1064,60 +1064,60 @@ sha1sum: fd470e7aec0db62e3750aa4819ff03b70c6e9977
 
 # Sangoma
 
-[aft_a101d]
+[aft_a101dm]
 brand: Sangoma
 model: AFT A101D
-version: 36
-files: A101dm_0040_V36.BIN
+version: 37
+files: A101dm_0040_V37.BIN
 
-[A101dm_0040_V36.BIN]
-url: ftp://ftp.sangoma.com/firmware/A101dm_0040_V36.BIN
+[A101dm_0040_V37.BIN]
+url: ftp://ftp.sangoma.com/firmware/A101dm_0040_V37.BIN
 size: 212392
-sha1sum: 56cf2ff219e4716e428c9e6f2935878d1888104a
+sha1sum: 71f1906d8ec593f732198291a8dbe7c934edb999
 
-[aft_a102d]
+[aft_a102dm]
 brand: Sangoma
 model: AFT A102D
-version: 36
-files: A102dm_0040_V36.BIN
+version: 37
+files: A102dm_0040_V37.BIN
 
-[A102dm_0040_V36.BIN]
-url: ftp://ftp.sangoma.com/firmware/A102dm_0040_V36.BIN
+[A102dm_0040_V37.BIN]
+url: ftp://ftp.sangoma.com/firmware/A102dm_0040_V37.BIN
 size: 212392
-sha1sum: f1b91ccc3383d9ca4971b3d7e129f4f8763b065d
+sha1sum: 39491b91796269acbc16bbe8b6c1d848b9ecdd1a
 
-[aft_a104d]
+[aft_a104dm]
 brand: Sangoma
 model: AFT A104D
-version: 36
-files: A104d_0100_V36.BIN
+version: 43
+files: A104dm_0100_V43.BIN
 
-[A104d_0100_V36.BIN]
-url: ftp://ftp.sangoma.com/firmware/A104d_0100_V36.BIN
+[A104dm_0100_V43.BIN]
+url: ftp://ftp.sangoma.com/firmware/A104dm_0100_V43.BIN
 size: 402936
-sha1sum: a28f09a3741cbbee536d586cae9239d5cd0c4f04
+sha1sum: fefbb2d0effd67fb642e43d04ff396e565acfcb1
 
-[aft_a108d]
+[aft_a108dm]
 brand: Sangoma
 model: AFT A108D
-version: 41
-files: A108dm_0100_V41.BIN
+version: 43
+files: A108dm_0100_V43.BIN
 
-[A108dm_0100_V41.BIN]
-url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V41.BIN
+[A108dm_0100_V43.BIN]
+url: ftp://ftp.sangoma.com/firmware/A108dm_0100_V43.BIN
 size: 402936
-sha1sum: aa95101469fb32fd52abaaf7dcc1d3ead1a1c653
+sha1sum: 4afabcf22c5a2e64f2ba62e04a3a6dab7a619bf8
 
 [aft_a200]
 brand: Sangoma
 model: AFT A200
-version: 12
-files: A200_0040_V12.BIN
+version: 13
+files: A200_0040_V13.BIN
 
-[A200_0040_V12.BIN]
-url: ftp://ftp.sangoma.com/firmware/A200_0040_V12.BIN
+[A200_0040_V13.BIN]
+url: ftp://ftp.sangoma.com/firmware/A200_0040_V13.BIN
 size: 212392
-sha1sum: 99458fbf9bdae1ab9914caba456b39fef0052ef9
+sha1sum: 6d15bbf1e37985573b217e2c6e2c09ab36ec51bf
 
 [aft_a400]
 brand: Sangoma
@@ -1155,13 +1155,13 @@ sha1sum: ac3aba913ebdcc48309ccb0b62fa8d6366958b57
 [aft_b601]
 brand: Sangoma
 model: AFT B601
-version: 03
-files: B601_0025_V03.BIN
+version: 04
+files: B601_0025_V04.BIN
 
-[B601_0025_V03.BIN]
-url: ftp://ftp.sangoma.com/firmware/B601_0025_V03.BIN
+[B601_0025_V04.BIN]
+url: ftp://ftp.sangoma.com/firmware/B601_0025_V04.BIN
 size: 169216
-sha1sum: db03b208683a8a930947376a3246114f605bb277
+sha1sum: 9a6605cb2d2bb06c66af0a8841e882d9e2284b34
 
 [aft_b700]
 brand: Sangoma
@@ -1188,10 +1188,10 @@ sha1sum: 28ffa475ab151fecaac33b018720edf2b0c1bbfc
 [aft_echocan]
 brand: Sangoma
 model: Echo Canceller for all cards
-version: 3.5.10
-files: wanpipe-3.5.10.tgz
+version: 3.5.15
+files: wanpipe-3.5.15.tgz
 
-[wanpipe-3.5.10.tgz]
-url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.10.tgz
-size: 22581851
-sha1sum: 06759bbec8e6f9c69283531bb6b315a24b05d3a4
+[wanpipe-3.5.15.tgz]
+url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.15.tgz
+size: 13925835
+sha1sum: 1641d54ad0ac955e23a9f4965c07868fba7b865f
