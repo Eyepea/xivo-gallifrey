@@ -348,7 +348,7 @@ CREATE TABLE ha_peer (
 );
 
 -- provisioning
-DROP TABLE IF EXISTS provisioning;
+DROP TABLE provisioning;
 CREATE TABLE provisioning (
  id integer unsigned,
  registrar_main   varchar(255) NOT NULL DEFAULT '',
