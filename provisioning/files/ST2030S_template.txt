@@ -8,7 +8,7 @@ regid1={{user_phone_ident}}
 regpwd1={{user_phone_passwd}}
 DisplayNumFlag1=1
 DisplayNum1={{user_phone_number}}
-VoiceMailTelNum={{exten_voicemail}}{{user_phone_number}}
+VoiceMailTelNum={{exten_voicemail}}
 subscribe_event={{user_subscribe_mwi}}
 sw_park_srv_addr0={{exten_park}}@{{asterisk_ipv4}}
 
