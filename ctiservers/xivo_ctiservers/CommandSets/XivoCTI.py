@@ -1137,8 +1137,10 @@ class XivoCTICommand(BaseCommand):
             #log.info('askstatus %s %s' %(a, b))
             if b['tech'] != 'custom':
                 if b['number']:
-                    self.__ami_execute__(astid, 'sendextensionstate', b['number'], b['context'])
-                    self.__ami_execute__(astid, 'mailbox', b['number'], b['context'])
+                    self.__ami_execute__(astid, 'sendextensionstate',
+                                         b['number'], b['context'])
+                    self.__ami_execute__(astid, 'mailbox',
+                                         b['number'], b['context'])
                 else:
                     log.warning('%s askstatus : not enough data for %s' % (astid, b))
             else:
@@ -1163,11 +1165,11 @@ class XivoCTICommand(BaseCommand):
         """
         requester = '%s:%d' % connid.getpeername()
         connid.sendall('XiVO CTI Server Version %s(%s) svn:%s (on %s)\n'
-            % (XIVOVERSION_NUM, XIVOVERSION_NAME,
-                __revision__, ' '.join(os.uname()[:3])))
+                       % (XIVOVERSION_NUM, XIVOVERSION_NAME,
+                          __revision__, ' '.join(os.uname()[:3])))
         self.timerthreads_login_timeout[connid] = threading.Timer(self.logintimeout,
-            self.__callback_timer__,
-            ('login(%s)' % requester,))
+                                                                  self.__callback_timer__,
+                                                                  ('login(%s)' % requester,))
         self.timerthreads_login_timeout[connid].start()
         return
 
@@ -1177,8 +1179,7 @@ class XivoCTICommand(BaseCommand):
             del self.timerthreads_login_timeout[connid]
         return
 
-    def checkqueue(self):
-        buf = os.read(self.queued_threads_pipe[0], 1024)
+    def checkqueue(self, buf):
         log.info('checkqueue : read buf = %s, tqueue size = %d' % (buf, self.tqueue.qsize()))
         todisconn = []
         while self.tqueue.qsize() > 0:
@@ -2909,21 +2910,25 @@ class XivoCTICommand(BaseCommand):
             if 'voicemailid' in userinfo and userinfo.get('voicemailid') == voicemailid and userinfo.get('astid') == astid:
                 if userinfo['mwi']:
                     log.debug('amiresponse_mailboxstatus voicemailid=%s user=%s %s=>%s'
-                        % (voicemailid, userinfo.get('xivo_userid'), userinfo['mwi'][0], event.get('Waiting')))
+                              % (voicemailid,
+                                 userinfo.get('xivo_userid'),
+                                 userinfo['mwi'][0],
+                                 event.get('Waiting')))
                     #if userinfo['mwi'][0] != event.get('Waiting'): # only send if it has changed
                     # the condition above is not the right one : there are cases when Waiting remains 1
                     # while NewMessages changes, and we thus need to make some announcements
                     if True:
                         userinfo['mwi'][0] = event.get('Waiting')
                         tosend = { 'class' : 'users',
-                            'function' : 'update',
-                            'user' : [userinfo.get('astid'),
-                                userinfo.get('xivo_userid')],
-                            'subclass' : 'mwi',
-                            'payload' : userinfo.get('mwi')
-                            }
+                                   'function' : 'update',
+                                   'user' : [userinfo.get('astid'),
+                                             userinfo.get('xivo_userid')],
+                                   'subclass' : 'mwi',
+                                   'payload' : userinfo.get('mwi')
+                                   }
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend),
-                            userinfo.get('astid'), userinfo.get('context'))
+                                                         userinfo.get('astid'),
+                                                         userinfo.get('context'))
         return
 
     def amiresponse_extensionstatus(self, astid, event):
@@ -2944,14 +2949,16 @@ class XivoCTICommand(BaseCommand):
                         tosend['astid'] = astid
                         self.__send_msg_to_cti_clients__(self.__cjson_encode__(tosend), astid, context)
             elif hint.startswith('user:'):
-                log.warning('%s : user:xxx hint (phone %s not watched but present) : %s' % (astid, exten, event))
+                log.warning('%s : user:xxx hint (phone %s not watched but present) : %s'
+                            % (astid, exten, event))
                 # {'Status': '4', 'Hint': 'user:218', 'Exten': '218', 'ActionID': 'pPKvoLQ97b', 'Context': 'default', ''})
             else:
                 log.warning('%s : undefined hint : %s' % (astid, event))
                 # {'Status': '0', 'Hint': 'Custom:user:105', 'Exten': '105', 'ActionID': 'RBx7j3NSwI', 'Context': 'default'}
         else:
             event.pop('Hint')
-            log.warning('%s : empty hint (watched or not, the phone %s is not present) : %s' % (astid, exten, event))
+            log.warning('%s : empty hint (watched or not, the phone %s is not present) : %s'
+                        % (astid, exten, event))
             # {'Status': '-1', 'Hint': '', 'Exten': '205', 'ActionID': 'MfW1kqRV3j', 'Context': 'default', ''}
         return
 

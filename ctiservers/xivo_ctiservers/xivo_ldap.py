@@ -27,7 +27,7 @@ __author__    = 'Corentin Le Gall'
 LDAP class.
 """
 
-# http://www.ietf.org/rfc/rfc2255.txt
+# http://www.ietf.org/rfc/rfc4516.txt # obsoletes 2255
 
 import ldap
 import logging
@@ -107,7 +107,7 @@ class xivo_ldap:
         except ldap.LDAPError, exc:
             log.exception('__init__: ldap.LDAPError (%r, %r, %r)', self.ldapobj, iuri, exc)
             self.ldapobj = None
-            
+
     def getldap(self, xfilter, attrib):
         if self.ldapobj is None:
             self.__init__(self.iuri)

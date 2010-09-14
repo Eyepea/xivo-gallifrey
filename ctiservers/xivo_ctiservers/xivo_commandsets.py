@@ -54,7 +54,7 @@ class BaseCommand:
 
     def handle_outsock(self, astid, msg):
         return
-    def checkqueue(self):
+    def checkqueue(self, buf):
         return
     def clear_disconnlist(self):
         return

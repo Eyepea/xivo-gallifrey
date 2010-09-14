@@ -799,8 +799,7 @@ class manage_connection:
         return
 
     @staticmethod
-    def checkqueue_main(daemon):
-        buf = os.read(daemon.pipe_queued_threads_main[0], 1024)
+    def checkqueue_main(daemon, buf):
         log.info('checkqueue_main : read buf = %s, tqueue size = %d' % (buf, daemon.tqueue.qsize()))
         while daemon.tqueue.qsize() > 0:
             thisthread = daemon.tqueue.get()
@@ -1237,7 +1236,9 @@ class xivo_daemon:
                     else:
                         self.commandclass.reset('reload', s)
                 if isinstance(s, int):
-                    os.close(s)
+                    # the only ones are the (read) pipes : no need to close/reopen them
+                    # os.close(s)
+                    pass
                 else:
                     s.close()
 
@@ -1449,31 +1450,39 @@ class xivo_daemon:
                     # local pipe fd
                     elif self.pipe_queued_threads_commandclass[0] == sel_i: # {
                         try:
-                            actionqueue = self.commandclass.checkqueue()
-                            for actionname, actionarg in actionqueue.iteritems():
-                                if actionname == 'disconnlist-tcp':
-                                    # disconnect when timeout after first connection
-                                    disconnlist = actionarg
-                                    if disconnlist:
-                                        log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
-                                        for connid in disconnlist:
-                                            try:
-                                                self.commandclass.telldisconn(connid)
-                                            except Exception:
-                                                log.exception('disconnlist-tcp')
+                            pipebuf = os.read(sel_i, 1024)
+                            if len(pipebuf) == 0:
+                                log.warning('pipe_queued_threads_commandclass has been closed')
+                            else:
+                                actionqueue = self.commandclass.checkqueue(pipebuf)
+                                for actionname, actionarg in actionqueue.iteritems():
+                                    if actionname == 'disconnlist-tcp':
+                                        # disconnect when timeout after first connection
+                                        disconnlist = actionarg
+                                        if disconnlist:
+                                            log.warning('checkqueue return : should disconnect %d connections' % len(disconnlist))
+                                            for connid in disconnlist:
+                                                try:
+                                                    self.commandclass.telldisconn(connid)
+                                                except Exception:
+                                                    log.exception('disconnlist-tcp')
 
-                                            log.info('TCP socket %s closed(disconnlist) on %s'
-                                                     % (self.fdlist_established[connid],
-                                                        '%s:%d' % connid.getpeername()))
-                                            del self.fdlist_established[connid]
-                                            connid.close()
+                                                log.info('TCP socket %s closed(disconnlist) on %s'
+                                                         % (self.fdlist_established[connid],
+                                                            '%s:%d' % connid.getpeername()))
+                                                del self.fdlist_established[connid]
+                                                connid.close()
                         except Exception:
                             log.exception('[pipe_queued_threads_commandclass]')
 
                     # }
                     elif self.pipe_queued_threads_main[0] == sel_i: # {
                         try:
-                            manage_connection.checkqueue_main(self)
+                            pipebuf = os.read(sel_i, 1024)
+                            if len(pipebuf) == 0:
+                                log.warning('pipe_queued_threads_main has been closed')
+                            else:
+                                manage_connection.checkqueue_main(self, pipebuf)
                         except Exception:
                             log.exception('[pipe_queued_threads_main]')
 
