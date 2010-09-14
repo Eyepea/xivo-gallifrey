@@ -218,6 +218,17 @@ class CiscoRemoteFile(RemoteFile):
         return f
 
 
+class NortelRemoteFile(RemoteFile):
+    def __init__(self, filename, url, size, sha1sum, nnAkamaiAuth):
+        RemoteFile.__init__(self, filename, url, size, sha1sum)
+        self._nnAkamaiAuth = nnAkamaiAuth
+        
+    def open_src(self):
+        request = urllib2.Request(self.url)
+        request.add_header('Cookie',  'nnAkamaiAuth=' + self._nnAkamaiAuth)
+        return OPENER.open(request)
+
+
 class FirmwareInstallationError(Exception):
     """ Raised when a problem occurs during a firmware installation. """
     pass
@@ -468,7 +479,12 @@ def load():
             url = config.get(xfile, 'url')
             size = config.getint(xfile, 'size')
             sha1sum = config.get(xfile, 'sha1sum')
-            remote_files.append(remote_file_class(xfile, url, size, sha1sum))
+            if brand == 'Nortel':
+                nnAkamaiAuth = config.get(xfile, 'nnAkamaiAuth')
+                cur_remote_file = NortelRemoteFile(xfile, url, size, sha1sum, nnAkamaiAuth)
+            else:
+                cur_remote_file = remote_file_class(xfile, url, size, sha1sum)
+            remote_files.append(cur_remote_file)
         
         fw = Firmware(fw_name, brand, model, version, remote_files)
         

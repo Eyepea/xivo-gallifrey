@@ -610,6 +610,7 @@ files: SIP12x0e03.02.16.00.bin
 url: http://www116.nortel.com/software/i/ipphones/12xx/SIP12x0e03.02.16.00.bin
 size: 3999622
 sha1sum: 5ae3853c30a0ef61ba3f66d382fcafc0706e529e
+nnAkamaiAuth: access=/software/i/ipphones/12xx/SIP12x0e03.02.16.00.bin*~md5=e518d8db607312349dabb60e240e1495
 
 # Polycom SoundPoint IP 301
 [pcspip301_316]
