@@ -45,8 +45,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 	function set($arr)
     {
         $this->_reset();
-
-        if($this->_prov->chk_values($arr) === false)
+        if(($arr = $this->_prov->chk_values($arr)) === false)
             $this->_set_errors($this->_prov->get_filter_error());
 
 				if($this->get_errnb() > 0)
@@ -60,7 +59,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 				}
 
 				if($this->_prov->edit(1, $arr) === false)
-            return false;
+					return false;
 
         // update commonconf via sysconfd
         return $this->_commonconf->generate();
