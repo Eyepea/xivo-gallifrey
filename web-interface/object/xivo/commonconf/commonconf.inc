@@ -225,7 +225,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.registrar.backup.ip' => $rawdata['registrar_backup'],
             'xivo.proxy.main.ip'       => $rawdata['proxy_main'],
             'xivo.proxy.backup.ip'     => $rawdata['proxy_backup'],
-            'xivo.voip.vlan.id'        => intval($rawdata['vlan_id'])==0?null:intval($rawdata['vlan_id']),
+            'xivo.voip.vlan.id'        => intval($rawdata['vlan_id'])==0?'':intval($rawdata['vlan_id']),
 					));
 
         return $this->_sysconfd->request_post('/commonconf_generate', $conf);
