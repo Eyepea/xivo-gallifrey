@@ -179,7 +179,7 @@ LangString SuccessInstall \${LANG_ENGLISH}  "The installation was successful, do
 LangString SuccessInstall \${LANG_FRENCH}  "L'installation a réussi, voulez-vous lancer le xivoclient maintenant ?"
 
 Function .onInstSuccess
-  MessageBox MB_YESNO  \$(SuccessInstall) IDNO NoReadme
+  MessageBox MB_YESNO  \$(SuccessInstall) /SD IDNO IDNO NoReadme
   ExecShell "open" \$INSTDIR/xivoclient.exe
   NoReadme:
 FunctionEnd
