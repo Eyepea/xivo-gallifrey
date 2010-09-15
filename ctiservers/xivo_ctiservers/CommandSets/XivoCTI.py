@@ -725,7 +725,7 @@ class XivoCTICommand(BaseCommand):
 
         self.zipsheets = bool(int(xivocticonf.get('zipsheets', '1')))
         self.regupdates = xivocticonf.get('regupdates', {})
-        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'].replace('\\/', '/'))
+        allowedxlets = self.__json2dict__(xivocticonf['allowedxlets'].replace('\/', '/'))
 
         for name, val in xivocticonf['profiles'].iteritems():
             if name not in self.capas:

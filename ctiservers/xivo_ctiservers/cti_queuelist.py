@@ -220,17 +220,18 @@ class QueueStats:
 
 class QueueList(AnyList):
     def __init__(self, newurls = [], misc = None):
-        self.anylist_properties = {
-            'keywords' : ['number', 'context', 'queuename'],
-            'name' : 'queues',
-            'action' : 'getqueueslist',
-            'urloptions' : (1, 5, True)}
+        self.anylist_properties = { 'keywords' : ['number', 'context', 'queuename'],
+                                    'name' : 'queues',
+                                    'action' : 'getqueueslist',
+                                    'urloptions' : (1, 5, True)
+                                    }
         AnyList.__init__(self, newurls)
 
         try:
-            self.stats = QueueStats(misc["conf"].xc_json['main']['asterisk_queuestat_db'].replace("\\/","/"));
+            queuestatpath = misc["conf"].xc_json['main']['asterisk_queuestat_db']
+            self.stats = QueueStats(queuestatpath.replace('\/','/'));
         except Exception:
-            log.exception('could not access queuestats db')
+            log.exception('could not access queuestats db (%s)' % queuestatpath)
             self.stats = None
 
         return
