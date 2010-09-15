@@ -33,11 +33,18 @@ import xmlrpclib
 log = logging.getLogger('extrarequests')
 
 def getvariables(fileuri, itemdir):
-    k = urllib.urlopen(fileuri)
+    myret = {}
+    try:
+        k = urllib.urlopen(fileuri)
+    except IOError, exc:
+        log.warning('getvariables %s : unable to open uri (%s)' % (fileuri, exc))
+        return myret
+    except Exception:
+        log.exception('getvariables %s' % fileuri)
+        return myret
     json_c = k.read()
     k.close()
     jcs = cjson.decode(json_c)
-    myret = {}
 
     t1 = time.time()
     for jc in jcs:
