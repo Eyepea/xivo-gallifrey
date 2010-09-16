@@ -40,7 +40,8 @@ def parse_cmd_line():
     parser.add_option("-w", "--web-config-uri", dest="webconfig_uri", type="string",
                       help="specify a queuelogger webconfig URI to be sure to use"
                            " the same database than the one used by the xivo_daemon",
-                      metavar="https://loc...", default="")
+                      metavar="https://loc...",
+                      default="https://localhost/service/ipbx/json.php/private/queuelogger/configuration")
 
     parser.add_option("-i", "--ip", dest="ip", type="string",
                       help="monitor AMI ip", metavar="127.0.0.1",
