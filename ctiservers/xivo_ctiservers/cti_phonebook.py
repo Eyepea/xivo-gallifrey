@@ -55,8 +55,8 @@ class PhoneBook(AnyList):
                                                    'phonebooknumber.home.number',
                                                    'phonebooknumber.other.number'
                                                    ],
-                                   'name' : 'phonebook',
-                                   'action' : 'getphonebook',
-                                   'urloptions' : (1, 5, True)}
+                                    'name' : 'phonebook',
+                                    'action' : 'getphonebook',
+                                    'urloptions' : (1, 5, True)}
         AnyList.__init__(self, newurls)
         return

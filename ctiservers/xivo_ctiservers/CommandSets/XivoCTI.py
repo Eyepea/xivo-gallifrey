@@ -5743,15 +5743,19 @@ class XivoCTICommand(BaseCommand):
                     elif kind == 'agent':
                         props['id'] = self.weblist['agents'][astid].keeplist.keys()
                 else:
-                    props['id'] = kid
                     if kind == 'agent':
+                        props['id'] = [kid]
                         agentnum = self.weblist['agents'][astid].keeplist[kid].get('agentnum')
                         props['channels'] = self.__find_channel_by_agentnum__(astid, agentnum)
                     elif kind == 'queue':
+                        props['id'] = [kid]
                         props['channels'] = self.weblist['queues'][astid].keeplist[kid]['channels'].keys()
                     elif kind == 'chan':
+                        props['id'] = kid
                         [d1, d2, channel] = fullid.split(':', 2)
                         props['channel'] = channel
+                    else:
+                        props['id'] = kid
             elif xid == 'special:me':
                 props['astid'] = uinfo.get('astid')
                 props['userinfo'] = uinfo
