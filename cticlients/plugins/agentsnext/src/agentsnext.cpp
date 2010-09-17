@@ -37,7 +37,7 @@ Q_EXPORT_PLUGIN2(xletagentsnextplugin, XLetAgentsNextPlugin);
 
 XLet* XLetAgentsNextPlugin::newXLetInstance(QWidget *parent)
 {
-    b_engine->registerTranslation(":/agentnext_%1");
+    b_engine->registerTranslation(":/agentsnext_%1");
     return new XletAgentsNext(parent);
 }
 
