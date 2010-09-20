@@ -16,6 +16,9 @@ Services
 ; smenu_signalling
 Signalisation
 
+; smenu_queueskills
+Compétences
+
 ; smenu_groups
 Groupes
 
@@ -759,9 +762,6 @@ Activer le T38 (TCP) :
 
 ; fm_protocol_t38pt-usertpsource
 Utiliser l'adresse IP source comme destination pour le T38 :
-
-; smenu_queueskills
-Compétences
 
 ; fm_queueskills_item
 Pondération des compétences

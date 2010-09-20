@@ -28,11 +28,11 @@ Provisioning
 ; smenu_advanced
 Advanced
 
-; smenu_codecs
-Codecs
-
 ; smenu_rightcalls
 Call permissions
+
+; smenu_t38
+T38
 
 ; fm_userfeatures_firstname
 First name:
@@ -45,6 +45,9 @@ Username:
 
 ; fm_protocol_secret
 Password:
+
+; fm_userfeatures_number
+Phone number:
 
 ; fm_protocol_interface
 Interface:
@@ -190,9 +193,6 @@ Disabled
 ; fm_protocol_rtpkeepalive-opt
 %s seconds
 
-; fm_userfeatures_number
-Phone number:
-
 ; fm_userfeatures_ringseconds
 Ringing time:
 
@@ -229,8 +229,14 @@ Simultaneous calls:
 ; fm_userfeatures_musiconhold
 On-Hold Music:
 
+; fld-client
+XIVO Client
+
 ; fm_userfeatures_enableclient
 Enable XIVO Client:
+
+; fld-services
+Services
 
 ; fm_userfeatures_enablehint
 Enable supervision:
@@ -252,6 +258,9 @@ Incoming call filtering:
 
 ; fm_userfeatures_enablednd
 Do not disturb:
+
+; fld-callforwards
+Call forwards
 
 ; fm_userfeatures_enablerna
 Forward on no-answer:
@@ -717,9 +726,6 @@ Use the source IP address as the destination for the T38:
 
 ; col_1
 Skill
-
-; smenu_t38
-T38
 
 ; fm_userfeatures_profileclient
 Profile:
