@@ -391,7 +391,7 @@ void ConfigWidget::_insert_operatorxlet_tab()
     m_operator_answer_work->setCheckState((b_engine->getGuiOptions("client_gui").value("xlet_operator_answer_work", 1).toInt()) ? Qt::Checked : Qt::Unchecked);
     glayout->addWidget(m_operator_answer_work, ++i , 1, 1, 2);
 
-    glayout->addWidget(new QLabel(tr("Any change here requires an application restart to be in effecteffective")), ++i, 1, 1, 2);
+    glayout->addWidget(new QLabel(tr("Any change here requires an application restart to be effective")), ++i, 1, 1, 2);
 
     m_tabwidget->addTab(root_widget, tr("Operator Xlet"));
 }
