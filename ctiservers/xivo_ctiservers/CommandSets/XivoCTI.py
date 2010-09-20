@@ -5751,9 +5751,10 @@ class XivoCTICommand(BaseCommand):
                         props['id'] = [kid]
                         props['channels'] = self.weblist['queues'][astid].keeplist[kid]['channels'].keys()
                     elif kind == 'chan':
+                        [kid, channel] = xid.split(':', 2)
                         props['id'] = kid
-                        [d1, d2, channel] = fullid.split(':', 2)
                         props['channel'] = channel
+                        props['userinfo'] = self.ulist_ng.keeplist.get(kid)
                     else:
                         props['id'] = kid
             elif xid == 'special:me':
