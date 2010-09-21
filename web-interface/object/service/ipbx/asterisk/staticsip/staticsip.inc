@@ -40,10 +40,10 @@ class xivo_service_asterisk_realstatic_staticsip extends xivo_service_asterisk_r
 	{
 		if(is_object($this->_uri) === true)
 			return(true);
-		else if(dwho::load_class('dwho_uri') === false)
+		else if(dwho::load_class('dwho_asterisk_uri','','asturi') === false)
 			return(false);
 
-		$this->_uri = new dwho_uri();
+		$this->_uri = new dwho_asterisk_uri();
 
 		return(true);
 	}
