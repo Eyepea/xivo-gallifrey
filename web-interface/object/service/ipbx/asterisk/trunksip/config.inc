@@ -319,7 +319,7 @@ $array['element']['category']['forcedef'] = true;
 dwho::load_class('dwho_network');
 
 $array['filter'] = array();
-$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9@+_-]+$/i');
+$array['filter']['name'] = array('minlen' => 1,'maxlen' => 40,'regexp' => '/^[a-z0-9@+._-]+$/i');
 $array['filter']['type'] = array('set' => false,'chk' => 2,'key' => array('user','peer','friend'));
 $array['filter']['username'] = array('set' => false,'chk' => 2,'maxlen' => 80,'cast' => 'sgraph');
 $array['filter']['secret'] = array('set'	=> false,
