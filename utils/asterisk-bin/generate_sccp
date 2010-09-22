@@ -27,11 +27,22 @@ from xivo.provisioning import get_funckeys
 
 cursor = db_connect().cursor()
 
+codecs = {'allow': None, 'disallow': None}
 cursor.query("SELECT ${columns} FROM staticsccp WHERE commented = 0 AND var_val IS NOT NULL ORDER BY var_name",
     ('var_name', 'var_val'))
 print "[general]"
 for r in cursor.fetchall():
-    print "%s = %s" % (r['var_name'], r['var_val'])
+    if r['var_name'] not in ['allow', 'disallow']:
+        print "%s = %s" % (r['var_name'], r['var_val'])
+    else:
+		    codecs[r['var_name']] = r['var_val']
+
+if codecs['disallow'] is not None:
+    print "disallow = %s" % codecs['disallow']
+if codecs['allow'] is not None:
+    print "allow = %s" % codecs['allow']
+
+
 
 #
 # Generate devices sections
