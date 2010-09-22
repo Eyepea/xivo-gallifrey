@@ -351,6 +351,15 @@ endif;
 				    'selected'	=> $info['protocol']['videosupport']),
 			      $element['protocol']['videosupport']['value']),
 
+		$form->text(array('desc'	=> $this->bbf('fm_protocol_outboundproxy'),
+				  'name'	=> 'protocol[outboundproxy]',
+				  'labelid'	=> 'protocol-outboundproxy',
+				  'size'	=> 10,
+				  'default'	=> $element['protocol']['outboundproxy']['default'],
+				  'value'	=> $info['protocol']['outboundproxy'],
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'protocol', 'outboundproxy')) )),
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_maxcallbitrate'),
 				  'name'	=> 'protocol[maxcallbitrate]',
 				  'labelid'	=> 'protocol-maxcallbitrate',

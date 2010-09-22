@@ -1802,6 +1802,7 @@ CREATE TABLE `usersip` (
  `lastms` varchar(15) NOT NULL DEFAULT '',
  `protocol` enum('sip') NOT NULL DEFAULT 'sip',
  `category` enum('user','trunk') NOT NULL,
+ `outboundproxy` varchar(1024),  
  `commented` tinyint(1) NOT NULL DEFAULT 0, -- user / peer --
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
@@ -1820,7 +1821,7 @@ INSERT INTO `usersip` VALUES (1,'guest','friend','guest','guest','','xivo-initco
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                               NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-                              'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',0);
+                              'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',NULL,0);
 
 
 DROP TABLE IF EXISTS `voicemail`;

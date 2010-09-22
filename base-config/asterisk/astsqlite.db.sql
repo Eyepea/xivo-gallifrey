@@ -1724,6 +1724,7 @@ CREATE TABLE usersip (
  lastms varchar(15) NOT NULL DEFAULT '',
  protocol char(3) NOT NULL DEFAULT 'sip',
  category varchar(5) NOT NULL,
+ outboundproxy varchar(1024),
  commented tinyint(1) NOT NULL DEFAULT 0,
  PRIMARY KEY(id)
 );
@@ -1742,7 +1743,7 @@ INSERT INTO usersip VALUES (1,'guest','friend','guest','guest','','xivo-initconf
                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,
                             NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'XIVO_USERID=1',
-                            'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',0);
+                            'dynamic',NULL,NULL,NULL,NULL,NULL,NULL,'',0,NULL,'','sip','user',NULL,0);
 
 
 DROP TABLE voicemail;

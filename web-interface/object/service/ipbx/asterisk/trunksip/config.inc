@@ -315,6 +315,8 @@ $array['element']['category'] = array();
 $array['element']['category']['default'] = 'trunk';
 $array['element']['category']['forcedef'] = true;
 
+$array['element']['outboundproxy'] = array();
+$array['element']['outboundproxy']['default'] = '';
 
 dwho::load_class('dwho_network');
 
@@ -421,5 +423,6 @@ $array['filter']['regserver'] = array('set' => false,'chk' => 0);
 $array['filter']['lastms'] = array('set' => false,'chk' => 0);
 $array['filter']['protocol'] = array('set' => false);
 $array['filter']['category'] = array('set' => false);
+$array['filter']['outboundproxy'] = array('set' => false, 'chk' => 2);
 
 ?>
