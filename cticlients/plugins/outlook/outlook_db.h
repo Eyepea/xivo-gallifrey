@@ -7,7 +7,6 @@
 #include <QtSql>
 
 class COLDB {
-Q_OBJECT
 public:
 	COLDB();
 	virtual ~COLDB();

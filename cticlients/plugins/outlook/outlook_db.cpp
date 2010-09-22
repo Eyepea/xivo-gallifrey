@@ -12,7 +12,7 @@
 #include "outlook_tools.h"
 
 // we store outlook addresses in
-// <user's directory>\Application Data\Proformatique\xivoclient\outlook.db
+// <user's directory>\Application Data\XiVO\xivoclient\outlook.db
 
 static QString get_local_db()
 {
@@ -21,7 +21,7 @@ static QString get_local_db()
         // <user's directory>\Application Data
         strPath = getenv("APPDATA");
 
-        strPath += "\\Proformatique";
+        strPath += "\\XiVO";
         if ( !OLPathExist(strPath) && !OLCreateDirectory(strPath) ) {
             // bla bla bla
             strPath = "";
@@ -61,7 +61,7 @@ bool COLDB::open() {
 bool COLDB::table_exist(const QString & strTableName) {
     QSqlQuery query(m_db);
     QString strQuery = "SELECT count(*) FROM ";
-    strQuery+=strTableName;
+    strQuery += strTableName;
 
     return query.exec(strQuery);
 }
@@ -73,16 +73,7 @@ void COLDB::close() {
 bool COLDB::create() {
     QSqlQuery query(m_db);
 
-    QHash <QString, QString> column;
     QHash <QString, int> displayable;
-    column["FirstName"] = tr("First Name");
-    column["LastName"] = tr("Last Name");
-    column["FullName"] = tr("Full Name");
-    column["BusinessTelephoneNumber"] = tr("Business Phone");
-    column["MobileTelephoneNumber"] = tr("Mobile Phone");
-    column["HomeTelephoneNumber"] = tr("Home Phone");
-    column["Email1Address"] = tr("Email Address");
-    column["EntryID"] = tr("EntryID");
     displayable["FirstName"] = 0;
     displayable["LastName"] = 0;
     displayable["FullName"] = 1;
@@ -93,52 +84,50 @@ bool COLDB::create() {
     displayable["EntryID"] = 0;
 
     if ( !table_exist("props_def") ) {
-        if ( !query.exec("CREATE TABLE props_def(\
-	PROP_ID INTEGER PRIMARY KEY,             \
-	NAME TEXT NOT NULL DEFAULT '',           \
-	DISPLAY_NAME TEXT NOT NULL DEFAULT '',\
-	DISPLAYABLE INT(1) NOT NULL DEFAULT 0)") ) {
+        if ( !query.exec("CREATE TABLE props_def("
+                         "PROP_ID INTEGER PRIMARY KEY,"
+                         "NAME TEXT NOT NULL DEFAULT '',"
+                         "DISPLAYABLE INT(1) NOT NULL DEFAULT 0)") )
             // bla bla bla
             return false;
-        }
 
-        foreach (QString key, column.keys()) {
-            QString request = QString("INSERT INTO props_def(name, display_name, displayable) "
-                                      "values('%1', '%2', %3)").arg(key).arg(column[key]).arg(displayable[key]);
+        foreach (QString key, displayable.keys()) {
+            QString request = QString("INSERT INTO props_def(name, displayable) "
+                                      "values('%1', %2)").arg(key).arg(displayable[key]);
             if ( !query.exec(request) )
-                /* bla bla bla */ return false;
+                /* bla bla bla */
+                return false;
         }
     }
 
     if ( !table_exist("folders") ) {
-        if ( !query.exec("CREATE TABLE folders(\
-	ID INTEGER PRIMARY KEY)") ) {
+        if ( !query.exec("CREATE TABLE folders("
+                         "ID INTEGER PRIMARY KEY)") )
             // bla bla bla
             return false;
-        }
-
-        if ( !query.exec("INSERT INTO folders(id) values(10)")) { /* bla bla bla */ return false;}
+        
+        if ( !query.exec("INSERT INTO folders(id) values(10)"))
+            /* bla bla bla */
+            return false;
     }
 
     if ( !table_exist("contacts") ) {
-        if ( !query.exec("CREATE TABLE contacts(\
-	CONTACT_ID INTEGER PRIMARY KEY,         \
-	FOLDER_ID INTEGER NOT NULL DEFAULT 0,   \
-	CREATED REAL NOT NULL DEFAULT 0,                \
-	LAST_MODIFIED REAL NOT NULL DEFAULT 0)") ) {
+        if ( !query.exec("CREATE TABLE contacts("
+                         "CONTACT_ID INTEGER PRIMARY KEY,"
+                         "FOLDER_ID INTEGER NOT NULL DEFAULT 0,"
+                         "CREATED REAL NOT NULL DEFAULT 0,"
+                         "LAST_MODIFIED REAL NOT NULL DEFAULT 0)") )
             // bla bla bla
             return false;
-        }
     }
 
     if ( !table_exist("props_vals") ) {
-        if ( !query.exec("CREATE TABLE props_vals(\
-	CONTACT_ID INTEGER NOT NULL DEFAULT 0, \
-	PROP_ID INTEGER NOT NULL DEFAULT 0, \
-	PROP_VALUE TEXT NOT NULL DEFAULT '')") ) {
+        if ( !query.exec("CREATE TABLE props_vals("
+                         "CONTACT_ID INTEGER NOT NULL DEFAULT 0,"
+                         "PROP_ID INTEGER NOT NULL DEFAULT 0,"
+                         "PROP_VALUE TEXT NOT NULL DEFAULT '')") )
             // bla bla bla
             return false;
-        }
     }
 
     return true;
@@ -148,17 +137,15 @@ bool COLDB::load_props_def(COLPropsDef & props_def) {
 
     QSqlQuery query(m_db);
 
-    if ( !query.exec("SELECT prop_id, name, display_name, displayable FROM props_def") ) {
+    if ( !query.exec("SELECT prop_id, name, displayable FROM props_def") )
         // bla bla bla
         return FALSE;
-    }
 
     while(query.next()) {
         props_def.insert(query.value(1).toString(),
                          COLPropDef(query.value(0).toLongLong(),
                                     query.value(1).toString(),
-                                    query.value(2).toString(),
-                                    query.value(3).toBool()));
+                                    query.value(2).toBool()));
     }
 
     return true;
@@ -167,10 +154,9 @@ bool COLDB::load_props_def(COLPropsDef & props_def) {
 bool COLDB::load_contacts(COLContacts & contacts) {
     QSqlQuery query(m_db);
 
-    if ( !query.exec("SELECT contact_id, folder_id, created, last_modified from contacts")) {
+    if ( !query.exec("SELECT contact_id, folder_id, created, last_modified from contacts"))
         // bla bla bla
         return false;
-    }
 
     COLContact contact;
     while( query.next() ) {
@@ -184,10 +170,9 @@ bool COLDB::load_contacts(COLContacts & contacts) {
 
         QSqlQuery query2(m_db);
         QString strQuery=QString("select a.name, b.prop_value from props_def a, props_vals b where a.prop_id=b.prop_id and b.contact_id=")+QString::number(c.m_nID);
-        if ( !query2.exec(strQuery) ) {
+        if ( !query2.exec(strQuery) )
             // bla bla bla
             return FALSE;
-        }
 
         while( query2.next() ) {
             c.m_properties.insert(query2.value(0).toString(), query2.value(1).toString());
@@ -202,7 +187,7 @@ bool COLDB::create_contact(COLContact & contact, const COLPropsDef & props_def) 
     sqlite3_stmt * stmt;
 
     QString strQuery = "insert into contacts(created, last_modified) values (?1,?2)";
-    int error=sqlite3_prepare_v2(m_pDB, strQuery.toUtf8(), -1, &stmt, NULL);
+    int error = sqlite3_prepare_v2(m_pDB, strQuery.toUtf8(), -1, &stmt, NULL);
     if ( error != SQLITE_OK ) {
         // bla bla bla
         qDebug() << "sqlite3_prepare_v2: " << strQuery;
@@ -213,7 +198,7 @@ bool COLDB::create_contact(COLContact & contact, const COLPropsDef & props_def) 
     sqlite3_bind_double(stmt, 1, contact.m_dtCreate);
     sqlite3_bind_double(stmt, 2, contact.m_dtLastModified);
 
-    error=sqlite3_step(stmt);
+    error = sqlite3_step(stmt);
     if ( (error != SQLITE_OK) && (error != SQLITE_DONE) && (error != SQLITE_ROW) ) {
         // bla bla bla
         qDebug() << "sqlite3_prepare_v2: " << strQuery;
@@ -222,7 +207,7 @@ bool COLDB::create_contact(COLContact & contact, const COLPropsDef & props_def) 
         return false;
     }
 
-    contact.m_nID=sqlite3_last_insert_rowid(m_pDB);
+    contact.m_nID = sqlite3_last_insert_rowid(m_pDB);
 
     sqlite3_finalize(stmt);
 
