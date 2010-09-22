@@ -12,7 +12,6 @@ setup(
       author_email='technique@proformatique.com',
       url='http://xivo.fr/',
       packages=['xivo_queuelogger'],
-      scripts=['queuelogger'],
       license="GNU General Public License 3",
       data_files=[
           ('/usr/sbin', ['queuelogger']),
