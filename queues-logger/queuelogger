@@ -4,10 +4,12 @@
 __version__   = '$Revision$'
 __date__      = '$Date$'
 
+import cjson
+import logging
+from logging.handlers import RotatingFileHandler
 import sys
 import time
 import urllib2
-import cjson
 
 from optparse import OptionParser
 
@@ -16,7 +18,10 @@ from xivo_queuelogger.ami_conn import *
 from xivo_queuelogger.ami_logger import *
 
 DAEMONNAME = 'queues-logger'
+LOGDAEMONNAME = DAEMONNAME
 PIDFILE = '/var/run/%s.pid' % DAEMONNAME
+XIVO_CONF_FILE = 'https://localhost/service/ipbx/json.php/private/queuelogger/configuration'
+LOGFILENAME = '/var/log/pf-xivo-queues-logger/daemon.log'
 
 usage = \
 '''
@@ -29,33 +34,40 @@ usage = \
  * 3: your credential are wrong - verify your login/password
  * 4: *impossible*
 '''
+
 def parse_cmd_line():
 # {
     parser = OptionParser(usage)
 
     parser.add_option("-u", "--uri", dest="anysql_uri", type="string",
-                      help="an anysql uri", metavar="",
+                      help="an anysql uri",
+                      metavar="",
                       default="sqlite3:/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db")
 
     parser.add_option("-w", "--web-config-uri", dest="webconfig_uri", type="string",
-                      help="specify a queuelogger webconfig URI to be sure to use"
-                           " the same database than the one used by the xivo_daemon",
-                      metavar="https://loc...",
-                      default="https://localhost/service/ipbx/json.php/private/queuelogger/configuration")
+                      help="specify a queuelogger webconfig URI to be sure to use "
+                           "the same database than the one used by the xivo_daemon",
+                      metavar=XIVO_CONF_FILE,
+                      default=XIVO_CONF_FILE)
 
     parser.add_option("-i", "--ip", dest="ip", type="string",
-                      help="monitor AMI ip", metavar="127.0.0.1",
+                      help="monitor AMI ip",
+                      metavar="127.0.0.1",
                       default="127.0.0.1")
 
     parser.add_option("-p", "--port", dest="port", type="int",
-                      help="monitor AMI port", metavar="5038", default=5038)
+                      help="monitor AMI port",
+                      metavar="5038",
+                      default=5038)
 
     parser.add_option("-l", "--ami-user-login", dest="user", type="string",
-                      help="AMI user for login", metavar="xivouser",
+                      help="AMI user for login",
+                      metavar="xivouser",
                       default="xivouser")
 
     parser.add_option("-x", "--password", dest="password", type="string",
-                      help="AMI user password", metavar="xivouser",
+                      help="AMI user password",
+                      metavar="xivouser",
                       default="xivouser")
 
     parser.add_option("-d", "--debug", dest = "debug", action = "store_true",
@@ -64,45 +76,56 @@ def parse_cmd_line():
 
     (options, args) = parser.parse_args()
 
-
     return options
 # }
 
 def main():
-# (
-    options = parse_cmd_line()
+# {
+    # define the logging properties, before anything else
+    logging.basicConfig(level = logging.INFO)
+    log = logging.getLogger('main')
+    try:
+        logfilehandler = RotatingFileHandler(LOGFILENAME)
+        formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
+                                      % LOGDAEMONNAME)
+        logfilehandler.setFormatter(formatter)
+        logging.getLogger('').addHandler(logfilehandler)
+    except Exception:
+        log.exception('logfilehandler')
 
-    # fetch the database URI on a queue_logger JSON config
-    # normally something like
-    # https://localhost/service/ipbx/json.php/private/queuelogger/configuration
-    if options.webconfig_uri != "":
-        req = urllib2.Request(url=options.webconfig_uri)
-        config_file = cjson.decode(urllib2.urlopen(req).read())
-        options.anysql_uri = config_file["db_uri"]
-        
+    options = parse_cmd_line()
 
     if not options.debug:
         daemonize.daemonize()
     daemonize.lock_pidfile_or_die(PIDFILE)
-    
+
+    # fetch the database URI on a queue_logger JSON config
+    # normally something like XIVO_CONF_FILE
+    if options.webconfig_uri != "":
+        try:
+            req = urllib2.Request(url = options.webconfig_uri)
+            config_file = cjson.decode(urllib2.urlopen(req).read())
+            options.anysql_uri = config_file.get('db_uri')
+        except Exception, exc:
+            log.exception('Could not access to %s' % (options.webconfig_uri))
+            options.anysql_uri = None
+
     try:
         ami_conn(options)
     except socket.error, msg:
-        sys.stderr.write("Oops, Couldn t connect to AMI check,"\
-                         "ami ip/port (%s)\n" % msg)
+        log.exception('Unable to connect to AMI (%s)' % msg)
 
     time_before_retry = 1
 
     while time_before_retry:
-        loop_ret = ami_logger.loop(options)
+        if options.anysql_uri:
+            loop_ret = ami_logger.loop(options)
 
-        if loop_ret and loop_ret[1]>1:
-            sys.stderr.write(loop_ret[0])
-            return loop_ret[1]
-        elif loop_ret and loop_ret[1] != -3:
-            sys.stderr.write(loop_ret[0])
-            
-            
+            if loop_ret and loop_ret[1]>1:
+                log.error(loop_ret[0])
+                return loop_ret[1]
+            elif loop_ret and loop_ret[1] != -3:
+                log.error(loop_ret[0])
 
         time.sleep(time_before_retry)
         time_before_retry += 2
@@ -110,17 +133,15 @@ def main():
         try:
             ami_conn(options)
         except:
-            sys.stderr.write("%s:%d| Unable to reconnect, next try scheduled "\
-                             "in %d sec.\n" %\
-                             (options.ip, options.port, time_before_retry))
+            log.exception('%s:%d| Unable to reconnect, next try scheduled in %d sec'
+                          % (options.ip, options.port, time_before_retry))
 
     daemonize.unlock_pidfile(PIDFILE)
-    
+
     return 4
 # }
-
 
 try:
     sys.exit(main())
 except KeyboardInterrupt:
-    sys.stderr.write("\rbye")
+    sys.stderr.write('\nbye\n')
