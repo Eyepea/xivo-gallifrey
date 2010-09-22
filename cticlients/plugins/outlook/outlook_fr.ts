@@ -6,7 +6,7 @@
     <message>
         <location filename="outlook_panel.cpp" line="76"/>
         <source>Outlook</source>
-        <translation>Outlook</translation>
+        <translation>OutlookFR</translation>
     </message>
     <message>
         <location filename="outlook_panel.cpp" line="78"/>
