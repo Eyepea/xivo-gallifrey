@@ -12,7 +12,7 @@
 #include "outlook_tools.h"
 
 // we store outlook addresses in
-// <user's directory>\Application Data\XiVO\xivoclient\outlook.db
+// <user's directory>\Application Data\XIVO\xivoclient_outlook.db
 
 static QString get_local_db()
 {
@@ -21,21 +21,14 @@ static QString get_local_db()
         // <user's directory>\Application Data
         strPath = getenv("APPDATA");
 
-        strPath += "\\XiVO";
+        strPath += "\\XIVO";
         if ( !OLPathExist(strPath) && !OLCreateDirectory(strPath) ) {
             // bla bla bla
             strPath = "";
             return "";
         }
 
-        strPath += "\\xivoclient";
-        if ( !OLPathExist(strPath) && !OLCreateDirectory(strPath) ) {
-            // bla bla bla
-            strPath = "";
-            return "";
-        }
-
-        strPath += "\\outlook.db";
+        strPath += "\\xivoclient_outlook.db";
     }
     return strPath;
 }
