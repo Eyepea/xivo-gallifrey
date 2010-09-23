@@ -175,6 +175,9 @@ Frame automatique :
 ; fm_protocol_videosupport
 Support vidéo :
 
+; fm_protocol_outboundproxy
+Serveur proxy sortant : 
+
 ; fm_protocol_maxcallbitrate
 Bit rate maximal pour les appels vidéo :
 

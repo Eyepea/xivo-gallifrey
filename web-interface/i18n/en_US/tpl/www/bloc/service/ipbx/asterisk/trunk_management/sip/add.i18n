@@ -237,6 +237,9 @@ Autoframing :
 ; fm_protocol_videosupport
 Video support :
 
+; fm_protocol_outboundproxy
+Outbound proxy : 
+
 ; fm_protocol_maxcallbitrate
 Max call bitrate :
 
