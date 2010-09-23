@@ -6043,9 +6043,9 @@ class XivoCTICommand(BaseCommand):
             userinfo['state'] = 'xivo_unknown'
 
         cstatus = {}
-        statedetails = {'color' : 'grey',
-                        'longname' : PRESENCE_UNKNOWN,
-                        'stateid' : 'xivo_unknown'}
+        statedetails = { 'color' : 'grey',
+                         'longname' : PRESENCE_UNKNOWN,
+                         'stateid' : 'xivo_unknown' }
 
         if capaid and capaid in self.capas:
             allowed = {}
@@ -6407,7 +6407,8 @@ class XivoCTICommand(BaseCommand):
         if astid in self.sheetmanager and self.sheetmanager[astid].has_sheet(channel):
             newuser = '%s/%s' % (newuinfo.get('astid'), newuinfo.get('xivo_userid'))
             log.debug('%s __update_sheet_user__ %s from user %s to %s (%s)'
-                      % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser, newuser, newuinfo.get('fullname')))
+                      % (astid, channel, self.sheetmanager[astid].get_sheet(channel).currentuser,
+                         newuser, newuinfo.get('fullname')))
             if self.sheetmanager[astid].get_sheet(channel).currentuser == newuser:
                 # nothing to update !
                 return
@@ -6423,7 +6424,8 @@ class XivoCTICommand(BaseCommand):
                 self.__send_msg_to_cti_client__(olduinfo, self.__cjson_encode__(tosend))
             # faut-il tout d'abord envoyer la fiche a l'utilisateur ???
             if newuser not in self.sheetmanager[astid].get_sheet(channel).viewingusers:
-                log.debug('%s __update_sheet_user_ forwarding sheet to new user : %s' % (astid, self.sheetmanager[astid].get_sheet(channel).sheet))
+                log.debug('%s __update_sheet_user_ forwarding sheet to new user : %s'
+                          % (astid, self.sheetmanager[astid].get_sheet(channel).sheet))
                 tosend = { 'class' : 'sheet',
                            #'whom' : whoms,
                            'function' : 'displaysheet',
@@ -6456,7 +6458,8 @@ class XivoCTICommand(BaseCommand):
         """close the sheet if it is open on a user screen"""
         if self.sheetmanager[astid].get_sheet(channel).currentuser is not None:
             olduinfo = self.ulist_ng.keeplist[self.sheetmanager[astid].get_sheet(channel).currentuser]
-            log.debug('%s __sheet_disconnect__ olduser=%s' % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
+            log.debug('%s __sheet_disconnect__ olduser=%s'
+                      % (astid, self.sheetmanager[astid].get_sheet(channel).currentuser))
             tosend = { 'class': 'sheet',
                        'function': 'loseownership',
                        'astid': astid,

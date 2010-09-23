@@ -445,7 +445,10 @@ class manage_connection:
                         for number in numbers:
                             reverses = daemon.commandclass.findreverse(dirnames, number)
                             for number, rep in reverses.iteritems():
-                                connid.sendall('%s %s\n' % (number, rep))
+                                if isinstance(rep, unicode):
+                                    connid.sendall('%s %s\n' % (number, rep.encode('utf8')))
+                                else:
+                                    connid.sendall('%s %s\n' % (number, rep))
                 elif usefulmsg.startswith('disc '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -456,7 +459,8 @@ class manage_connection:
                                 socktoremove = sockid
                         if socktoremove:
                             connid.sendall('disconnecting %s (%s)\n'
-                                           % (socktoremove.getpeername(), daemon.fdlist_established[socktoremove]))
+                                           % (socktoremove.getpeername(),
+                                              daemon.fdlist_established[socktoremove]))
                             socktoremove.close()
                             del daemon.fdlist_established[socktoremove]
                         else:
@@ -838,8 +842,8 @@ class xivo_daemon:
     # ==============================================================================
     def __init__(self):
         # print sys.getdefaultencoding()
-        logging.basicConfig(level=logging.INFO)
-        #logging.basicConfig(level=logging.DEBUG)
+        logging.basicConfig(level = logging.INFO)
+        #logging.basicConfig(level = logging.DEBUG)
 
         global log
 
@@ -891,7 +895,6 @@ class xivo_daemon:
             print '--- living thread <%s>' % (t.getName())
             t._Thread__stop()
         self.askedtoquit = True
-
 
     ## \brief Handler for catching signals (in the main thread)
     # \param signum signal number

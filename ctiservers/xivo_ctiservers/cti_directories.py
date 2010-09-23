@@ -3,7 +3,7 @@
 
 __version__   = '$Revision$'
 __date__      = '$Date$'
-__copyright__ = 'Copyright (C) 2007-2010 Proformatique'
+__copyright__ = 'Copyright (C) 2010 Proformatique'
 __author__    = 'Corentin Le Gall'
 
 # This program is free software; you can redistribute it and/or modify
@@ -25,10 +25,12 @@ __author__    = 'Corentin Le Gall'
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import urllib
 from xivo import anysql
 from xivo.BackSQL import backmysql
 from xivo.BackSQL import backsqlite
 from xivo_ctiservers import xivo_ldap
+from xivo_ctiservers import cti_directories_csv
 
 log = logging.getLogger('directories')
 
@@ -102,44 +104,6 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
             except Exception:
                 log.exception('ldaprequest (directory)')
 
-        elif z.dbkind == 'file':
-            f = urllib.urlopen(z.uri)
-            n = 0
-            if reversedir:
-                matchkeywords = z.match_reverse
-            else:
-                matchkeywords = z.match_direct
-            for line in f:
-                if n == 0:
-                    header = line
-                    headerfields = header.strip().split(z.delimiter)
-                    revindex = []
-                    for mr in matchkeywords:
-                        if mr in headerfields:
-                            revindex.append(headerfields.index(mr))
-                else:
-                    # ll = line.strip()
-                    ll = line.decode('utf8').strip()
-                    t = ll.split(z.delimiter)
-                    matchme = False
-                    for ri in revindex:
-                        if ri < len(t):
-                            if t[ri].lower().find(searchpattern.lower()) >= 0:
-                                matchme = True
-                    if matchme:
-                        # XXX problem when badly set delimiter + index()
-                        futureline = {'xivo-directory' : z.name}
-                        for keyw, dbkeys in z.fkeys.iteritems():
-                            for dbkey in dbkeys:
-                                idx = headerfields.index(dbkey)
-                                futureline[keyw] = t[idx]
-                        fullstatlist.append(futureline)
-                n += 1
-            if n == 0:
-                log.warning('WARNING : %s is empty' % z.uri)
-            elif n == 1:
-                log.warning('WARNING : %s contains only one line (the header one)' % z.uri)
-
         elif z.dbkind == 'phonebook':
             if reversedir:
                 matchkeywords = z.match_reverse
@@ -163,6 +127,18 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
                                 if dbkey in v.keys():
                                     futureline[keyw] = v[dbkey]
                         fullstatlist.append(futureline)
+
+        elif z.dbkind == 'file':
+            if reversedir:
+                matchkeywords = z.match_reverse
+            else:
+                matchkeywords = z.match_direct
+            fullstatlist = cti_directories_csv.lookup(searchpattern.encode('utf8'),
+                                                      z.uri,
+                                                      matchkeywords,
+                                                      z.fkeys,
+                                                      z.delimiter,
+                                                      z.name)
 
         elif z.dbkind == 'http':
             if not reversedir:
