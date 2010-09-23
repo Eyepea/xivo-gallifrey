@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.4 to 1.1.5 =
+ 
+* Add missing 'outboundproxy' field in usersip table (ticket #1335)
