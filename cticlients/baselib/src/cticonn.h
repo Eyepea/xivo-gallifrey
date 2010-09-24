@@ -1,5 +1,5 @@
 /* XiVO Client
- * Copyright (C) 2010, Proformatique
+ * Copyright (C) 2007-2010, Proformatique
  *
  * This file is part of XiVO Client.
  *
@@ -46,7 +46,8 @@ class CtiConn : public QObject
     public:
         CtiConn(QTcpSocket *s);
     private slots:
-        void ctiSocketError(QAbstractSocket::SocketError socketError);
+        void ctiSocketError(QAbstractSocket::SocketError);
         void ctiSocketDisconnected();
+        void ctiSocketStateChanged(QAbstractSocket::SocketState);
 };
 #endif

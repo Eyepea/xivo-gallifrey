@@ -55,7 +55,7 @@ Var CheckboxShortcutStartState
 Page custom installMiscPage installMiscPageLeave ;Custom page
 
 Function installMiscPage
-  !insertmacro MUI_HEADER_TEXT \$(SHORTCUT_PAGE_TITLE)
+  !insertmacro MUI_HEADER_TEXT \$(SHORTCUT_PAGE_TITLE) ""
   nsDialogs::Create 1018
   Pop \$Dialog
   
@@ -132,14 +132,16 @@ Section "XiVO client executable" XivoclientExe ; components page
   WriteRegStr HKCR "callto" "URL Protocol" ""
   WriteRegStr HKCR "callto\shell\open\command" "" "\$INSTDIR\xivoclient.exe %1"
 
-  \${If} \$CheckboxShortcutDesktopState == \${BST_CHECKED} \${OrIf} \${Silent}
-    CreateShortCut "\$DESKTOP\xivoclient.lnk"  "\$INSTDIR\xivoclient.exe"
+  \${If} \$CheckboxShortcutDesktopState == \${BST_CHECKED}
+  \${OrIf} \${Silent}
+    CreateShortCut "\$DESKTOP\xivoclient.lnk" "\$INSTDIR\xivoclient.exe"
   \${EndIf}
 
-  \${If} \$CheckboxShortcutStartState == \${BST_CHECKED} \${OrIf} \${Silent}
+  \${If} \$CheckboxShortcutStartState == \${BST_CHECKED}
+  \${OrIf} \${Silent}
      CreateDirectory "\$SMPROGRAMS\XiVO"
-     CreateShortCut "\$SMPROGRAMS\XiVO\\\$(START_XIVOCLIENT)"  "\$INSTDIR\xivoclient.exe"
-     CreateShortCut "\$SMPROGRAMS\XiVO\\\$(REMOVE_XIVOCLIENT)"  "\$INSTDIR\uninstall.exe"
+     CreateShortCut  "\$SMPROGRAMS\XiVO\\\$(START_XIVOCLIENT)"  "\$INSTDIR\xivoclient.exe"
+     CreateShortCut  "\$SMPROGRAMS\XiVO\\\$(REMOVE_XIVOCLIENT)" "\$INSTDIR\uninstall.exe"
   \${EndIf}
 SectionEnd ; end the section
 
@@ -223,12 +225,12 @@ LangString REMOVE_XIVOCLIENT \${LANG_FRENCH}  "Désinstaller XiVO Client \${FULL
   !insertmacro MUI_DESCRIPTION_TEXT \${OpensslLib} \$(DESC_OpensslLib)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
-VIProductVersion "1.0.0.33"
-VIAddVersionKey /LANG=\${LANG_ENGLISH} "ProductName" "XiVO client installer"
-VIAddVersionKey /LANG=\${LANG_ENGLISH} "Comments" "XiVO client, phone helper"
-VIAddVersionKey /LANG=\${LANG_ENGLISH} "FileDescription" "XiVO client, phone helper installer"
+VIProductVersion "${XIVO_VERSION}-${SVN_VERSION}"
+VIAddVersionKey /LANG=\${LANG_ENGLISH} "ProductName" "XiVO client"
+VIAddVersionKey /LANG=\${LANG_ENGLISH} "Comments" "Computer Telephony Integration (CTI) client for XiVO"
+VIAddVersionKey /LANG=\${LANG_ENGLISH} "FileDescription" "XiVO client installer"
 VIAddVersionKey /LANG=\${LANG_ENGLISH} "FileVersion" "1"
-VIAddVersionKey /LANG=\${LANG_ENGLISH} "LegalCopyright" "© Bender Bending Rodríguez"
+VIAddVersionKey /LANG=\${LANG_ENGLISH} "LegalCopyright" "© 2007-2010, Proformatique"
 !
 
 wine /woot/Unicode/makensis.exe installer.nsi

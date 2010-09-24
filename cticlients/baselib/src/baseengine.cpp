@@ -100,10 +100,10 @@ BaseEngine::BaseEngine(QSettings *settings,
     // TCP connection for file transfer
     // (this could be moved to some other class)
     m_filetransfersocket = new QTcpSocket(this);
-    connect(m_filetransfersocket, SIGNAL(readyRead()),
-            this, SLOT(filetransferSocketReadyRead()));
     connect(m_filetransfersocket, SIGNAL(connected()),
             this, SLOT(filetransferSocketConnected()));
+    connect(m_filetransfersocket, SIGNAL(readyRead()),
+            this, SLOT(filetransferSocketReadyRead()));
 
     if (m_autoconnect)
         start();

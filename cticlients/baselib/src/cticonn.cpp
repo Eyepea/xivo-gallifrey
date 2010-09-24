@@ -1,5 +1,5 @@
 /* XiVO Client
- * Copyright (C) 2010, Proformatique
+ * Copyright (C) 2007-2010, Proformatique
  *
  * This file is part of XiVO Client.
  *
@@ -36,15 +36,17 @@
 CtiConn::CtiConn(QTcpSocket *s)
     : QObject(NULL)
 {
-    connect(s, SIGNAL(error(QAbstractSocket::SocketError)),
-            this, SLOT(ctiSocketError(QAbstractSocket::SocketError)));
     connect(s, SIGNAL(disconnected()),
             this, SLOT(ctiSocketDisconnected()));
+    connect(s, SIGNAL(error(QAbstractSocket::SocketError)),
+            this, SLOT(ctiSocketError(QAbstractSocket::SocketError)));
+    connect(s, SIGNAL(stateChanged(QAbstractSocket::SocketState)),
+            this, SLOT(ctiSocketStateChanged(QAbstractSocket::SocketState)));
 }
 
 void CtiConn::ctiSocketError(QAbstractSocket::SocketError socketError)
 {
-    qDebug() << Q_FUNC_INFO << socketError;
+    // qDebug() << Q_FUNC_INFO << socketError;
     switch(socketError) {
         // ~ once connected
         case QAbstractSocket::RemoteHostClosedError:
@@ -70,6 +72,8 @@ void CtiConn::ctiSocketError(QAbstractSocket::SocketError socketError)
             break;
 
         default:
+            // see http://doc.trolltech.com/4.6/qabstractsocket.html#SocketError-enum
+            // for unmanaged error cases
             b_engine->popupError(QString("socket_error_unmanagedyet:%1").arg(socketError));
             break;
     }
@@ -87,4 +91,15 @@ void CtiConn::ctiSocketDisconnected()
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), b_engine, SLOT(stop()));
     timer->start();
+}
+
+void CtiConn::ctiSocketStateChanged(QAbstractSocket::SocketState socketState)
+{
+    // qDebug() << Q_FUNC_INFO << socketState;
+    // QAbstractSocket::HostLookupState 
+    // QAbstractSocket::ConnectingState
+    // QAbstractSocket::ConnectedState
+    // ...
+    // QAbstractSocket::ClosingState
+    // QAbstractSocket::UnconnectedState
 }
