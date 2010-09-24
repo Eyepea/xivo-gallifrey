@@ -225,11 +225,11 @@ LangString REMOVE_XIVOCLIENT \${LANG_FRENCH}  "Désinstaller XiVO Client \${FULL
   !insertmacro MUI_DESCRIPTION_TEXT \${OpensslLib} \$(DESC_OpensslLib)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 
-VIProductVersion "${XIVO_VERSION}-${SVN_VERSION}"
+VIProductVersion "9.4.8.6"
 VIAddVersionKey /LANG=\${LANG_ENGLISH} "ProductName" "XiVO client"
 VIAddVersionKey /LANG=\${LANG_ENGLISH} "Comments" "Computer Telephony Integration (CTI) client for XiVO"
 VIAddVersionKey /LANG=\${LANG_ENGLISH} "FileDescription" "XiVO client installer"
-VIAddVersionKey /LANG=\${LANG_ENGLISH} "FileVersion" "1"
+VIAddVersionKey /LANG=\${LANG_ENGLISH} "FileVersion" "${XIVO_VERSION}-${SVN_VERSION}"
 VIAddVersionKey /LANG=\${LANG_ENGLISH} "LegalCopyright" "© 2007-2010, Proformatique"
 !
 
