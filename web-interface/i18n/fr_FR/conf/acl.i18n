@@ -264,3 +264,9 @@ Queuelogger
 
 ; acl(service-ipbx-queuelogger-configuration)
 Configuration
+
+; acl(xivo-configuration-provisioning)
+Provisioning
+
+; acl(xivo-configuration-provisioning-general)
+Général
