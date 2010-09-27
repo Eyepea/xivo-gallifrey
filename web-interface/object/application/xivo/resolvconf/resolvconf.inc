@@ -129,11 +129,14 @@ class xivo_application_xivo_object_resolvconf extends xivo_application_xivo_obje
 			if(!is_null($rs["nameserver$i"]))
 				$ns[] = $rs["nameserver$i"];
 
-		$args = array();
+		$args = array('search' => array());
 		if(count($ns) > 0)
 			$args['nameservers'] = $ns;
+
+		if(!is_null($rs['domain']))
+			$args['search'][] = $rs['domain'];
 		if(!is_null($rs['search']))
-			$args['search']      = explode(' ', $rs['search']);
+			$args['search'] = array_merge($args['search'], explode(' ', $rs['search']));
 
 		return $this->_sysconfd->request_post('/resolv_conf', $args);
 	}
