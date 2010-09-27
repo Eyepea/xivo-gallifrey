@@ -61,6 +61,7 @@ $array['xivo/configuration/json/restricted/network/dhcp'] = 'xivo/configuration/
 $array['xivo/configuration/json/restricted/network/ha'] = 'xivo/configuration/json.php/restricted/network/ha/';
 $array['xivo/configuration/json/restricted/network/ha_stop'] = 'xivo/configuration/json.php/restricted/network/ha_stop/';
 $array['xivo/configuration/json/restricted/support/monitoring'] = 'xivo/configuration/json.php/restricted/support/monitoring/';
+$array['xivo/configuration/json/restricted/provisioning/general'] = 'xivo/configuration/json.php/restricted/provisioning/general/';
 
 
 $array['xivo/configuration/json/private/manage/entity'] = 'xivo/configuration/json.php/restricted/manage/entity/';
@@ -70,7 +71,8 @@ $array['xivo/configuration/json/private/network/resolvconf'] = 'xivo/configurati
 $array['xivo/configuration/json/private/network/mail'] = 'xivo/configuration/json.php/private/network/mail/';
 $array['xivo/configuration/json/private/network/dhcp'] = 'xivo/configuration/json.php/private/network/dhcp/';
 $array['xivo/configuration/json/private/network/ha_stop'] = 'xivo/configuration/json.php/private/network/ha_stop/';
-$array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configuration/json.php/private/support/monitorinh/';
+$array['xivo/configuration/json/private/support/monitoring'] = 'xivo/configuration/json.php/private/support/monitoring/';
+$array['xivo/configuration/json/private/provisioning/general'] = 'xivo/configuration/json.php/private/provisioning/general/';
 
 $array['service/ipbx'] = 'service/ipbx/index.php';
 $array['service/ipbx/general_settings/sip'] = 'service/ipbx/index.php/general_settings/sip/';

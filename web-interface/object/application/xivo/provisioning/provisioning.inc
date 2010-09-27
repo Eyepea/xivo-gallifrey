@@ -49,7 +49,7 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
             $this->_set_errors($this->_prov->get_filter_error());
 
 				if($this->get_errnb() > 0)
-            return false;
+					return false;
 
         $keys = array('registrar_main', 'registrar_backup', 'proxy_main', 'proxy_backup', 'vlan_id');
         foreach(array_keys($arr) as $key)
@@ -63,7 +63,16 @@ class xivo_application_xivo_object_provisioning extends xivo_application_xivo_ob
 
         // update commonconf via sysconfd
         return $this->_commonconf->generate();
-    }
+		}
+
+	function edit_from_json()
+	{
+		if(($data = $this->_get_data_from_json()) === false
+		|| $this->set($data) === false)
+			return(false);
+
+		return(true);
+	}
 }
 
 ?>
