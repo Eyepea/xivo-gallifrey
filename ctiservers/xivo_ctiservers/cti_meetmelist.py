@@ -30,11 +30,16 @@ log = logging.getLogger('meetmelist')
 
 class MeetmeList(AnyList):
     def __init__(self, newurls = [], useless = None):
-        self.anylist_properties = {'keywords' : ['number', 'name', 'context',
-                                                 'pin', 'pinadmin'],
-                                   'name' : 'meetme',
-                                   'action' : 'getmeetmelist',
-                                   'urloptions' : (1, 5, True)}
+        self.anylist_properties = { 'keywords' : [ 'roomnumber',
+                                                   'roomname',
+                                                   'context',
+                                                   'pin',
+                                                   'pinadmin',
+                                                   'moderated' ],
+                                    'name' : 'meetme',
+                                    'action' : 'getmeetmelist',
+                                    'urloptions' : (1, 5, True)
+                                    }
         AnyList.__init__(self, newurls)
         return
 

@@ -2824,7 +2824,7 @@ class XivoCTICommand(BaseCommand):
                                 log.info('%s %s channel MONITORED' % (astid, channel))
                         else:
                             log.info('%s AMI Response=Success (%s) : %s = %s (%s)'
-                                % (astid, actionid, variable, value, channel))
+                                     % (astid, actionid, variable, value, channel))
             else:
                 log.warning('%s AMI Response=Success : event = %s' % (astid, event))
         elif msg == 'Extension Status':
@@ -5984,7 +5984,7 @@ class XivoCTICommand(BaseCommand):
     # \param phoneid phone id
     # \param nlines the number of lines to fetch for the given phone
     # \param kind kind of list (ingoing, outgoing, missed calls)
-    def __update_history_call__(self, cfg, techno, phoneid, nlines, kind, morerecentthan=None):
+    def __update_history_call__(self, cfg, techno, phoneid, nlines, kind, morerecentthan = None):
         results = []
         if cfg.cdr_db_conn is None:
             log.warning('%s : no CDR uri defined for this asterisk - see cdr_db_uri parameter' % cfg.astid)
@@ -6344,7 +6344,7 @@ class XivoCTICommand(BaseCommand):
                 self.localchans[astid][localchan] = otherchan
         self.localchans[astid][localchan] = otherchan
 
-    def __translate_local_channel_uid__(self, astid, chan, uid, clid=None, clidn=None):
+    def __translate_local_channel_uid__(self, astid, chan, uid, clid = None, clidn = None):
         chan = chan.replace('<ZOMBIE>', '')
         if not chan.startswith('Local/'):# or chan.endswith('<ZOMBIE>'):
             return (chan, uid, clid, clidn)
