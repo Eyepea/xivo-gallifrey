@@ -21,6 +21,7 @@ __license__ = """
 
 import optparse
 import urllib2
+import sys
 from xivo_fetchfw import fetchfw
 
 fetchfw.load()
@@ -52,13 +53,17 @@ def install_firmware(fw_name):
     try:
         firmware.install()
     except fetchfw.NoCiscoCredentialsError:
-        fetchfw.die("No cisco.com credentials: see %s" % fetchfw.CONFIG_FILE)
+        print >>sys.stderr, "No cisco.com credentials: see %s" % fetchfw.CONFIG_FILE
+        raise
     except fetchfw.InvalidCiscoCredentialsError:
-        fetchfw.die("Invalid cisco.com credentials: see %s" % fetchfw.CONFIG_FILE)
+        print >>sys.stderr, "Invalid cisco.com credentials: see %s" % fetchfw.CONFIG_FILE
+        raise
     except fetchfw.WeakCiscoCredentialsError:
-        fetchfw.die("Your cisco.com credentials doesn't give you access to this software")
+        print >>sys.stderr, "Your cisco.com credentials doesn't give you access to this software"
+        raise
     except urllib2.HTTPError, e:
-        fetchfw.die(str(e) + ". See %s" % fetchfw.CONFIG_FILE)
+        print >>sys.stderr, e
+        raise
 
 parser = optparse.OptionParser()
 parser.add_option("-s", action = "store_true", dest = "search",
@@ -71,6 +76,8 @@ parser.add_option("-m", dest = "model",
                   help = "Specify the model (search mode)")
 parser.add_option("-i", dest = "install", metavar="FIRMWARE/all",
                   help = "Install a firmware (install mode)")
+parser.add_option("--ignore", dest="ignore", action="store_true",
+                  help = "When installing all firmwares, ignore errors")
 (options, args) = parser.parse_args()
 
 if options.search:
@@ -93,12 +100,15 @@ elif options.install:
     fw_name = options.install
 
     if fw_name == "all":
-        fw_names = sorted(fetchfw.FIRMWARES.iterkeys())
+        for fw_name in sorted(fetchfw.FIRMWARES.iterkeys()):
+            try:
+                install_firmware(fw_name)
+            except Exception, e:
+                if options.ignore:
+                    pass
+                else:
+                    sys.exit(1)
     else:
-        fw_names = [fw_name]
-
-    for fw_name in fw_names:
         install_firmware(fw_name)
-
 else:
     fetchfw.die("error: one of -s or -i must be provided (use -h for help)")
