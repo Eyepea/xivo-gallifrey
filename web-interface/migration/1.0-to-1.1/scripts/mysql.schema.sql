@@ -208,9 +208,11 @@ CREATE TABLE `provisioning` (
  `registrar_backup` varchar(255) NOT NULL DEFAULT '',
  `proxy_main`       varchar(255) NOT NULL DEFAULT '',
  `proxy_backup`     varchar(255) NOT NULL DEFAULT '',
+ `vlan_id`          integer,
  PRIMARY KEY(`id`)
 ) ENGINE=MyISAM;
 
-INSERT INTO `provisioning` VALUES(1, '', '', '', '');
+
+INSERT INTO `provisioning` VALUES(1, '', '', '', '', NULL);
 
 COMMIT;
