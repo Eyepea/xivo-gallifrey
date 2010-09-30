@@ -58,6 +58,9 @@ import os
 import cgi
 import traceback
 import logging
+import re
+import urlparse
+import subprocess
 from logging.handlers import SysLogHandler
 
 from xivo import anysql
@@ -1011,6 +1014,62 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
             self.wfile.write(phonekey + '="' + phoneclass.__name__.replace('"','\\"') + '"\r\n')
             self.wfile.writelines([(phonekey + '.' + x[0] + '="' + x[1].replace('"','\\"') + '"\r\n') for x in phones])
 
+    _PATTERN_0_TO_255 = r'(?:1?\d?\d|2(?:5[0-5]|[0-4]\d))'
+    _PATTERN_IPV4 = r'^%s(?:\.%s){3}$' % (_PATTERN_0_TO_255, _PATTERN_0_TO_255)
+    
+    def handle_phoneinfo(self, query):
+        query_dict = cgi.parse_qs(query)
+        if 'ip' not in query_dict:
+            self.send_error(400, 'Missing ip parameter')
+            return
+        ip = query_dict['ip'][0]
+        if not re.match(self._PATTERN_IPV4, ip):
+            self.send_error(400, 'Invalid ip parameter')
+            return
+        macaddr = xivo_config.macaddr_from_ipv4(ip)
+        if not macaddr:
+            self.send_error(404, 'MAC address from IP not found')
+            return
+        macaddr = macaddr.upper()
+        # look for the vendor, model in the db
+        phonedesc = self.my_ctx.dbinfos.phone_by_macaddr(macaddr)
+        if phonedesc:
+            vendor = phonedesc['vendor']
+            model = phonedesc['model']
+        else:
+            try:
+                p = subprocess.Popen(['sip-options', 'sip:%s' % ip], stdout=subprocess.PIPE)
+                output = p.communicate()[0]
+                lines = output.splitlines()
+                for line in lines:
+                    if line.startswith('Server: '):
+                        ua = line[len('Server: '):]
+                        break
+                    elif line.startswith('User-Agent: '):
+                        # Polycom phone return info in User-Agent instead of Server...
+                        ua = line[len('User-Agent: '):]
+                        break
+                else:
+                    self.send_error(500, 'Could not extract phoneinfo from SIP OPTIONS asnwer')
+                    return
+                phone_desc = xivo_config.phone_desc_by_ua(ua)
+                if not phone_desc:
+                    self.send_error(500, 'Unknown phone model')
+                    return
+                vendor = phone_desc[0]
+                model = phone_desc[1]
+            except OSError:
+                self.send_error(500, 'Could not send SIP OPTIONS: sip-options (sofia-sip-bin) is not installed')
+                return
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write('{\n')
+        self.wfile.write('\t"vendor": "%s"\n' % vendor)
+        self.wfile.write('\t"model": "%s"\n' % model)
+        self.wfile.write('\t"macaddr": "%s"\n' % macaddr)
+        self.wfile.write('}\n')
+        
     # === ENTRY POINTS (called FROM BaseHTTPRequestHandler) ===
 
     def do_POST(self):
@@ -1021,9 +1080,14 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         log.info("do_GET(): handling GET request to path %s for peer %s", self.path, self.client_address)
+        parsed_path = urlparse.urlparse(self.path)
         if self.path == '/list':
             self.handle_list()
-        else: self.answer_404()
+        elif parsed_path.path == '/phoneinfo':
+            # syntax is: GET /phoneinfo?ip=192.168.32.3
+            self.handle_phoneinfo(parsed_path.query)
+        else:
+            self.answer_404()
 
 
 def main(log_level, foreground):
