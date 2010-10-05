@@ -36,3 +36,15 @@ Champ affiché lors de la résolution du numéro appelant (calleridnum) :
 
 ; fm_description
 Description
+
+; col_1
+Nom du champ
+
+; col_2
+Valeur 
+
+; no_disp
+Aucun champ associé
+
+; fields_title
+Champs associés:

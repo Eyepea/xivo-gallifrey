@@ -80,6 +80,10 @@ $array['ctidirectories'] = array();
 $array['ctidirectories']['table'] = 'ctidirectories';
 $array['ctidirectories']['primary'] = array('id' => '');
 
+$array['ctidirectoryfields'] = array();
+$array['ctidirectoryfields']['table'] = 'ctidirectoryfields';
+$array['ctidirectoryfields']['primary'] = array('dir_id' => '', 'fieldname' => '');
+
 $array['ctidisplays'] = array();
 $array['ctidisplays']['table'] = 'ctidisplays';
 $array['ctidisplays']['primary'] = array('id' => '');

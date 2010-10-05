@@ -107,6 +107,9 @@ $array['module']['contextnummember']['datastorage'] = true;
 $array['module']['ctidirectories'] = array();
 $array['module']['ctidirectories']['datastorage'] = true;
 
+$array['module']['ctidirectoryfields'] = array();
+$array['module']['ctidirectoryfields']['datastorage'] = true;
+
 $array['module']['ctimain'] = array();
 $array['module']['ctimain']['datastorage'] = true;
 

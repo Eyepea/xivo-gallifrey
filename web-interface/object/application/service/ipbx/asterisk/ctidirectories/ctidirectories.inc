@@ -22,14 +22,17 @@ dwho_file::required(array(XIVO_PATH_OBJECT,'application','service','ipbx','aster
 
 class xivo_application_service_asterisk_ctidirectories extends xivo_application_asterisk_abstract
 {
-	var $_ctidirectories = false;
-	var $_ctistatus = false;
+	var $_ctistatus          = false;
+	var $_ctidirectories     = false;
+	var $_ctidirectoryfields = false;
 
 	function xivo_application_service_asterisk_ctidirectories(&$service,$param=null,$components=true)
 	{
 		$this->xivo_application_asterisk_abstract(&$service);
-		if(($this->_ctidirectories = &$this->_service->get_module('ctidirectories')) === false)
+		if(($this->_ctidirectories = &$this->_service->get_module('ctidirectories')) === false
+		|| ($this->_ctidirectoryfields = &$this->_service->get_module('ctidirectoryfields')) === false)
 			return(false);
+
 		else if((bool) $components === true)
 			$this->load_components();
 
@@ -70,6 +73,7 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		$this->_info = $this->_origin = array();
 
 		$this->_info['directories'] = $this->_ctidirectories->get($id);
+		$this->_info['directories']['fields'] = $this->_ctidirectoryfields->get_all_where(array('dir_id' => $id));
 
 		if($this->_components === false)
 			return($this->_info);
@@ -112,6 +116,7 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 			return(false);
 
 		$this->set_directories($arr['directories']);
+		$this->set_fields($arr['fields']);
 
 		return(($this->get_errnb() < 1));
 	}
@@ -136,6 +141,26 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		return(true);
 	}
 
+	function set_fields($arr)
+	{
+		if(!is_array($arr))
+			return false;
+
+		$rs = array();
+		foreach($arr as $item)
+		{
+			if(($_rs = $this->_ctidirectoryfields->chk_values($item)) === false)
+			{
+				$this->_set_error('fields', $this->_ctidirectoryfields->get_filter_error());
+			}
+
+			$rs[] = $_rs;
+		}
+
+		$this->_set_result('fields', $rs);
+		return true;
+	}
+
 	function add()
 	{
 		$r = true;
@@ -144,7 +169,8 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| ($directoriesid = $this->add_directories()) === false)
+		|| ($directoriesid = $this->add_directories()) === false
+		|| $this->add_fields($directoriesid) === false)
 		{
 			$r = false;
 			if($directoriesid !== null)
@@ -181,6 +207,21 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		return($this->_return['directories']);
 	}
 
+	function add_fields($dirid)
+	{
+		if(($rs = $this->get_result('fields')) === null
+		|| $rs === false)
+		return(false);
+
+		foreach($rs as $item)
+		{
+			$item['dir_id'] = $dirid;
+			$this->_ctidirectoryfields->add($item);
+		}
+
+		return true;
+	}
+
 	function _reverse_add()
 	{
 		if($this->get_errnb() > 0
@@ -213,7 +254,8 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->edit_directories() === false)
+		|| $this->edit_directories() === false
+		|| $this->edit_fields() === false)
 		{
 			$r = false;
 			$this->_reverse_edit();
@@ -224,13 +266,13 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		return($r);
 	}
 
-    function edit_directories()
-    {
-        if(dwho_issa('directories',$this->_info) === false
-        || ($rs = $this->get_result('directories')) === null
-        || $rs === false)
-            return(false);
-
+  function edit_directories()
+  {
+      if(dwho_issa('directories',$this->_info) === false
+      || ($rs = $this->get_result('directories')) === null
+      || $rs === false)
+				return(false);
+				
 		foreach(array('match_direct', 'match_reverse', 'field_phone', 'field_firstname', 'field_lastname', 'field_fullname', 'field_company', 'field_mail', 'display_reverse') as $v)
 		{
 			if($rs[$v] != '')
@@ -246,8 +288,20 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 			}
 		}
 
-        return(($this->_return['directories'] = $this->_ctidirectories->edit($this->_info['directories']['id'],$rs)));
-    }
+		return(($this->_return['directories'] = $this->_ctidirectories->edit($this->_info['directories']['id'],$rs)));
+  }
+
+	function edit_fields()
+	{
+		if(($rs = $this->get_result('fields')) === null)
+			return(false);
+
+		$this->_ctidirectoryfields->delete_where(array('dir_id' => $this->_info['directories']['id']));
+		foreach($rs as $item)
+			$this->_ctidirectoryfields->add($item);
+
+		return true;
+	}
 
 	function _reverse_edit()
 	{
@@ -285,7 +339,8 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 		$this->_return = array();
 
 		if($this->get_errnb() > 0
-		|| $this->delete_directories() === false)
+		|| $this->delete_directories() === false
+		|| $this->delete_fields() === false)
 		{
 			$r = false;
 			$this->_reverse_delete();
@@ -307,6 +362,11 @@ class xivo_application_service_asterisk_ctidirectories extends xivo_application_
 			$this->_return['directories'] = $r;
 
 		return($r);
+	}
+
+	function delete_fields()
+	{
+		$this->_ctidirectoryfields->delete_where(array('dir_id' => $this->_info['directories']['id']));
 	}
 
 	function _reverse_delete()

@@ -36,3 +36,15 @@ Name displayed when solving the caller number (calleridnum):
 
 ; fm_description
 Description
+
+; col_1
+Fieldname
+
+; col_2
+Value
+
+; no_disp
+No fields
+
+; fields_title
+Mapped fields:

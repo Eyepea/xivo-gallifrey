@@ -67,8 +67,19 @@ switch($act)
 		if(isset($_QR['fm_send']) === true
 		&& dwho_issa('directories',$_QR) === true)
 		{
+			$_QR['fields'] = array();
+			for($i = 0; $i < count($_QR['field_fieldname'])-1; $i++)
+			{
+				$_QR['fields'][] = array(
+					'dir_id'    => null,
+					'fieldname' => $_QR['field_fieldname'][$i],
+					'value'     => $_QR['field_value'][$i]
+				);
+			}
+
 			$_QR['directories']['uri'] = $_QR['directories-uri'];
 			$_QR['directories']['deletable'] = 1;
+
 			if($app->set_add($_QR) === false
 			|| $app->add() === false)
 			{
@@ -103,6 +114,16 @@ switch($act)
 		&& dwho_issa('directories',$_QR) === true)
 		{
 			$return = &$result;
+
+			$_QR['fields'] = array();
+			for($i = 0; $i < count($_QR['field_fieldname'])-1; $i++)
+			{
+				$_QR['fields'][] = array(
+					'dir_id'    => $_QR['iddirectories'],
+					'fieldname' => $_QR['field_fieldname'][$i],
+					'value'     => $_QR['field_value'][$i]
+				);
+			}
 
 			$_QR['directories']['deletable'] = 1;
 			$_QR['directories']['uri'] = $_QR['directories-uri'];

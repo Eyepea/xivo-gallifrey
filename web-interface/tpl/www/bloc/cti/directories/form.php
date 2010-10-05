@@ -22,7 +22,7 @@ $form = &$this->get_module('form');
 $url = &$this->get_module('url');
 
 $element = $this->get_var('element');
-$info = $this->get_var('info');
+$info    = $this->get_var('info');
 $urilist = $this->get_var('urilist');
 
 $presence = $this->get_var('directories');
@@ -75,48 +75,6 @@ endif;
 				  'default'	=> $element['directories']['match_reverse']['default'],
 				  'value'	=> $info['directories']['match_reverse']));
 
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_phone'),
-				  'name'	=> 'directories[field_phone]',
-				  'labelid'	=> 'directories-field_phone',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['field_phone']['default'],
-				  'value'	=> $info['directories']['field_phone']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_firstname'),
-				  'name'	=> 'directories[field_firstname]',
-				  'labelid'	=> 'directories-field_firstname',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['field_firstname']['default'],
-				  'value'	=> $info['directories']['field_firstname']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_lastname'),
-				  'name'	=> 'directories[field_lastname]',
-				  'labelid'	=> 'directories-field_lastname',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['field_lastname']['default'],
-				  'value'	=> $info['directories']['field_lastname']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_fullname'),
-				  'name'	=> 'directories[field_fullname]',
-				  'labelid'	=> 'directories-field_fullname',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['field_fullname']['default'],
-				  'value'	=> $info['directories']['field_fullname']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_company'),
-				  'name'	=> 'directories[field_company]',
-				  'labelid'	=> 'directories-field_company',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['field_company']['default'],
-				  'value'	=> $info['directories']['field_company']));
-
-	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_field_mail'),
-				  'name'	=> 'directories[field_mail]',
-				  'labelid'	=> 'directories-field_mail',
-				  'size'	=> 40,
-				  'default'	=> $element['directories']['field_mail']['default'],
-				  'value'	=> $info['directories']['field_mail']));
-
 	echo	$form->text(array('desc'	=> $this->bbf('fm_directories_display_reverse'),
 				  'name'	=> 'directories[display_reverse]',
 				  'labelid'	=> 'directories-display_reverse',
@@ -125,6 +83,127 @@ endif;
 				  'value'	=> $info['directories']['display_reverse']));
 
 ?>
+
+
+
+<?php
+	$type = 'disp';
+	$errdisplay = '';
+	$fields = $info['directories']['fields'];
+?>
+	<p>&nbsp;</p>
+	<div class="sb-list">
+		<p><?= $this->bbf('fields_title');?></p>
+		<table cellspacing="0" cellpadding="0" border="0">
+			<thead>
+			<tr class="sb-top">
+
+				<th class="th-left"><?=$this->bbf('col_1');?></th>
+				<th class="th-center"><?=$this->bbf('col_2');?></th>
+				<th class="th-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/orange/bo-add.gif',
+									  $this->bbf('col_add'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\'disp\',this); return(dwho.dom.free_focus());"',
+							   $this->bbf('col_add'));?>
+				</th>
+			</tr>
+			</thead>
+			<tbody id="disp">
+		<?php
+		if(count($fields) > 0):
+			for($i = 0;$i < count($fields);$i++):
+
+		?>
+			<tr class="fm-paragraph<?=$errdisplay?>">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+								   'name'	  	=> 'field_fieldname[]',
+								   'id'	    	=> false,
+								   'label'		=> false,
+								   'size'	  	=> 15,
+								   'key'  		=> false,
+								   'value'		=> $fields[$i]['fieldname'],
+								   'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+								   'name'	   	=> 'field_value[]',
+								   'id'		    => false,
+								   'label'		=> false,
+								   'size'	   	=> 30,
+								   'key'		  => false,
+								   'value'		=> $fields[$i]['value'],
+								   'default'	=> ''));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+
+		<?php
+			endfor;
+		endif;
+		?>
+			</tbody>
+			<tfoot>
+			<tr id="no-<?=$type?>"<?=(count($fields) > 0 ? ' class="b-nodisplay"' : '')?>>
+				<td colspan="3" class="td-single"><?=$this->bbf('no_'.$type);?></td>
+			</tr>
+			</tfoot>
+		</table>
+		<table class="b-nodisplay" cellspacing="0" cellpadding="0" border="0">
+			<tbody id="ex-<?=$type?>">
+			<tr class="fm-paragraph">
+				<td class="td-left">
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+								   'name'		=> 'field_fieldname[]',
+								   'id'		=> false,
+								   'label'		=> false,
+								   'size'		=> 15,
+								   'key'		=> false,
+								   'default'	=> ''));
+	 ?>
+				</td>
+				<td>
+	<?php
+					echo $form->text(array('paragraph'	=> false,
+								   'name'		=> 'field_value[]',
+								   'id'		=> false,
+								   'label'		=> false,
+								   'size'		=> 30,
+								   'key'		=> false,
+								   'default'	=> ''));
+	 ?>
+				</td>
+				<td class="td-right">
+					<?=$url->href_html($url->img_html('img/site/button/mini/blue/delete.gif',
+									  $this->bbf('opt_'.$type.'-delete'),
+									  'border="0"'),
+							   '#',
+							   null,
+							   'onclick="dwho.dom.make_table_list(\''.$type.'\',this,1); return(dwho.dom.free_focus());"',
+							   $this->bbf('opt_'.$type.'-delete'));?>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+<br />
+
 </div>
 <div class="fm-paragraph fm-description">
 	<p>

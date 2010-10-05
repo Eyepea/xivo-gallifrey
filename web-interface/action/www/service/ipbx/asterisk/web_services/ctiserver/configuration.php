@@ -35,6 +35,7 @@ switch($act)
 		$app = &$ipbx->get_application('serverfeatures', array('feature' => 'phonebook', 'type' => 'xivo'));
 		$cticontexts = &$ipbx->get_module('cticontexts');
 		$ctidirectories = &$ipbx->get_module('ctidirectories');
+		$ctidirectoryfld = &$ipbx->get_module('ctidirectoryfields');
 		$ctidisplays = &$ipbx->get_module('ctidisplays');
 		$ctisheetactions = &$ipbx->get_module('ctisheetactions');
 		$ctisheetevents = &$ipbx->get_module('ctisheetevents');
@@ -156,12 +157,11 @@ switch($act)
 				$dirout[$dirid]['name'] = $dir['description'];
 				$dirout[$dirid]['match_direct'] = dwho_json::decode($dir['match_direct'], true) == false ? array() : dwho_json::decode($dir['match_direct'], true);
 				$dirout[$dirid]['match_reverse'] = dwho_json::decode($dir['match_reverse'], true) == false ? array() : dwho_json::decode($dir['match_reverse'], true);
-				$dirout[$dirid]['field_phone'] = dwho_json::decode($dir['field_phone'], true) == false ? array() : dwho_json::decode($dir['field_phone'], true);
-				$dirout[$dirid]['field_fullname'] = dwho_json::decode($dir['field_fullname'], true) == false ? array() : dwho_json::decode($dir['field_fullname'], true);
-				$dirout[$dirid]['field_firstname'] = dwho_json::decode($dir['field_firstname'], true) == false ? array() : dwho_json::decode($dir['field_firstname'], true);
-				$dirout[$dirid]['field_lastname'] = dwho_json::decode($dir['field_lastname'], true) == false ? array() : dwho_json::decode($dir['field_lastname'], true);
-				$dirout[$dirid]['field_company'] = dwho_json::decode($dir['field_company'], true) == false ? array() : dwho_json::decode($dir['field_company'], true);
-				$dirout[$dirid]['field_mail'] = dwho_json::decode($dir['field_mail'], true) == false ? array() : dwho_json::decode($dir['field_mail'], true);
+
+				$fields = $ctidirectoryfld->get_all_where(array('dir_id' => $dir['id']));
+				foreach($fields as $field)
+					$dirout[$dirid]['field_' . $field['fieldname']] = array($field['value']);
+
 				$dirout[$dirid]['display_reverse'] = dwho_json::decode($dir['display_reverse'], true) == false ? array() : dwho_json::decode($dir['display_reverse'], true);
 			}
 			$out['directories'] = $dirout;
