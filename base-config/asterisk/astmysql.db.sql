@@ -286,13 +286,13 @@ CREATE TABLE `ctidirectoryfields` (
 	PRIMARY KEY(`dir_id`, `fieldname`)
 ) ENGINE MyISAM DEFAULT CHARSET=utf8;
 
-INSERT INTO `ctidirectoryfields` VALUES(1, 'phone'    , 'phonebooknumber.office.number');
-INSERT INTO `ctidirectoryfields` VALUES(1, 'firstname', 'phonebook.firsname');
-INSERT INTO `ctidirectoryfields` VALUES(1, 'lastname' , 'phonebook.lastname');
-INSERT INTO `ctidirectoryfields` VALUES(1, 'fullname' , 'phonebook.fullname');
-INSERT INTO `ctidirectoryfields` VALUES(1, 'company'  , 'phonebook.company');
-INSERT INTO `ctidirectoryfields` VALUES(1, 'mail'     , 'phonebook.email');
-INSERT INTO `ctidirectoryfields` VALUES(2, 'fullname' , '{internal-fullname}');
+INSERT INTO `ctidirectoryfields` VALUES (1, 'phone'    , 'phonebooknumber.office.number');
+INSERT INTO `ctidirectoryfields` VALUES (1, 'firstname', 'phonebook.firsname');
+INSERT INTO `ctidirectoryfields` VALUES (1, 'lastname' , 'phonebook.lastname');
+INSERT INTO `ctidirectoryfields` VALUES (1, 'fullname' , 'phonebook.fullname');
+INSERT INTO `ctidirectoryfields` VALUES (1, 'company'  , 'phonebook.company');
+INSERT INTO `ctidirectoryfields` VALUES (1, 'mail'     , 'phonebook.email');
+INSERT INTO `ctidirectoryfields` VALUES (2, 'fullname' , '{internal-fullname}');
 
 
 DROP TABLE IF EXISTS `ctidisplays`;

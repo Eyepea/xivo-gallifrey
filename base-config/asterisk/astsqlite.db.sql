@@ -266,21 +266,30 @@ CREATE TABLE ctidirectories (
  delimiter varchar(20),
  match_direct text NOT NULL,
  match_reverse text NOT NULL,
- field_phone text NOT NULL,
- field_fullname varchar(255),
- field_company varchar(255),
- field_mail varchar(255),
- field_firstname varchar(255),
- field_lastname varchar(255),
  display_reverse varchar(255),
  description varchar(255),
  deletable tinyint(1),
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctidirectories VALUES(1,'xivodir','phonebook','','["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["phonebooknumber.office.number"]','["phonebook.fullname"]','["phonebook.society"]','["phonebook.email"]','["phonebook.firstname"]','["phonebook.lastname"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
-INSERT INTO ctidirectories VALUES(2,'internal','internal','','','','','["{internal-fullname}"]','','','','','','Répertoire XiVO Interne',1);
+INSERT INTO ctidirectories VALUES(1,'xivodir', 'phonebook', '', '["phonebook.firstname","phonebook.lastname","phonebook.displayname","phonebook.society","phonebooknumber.office.number"]','["phonebooknumber.office.number","phonebooknumber.mobile.number"]','["{db-fullname}"]','Répertoire XiVO Externe',1);
+INSERT INTO ctidirectories VALUES(2,'internal','internal','','','','','Répertoire XiVO Interne',1);
 
+DROP TABLE ctidirectoryfields;
+CREATE TABLE ctidirectoryfields (
+	dir_id integer unsigned,
+	fieldname varchar(255),
+	value varchar(255),
+	PRIMARY KEY(dir_id, fieldname)
+);
+
+INSERT INTO ctidirectoryfields VALUES (1, 'phone'    , 'phonebooknumber.office.number');
+INSERT INTO ctidirectoryfields VALUES (1, 'firstname', 'phonebook.firsname');
+INSERT INTO ctidirectoryfields VALUES (1, 'lastname' , 'phonebook.lastname');
+INSERT INTO ctidirectoryfields VALUES (1, 'fullname' , 'phonebook.fullname');
+INSERT INTO ctidirectoryfields VALUES (1, 'company'  , 'phonebook.company');
+INSERT INTO ctidirectoryfields VALUES (1, 'mail'     , 'phonebook.email');
+INSERT INTO ctidirectoryfields VALUES (2, 'fullname' , '{internal-fullname}');
 
 DROP TABLE ctidisplays;
 CREATE TABLE ctidisplays (
