@@ -90,6 +90,7 @@ endif;
 	$type = 'disp';
 	$errdisplay = '';
 	$fields = $info['directories']['fields'];
+	$count  = $fields === false?0:count($fields);
 ?>
 	<p>&nbsp;</p>
 	<div class="sb-list">
@@ -113,8 +114,8 @@ endif;
 			</thead>
 			<tbody id="disp">
 		<?php
-		if(count($fields) > 0):
-			for($i = 0;$i < count($fields);$i++):
+		if($count > 0):
+			for($i = 0;$i < $count;$i++):
 
 		?>
 			<tr class="fm-paragraph<?=$errdisplay?>">
@@ -159,7 +160,7 @@ endif;
 		?>
 			</tbody>
 			<tfoot>
-			<tr id="no-<?=$type?>"<?=(count($fields) > 0 ? ' class="b-nodisplay"' : '')?>>
+			<tr id="no-<?=$type?>"<?=($count > 0 ? ' class="b-nodisplay"' : '')?>>
 				<td colspan="3" class="td-single"><?=$this->bbf('no_'.$type);?></td>
 			</tr>
 			</tfoot>
