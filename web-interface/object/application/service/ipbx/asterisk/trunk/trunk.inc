@@ -263,7 +263,7 @@ class xivo_application_service_asterisk_trunk extends xivo_application_asterisk_
 					$sip = dwho_array_startswith_key($ref,'usersip.',true);
 					$sip['commented'] = (bool) $sip['commented'];
 
-					if(empty($sip['calllimit']) === true)
+					if(empty($sip['call-limit']) === true)
 						$sip['call-limit'] = '';
 
 					$sip['register'] = $staticsipclass->parse_register_uri($ref['register']);
