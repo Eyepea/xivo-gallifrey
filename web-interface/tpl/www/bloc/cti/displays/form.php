@@ -51,10 +51,6 @@ endif;
 	$errdisplay = '';
 ?>
 	<p>&nbsp;</p>
-	<p>
-	<?=$this->bbf('list-avail-formats');?>
-	{db-phone} {db-firstname} {db-lastname} {db-fullname} {db-company} {db-mail}
-	</p>
 	<div class="sb-list">
 		<table cellspacing="0" cellpadding="0" border="0">
 			<thead>
