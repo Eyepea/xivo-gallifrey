@@ -38,9 +38,9 @@ CREATE TABLE ctidirectories (
 
 INSERT INTO ctidirectories SELECT
 	id,
-	name
+	name,
 	uri,
-	delimiter
+	delimiter,
 	match_direct,
 	match_reverse,
 	display_reverse,
