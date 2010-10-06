@@ -8,3 +8,5 @@
 
 * generate_iax : xivo2asterisk iax configuration (non-realtion mode)
   see https://wiki.xivo.fr/index.php/SIP_Realtime_To_SIP_NonRealtime
+
+* mass_reapprov.php: reprovision list of phones
