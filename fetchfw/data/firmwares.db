@@ -6,7 +6,7 @@ version: 2.6.0.1008
 files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6730i_FC-001240-03-REV02_sr_2.6.0.1008_1008.zip
 
 [6730i_FC-001240-03-REV02_sr_2.6.0.1008_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6730i_FC-001240-03-REV02_sr_2.6.0.1008_1008.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6167-13995-_MAS_XML&dsproject=aastra&mtype=zip
 size: 1805951
 sha1sum: c9dd328c38e97408c538b7da0efe5f96108cbb48
 
@@ -18,7 +18,7 @@ version: 2.6.0.1008
 files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6731i_FC-001224-04-REV02_sr_2.6.0.1008_1008.zip
 
 [6731i_FC-001224-04-REV02_sr_2.6.0.1008_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6731i_FC-001224-04-REV02_sr_2.6.0.1008_1008.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6274-13997-_MAS_XML&dsproject=aastra&mtype=zip
 size: 1806663
 sha1sum: a5119cb27872fb99f900c1c0e037448c4c246ea3
 
@@ -30,7 +30,7 @@ version: 3.0.1.2024
 files: LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip 6739i_FC-001274-00_REV03_3_0_1_2024_1008.zip
 
 [6739i_FC-001274-00_REV03_3_0_1_2024_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6739i_FC-001274-00_REV03_3_0_1_2024_1008.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6354-14015-_MAS_XML&dsproject=aastra&mtype=zip
 size: 4496869
 sha1sum: cbbbc7bb517825eb519f09c5c367be325fe79fc3
 
@@ -42,7 +42,7 @@ version: 2.6.0.1008
 files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6751i_FC-001126-06-REV02_sr_2.6.0.1008_1008.zip
 
 [6751i_FC-001126-06-REV02_sr_2.6.0.1008_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6751i_FC-001126-06-REV02_sr_2.6.0.1008_1008.zip
+url: http://www.aastratelecom.com/cps/rde/xbcr/SID-3D8CCB6A-040A7280/03/6751i_FC-001126-06-REV02_sr_2.6.0.1008_1008.zip
 size: 1752731
 sha1sum: 47a2db7c2f5cf7bb73429184f41a7c77f797f800
 
@@ -54,7 +54,7 @@ version: 2.6.0.1008
 files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6753i_FC-001086-10-REV02_sr_2.6.0.1008_1008.zip
 
 [6753i_FC-001086-10-REV02_sr_2.6.0.1008_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6753i_FC-001086-10-REV02_sr_2.6.0.1008_1008.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6848-14005-_MAS_XML&dsproject=aastra&mtype=zip
 size: 2602715
 sha1sum: 0dded91fbdb0afa5cf1506cfd8fb6090ff4bcc7c
 
@@ -66,7 +66,7 @@ version: 2.6.0.1008
 files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6755i_FC-001087-11-REV02_sr_2.6.0.1008_1008.zip
 
 [6755i_FC-001087-11-REV02_sr_2.6.0.1008_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6755i_FC-001087-11-REV02_sr_2.6.0.1008_1008.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6950-14007-_MAS_XML&dsproject=aastra&mtype=zip
 size: 2635591
 sha1sum: a49eedcda0eb2f9bdbde9f4888af0426263b406d
 
@@ -78,18 +78,18 @@ version: 2.6.0.1008
 files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6757i_FC-001088-10-REV02_sr_2.6.0.1008_1008.zip
 
 [6757i_FC-001088-10-REV02_sr_2.6.0.1008_1008.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-432F7243/04/6757i_FC-001088-10-REV02_sr_2.6.0.1008_1008.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=7041-14009-_MAS_XML&dsproject=aastra&mtype=zip
 size: 2635437
 sha1sum: 650c1b96e52fac24f28a959c0c150217ed3d0d2c
 
 # Common files for Aastra phones
 [LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-68020DFD/04/LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6167-13677-_MAS_XML&dsproject=aastra&mtype=zip
 size: 145824
 sha1sum: 859de6f9b34ae3eb0addd18175af3ec9cef735d4
 
 [LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip]
-url: http://www.aastra.com/cps/rde/xbcr/SID-3D8CCB6A-A0321CDA/04/LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6354-6364-_MAS_XML&dsproject=aastra&mtype=zip
 size: 138130
 sha1sum: fd79b1909b41254b864e4f993675a81d87209288
 
