@@ -693,6 +693,17 @@ def route_set(address, netmask, gateway, iface):
     return (ret, stdout)
 
 
+def route_unset(address, netmask, gateway, iface):
+    cmd = [ROUTE, 'route', 'del', 'table', 'xivo', 
+        '%s/%s' % (address, netmask), 'via', gateway, 'dev', iface]
+    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    ret = p.wait()
+
+    stdout = p.stdout.read()
+    p.stdout.close()
+    
+    return (ret, stdout)
+
 def route_flush():
     cmd = [ROUTE, 'route', 'flush', 'table', 'xivo']
     p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
@@ -713,6 +724,22 @@ def route_flush_cache():
     p.stdout.close()
     
     return (ret, stdout)
+
+def route_list():
+    cmd = [ROUTE, 'route', 'list', 'table', 'xivo']
+    p   = subprocess.Popen(cmd, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+    ret = p.wait()
+
+    stdout = p.stdout.read()
+    p.stdout.close()
+
+    res = []
+    for line in stdout.split('\n'):
+        m = re.match(r"^([\d.:]+)/(\d+) via ([\d.:]+).*", line)
+        if m is not None:
+            res.append(m.groups())
+
+    return res
 
 
 if __name__ == "__main__":
