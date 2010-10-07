@@ -1698,21 +1698,22 @@ class XivoCTICommand(BaseCommand):
             dialplan_data['xivo-calleridnum'] = self.ulist_ng.keeplist[xuserid].get('phonenum')
             dialplan_data['xivo-calleridname'] = self.ulist_ng.keeplist[xuserid].get('fullname')
             try:
-                e = self.lconf.xc_json['directories']['internal']
-                for k, v in e.iteritems():
-                    if k.startswith('field_'):
-                        nk = 'db-%s' % k[6:]
-                        if v:
-                            v2 = v[0]
-                        else:
-                            v2 = ''
-                        for kk, vv in self.ulist_ng.keeplist[xuserid].iteritems():
-                            pattern = '{internal-%s}' % kk
-                            if v2.find(pattern) >= 0:
-                                v2 = v2.replace('{internal-%s}' % kk, vv)
-                        dialplan_data[nk] = v2
-                if 'name' in e:
-                    dialplan_data['xivo-directory'] = e.get('name')
+                if 'internal' in self.lconf.xc_json['directories']:
+                    e = self.lconf.xc_json['directories']['internal']
+                    for k, v in e.iteritems():
+                        if k.startswith('field_'):
+                            nk = 'db-%s' % k[6:]
+                            if v:
+                                v2 = v[0]
+                            else:
+                                v2 = ''
+                            for kk, vv in self.ulist_ng.keeplist[xuserid].iteritems():
+                                pattern = '{internal-%s}' % kk
+                                if v2.find(pattern) >= 0:
+                                    v2 = v2.replace('{internal-%s}' % kk, vv)
+                            dialplan_data[nk] = v2
+                        if 'name' in e:
+                            dialplan_data['xivo-directory'] = e.get('name')
             except Exception:
                 log.exception('__internal__ %s' % xuserid)
         return
@@ -6280,7 +6281,7 @@ class XivoCTICommand(BaseCommand):
             if calleridsolved:
                 td = '%s handle_fagi %s : calleridsolved="%s"' % (astid, function, calleridsolved)
                 log.info(td.encode('utf8'))
-                if calleridname in ['', 'unknown']:
+                if calleridname in ['', 'unknown', calleridnum]:
                     calleridname = calleridsolved
                 else:
                     log.warning('%s handle_fagi %s : (solved) there is already a calleridname="%s"'
