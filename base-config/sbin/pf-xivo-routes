@@ -1,0 +1,142 @@
+#!/usr/bin/python
+__version__ = "$Revision$ $Date$"
+__license__ = """
+    Copyright (C) 2010  Proformatique, Guillaume Bour <gbour@proformatique.com>
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+"""
+	XiVO network routes manipulation
+		list  - list available routes (per interfaces, followed by a * if applied)
+    set   - apply available routes for specified up-interface (if ommited, for all up-interfaces)
+    unset - remove route for specified up-interface (if ommited, for all up-interfaces)
+"""
+
+import os
+import sys
+import traceback
+import ConfigParser
+
+from xivo import network
+
+CFGFILE = '/etc/pf-xivo/routes'
+
+def up_interfaces():
+	import socket, fcntl, struct, array
+
+	BYTES = 4096
+	s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	names   = array.array('B', '\0' * BYTES)
+	bytelen = struct.unpack('iL', fcntl.ioctl(
+		s.fileno(),
+		0x8912,  # SIOCGIFCONF
+		struct.pack('iL', BYTES, names.buffer_info()[0])
+	))[0]
+
+	namestr = names.tostring()
+	return [namestr[i:i+32].split('\0', 1)[0] for i in range(0, bytelen, 32)]
+
+def list(cfg, iface=None):
+	applied = dict([("%s/%s via %s" % 
+		(
+			rule[0], 
+			'.'.join([str(x) for x in network.bitmask_to_mask_ipv4(int(rule[1]))]),
+			rule[2]
+		), None) 
+		for rule in network.route_list()
+	])
+	#print applied
+
+	for iface in sections:
+		print "===", iface
+
+		for name, rule in cfg.items(iface):
+			rule = "%s/%s via %s" % tuple(rule.split(';'))
+			print " .", rule,
+			if rule in applied:
+				print '(*)',
+			print
+
+
+def set(cfg, iface):
+	upifaces =  up_interfaces()
+
+	for iface in sections:
+		if not cfg.has_section(iface):
+			continue
+		elif not iface in upifaces:
+			print "%s interface is not up" % iface;	continue
+
+		print "===", iface
+		for name, rule  in cfg.items(iface):
+			rule = rule.split(';')
+			if len(rule) != 3:
+				continue
+
+			rule.append(iface)
+			try:
+				(ret, verbose) = network.route_set(*rule)
+				print "  . %s/%s via %s ::" % tuple(rule[:-1]),
+				if ret == 0:
+					print "APPLIED"
+				elif verbose.endswith('File exists\n'):
+					print "ALREADY SET"
+				else:
+					print "INVALID"
+
+			except Exception, e:
+				print e; traceback.print_exc()
+
+def unset(cfg, iface):
+	upifaces =  up_interfaces()
+
+	for iface in sections:
+		if not cfg.has_section(iface):
+			continue
+		elif not iface in upifaces:
+			print "%s interface is not up" % iface;	continue
+
+		print "===", iface
+		for name, rule  in cfg.items(iface):
+			rule = rule.split(';')
+			if len(rule) != 3:
+				continue
+
+			rule.append(iface)
+			try:
+				(ret, verbose) = network.route_unset(*rule)
+				if ret == 0:
+					print "  . %s/%s via %s :: UNSET" % tuple(rule[:-1])
+			except Exception, e:
+				print e; traceback.print_exc()
+
+
+if __name__ == '__main__':
+	if len(sys.argv) < 2 or sys.argv[1] not in ['set', 'unset', 'list']:
+		print "Usage: %s set|unset|list [iface]" % sys.argv[0]; sys.exit(1)
+
+	cfg = ConfigParser.ConfigParser()
+	cfg.read(CFGFILE)
+
+	if len(sys.argv) < 3 or sys.argv[2] == '*':
+		sections = cfg.sections()
+	else:
+		sections = [sys.argv[2]]
+
+	eval(sys.argv[1])(cfg, sections)
+
+
+
+
