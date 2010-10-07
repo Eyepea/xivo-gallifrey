@@ -2779,39 +2779,39 @@ class XivoCTICommand(BaseCommand):
         return
 
     ami_error_responses_list = ['No such channel',
-        'No such agent',
-        'Permission denied',
-        'Member not dynamic',
-        'Extension not specified',
-        'Interface not found',
-        'No active conferences.',
-        'Unable to add interface: Already there',
-        'Unable to remove interface from queue: No such queue',
-        'Unable to remove interface: Not there']
+                                'No such agent',
+                                'Permission denied',
+                                'Member not dynamic',
+                                'Extension not specified',
+                                'Interface not found',
+                                'No active conferences.',
+                                'Unable to add interface: Already there',
+                                'Unable to remove interface from queue: No such queue',
+                                'Unable to remove interface: Not there']
 
     def amiresponse_success(self, astid, event, nocolon):
         msg = event.get('Message')
         actionid = event.get('ActionID')
         ami_success_responses_list = ['Channel status will follow',
-            'Parked calls will follow',
-            'Agents will follow',
-            'Queue status will follow',
-            'Variable Set',
-            'Attended transfer started',
-            'Channel Hungup',
-            'Park successful',
-            'Meetme user list will follow',
-            'AOriginate successfully queued',
-            'Originate successfully queued',
-            'Redirect successful',
-            'Started monitoring channel',
-            'Stopped monitoring channel',
-            'Added interface to queue',
-            'Removed interface from queue',
-            'Interface paused successfully',
-            'Interface unpaused successfully',
-            'Agent logged out',
-            'Agent logged in']
+                                      'Parked calls will follow',
+                                      'Agents will follow',
+                                      'Queue status will follow',
+                                      'Variable Set',
+                                      'Attended transfer started',
+                                      'Channel Hungup',
+                                      'Park successful',
+                                      'Meetme user list will follow',
+                                      'AOriginate successfully queued',
+                                      'Originate successfully queued',
+                                      'Redirect successful',
+                                      'Started monitoring channel',
+                                      'Stopped monitoring channel',
+                                      'Added interface to queue',
+                                      'Removed interface from queue',
+                                      'Interface paused successfully',
+                                      'Interface unpaused successfully',
+                                      'Agent logged out',
+                                      'Agent logged in']
         if msg is None:
             if actionid is not None:
                 if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
@@ -5122,9 +5122,9 @@ class XivoCTICommand(BaseCommand):
                         if self.capas[capaid].match_funcs(ucapa, 'features'):
                             log.info('%s %s' % (classcomm, icommand.struct))
                             rep = self.__build_features_put__(icommand.struct.get('userid'),
-                                icommand.struct.get('function'),
-                                icommand.struct.get('value'),
-                                icommand.struct.get('destination'))
+                                                              icommand.struct.get('function'),
+                                                              icommand.struct.get('value'),
+                                                              icommand.struct.get('destination'))
                             self.__send_msg_to_cti_client__(userinfo, rep)
 
                     elif classcomm == 'logout':
@@ -6282,15 +6282,22 @@ class XivoCTICommand(BaseCommand):
                 log.info(td.encode('utf8'))
                 if calleridname in ['', 'unknown']:
                     calleridname = calleridsolved
+                else:
+                    log.warning('%s handle_fagi %s : (solved) there is already a calleridname="%s"'
+                                % (astid, calleridname))
 
             # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
             if calleridnum in ['', 'unknown']:
                 calleridnum = CALLERID_UNKNOWN_NUM
             if calleridname in ['', 'unknown']:
                 calleridname = calleridnum
+            else:
+                log.warning('%s handle_fagi %s : (number) there is already a calleridname="%s"'
+                            % (astid, calleridname))
 
             calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
-            td = 'handle_fagi %s :   the callerid will be set to %s' % (astid, calleridtoset.decode('utf8'))
+            td = '%s handle_fagi %s : the callerid will be set to %s' % (astid, function,
+                                                                         calleridtoset.decode('utf8'))
             log.info(td.encode('utf8'))
             fastagi.set_callerid(calleridtoset)
             return
