@@ -109,12 +109,16 @@ def unset(cfg, iface):
 			print "%s interface is not up" % iface;	continue
 
 		print "===", iface
+		# a route applyed to virtual interface (ethX:Y) is in reality applied to its parent
+		# physical interface (ethX), as show by "ip route list" command
+		phy_iface = iface.split(':')[0]
+
 		for name, rule  in cfg.items(iface):
 			rule = rule.split(';')
 			if len(rule) != 3:
 				continue
 
-			rule.append(iface)
+			rule.append(phy_iface)
 			try:
 				(ret, verbose) = network.route_unset(*rule)
 				if ret == 0:
