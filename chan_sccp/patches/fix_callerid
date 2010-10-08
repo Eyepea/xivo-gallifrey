@@ -1,8 +1,8 @@
 Index: asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1970.orig/src/sccp_pbx.c	2010-10-07 12:14:25.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c	2010-10-07 12:14:45.000000000 +0200
-@@ -241,19 +241,19 @@
+--- asterisk-chan-sccp-0~prerelease+svn1970.orig/src/sccp_pbx.c	2010-10-08 16:24:36.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c	2010-10-08 16:27:46.000000000 +0200
+@@ -265,21 +265,21 @@
  		   enbloc dialed numbers (such as via 7970 enbloc dialing) if they match a certain pattern.
  		   This would help users dial from call history lists on other phones, which do not have enbloc dialing,
  		   when using shared lines. */
@@ -19,13 +19,17 @@ Index: asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c
 +			sccp_channel_set_callingparty(c, ast->lid.lid_name, suffixedNumber);
  		} else
 -			sccp_channel_set_callingparty(c, ast->cid.cid_name, ast->cid.cid_num);
+-			
 +			sccp_channel_set_callingparty(c, ast->lid.lid_name, ast->lid.lid_num);
- 
++
  	}
  	else
  	{
 -		sccp_channel_set_callingparty(c, ast->cid.cid_name, ast->cid.cid_num);
 +		sccp_channel_set_callingparty(c, ast->lid.lid_name, ast->lid.lid_num);
  	}
- 
+-	
++
  	/* check if we have an forwared call */
+ 	if(!ast_strlen_zero(ast->cid.cid_ani) && strncmp(ast->cid.cid_ani, c->callInfo.callingPartyNumber, strlen(ast->cid.cid_ani) )){
+ 		sccp_copy_string(c->callInfo.originalCalledPartyNumber, ast->cid.cid_ani, sizeof(c->callInfo.originalCalledPartyNumber));
