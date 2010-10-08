@@ -45,7 +45,9 @@ $array['element']['regcontext'] = array();
 $array['element']['regcontext']['default'] = '';
 
 $array['element']['incominglimit'] = array();
-$array['element']['incominglimit']['default'] = '';
+$array['element']['incominglimit']['value'] = array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20);
+$array['element']['incominglimit']['default'] = 2;
+$array['element']['incominglimit']['null'] = true;
 
 $array['element']['transfer'] = array();
 $array['element']['transfer']['default'] = '';
