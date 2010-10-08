@@ -40,22 +40,10 @@ $array['element']['vlan_id']['null']    = true;
 ### filters ###
 $array['filter'] = array();
 
-$array['filter']['registrar_main']	 = array('set'		=> false,
-				    'chk'		    => 2,
-				    'callback'		=> 'dwho_network::valid_host',
-				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['registrar_backup'] = array('set'		=> false,
-				    'chk'		    => 2,
-				    'callback'		=> 'dwho_network::valid_host',
-				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['proxy_main']	     = array('set'		=> false,
-				    'chk'		    => 2,
-				    'callback'		=> 'dwho_network::valid_host',
-				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
-$array['filter']['proxy_backup']	   = array('set'		=> false,
-				    'chk'		    => 2,
-				    'callback'		=> 'dwho_network::valid_host',
-						'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
+$array['filter']['registrar_main']	 = array('set'		=> false, 'chk'		    => 2, 'maxlen' => 255);
+$array['filter']['registrar_backup'] = array('set'		=> false, 'chk'		    => 2, 'maxlen' => 255);
+$array['filter']['proxy_main']	     = array('set'		=> false, 'chk'		    => 2, 'maxlen' => 255);
+$array['filter']['proxy_backup']	   = array('set'		=> false, 'chk'		    => 2, 'maxlen' => 255);
 $array['filter']['vlan_id']          = array('set'    => false,
 						'chk'			=> 2,
 						'cast'    => 'uint',
