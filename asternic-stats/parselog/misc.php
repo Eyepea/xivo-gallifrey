@@ -44,6 +44,7 @@ function check_queue($queue_name) {
 		$query = "INSERT INTO qname (queue) VALUES ('$queue_name')";
 		$res = consulta_db($query,0,0);
 		$id = db_insert_id($res);
+		mysql_free_result($res);
 		$queuecache["$queue_name"]=$id;
 		return $id;
 	}
@@ -75,11 +76,13 @@ function check_agent($agent) {
 
 	if(db_num_rows($res)>0) {
 		$row = db_fetch_row($res);
+		mysql_free_result($res);
 		return $row[0];
 	} else {
 		$query = "INSERT INTO qagent (agent) VALUES ('$agent')";
 		$res = consulta_db($query,0,0);
 		$id = db_insert_id($res);
+		mysql_free_result($res);
 		$agentcache["$agent"]=$id;
 		return $id;
 	}
@@ -107,6 +110,7 @@ function procesa($linea) {
 	$query = "INSERT INTO queue_stats (uniqueid, datetime, qname, qagent, qevent, info1, info2, info3) ";
 	$query.= "VALUES ('$uniqueid','$date','$queue_id','$agent_id','$event_id','$data1','$data2','$data3')";
 	$res = consulta_db($query,0,0,1);
+	mysql_free_result($res);
 	}
 }
 ?>

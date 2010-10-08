@@ -31,13 +31,13 @@ if($argv[1]=="purge") {
 exit;
 }
 
-
 // Select the most recent event saved
 $query = "SELECT datetime FROM queue_stats ORDER BY datetime DESC LIMIT 1";
 $res = consulta_db($query,0,0);
 
 if(db_num_rows($res)>0) {
 	$row = db_fetch_row($res);
+	mysql_free_result($res);
 	$last_event_ts = return_timestamp($row[0]);
 	$last_event_ts -= 10;
 } else {
@@ -62,7 +62,7 @@ if ( $dataFile ) {
 		procesa($buffer);
 	}
 	fclose($dataFile);
-} 
+}
 else {
 	die( "fopen failed for $filename" ) ;
 }

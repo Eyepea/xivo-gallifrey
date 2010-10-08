@@ -32,41 +32,21 @@ function debug($array) {
 function Sdump($var, $title = null) {
 
 	echo '<pre style="border: 1px solid gray; padding: 5px; text-align: left;">';
-	
+
 	if (!is_null($title)):
-	
+
 		echo '<h3>', htmlspecialchars($title), '</h3>';
-	
+
 	endif;
-	
+
 	ob_start();
-	
+
 	var_dump($var);
-	
+
 	echo htmlspecialchars(preg_replace("/\]\=\>\n(\s+)/m", '] => ', ob_get_clean()));
-	
+
 	echo '</pre>';
 
-}
-
-function print_human_hour($sec) {
-	$sec = calc_duration(false,false,$sec);
-
-	$res = '';
-	if($sec['d'] != 0)
-		$res .= $sec['d'] . 'j ';
-	if($sec['h'] != 0)
-		$res .= $sec['h'] . 'h ';
-	if($sec['m'] != 0)
-		$res .= $sec['m'] . 'm ';
-	if($sec['s'] != 0)
-		$res .= round($sec['s'], 0) . 's';
-		
-		
-	if($sec['s'] == 0)
-		$res = 0;
-	
-	return $res;
 }
 
 function draw_bar($values,$width,$height,$divid,$stack) {
@@ -79,7 +59,7 @@ function get_xivo_json_info($xivo_url) {
 	  if ($datafile) {
 	    while (!feof($datafile)) {
 	       $buffer .= fgets($datafile, 4096);
-	    } 
+	    }
 	    fclose($datafile);
 	  } else {
 	    die( "fopen failed!" ) ;
@@ -88,10 +68,14 @@ function get_xivo_json_info($xivo_url) {
 	return(json_decode($buffer));
 }
 
+
 function populate_agents($agents_array) {
+$start = microtime(true);
 	// Get informations from XiVO in JSON
 	$xivo_user = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/pbx_settings/users");
 	$xivo_agent = get_xivo_json_info("https://127.0.0.1/service/ipbx/json.php/private/call_center/agents");
+$time = microtime(true) - $start;
+// Sdump(second_to($time));
 
 	$agent = array();
 
@@ -120,11 +104,57 @@ function populate_agents($agents_array) {
 	return $agent;
 }
 
+function second_to($sec, $round=null) {
+
+	$sec = floatval($sec);
+
+	$arr = array('s' => pow(10, 0), # second
+		     	'ms' => pow(10, -3), # millisecond
+		     	'µs' => pow(10, -6), # microsecond
+		     	'ns' => pow(10, -9), # nanosecond
+		     	'ps' => pow(10, -12) # picosecond
+		     	);
+
+	$arr_keys = array_keys($arr);
+
+	for($c = 0;$sec <= 1 && $c < 4;$c++)
+		$sec *= 1000;
+
+	if (!is_null($round) && is_numeric($round))
+		$sec = round($sec, $round);
+
+	return($sec.$arr_keys[$c]);
+
+}
+
 function array_search_recursive($text, $find, $array) {
 	for ($a=0;$a<count($array);$a++) {
 		if ($array[$a]->$find == $text)
 			return $array[$a];
 	}
+}
+
+function print_human_hour($sec) {
+
+	$sec = calc_duration('','',$sec);
+
+	$res = '';
+	if($sec['d'] != 0)
+		$res .= $sec['d'].'j ';
+	if($sec['h'] != 0)
+		$res .= $sec['h'].'h ';
+	if($sec['m'] != 0)
+		$res .= $sec['m'].'m ';
+	if($sec['s'] != 0)
+		$res .= round($sec['s'],0).'s';
+
+	if($sec['d'] == 0
+	&& $sec['h'] == 0
+	&& $sec['m'] == 0
+	&& $sec['s'] == 0)
+		$res = 0;
+
+	return $res;
 }
 
 function calc_duration($beg,$end,$diff=false,$unset=false)
@@ -136,8 +166,7 @@ function calc_duration($beg,$end,$diff=false,$unset=false)
 	else if(is_numeric($beg) === false
 	|| is_numeric($end) === false)
 		return(false);
-	else
-	{
+	else {
 		$r['beg'] = $beg;
 		$r['end'] = $end;
 		$r['diff'] = $end - $beg;
@@ -151,11 +180,12 @@ function calc_duration($beg,$end,$diff=false,$unset=false)
 	$r['m']  = floor($r['s'] / 60);
 	$r['s'] -= $r['m'] * 60;
 
+
 	ksort($r);
 
 	if((bool) $unset === false)
 		return($r);
-	
+
 	unset($r['beg'],$r['end'],$r['diff']);
 
 	if($r['d'] === (float) 0)
@@ -234,7 +264,7 @@ function print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf) {
 		#echo "<input type=image name='pdf' src='images/pdf.gif' ";
 		#tooltip($lang["$language"]['pdfhelp'],200);
 		#echo ">\n";
-		echo "<input type=image name='csv' src='images/excel.gif' "; 
+		echo "<input type=image name='csv' src='images/excel.gif' ";
 		tooltip($lang["$language"]['csvhelp'],200);
 		echo ">\n";
 		echo "</form>";

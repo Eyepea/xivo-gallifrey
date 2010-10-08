@@ -38,14 +38,14 @@ include("sesvars.php");
 <![endif]-->
 
 <!--[if IE]>
-<link 
- href="css/fixed-ie.css" 
- rel="stylesheet" 
- type="text/css" 
- media="screen"> 
-<script type="text/javascript"> 
-onload = function() { content.focus() } 
-</script> 
+<link
+ href="css/fixed-ie.css"
+ rel="stylesheet"
+ type="text/css"
+ media="screen">
+<script type="text/javascript">
+onload = function() { content.focus() }
+</script>
 <![endif]-->
 </head>
 <?
@@ -54,7 +54,7 @@ $tmp = explode(',', $agent);
 $tmp2 = array();
 foreach ($tmp as $res) {
         array_push($tmp2, '\''.$res.'\'');
-}       
+}
 
 $agent = implode(',', $tmp2);
 */
@@ -77,7 +77,7 @@ while($row=db_fetch_row($res)) {
   $total_hangup+=$row[0];
 }
 
-$query = "SELECT qs.datetime AS datetime, q.queue AS qname, ag.agent AS qagent, "; 
+$query = "SELECT qs.datetime AS datetime, q.queue AS qname, ag.agent AS qagent, ";
 $query.= "ac.event AS qevent, qs.info1 AS info1, qs.info2 AS info2,  qs.info3 AS info3 ";
 $query.= "FROM queue_stats AS qs, qname AS q, qagent AS ag, qevent AS ac WHERE ";
 $query.= "qs.qname = q.qname_id AND qs.qagent = ag.agent_id AND qs.qevent = ac.event_id AND ";
@@ -143,7 +143,8 @@ if($res) {
             }
         }
     }
-} 
+	mysql_free_result($res);
+}
 
 if($total_calls > 0) {
     ksort($answer);
@@ -172,6 +173,7 @@ if($res) {
         $transfers["$keytra"]++;
         $totaltransfers++;
     }
+	mysql_free_result($res);
 } else {
    $totaltransfers=0;
 }
@@ -200,6 +202,7 @@ while($row=db_fetch_row($res)) {
         $total_hold_timeout+=$row[3];
     }
 }
+mysql_free_result($res);
 
 if($abandoned > 0) {
     $abandon_average_hold = $total_hold_abandon / $abandoned;
@@ -234,6 +237,7 @@ while($row=db_fetch_row($res)) {
     $grandtotal_time+=$row[5];
     $grandtotal_calls++;
 }
+mysql_free_result($res);
 
 $start_parts = split(" ", $start);
 $end_parts   = split(" ", $end);
@@ -285,11 +289,11 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                 <TABLE width='100%' border=0 cellpadding=0 cellspacing=0>
                 <CAPTION><?=$lang["$language"]['answered_calls']?></CAPTION>
                 <TBODY>
-                <TR> 
+                <TR>
                   <TD><?=$lang["$language"]['answered_calls']?></TD>
                   <TD><?=$total_calls?> <?=$lang["$language"]['calls']?></TD>
                 </TR>
-                <TR> 
+                <TR>
                   <TD><?=$lang["$language"]['transferred_calls']?></TD>
                   <TD><?=$transferidas?> <?=$lang["$language"]['calls']?></TD>
                 </TR>
@@ -316,8 +320,8 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
         <a name='1'></a>
         <TABLE width='99%' cellpadding=3 cellspacing=3 border=0 class='sortable' id='table1' >
         <CAPTION>
-        <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16 
-	<? 
+        <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16
+	<?
         tooltip($lang["$language"]['gotop'],200);
         ?> ></a>&nbsp;&nbsp;
         <?=$lang["$language"]['answered_calls_by_agent']?>
@@ -346,7 +350,7 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                 $query2 = "";
                 if($total_calls2>0) {
                 foreach($total_calls2 as $agent=>$val) {
-		    		$aa = populate_agents(array($agent)); 
+		    		$aa = populate_agents(array($agent));
                     $contavar = $contador +1;
                     $cual = $contador % 2;
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
@@ -357,42 +361,43 @@ $cover_pdf.= $lang["$language"]['avg_holdtime'].": ".$average_hold."\n";
                     $avg_time = $total_time2["$agent"] / $val;
                     $avg_time = number_format($avg_time,2);
                     $avg_print = print_human_hour($avg_time);
+					$wait_time_by_agent = $total_hold2["$agent"];
+					$total_call_by_agent = $val;
 
                     echo "<TR $odd>\n";
+# Agent
                     echo "<TD>".$aa[0]['fullname']."</TD>\n";
-                    echo "<TD>$val</TD>\n";
-
+# Appels (Nombre)
+                    echo "<TD>$total_call_by_agent</TD>\n";
+# % Appels
                     if($grandtotal_calls > 0) {
-                       $percentage_calls = $val * 100 / $grandtotal_calls;
+                       $percentage_calls = $total_call_by_agent * 100 / $grandtotal_calls;
                     } else {
                        $percentage_calls = 0;
                     }
                     $percentage_calls = number_format($percentage_calls,2);
-                    echo "<TD>$percentage_calls ".$lang["$language"]['percent']."</TD>\n";
-//                    echo "<TD>".$total_time2["$agent"]." ".$lang["$language"]['secs']."</TD>\n";
+                    echo "<TD>$percentage_calls %</TD>\n";
+#Temps d'appel
                     echo "<TD>$time_print </TD>\n";
-                    if($grandtotal_time > 0) {
-                       $percentage_time = $total_time2["$agent"] * 100 / $grandtotal_time;
-                    } else {
+# % Temps d'appel
+                    if($grandtotal_time > 0)
+                       $percentage_time = $total_call_by_agent * 100 / $grandtotal_time;
+                    else
                        $percentage_time = 0;
-                    }
                     $percentage_time = number_format($percentage_time,2);
-                    echo "<TD>$percentage_time ".$lang["$language"]['percent']."</TD>\n";
-                    //echo "<TD>$avg_time ".$lang["$language"]['secs']."</TD>\n";
+                    echo "<TD>$percentage_time %</TD>\n";
+# Moy. Temps d'appel
                     echo "<TD>$avg_print</TD>\n";
-                    echo "<TD>".print_human_hour($total_hold2["$agent"])."</TD>\n";
-                    $avg_hold = $total_hold2["$agent"] / $val;
-                    $avg_hold = number_format($avg_hold,2);
+# Temps d'attente
+                    echo "<TD>".print_human_hour($wait_time_by_agent)."</TD>\n";
+# Moy. Temps d'attente
+                    $avg_hold = $wait_time_by_agent / $total_call_by_agent;
                     echo "<TD>".print_human_hour($avg_hold)."</TD>\n";
+# Nb appels traités/h loggé
 ################################################################################
 
-
-	$mysqlconnect = mysql_connect($dbhost, $dbuser, $dbpass) or die("connect impossible : " . mysql_error());
-
-	$db = mysql_select_db($dbname, $mysqlconnect);
-	if (!$db) {
-   		die ('connect bdd impossible : ' . mysql_error());
-	}
+$mysqlconnect = mysql_connect("localhost", "xivo", "proformatique") or die("connect impossible : ". mysql_error());
+$db = mysql_select_db('xivo', $mysqlconnect) or die ('connect bdd impossible : '. mysql_error());
 
 $query = "SELECT * FROM ctilog WHERE action IN('cti_login','cti_logout','cticommand:availstate') ";
 $query.= "AND eventdate >= '$start' AND eventdate <= '$end' ";
@@ -407,7 +412,7 @@ $llt=0;
 $nbminus1 = $nb-1;
 
 $datenow = mktime();
-    
+
 while($row=mysql_fetch_assoc($res_cti)) {
 
 	$ref = $row;
@@ -460,20 +465,32 @@ while($row=mysql_fetch_assoc($res_cti)) {
 	}
 
 	$loginclient = $ref['loginclient'];
-	
+
 	$llt++;
 }
+mysql_free_result($res_cti);
 
-echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels traités/h</TD>\n";
+$total_hour =  floor($data[$aa[0]['loginclient']]['total'] / 3600);
+
+echo "<TD>".floor($total_call_by_agent / $total_hour)." appels traités/h</TD>\n";
 
 ################################################################################
                     echo "</TR>\n";
 
-                    $linea_pdf = array($aa[0]['fullname'],$val,"$percentage_calls ".$lang["$language"]['percent'],$total_time2["$agent"],"$percentage_time ".$lang["$language"]['percent'],"$avg_time ".$lang["$language"]['secs'],$total_hold2["$agent"]." ".$lang["$language"]['secs'], "$avg_hold ".$lang["$language"]['secs'], round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels traites");
-                       $data_pdf[]=$linea_pdf;
+                    $linea_pdf = array(
+									$aa[0]['fullname'],
+									$val,
+									"$percentage_calls ".$lang["$language"]['percent'],
+									$total_time2["$agent"],
+									"$percentage_time ".$lang["$language"]['percent'],
+									"$avg_time ".$lang["$language"]['secs'],
+									$total_hold2["$agent"]." ".$lang["$language"]['secs'],
+									"$avg_hold ".$lang["$language"]['secs'],
+									floor($total_call_by_agent / $total_hour)." appels traites/h");
+					$data_pdf[]=$linea_pdf;
                     $contador++;
                 }
-                
+
                 $query1.="title=".addslashes($lang["$language"]['total_time_agent'])."$graphcolor";
                 $query2.="title=".addslashes($lang["$language"]['no_calls_agent'])."$graphcolor";
                 }
@@ -484,7 +501,7 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
                 print_exports($header_pdf,$data_pdf,$width_pdf,$title_pdf,$cover_pdf);
                 }
             ?>
-        <BR>    
+        <BR>
             <?
             if($total_calls2>0) {
 
@@ -507,8 +524,8 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
             <a name='2'></a>
             <TABLE width='99%' cellpadding=3 cellspacing=3 border=0 >
             <CAPTION>
-            <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16 
-            <? 
+            <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16
+            <?
             tooltip($lang["$language"]['gotop'],200);
             ?>
             ></a>&nbsp;&nbsp;
@@ -518,7 +535,7 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
             <TD valign=top width='50%' bgcolor='#fffdf3'>
                 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table2'>
                 <THEAD>
-                <TR> 
+                <TR>
                   <TH><?=$lang["$language"]['answer']?></TH>
                   <TH><?=$lang["$language"]['count']?></TH>
                   <TH><?=$lang["$language"]['delta']?></TH>
@@ -539,7 +556,7 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
                     if($cual>0) { $odd = " class='odd' "; } else { $odd = ""; }
                     echo "<TR $odd>\n";
                     echo "<TD>".$lang["$language"]['within']."$key ".$lang["$language"]['secs']."</TD>\n";
-                    $delta = $val;                   
+                    $delta = $val;
 		    if($delta > 0) { $delta = "+".$delta;}
                     $partial_total += $val;
                     if($total_y_transfer > 0) {
@@ -574,9 +591,9 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
             <a name='3'></a>
             <TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
             <CAPTION>
-            <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16 
+            <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16
 
-            <? 
+            <?
             tooltip($lang["$language"]['gotop'],200);
             ?>
             ></a>&nbsp;&nbsp;
@@ -586,7 +603,7 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
             <TD valign=top width='50%'  bgcolor='#fffdf3'  >
                 <TABLE width='99%' cellpadding=1 cellspacing=1 border=0 class='sortable' id='table3' >
                 <THEAD>
-                <TR> 
+                <TR>
                        <TH><?=$lang["$language"]['queue']?></TH>
                     <TH><?=$lang["$language"]['count']?></TH>
                     <TH><?=$lang["$language"]['percent']?></TH>
@@ -619,11 +636,11 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
               </TABLE>
             </TD>
             <TD valign=top width="50%" align=center  bgcolor='#fffdf3'>
-                <? 
+                <?
                 if ($countrow>1) {
                     //draw_bar($query2,364,220,"chart4",0);
                     swf_bar($query2,364,220,"chart4",0);
-                   } 
+                   }
                    ?>
             </TD>
             </TR>
@@ -634,9 +651,9 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
             <a name='4'></a>
             <TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
             <CAPTION>
-            <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16 
+            <a href='#0'><img src='images/go-up.png' border=0 class='icon' width=16 height=16
 
-            <? 
+            <?
             tooltip($lang["$language"]['gotop'],200);
             ?>
             ></a>&nbsp;&nbsp;
@@ -653,7 +670,7 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
                 </TR>
                 </THEAD>
                 <TBODY>
-                <TR> 
+                <TR>
                   <TD><?=$lang["$language"]['agent_hungup']?>:</TD>
                   <TD><?=$hangup_cause["COMPLETEAGENT"]?> <?=$lang["$language"]['calls']?></TD>
                   <TD>
@@ -665,10 +682,10 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
                         }
                         $percent=number_format($percent,2);
                         echo $percent;
-                      ?> 
+                      ?>
                    <?=$lang["$language"]['percent']?></TD>
                 </TR>
-                <TR> 
+                <TR>
                   <TD><?=$lang["$language"]['caller_hungup']?>:</TD>
                   <TD><?=$hangup_cause['COMPLETECALLER']?> <?=$lang["$language"]['calls']?></TD>
                   <TD>
@@ -680,7 +697,7 @@ echo "<TD>".round($val/($data[$aa[0]['loginclient']]['total']/60/60),2)." appels
                         }
                         $percent=number_format($percent,2);
                         echo $percent;
-                      ?> 
+                      ?>
                     <?=$lang["$language"]['percent']?></TD>
                 </TR>
                 </TBODY>

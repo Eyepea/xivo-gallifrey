@@ -37,14 +37,14 @@ include("sesvars.php");
 <![endif]-->
 
 <!--[if IE]>
-<link 
- href="css/fixed-ie.css" 
- rel="stylesheet" 
- type="text/css" 
- media="screen"> 
-<script type="text/javascript"> 
-onload = function() { content.focus() } 
-</script> 
+<link
+ href="css/fixed-ie.css"
+ rel="stylesheet"
+ type="text/css"
+ media="screen">
+<script type="text/javascript">
+onload = function() { content.focus() }
+</script>
 <![endif]-->
 </head>
 <?
@@ -80,6 +80,7 @@ while($row=db_fetch_row($res)) {
 	}
 	$abandon_calls_queue["$row[1]"]++;
 }
+mysql_free_result($res);
 
 if($abandoned > 0) {
 	$abandon_average_hold = $total_hold_abandon / $abandoned;
@@ -156,7 +157,7 @@ $end_parts   = split(" ", $end);
 				<TABLE width='100%' border=0 cellpadding=0 cellspacing=0>
 				<CAPTION><?=$lang["$language"]['unanswered_calls']?></CAPTION>
 				<TBODY>
-		        <TR> 
+		        <TR>
                   <TD><?=$lang["$language"]['number_unanswered']?>:</TD>
 		          <TD><?=$total_abandon?> <?=$lang["$language"]['calls']?></TD>
 	            </TR>
@@ -179,13 +180,13 @@ $end_parts   = split(" ", $end);
 		</TR>
 		</THEAD>
 		</TABLE>
-		<BR>	
+		<BR>
 
 		<a name='1'></a>
 		<TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
 		<CAPTION>
-		<a href='#0'><img src='images/go-up.png' border=0 width=16 height=16 class='icon' 
-		<? 
+		<a href='#0'><img src='images/go-up.png' border=0 width=16 height=16 class='icon'
+		<?
 		tooltip($lang["$language"]['gotop'],200);
 		?>
 		></a>&nbsp;&nbsp;
@@ -203,7 +204,7 @@ $end_parts   = split(" ", $end);
 				</TR>
 				</THEAD>
 				<TBODY>
-                <TR> 
+                <TR>
                   <TD><?=$lang["$language"]['user_abandon']?></TD>
 			      <TD><?=$abandoned?> <?=$lang["$language"]['calls']?></TD>
 			      <TD>
@@ -215,10 +216,10 @@ $end_parts   = split(" ", $end);
 						}
 						$percent=number_format($percent,2);
 						echo $percent;
-                      ?> 
+                      ?>
                    <?=$lang["$language"]['percent']?></TD>
 		        </TR>
-			    <TR> 
+			    <TR>
                   <TD><?=$lang["$language"]['timeout']?></TD>
 			      <TD><?=$timeout?> <?=$lang["$language"]['calls']?></TD>
 			      <TD>
@@ -230,7 +231,7 @@ $end_parts   = split(" ", $end);
 						}
 						$percent=number_format($percent,2);
 						echo $percent;
-                      ?> 
+                      ?>
 					<?=$lang["$language"]['percent']?></TD>
 		        </TR>
 				</TBODY>
@@ -257,8 +258,8 @@ $end_parts   = split(" ", $end);
 			<a name='2'></a>
 			<TABLE width='99%' cellpadding=3 cellspacing=3 border=0>
 			<CAPTION>
-			<a href='#0'><img src='images/go-up.png' border=0 width=16 height=16 class='icon' 
-			<? 
+			<a href='#0'><img src='images/go-up.png' border=0 width=16 height=16 class='icon'
+			<?
 			tooltip($lang["$language"]['gotop'],200);
 			?>
 			></a>&nbsp;&nbsp;
@@ -269,7 +270,7 @@ $end_parts   = split(" ", $end);
 			<TD valign=top width='50%' bgcolor='#fffdf3'>
 				<TABLE width='99%' cellpadding=1 cellspacing=1 border=0>
 				<THEAD>
-                <TR> 
+                <TR>
 				   	<TH><?=$lang["$language"]['queue']?></TH>
 					<TH><?=$lang["$language"]['count']?></TH>
 					<TH><?=$lang["$language"]['percent']?></TH>
@@ -299,10 +300,10 @@ $end_parts   = split(" ", $end);
 			  </TABLE>
 			</TD>
 			<TD valign=top width="50%" align=center bgcolor='#fffdf3'>
-				<? 
+				<?
 				//if ($countrow>1) {
 			    	swf_bar($query2,350,211,"chart2",0);
-			   	//} 
+			   	//}
                	?>
 			</TD>
 			</TR>
