@@ -737,7 +737,7 @@ def route_list():
     for line in stdout.split('\n'):
         m = re.match(r"^([\d.:]+)(?:/(\d+))? via ([\d.:]+).*", line)
         if m is not None:
-            route = list(m.groups)
+            route = list(m.groups())
             if route[1] is None:
                 route[1] = 32
 
