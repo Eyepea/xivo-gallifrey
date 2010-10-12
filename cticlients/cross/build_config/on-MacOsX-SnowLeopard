@@ -24,23 +24,32 @@ make_the_build <<!
   
   macdeployqt xivoclient.app
   
-  install_name_tool -change libxivoclientbaselib.1.dylib \
+  install_name_tool -change @executable_path/../Frameworks/libxivoclientbaselib.1.dylib \
                             @executable_path/libxivoclientbaselib.1.dylib \
                             ./xivoclient.app/Contents/MacOS/xivoclient
 
-  install_name_tool -change /opt/qt-4.6.3-shared/lib/QtGui.framework/Versions/4/QtGui \
-                            @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui \
-                            libxivoclientbaselib.dylib
-  install_name_tool -change /opt/qt-4.6.3-shared/lib/QtNetwork.framework/Versions/4/QtNetwork \
-                            @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork \
-                            libxivoclientbaselib.dylib
-  install_name_tool -change /opt/qt-4.6.3-shared/lib/QtCore.framework/Versions/4/QtCore \
-                            @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore \
-                            libxivoclientbaselib.dylib
-  
+  for mylib in libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
+      install_name_tool -change /opt/qt-4.6.3-shared/lib/QtGui.framework/Versions/4/QtGui \
+          @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui \
+          ${mylib}
+      install_name_tool -change /opt/qt-4.6.3-shared/lib/QtNetwork.framework/Versions/4/QtNetwork \
+          @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork \
+          ${mylib}
+      install_name_tool -change /opt/qt-4.6.3-shared/lib/QtCore.framework/Versions/4/QtCore \
+          @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore \
+          ${mylib}
+  done
+
+  for mylib in ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
+      install_name_tool -change libxivoclientbaselib.1.dylib \
+          @executable_path/libxivoclientbaselib.1.dylib \
+          ${mylib}
+  done
+
   cp -R *dylib  ./xivoclient.app/Contents/MacOS
-  
-  macdeployqt xivoclient.app -dmg
+
+  hdiutil create xivoclient.dmg -srcfolder xivoclient.app -format UDZO
+
 !
 fetch_built_files xivoclient.dmg
 remove_build_dir 
