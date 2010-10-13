@@ -6,7 +6,6 @@ TARGET_SVN_VERSION=1.6
 set_up_build_dir
 
 make_the_build <<!
-#/bin/bash
   export PATH="/opt/qt-4.6.3-shared/bin:\$PATH"
   QMAKE="/opt/qt-4.6.3-shared/bin/qmake -macx" \
   JOPT=-j3 \
@@ -23,41 +22,41 @@ make_the_build <<!
   sips -s format icns ../images/xivoicon.ico --out xivoclient.app/Contents/Resources/xivo.icns
   rm ./xivoclient.app/Contents/Resources/appli.rc
 
-  echo "-- macdeployqt step" $SHELL
+  echo "-- macdeployqt step"
   macdeployqt xivoclient.app
 
-  echo "-- install_name_tool steps" $SHELL
+  echo "-- install_name_tool steps" $BASH ${BASH}
   install_name_tool -change @executable_path/../Frameworks/libxivoclientbaselib.1.dylib \
                             @executable_path/libxivoclientbaselib.1.dylib \
                             ./xivoclient.app/Contents/MacOS/xivoclient
 
-  for mylib in libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
-      echo "Qt transformations :" $mylib
+  ls ./xivoclient.app/Contents/Resources/plugins/*.dylib
+
+  echo libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib
+
+  for m in libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
+      echo "Qt transformations : $m"
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtGui.framework/Versions/4/QtGui \
-          @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui \
-          $mylib
+          @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui $m
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtNetwork.framework/Versions/4/QtNetwork \
-          @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork \
-          $mylib
+          @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork $m
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtCore.framework/Versions/4/QtCore \
-          @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore \
-          $mylib
+          @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore $m
   done
 
-  for mylib in ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
-      echo "libxivoclientbaselib transformations :" $mylib
+  for m in ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
+      echo "libxivoclientbaselib transformations : $m"
       install_name_tool -change libxivoclientbaselib.1.dylib \
-          @executable_path/libxivoclientbaselib.1.dylib \
-          $mylib
+          @executable_path/libxivoclientbaselib.1.dylib $m
   done
 
-  cp -R *dylib  ./xivoclient.app/Contents/MacOS
+  cp -R *dylib ./xivoclient.app/Contents/MacOS
 
   echo "-- hdiutil step"
   hdiutil create xivoclient.dmg -srcfolder xivoclient.app -format UDZO
 
 !
 fetch_built_files xivoclient.dmg
-remove_build_dir 
+remove_build_dir
 
 exit 0;
