@@ -65,6 +65,7 @@ NameVirtualHost *:80
 
 	<Location />
 		Deny from all
+		Options -indexes
 	</Location>
 
 	# Used for stats/monitoring
