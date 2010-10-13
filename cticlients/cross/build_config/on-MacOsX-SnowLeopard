@@ -6,7 +6,7 @@ TARGET_SVN_VERSION=1.6
 set_up_build_dir
 
 make_the_build <<!
-  #!/bin/bash
+#/bin/bash
   export PATH="/opt/qt-4.6.3-shared/bin:\$PATH"
   QMAKE="/opt/qt-4.6.3-shared/bin/qmake -macx" \
   JOPT=-j3 \
@@ -23,32 +23,32 @@ make_the_build <<!
   sips -s format icns ../images/xivoicon.ico --out xivoclient.app/Contents/Resources/xivo.icns
   rm ./xivoclient.app/Contents/Resources/appli.rc
 
-  echo "-- macdeployqt step"
+  echo "-- macdeployqt step" $SHELL
   macdeployqt xivoclient.app
 
-  echo "-- install_name_tool steps"
+  echo "-- install_name_tool steps" $SHELL
   install_name_tool -change @executable_path/../Frameworks/libxivoclientbaselib.1.dylib \
                             @executable_path/libxivoclientbaselib.1.dylib \
                             ./xivoclient.app/Contents/MacOS/xivoclient
 
   for mylib in libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
-      echo "Qt transformations : ${mylib}"
+      echo "Qt transformations :" $mylib
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtGui.framework/Versions/4/QtGui \
           @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui \
-          ${mylib}
+          $mylib
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtNetwork.framework/Versions/4/QtNetwork \
           @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork \
-          ${mylib}
+          $mylib
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtCore.framework/Versions/4/QtCore \
           @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore \
-          ${mylib}
+          $mylib
   done
 
   for mylib in ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
-      echo "libxivoclientbaselib transformations : ${mylib}"
+      echo "libxivoclientbaselib transformations :" $mylib
       install_name_tool -change libxivoclientbaselib.1.dylib \
           @executable_path/libxivoclientbaselib.1.dylib \
-          ${mylib}
+          $mylib
   done
 
   cp -R *dylib  ./xivoclient.app/Contents/MacOS
