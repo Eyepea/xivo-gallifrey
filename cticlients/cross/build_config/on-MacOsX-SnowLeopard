@@ -25,29 +25,29 @@ make_the_build <<!
   echo "-- macdeployqt step"
   macdeployqt xivoclient.app
 
-  echo "-- install_name_tool steps" $BASH ${BASH}
+  echo "-- install_name_tool steps"
   install_name_tool -change @executable_path/../Frameworks/libxivoclientbaselib.1.dylib \
                             @executable_path/libxivoclientbaselib.1.dylib \
                             ./xivoclient.app/Contents/MacOS/xivoclient
 
-  ls ./xivoclient.app/Contents/Resources/plugins/*.dylib
-
-  echo libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib
-
-  for m in libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
-      echo "Qt transformations : $m"
+  for mylib in libxivoclientbaselib.dylib ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
+      echo "Qt transformations : \${mylib}"
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtGui.framework/Versions/4/QtGui \
-          @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui $m
+          @executable_path/../Frameworks/QtGui.framework/Versions/4/QtGui \
+          \${mylib}
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtNetwork.framework/Versions/4/QtNetwork \
-          @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork $m
+          @executable_path/../Frameworks/QtNetwork.framework/Versions/4/QtNetwork \
+          \${mylib}
       install_name_tool -change /opt/qt-4.6.3-shared/lib/QtCore.framework/Versions/4/QtCore \
-          @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore $m
+          @executable_path/../Frameworks/QtCore.framework/Versions/4/QtCore \
+          \${mylib}
   done
 
-  for m in ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
-      echo "libxivoclientbaselib transformations : $m"
+  for mylib in ./xivoclient.app/Contents/Resources/plugins/*.dylib ; do
+      echo "libxivoclientbaselib transformations : \${mylib}"
       install_name_tool -change libxivoclientbaselib.1.dylib \
-          @executable_path/libxivoclientbaselib.1.dylib $m
+          @executable_path/libxivoclientbaselib.1.dylib \
+          \${mylib}
   done
 
   cp -R *dylib ./xivoclient.app/Contents/MacOS
