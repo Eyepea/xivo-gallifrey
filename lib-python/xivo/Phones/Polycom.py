@@ -41,22 +41,17 @@ log = logging.getLogger("xivo.Phones.Polycom") # pylint: disable-msg=C0103
 
 class Polycom(PhoneVendorMixin):
 
-    POLYCOM_MODELS = (('spip_301', 'SPIP301'),
-                      ('spip_320', 'SPIP320'),
+    POLYCOM_MODELS = (('spip_320', 'SPIP320'),
                       ('spip_321', 'SPIP321'),
                       ('spip_330', 'SPIP330'),
                       ('spip_331', 'SPIP331'),
                       ('spip_335', 'SPIP335'),
                       ('spip_430', 'SPIP430'),
                       ('spip_450', 'SPIP450'),
-                      ('spip_501', 'SPIP501'),
                       ('spip_550', 'SPIP550'),
                       ('spip_560', 'SPIP560'),
-                      ('spip_600', 'SPIP600'),
-                      ('spip_601', 'SPIP601'),
                       ('spip_650', 'SPIP650'),
                       ('spip_670', 'SPIP670'),
-                      ('spip_4000', 'SSIP4000'),
                       ('spip_5000', 'SSIP5000'),
                       ('spip_6000', 'SSIP6000'),
                       ('spip_7000', 'SSIP7000'))

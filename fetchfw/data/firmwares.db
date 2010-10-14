@@ -231,18 +231,6 @@ model: 7911
 version: 9.0.3
 files: cmterm-7911_7906-sccp.9-0-3.zip
 
-# Cisco 7910G+SW SCCP 5.0.7
-[cisco7910_sccp_507]
-brand: Cisco
-model: 7910
-version: 5.0.7
-files: cmterm-7910-sccp.5-0-7.zip
-
-[cmterm-7910-sccp.5-0-7.zip]
-url: http://download-sj.cisco.com/swc/esd/02/274382152/contract/cmterm-7910-sccp.5-0-7.zip
-size: 592359
-sha1sum: b1b640d14b925e9746953c761a2b9218d0248b52
-
 # Cisco 7906G SCCP 9.0.3
 [cisco7906_sccp_903]
 brand: Cisco
@@ -254,30 +242,6 @@ files: cmterm-7911_7906-sccp.9-0-3.zip
 url: http://download-sj.cisco.com/swc/esd/04/280136569/contract/cmterm-7911_7906-sccp.9-0-3.zip
 size: 5066707
 sha1sum: 02f37cd69aab190d018d13f86ccdc61cc2bb4235
-
-# Cisco 7905G SCCP 8.0.3 
-[cisco7905_sccp_803]
-brand: Cisco
-model: 7905
-version: 8.0.3
-files: cmterm-7905G-sccp.8-0-3.zip
-
-[cmterm-7905G-sccp.8-0-3.zip]
-url: http://download-sj.cisco.com/swc/esd/02/273941556/contract/cmterm-7905G-sccp.8-0-3.zip
-size: 673168
-sha1sum: c68b1ddddc06ab7bc85eef2a5956d6a58844d700
-
-# Cisco 7902G SCCP 8.0.2 
-[cisco7902_sccp_802]
-brand: Cisco
-model: 7902
-version: 8.0.2
-files: cmterm-7902G-sccp.8-0-2.zip
-
-[cmterm-7902G-sccp.8-0-2.zip]
-url: http://download-sj.cisco.com/swc/esd/02/278078615/contract/cmterm-7902G-sccp.8-0-2.zip
-size: 329363
-sha1sum: 691fb351d9228bd193dcb78cb1e7ddec73ccf835
 
 # Cisco Expansion Module 7916 SCCP 1.0.4
 [cisco7916_sccp_104]
@@ -587,18 +551,6 @@ url: http://download-sj.cisco.com/swc/esd/03/282414111/anon/SPA2102_Firmware.zip
 size: 3424733
 sha1sum: e735d328e29d5a5ce17f381350a6c623c3b70436
 
-# Linksys SPA400 01-01-02-02
-[lsspa400_01010202]
-brand: Linksys
-model: SPA400
-version: 01-01-02-02
-files: SPA400_Firmware.ZIP
-
-[SPA400_Firmware.ZIP]
-url: http://www.cisco.com/en/US/prod/voicesw/ps6788/vcallcon/ps10030/ps10032/SPA400_Firmware.ZIP
-size: 3535794
-sha1sum: 947556fd4ccd089e76f41c954f66da63055ddfe9
-
 # Nortel IP 1220
 [nortelip1220_32]
 brand: Nortel
@@ -611,13 +563,6 @@ url: http://www116.nortel.com/software/i/ipphones/12xx/SIP12x0e03.02.16.00.bin
 size: 3999622
 sha1sum: 5ae3853c30a0ef61ba3f66d382fcafc0706e529e
 nnAkamaiAuth: access=/software/i/ipphones/12xx/SIP12x0e03.02.16.00.bin*~md5=e518d8db607312349dabb60e240e1495
-
-# Polycom SoundPoint IP 301
-[pcspip301_316]
-brand: Polycom
-model: SoundPoint IP 301
-version: 3.1.6
-files: spip_ssip_vvx_BootROM_4_1_4_release_sig.zip spip_ssip_3_1_6_legacy_release_sig_split.zip
 
 # Polycom SoundPoint IP 320
 [pcspip320_323]
@@ -668,13 +613,6 @@ model: SoundPoint IP 450
 version: 3.2.3
 files: spip_ssip_BootROM_4_2_2_release_sig.zip spip_ssip_vvx_3_2_3_release_sig_split.zip
 
-# Polycom SoundPoint IP 501
-[pcspip501_316]
-brand: Polycom
-model: SoundPoint IP 501
-version: 3.1.6
-files: spip_ssip_vvx_BootROM_4_1_4_release_sig.zip spip_ssip_3_1_6_legacy_release_sig_split.zip
-
 # Polycom SoundPoint IP 550
 [pcspip550_323]
 brand: Polycom
@@ -689,20 +627,6 @@ model: SoundPoint IP 560
 version: 3.2.3
 files: spip_ssip_BootROM_4_2_2_release_sig.zip spip_ssip_vvx_3_2_3_release_sig_split.zip
 
-# Polycom SoundPoint IP 600
-[pcspip600_316]
-brand: Polycom
-model: SoundPoint IP 600
-version: 3.1.6
-files: spip_ssip_vvx_BootROM_4_1_4_release_sig.zip spip_ssip_3_1_6_legacy_release_sig_split.zip
-
-# Polycom SoundPoint IP 601
-[pcspip601_316]
-brand: Polycom
-model: SoundPoint IP 601
-version: 3.1.6
-files: spip_ssip_vvx_BootROM_4_1_4_release_sig.zip spip_ssip_3_1_6_legacy_release_sig_split.zip
-
 # Polycom SoundPoint IP 650
 [pcspip650_323]
 brand: Polycom
@@ -716,13 +640,6 @@ brand: Polycom
 model: SoundPoint IP 670
 version: 3.2.3
 files: spip_ssip_BootROM_4_2_2_release_sig.zip spip_ssip_vvx_3_2_3_release_sig_split.zip
-
-# Polycom SoundStation IP 4000
-[pcssip4000sip_316]
-brand: Polycom
-model: SoundStation IP 4000
-version: 3.1.6
-files: spip_ssip_vvx_BootROM_4_1_4_release_sig.zip spip_ssip_3_1_6_legacy_release_sig_split.zip
 
 # Polycom SoundStation IP 5000
 [pcssip5000sip_323]
@@ -751,20 +668,10 @@ url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_BootROM_4_2
 size: 21452104
 sha1sum: 6bb960aa48e0b9a515218b1735b4735bf4088687
 
-[spip_ssip_vvx_BootROM_4_1_4_release_sig.zip]
-url: http://downloads.polycom.com/voice/voip/sp_ss_bootrom/spip_ssip_vvx_BootROM_4_1_4_release_sig.zip
-size: 31470670
-sha1sum: 7677f6cda04effc39b0cf47d0a3e3b8ff0ab0edd
-
 [spip_ssip_vvx_3_2_3_release_sig_split.zip]
 url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_vvx_3_2_3_release_sig_split.zip
 size: 93522406
 sha1sum: 3b709a6a764753e6a99e972779c06c71e4471fec
-
-[spip_ssip_3_1_6_legacy_release_sig_split.zip]
-url: http://downloads.polycom.com/voice/voip/sp_ss_sip/spip_ssip_3_1_6_legacy_release_sig_split.zip
-size: 15006377
-sha1sum: 42626304e83dfc5ce2d26559b9f28266f99da559
 
 # Siemens C470IP 022140000000
 [siemens_c470ip_02214]
@@ -868,35 +775,6 @@ files: snom870-8.4.18-SIP-r.bin
 url: http://provisioning.snom.com/download/fw/snom870-8.4.18-SIP-r.bin
 size: 21887168
 sha1sum: f39b66bfc84d33b5e79d82947d5e8e6618adbfad
-
-# Snom m3 2.0.2
-[snm3_202]
-brand: Snom
-model: m3
-version: 2.0.2
-files: SnakeGw_fr01_v0202.fwu SnakePp_fr01_v0202.fwu
-
-[SnakeGw_fr01_v0202.fwu]
-url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakeGw_fr01_v0202.fwu
-size: 1022280
-sha1sum: 8cebcd1e3eb45c5eb30a5fbb8be8940139ed7dfe
-
-[SnakePp_fr01_v0202.fwu]
-url: http://provisioning.snom.com/m3/firmware/Fileformat3/SnakePp_fr01_v0202.fwu
-size: 990184
-sha1sum: b5d3b660feb6fbf0f49493bb96799716ef0368c3
-
-# Snom m9 9.1.56
-[snm3_9156]
-brand: Snom
-model: m9
-version: 9.1.56
-files: m9-9.1.56.bin
-
-[m9-9.1.56.bin]
-url: http://provisioning.snom.com/download/fw/m9-9.1.56.bin
-size: 3125532
-sha1sum: b1a752dd88b706f46acdd03f4f6decf785ac3783
 
 # Snom MP 8.2.35
 [snmp_8235]
