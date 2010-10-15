@@ -124,3 +124,15 @@ class ClientConnection:
             return ret
         except:
             return None
+
+    # return lines if available, None otherwise
+    # use the separator to split "lines"
+    def readlines(self):
+        ret = list()
+        self.recv()
+        try:
+            ret = self.readbuff.split(self.separator)
+            self.readbuff = ret.pop()
+        except:
+            pass
+        return ret

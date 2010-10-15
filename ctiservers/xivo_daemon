@@ -1200,17 +1200,21 @@ class xivo_daemon:
                     if cn in self.userinfo_by_requester:
                         del self.userinfo_by_requester[cn]
 
-            self.fdlist_full = self.fdlist_listen_cti.keys() + self.fdlist_udp_cti.keys() + self.fdlist_established.keys()
-            self.fdlist_full.extend(self.amilist.fdlist())
+            self.fdlist_full = list()
             self.fdlist_full.append(self.pipe_queued_threads_commandclass[0])
             self.fdlist_full.append(self.pipe_queued_threads_main[0])
+            self.fdlist_full.extend(self.fdlist_listen_cti.keys())
+            self.fdlist_full.extend(self.fdlist_udp_cti.keys())
+            self.fdlist_full.extend(self.fdlist_established.keys())
+            self.fdlist_full.extend(self.amilist.fdlist())
             if self.outsock is not None:
                 self.fdlist_full.append(self.outsock)
             writefds = []
             for iconn, kind in self.fdlist_established.iteritems():
                 if kind == 'CTI' and iconn.need_sending():
                     writefds.append(iconn)
-            [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [], self.updates_period)
+            [sels_i, sels_o, sels_e] = select.select(self.fdlist_full, writefds, [],
+                                                     self.updates_period)
         # }
         except Exception:  # {
             log.exception('(select) probably Ctrl-C or daemon stop or daemon restart ...')
@@ -1377,11 +1381,10 @@ class xivo_daemon:
                             requester = '%s:%d' % sel_i.getpeername()
                             if isinstance(sel_i, ClientConnection):
                                 try:
-                                    while True:
-                                        line = sel_i.readline()
-                                        if line is None:
-                                            break
-                                        manage_connection.manage_tcp_connections(self, sel_i, line, kind)
+                                    lines = sel_i.readlines()
+                                    for line in lines:
+                                        if line:
+                                            manage_connection.manage_tcp_connections(self, sel_i, line, kind)
                                 except ClientConnection.CloseException, cexc:
                                     if kind == 'CTI':
                                         if sel_i in self.userinfo_by_requester:
