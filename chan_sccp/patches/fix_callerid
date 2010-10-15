@@ -1,8 +1,8 @@
-Index: asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c
+Index: asterisk-chan-sccp-0~prerelease+svn2001/src/sccp_pbx.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1970.orig/src/sccp_pbx.c	2010-10-08 16:24:36.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c	2010-10-08 16:27:46.000000000 +0200
-@@ -265,21 +265,21 @@
+--- asterisk-chan-sccp-0~prerelease+svn2001.orig/src/sccp_pbx.c	2010-10-15 12:26:04.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2001/src/sccp_pbx.c	2010-10-15 15:48:40.000000000 +0200
+@@ -211,21 +211,21 @@
  		   enbloc dialed numbers (such as via 7970 enbloc dialing) if they match a certain pattern.
  		   This would help users dial from call history lists on other phones, which do not have enbloc dialing,
  		   when using shared lines. */

@@ -1,7 +1,7 @@
-Index: asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_actions.c
+Index: asterisk-chan-sccp-0~prerelease+svn2001/src/sccp_actions.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1970.orig/src/sccp_actions.c	2010-10-08 16:28:12.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_actions.c	2010-10-08 16:28:54.000000000 +0200
+--- asterisk-chan-sccp-0~prerelease+svn2001.orig/src/sccp_actions.c	2010-10-13 16:25:11.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2001/src/sccp_actions.c	2010-10-15 15:48:40.000000000 +0200
 @@ -1273,7 +1273,9 @@
  	if (c) {
      		/* Answer the ringing channel. */
@@ -12,17 +12,3 @@ Index: asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_actions.c
  	} else {
  		/* use default line if it is set */
  		if(d && d->defaultLineInstance > 0){
-Index: asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c
-===================================================================
---- asterisk-chan-sccp-0~prerelease+svn1970.orig/src/sccp_pbx.c	2010-10-08 16:28:16.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn1970/src/sccp_pbx.c	2010-10-08 16:29:12.000000000 +0200
-@@ -959,7 +959,8 @@
- 			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
- 			break;
- 		case AST_CONTROL_PROGRESS:
--			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
-+			//sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
-+			sccp_channel_setSkinnyCallstate(c, SCCP_CHANNELSTATE_CONNECTED);
- 			break;
- 		case AST_CONTROL_PROCEEDING:
- 			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROCEED);
