@@ -6190,7 +6190,7 @@ class XivoCTICommand(BaseCommand):
                         aststatus.append('%s:%d' % (var, val))
                     fastagi.set_variable('XIVO_PRESENCE', ','.join(aststatus))
             except Exception:
-                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
             return
 
         elif function == 'queuestatus':
@@ -6217,7 +6217,7 @@ class XivoCTICommand(BaseCommand):
                         fastagi.set_variable('XIVO_QUEUESTATUS', ','.join(lst))
                         fastagi.set_variable('XIVO_QUEUEID', queueid)
             except Exception:
-                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
             return
 
         elif function == 'queueentries':
@@ -6232,7 +6232,7 @@ class XivoCTICommand(BaseCommand):
                             lst.append('%s:%d' % (chan, int(round(time.time() - chanprops.get('entrytime')))))
                         fastagi.set_variable('XIVO_QUEUEENTRIES', ','.join(lst))
             except Exception:
-                log.exception('handle_fagi %s %s : %s %s' % (astid, function, astid, fastagi.args))
+                log.exception('handle_fagi %s %s : %s' % (astid, function, fastagi.args))
             return
 
         elif function == 'queueholdtime':
@@ -6285,7 +6285,7 @@ class XivoCTICommand(BaseCommand):
                     calleridname = calleridsolved
                 else:
                     log.warning('%s handle_fagi %s : (solved) there is already a calleridname="%s"'
-                                % (astid, calleridname))
+                                % (astid, function, calleridname))
 
             # to set according to os.getenv('LANG') or os.getenv('LANGUAGE') later on ?
             if calleridnum in ['', 'unknown']:
@@ -6294,7 +6294,7 @@ class XivoCTICommand(BaseCommand):
                 calleridname = calleridnum
             else:
                 log.warning('%s handle_fagi %s : (number) there is already a calleridname="%s"'
-                            % (astid, calleridname))
+                            % (astid, function, calleridname))
 
             calleridtoset = '"%s"<%s>' % (calleridname, calleridnum)
             td = '%s handle_fagi %s : the callerid will be set to %s' % (astid, function,
