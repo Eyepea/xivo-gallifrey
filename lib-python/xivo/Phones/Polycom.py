@@ -114,7 +114,7 @@ class Polycom(PhoneVendorMixin):
         """
         self.__action('reboot', self.POLYCOM_COMMON_HTTP_USER, self.POLYCOM_COMMON_HTTP_PASS)
 
-    def __generate(self, provinfo):
+    def __generate(self, provinfo, dry_run):
         macaddr = self.phone['macaddr'].replace(":", "").lower()
 
         try:
@@ -185,10 +185,10 @@ class Polycom(PhoneVendorMixin):
                 cfg_filename,
                 'utf8')
 
-        tmp_file = open(tmp_filename, "w")
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(tmp_filename, cfg_filename)
+        if dry_run:
+            return ''.join(txt)
+        else:
+            self._write_cfg(tmp_filename, cfg_filename, txt)
         
     @classmethod
     def __format_tz_inform(cls, inform):
@@ -224,19 +224,19 @@ class Polycom(PhoneVendorMixin):
         return lines
         
 
-    def do_reinitprov(self, provinfo):
+    def do_reinitprov(self, provinfo, dry_run):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__generate(provinfo)
+        return self.__generate(provinfo, dry_run)
 
-    def do_autoprov(self, provinfo):
+    def do_autoprov(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        self.__generate(provinfo)
+        return self.__generate(provinfo, dry_run)
 
     # Introspection entry points
 

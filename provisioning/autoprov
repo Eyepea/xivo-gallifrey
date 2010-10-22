@@ -1070,6 +1070,44 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
         self.wfile.write('\t"macaddr": "%s"\n' % macaddr)
         self.wfile.write('}\n')
         
+    def handle_config(self, query):
+        query_dict = cgi.parse_qs(query)
+        try:
+            iduserfeatures = query_dict['id'][0]
+            vendor = query_dict['vendor'][0]
+            model = query_dict['model'][0]
+            proto = query_dict.get('proto', ('sip',))[0]
+        except KeyError:
+            self.send_error(400, 'Invalid query parameters')
+        else:
+            phone = {
+                'from': 'ipbx',
+                'actions': 'no',                    # might be useless
+                'isinalan': '0',                    # might be useless
+                'macaddr': '00:00:00:00:00:00',     # fake MAC address
+                'proto': proto,
+                'model': model,
+                'vendor': vendor,
+                'iduserfeatures': iduserfeatures,
+            }
+            try:
+                prov_inst = xivo_config.phone_factory(phone)
+            except Exception:
+                log.debug('error creating phone instance', exc_info=True)
+                self.send_error(400, 'Unknown vendor/model')
+            else:
+                config = self.my_ctx.dbinfos.config_by_iduserfeatures_proto(iduserfeatures, proto)
+                if not config:
+                    self.send_error(404, 'Config not found (unknown ID)')
+                else:
+                    txt = prov_inst.generate_autoprov(config, True)
+                    if not txt:
+                        self.send_error(500, 'Operation not supported for this vendor/model')
+                    else:
+                        self.send_response(200)
+                        self.end_headers()
+                        self.wfile.write(txt)
+        
     # === ENTRY POINTS (called FROM BaseHTTPRequestHandler) ===
 
     def do_POST(self):
@@ -1081,13 +1119,19 @@ class ProvHttpHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         log.info("do_GET(): handling GET request to path %s for peer %s", self.path, self.client_address)
         parsed_path = urlparse.urlparse(self.path)
-        if self.path == '/list':
-            self.handle_list()
-        elif parsed_path.path == '/phoneinfo':
-            # syntax is: GET /phoneinfo?ip=192.168.32.3
-            self.handle_phoneinfo(parsed_path.query)
-        else:
-            self.answer_404()
+        try:
+            if self.path == '/list':
+                self.handle_list()
+            elif parsed_path.path == '/phoneinfo':
+                # syntax is: GET /phoneinfo?ip=192.168.32.3
+                self.handle_phoneinfo(parsed_path.query)
+            elif parsed_path.path == '/config':
+                # syntax is: GET /config?id=5&vendor=aastra&model=6751i
+                self.handle_config(parsed_path.query)
+            else:
+                self.answer_404()
+        except Exception:
+            log.debug('error while processing GET request', exc_info=True)
 
 
 def main(log_level, foreground):

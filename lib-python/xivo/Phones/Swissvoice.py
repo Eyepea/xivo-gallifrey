@@ -111,28 +111,33 @@ class Swissvoice(PhoneVendorMixin):
         "Entry point to send the reboot command to the phone."
         self.__action(self.SWISSVOICE_COMMON_HTTP_USER, self.SWISSVOICE_COMMON_HTTP_PASS)
 
-    def do_reinitprov(self, provinfo):
+    def do_reinitprov(self, provinfo, dry_run):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        macaddr = self.phone['macaddr'].replace(":", "").lower()
-        cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
-        inf_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
-        try:
-            os.unlink(cfg_filename)
-        except OSError:
-            pass
-        try:
-            os.unlink(inf_filename)
-        except OSError:
-            pass
+        if dry_run:
+            return
+        else:
+            macaddr = self.phone['macaddr'].replace(":", "").lower()
+            cfg_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, macaddr + "_ip10.cfg")
+            inf_filename = os.path.join(self.SWISSVOICE_SPEC_DIR, "..", macaddr + "_ip10.inf")
+            try:
+                os.unlink(cfg_filename)
+            except OSError:
+                pass
+            try:
+                os.unlink(inf_filename)
+            except OSError:
+                pass
 
-    def do_autoprov(self, provinfo):
+    def do_autoprov(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
+        if dry_run:
+            return
         macaddr = self.phone['macaddr'].replace(":", "").lower()
 
         try:
@@ -177,10 +182,7 @@ class Swissvoice(PhoneVendorMixin):
                 cfg_filename,
                 'utf8')
 
-        tmp_file = open(cfg_tmp_filename, 'w')
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(cfg_tmp_filename, cfg_filename)
+        self._write_cfg(cfg_tmp_filename, cfg_filename, txt)
 
         txt = xivo_config.txtsubst(
                 inf_template_lines,
@@ -192,10 +194,7 @@ class Swissvoice(PhoneVendorMixin):
                 inf_filename,
                 'utf8')
 
-        tmp_file = open(inf_tmp_filename, 'w')
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(inf_tmp_filename, inf_filename)
+        self._write_cfg(inf_tmp_filename, inf_filename, txt)
 
     # Introspection entry points
 

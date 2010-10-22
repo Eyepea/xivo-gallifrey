@@ -121,22 +121,22 @@ class Snom(PhoneVendorMixin):
     def do_reboot(self):
         "Entry point to send the reboot command to the phone."
         self.__action("REBOOT", self.SNOM_COMMON_HTTP_USER, self.SNOM_COMMON_HTTP_PASS)
-
-    def do_reinitprov(self, provinfo):
+    
+    def do_reinitprov(self, provinfo, dry_run):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        model = self.phone['model']
-        macaddr = self.phone['macaddr'].replace(":", "").upper()
+        return self.__generate(provinfo, dry_run)
 
-        xml_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm")
-        try:
-            os.unlink(xml_filename)
-        except OSError:
-            pass
+    def do_autoprov(self, provinfo, dry_run):
+        """
+        Entry point to generate the provisioned configuration for
+        this phone.
+        """
+        return self.__generate(provinfo, dry_run)
 
-    def do_autoprov(self, provinfo):
+    def __generate(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
@@ -163,18 +163,6 @@ class Snom(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        # We need to create a file which contains only a link to another file if we want the
-        # configuration parameters to be applied with the correct priority... (i.e. we want
-        # the per-phone parameters to override the generic parameters)
-        redirect_file = open(os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm"), 'w')
-        redirect_file.write(
-"""\
-<?xml version="1.0" encoding="UTF-8" ?>
-<setting-files>
-  <file url="http://%s:8667/Snom/snom%s-%s.xml"/>
-</setting-files>
-""" % (self.ASTERISK_IPV4, model, macaddr))
-        redirect_file.close()
         tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml.tmp")
         xml_filename = tmp_filename[:-4]
 
@@ -211,10 +199,22 @@ class Snom(PhoneVendorMixin):
                 xml_filename,
                 'utf8')
 
-        tmp_file = open(tmp_filename, 'w')
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(tmp_filename, xml_filename)
+        if dry_run:
+            return ''.join(txt)
+        else:
+            # We need to create a file which contains only a link to another file if we want the
+            # configuration parameters to be applied with the correct priority... (i.e. we want
+            # the per-phone parameters to override the generic parameters)
+            redirect_file = open(os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".htm"), 'w')
+            redirect_file.write(
+"""\
+<?xml version="1.0" encoding="UTF-8" ?>
+<setting-files>
+  <file url="http://%s:8667/Snom/snom%s-%s.xml"/>
+</setting-files>
+""" % (self.ASTERISK_IPV4, model, macaddr))
+            redirect_file.close()
+            self._write_cfg(tmp_filename, xml_filename, txt)
         
     @classmethod
     def __format_tz_inform(cls, inform):

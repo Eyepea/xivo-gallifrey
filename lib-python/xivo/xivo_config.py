@@ -449,27 +449,46 @@ class PhoneVendorMixin(object):
             return
         log.debug("Sent UPGRADE FIRMWARE command. (phone: %r, vendor: %r)", self.phone['macaddr'], self.phone['vendor'])
 
-    def generate_reinitprov(self, provinfo):
+    def generate_reinitprov(self, provinfo, dry_run=False):
         """
         This function put the configuration for the phone back in guest
         state.
+        
+        If dry_run is true, do not configure the phone; instead, return
+        the content of the file that would have been generated.
         """
         log.info("About to GUEST'ify the phone %s", self.phone['macaddr'])
-        self.do_reinitprov(provinfo)
+        res = self.do_reinitprov(provinfo, dry_run)
         log.debug("Phone GUEST'ified %s", self.phone['macaddr'])
+        return res
 
-    def generate_autoprov(self, provinfo):
+    def generate_autoprov(self, provinfo, dry_run=False):
         """
         This function generate the configuration for the phone with
-        provisioning informations provided in the provinfo dictionary,
-        which must contain the following keys:
-
-        'name', 'ident', 'number', 'passwd'
+        provisioning informations provided in the provinfo dictionary.
+        
+        If dry_run is true, do not configure the phone; instead, return
+        the content of the file that would have been generated (if
+        applicable, else return None).
         """
         log.info("About to AUTOPROV the phone %s with infos %s", self.phone['macaddr'], str(provinfo))
-        self.do_autoprov(provinfo)
+        res = self.do_autoprov(provinfo, dry_run)
         log.debug("Phone AUTOPROV'ed %s", self.phone['macaddr'])
+        return res
 
+    def _write_cfg(self, tmp_filename, cfg_filename, txt):
+        """Write txt to cfg_filename in a two step process:
+        
+        - first write all txt into tmp_filename, which should be on
+          the same filesystem such that the rename operation is atomic
+        - then rename tmp_filename into cfg_filename
+        """
+        tmp_file = open(tmp_filename, 'w')
+        try:
+            tmp_file.writelines(txt)
+        finally:
+            tmp_file.close()
+        os.rename(tmp_filename, cfg_filename)
 
 PhoneClasses = {}
 

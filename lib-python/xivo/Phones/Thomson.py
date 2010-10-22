@@ -257,7 +257,7 @@ class Thomson(PhoneVendorMixin):
             fk_config_lines.append("FeatureKeyExt%02d=%s/<sip:%s>" % (int(key), 'LS'[supervise], exten))
         return "\n".join(fk_config_lines)
 
-    def __generate(self, provinfo):
+    def __generate(self, provinfo, dry_run):
         model = self.phone['model'].upper()
         macaddr = self.phone['macaddr'].replace(":", "").upper()
         phonetype = "ST"
@@ -324,17 +324,17 @@ class Thomson(PhoneVendorMixin):
                 txt_filename,
                 'utf8')
 
-        tmp_file = open(tmp_filename, 'w')
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(tmp_filename, txt_filename) # atomically update the file
-        inf_filename = self.THOMSON_SPEC_TXT_BASENAME + phonetype + model + "_" + macaddr + ".inf"
-        try:
-            os.lstat(inf_filename)
-            os.unlink(inf_filename)
-        except Exception: # XXX: OsError?
-            pass
-        os.symlink(self.THOMSON_COMMON_INF + phonetype + model, inf_filename)
+        if dry_run:
+            return ''.join(txt)
+        else:
+            self._write_cfg(tmp_filename, txt_filename, txt)
+            inf_filename = self.THOMSON_SPEC_TXT_BASENAME + phonetype + model + "_" + macaddr + ".inf"
+            try:
+                os.lstat(inf_filename)
+                os.unlink(inf_filename)
+            except Exception: # XXX: OsError?
+                pass
+            os.symlink(self.THOMSON_COMMON_INF + phonetype + model, inf_filename)
 
     @classmethod
     def __tz_name_to_num(cls, timezone):
@@ -383,14 +383,14 @@ class Thomson(PhoneVendorMixin):
 #               self.__action(('sys set rel 0', 'ffs format', 'ffs commit', 'ffs commit', 'reboot', 'quit'))
         self.__action(('reboot',))
 
-    def do_reinitprov(self, provinfo):
+    def do_reinitprov(self, provinfo, dry_run):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self.__generate(provinfo)
+        return self.__generate(provinfo, dry_run)
 
-    def do_autoprov(self, provinfo):
+    def do_autoprov(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
@@ -400,7 +400,7 @@ class Thomson(PhoneVendorMixin):
         else:
             provinfo['subscribemwi'] = '0'
 
-        self.__generate(provinfo)
+        return self.__generate(provinfo, dry_run)
 
     # Introspection entry points
 

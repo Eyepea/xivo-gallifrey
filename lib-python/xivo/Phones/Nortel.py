@@ -132,27 +132,28 @@ class Nortel(PhoneVendorMixin):
         finally:
             child.close(force=True)
 
-    def do_reinitprov(self, provinfo):
+    def do_reinitprov(self, provinfo, dry_run):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
-        self._pre_generate(provinfo)
+        return self._pre_generate(provinfo, dry_run)
 
-    def do_autoprov(self, provinfo):
+    def do_autoprov(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
-        self._pre_generate(provinfo)
+        return self._pre_generate(provinfo, dry_run)
         
-    def _pre_generate(self, provinfo):
+    def _pre_generate(self, provinfo, dry_run):
         if self.phone.get('from') == 'dhcp':
-            self._generate_from_dhcp(provinfo)
+            res = self._generate_from_dhcp(provinfo, dry_run)
         else:
-            self._generate(provinfo)
+            res = self._generate(provinfo, dry_run)
+        return res
             
-    def _generate_from_dhcp(self, provinfo):
+    def _generate_from_dhcp(self, provinfo, dry_run):
         """
         Generate a default device-specific configuration file for the
         phone to autologin in guest if the config file is not already
@@ -160,7 +161,7 @@ class Nortel(PhoneVendorMixin):
         """
         cfg_filename = self._get_filenames()[0]
         if not os.path.isfile(cfg_filename):
-            self._generate(provinfo)
+            return self._generate(provinfo, dry_run)
         
     def _get_filenames(self):
         """
@@ -170,7 +171,7 @@ class Nortel(PhoneVendorMixin):
         tmp_filename = cfg_filename + ".tmp"
         return cfg_filename, tmp_filename
         
-    def _generate(self, provinfo):
+    def _generate(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
@@ -221,10 +222,10 @@ class Nortel(PhoneVendorMixin):
                 cfg_filename,
                 'utf8')
 
-        tmp_file = open(tmp_filename, 'w')
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(tmp_filename, cfg_filename)
+        if dry_run:
+            return ''.join(txt)
+        else:
+            self._write_cfg(tmp_filename, cfg_filename, txt)
 
     # Introspection entry points
 

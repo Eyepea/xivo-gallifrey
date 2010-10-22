@@ -547,10 +547,7 @@ class Siemens(PhoneVendorMixin):
                 cfg_filename,
                 'utf8')
 
-        tmp_file = open(tmp_filename, 'w')
-        tmp_file.writelines(txt)
-        tmp_file.close()
-        os.rename(tmp_filename, cfg_filename)
+        self._write_cfg(tmp_filename, cfg_filename, txt)
 
     def __get_config_sha1sum(self):
         "Get sha1sum value from configuration."
@@ -596,8 +593,8 @@ class Siemens(PhoneVendorMixin):
         http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
         http.provi(ipv4, self.phone['model'], self.phone['macaddr'])
 
-    def __action_prov(self, provinfo):
-        if provinfo['sha1sum'] == '0':
+    def __action_prov(self, provinfo, dry_run):
+        if dry_run or provinfo['sha1sum'] == '0':
             return
         elif self.phone.get('ipv4'):
             http = SiemensHTTP(self.SIEMENS_COMMON_DIR, self.SIEMENS_COMMON_PIN)
@@ -634,23 +631,23 @@ class Siemens(PhoneVendorMixin):
             provinfo['sha1sum'] = '1'
             self.__generate(provinfo)
 
-    def do_reinitprov(self, provinfo):
+    def do_reinitprov(self, provinfo, dry_run):
         """
         Entry point to generate the reinitialized (GUEST)
         configuration for this phone.
         """
         provinfo['sha1sum'] = self.__get_config_sha1sum()
 
-        self.__action_prov(provinfo)
+        return self.__action_prov(provinfo, dry_run)
 
-    def do_autoprov(self, provinfo):
+    def do_autoprov(self, provinfo, dry_run):
         """
         Entry point to generate the provisioned configuration for
         this phone.
         """
         provinfo['sha1sum'] = self.__get_config_sha1sum()
 
-        self.__action_prov(provinfo)
+        return self.__action_prov(provinfo, dry_run)
 
     # Introspection entry points
 
