@@ -776,10 +776,10 @@ class manage_connection:
         """
         try:
             daemon.amilist.setconfig(astid,
-                              (daemon.configs[astid].remoteaddr,
-                               daemon.configs[astid].ami_port),
-                               daemon.configs[astid].ami_login,
-                               daemon.configs[astid].ami_pass)
+                                     (daemon.configs[astid].remoteaddr,
+                                      daemon.configs[astid].ami_port),
+                                     daemon.configs[astid].ami_login,
+                                     daemon.configs[astid].ami_pass)
             daemon.amilist.connect(astid)
             daemon.amilist.set_aoriginate(astid, daemon.configs[astid].aoriginate)
 
