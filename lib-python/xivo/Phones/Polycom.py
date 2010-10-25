@@ -115,6 +115,7 @@ class Polycom(PhoneVendorMixin):
         self.__action('reboot', self.POLYCOM_COMMON_HTTP_USER, self.POLYCOM_COMMON_HTTP_PASS)
 
     def __generate(self, provinfo, dry_run):
+        model = self.phone['model']
         macaddr = self.phone['macaddr'].replace(":", "").lower()
 
         try:
@@ -144,6 +145,8 @@ class Polycom(PhoneVendorMixin):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
+            
+        fkeys_config_lines = self.__format_function_keys(provinfo['funckey'], model)
         
         if 'language' in provinfo and provinfo['language'] in self.POLYCOM_LOCALES:
             locale = provinfo['language']
@@ -176,6 +179,7 @@ class Polycom(PhoneVendorMixin):
                 PhoneVendorMixin.set_provisioning_variables(
                     provinfo,
                     { 'user_vmail_addr':        self.xml_escape(provinfo['vmailaddr']),
+                      'function_keys':          fkeys_config_lines,
                       'language':               language,
                       'timezone':               timezone,
                       'backup_pbx':             backup_pbx,
@@ -189,6 +193,30 @@ class Polycom(PhoneVendorMixin):
             return ''.join(txt)
         else:
             self._write_cfg(tmp_filename, cfg_filename, txt)
+            
+    @classmethod
+    def __format_function_keys(cls, funckey, model):
+        max_fkey_no_map = {
+            'spip_450': 2,
+            'spip_550': 3,
+            'spip_560': 3,
+            'spip_650': 47,
+            'spip_670': 47,
+        }
+        max_fkey_no = max_fkey_no_map.get(model, 0)
+        lines = []
+        for fkey_no, fkey in funckey.iteritems():
+            if not fkey['supervision']:
+                log.info('Ignoring function key no %s -- supervision must be enabled for Polycom',
+                         fkey_no)
+            else:
+                if fkey_no < 1 or fkey_no > max_fkey_no:
+                    log.info('Invalid function key no %s for Polycom %s -- must be in [1, %s[',
+                             fkey_no, model, max_fkey_no)
+                else:
+                    lines.append('attendant.resourceList.%s.address="%s"' % (fkey_no, fkey['exten']))
+                    lines.append('attendant.resourceList.%s.label="%s"' % (fkey_no, fkey['label']))
+        return '\n'.join(lines)
         
     @classmethod
     def __format_tz_inform(cls, inform):
