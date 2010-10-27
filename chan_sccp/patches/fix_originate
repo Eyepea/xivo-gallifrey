@@ -1,8 +1,8 @@
-Index: asterisk-chan-sccp-0~prerelease+svn2001/src/sccp_actions.c
+Index: asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_actions.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn2001.orig/src/sccp_actions.c	2010-10-13 16:25:11.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn2001/src/sccp_actions.c	2010-10-15 15:48:40.000000000 +0200
-@@ -1273,7 +1273,9 @@
+--- asterisk-chan-sccp-0~prerelease+svn2064.orig/src/sccp_actions.c	2010-10-25 12:40:51.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_actions.c	2010-10-27 11:15:25.000000000 +0200
+@@ -1322,7 +1322,9 @@
  	if (c) {
      		/* Answer the ringing channel. */
  		sccp_log(1)(VERBOSE_PREFIX_3 "%s: Answer channel\n", d->id);
