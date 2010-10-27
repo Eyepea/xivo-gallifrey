@@ -1,7 +1,7 @@
 Index: asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_actions.c
 ===================================================================
 --- asterisk-chan-sccp-0~prerelease+svn2064.orig/src/sccp_actions.c	2010-10-25 12:40:51.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_actions.c	2010-10-27 11:15:25.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_actions.c	2010-10-27 15:58:54.000000000 +0200
 @@ -1322,7 +1322,9 @@
  	if (c) {
      		/* Answer the ringing channel. */
@@ -12,3 +12,18 @@ Index: asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_actions.c
  	} else {
  		/* use default line if it is set */
  		if(d && d->defaultLineInstance > 0){
+Index: asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_pbx.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2064.orig/src/sccp_pbx.c	2010-10-27 16:00:39.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2064/src/sccp_pbx.c	2010-10-27 16:00:43.000000000 +0200
+@@ -859,8 +859,8 @@
+ 			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
+ 			break;
+ 		case AST_CONTROL_PROGRESS:
+-			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
+-			//sccp_pbx_answer(ast);//TODO FIXIT dirty hack
++			//sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
++			sccp_pbx_answer(ast);//TODO FIXIT dirty hack
+ 			res = -1;
+ 			break;
+ 		case AST_CONTROL_PROCEEDING:
