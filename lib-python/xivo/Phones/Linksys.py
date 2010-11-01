@@ -235,6 +235,7 @@ class Linksys(PhoneVendorMixin):
             weekday = '0'
         else:
             week, weekday = _day[1:].split('.')
+            weekday = tzinform.week_start_on_monday(int(weekday))
             if week == '5':
                 day = '-1'
             else:
