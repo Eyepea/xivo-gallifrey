@@ -357,7 +357,7 @@ class Aastra(PhoneVendorMixin):
             else:
                 lines.append('dst [start|end] relative date: 1')
             lines.extend(cls.__format_dst_change('start', inform['dst']['start']))
-            lines.extend(cls.__format_dst_change('stop', inform['dst']['end']))
+            lines.extend(cls.__format_dst_change('end', inform['dst']['end']))
         return '\n'.join(lines)
     
     @classmethod
