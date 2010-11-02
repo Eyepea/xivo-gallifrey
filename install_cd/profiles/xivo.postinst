@@ -35,7 +35,7 @@ export KERN_REL=$(ls /lib/modules/ | sort | head -n 1)
 apt-get update
 apt-get install -y dahdi-linux-modules-${KERN_REL}
 apt-get install -y x11-common
-apt-get install -y -o Dpkg::Options::="--force-confold" pf-fai-xivo-1.1-gallifrey-dev pf-xivo
+apt-get install -y -o Dpkg::Options::="--force-confold" pf-fai-xivo-1.1-gallifrey pf-xivo
 
 # restore apt configuration
 mv /etc/apt/sources.list.bkp /etc/apt/sources.list

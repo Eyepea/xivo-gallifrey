@@ -6,3 +6,4 @@ hwinfo
 openssh-server
 console-data
 locales-all
+libbind9-50
