@@ -1419,6 +1419,9 @@ class XivoCTICommand(BaseCommand):
             itemdir['xivo-calledidname'] = event.get('CallerIDName2', 'NOXIVO-CID2')
             itemdir['xivo-agentnumber'] = dstnum
             itemdir['xivo-uniqueid'] = event.get('Uniqueid1')
+            for fieldname in extraevent.keys():
+                if not itemdir.has_key(fieldname):
+                    itemdir[fieldname] = extraevent[fieldname]
 
         elif where == 'dial':
             for fieldname in extraevent.keys():
@@ -2332,16 +2335,18 @@ class XivoCTICommand(BaseCommand):
                 qname = self.queues_channels_list[astid][chan1]
                 ## del self.queues_channels_list[astid][chan1]
                 extraevent = {'xivo_queuename' : qname}
+                if astid in self.uniqueids and uid1 in self.uniqueids[astid]:
+                    extraevent.update(self.uniqueids[astid][uid1].get('dialplan_data'))
                 self.__sheet_alert__('agentlinked', astid, CONTEXT_UNKNOWN, event, extraevent, chan1)
 
             agent_id = uinfo.get('agentid')
             thisagent = self.weblist['agents'][astid].keeplist[agent_id]
             thisagent['agentstats'].update({'Xivo-Agent-StateTime' : time.time()})
             thisagent['agentstats'].update({'Xivo-Agent-Status-Link' : { 'linkmode' : 'agentlink',
-                'dir' : status,
-                'outcall' : uid1info.get('OUTCALL'),
-                'did' : uid1info.get('DID'),
-                'linkqueue' : qname } })
+                                                                         'dir' : status,
+                                                                         'outcall' : uid1info.get('OUTCALL'),
+                                                                         'did' : uid1info.get('DID'),
+                                                                         'linkqueue' : qname } })
             for qval in thisagent['queues_by_agent'].itervalues():
                 qval['Xivo-QueueMember-StateTime'] = time.time()
             for qval in thisagent['groups_by_agent'].itervalues():
