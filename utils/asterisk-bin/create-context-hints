@@ -20,8 +20,16 @@ __license__ = """
 CONFIG_CONTEXT_TEMPLATE = "/etc/asterisk/xivo_context.conf"
 
 import sys
+import logging
+from logging.handlers import SysLogHandler
+
 from xivo import OrderedConf
 from xivo import xivo_helpers
+
+SYSLOG_NAME='create-context-hints'
+logging.basicConfig(level=logging.DEBUG)
+sysloghandler = SysLogHandler("/dev/log", SysLogHandler.LOG_DAEMON)
+sysloghandler.setFormatter(logging.Formatter("%s[%%(process)d]: %%(message)s" % SYSLOG_NAME))
 
 cursor = xivo_helpers.db_connect().cursor()
 
