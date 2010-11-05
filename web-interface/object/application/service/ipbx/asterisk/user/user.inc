@@ -176,9 +176,12 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if(dwho_ak('autoprov',$nocomponents,true) === false)
 			$this->_get_autoprov();
 
+
 		// queueskills
 		$skills = $this->_queueskills->get_skills($this->_info['userfeatures']['id']);
 		$this->_info['queueskills'] = $skills === false?array():$skills;
+
+		$this->_get_ipbx_infos();
 
 		return($this->_info);
 	}
@@ -339,6 +342,50 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$this->_origin['autoprov'] = $this->_autoprov->get_origin();
 
 		return($this->_info['autoprov']);
+	}
+
+	function _get_ipbx_infos()
+	{
+		$protocols = array(
+			'sip'  => 'sip show peer',
+			'iax'  => 'iax2 show peer',
+			'sccp' => 'sccp show line'
+		);
+
+		if (!array_key_exists($this->_info['userfeatures']['protocol'], $protocols))
+			return false;
+
+		$q = sprintf("%s %s load",
+			$protocols[$this->_info['userfeatures']['protocol']],
+			$this->_info['protocol']['name']
+		);                                                                             
+
+		$infos = $this->_service->discuss($q, true);
+		if(!is_array($infos))
+			return false;
+
+		$res = array();
+		foreach($infos as $line)
+		{
+			if (strstr($line, 'XIVO_USERID = '))
+			{
+				$item = explode('=',$line);
+				$res['xivo_userid'] = trim($item[1]);
+			} else {
+				if (strpos($line,':'))
+				{
+					$item = explode(':',$line);
+					// Remove bad characters and normalize the key values
+					$item[0] = str_replace(array('.'),'',$item[0]);
+					$item[0] = trim(str_replace(array('*','=','->'),' ',$item[0]));
+					$item[0] = strtolower(str_replace(array(' ','-'),'_',$item[0]));
+					$res[$item[0]] = trim($item[1]);
+				}
+			}
+		}
+
+		$this->_info['ipbx'] = $res;
+		return true;
 	}
 
 	function get_timezones()
