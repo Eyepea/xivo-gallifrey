@@ -158,13 +158,13 @@ Compensating for RFC 2833 DTMF from another IP PBX:
 Monitoring:
 
 ; fm_protocol_qualify-opt(no)
-Non
+No
 
 ; fm_protocol_qualify-opt(yes)
-Oui
+Yes
 
 ; fm_protocol_qualify-opt
-%s millisecondes
+%s milliseconds
 
 ; fm_protocol_rtptimeout
 RTP timeout:

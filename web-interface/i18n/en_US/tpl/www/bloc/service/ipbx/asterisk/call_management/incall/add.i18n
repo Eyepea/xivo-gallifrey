@@ -167,7 +167,7 @@ Unlimited
 1 second
 
 ; fm_incall_faxdetecttimeout-opt
-%s secondes
+%s seconds
 
 ; fm_incall_faxdetectemail
 Destination email :
