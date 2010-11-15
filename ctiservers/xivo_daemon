@@ -819,9 +819,9 @@ class manage_connection:
                     # the related WEBI request then
                     actionid = thisthread.args[1][1]
                     if actionid in waiting_actionid and actionid in waiting_actionid_timer:
+                        conn_to_close = waiting_actionid[actionid]
                         log.info('closing the WEBI connection %s for the request %s'
                                  % (conn_to_close, actionid))
-                        conn_to_close = waiting_actionid[actionid]
                         del daemon.fdlist_established[conn_to_close]
                         conn_to_close.close()
                         del waiting_actionid[actionid]
@@ -1420,11 +1420,16 @@ class xivo_daemon:
                                             userinfo = self.userinfo_by_requester.get(sel_i)
                                             self.commandclass.manage_logout(userinfo, 'end_receiving')
                                             del self.userinfo_by_requester[sel_i]
+
                                 doclose = False
                                 if kind == 'WEBI':
                                     doclose = closemenow
-                                elif kind not in ['CTI', 'INFO'] or lmsg == 0:
+                                elif kind not in ['CTI', 'INFO']:
                                     doclose = True
+
+                                if lmsg == 0:
+                                    doclose = True
+
                                 if doclose:
                                     sel_i.close()
                                     if sel_i in self.fdlist_established:
