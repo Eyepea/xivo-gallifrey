@@ -162,7 +162,8 @@ class BASELIB_EXPORT BaseEngine: public QObject
         int m_historysize;  //!< Number of elements when requestion call log
 
         void pasteToDial(const QString &);
-        void registerClassEvent(const QString &class_function, void (*)(const QVariantMap &map, void *udata), void *udata);
+        void registerClassEvent(const QString &class_function,
+                                void (*)(const QVariantMap &map, void *udata), void *udata);
         void sendJsonCommand(const QVariantMap &);
 
         const QHash<QString, AgentInfo *> agents() const { return m_agents; }; //!< Return the agents to any Xlet
