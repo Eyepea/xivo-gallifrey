@@ -63,13 +63,15 @@ def getvariables(fileuri, itemdir):
 
             url = accessdefs.get('url').replace('\/', '/')
             basename = accessdefs.get('basename')
-            loginname = accessdefs.get('loginname')
-            password = accessdefs.get('password')
+            userid = accessdefs.get('userid') # should be a number
+            userpass = accessdefs.get('userpass')
+            objectname = accessdefs.get('objectname')
             function = jc.get('function')
 
             try:
                 pp = xmlrpclib.ServerProxy(url)
-                myret[vardest] = pp.execute((basename), 1, loginname, password, function, *nv)
+                myret[vardest] = pp.execute((basename), userid, userpass,
+                                            objectname, function, *nv)
             except Exception:
                 log.exception('attempt to join %s' % url)
         else:
