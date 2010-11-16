@@ -47,9 +47,11 @@ TFTP_PATH = None            # modified by _init()
 KFW_PATH = None             # modified by _init()
 TMP_PATH = None             # modified by _init()
 FIRMWARES_DB_PATH = None    # modified by _init()
-PROXY_URL = None            # modified by _init()
 CISCO_USER = None           # modified by _init()
 CISCO_PASS = None           # modified by _init()
+HTTP_PROXY_URL = None       # modified by _init()
+FTP_PROXY_URL = None
+HTTPS_PROXY_URL = None
 
 
 # Installation functions by brand and optionnally model.  INSTALL_FNS is
@@ -65,7 +67,7 @@ BRANDS = {}
 # (name -> object) dictionary.
 FIRMWARES = {}
 
-OPENER = urllib2.build_opener()
+OPENER = None   # modified by _init()
 
 
 class RemoteFile(object):
@@ -117,33 +119,47 @@ class RemoteFile(object):
         except IOError:
             src = self.open_src()
             dst = open(self.path, "wb")
-        pbar.start()
-        while True:
-            buf = src.read(self.BUFFER_SIZE)
-            if not buf:
-                break
-
-            md_sha.update(buf)
-            size += len(buf)
-            pbar.update(size)
-
+        try:
+            pbar.start()
+            while True:
+                buf = src.read(self.BUFFER_SIZE)
+                if not buf:
+                    break
+    
+                md_sha.update(buf)
+                size += len(buf)
+                pbar.update(size)
+    
+                if dst:
+                    dst.write(buf)
+    
+            pbar.finish()
+            src.close()
             if dst:
-                dst.write(buf)
+                dst.close()
 
-        pbar.finish()
-        src.close()
-        if dst:
-            dst.close()
-
-        def die_dont_match(what, filename):
-            print "error: %s doesn't match for file %s" % (what, filename)
-            sys.exit()
-
-        if md_sha.hexdigest() != self.sha1sum:
-            die_dont_match("SHA-1 sum", self.filename)
-
-        if size != self.size:
-            die_dont_match("size", self.filename)
+            def die_dont_match(what, filename):
+                print "error: %s doesn't match for file %s" % (what, filename)
+                sys.exit()
+    
+            if md_sha.hexdigest() != self.sha1sum:
+                die_dont_match("SHA-1 sum", self.filename)
+    
+            if size != self.size:
+                die_dont_match("size", self.filename)
+        except:
+            # remove file from 'cache' if an exception is raised 
+            if dst:
+                dst.close()
+            # next lines are to avoid stack trace 'modification' if os.remove
+            # raise an error
+            try:
+                raise
+            finally:
+                try:
+                    os.remove(self.path)
+                except:
+                    pass
 
 class NoCiscoCredentialsError(Exception):
     pass
@@ -182,8 +198,16 @@ class CiscoRemoteFile(RemoteFile):
     def __authenticate():
         handlers = []
         handlers.append(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
-        if PROXY_URL:
-            handlers.append(urllib2.ProxyHandler({"http" : PROXY_URL}))
+        proxy_dict = {}
+        if HTTP_PROXY_URL:
+            proxy_dict['http'] = HTTP_PROXY_URL
+        if FTP_PROXY_URL:
+            proxy_dict['ftp'] = FTP_PROXY_URL
+        if HTTPS_PROXY_URL:
+            from xivo_fetchfw.proxy import ConnectHTTPSHandler
+            handlers.append(ConnectHTTPSHandler(HTTPS_PROXY_URL))
+        if proxy_dict:
+            handlers.append(urllib2.ProxyHandler(proxy_dict))
         op = CiscoRemoteFile.__opener = urllib2.build_opener(*handlers)
         
         print "Logging in on cisco website... "
@@ -407,9 +431,12 @@ def _init():
     global KFW_PATH
     global TMP_PATH
     global FIRMWARES_DB_PATH
-    global PROXY_URL
+    global HTTP_PROXY_URL
     global CISCO_USER
     global CISCO_PASS
+    global FTP_PROXY_URL
+    global HTTPS_PROXY_URL
+    global OPENER
     
     config = ConfigParser.RawConfigParser()
     try:
@@ -422,9 +449,20 @@ def _init():
     KFW_PATH = config.get(CONFIG_SECTION_GENERAL, 'kfw_path')
     TMP_PATH = config.get(CONFIG_SECTION_GENERAL, 'tmp_path')
     FIRMWARES_DB_PATH = config.get(CONFIG_SECTION_GENERAL, 'firmwares_db_path')
-    if config.has_option(CONFIG_SECTION_GENERAL, 'proxy_url'):
-        PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'proxy_url')
-        OPENER.add_handler(urllib2.ProxyHandler({"http" : PROXY_URL}))
+    proxy_dict = {}
+    handlers = []
+    if config.has_option(CONFIG_SECTION_GENERAL, 'http_proxy_url'):
+        HTTP_PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'http_proxy_url')
+        proxy_dict['http'] = HTTP_PROXY_URL
+    if config.has_option(CONFIG_SECTION_GENERAL, 'ftp_proxy_url'):
+        FTP_PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'ftp_proxy_url')
+        proxy_dict['ftp'] = FTP_PROXY_URL
+    if config.has_option(CONFIG_SECTION_GENERAL, 'https_proxy_url'):
+        HTTPS_PROXY_URL = config.get(CONFIG_SECTION_GENERAL, 'https_proxy_url')
+        from xivo_fetchfw.proxy import ConnectHTTPSHandler
+        handlers.append(ConnectHTTPSHandler(HTTPS_PROXY_URL))
+    if proxy_dict:
+        handlers.append(urllib2.ProxyHandler(proxy_dict))
 
     if config.has_option(CONFIG_SECTION_CISCO, 'username') and \
        config.has_option(CONFIG_SECTION_CISCO, 'password'):
@@ -439,8 +477,8 @@ def _init():
                                  config.get(CONFIG_SECTION_ZENITEL, 'username'),
                                  config.get(CONFIG_SECTION_ZENITEL, 'password'))
         basic_auth = urllib2.HTTPBasicAuthHandler(pwd_manager)
-        OPENER.add_handler(basic_auth)
-    
+        handlers.append(basic_auth)
+    OPENER = urllib2.build_opener(*handlers)
     makedirs(TMP_PATH)
 
 
