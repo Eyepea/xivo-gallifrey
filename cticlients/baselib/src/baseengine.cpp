@@ -395,21 +395,25 @@ void BaseEngine::stop()
     /* cleaning the registred callback */
     {
         QHashIterator<QString, e_callback*> i(m_class_event_cb);
-
-            while (i.hasNext()) {
-                i.next();
-                delete i.value();
-            }
-
+        while (i.hasNext()) {
+            i.next();
+            delete i.value();
+        }
         m_class_event_cb.clear();
     }
 
-
     delete m_tree;
     m_tree = new DStore();
-
 }
 
+void BaseEngine::addToDataBase(QVariantMap & qv)
+{
+    QVariantMap command;
+    command["class"] = "database";
+    command["direction"] = "xivoserver";
+    command["items"] = qv;
+    sendJsonCommand(command);
+}
 
 /*! \brief clear the content of m_users
  *
