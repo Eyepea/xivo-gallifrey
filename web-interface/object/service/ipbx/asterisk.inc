@@ -828,8 +828,13 @@ class xivo_service_asterisk extends xivo_service_abstract
 
 	function mk_callerid($calleridname,$calleridnum='', $protocol=XIVO_SRE_IPBX_AST_PROTO_SIP)
 	{
-		$calleridname = trim(preg_replace('/<[^<]*>$/','',trim(strval($calleridname))));
 		$calleridnum = strval($calleridnum);
+		// if calleridnum is already set by the user (calleridname looks like "name <num>")
+		// we don't replace it by calleridnum
+		if(preg_match('/<([^>]+)>/', $calleridname, $matches) > 0)
+			$calleridnum = $matches[1];
+
+		$calleridname = trim(preg_replace('/<[^<]*>$/','',trim(strval($calleridname))));
 
 		if(isset($calleridname{0}) === true)
 		{
