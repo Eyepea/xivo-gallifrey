@@ -336,7 +336,11 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 		|| dwho_file::is_d($dir) !== false)
 			return(false);
 
-		return(mkdir($dir));
+		if (!mkdir($dir))
+			return false;
+
+		// debian-specific
+		return chmod($dir, 0771);
 	}
 
 	function edit_dir($name,$newname)
