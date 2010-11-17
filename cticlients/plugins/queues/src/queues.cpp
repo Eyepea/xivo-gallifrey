@@ -141,7 +141,7 @@ XletQueues::XletQueues(QWidget *parent)
     QTimer *timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateLongestWaitWidgets()));
     connect(timer, SIGNAL(timeout()), this, SLOT(askForQueueStats()));
-    timer->start(1000);
+    timer->start(30000);
 
     connect(b_engine, SIGNAL(newQueueList(const QStringList &)),
             this, SLOT(newQueueList(const QStringList &)));
