@@ -330,18 +330,20 @@ class XivoCTICommand(BaseCommand):
     def manage_login(self, loginparams, phase, uinfo):
         if phase == xivo_commandsets.CMD_LOGIN_ID:
             missings = []
-            # warns that the former session did not exit correctly (on a given computer)
-            if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
-                if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
-                    log.warning('lastlogout stopper=%s datetime=%s'
-                                % (loginparams['lastlogout-stopper'],
-                                   loginparams['lastlogout-datetime']))
             for argum in ['company', 'userid', 'ident', 'xivoversion', 'version']:
                 if argum not in loginparams:
                     missings.append(argum)
             if len(missings) > 0:
                 log.warning('missing args in loginparams : %s' % ','.join(missings))
                 return 'missing:%s' % ','.join(missings)
+
+            # warns that the former session did not exit correctly (on a given computer)
+            if 'lastlogout-stopper' in loginparams and 'lastlogout-datetime' in loginparams:
+                if not loginparams['lastlogout-stopper'] or not loginparams['lastlogout-datetime']:
+                    log.warning('lastlogout userid=%s stopper=%s datetime=%s'
+                                % (loginparams['userid'],
+                                   loginparams['lastlogout-stopper'],
+                                   loginparams['lastlogout-datetime']))
 
             # trivial checks (version, client kind) dealing with the software used
             xivoversion = loginparams.get('xivoversion')
