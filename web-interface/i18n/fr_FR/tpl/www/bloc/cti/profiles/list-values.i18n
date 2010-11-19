@@ -99,8 +99,14 @@ Taille de la police de caractères (xlet "Liste d'agents")
 ; pref-xlet-agents-iconsize
 Taille des icônes (xlet "Liste d'agents")
 
+; pref-xlet-queues-statsfetchperiod
+Période de récupération des statistiques (xlet "Liste des Files")
+
 ; pref-presence-autochangestate
 Transitions automatiques entre les états de présence
+
+; pref-adlibitum
+Ad libitum
 
 
 
@@ -111,13 +117,13 @@ Agents (liste)
 Agents (liste, next)
 
 ; xlet-agentdetails
-Agents (detail)
+Agents (détail)
 
 ; xlet-queues
 Files d'attente (liste)
 
 ; xlet-queuedetails
-Files d'attente (detail)
+Files d'attente (détail)
 
 ; xlet-queueentrydetails
 Files d'attente (détail des entrées)

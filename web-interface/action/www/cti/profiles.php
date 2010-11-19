@@ -52,7 +52,9 @@ $preferencesavail = array(
     'xlet.agents.fontname'            => $_TPL->bbf('pref-xlet-agents-fontname'),
     'xlet.agents.fontsize'            => $_TPL->bbf('pref-xlet-agents-fontsize'),
     'xlet.agents.iconsize'            => $_TPL->bbf('pref-xlet-agents-iconsize'),
-    'presence.autochangestate'        => $_TPL->bbf('pref-presence-autochangestate')
+    'xlet.queues.statsfetchperiod'    => $_TPL->bbf('pref-xlet-queues-statsfetchperiod'),
+    'presence.autochangestate'        => $_TPL->bbf('pref-presence-autochangestate'),
+    'adlibitum'                       => $_TPL->bbf('pref-adlibitum')
 );
 
 $funcsavail = array(
