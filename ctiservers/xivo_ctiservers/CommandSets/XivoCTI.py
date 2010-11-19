@@ -2013,12 +2013,13 @@ class XivoCTICommand(BaseCommand):
                 if qaction == 'QUEUESTART':
                     last_start = qdate
                 if qaction in ['AGENTLOGIN', 'AGENTCALLBACKLOGIN', 'AGENTLOGOFF', 'AGENTCALLBACKLOGOFF']:
-                    # on asterisk 1.2, there is no Agent/ before AGENTCALLBACKLOGIN and AGENTCALLBACKLOGOFF
                     # on asterisk 1.4, there is no Agent/ before AGENTCALLBACKLOGIN
+                    # (hum..., sometimes there is, actually)
                     if qaction == 'AGENTCALLBACKLOGIN':
-                        agent_channel = 'Agent/' + line[3]
-                    else:
-                        agent_channel = line[3]
+                        if line[1] == 'NONE':
+                            agent_channel = 'Agent/' + line[3]
+                        else:
+                            agent_channel = line[3]
                     if agent_channel.startswith('Agent/') and len(agent_channel) > LENGTH_AGENT:
                         if agent_channel not in self.last_agents[astid]:
                             self.last_agents[astid][agent_channel] = {}
@@ -5263,7 +5264,9 @@ class XivoCTICommand(BaseCommand):
             [techno, ctx, phoneid, exten] = termin.split('.')
             # print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
             try:
-                hist = self.__update_history_call__(self.configs[astid], techno, phoneid, nlines, kind, morerecentthan)
+                hist = self.__update_history_call__(self.configs[astid],
+                                                    techno, phoneid, nlines,
+                                                    kind, morerecentthan)
                 for x in hist:
                     ritem = { 'duration' : x[10] }
                     # 'x1' : x[1].replace('"', '')
@@ -6011,16 +6014,16 @@ class XivoCTICommand(BaseCommand):
 
                 if kind == "0": # outgoing calls (all)
                     cursor.query("SELECT ${columns} FROM cdr WHERE channel LIKE %s " + datecond + orderbycalldate,
-                        columns,
-                        (likestring,))
+                                 columns,
+                                 (likestring,))
                 elif kind == "1": # incoming calls (answered)
                     cursor.query("SELECT ${columns} FROM cdr WHERE disposition='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
-                        columns,
-                        (likestring,))
+                                 columns,
+                                 (likestring,))
                 else: # missed calls (received but not answered)
                     cursor.query("SELECT ${columns} FROM cdr WHERE disposition!='ANSWERED' AND dstchannel LIKE %s " + datecond + orderbycalldate,
-                        columns,
-                        (likestring,))
+                                 columns,
+                                 (likestring,))
                 results = cursor.fetchall()
             except Exception:
                 log.exception('%s : Connection to DataBase failed in History request' % cfg.astid)
