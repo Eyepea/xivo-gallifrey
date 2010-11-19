@@ -1293,7 +1293,7 @@ void BaseEngine::parseCommand(const QString &line)
 
             if (m_version_server < REQUIRED_SERVER_VERSION) {
                 stop();
-                popupError("version_server:" + QString::number(m_version_server) + ";" + QString::number(REQUIRED_SERVER_VERSION));
+                popupError(QString("version_server:%1;%2").arg(m_version_server).arg(REQUIRED_SERVER_VERSION));
             } else {
                 QString tohash = datamap["sessionid"].toString() + ":" + m_password;
                 QCryptographicHash hidepass(QCryptographicHash::Sha1);
