@@ -4731,7 +4731,7 @@ class XivoCTICommand(BaseCommand):
         self.__sheet_alert__('incoming' + queueorgroup[:-1], astid, queuecontext, event, ddata, chan)
         log.info('%s AMI Join (Queue) %s %s %s' % (astid, queuename, chan, count))
         self.weblist[queueorgroup][astid].queueentry_update(queueid, chan, position, time.time(),
-            clidnum, clidname)
+                                                            clidnum, clidname)
         event['Calls'] = count
         self.weblist[queueorgroup][astid].update_queuestats(queueid, event)
         tosend = { 'class' : queueorgroup,
@@ -4855,6 +4855,17 @@ class XivoCTICommand(BaseCommand):
                                     self.__ami_rename_now__(astid, chan_old_1, chan_new_1, uniqueid1)
                                     self.__ami_rename_now__(astid, chan_old_2, chan_new_2, uniqueid2)
                                     self.__ami_rename_now__(astid, chan_old_3, chan_new_3, uniqueid3)
+
+                                # queue entry members
+                                if uniqueid2 in self.uniqueids[astid]:
+                                    if 'join' in self.uniqueids[astid][uniqueid2]:
+                                        queueorgroup = self.uniqueids[astid][uniqueid2]['join'].get('queueorgroup')
+                                        queuename = self.uniqueids[astid][uniqueid2]['join'].get('queuename')
+                                        queueid = self.uniqueids[astid][uniqueid2]['join'].get('queueid')
+                                        log.warning('%s : the channel %s was in a %s entry (%s) : new channel %s'
+                                                    % (astid, chan_old_2, queueorgroup, queuename, chan_old_1))
+                                        self.weblist[queueorgroup][astid].queueentry_rename(queueid,
+                                                                                            chan_old_2, chan_old_1)
                             else:
                                 log.warning('%s Rename : chan_old_2 and chan_new_3 do not match modulo <ZOMBIE> : %s %s'
                                             % (astid, chan_old_2, chan_new_3))
@@ -4994,7 +5005,8 @@ class XivoCTICommand(BaseCommand):
                         userinfo['login']['sessiontimestamp'] = time.time()
 
                     if classcomm not in ['keepalive', 'logclienterror', 'history', 'logout']:
-                        log.info('command attempt %s from user:%s : %s' % (classcomm, userid, icommand.struct))
+                        log.info('command attempt %s from user:%s : %s'
+                                 % (classcomm, userid, icommand.struct))
                     if classcomm not in ['keepalive', 'logclienterror', 'history', 'availstate', 'actionfiche']:
                         self.__fill_user_ctilog__(userinfo, 'cticommand:%s' % classcomm)
                     if classcomm == 'meetme':

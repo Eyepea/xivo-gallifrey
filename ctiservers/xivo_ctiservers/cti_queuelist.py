@@ -269,7 +269,19 @@ class QueueList(AnyList):
         else:
             self.keeplist[queueid]['queuestats']['Xivo-Rate'] = -1
         return
-    
+
+    def queueentry_rename(self, queueid, oldchan, newchan):
+        if queueid in self.keeplist:
+            if oldchan in self.keeplist[queueid]['channels']:
+                self.keeplist[queueid]['channels'][newchan] = self.keeplist[queueid]['channels'][oldchan]
+                del self.keeplist[queueid]['channels'][oldchan]
+            else:
+                log.warning('queueentry_rename : channel %s is not in queueid %s'
+                            % (oldchan, queueid))
+        else:
+            log.warning('queueentry_rename : no such queueid %s' % queueid)
+        return
+
     def queueentry_update(self, queueid, channel, position, entrytime, calleridnum, calleridname):
         if queueid in self.keeplist:
             self.keeplist[queueid]['channels'][channel] = { 'position' : position,
@@ -279,15 +291,18 @@ class QueueList(AnyList):
         else:
             log.warning('queueentry_update : no such queueid %s' % queueid)
         return
-    
+
     def queueentry_remove(self, queueid, channel):
         if queueid in self.keeplist:
             if channel in self.keeplist[queueid]['channels']:
                 del self.keeplist[queueid]['channels'][channel]
+            else:
+                log.warning('queueentry_remove : channel %s is not in queueid %s'
+                            % (channel, queueid))
         else:
             log.warning('queueentry_remove : no such queueid %s' % queueid)
         return
-    
+
     def queuememberupdate(self, queueid, location, event):
         changed = False
         if queueid in self.keeplist:
