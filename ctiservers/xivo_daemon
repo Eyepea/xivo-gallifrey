@@ -74,7 +74,7 @@ from xivo_ctiservers.client_connection import ClientConnection
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 waiting_actionid = {}
 waiting_actionid_timer = {}
-dumpami = None
+dumpami = (None, None)
 
 LOGDAEMONNAME = 'cti-server'
 try:
@@ -91,6 +91,38 @@ LOGFILENAME        = '/var/log/pf-xivo-cti-server/daemon.log'
 GETOPT_SHORTOPTS   = 'dc:p:l:'
 GETOPT_LONGOPTS    = ['debug', 'config=', 'pidfile=', 'logfile=']
 debug_mode = False
+
+infohelptext = ['',
+                'help                     : this help',
+                '-- general purpose commands --',
+                'show_infos               : gives a few informations about the server (version, uptime)',
+                '-- informations about misc lists --',
+                'show_users               : the users list',
+                'show_phones, show_trunks : phones and trunks lists',
+                'show_queues, show_groups,',
+                'show_agents              : call-center related lists',
+                'show_incomingcalls       : did lists',
+                'show_meetme              : conference rooms',
+                'show_voicemail           : voicemails',
+                'show_phonebook           : phonebook contents',
+                '-- selective lists --',
+                'show_logged              : only the logged users',
+                'show_logged_ip           : the human-readable IPs of logged users',
+                '-- for debugging purposes --',
+                'loglevel set <level>         : changes the syslog output level',
+                'show_varsizes <astid>        : gives the number of items of some variables',
+                'show_var <astid> <varname>   : outputs the contents of one such variable',
+                'dumpami enable               : enables the line-by-line display of all AMI events',
+                'dumpami enable Dial,Hangup   : enables the line-by-line display of these 2 AMI events',
+                'dumpami disable              : disables the line-by-line display of all AMI events',
+                'dumpami disable Dial,Hangup  : enables the line-by-line display of all but these 2 AMI events',
+                'dumpami                      : shows the current settings of this line-by-line display',
+                '-- slightly advanced features --',
+                'kick <user>                  : disconnects the user <user>',
+                'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
+                'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
+                'reverse <dirname> <number>   : lookup the number in the given directory',
+                '']
 
 def parse_command_line():
     global XIVO_CONF_FILE, PIDFILE, LOGFILENAME, debug_mode
@@ -284,35 +316,7 @@ class manage_connection:
                                      'show_incomingcalls', 'show_phonebook',
                                      'show_meetme', 'show_voicemail']
                 if usefulmsg == 'help':
-                    helptxt = ['',
-                               'help                     : this help',
-                               '-- general purpose commands --',
-                               'show_infos               : gives a few informations about the server (version, uptime)',
-                               '-- informations about misc lists --',
-                               'show_users               : the users list',
-                               'show_phones, show_trunks : phones and trunks lists',
-                               'show_queues, show_groups,',
-                               'show_agents              : call-center related lists',
-                               'show_incomingcalls       : did lists',
-                               'show_meetme              : conference rooms',
-                               'show_voicemail           : voicemails',
-                               'show_phonebook           : phonebook contents',
-                               '-- selective lists --',
-                               'show_logged              : only the logged users',
-                               'show_logged_ip           : the human-readable IPs of logged users',
-                               '-- for debugging purposes --',
-                               'loglevel set <level>         : changes the syslog output level',
-                               'show_varsizes <astid>        : gives the number of items of some variables',
-                               'show_var <astid> <varname>   : outputs the contents of one such variable',
-                               'dumpami enable               : enables the line-by-line display of AMI events',
-                               'dumpami disable              : disables it',
-                               '-- slightly advanced features --',
-                               'kick <user>                  : disconnects the user <user>',
-                               'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
-                               'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
-                               'reverse <dirname> <number>   : lookup the number in the given directory',
-                               '']
-                    for helpline in helptxt:
+                    for helpline in infohelptext:
                         connid.sendall('%s\n' % helpline)
                 elif usefulmsg == 'show_infos':
                     time_uptime = int(time.time() - time.mktime(daemon.time_start))
@@ -334,20 +338,25 @@ class manage_connection:
                         action = command_args[1]
                         if action == 'enable':
                             if len(command_args) > 2:
-                                dumpami = command_args[2].split(',')
+                                dumpami = (command_args[2].split(','), None)
                             else:
-                                dumpami = 'all'
+                                dumpami = ('all', None)
                         elif action == 'disable':
-                            dumpami = None
+                            if len(command_args) > 2:
+                                dumpami = ('all', command_args[2].split(','))
+                            else:
+                                dumpami = (None, None)
+                    else:
+                        connid.sendall('dumpami status (allow, disallow) : %s\n' % (dumpami,))
                 elif usefulmsg.startswith('loglevel '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
                         action = command_args[1]
                         levelname = command_args[2]
-                        levels = {'debug' : logging.DEBUG,
-                                  'info' : logging.INFO,
-                                  'warning' : logging.WARNING,
-                                  'error' : logging.ERROR}
+                        levels = { 'debug' : logging.DEBUG,
+                                   'info' : logging.INFO,
+                                   'warning' : logging.WARNING,
+                                   'error' : logging.ERROR}
                         if action == 'set':
                             if levelname in levels:
                                 newlevel = levels[levelname]
@@ -739,14 +748,19 @@ class manage_connection:
         try:
             if 'Privilege' in this_event:
                 this_event.pop('Privilege')
-            if dumpami:
+            (dumpami_allow, dumpami_disallow) = dumpami
+            if dumpami_allow:
                 todisp = this_event
                 if 'Event' in todisp:
                     efn = todisp.pop('Event')
-                    if dumpami == 'all' or efn in dumpami:
-                        for ik, iv in daemon.fdlist_established.iteritems():
-                            if iv == 'INFO':
-                                ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
+                    if dumpami_allow == 'all' or efn in dumpami_allow:
+                        doallow = True
+                        if dumpami_disallow and efn in dumpami_disallow:
+                            doallow = False
+                        if doallow:
+                            for ik, iv in daemon.fdlist_established.iteritems():
+                                if iv == 'INFO':
+                                    ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
             if evfunction == 'Reload':
                 log.warning('%s AMI:Reload %s' % (astid, this_event))
                 daemon.commandclass.ami_reload(astid, this_event)
