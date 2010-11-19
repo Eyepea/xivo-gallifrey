@@ -1273,12 +1273,15 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 	function skills_delete($id, $vals_only=false)
 	{
-		// deleting related user skills
+		// deleting related user/agent skills
 		$skills = $this->_skill->get_list_where(array('catid' => $id));
 		if(is_array($skills))
 		{
 			foreach($skills as $skid)
+			{
 				$this->_userskill->delete_where(array('skillid' => $skid));
+				$this->_agentskill->delete_where(array('skillid' => $skid));
+			}
 		}
 
 		$res = $this->_skill->delete_where(array('catid' => $id));
@@ -1397,12 +1400,13 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 
 		$delete_values = array_diff($stored_values, $update_values);
 
-		// WARNING: skills may be users by users & by skill rules
+		// WARNING: skills may be used by users/agents & by skill rules
 		//	- we also delete user skills
 		//	  (rule skills just be ignored)
 		foreach($delete_values as $id)
 		{ 
 			$this->_userskill->delete_where(array('skillid' => $id));
+			$this->_agentskill->delete_where(array('skillid' => $id));
 			$res = $this->_skill->delete($id); 
 		}
 
