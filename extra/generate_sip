@@ -51,7 +51,7 @@ cursor.query("SELECT ${columns} FROM usersip WHERE commented = 0 ",
 'allow', 'autoframing', 'mohinterpret', 'mohsuggest', 'useclientcode', 'progressinband', 't38pt_udptl', 't38pt_rtp', 't38pt_tcp',
 't38pt_usertpsource', 'rtptimeout', 'rtpholdtimeout', 'rtpkeepalive', 'deny', 'permit', 'defaultip', 'callgroup', 'pickupgroup',
 'setvar', 'host', 'port', 'regexten', 'subscribecontext', 'fullcontact', 'vmexten', 'callingpres', 'ipaddr', 'regseconds',
-'regserver'))
+'regserver', 'outboundproxy'))
 res = cursor.fetchall()
 
 for k in res:
