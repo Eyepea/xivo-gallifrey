@@ -49,20 +49,20 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
             return []
 
         if z.dbkind in ['ldap', 'ldaps']:
-            selectline = []
-            ldapattrib = []
+            ldap_filter = []
+            ldap_attributes = []
             for fname in z.match_direct:
                 if searchpattern == '*':
-                    selectline.append("(%s=*)" % fname)
+                    ldap_filter.append("(%s=*)" % fname)
                 else:
-                    selectline.append("(%s=*%s*)" %(fname, searchpattern))
+                    ldap_filter.append("(%s=*%s*)" %(fname, searchpattern))
 
             for listvalue in z.fkeys.itervalues():
                 for attrib in listvalue:
                     if isinstance(attrib, unicode):
-                        ldapattrib.append(attrib.encode('utf8'))
+                        ldap_attributes.append(attrib.encode('utf8'))
                     else:
-                        ldapattrib.append(attrib)
+                        ldap_attributes.append(attrib)
 
             try:
                 results = None
@@ -83,8 +83,9 @@ def findpattern(xivocti, dirname, searchpattern, z, reversedir):
                 if ldapid.ldapobj is not None:
                     # if the ldapid had already been defined and setup, the failure would occur here
                     try:
-                        results = ldapid.getldap('(|%s)' % ''.join(selectline),
-                                                 ldapattrib)
+                        results = ldapid.getldap('(|%s)' % ''.join(ldap_filter),
+                                                 ldap_attributes,
+                                                 searchpattern)
                     except Exception:
                         ldapid.ldapobj = None
                         del xivocti.ldapids[z.uri]

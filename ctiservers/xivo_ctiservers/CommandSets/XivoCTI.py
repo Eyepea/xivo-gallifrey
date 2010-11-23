@@ -1810,6 +1810,7 @@ class XivoCTICommand(BaseCommand):
         for cs, looptech in channelstarts.iteritems():
             if channel.startswith(cs):
                 tech = looptech
+                # XXX what about a peer called a-b-c ?
                 phoneid = channel[len(cs):].split('-')[0]
                 break
         if tech is not None and phoneid is not None:
@@ -1827,9 +1828,11 @@ class XivoCTICommand(BaseCommand):
             log.warning('%s __trunkid_from_channel__ : channel %s not found' % (astid, channel))
         if channel.startswith('SIP/'):
             tech = 'sip'
+            # XXX what about a trunk called a-b-c ?
             trunkid = channel[4:].split('-')[0]
         elif channel.startswith('IAX2/'):
             tech = 'iax'
+            # XXX what about a trunk called a-b-c ?
             trunkid = channel[5:].split('-')[0]
         if tech is not None and trunkid is not None:
             for tref, tv in self.weblist['trunks'][astid].keeplist.iteritems():

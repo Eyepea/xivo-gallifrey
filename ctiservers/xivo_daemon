@@ -774,12 +774,11 @@ class manage_connection:
             elif (evfunction in manage_connection.evfunction_to_method_name):
                 getattr(daemon.commandclass, manage_connection.evfunction_to_method_name[evfunction])(astid, this_event)
             else:
-                log.warning('%s AMI ... this event (%s) is not tracked : %s' % (astid, evfunction, this_event))
+                log.warning('%s AMI ... this event (%s) is not tracked : %s'
+                            % (astid, evfunction, this_event))
 
         except Exception:
             log.exception('%s AMI / %s : event %s' % (astid, evfunction, this_event))
-
-
 
 
     @staticmethod
