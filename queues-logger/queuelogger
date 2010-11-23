@@ -112,6 +112,7 @@ def main():
 
     try:
         ami_conn(options)
+        log.info('Seems we are connected to the AMI (first try)')
     except socket.error, msg:
         log.exception('Unable to connect to AMI (%s)' % msg)
 
@@ -120,6 +121,8 @@ def main():
     while time_before_retry:
         if options.anysql_uri:
             loop_ret = ami_logger.loop(options)
+            log.warning('End of the loop ... tbr is %d sec now'
+                        % time_before_retry)
 
             if loop_ret and loop_ret[1]>1:
                 log.error(loop_ret[0])
@@ -132,6 +135,8 @@ def main():
 
         try:
             ami_conn(options)
+            log.info('Seems we are connected to the AMI (try when tbr is %d sec)'
+                     % time_before_retry)
         except:
             log.exception('%s:%d| Unable to reconnect, next try scheduled in %d sec'
                           % (options.ip, options.port, time_before_retry))
