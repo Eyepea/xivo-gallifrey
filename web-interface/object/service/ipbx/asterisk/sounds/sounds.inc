@@ -340,7 +340,7 @@ class xivo_service_asterisk_sounds extends xivo_service_asterisk_abstract
 			return false;
 
 		// debian-specific
-		return chmod($dir, 0771);
+		return chmod($dir, 0770);
 	}
 
 	function edit_dir($name,$newname)

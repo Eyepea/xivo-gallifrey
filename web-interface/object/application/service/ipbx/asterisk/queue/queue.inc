@@ -1690,7 +1690,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{ return $this->_userskill->delete_where(array('userid' => $userid)); }
 
 	function userskills_get($userid)
-	{ return $this->_userskill->get_all_where(array('userid' => $userid)); }
+	{ 
+		return $this->_dso->userskills_get(intval($userid));
+	}
 	
 	
 	/** agent skills */
@@ -1753,7 +1755,9 @@ class xivo_application_service_asterisk_queue extends xivo_application_asterisk_
 	{ return $this->_agentskill->delete_where(array('agentid' => $agentid)); }
 
 	function agentskills_get($agentid)
-	{ return $this->_agentskill->get_all_where(array('agentid' => $agentid)); }
+	{
+		return $this->_dso->agentskills_get(intval($agentid));
+	}
 }
 
 ?>
