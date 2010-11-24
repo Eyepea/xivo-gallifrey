@@ -2023,6 +2023,8 @@ class XivoCTICommand(BaseCommand):
                             agent_channel = 'Agent/' + line[3]
                         else:
                             agent_channel = line[3]
+                    else:
+                        agent_channel = line[3]
                     if agent_channel.startswith('Agent/') and len(agent_channel) > LENGTH_AGENT:
                         if agent_channel not in self.last_agents[astid]:
                             self.last_agents[astid][agent_channel] = {}

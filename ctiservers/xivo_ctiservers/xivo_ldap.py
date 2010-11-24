@@ -110,7 +110,7 @@ class xivo_ldap:
             log.info('LDAP URI understood: %r / filter: %r', self.uri, self.base_filter)
 
             # actual cases where these options are useful and used would be
-            # to be investigated further, since it does not look like the proper
+            # to be investigated further, since it does not look like the proper
             # way to add such options to the LDAP URI :
             # ldapquery = dict(ldapuri[3])
             # if ldapquery.has_key('protocol_version'):

@@ -74,7 +74,7 @@ from xivo_ctiservers.client_connection import ClientConnection
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 waiting_actionid = {}
 waiting_actionid_timer = {}
-dumpami = (None, None)
+dumpami = ([], [])
 
 LOGDAEMONNAME = 'cti-server'
 try:
@@ -338,16 +338,20 @@ class manage_connection:
                         action = command_args[1]
                         if action == 'enable':
                             if len(command_args) > 2:
-                                dumpami = (command_args[2].split(','), None)
+                                dumpami = (command_args[2].split(','), [])
                             else:
-                                dumpami = ('all', None)
+                                dumpami = (['all'], [])
                         elif action == 'disable':
                             if len(command_args) > 2:
-                                dumpami = ('all', command_args[2].split(','))
+                                dumpami = (['all'], command_args[2].split(','))
                             else:
-                                dumpami = (None, None)
+                                dumpami = ([], [])
+                        else:
+                            connid.sendall('dumpami status : enable (%s) disable (%s)\n'
+                                           % (''.join(dumpami[0]), ''.join(dumpami[1])))
                     else:
-                        connid.sendall('dumpami status (allow, disallow) : %s\n' % (dumpami,))
+                        connid.sendall('dumpami status : enable (%s) disable (%s)\n'
+                                       % (''.join(dumpami[0]), ''.join(dumpami[1])))
                 elif usefulmsg.startswith('loglevel '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -748,16 +752,16 @@ class manage_connection:
         try:
             if 'Privilege' in this_event:
                 this_event.pop('Privilege')
-            (dumpami_allow, dumpami_disallow) = dumpami
-            if dumpami_allow:
+            (dumpami_enable, dumpami_disable) = dumpami
+            if dumpami_enable:
                 todisp = this_event
                 if 'Event' in todisp:
                     efn = todisp.pop('Event')
-                    if dumpami_allow == 'all' or efn in dumpami_allow:
-                        doallow = True
-                        if dumpami_disallow and efn in dumpami_disallow:
-                            doallow = False
-                        if doallow:
+                    if dumpami_enable == ['all'] or efn in dumpami_enable:
+                        do_enable = True
+                        if dumpami_disable and efn in dumpami_disable:
+                            do_enable = False
+                        if do_enable:
                             for ik, iv in daemon.fdlist_established.iteritems():
                                 if iv == 'INFO':
                                     ik.sendall('%.3f %s %s %s\n' % (time.time(), astid, efn, todisp))
