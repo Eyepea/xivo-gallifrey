@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.6 to 1.1.7 =
+ 
+* Change staticmeetme confno from meetmefeatures.name to meetmefeatures.number value
