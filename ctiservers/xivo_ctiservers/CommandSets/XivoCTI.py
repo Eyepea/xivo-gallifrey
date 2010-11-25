@@ -4303,7 +4303,7 @@ class XivoCTICommand(BaseCommand):
         usernum = event.get('Usernum')
         status = (event.get('Status') == 'off')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmenoauthed : unable to find room %s' % (astid, confno))
             return
@@ -4329,7 +4329,7 @@ class XivoCTICommand(BaseCommand):
         confno = event.get('Meetme')
         status = (event.get('Status') == 'on')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmepause : unable to find room %s' % (astid, confno))
             return
@@ -4362,7 +4362,7 @@ class XivoCTICommand(BaseCommand):
         # here we flip/flop the 'not authed' event to an 'authed' event
         authed = ( event.get('NoAuthed') == 'No' )
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmejoin : unable to find room %s' % (astid, confno))
             return
@@ -4419,7 +4419,7 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         usernum = event.get('Usernum')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
 
         if meetmeref is None:
             log.warning('%s ami_meetmeleave : unable to find room %s' % (astid, confno))
@@ -4459,7 +4459,7 @@ class XivoCTICommand(BaseCommand):
         uniqueid = event.get('Uniqueid')
         usernum = event.get('Usernum')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmemute : unable to find room %s' % (astid, confno))
             return
@@ -4502,7 +4502,7 @@ class XivoCTICommand(BaseCommand):
         calleridname = event.get('CallerIDName')
         authed = (event.get('NoAuthed') == 'No')
 
-        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+        (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
         if meetmeref is None:
             log.warning('%s ami_meetmelist : unable to find room %s' % (astid, confno))
             return
@@ -4576,7 +4576,7 @@ class XivoCTICommand(BaseCommand):
             # however knowing how much time has been spent might be useful here
             confno = applidata[0]
             seconds = int(event.get('Seconds'))
-            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomname(confno)
+            (meetmeref, meetmeid) = self.weblist['meetme'][astid].byroomnumber(confno)
             if meetmeref is not None:
                 if uniqueid in meetmeref['uniqueids']:
                     meetmeref['uniqueids'][uniqueid]['time_start'] = time.time() - seconds

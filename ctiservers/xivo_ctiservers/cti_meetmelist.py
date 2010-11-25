@@ -47,15 +47,15 @@ class MeetmeList(AnyList):
         ret = AnyList.update(self)
         self.reverse_index = {}
         for idx, ag in self.keeplist.iteritems():
-            if ag['roomname'] not in self.reverse_index:
-                self.reverse_index[ag['roomname']] = idx
+            if ag['roomnumber'] not in self.reverse_index:
+                self.reverse_index[ag['roomnumber']] = idx
             else:
-                log.warning('2 meetme have the same roomname')
+                log.warning('2 meetme have the same roomnumber')
         return ret
 
-    def byroomname(self, roomname):
+    def byroomnumber(self, roomnumber):
         meetmeref = None
-        meetme_id = self.reverse_index.get(roomname)
+        meetme_id = self.reverse_index.get(roomnumber)
         if meetme_id:
             meetmeref = self.keeplist.get(meetme_id)
         return (meetmeref, meetme_id)
