@@ -1,29 +1,15 @@
-Index: asterisk-chan-sccp-0~prerelease+svn2077/src/sccp_actions.c
+Index: asterisk-chan-sccp-0~prerelease+svn2186/src/sccp_pbx.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn2077.orig/src/sccp_actions.c	2010-10-27 16:59:37.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn2077/src/sccp_actions.c	2010-10-28 12:04:49.000000000 +0200
-@@ -1328,7 +1328,9 @@
- 	if (c) {
-     		/* Answer the ringing channel. */
- 		sccp_log(1)(VERBOSE_PREFIX_3 "%s: Answer channel\n", d->id);
-+		sccp_channel_lock(c);
-     		sccp_channel_answer(d, c);
-+		sccp_channel_unlock(c);
- 	} else {
- 		/* use default line if it is set */
- 		if(d && d->defaultLineInstance > 0){
-Index: asterisk-chan-sccp-0~prerelease+svn2077/src/sccp_pbx.c
-===================================================================
---- asterisk-chan-sccp-0~prerelease+svn2077.orig/src/sccp_pbx.c	2010-10-28 12:04:49.000000000 +0200
-+++ asterisk-chan-sccp-0~prerelease+svn2077/src/sccp_pbx.c	2010-10-28 12:04:49.000000000 +0200
-@@ -859,8 +859,8 @@
- 			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
- 			break;
- 		case AST_CONTROL_PROGRESS:
--			sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
--			//sccp_pbx_answer(ast);//TODO FIXIT dirty hack
-+			//sccp_indicate_nolock(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
-+			sccp_pbx_answer(ast);//TODO FIXIT dirty hack
- 			res = -1;
- 			break;
- 		case AST_CONTROL_PROCEEDING:
+--- asterisk-chan-sccp-0~prerelease+svn2186.orig/src/sccp_pbx.c	2010-11-29 15:48:40.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2186/src/sccp_pbx.c	2010-11-29 15:48:51.000000000 +0100
+@@ -932,8 +932,8 @@
+ 		sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
+ 		break;
+ 	case AST_CONTROL_PROGRESS:
+-		sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
+-		//sccp_pbx_answer(ast);//TODO FIXIT dirty hack
++		//sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
++		sccp_pbx_answer(ast);//TODO FIXIT dirty hack
+ 		res = -1;
+ 		break;
+ 	case AST_CONTROL_PROCEEDING:
