@@ -132,6 +132,8 @@ cisco_install_map = {
         cisco79xx_install_fw,
     'cisco7971_sccp_903':
         cisco79xx_install_fw,
+    'cisco7970_sccp_903':
+        cisco79xx_install_fw,
     'cisco7965_sccp_903':
         cisco79xx_install_fw,
     'cisco7962_sccp_903':
