@@ -62,9 +62,8 @@ mysql_migrate() {
 
 	echo "Backup old XIVO Asterisk Database";
   # check mysql status
-  /etc/init.d/mysql status > /dev/null 2>&1
-  if [ $? -ne 0 ]; then
-    /etc/init.d/mysql start > /dev/null 2>&1
+  if [ ! -f "/var/run/asterisk/asterisk.pid" ]; then
+    invoke-rc.d mysql start  > /dev/null 2>&1
   fi
 
 	mysqldump --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} > "${BACKUP_DIR}/${DBNAME}-mysql.dump-1.0-`date +%Y%m%d%H%M%S`";
