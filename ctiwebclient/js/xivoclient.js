@@ -269,7 +269,7 @@ XiVOClient.prototype._send_login = function (us) {
   login_command["class"] = 'login_id';
   login_command["company"] = 'default';
   login_command["userid"] = us.user;
-  login_command["ident"] = 'undef@X11-LE';
+  login_command["ident"] = 'WEB';
   login_command["xivoversion"] = '1.1';
   login_command["version"] = '9999';
   
