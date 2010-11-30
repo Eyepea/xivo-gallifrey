@@ -221,7 +221,7 @@ $array['filter']['simultcalls'] = array('set' => false,'chk' => 2,'cast' => 'uin
 $array['filter']['enableclient'] = array('bool' => true);
 $array['filter']['loginclient'] = array('set'		=> false,
 					'chk'		=> 2,
-					'minlen'	=> 4,
+					'minlen'	=> 2,
 					'maxlen'	=> 64,
 					'regexp'	=> '/^[a-zA-Z0-9-\._~\!\$&\'\(\)\*\+,;=%]+$/');
 $array['filter']['passwdclient'] = array('set'		=> false,
