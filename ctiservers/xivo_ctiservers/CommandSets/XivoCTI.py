@@ -5669,7 +5669,8 @@ class XivoCTICommand(BaseCommand):
                 return
 
             if typesrc == typedst and typedst == 'ext' and len(whosrc) > 8 and len(whodst) > 8:
-                log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s). Canceling' % (whosrc, whodst))
+                log.warning('ORIGINATE : Trying to call two external phone numbers (%s and %s)'
+                            % (whosrc, whodst))
                 # this warning dates back to revision 6095 - maybe to avoid making arbitrary calls on behalf
                 # of the local telephony system ?
                 # let's keep the warning, without disabling the ability to do it ...
