@@ -354,10 +354,14 @@ class XivoCTICommand(BaseCommand):
             if len(ident.split('@')) == 2:
                 [whoami, whatsmyos] = ident.split('@')
                 # return 'wrong_client_identifier:%s' % whoami
-                if whatsmyos[:3] not in ['X11', 'WIN', 'MAC']:
-                    return 'wrong_os_identifier:%s' % whatsmyos
+                if whatsmyos[:3].lower() not in ['x11', 'win', 'mac']:
+                    return 'wrong_client_os_identifier:%s' % whatsmyos
             else:
-                return 'wrong_client_os_identifier:%s' % ident
+                # the old xxx@version stuff will be obsolete ...
+                whatsmyos = ident.split('-')[0]
+                if whatsmyos.lower() not in ['x11', 'win', 'mac',
+                                             'web', 'android', 'iphone']:
+                    return 'wrong_client_os_identifier:%s' % whatsmyos
             if (not svnversion.isdigit()) or int(svnversion) < self.required_client_version:
                 return 'version_client:%s;%d' % (svnversion, self.required_client_version)
 
