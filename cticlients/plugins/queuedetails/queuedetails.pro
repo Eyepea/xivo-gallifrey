@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = queuedetails_fr.ts
+TRANSLATIONS = queuedetails_*.ts
 
 TARGET      = $$qtLibraryTarget(queuedetailsplugin)
 

@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = outlook*.h
 SOURCES     = outlook*.cpp
-TRANSLATIONS = outlook_fr.ts
+TRANSLATIONS = outlook_*.ts
 
 TARGET      = $$qtLibraryTarget(outlookplugin)
 

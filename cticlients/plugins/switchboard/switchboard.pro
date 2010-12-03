@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = switchboard_fr.ts
+TRANSLATIONS = switchboard_*.ts
 
 include(../../qtaddons/qtcolorpicker/src/qtcolorpicker.pri)
 

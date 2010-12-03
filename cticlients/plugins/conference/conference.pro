@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = conference_fr.ts
+TRANSLATIONS = conference_*.ts
 
 TARGET      = $$qtLibraryTarget(conferenceplugin)
 

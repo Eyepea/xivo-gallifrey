@@ -33,8 +33,8 @@ QT += xml
 
 RESOURCES += appli.qrc
 
-# this should just tell lrelease to compile this file
-TRANSLATIONS = xivoclient_fr.ts
+# this should just tell lrelease to compile these files
+TRANSLATIONS = xivoclient_*.ts
 
 RC_FILE = appli.rc
 
