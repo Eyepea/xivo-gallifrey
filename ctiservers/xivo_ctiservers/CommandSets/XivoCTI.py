@@ -3584,6 +3584,10 @@ class XivoCTICommand(BaseCommand):
                             % (astid, agent_number))
         return
 
+    def ami_agentscomplete(self, astid, event):
+        log.info('%s ami_agentscomplete : %s' % (astid, event))
+        return
+
     def __queuemismatch__(self, astid, queuename, origin):
         log.warning('%s %s : no such queue (or group) %s (probably mismatch asterisk/XiVO)'
                     % (astid, origin, queuename))
@@ -4046,7 +4050,7 @@ class XivoCTICommand(BaseCommand):
         return nlocations
 
     def ami_queuestatuscomplete(self, astid, event):
-        # log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
+        log.info('%s ami_queuestatuscomplete : %s' % (astid, event))
         if astid not in self.weblist['queues']:
             log.warning('%s ami_queuestatuscomplete : no queue list has been defined' % astid)
             return
@@ -4054,19 +4058,22 @@ class XivoCTICommand(BaseCommand):
             self.__ami_execute__(astid, 'sendcommand', 'Command',
                                  [('Command', 'queue show %s' % qname)])
 
-        for aid, v in self.last_agents[astid].iteritems():
-            if v:
-                log.info('%s ami_queuestatuscomplete last agents = %s %s' % (astid, aid, v))
-        for qid, vv in self.last_queues[astid].iteritems():
-            for aid, v in vv.iteritems():
-                if v:
-                    if qid in self.weblist['queues'][astid].keeplist and aid in self.weblist['queues'][astid].keeplist[qid]['agents_in_queue']:
-                        qastatus = self.weblist['queues'][astid].keeplist[qid]['agents_in_queue'][aid]
+        ## no real use for that :
+        # for aid, v in self.last_agents[astid].iteritems():
+        # if v:
+        # log.info('%s ami_queuestatuscomplete last agents = %s %s' % (astid, aid, v))
+        for qid, vq in self.last_queues[astid].iteritems():
+            if qid in self.weblist['queues'][astid].keeplist:
+                agents_in_queue = self.weblist['queues'][astid].keeplist[qid]['agents_in_queue']
+                for aid, va in vq.iteritems():
+                    if va and aid in agents_in_queue:
+                        qastatus = agents_in_queue[aid]
                         qastatus['Xivo-QueueMember-StateTime'] = -1
                         if qastatus.get('Paused') == '1':
-                            if 'PAUSE' in v:
-                                qpausetime = int(v['PAUSE'])
+                            if 'PAUSE' in va:
+                                qpausetime = int(va['PAUSE'])
                                 qastatus['Xivo-QueueMember-StateTime'] = qpausetime
+        log.info('%s ami_queuestatuscomplete (done) : %s' % (astid, event))
         return
 
     def ami_userevent(self, astid, event):
