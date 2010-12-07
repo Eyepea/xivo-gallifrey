@@ -22,7 +22,7 @@ xivo_service_asterisk::required(array('abstract','abstract.inc'),true);
 
 define("TOK_SPACE" , 0); // space, tabulation
 define("TOK_BOOL"  , 1); // &, |
-define("TOK_CMP"   , 2); // >, <, >=, <=
+define("TOK_CMP"   , 2); // >, <, =
 define("TOK_PAROP" , 3); // (
 define("TOK_PARCL" , 4); // )
 define("TOK_SKILL" , 5); // skill name
@@ -75,7 +75,7 @@ class xivo_service_asterisk_queueskillrule extends xivo_service_asterisk_abstrac
 	function _tokenize($rule)
 	{
 		$_space  = " \t";
-		$_opcmp  = "><";
+		$_opcmp  = "><=";
 		$_opbool = '&|';
 
 		$tokens = array();
