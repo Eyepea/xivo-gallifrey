@@ -2798,6 +2798,7 @@ class XivoCTICommand(BaseCommand):
 
     ami_error_responses_list = ['No such channel',
                                 'No such agent',
+                                'Agent already logged in',
                                 'Permission denied',
                                 'Member not dynamic',
                                 'Extension not specified',
@@ -2807,29 +2808,30 @@ class XivoCTICommand(BaseCommand):
                                 'Unable to remove interface from queue: No such queue',
                                 'Unable to remove interface: Not there']
 
+    ami_success_responses_list = ['Channel status will follow',
+                                  'Parked calls will follow',
+                                  'Agents will follow',
+                                  'Queue status will follow',
+                                  'Variable Set',
+                                  'Attended transfer started',
+                                  'Channel Hungup',
+                                  'Park successful',
+                                  'Meetme user list will follow',
+                                  'AOriginate successfully queued',
+                                  'Originate successfully queued',
+                                  'Redirect successful',
+                                  'Started monitoring channel',
+                                  'Stopped monitoring channel',
+                                  'Added interface to queue',
+                                  'Removed interface from queue',
+                                  'Interface paused successfully',
+                                  'Interface unpaused successfully',
+                                  'Agent logged out',
+                                  'Agent logged in']
+
     def amiresponse_success(self, astid, event, nocolon):
         msg = event.get('Message')
         actionid = event.get('ActionID')
-        ami_success_responses_list = ['Channel status will follow',
-                                      'Parked calls will follow',
-                                      'Agents will follow',
-                                      'Queue status will follow',
-                                      'Variable Set',
-                                      'Attended transfer started',
-                                      'Channel Hungup',
-                                      'Park successful',
-                                      'Meetme user list will follow',
-                                      'AOriginate successfully queued',
-                                      'Originate successfully queued',
-                                      'Redirect successful',
-                                      'Started monitoring channel',
-                                      'Stopped monitoring channel',
-                                      'Added interface to queue',
-                                      'Removed interface from queue',
-                                      'Interface paused successfully',
-                                      'Interface unpaused successfully',
-                                      'Agent logged out',
-                                      'Agent logged in']
         if msg is None:
             if actionid is not None:
                 if astid in self.getvar_requests and actionid in self.getvar_requests[astid]:
@@ -2854,7 +2856,7 @@ class XivoCTICommand(BaseCommand):
             self.amiresponse_mailboxstatus(astid, event)
         elif msg == 'Authentication accepted':
             log.info('%s : %s %s' % (astid, msg, nocolon))
-        elif msg in ami_success_responses_list:
+        elif msg in self.ami_success_responses_list:
             if actionid in self.amirequests[astid]:
                 # log.info('%s AMI Response=Success : (tracked) %s %s' % (astid, event, self.amirequests[astid][actionid]))
                 pass
@@ -5283,18 +5285,18 @@ class XivoCTICommand(BaseCommand):
                               % (repstr[:40], len(repstr)))
         return ret
 
-    def __build_history_string__(self, requester_id, nlines, kind, morerecentthan):
+    def __build_history_string__(self, requester_id, nlines, mode, morerecentthan):
         userinfo = self.ulist_ng.keeplist[requester_id]
         astid = userinfo.get('astid')
         termlist = userinfo.get('techlist')
         reply = []
         for termin in termlist:
             [techno, ctx, phoneid, exten] = termin.split('.')
-            # print '__build_history_string__', requester_id, nlines, kind, techno, phoneid
+            # print '__build_history_string__', requester_id, nlines, mode, techno, phoneid
             try:
                 hist = self.__update_history_call__(self.configs[astid],
                                                     techno, phoneid, nlines,
-                                                    kind, morerecentthan)
+                                                    mode, morerecentthan)
                 for x in hist:
                     ritem = { 'duration' : x[10] }
                     # 'x1' : x[1].replace('"', '')
@@ -5304,7 +5306,8 @@ class XivoCTICommand(BaseCommand):
                     except:
                         ritem['ts'] = x[0]
                     ritem['termin'] = termin
-                    if kind == '0':
+                    ritem['mode'] = mode
+                    if mode == '0':
                         ritem['direction'] = 'OUT'
                         num = x[3].replace('"', '')
                         cidname = num
@@ -5315,7 +5318,7 @@ class XivoCTICommand(BaseCommand):
                     reply.append(ritem)
             except Exception:
                 log.exception('history : (client %s, termin %s)'
-                    % (requester_id, termin))
+                              % (requester_id, termin))
 
         if len(reply) > 0:
             # sha1sum = sha.sha(''.join(reply)).hexdigest()
