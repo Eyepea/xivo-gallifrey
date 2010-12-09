@@ -381,6 +381,9 @@ void XletQueues::askForQueueStats()
     b_engine->sendJsonCommand(command);
 }
 
+
+
+
 XletQueuesConfigure::XletQueuesConfigure(XletQueues *)
     : QWidget(NULL)
 {
@@ -485,6 +488,9 @@ void XletQueuesConfigure::closeEvent(QCloseEvent *)
 {
     hide();
 }
+
+
+
 
 QueueRow::QueueRow(const QueueInfo *qInfo, XletQueues *parent)
     : QWidget(parent), qinfo(qInfo), xlet(parent)
