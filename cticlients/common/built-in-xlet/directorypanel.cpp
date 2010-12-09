@@ -159,6 +159,7 @@ void DirectoryPanel::setSearchResponse(const QStringList & headers, const QStrin
             }
         }
         m_table->setSortingEnabled(true);
+        m_table->resizeColumnsToContents();
         
         // to remove the headers if ever ...
         // (they are useful to know that a reply has been received)

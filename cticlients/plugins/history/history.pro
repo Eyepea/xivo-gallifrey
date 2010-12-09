@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = history_*.ts
+TRANSLATIONS = history_fr.ts
 
 TARGET      = $$qtLibraryTarget(historyplugin)
 

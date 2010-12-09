@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = identity_*.ts
+TRANSLATIONS = identity_fr.ts
 
 TARGET      = $$qtLibraryTarget(identityplugin)
 

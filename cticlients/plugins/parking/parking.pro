@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = parking_*.ts
+TRANSLATIONS = parking_fr.ts
 
 TARGET      = $$qtLibraryTarget(parkingplugin)
 

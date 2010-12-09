@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = calls_*.ts
+TRANSLATIONS = calls_fr.ts
 
 TARGET      = $$qtLibraryTarget(callsplugin)
 

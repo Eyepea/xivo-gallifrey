@@ -47,12 +47,12 @@ LogWidgetModel::LogWidgetModel(int initialMode)
 {
     b_engine->registerClassEvent("history", LogWidgetModel::updateHistory_t, this);
     mode = initialMode;
-    history << QVariant() << QVariant() << QVariant();
+    m_history << QVariant() << QVariant() << QVariant();
 }
 
 void LogWidgetModel::sort(int column, Qt::SortOrder order)
 {
-    QList<QVariant> tosort = history[mode].toList();
+    QList<QVariant> tosort = m_history[mode].toList();
 
     if (order == Qt::AscendingOrder) {
         if (column == 0) {
@@ -72,7 +72,7 @@ void LogWidgetModel::sort(int column, Qt::SortOrder order)
         }
     }
 
-    history[mode] = tosort;
+    m_history[mode] = tosort;
     reset();
 }
 
@@ -81,8 +81,8 @@ int LogWidgetModel::rowCount(const QModelIndex &a) const
     int row, column; row = a.row(); column = a.column();
     int nbrow = 0;
 
-    if (((history[mode].toList().count())))
-        nbrow = (history[mode].toList()).count();
+    if (((m_history[mode].toList().count())))
+        nbrow = (m_history[mode].toList()).count();
 
     return nbrow;
 }
@@ -102,17 +102,17 @@ QVariant LogWidgetModel::data(const QModelIndex &a, int role) const
     int row, column; row = a.row(); column = a.column();
 
     if (role == Qt::DisplayRole) {
-        if (((history[mode].toList().count()) &&
-             ((history[mode].toList()).value(row).toMap().count()))) {
+        if (((m_history[mode].toList().count()) &&
+             ((m_history[mode].toList()).value(row).toMap().count()))) {
             if (column == 0) {
-                return ((history[mode].toList()).value(row).toMap())["fullname"]; 
+                return ((m_history[mode].toList()).value(row).toMap())["fullname"]; 
             } else if (column == 1) {
-                QString qsd = ((history[mode].toList()).value(row).toMap())["ts"].toString();
+                QString qsd = ((m_history[mode].toList()).value(row).toMap())["ts"].toString();
                 QDateTime qdt = QDateTime::fromString(qsd, Qt::ISODate);
                 QString qsf = qdt.toString(Qt::DefaultLocaleLongDate); // Qt::DefaultLocaleShortDate
                 return qsf;
             } else if (column == 2) {
-                int duration = ((history[mode].toList()).value(row).toMap())["duration"].toInt();
+                int duration = ((m_history[mode].toList()).value(row).toMap())["duration"].toInt();
                 int sec =   ( duration % 60);
                 int min =   ( duration - sec ) / 60 % 60;
                 int hou = ( ( duration - sec - min * 60 ) / 60 ) / 60;
@@ -135,7 +135,7 @@ void LogWidgetModel::updateHistory(const QVariantMap &p)
 {
     QVariant payload = p["payload"] ;
     
-    history[mode] = payload;
+    m_history[mode] = payload;
     reset();
 }
 

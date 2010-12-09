@@ -2,7 +2,7 @@ include(../plugins-global.pri)
 
 HEADERS     = src/*.h
 SOURCES     = src/*.cpp
-TRANSLATIONS = operator_*.ts
+TRANSLATIONS = operator_fr.ts
 
 TARGET      = $$qtLibraryTarget(operatorplugin)
 
