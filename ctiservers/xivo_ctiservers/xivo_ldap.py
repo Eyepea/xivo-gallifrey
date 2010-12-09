@@ -134,8 +134,8 @@ class xivo_ldap:
             self.__init__(self.iuri)
 
         if self.base_filter:
-            actual_filter = '(&(%s)(%s))' % (self.base_filter.replace('%Q', searchpattern),
-                                             search_filter)
+            actual_filter = '(&(%s)%s)' % (self.base_filter.replace('%Q', searchpattern),
+                                           search_filter)
         else:
             actual_filter = search_filter
 
