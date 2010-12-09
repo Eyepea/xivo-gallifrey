@@ -120,8 +120,9 @@ class xivo_ldap:
             #   self.ldapobj.set_option(ldap.OPT_NETWORK_TIMEOUT,
             #   float(ldapquery.get('network_timeout')))
 
-            if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
-                self.ldapobj.start_tls_s()
+            # XXX how should we handle the starttls option ?
+            # if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
+            # self.ldapobj.start_tls_s()
 
             self.ldapobj.simple_bind_s(ldapuser, ldappass)
         except ldap.LDAPError, exc:
