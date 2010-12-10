@@ -175,7 +175,7 @@ class Snom(PhoneVendorMixin):
             locale = self.DEFAULT_LOCALE
         language = """\
     <language perm="R">%s</language>
-    <web_language perm="R">%s</language>
+    <web_language perm="R">%s</web_language>
     <tone_scheme perm="R">%s</tone_scheme>""" % (self.SNOM_LOCALES[locale][0],
                                                  self.SNOM_LOCALES[locale][0],
                                                  self.SNOM_LOCALES[locale][1])

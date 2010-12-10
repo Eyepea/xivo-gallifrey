@@ -174,17 +174,10 @@ class Cisco(PhoneVendorMixin):
         if self.phone['proto'] == 'sccp' and command == 'REBOOT':
             # a phone is reconfigured by reloading chan_sccp configuration
             # send to commands to asterisk through CTI server remote protocol
-
-            # WARNING: reloading sccp channel disconnect all SCCP phones 
             try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
                 s.connect(('127.0.0.1', 5004))
                 s.send('sccp reload')
-                s.close()
-                
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
-                s.connect(('127.0.0.1', 5004))
-                s.send('sccp restart SEP%s' % ''.join(self.phone['macaddr'].upper().split(':')))
                 s.close()
             except Exception:
                 log.exception("error when trying to reload chan_sccp")
