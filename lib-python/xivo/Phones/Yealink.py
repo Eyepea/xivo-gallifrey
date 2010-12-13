@@ -28,6 +28,7 @@ import os
 import logging
 import subprocess
 import md5
+from itertools import chain
 from time import time
 
 from xivo import tzinform
@@ -64,6 +65,14 @@ class Yealink(PhoneVendorMixin):
         'es_ES': ('Spanish', 'Spain'),
         'fr_FR': ('French', 'France'),
         'fr_CA': ('French', 'United States'),
+    }
+    
+    YEALINK_FCN_KEYS = {
+        # model: (nb_DSS_keys, nb_line_keys)
+        't20p': ( 0, 2),
+        't22p': ( 0, 3),
+        't26p': (10, 3),
+        't28p': (10, 6)
     }
 
     @classmethod
@@ -237,43 +246,48 @@ class Yealink(PhoneVendorMixin):
             return '%d/%d/%d/%d' % (dst_change['month'], week, weekday, dst_change['time'].as_hours)
 
     @classmethod
-    def __format_function_keys(cls, funckey, model, exten_pickup_prefix):
-        if model not in ('t26p', 't28p'):
-            return ""
-
-        sorted_keys = funckey.keys()
-        sorted_keys.sort()
-        fk_config_lines = []
-
-        unused_keys = set(n for n in xrange(1, 11))
-        for key in sorted_keys:
-            # XXX keys between 11 and 16 for the T28 and between 11 and 13 for the T26
-            # are not handled really well. Those keys correspond to the line keys. I'm
-            # leaving this as is right now, hoping that Yealink will eventually makes
-            # the provisioning more robust and more documented (and up to date)... 
-            value   = funckey[key]
-            exten   = value['exten']
-            if value.get('supervision'):
-                type = "blf"
-                dktype = "16"
+    def __format_function_key(cls, num_key, exten_pickup_prefix, key_value=None):
+        """Format ONE function key and return the lines to add to the config.
+        
+        value is either None or a value of a funckey dictionary (aye).
+        """
+        if key_value is not None:
+            line = '0'
+            value = key_value['exten']
+            if num_key <= 10 and key_value.get('supervision'):
+                type = 'blf'
+                dktype = '16'
             else:
-                type = ""
-                dktype = "13"
-
-            unused_keys.discard(int(key))
-            fk_config_lines.append("[ memory%s ]" % key)
-            fk_config_lines.append("path = /config/vpPhone/vpPhone.ini")
-            fk_config_lines.append("type = %s" % type)
-            fk_config_lines.append("Line = 0")
-            fk_config_lines.append("Value = %s" % exten)
-            fk_config_lines.append("DKtype = %s" % dktype)
-            fk_config_lines.append("PickupValue = %s%s\n" % (exten_pickup_prefix, exten))
-        for key in unused_keys:
-            fk_config_lines.append("[ memory%s ]" % key)
-            fk_config_lines.append("path = /config/vpPhone/vpPhone.ini")
-            fk_config_lines.append("Line = 0")
-            fk_config_lines.append("Value = ")
-            fk_config_lines.append("DKtype = 0")
+                type = ''
+                dktype = '13'
+            pickup_value = '%s%s' % (exten_pickup_prefix, value)
+            label = key_value.get('label', '')
+        else:
+            line = value = type = pickup_value = dktype = label = ''
+        
+        result = []
+        result.append('[ memory%s ]' % num_key)
+        result.append('path = /config/vpPhone/vpPhone.ini')
+        result.append('Line = %s' % line)
+        result.append('Value = %s' % value)
+        result.append('type = %s' % type)
+        result.append('PickupValue = %s' % pickup_value)
+        result.append('DKtype = %s' % dktype)
+        if 11 <= num_key <= 16:
+            # line key can use labels
+            result.append('Label = %s' % label)
+        return result
+    
+    @classmethod
+    def __format_function_keys(cls, funckey, model, exten_pickup_prefix):
+        fk_config_lines = []
+        nb_dss_keys, nb_line_keys = cls.YEALINK_FCN_KEYS[model]
+        for num_key in chain(xrange(1, nb_dss_keys + 1),
+                             xrange(11, nb_line_keys + 11)):
+            key_value = funckey.get(num_key)
+            cur_config_lines = cls.__format_function_key(num_key, exten_pickup_prefix, key_value)
+            fk_config_lines.extend(cur_config_lines)
+            fk_config_lines.append('')
 
         return "\n".join(fk_config_lines)
 
