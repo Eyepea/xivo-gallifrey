@@ -1311,8 +1311,15 @@ class xivo_daemon:
                     # these AMI connections are used in order to manage AMI commands and events
                     if sel_i in self.amilist.fdlist():
                         try:
-                            buf = sel_i.readline()
                             astid = self.amilist.astid(sel_i)
+
+                            # to comment in non-blocking mode
+                            buf = sel_i.readline()
+                            # to uncomment in non-blocking mode
+                            # sock = self.amilist.ami[astid].sock
+                            # buf = sock.recv(200000)
+                            # end of non-blocking mode switch
+
                             if len(buf) == 0:
                                 log.warning('%s AMI : CLOSING' % astid)
                                 self.amilist.remove(astid)
