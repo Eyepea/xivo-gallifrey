@@ -69,13 +69,14 @@ class AMIClass:
 
     # \brief Connection to a socket.
     def connect(self):
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(self.address)
-        s.settimeout(30)
-        self.fileobj = s.makefile('rw', 0)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect(self.address)
+        self.sock.settimeout(30)
+        self.fileobj = self.sock.makefile('rw', 0)
         self.fd = self.fileobj.fileno()
-        log.info('%s AMI connection properties : %s %s %s' % (self.astid, self.address, self.fileobj, self.fd))
-        s.close()
+        log.info('%s AMI connection properties : here=%s remote=%s fileobj=%s fd=%s'
+                 % (self.astid, self.sock.getsockname(), self.sock.getpeername(),
+                    self.fileobj, self.fd))
         return
 
     def setlistref(self, amilist):
@@ -505,12 +506,12 @@ class AMIClass:
         return ret
 
     # \brief Starts monitoring a channel
-    def monitor(self, channel, filename):
+    def monitor(self, channel, filename, mixme = 'true'):
         try:
             ret = self.sendcommand('Monitor',
                                    [('Channel', channel),
                                     ('File', filename),
-                                    ('Mix', 'true')])
+                                    ('Mix', mixme)])
         except self.AMIError:
             ret = False
         except Exception:
