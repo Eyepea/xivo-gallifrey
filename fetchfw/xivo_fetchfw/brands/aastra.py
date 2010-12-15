@@ -25,9 +25,9 @@ AASTRA_MODEL_STANDARDIZE = {'6751i':    '51i',
                             '6755i':    '55i',
                             '6757i':    '57i'}
 
-def aastra_install_langs(firmware, xfile):
+def aastra_install_langs(firmware, xfile, i18n_dir):
     zip_path = fetchfw.zip_extract_all('aastra-langs', xfile.path)
-    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra/i18n")
+    fw_dst_dir = os.path.join(fetchfw.TFTP_PATH, "Aastra", i18n_dir)
     
     fetchfw.makedirs(fw_dst_dir)
     
@@ -54,7 +54,10 @@ def aastra_install_fw(firmware, xfile):
 def aastra_install(firmware):
     for xfile in firmware.remote_files:
         if xfile.filename.startswith('Lang'):
-            aastra_install_langs(firmware, xfile)
+            if firmware.model == '6739i':
+                aastra_install_langs(firmware, xfile, 'i18n-3')
+            else:
+                aastra_install_langs(firmware, xfile, 'i18n-2')
         else:
             aastra_install_fw(firmware, xfile)
 

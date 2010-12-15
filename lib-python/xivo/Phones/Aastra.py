@@ -60,11 +60,11 @@ class Aastra(PhoneVendorMixin):
                                       ('!', '+'))
     
     AASTRA_LOCALES = {
-        'de_DE': 'language: 1\nlanguage 1: i18n/lang_de.txt\ntone set: Germany\ninput language: German',
-        'en_US': 'language: 0\ntone set: US\ninput language: English',
-        'es_ES': 'language: 1\nlanguage 1: i18n/lang_es.txt\ntone set: Europe\ninput language: Spanish',
-        'fr_FR': 'language: 1\nlanguage 1: i18n/lang_fr.txt\ntone set: France\ninput language: French',
-        'fr_CA': 'language: 1\nlanguage 1: i18n/lang_fr_ca.txt\ntone set: US\ninput language: French',
+        'de_DE': 'language: 1\nlanguage 1: %s/lang_de.txt\ntone set: Germany\ninput language: German',
+        'en_US': 'language: 0\nlanguage 1: %s/lang_fr.txt\ntone set: US\ninput language: English',
+        'es_ES': 'language: 1\nlanguage 1: %s/lang_es.txt\ntone set: Europe\ninput language: Spanish',
+        'fr_FR': 'language: 1\nlanguage 1: %s/lang_fr.txt\ntone set: France\ninput language: French',
+        'fr_CA': 'language: 1\nlanguage 1: %s/lang_fr_ca.txt\ntone set: US\ninput language: French',
     }
     
     AASTRA_DICT = {
@@ -285,7 +285,11 @@ class Aastra(PhoneVendorMixin):
             locale = provinfo['language']
         else:
             locale = self.DEFAULT_LOCALE
-        language = self.AASTRA_LOCALES[locale]
+        if model == '6739i':
+            i18n_dir = 'i18n-3'
+        else:
+            i18n_dir = 'i18n-2'
+        language = self.AASTRA_LOCALES[locale] % i18n_dir
         
         if 'timezone' in provinfo:
             timezone = self.__format_tz_inform(tzinform.get_timezone_info(provinfo['timezone']))
