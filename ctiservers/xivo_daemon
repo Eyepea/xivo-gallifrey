@@ -568,8 +568,12 @@ class manage_connection:
         evlist = full_idata.split('\r\n\r\n')
         daemon.save_for_next_packet_events[astid] = evlist.pop()
 
-        for evt in evlist:
-            evt = evt.decode('utf8')
+        for ievt in evlist:
+            try:
+                evt = ievt.decode('utf8')
+            except Exception:
+                log.exception('%s could not decode event %r' % (astid, ievt))
+                continue
             this_event = {}
             nocolon = []
             for myline in evt.split('\r\n'):
@@ -667,6 +671,9 @@ class manage_connection:
                 else:
                     log.warning('AMI %s Other : %s' % (astid, this_event))
             # }
+        nevts = len(evlist)
+        if nevts > 200:
+            log.info('%s : handled %d (> 200) events' % (astid, nevts))
 
 
     evfunction_to_method_name = {
@@ -1312,14 +1319,8 @@ class xivo_daemon:
                     if sel_i in self.amilist.fdlist():
                         try:
                             astid = self.amilist.astid(sel_i)
-
-                            # to comment in non-blocking mode
-                            buf = sel_i.readline()
-                            # to uncomment in non-blocking mode
-                            # sock = self.amilist.ami[astid].sock
-                            # buf = sock.recv(200000)
-                            # end of non-blocking mode switch
-
+                            sock = self.amilist.ami[astid].sock
+                            buf = sock.recv(200000)
                             if len(buf) == 0:
                                 log.warning('%s AMI : CLOSING' % astid)
                                 self.amilist.remove(astid)

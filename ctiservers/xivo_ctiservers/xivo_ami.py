@@ -99,32 +99,35 @@ class AMIClass:
                 towritefields.append('ActionId: %s' % self.actionid)
             towritefields.append('\r\n')
 
-            # if random.randint(0, 5) == 0 and loopnum == 0:
-            # ret = False
-            # else:
-            str = '\r\n'.join(towritefields)
-            if isinstance(str, unicode):
-                str = str.encode('utf8')
-            self.fileobj.write(str)
-            self.fileobj.flush()
+            rawstr = '\r\n'.join(towritefields)
+            if isinstance(rawstr, unicode):
+                ustr = rawstr.encode('utf8')
+            else:
+                ustr = rawstr
+            self.sock.sendall(ustr)
             ret = True
         except UnicodeEncodeError:
-            log.exception('(sendcommand UnicodeEncodeError (%s %s %s))' % (towritefields, self.actionid, self.fd))
+            log.exception('(sendcommand UnicodeEncodeError (%s %s %s))'
+                          % (towritefields, self.actionid, self.fd))
             ret = True
         except UnicodeDecodeError:
-            log.exception('(sendcommand UnicodeDecodeError (%s %s %s))' % (action, self.actionid, self.fd))
+            log.exception('(sendcommand UnicodeDecodeError (%s %s %s))'
+                          % (action, self.actionid, self.fd))
             ret = True
         except socket.timeout:
             t1 = time.time()
-            log.exception('(sendcommand timeout (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
+            log.exception('(sendcommand timeout (%s %s %s) timespent=%f)'
+                          % (action, self.actionid, self.fd, (t1 - t0)))
             ret = False
         except Exception:
             t1 = time.time()
-            log.exception('(sendcommand other (%s %s %s) timespent=%f)' % (action, self.actionid, self.fd, (t1 - t0)))
+            log.exception('(sendcommand other (%s %s %s) timespent=%f)'
+                          % (action, self.actionid, self.fd, (t1 - t0)))
             ret = False
         if ret == False:
             if loopnum == 0:
-                log.warning('second attempt for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
+                log.warning('second attempt for AMI command (%s %s %s)'
+                            % (action, self.actionid, self.fd))
                 # tries to reconnect
                 try:
                     self.fileobj.close()
@@ -140,7 +143,8 @@ class AMIClass:
                 except Exception:
                     log.exception("reconnection (%s %s %s)" % (action, self.actionid, self.fd))
             else:
-                log.warning('2 attempts have failed for AMI command (%s %s %s)' % (action, self.actionid, self.fd))
+                log.warning('2 attempts have failed for AMI command (%s %s %s)'
+                            % (action, self.actionid, self.fd))
         if self.actionid:
             self.actionid = None
         return ret
@@ -171,6 +175,7 @@ class AMIClass:
                                [('Exten', exten),
                                 ('Context', context)])
         return ret
+
     def sendparkedcalls(self):
         ret = self.sendcommand('ParkedCalls', [])
         return ret
@@ -178,51 +183,6 @@ class AMIClass:
     def sendmeetmelist(self):
         ret = self.sendcommand('MeetMeList', [])
         return ret
-
-    # \brief For debug.
-    def printresponse_forever(self):
-        while True:
-            str = self.fileobj.readline()
-    # \brief Reads a part of a reply.
-    def readresponsechunk(self):
-        start = True
-        list = []
-        while True:
-            str = self.fileobj.readline()
-            if start and str == '\r\n': continue
-            start = False
-            if str == '\r\n' or str == '': break
-            l = [ x.strip() for x in str.split(': ') ]
-            if len(l) == 2:
-                list.append((l[0], l[1]))
-        return dict(list)
-    # \brief Reads the reply.
-    def readresponse(self, check):
-        first = self.readresponsechunk()
-        if first=={}: return []
-        if first['Response'] != 'Success':
-            #and first['Response'] != 'Follows':
-            if first.has_key('Message'):
-                raise self.AMIError(first['Message'])
-            else:
-                raise self.AMIError('')
-        if check == '':
-            return []
-        resp = []
-        while True:
-            chunk = self.readresponsechunk()
-            #print "chunk", chunk
-            if chunk=={}:
-                #print 'empty chunk'
-                resp.append(first)
-                break
-            resp.append(chunk)
-            if not chunk.has_key('Event'):
-                continue
-                #break
-            if chunk['Event'] == check:
-                break
-        return resp
 
     # \brief Logins to the AMI.
     def login(self):
@@ -243,21 +203,6 @@ class AMIClass:
             return False
         except Exception:
             return False
-
-    # \brief Executes a CLI command.
-    def execclicommand(self, command):
-        # special procession for cli commands.
-        self.sendcommand('Command',
-                         [('Command', command)])
-        resp = []
-        for i in (1, 2):
-            str = self.fileobj.readline()
-        while True:
-            str = self.fileobj.readline()
-            if str == '\r\n' or str == '' or str == '--END COMMAND--\r\n':
-                break
-            resp.append(str)
-        return resp
 
     # \brief Hangs up a Channel.
     def hangup(self, channel, channel_peer = None):
