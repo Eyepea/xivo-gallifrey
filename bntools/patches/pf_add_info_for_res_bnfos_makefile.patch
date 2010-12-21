@@ -1,0 +1,23 @@
+Nicolas Hicher (atarakt) <nhicher@proformatique.com>
+Add res_bnfos in all and install
+Index: bntools/Makefile
+===================================================================
+--- bntools.orig/Makefile	2010-12-21 21:58:31.000000000 +0100
++++ bntools/Makefile	2010-12-21 21:59:31.000000000 +0100
+@@ -2,6 +2,7 @@
+ 	make -C src $@ DESTDIR=$(DESTDIR)
+ 	make -C bnfos $@ DESTDIR=$(DESTDIR)
+ 	make -C bnrps $@ DESTDIR=$(DESTDIR)
++	make -C res_bnfos $@ DESTDIR=$(DESTDIR)
+ 	@echo
+ 	@echo "Success. Install now with: make install"
+ 
+@@ -15,6 +16,8 @@
+ 	make -C src $@ DESTDIR=$(DESTDIR)
+ 	make -C bnfos $@ DESTDIR=$(DESTDIR)
+ 	make -C bnrps $@ DESTDIR=$(DESTDIR)
++	make -C res_bnfos $@ DESTDIR=$(DESTDIR)
++
+ 	@echo
+ 	@echo "Installation successful."
+ 	

@@ -1,0 +1,47 @@
+Nicolas HICHER (atarakt) <nhicher@proformatique.com>
+Index: bntools/res_bnfos/Makefile
+===================================================================
+--- bntools.orig/res_bnfos/Makefile	2008-04-18 11:00:36.000000000 +0200
++++ bntools/res_bnfos/Makefile	2010-12-21 22:40:56.000000000 +0100
+@@ -1,10 +1,10 @@
+ INSTALL_MODPATH=/usr/lib/asterisk/modules
+ 
+-INSTALL_PREFIX:=
++DESTDIR:=
+ 
+ CFLAGS+=-g -ggdb -Wall -D_GNU_SOURCE -I. -I../src/
+ CFLAGS+=-Wno-missing-prototypes -Wno-missing-declarations
+-CFLAGS+=-fomit-frame-pointer -D_REENTRANT -DINSTALL_PREFIX=$(INSTALL_PREFIX)
++CFLAGS+=-fomit-frame-pointer -D_REENTRANT -DDESTDIR=$(DESTDIR)
+ CFLAGS+=-Wall
+ LDFLAGS 	= -L../src -lbnfos `curl-config --libs`
+ 
+@@ -20,13 +20,20 @@
+ 	rm -f *.so *.o
+ 
+ install: res_bnfos.so
+-	install -m 755 res_bnfos.so $(INSTALL_PREFIX)$(INSTALL_MODPATH)/
+-	if [ ! -f $(INSTALL_PREFIX)/etc/asterisk/bnfos.conf ] ; then cp conf/bnfos.conf $(INSTALL_PREFIX)/etc/asterisk/; fi
+-	if [ ! -f $(INSTALL_PREFIX)/usr/sbin/safe_asterisk_fos ] ; then install -m 755 init/safe_asterisk_fos $(INSTALL_PREFIX)/usr/sbin/safe_asterisk_fos; fi
+-	if [ ! -f $(INSTALL_PREFIX)/etc/init.d/asterisk_fos ] ; then install -m 755 init/asterisk_fos $(INSTALL_PREFIX)/etc/init.d/asterisk_fos; fi
++	if [ ! -d $(DESTDIR)$(INSTALL_MODPATH) ]; then mkdir -p $(DESTDIR)$(INSTALL_MODPATH); fi
++	if [ ! -d $(DESTDIR)/etc/asterisk ]; then mkdir -p $(DESTDIR)/etc/asterisk; fi
++	if [ ! -d $(DESTDIR)/usr/sbin ]; then mkdir -p $(DESTDIR)/usr/sbin; fi
++	if [ ! -d $(DESTDIR)/etc/init.d/ ]; then	mkdir -p $(DESTDIR)/etc/init.d; fi
++	install -m 755 res_bnfos.so $(DESTDIR)$(INSTALL_MODPATH)/
++	if [ ! -f $(DESTDIR)/etc/asterisk/bnfos.conf ] ; then cp conf/bnfos.conf $(DESTDIR)/etc/asterisk/; fi
++	if [ ! -f $(DESTDIR)/usr/sbin/safe_asterisk_fos ]; then install -m 755 init/safe_asterisk_fos $(DESTDIR)/usr/sbin/safe_asterisk_fos; fi
++	if [ ! -f $(DESTDIR)/etc/init.d/asterisk_fos ] ; then install -m 755 init/asterisk_fos $(DESTDIR)/etc/init.d/asterisk_fos; fi
+ 
+ force-install: res_bnfos.so
+-	install -m 755 res_bnfos.so $(INSTALL_PREFIX)$(INSTALL_MODPATH)/
+-	if [ ! -f $(INSTALL_PREFIX)/etc/asterisk/bnfos.conf ] ; then cp conf/bnfos.conf $(INSTALL_PREFIX)/etc/asterisk/; fi
+-	install -m 755 init/safe_asterisk_fos $(INSTALL_PREFIX)/usr/sbin/safe_asterisk_fos
+-	install -m 755 init/asterisk_fos $(INSTALL_PREFIX)/etc/init.d/asterisk_fos
++	if [ ! -d $(DESTDIR)/etc/asterisk ]; then mkdir -p $(DESTDIR)/etc/asterisk; fi
++	if [ ! -d $(DESTDIR)/usr/sbin ]; then mkdir -p $(DESTDIR)/usr/sbin; fi
++	if [ ! -d $(DESTDIR)/etc/init.d/ ]; then	mkdir -p $(DESTDIR)/etc/init.d; fi
++	install -m 755 res_bnfos.so $(DESTDIR)$(INSTALL_MODPATH)/
++	if [ ! -f $(DESTDIR)/etc/asterisk/bnfos.conf ] ; then cp conf/bnfos.conf $(DESTDIR)/etc/asterisk/; fi
++	install -m 755 init/safe_asterisk_fos $(DESTDIR)/usr/sbin/safe_asterisk_fos
++	install -m 755 init/asterisk_fos $(DESTDIR)/etc/init.d/asterisk_fos
