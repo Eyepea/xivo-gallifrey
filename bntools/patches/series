@@ -1,3 +1,4 @@
 pf_res_bn_fos_makefile.patch
 res-bnfos.patch
 pf_add_info_for_res_bnfos_makefile.patch
+pf_comment_mac_add_in_bnfos_configfile.patch

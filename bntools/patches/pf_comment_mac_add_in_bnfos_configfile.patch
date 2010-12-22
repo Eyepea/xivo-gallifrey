@@ -1,0 +1,15 @@
+Nicolas Hicher (atarakt) <nhicher@proformatique.com>
+
+Index: bntools/res_bnfos/conf/bnfos.conf
+===================================================================
+--- bntools.orig/res_bnfos/conf/bnfos.conf	2010-12-22 09:14:11.000000000 +0100
++++ bntools/res_bnfos/conf/bnfos.conf	2010-12-22 09:14:40.000000000 +0100
+@@ -4,7 +4,7 @@
+ [my_berofos]
+ 
+ ; The bero*fos's mac address (mandatory).
+-dev_mac=00:19:32:00:00:42
++; dev_mac=00:19:32:00:00:42
+ 
+ ; Address to reach the bero*fos - required on multihomed hosts or if you use the
+ ; enable_wdog_on_start or relais_mode_on_start parameter (see below).
