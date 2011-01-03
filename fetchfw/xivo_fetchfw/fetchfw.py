@@ -517,7 +517,7 @@ def load():
             url = config.get(xfile, 'url')
             size = config.getint(xfile, 'size')
             sha1sum = config.get(xfile, 'sha1sum')
-            if brand == 'Nortel':
+            if brand == 'Nortel' and config.has_option(xfile, 'nnAkamaiAuth'):
                 nnAkamaiAuth = config.get(xfile, 'nnAkamaiAuth')
                 cur_remote_file = NortelRemoteFile(xfile, url, size, sha1sum, nnAkamaiAuth)
             else:
