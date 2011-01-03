@@ -38,7 +38,7 @@ class ami_conn:
         return self.socket.fileno()
 
     def send_login(self):
-        self.to_send = ami.forge_command("Login", {'Username': self.user,
+        self.to_send = ami.forge_command('Login', {'Username': self.user,
                                                    'Secret'  : self.password})
 
     def parse_event(self):

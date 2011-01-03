@@ -35,6 +35,9 @@ usage = \
  * 4: *impossible*
 '''
 
+logging.basicConfig(level = logging.INFO)
+log = logging.getLogger('main')
+
 def parse_cmd_line():
 # {
     parser = OptionParser(usage)
@@ -79,11 +82,23 @@ def parse_cmd_line():
     return options
 # }
 
+
+def request_config(webconfig_uri):
+    anysql_uri = None
+    if webconfig_uri != '':
+        try:
+            req = urllib2.Request(url = webconfig_uri)
+            config_file = cjson.decode(urllib2.urlopen(req).read())
+            anysql_uri = config_file.get('db_uri')
+        except Exception, exc:
+            log.exception('Could not access to %s' % (webconfig_uri))
+            anysql_uri = None
+    return anysql_uri
+
+
 def main():
 # {
     # define the logging properties, before anything else
-    logging.basicConfig(level = logging.INFO)
-    log = logging.getLogger('main')
     try:
         logfilehandler = RotatingFileHandler(LOGFILENAME)
         formatter = logging.Formatter('%%(asctime)s %s[%%(process)d] (%%(levelname)s) (%%(name)s): %%(message)s'
@@ -101,14 +116,7 @@ def main():
 
     # fetch the database URI on a queue_logger JSON config
     # normally something like XIVO_CONF_FILE
-    if options.webconfig_uri != "":
-        try:
-            req = urllib2.Request(url = options.webconfig_uri)
-            config_file = cjson.decode(urllib2.urlopen(req).read())
-            options.anysql_uri = config_file.get('db_uri')
-        except Exception, exc:
-            log.exception('Could not access to %s' % (options.webconfig_uri))
-            options.anysql_uri = None
+    options.anysql_uri = request_config(options.webconfig_uri)
 
     try:
         ami_conn(options)
@@ -119,6 +127,11 @@ def main():
     time_before_retry = 1
 
     while time_before_retry:
+        if not options.anysql_uri:
+            log.warning('attempting to fetch the config from WEBI again, tbr is %d sec now '
+                        % time_before_retry)
+            options.anysql_uri = request_config(options.webconfig_uri)
+
         if options.anysql_uri:
             loop_ret = ami_logger.loop(options)
             log.warning('End of the loop ... tbr is %d sec now'
