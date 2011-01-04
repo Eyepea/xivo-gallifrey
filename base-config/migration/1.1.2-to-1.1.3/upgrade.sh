@@ -49,6 +49,10 @@ mysql_migrate() {
 	fi
 
 	echo "  . Upgrading MYSQL database schema... ";
+	# check mysql status
+	if [ ! -f "/var/run/mysqld/mysqld.pid" ]; then
+	  invoke-rc.d mysql start  > /dev/null 2>&1
+	fi
 
 	# backuping
 	mysqldump --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} > "${BACKUP_DIR}/${DBNAME}-mysql.dump-pre-1.1.3-`date +%Y%m%d%H%M%S`";
