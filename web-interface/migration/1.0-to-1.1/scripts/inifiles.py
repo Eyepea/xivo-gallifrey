@@ -40,6 +40,13 @@ def migrate_cti(basedir):
 		to.add_section('general')
 	to.set('general', 'datastorage', datastorage)
 
+	if not to.has_section('queuelogger'):
+		to.add_section('queuelogger')
+
+	if not datastorage.startswith('mysql://'):
+		datastorage = "sqlite3:/var/lib/pf-xivo-queues-logger/sqlite3/queuestat.db"
+	to.set('queuelogger', 'datastorage', datastorage)
+
 	with open(basedir + '/cti.ini', 'wb') as fp:
 		to.write(fp)
 
