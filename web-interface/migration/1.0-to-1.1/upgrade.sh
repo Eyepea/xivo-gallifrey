@@ -53,6 +53,11 @@ mysql_migrate() {
 	fi
 
 	echo "Backup old XIVO Web Interface Database";
+	# check mysql status
+	if [ ! -f "/var/run/mysqld/mysqld.pid" ]; then
+	  invoke-rc.d mysql start  > /dev/null 2>&1
+	fi
+
 	mysqldump --defaults-extra-file=/etc/mysql/debian.cnf ${DBNAME} > "${BACKUP_DIR}/xivo-mysql.dump-1.0-`date +%Y%m%d%H%M%S`";
 	if [ $? != 0 ]; then
 		echo "Can't backup ${DBNAME} mysql database";
