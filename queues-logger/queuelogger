@@ -32,7 +32,8 @@ usage = \
  * 1: unable to connect to server
  * 2: this server is not a valid AMI server
  * 3: your credential are wrong - verify your login/password
- * 4: *impossible*
+ * 4: exception occured in AMI loop
+ * 5: *impossible*
 '''
 
 logging.basicConfig(level = logging.INFO)
@@ -153,7 +154,12 @@ def main():
         log.exception('Unable to connect to AMI (%s)' % msg)
 
     while True:
-        loop_ret = ami_logger.loop(options)
+        try:
+            loop_ret = ami_logger.loop(options)
+        except Exception:
+            log.exception('in ami_logger loop')
+            return 4
+
         log.warning('End of the loop ... counter is %d' % counter)
 
         if loop_ret and loop_ret[1]>1:
@@ -174,7 +180,7 @@ def main():
 
     daemonize.unlock_pidfile(PIDFILE)
 
-    return 4
+    return 5
 # }
 
 try:
