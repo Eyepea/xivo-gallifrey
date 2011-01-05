@@ -10,9 +10,9 @@ include $(NONO_MK)/autobuild-classic.mk
 DEB_PKG = "bntools"
 TARBALL_DIR := $(shell mktemp -d)
 
-VER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
-TARBALL_NAME = "bntools_$(VER).orig.tar.gz"
-UPSTREAM_VER = $(VER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
+SRCVER = $(shell cat $(MODULE_PATH)/SOURCE-VERSION)
+TARBALL_NAME = "$(DEB_PKG)_$(SRCVER).orig.tar.gz"
+UPSTREAM_VER = $(SRCVER)+pf.xivo.$(MAINREV)~svn$(SVNREV)
 
 
 default:
