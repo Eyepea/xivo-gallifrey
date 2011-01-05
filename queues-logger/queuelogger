@@ -49,7 +49,7 @@ def parse_cmd_line():
 
     parser.add_option("-w", "--web-config-uri", dest="webconfig_uri", type="string",
                       help="specify a queuelogger webconfig URI to be sure to use "
-                           "the same database than the one used by the xivo_daemon",
+                           "the same database as the one used by the xivo_daemon",
                       metavar=XIVO_CONF_FILE,
                       default=XIVO_CONF_FILE)
 
@@ -85,14 +85,19 @@ def parse_cmd_line():
 
 def request_config(webconfig_uri):
     anysql_uri = None
-    if webconfig_uri != '':
+    if webconfig_uri:
         try:
             req = urllib2.Request(url = webconfig_uri)
             config_file = cjson.decode(urllib2.urlopen(req).read())
             anysql_uri = config_file.get('db_uri')
+            if not anysql_uri:
+                log.warning('despite webconfig availability at %s, its db_uri field looks empty'
+                            % (webconfig_uri))
         except Exception, exc:
             log.exception('Could not access to %s' % (webconfig_uri))
             anysql_uri = None
+    else:
+        log.warning('the webconfig_uri option is empty')
     return anysql_uri
 
 
@@ -114,9 +119,32 @@ def main():
         daemonize.daemonize()
     daemonize.lock_pidfile_or_die(PIDFILE)
 
+    log.info('Starting the queues-logger daemon ...')
+
     # fetch the database URI on a queue_logger JSON config
     # normally something like XIVO_CONF_FILE
-    options.anysql_uri = request_config(options.webconfig_uri)
+
+    time_before_retry = 10
+    counter = 1
+
+    if options.webconfig_uri:
+        log.info('webconfig_uri is not empty : fetching the anysql_uri value from there (%s)'
+                 % (options.webconfig_uri))
+        options.anysql_uri = None
+        while not options.anysql_uri:
+            options.anysql_uri = request_config(options.webconfig_uri)
+            if not options.anysql_uri:
+                log.warning('anysql_uri is still empty : re-fetching soon its value from webconfig_uri (%s) (%d)'
+                            % (options.webconfig_uri, counter))
+                counter += 1
+                time.sleep(time_before_retry)
+
+    log.info('anysql_uri value is : %s' % (options.anysql_uri))
+
+    # AMI connection
+
+    time_before_retry = 1
+    counter = 1
 
     try:
         ami_conn(options)
@@ -124,35 +152,25 @@ def main():
     except socket.error, msg:
         log.exception('Unable to connect to AMI (%s)' % msg)
 
-    time_before_retry = 1
+    while True:
+        loop_ret = ami_logger.loop(options)
+        log.warning('End of the loop ... counter is %d' % counter)
 
-    while time_before_retry:
-        if not options.anysql_uri:
-            log.warning('attempting to fetch the config from WEBI again, tbr is %d sec now '
-                        % time_before_retry)
-            options.anysql_uri = request_config(options.webconfig_uri)
-
-        if options.anysql_uri:
-            loop_ret = ami_logger.loop(options)
-            log.warning('End of the loop ... tbr is %d sec now'
-                        % time_before_retry)
-
-            if loop_ret and loop_ret[1]>1:
-                log.error(loop_ret[0])
-                return loop_ret[1]
-            elif loop_ret and loop_ret[1] != -3:
-                log.error(loop_ret[0])
+        if loop_ret and loop_ret[1]>1:
+            log.error(loop_ret[0])
+            return loop_ret[1]
+        elif loop_ret and loop_ret[1] != -3:
+            log.error(loop_ret[0])
 
         time.sleep(time_before_retry)
-        time_before_retry += 2
+        counter += 1
 
         try:
             ami_conn(options)
-            log.info('Seems we are connected to the AMI (try when tbr is %d sec)'
-                     % time_before_retry)
+            log.info('Seems we are connected to the AMI (counter is %d)' % counter)
         except:
-            log.exception('%s:%d| Unable to reconnect, next try scheduled in %d sec'
-                          % (options.ip, options.port, time_before_retry))
+            log.exception('Unable to reconnect to %s:%d (counter is %d)'
+                          % (options.ip, options.port, counter))
 
     daemonize.unlock_pidfile(PIDFILE)
 
