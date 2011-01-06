@@ -1,0 +1,110 @@
+Index: asterisk-app-conference-2.0.1/Makefile
+===================================================================
+--- asterisk-app-conference-2.0.1.orig/Makefile	2008-11-05 14:41:02.000000000 +0100
++++ asterisk-app-conference-2.0.1/Makefile	2008-11-05 14:42:44.000000000 +0100
+@@ -20,8 +20,6 @@
+ INSTALL_PREFIX :=
+ INSTALL_MODULES_DIR := $(INSTALL_PREFIX)/usr/lib/asterisk/modules
+ 
+-ASTERISK_INCLUDE_DIR ?= ../asterisk/include
+-
+ REVISION = $(shell svnversion -n .)
+ 
+ # turn app_conference debugging on or off ( 0 == OFF, 1 == ON )
+@@ -45,48 +43,36 @@
+ PROC = $(shell uname -m)
+ INSTALL = install
+ 
+-INCLUDE = -I$(ASTERISK_INCLUDE_DIR)
+-DEBUG := -g
+-
+-CFLAGS = -pipe -Wall -Wmissing-prototypes -Wmissing-declarations -MD -MP $(DEBUG)
+-CPPFLAGS = $(INCLUDE) -D_REENTRANT -D_GNU_SOURCE -DREVISION=\"$(REVISION)\"
+-#CFLAGS += -O2
+-#CFLAGS += -O3 -march=pentium3 -msse -mfpmath=sse,387 -ffast-math
++MY_CFLAGS += -pipe -Wall -Wmissing-prototypes -Wmissing-declarations -MD -MP
++MY_CPPFLAGS += -D_REENTRANT -D_GNU_SOURCE -DREVISION=\"$(REVISION)\"
++#MY_CFLAGS += -O2
++#MY_CFLAGS += -O3 -march=pentium3 -msse -mfpmath=sse,387 -ffast-math
+ # PERF: below is 10% faster than -O2 or -O3 alone.
+-#CFLAGS += -O3 -ffast-math -funroll-loops
++#MY_CFLAGS += -O3 -ffast-math -funroll-loops
+ # below is another 5% faster or so.
+-#CFLAGS += -O3 -ffast-math -funroll-all-loops -fsingle-precision-constant
+-#CFLAGS += -mcpu=7450 -faltivec -mabi=altivec -mdynamic-no-pic
++#MY_CFLAGS += -O3 -ffast-math -funroll-all-loops -fsingle-precision-constant
++#MY_CFLAGS += -mcpu=7450 -faltivec -mabi=altivec -mdynamic-no-pic
+ # adding -msse -mfpmath=sse has little effect.
+-#CFLAGS += -O3 -msse -mfpmath=sse
+-#CFLAGS += $(shell if $(CC) -march=$(PROC) -S -o /dev/null -xc /dev/null >/dev/null 2>&1; then echo "-march=$(PROC)"; fi)
+-CFLAGS += $(shell if uname -m | grep -q ppc; then echo "-fsigned-char"; fi)
+-CFLAGS += -fPIC
+-CPPFLAGS += -DCRYPTO
++#MY_CFLAGS += -O3 -msse -mfpmath=sse
++#MY_CFLAGS += $(shell if $(CC) -march=$(PROC) -S -o /dev/null -xc /dev/null >/dev/null 2>&1; then echo "-march=$(PROC)"; fi)
++MY_CFLAGS += $(shell if uname -m | grep -q ppc; then echo "-fsigned-char"; fi)
++MY_CFLAGS += -fPIC
++MY_CPPFLAGS += -DCRYPTO
+ 
+ #
+ # Uncomment this if you want G.729A support (need to have the actual codec installed
+ #
+-# CPPFLAGS += -DAC_USE_G729A
++# MY_CPPFLAGS += -DAC_USE_G729A
+ 
+ 
+ ifeq ($(APP_CONFERENCE_DEBUG), 1)
+-CPPFLAGS += -DAPP_CONFERENCE_DEBUG
++MY_CPPFLAGS += -DAPP_CONFERENCE_DEBUG
+ endif
+ 
+ #
+ # additional flag values for silence detection
+ #
+ 
+-ifeq ($(SILDET), 2)
+-OBJS += libspeex/preprocess.o libspeex/misc.o libspeex/smallft.o
+-CPPFLAGS += -Ilibspeex -DSILDET=2
+-endif
+-
+-ifeq ($(SILDET), 1)
+-CPPFLAGS += -DSILDET=1
+-endif
+-
+ OSARCH=$(shell uname -s)
+ ifeq (${OSARCH},Darwin)
+ SOLINK=-dynamic -bundle -undefined suppress -force_flat_namespace
+@@ -94,6 +80,15 @@
+ SOLINK=-shared -Xlinker -x
+ endif
+ 
++ifeq ($(SILDET), 2)
++MY_CPPFLAGS += -DSILDET=2
++SOLINK += -lspeex
++endif
++
++ifeq ($(SILDET), 1)
++MY_CPPFLAGS += -DSILDET=1
++endif
++
+ DEPS += $(subst .o,.d,$(OBJS))
+ 
+ #
+@@ -110,6 +105,9 @@
+ distclean: clean
+ 	$(RM) $(TARGET)
+ 
++%.o: %.c
++	$(CC) $(CFLAGS) $(MY_CFLAGS) $(MY_CPPFLAGS) -c -o $@ $<
++
+ $(TARGET): $(OBJS)
+ 	$(CC) -pg $(SOLINK) -o $@ $(OBJS)
+ 
+@@ -117,6 +115,7 @@
+ 	$(CC) $(PROFILE) -o $@ $^ -lm
+ 
+ install:
++	$(INSTALL) -d $(INSTALL_MODULES_DIR)
+ 	$(INSTALL) -m 755 $(TARGET) $(INSTALL_MODULES_DIR)
+ 
+ 
