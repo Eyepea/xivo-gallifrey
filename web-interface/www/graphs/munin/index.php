@@ -23,6 +23,9 @@ require_once('xivo.php');
 if($_USR->mk_active() === false)
 	$_QRY->go($_TPL->url('xivo/logoff'));
 
+if(xivo_user::chk_acl('','','service/graphs/munin') === false)
+	$_QRY->go($_TPL->url('xivo'));
+
 $action_path = $_LOC->get_action_path('graphs/munin',0);
 
 if($action_path === false)

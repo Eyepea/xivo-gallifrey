@@ -93,7 +93,7 @@ $dhtml = &$this->get_module('dhtml');
 					'cti/sheetevents'),
 				'</dd>';
 		endif;
-		if(xivo_user::chk_acl('cti','restart', 'service') === true or true):
+		if(xivo_user::chk_acl('cti','restart', 'service') === true):
 			echo	'<dd id="mn-cti--restart">',
 				$url->href_html($this->bbf('mn_left_ctisettings-restart'),
 					'cti/restart',

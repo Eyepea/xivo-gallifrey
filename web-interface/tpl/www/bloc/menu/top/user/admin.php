@@ -42,15 +42,32 @@ $this->file_include('bloc/menu/top/user/loginbox');
 						<?=$url->href_html($this->bbf('mn_sub_top_services_ipbx'),
 								   'service/ipbx');?>
 					</li>
+					<?php 
+					if(xivo_user::chk_acl_section('service/cti') === true): 
+						// get 1st authorized subsection
+						foreach($_SESSION['_ACL']['user']['service']['cti'] as $sect => $acl)
+						{
+							if($acl)
+							{
+					?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_cti'),
-								   'cti/general');?>
+								   'cti/'.$sect);?>
 					</li>
+					<?php 
+								break;
+							}
+						}
+					
+					endif; 
+					?>
+			    <?php if(xivo_user::chk_acl_section('service/monitoring') === true): ?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_monitoring'),
 								   'xivo');?>
 					</li>
-				    <?php if(xivo_user::chk_acl_section('service/graphs/munin') === true): ?>
+					<?php endif; ?>
+			    <?php if(xivo_user::chk_acl_section('service/graphs/munin') === true): ?>
 					<li>
 						<?=$url->href_html($this->bbf('mn_sub_top_services_stats'),
 								   'graphs');?>

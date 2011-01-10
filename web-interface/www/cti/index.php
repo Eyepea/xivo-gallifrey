@@ -23,6 +23,9 @@ require_once('xivo.php');
 if($_USR->mk_active() === false)
 	$_QRY->go($_TPL->url('xivo/logoff'));
 
+if(xivo_user::chk_acl('','','service/cti'.$_SERVER['PATH_INFO']) === false)
+	$_QRY->go($_TPL->url('xivo'));
+
 $ipbx = &$_SRE->get('ipbx');
 
 $dhtml = &$_TPL->get_module('dhtml');
