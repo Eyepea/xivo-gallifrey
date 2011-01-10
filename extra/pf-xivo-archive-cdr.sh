@@ -17,7 +17,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #"""
 
+#XXX: this is a dump, ==> the uniqueid is dumped without reseting it
 #TODO: make some sanity check on the UPPER LIMIT (is it a correct date ?) otherwise it could erase every cdr ...
+#TODO: add an option to force answer yes to every question (for crontab usage)
+#TODO: add an command line option to set the DB_BACKUP_PATH
+#TODO: add some options to the dump request to be able to chose to -DROP and CREATE the table, -or to only INSERT the data
+#TODO: change the temp table name : add the year and month info ?
 
 println() {
     level=$1
