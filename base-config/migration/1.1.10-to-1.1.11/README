@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.10 to 1.1.11 =
+ 
+* ticket #1817: fix mysql database (table extenumbers):: switch 'queuetogglemember' and 'queueremovemember'
