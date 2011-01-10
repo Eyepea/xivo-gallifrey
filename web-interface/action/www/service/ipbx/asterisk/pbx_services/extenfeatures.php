@@ -21,12 +21,14 @@
 $appextenfeatures = &$ipbx->get_application('extenfeatures');
 
 $appfeatures = &$ipbx->get_apprealstatic('features');
-$appgeneralfeatures = &$appfeatures->get_module('general');
-$appfeaturemap = &$appfeatures->get_module('featuremap');
 
 $info = array();
 $info['extenfeatures'] = $appextenfeatures->get_all_by_context();
+
+$appgeneralfeatures = &$appfeatures->get_module('general');
 $info['generalfeatures'] = $appgeneralfeatures->get_all_by_category();
+
+$appfeaturemap = &$appfeatures->get_module('featuremap');
 $info['featuremap'] = $appfeaturemap->get_all_by_category();
 
 $element = array();
