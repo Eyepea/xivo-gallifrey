@@ -23,9 +23,10 @@ $info = $error = array();
 $return = &$info;
 
 $apphnumbersemergency = $ipbx->get_application('handynumbers',array('type' => 'emergency'));
-$apphnumbersspecial = $ipbx->get_application('handynumbers',array('type' => 'special'));
-
 $info['emergency'] = $apphnumbersemergency->get();
+$elements          = $apphnumbersemergency->get_elements();
+
+$apphnumbersspecial = $ipbx->get_application('handynumbers',array('type' => 'special'));
 $info['special'] = $apphnumbersspecial->get();
 
 $fm_save = null;
@@ -47,6 +48,7 @@ if(isset($_QR['fm_send']) === true)
 	|| ($emergency = dwho_group_array('trunkfeaturesid',$_QR['emergency'])) === false)
 		$emergency = array();
 
+	$apphnumbersemergency = $ipbx->get_application('handynumbers',array('type' => 'emergency'));
 	if($apphnumbersemergency->set_save_all($emergency) === false)
 		$result['emergency'] = false;
 	else
@@ -64,6 +66,7 @@ if(isset($_QR['fm_send']) === true)
 	|| ($special = dwho_group_array('trunkfeaturesid',$_QR['special'])) === false)
 		$special = array();
 
+	$apphnumbersspecial = $ipbx->get_application('handynumbers',array('type' => 'special'));
 	if($apphnumbersspecial->set_save_all($special) === false)
 		$result['special'] = false;
 	else
@@ -101,7 +104,7 @@ if(($trunkslist = $apptrunk->get_trunks_list(null,null,null,null,true)) !== fals
 $_TPL->set_var('fm_save',$fm_save);
 $_TPL->set_var('dwsm_form_tab',$dwsm_form_tab);
 $_TPL->set_var('dwsm_form_part',$dwsm_form_part);
-$_TPL->set_var('element',$apphnumbersemergency->get_elements());
+$_TPL->set_var('element',$elements);
 $_TPL->set_var('info',$return);
 $_TPL->set_var('error',$error);
 $_TPL->set_var('trunkslist',$trunkslist);

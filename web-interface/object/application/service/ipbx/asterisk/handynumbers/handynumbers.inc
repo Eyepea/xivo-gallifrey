@@ -329,6 +329,9 @@ class xivo_application_service_asterisk_handynumbers extends xivo_application_as
 
 	function _delete_all()
 	{
+		// we must load datas so that $this->_info is filled
+		$this->get();
+
 		if(dwho_issa('extenumbers',$this->_info) === true
 		&& ($nb = count($this->_info['extenumbers'])) !== 0)
 		{
