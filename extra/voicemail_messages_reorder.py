@@ -32,6 +32,10 @@ def corrector(basedir):
 				
 				print "-| %s (%s) |-" % (vmid, context)
 				for root, dirs, files in os.walk(os.path.join(vmdir, context, vmid)):
+					# exclude vm root dir as it can contains sound files
+					if root == os.path.join(vmdir, context, vmid):
+						continue
+
 					fixit(root, files, tmp)
 
 def fixit(basedir, files, tmp):
