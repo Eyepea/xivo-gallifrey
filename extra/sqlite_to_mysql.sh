@@ -232,6 +232,14 @@ for (( i=0 ; $i < ${#DB_NAME[*]} ; i++ )) ; do
     done;
 done;
 
+println info "Try to correct some bad export formating from SQLite (like string exported as number)"
+# This request changes lines like below (from the table VOICEMAIL), that is fields which are numbers but starting with must be enclosed by quotes (otherwise the first 0 is trimmed) :
+# INSERT INTO voicemail VALUES(38,'default',0141414141,0000,'Foo Bar','foo@bar.com',NULL,NULL,NULL,NULL,NULL,'eu-fr',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,'no',NULL,0);
+# to 
+# INSERT INTO voicemail VALUES(38,'default','0141414141','0000','Foo Bar','foo@bar.com',NULL,NULL,NULL,NULL,NULL,'eu-fr',1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,0,NULL,NULL,'no',NULL,0);
+# XXX: request not correct for staticmeetme, staticagent (and perhaps other field of static* tables)
+#sed -i -r "s/,(0[0-9]+)/,\'\1\'/g" dump-${DB_NAME[$i]}/*
+
 ######################################
 # IMPORT sqlite DATAS TO mysql       #
 ######################################
@@ -259,7 +267,6 @@ println info "SQLite does not store every values with the same type than MySQL d
 println info "Particularly some fields stored as tinyint values in MySQL are imported as string in SQLite dump files."
 println info "If you meet such issues, edit the dump file of the table and change it."
 println info "Before you start, you should verify these tables and these fields :"
-println info "\t.table USERFEATURES: passwdclient -> if you have numerical passwords, check that they don't start by 0"
 println info "\t.table QUEUE: reportholdtime, servicelevel, timeoutrestart"
 println info "\t.table VOICEMAIL: sendvoicemail"
 println info "\t.table CDR: answer, end (verify that timestamp value is correct)"
