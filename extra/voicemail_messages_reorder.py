@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-import sys, os, os.path, glob, tempfile
+import sys, os, os.path, glob, tempfile, shutil
 
 """
 	Asterisk voicemails tree structure:
@@ -51,14 +51,14 @@ def fixit(basedir, files, tmp):
 			to = "msg%04d%s" % (i, ext)
 
 			if to != f:
-				os.rename(os.path.join(basedir, f), os.path.join(tmp, to)); cnt += 1
+				shutil.move(os.path.join(basedir, f), os.path.join(tmp, to)); cnt += 1
 
 		except ValueError:
 			print "ERROR: %s not found in reorder map" % f
 
 	for root, dirs, files in os.walk(tmp):
 		for f in files:
-			os.rename(os.path.join(tmp, f), os.path.join(basedir, f))
+			shutil.move(os.path.join(tmp, f), os.path.join(basedir, f))
 
 	print "  . [%s] %d files renamed" % (os.path.split(basedir)[1], cnt)
 
