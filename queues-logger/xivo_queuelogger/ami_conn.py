@@ -1,5 +1,6 @@
 # vim: set expandtab ts=4 sw=4 sts=4 fileencoding=utf-8:
 
+import logging
 import sys
 import socket
 import re
@@ -8,6 +9,7 @@ from ami_logger import *
 from log_event import *
 from ami import *
 
+log = logging.getLogger('ami_conn')
 
 class ami_conn:
 # {
@@ -50,8 +52,14 @@ class ami_conn:
         event = self.read[:event_complete]
         self.read = self.read[event_complete + 4:]
 
-        return dict(map(lambda ev: re.match(r"([^:]+): (.*)", ev).groups(),
-                        event.splitlines()))
+        try:
+            pevent = dict(map(lambda ev: re.match(r"([^:]+): (.*)", ev).groups(),
+                              event.splitlines()))
+        except Exception:
+            log.exception('parse_event %s' % event)
+            pevent = {}
+
+        return pevent
     # }
 
     def recv(self):
