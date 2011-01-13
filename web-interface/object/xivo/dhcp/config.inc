@@ -38,12 +38,12 @@ $array['element']['extra_ifaces']['default'] = '';
 $array['filter'] = array();
 
 $array['filter']['pool_start']	    = array('set'		=> false,
-				    'chk'		    => 1,
+				    'chk'		    => 2,
 				    'callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 
 $array['filter']['pool_end']	    = array('set'		=> false,
-				    'chk'		    => 1,
+				    'chk'		    => 2,
 				    'callback'		=> 'dwho_network::valid_host',
 				    'callbackarg'	=> array(DWHO_NETWORK_HOST_IPV4_DOTDEC));
 
