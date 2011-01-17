@@ -1,20 +1,20 @@
-Index: asterisk-1.4.36/main/channel.c
+Index: asterisk-1.4.39/main/channel.c
 ===================================================================
---- asterisk-1.4.36.orig/main/channel.c	2010-09-17 08:15:54.376394726 -0400
-+++ asterisk-1.4.36/main/channel.c	2010-09-17 08:16:03.376394143 -0400
-@@ -2676,6 +2676,7 @@
+--- asterisk-1.4.39.orig/main/channel.c	2011-01-17 18:11:50.000000000 -0500
++++ asterisk-1.4.39/main/channel.c	2011-01-17 18:13:40.516839112 -0500
+@@ -2734,6 +2734,7 @@
  	case AST_CONTROL_TAKEOFFHOOK:
  	case AST_CONTROL_ANSWER:
  	case AST_CONTROL_HANGUP:
 +	case AST_CONTROL_ATXFERCMD:
+ 	case AST_CONTROL_END_OF_Q:
  		return 0;
  
- 	case AST_CONTROL_CONGESTION:
-@@ -2772,6 +2773,7 @@
+@@ -2828,6 +2829,7 @@
+ 	case AST_CONTROL_TAKEOFFHOOK:
+ 	case AST_CONTROL_ANSWER:
+ 	case AST_CONTROL_HANGUP:
++	case AST_CONTROL_ATXFERCMD:
  	case AST_CONTROL_RING:
  	case AST_CONTROL_HOLD:
  	case AST_CONTROL_UNHOLD:
-+	case AST_CONTROL_ATXFERCMD:
- 		/* Nothing left to do for these. */
- 		res = 0;
- 		break;

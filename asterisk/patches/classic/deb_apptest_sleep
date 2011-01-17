@@ -2,10 +2,10 @@ An extra little sleep that seems to work around a problem when
 running the test between two PRI channels.
 
 Upstream bug: http://bugs.digium.com/12442
-Index: asterisk-1.4.35/apps/app_test.c
+Index: asterisk-1.4.39/apps/app_test.c
 ===================================================================
---- asterisk-1.4.35.orig/apps/app_test.c	2010-08-16 08:37:28.202283410 -0400
-+++ asterisk-1.4.35/apps/app_test.c	2010-08-16 08:37:55.282910516 -0400
+--- asterisk-1.4.39.orig/apps/app_test.c	2011-01-17 18:11:19.448090085 -0500
++++ asterisk-1.4.39/apps/app_test.c	2011-01-17 18:11:47.518092407 -0500
 @@ -296,6 +296,8 @@
  					res = 0;
  				else
