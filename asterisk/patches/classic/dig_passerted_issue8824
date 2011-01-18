@@ -167,32 +167,6 @@ Index: asterisk-1.4.36/apps/app_dial.c
  static void senddialevent(struct ast_channel *src, struct ast_channel *dst)
  {
  	/* XXX do we need also CallerIDnum ? */
-@@ -433,15 +423,20 @@
- 	int orig = *to;
- 	struct ast_channel *peer = NULL;
- 	/* single is set if only one destination is enabled */
--	int single = outgoing && !outgoing->next && !ast_test_flag(outgoing, OPT_MUSICBACK | OPT_RINGBACK);
-+	int single = outgoing && !outgoing->next;
- 
- 	char featurecode[FEATURE_MAX_LEN + 1] = { 0, };
- 
- 	if (single) {
--		/* Turn off hold music, etc */
--		ast_deactivate_generator(in);
--		/* If we are calling a single channel, make them compatible for in-band tone purpose */
--		ast_channel_make_compatible(outgoing->chan, in);
-+		if (!ast_test_flag(outgoing, OPT_MUSICBACK | OPT_RINGBACK)) {
-+			ast_deactivate_generator(in);
-+
-+			/* If we are calling a single channel, make them compatible for in-band tone purpose */
-+			ast_channel_make_compatible(outgoing->chan, in);
-+		}
-+
-+		if (!ast_test_flag(peerflags, OPT_IGNORE_CONNECTEDLINE) && !ast_test_flag(outgoing, DIAL_NOCONNECTEDLINE))
-+			ast_connectedline_update(in, outgoing->chan->cid.cid_num, outgoing->chan->cid.cid_name, outgoing->chan->cid.cid_pres);
- 	}
- 	
- 	
 @@ -489,6 +484,8 @@
  				if (!peer) {
  					if (option_verbose > 2)
@@ -2199,6 +2173,7 @@ Index: asterisk-1.4.36/include/asterisk/frame.h
  	AST_CONTROL_SRCUPDATE = 20,     /*!< Indicate source of media has changed */
  	AST_CONTROL_SRCCHANGE = 21,     /*!< Media has changed and requires a new RTP SSRC */
 +	AST_CONTROL_CONNECTEDLINE = 22, /*!< Indicate connected line has changed */
+	AST_CONTROL_END_OF_Q = 22,		/*!< Indicate that this position was the end of the channel queue for a softhangup. */
  };
  
  #define AST_SMOOTHER_FLAG_G729		(1 << 0)
@@ -2235,14 +2210,6 @@ Index: asterisk-1.4.36/main/channel.c
  	/* Close pipes if appropriate */
  	if ((fd = chan->alertpipe[0]) > -1)
  		close(fd);
-@@ -2683,6 +2698,7 @@
- 	case AST_CONTROL_ANSWER:
- 	case AST_CONTROL_HANGUP:
- 	case AST_CONTROL_ATXFERCMD:
-+	case AST_CONTROL_CONNECTEDLINE:
- 		return 0;
- 
- 	case AST_CONTROL_CONGESTION:
 @@ -2705,6 +2721,8 @@
  	enum ast_control_frame_type condition = _condition;
  	const struct tone_zone_sound *ts = NULL;

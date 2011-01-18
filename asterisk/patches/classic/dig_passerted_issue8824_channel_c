@@ -1,0 +1,16 @@
+2011-01-18 <nhicher@proformatique.com>
+add small patch to allow asterisk build (splitting original
+dig_passerted_issue8824)
+
+Index: asterisk-1.4.39/main/channel.c
+===================================================================
+--- asterisk-1.4.39.orig/main/channel.c	2011-01-18 16:40:04.113892937 +0100
++++ asterisk-1.4.39/main/channel.c	2011-01-18 16:40:30.821394086 +0100
+@@ -2756,6 +2756,7 @@
+ 	case AST_CONTROL_ANSWER:
+ 	case AST_CONTROL_HANGUP:
+ 	case AST_CONTROL_ATXFERCMD:
++	case AST_CONTROL_CONNECTEDLINE:
+ 	case AST_CONTROL_END_OF_Q:
+ 		return 0;
+ 
