@@ -1291,17 +1291,18 @@ class XivoCTICommand(BaseCommand):
                 if z:
                     z = z.get(idxes.pop(0))
             if z:
-              for k, v in z.iteritems():
-                if v: # since WEBI config generates a default {'null' : ''} entry
-                    try:
-                        r = urllib.urlopen(v)
-                        t = r.read().decode('utf8')
-                        r.close()
-                    except Exception, exc: # conscious limited exception output ("No such file or directory")
-                        log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
-                        t = None
-                    if t is not None:
-                        linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>' % (sheetkind, k, t, sheetkind))
+                for k, v in z.iteritems():
+                    if v: # since WEBI config generates a default {'null' : ''} entry
+                        try:
+                            r = urllib.urlopen(v)
+                            t = r.read().decode('utf8')
+                            r.close()
+                        except Exception, exc: # conscious limited exception output ("No such file or directory")
+                            log.error('__build_xmlqtui__ %s %s : %s' % (sheetkind, whichitem, exc))
+                            t = None
+                        if t is not None:
+                            linestosend.append('<%s name="%s"><![CDATA[%s]]></%s>'
+                                               % (sheetkind, k, t, sheetkind))
         return linestosend
 
     def __build_xmlsheet__(self, sheetkind, actionopt, inputvars):
@@ -2609,41 +2610,40 @@ class XivoCTICommand(BaseCommand):
             queues_actions_list = ['queueadd', 'queueremove', 'queuepause', 'queueunpause',
                                    'queuepause_all', 'queueunpause_all']
             for actionname, paction in presenceactions.iteritems():
-                params = paction.split('|')
+                if actionname and paction:
+                    params = paction.split('|')
+                    # queues-related actions
+                    if actionname in queues_actions_list:
+                        if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
+                            agent_number = self.weblist['agents'][astid].keeplist[agent_id].get('number')
+                            agent_channel = 'Agent/%s' % agent_number
 
-                # queues-related actions
-                if actionname in queues_actions_list:
-                    if agent_id and agent_id in self.weblist['agents'][astid].keeplist:
-                        agent_number = self.weblist['agents'][astid].keeplist[agent_id].get('number')
-                        agent_channel = 'Agent/%s' % agent_number
-
-                        if actionname == 'queueadd' and len(params) > 1:
-                            self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%s' % agent_id)
-                        elif actionname == 'queueremove' and len(params) > 0:
-                            self.__ami_execute__(astid, actionname, params[0], agent_channel)
-                        elif actionname == 'queuepause' and len(params) > 0:
-                            self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
-                        elif actionname == 'queueunpause' and len(params) > 0:
-                            self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
-                        elif actionname == 'queuepause_all':
-                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                if qv.get('Paused') == '0':
-                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
-                        elif actionname == 'queueunpause_all':
-                            for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
-                                if qv.get('Paused') == '1':
-                                    self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
-
-                # services-related actions
-                elif actionname in services_actions_list and len(params) > 0:
-                    if params[0] == 'false':
-                        booltonum = '0'
-                    else:
-                        booltonum = '1'
-                    rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
-                                                      actionname,
-                                                      booltonum)
-                    self.__send_msg_to_cti_client__(userinfo, rep)
+                            if actionname == 'queueadd' and len(params) > 1:
+                                self.__ami_execute__(astid, actionname, params[0], agent_channel, params[1], 'agent-%s' % agent_id)
+                            elif actionname == 'queueremove' and len(params) > 0:
+                                self.__ami_execute__(astid, actionname, params[0], agent_channel)
+                            elif actionname == 'queuepause' and len(params) > 0:
+                                self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
+                            elif actionname == 'queueunpause' and len(params) > 0:
+                                self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
+                            elif actionname == 'queuepause_all':
+                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                    if qv.get('Paused') == '0':
+                                        self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'true')
+                            elif actionname == 'queueunpause_all':
+                                for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
+                                    if qv.get('Paused') == '1':
+                                        self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
+                    # services-related actions
+                    elif actionname in services_actions_list and len(params) > 0:
+                        if params[0] == 'false':
+                            booltonum = '0'
+                        else:
+                            booltonum = '1'
+                        rep = self.__build_features_put__(userinfo.get('astid') + '/' + userinfo.get('xivo_userid'),
+                                                          actionname,
+                                                          booltonum)
+                        self.__send_msg_to_cti_client__(userinfo, rep)
         except Exception:
             log.exception('(__presence_action__) %s %s %s %s' % (astid, agent_id, capaid, status))
         return
@@ -5815,8 +5815,8 @@ class XivoCTICommand(BaseCommand):
                 else:
                     if kind == 'agent':
                         props['id'] = [kid]
-                        agentnum = self.weblist['agents'][astid].keeplist[kid].get('agentnum')
-                        props['channels'] = self.__find_channel_by_agentnum__(astid, agentnum)
+                        agentnumber = self.weblist['agents'][astid].keeplist[kid].get('number')
+                        props['channels'] = self.__find_channel_by_agentnum__(astid, agentnumber)
                     elif kind == 'queue':
                         props['id'] = [kid]
                         props['channels'] = self.weblist['queues'][astid].keeplist[kid]['channels'].keys()
@@ -5935,7 +5935,8 @@ class XivoCTICommand(BaseCommand):
                 if source.get('astid') == destination.get('astid'):
                     astid = source.get('astid')
                 else:
-                    log.warning('astid is not the same for source and destination : %s %s' % (args.get('source'), args.get('destination')))
+                    log.warning('astid is not the same for source and destination : %s %s'
+                                % (args.get('source'), args.get('destination')))
                     return
 
                 if actionname == 'listen':
@@ -5946,13 +5947,15 @@ class XivoCTICommand(BaseCommand):
                                                    'ChanSpy',
                                                    '%s|q' % channels[0],
                                                    'Local',
+                                                   source.get('userinfo').get('phoneid'),
                                                    source.get('userinfo').get('phonenum'),
                                                    source.get('userinfo').get('context'))
                         log.info('started listening on %s %s (id %s) aid = %s'
                                  % (astid, channels[0], args.get('destination'), aid))
                         self.origapplication[astid][aid] = { 'origapplication' : 'ChanSpy',
-                                                             'origapplication-data' : { 'spied-channel' : channels[0],
-                                                                                        'spied-agentid' : args.get('destination') } }
+                                                             'origapplication-data' :
+                                                             { 'spied-channel' : channels[0],
+                                                               'spied-agentid' : args.get('destination') } }
 
                 elif actionname == 'stoplisten':
                     channels = destination.get('channels')
@@ -5961,18 +5964,22 @@ class XivoCTICommand(BaseCommand):
                             if 'origapplication' in vv and vv['origapplication'] == 'ChanSpy':
                                 if channels[0] == vv['origapplication-data']['spied-channel']:
                                     self.__ami_execute__(astid, 'hangup', vv['channel'])
-                                    log.info('stopped listening on %s %s (agent %s)' % (astid, channels[0], anum))
+                                    log.info('stopped listening on %s %s (agent %s)'
+                                             % (astid, channels[0], anum))
 
                 elif actionname == 'record':
                     datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                     channels = destination.get('channels')
+                    agent_id = destination.get('id')[0]
                     for channel in channels:
                         aid = self.__ami_execute__(astid,
                                                    'monitor',
                                                    channel,
-                                                   'cti-monitor-%s-%s-%s' % (destination.get('kind'), datestring, destination.get('id')))
+                                                   'cti-monitor-%s-%s-%s' % (destination.get('kind'),
+                                                                             datestring,
+                                                                             agent_id))
                         self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : True})
-                        log.info('started monitor on %s %s (agent %s)' % (astid, channel, anum))
+                        log.info('started monitor on %s %s' % (astid, channel))
                         tosend = { 'class' : 'agentrecord',
                                    'astid' : astid,
                                    'agentid' : agent_id,
@@ -5985,12 +5992,13 @@ class XivoCTICommand(BaseCommand):
 
                 elif actionname == 'stoprecord':
                     channels = destination.get('channels')
+                    agent_id = destination.get('id')[0]
                     for channel in channels:
                         self.__ami_execute__(astid,
                                              'stopmonitor',
                                              channel)
                         self.weblist['agents'][astid].keeplist[agent_id]['agentstats'].update({'Xivo-Agent-Status-Recorded' : False})
-                        log.info('stopped monitor on %s %s (agent %s)' % (astid, channel, anum))
+                        log.info('stopped monitor on %s %s' % (astid, channel))
                         tosend = { 'class' : 'agentrecord',
                                    'astid' : astid,
                                    'agentid' : agent_id,

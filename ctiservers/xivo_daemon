@@ -1303,7 +1303,8 @@ class xivo_daemon:
                         self.commandclass.manage_logout(userinfo, 'end_sending')
                         del self.userinfo_by_requester[sel_o]
 
-                    log.info('TCP socket %s closed(sending %s) on %s' % (self.fdlist_established[sel_o], cexc, sel_o.getpeername()))
+                    log.info('TCP socket %s closed(sending %s) on %s'
+                             % (self.fdlist_established[sel_o], cexc, sel_o.getpeername()))
 
                     if sel_o in self.fdlist_established:
                         del self.fdlist_established[sel_o]
