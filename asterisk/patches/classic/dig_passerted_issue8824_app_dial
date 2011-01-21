@@ -2,9 +2,9 @@
 add small patch to allow asterisk build (splitting original dig_passerted_issue8824)
 Index: asterisk-1.4.39.1/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.39.1.orig/apps/app_dial.c	2011-01-21 17:13:08.000000000 +0100
-+++ asterisk-1.4.39.1/apps/app_dial.c	2011-01-21 17:16:10.000000000 +0100
-@@ -423,15 +423,20 @@
+--- asterisk-1.4.39.1.orig/apps/app_dial.c	2011-01-21 18:38:55.000000000 +0100
++++ asterisk-1.4.39.1/apps/app_dial.c	2011-01-21 18:41:14.000000000 +0100
+@@ -423,24 +423,29 @@
  	int orig = *to;
  	struct ast_channel *peer = NULL;
  	/* single is set if only one destination is enabled */
@@ -18,15 +18,32 @@ Index: asterisk-1.4.39.1/apps/app_dial.c
 -		ast_deactivate_generator(in);
 -		/* If we are calling a single channel, make them compatible for in-band tone purpose */
 -		if (ast_channel_make_compatible(outgoing->chan, in) < 0) {
+-			/* If these channels can not be made compatible, 
+-			 * there is no point in continuing.  The bridge
+-			 * will just fail if it gets that far.
+-			 */
+-			*to = -1;
+-			strcpy(status, "CONGESTION");
+-			ast_cdr_failed(in->cdr);
+-			return NULL;
 +		if (!ast_test_flag(outgoing, OPT_MUSICBACK | OPT_RINGBACK)) {
 +			ast_deactivate_generator(in);
 +
 +			/* If we are calling a single channel, make them compatible for in-band tone purpose */
-+			ast_channel_make_compatible(outgoing->chan, in);
-+		}
++			if (ast_channel_make_compatible(outgoing->chan, in) < 0) {
++				/* If these channels can not be made compatible, 
++				 * there is no point in continuing.  The bridge
++				 * will just fail if it gets that far.
++				 */
++				*to = -1;
++				strcpy(status, "CONGESTION");
++				ast_cdr_failed(in->cdr);
++				return NULL;
++			}
+ 		}
 +
-+		if (!ast_test_flag(peerflags, OPT_IGNORE_CONNECTEDLINE) && !ast_test_flag(outgoing, DIAL_NOCONNECTEDLINE)) {
++		if (!ast_test_flag(peerflags, OPT_IGNORE_CONNECTEDLINE) && !ast_test_flag(outgoing, DIAL_NOCONNECTEDLINE))
 +			ast_connectedline_update(in, outgoing->chan->cid.cid_num, outgoing->chan->cid.cid_name, outgoing->chan->cid.cid_pres);
- 			/* If these channels can not be made compatible, 
- 			 * there is no point in continuing.  The bridge
- 			 * will just fail if it gets that far.
+ 	}
+ 	
+ 	
