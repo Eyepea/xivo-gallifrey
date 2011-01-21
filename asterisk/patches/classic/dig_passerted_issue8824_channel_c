@@ -2,10 +2,10 @@
 add small patch to allow asterisk build (splitting original
 dig_passerted_issue8824)
 
-Index: asterisk-1.4.39/main/channel.c
+Index: asterisk-1.4.39.1/main/channel.c
 ===================================================================
---- asterisk-1.4.39.orig/main/channel.c	2011-01-18 16:40:04.113892937 +0100
-+++ asterisk-1.4.39/main/channel.c	2011-01-18 16:40:30.821394086 +0100
+--- asterisk-1.4.39.1.orig/main/channel.c	2011-01-21 17:13:08.000000000 +0100
++++ asterisk-1.4.39.1/main/channel.c	2011-01-21 17:16:20.000000000 +0100
 @@ -2756,6 +2756,7 @@
  	case AST_CONTROL_ANSWER:
  	case AST_CONTROL_HANGUP:

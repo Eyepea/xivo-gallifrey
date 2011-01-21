@@ -6,10 +6,10 @@
 
     Fix some callerid displaying during ATXFER.
 
-Index: asterisk-1.4.35/res/res_features.c
+Index: asterisk-1.4.39.1/res/res_features.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_features.c	2010-08-17 00:36:11.000000000 +0200
-+++ asterisk-1.4.35/res/res_features.c	2010-08-17 00:36:48.000000000 +0200
+--- asterisk-1.4.39.1.orig/res/res_features.c	2011-01-21 17:17:13.000000000 +0100
++++ asterisk-1.4.39.1/res/res_features.c	2011-01-21 17:17:18.000000000 +0100
 @@ -1030,6 +1030,7 @@
  			hangup_dont = 1;
  		}
@@ -18,7 +18,7 @@ Index: asterisk-1.4.35/res/res_features.c
  		if (hangup_dont) {
  			ast_set_flag(chan, AST_FLAG_BRIDGE_HANGUP_DONT);
  		}
-@@ -1150,9 +1151,24 @@
+@@ -1153,9 +1154,24 @@
  		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
  	}
  
@@ -43,7 +43,7 @@ Index: asterisk-1.4.35/res/res_features.c
  	return -1;	/* XXX meaning the channel is bridged ? */
  }
  
-@@ -1516,12 +1532,19 @@
+@@ -1519,12 +1535,19 @@
  	struct ast_channel *active_channel;
  	int res = 0, ready = 0;
  	
@@ -63,7 +63,7 @@ Index: asterisk-1.4.35/res/res_features.c
  		if (!ast_call(chan, data, timeout)) {
  			struct timeval started;
  			int x, len = 0;
-@@ -1670,6 +1693,9 @@
+@@ -1673,6 +1696,9 @@
  	if (outstate)
  		*outstate = state;
  

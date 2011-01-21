@@ -10,11 +10,11 @@
 	If both priexclusive and pripreferred are TRUE, the behavior will be the same
 	as if only priexclusive were TRUE.
 
-Index: asterisk-1.4.35/channels/chan_dahdi.c
+Index: asterisk-1.4.39.1/channels/chan_dahdi.c
 ===================================================================
---- asterisk-1.4.35.orig/channels/chan_dahdi.c	2010-08-16 08:48:20.000000000 -0400
-+++ asterisk-1.4.35/channels/chan_dahdi.c	2010-08-16 08:51:09.382283586 -0400
-@@ -598,6 +598,13 @@
+--- asterisk-1.4.39.1.orig/channels/chan_dahdi.c	2011-01-21 17:13:08.000000000 +0100
++++ asterisk-1.4.39.1/channels/chan_dahdi.c	2011-01-21 17:17:02.000000000 +0100
+@@ -601,6 +601,13 @@
  	 */
  	unsigned int priexclusive:1;
  	/*!
@@ -28,7 +28,7 @@ Index: asterisk-1.4.35/channels/chan_dahdi.c
  	 * \brief TRUE if we will pulse dial.
  	 * \note Set from the "pulsedial" value read in from chan_dahdi.conf
  	 */
-@@ -2476,7 +2483,11 @@
+@@ -2520,7 +2527,11 @@
  		p->digital = IS_DIGITAL(ast->transfercapability);
  
  		/* Should the picked channel be used exclusively? */
@@ -41,7 +41,7 @@ Index: asterisk-1.4.35/channels/chan_dahdi.c
  			exclusive = 1;
  		} else {
  			exclusive = 0;
-@@ -7973,6 +7984,7 @@
+@@ -8202,6 +8213,7 @@
  						tmp->call = NULL;
  
  						tmp->priexclusive = conf->chan.priexclusive;
@@ -49,7 +49,7 @@ Index: asterisk-1.4.35/channels/chan_dahdi.c
  					} else {
  						ast_log(LOG_ERROR, "Channel %d is reserved for D-channel.\n", offset);
  						destroy_dahdi_pvt(&tmp);
-@@ -11980,6 +11992,8 @@
+@@ -12226,6 +12238,8 @@
  						v->value, v->lineno);
  			} else if (!strcasecmp(v->name, "priexclusive")) {
  				confp->chan.priexclusive = ast_true(v->value);

@@ -1,9 +1,9 @@
 2011-01-18 <nhicher@proformatique.com>
 add small patch to allow asterisk build (splitting original dig_passerted_issue8824)
-Index: asterisk-1.4.39/apps/app_dial.c
+Index: asterisk-1.4.39.1/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.39.orig/apps/app_dial.c	2011-01-18 16:02:52.088391594 +0100
-+++ asterisk-1.4.39/apps/app_dial.c	2011-01-18 16:06:46.592898776 +0100
+--- asterisk-1.4.39.1.orig/apps/app_dial.c	2011-01-21 17:13:08.000000000 +0100
++++ asterisk-1.4.39.1/apps/app_dial.c	2011-01-21 17:16:10.000000000 +0100
 @@ -423,15 +423,20 @@
  	int orig = *to;
  	struct ast_channel *peer = NULL;
@@ -25,7 +25,7 @@ Index: asterisk-1.4.39/apps/app_dial.c
 +			ast_channel_make_compatible(outgoing->chan, in);
 +		}
 +
-+		if (!ast_test_flag(peerflags, OPT_IGNORE_CONNECTEDLINE) && !ast_test_flag(outgoing, DIAL_NOCONNECTEDLINE))
++		if (!ast_test_flag(peerflags, OPT_IGNORE_CONNECTEDLINE) && !ast_test_flag(outgoing, DIAL_NOCONNECTEDLINE)) {
 +			ast_connectedline_update(in, outgoing->chan->cid.cid_num, outgoing->chan->cid.cid_name, outgoing->chan->cid.cid_pres);
  			/* If these channels can not be made compatible, 
  			 * there is no point in continuing.  The bridge
