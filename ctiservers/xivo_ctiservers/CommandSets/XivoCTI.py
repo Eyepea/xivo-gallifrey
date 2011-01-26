@@ -73,7 +73,6 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.1'
 XIVOVERSION_NAME = 'gallifrey'
-REQUIRED_CLIENT_VERSION = 5680
 __revision__ = __version__.split()[1]
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
@@ -209,8 +208,6 @@ class XivoCTICommand(BaseCommand):
         self.parting_astid = False
         self.parting_context = False
 
-        self.required_client_version = REQUIRED_CLIENT_VERSION
-
         # new style
         self.sheetmanager = {}
 
@@ -341,7 +338,11 @@ class XivoCTICommand(BaseCommand):
             xivoversion = loginparams.get('xivoversion')
             if xivoversion != XIVOVERSION_NUM:
                 return 'xivoversion_client:%s;%s' % (xivoversion, XIVOVERSION_NUM)
-            svnversion = loginparams.get('version')
+            if 'git_hash' in loginparams and 'git_date' in loginparams:
+                rcsversion = '%s-%s' % (loginparams.get('git_date'), loginparams.get('git_hash'))
+            else:
+                rcsversion = loginparams.get('version')
+
             ident = loginparams.get('ident')
             if len(ident.split('@')) == 2:
                 [whoami, whatsmyos] = ident.split('@')
@@ -354,8 +355,6 @@ class XivoCTICommand(BaseCommand):
                 if whatsmyos.lower() not in ['x11', 'win', 'mac',
                                              'web', 'android', 'iphone']:
                     return 'wrong_client_os_identifier:%s' % whatsmyos
-            if (not svnversion.isdigit()) or int(svnversion) < self.required_client_version:
-                return 'version_client:%s;%d' % (svnversion, self.required_client_version)
 
             # user match
             userinfo = None
@@ -365,7 +364,7 @@ class XivoCTICommand(BaseCommand):
             if userinfo == None:
                 return 'user_not_found'
             userinfo['prelogin'] = {'cticlientos' : whatsmyos,
-                                    'version' : svnversion,
+                                    'version' : rcsversion,
                                     'sessionid' : ''.join(random.sample(__alphanums__, 10))}
 
         elif phase == xivo_commandsets.CMD_LOGIN_PASS:
@@ -764,8 +763,6 @@ class XivoCTICommand(BaseCommand):
             if len(vv) > 1:
                 self.display_hints[v] = { 'longname' : vv[0],
                                           'color' : vv[1] }
-        if 'required_client_version' in xivocticonf:
-            self.required_client_version = int(xivocticonf['required_client_version'])
         return
 
     def set_configs(self, configs):
