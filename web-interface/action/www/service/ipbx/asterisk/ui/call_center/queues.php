@@ -18,17 +18,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-if(defined('XIVO_LOC_UI_ACL_CATEGORY') === true
-&& defined('XIVO_LOC_UI_ACL_SUBCATEGORY') === true)
-{
-	$access_category = XIVO_LOC_UI_ACL_CATEGORY;
-	$access_subcategory = XIVO_LOC_UI_ACL_SUBCATEGORY;
-}
-else
-{
-	$access_category = 'call_center';
-	$access_subcategory = 'queues';
-}
+$access_category = 'call_center';
+$access_subcategory = 'queues';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
