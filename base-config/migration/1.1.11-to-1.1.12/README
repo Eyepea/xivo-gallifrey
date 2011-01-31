@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.11 to 1.1.12 =
+ 
+* ticket #1680: add *features* missing fields (one of whom is *atxfernoanswertimeout*)
