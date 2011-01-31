@@ -190,7 +190,6 @@ Use ADSI announces:
 ; fm_generalfeatures_transferdigittimeout
 Dial timeout on transfer:
 
-; fm_generalfeatures_xferfailsound
 
 ; fm_generalfeatures_transferdigittimeout-opt1
 1 second
@@ -343,4 +342,31 @@ phone initialization :
 
 ; fm_extenfeatures_enable-enablevmbox
 Enable voicemail:
+
+; fm_generalfeatures_atxfernoanswertimeout
+Attended transfert no-answer timeout:
+
+; fm_generalfeatures_parkedcalltransfers
+Allow DTMF based transfer on parked call:
+
+; fm_generalfeatures_parkedcallreparking
+Allow DTMF based reparking on parked call:
+
+; fm_generalfeatures_parkedcallhangup
+Allow DTMF based hangup on parked call:
+
+; fm_generalfeatures_parkedcallrecording
+Allow DTMF based recording on parked call:
+
+; fm_generalfeatures_parkedcall-opt(callee)
+Callee only
+
+; fm_generalfeatures_parkedcall-opt(caller)
+Caller only
+
+; fm_generalfeatures_parkedcall-opt(both)
+Both
+
+; fm_generalfeatures_parkedcall-opt(no)
+None
 

@@ -468,7 +468,21 @@ if(isset($error_js[0]) === true)
 				    'empty'	=> $this->bbf('fm_generalfeatures_xferfailsound-opt','default'),
 				    'default'	=> $element['generalfeatures']['xferfailsound']['default'],
 				    'selected'	=> $this->get_var('generalfeatures','xferfailsound','var_val')),
-			      $sound_list);
+			      $sound_list),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_atxfernoanswertimeout'),
+				    'name'	=> 'generalfeatures[atxfernoanswertimeout]',
+				    'labelid'	=> 'generalfeatures-atxfernoanswertimeout',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_generalfeatures_parkingtime-opt',
+				    'bbfopt'	=> array('argmode'	=> 'paramvalue',
+							 'time'		=> array(
+									'from'		=> 'second',
+									'format'	=> '%M%s')),
+				    'selected'	=> $this->get_var('generalfeatures','atxfernoanswertimeout','var_val'),
+				    'default'	=> $element['generalfeatures']['atxfernoanswertimeout']['default']),
+			      $element['generalfeatures']['atxfernoanswertimeout']['value']);
+
 ?>
 	</div>
 
@@ -1100,7 +1114,43 @@ if(isset($error_js[0]) === true)
 				      'name'	=> 'generalfeatures[adsipark]',
 				      'labelid'	=> 'generalfeatures-adsipark',
 				      'checked'	=> $this->get_var('generalfeatures','adsipark','var_val'),
-				      'default'	=> $element['generalfeatures']['adsipark']['default']));
+				      'default'	=> $element['generalfeatures']['adsipark']['default'])),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_parkedcalltransfers'),
+				    'name'	=> 'generalfeatures[parkedcalltransfers]',
+				    'labelid'	=> 'generalfeatures-parkedcalltransfers',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_generalfeatures_parkedcall-opt',
+				    'selected'	=> $this->get_var('generalfeatures','parkedcalltransfers','var_val'),
+				    'default'	=> $element['generalfeatures']['parkedcalltransfers']['default']),
+			      $element['generalfeatures']['parkedcalltransfers']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_parkedcallreparking'),
+				    'name'	=> 'generalfeatures[parkedcallreparking]',
+				    'labelid'	=> 'generalfeatures-parkedcallreparking',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_generalfeatures_parkedcall-opt',
+				    'selected'	=> $this->get_var('generalfeatures','parkedcallreparking','var_val'),
+				    'default'	=> $element['generalfeatures']['parkedcallreparking']['default']),
+			      $element['generalfeatures']['parkedcallreparking']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_parkedcallhangup'),
+				    'name'	=> 'generalfeatures[parkedcallhangup]',
+				    'labelid'	=> 'generalfeatures-parkedcallhangup',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_generalfeatures_parkedcall-opt',
+				    'selected'	=> $this->get_var('generalfeatures','parkedcallhangup','var_val'),
+				    'default'	=> $element['generalfeatures']['parkedcallhangup']['default']),
+			      $element['generalfeatures']['parkedcallhangup']['value']),
+
+		$form->select(array('desc'	=> $this->bbf('fm_generalfeatures_parkedcallrecording'),
+				    'name'	=> 'generalfeatures[parkedcallrecording]',
+				    'labelid'	=> 'generalfeatures-parkedcallrecording',
+				    'key'	=> false,
+				    'bbf'	=> 'fm_generalfeatures_parkedcall-opt',
+				    'selected'	=> $this->get_var('generalfeatures','parkedcallrecording','var_val'),
+				    'default'	=> $element['generalfeatures']['parkedcallrecording']['default']),
+			      $element['generalfeatures']['parkedcallrecording']['value']);
 ?>
 	</div>
 
@@ -1161,6 +1211,7 @@ if(isset($error_js[0]) === true)
 				    'default'	=> $element['generalfeatures']['courtesytone']['default'],
 				    'selected'	=> $this->get_var('generalfeatures','courtesytone','var_val')),
 			      $sound_list);
+
 ?>
 	</div>
 	<?=$form->submit(array('name'	=> 'submit',

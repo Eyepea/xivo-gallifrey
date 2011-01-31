@@ -240,3 +240,31 @@ Défaut
 
 ; fm_success-save
 Extensions sauvegardées avec succès
+
+; fm_generalfeatures_atxfernoanswertimeout
+Délai de non-réponse pour un transfert indirect : 
+
+; fm_generalfeatures_parkedcalltransfers
+Autoriser le transfert via DTMF sur un appel parké : 
+
+; fm_generalfeatures_parkedcallreparking
+Autoriser le re-parking via DTMF sur un appel parké :
+
+; fm_generalfeatures_parkedcallhangup
+Autoriser le raccroché via DTMF sur un appel parké : 
+
+; fm_generalfeatures_parkedcallrecording
+Autoriser l'enregistrement via DTMF sur un appel parké : 
+
+; fm_generalfeatures_parkedcall-opt(callee)
+Pour l'appelé
+
+; fm_generalfeatures_parkedcall-opt(caller)
+Pour l'appelant
+
+; fm_generalfeatures_parkedcall-opt(both)
+Pour les deux
+
+; fm_generalfeatures_parkedcall-opt(no)
+Non
+

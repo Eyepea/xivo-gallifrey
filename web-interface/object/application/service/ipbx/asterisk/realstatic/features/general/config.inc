@@ -80,6 +80,30 @@ $array['element']['xferfailsound']['null'] = true;
 $array['element']['pickupexten'] = array();
 $array['element']['pickupexten']['default'] = '*8';
 
+$array['element']['parkedcalltransfers'] = array();
+$array['element']['parkedcalltransfers']['value']   = array('callee','caller','both','no');
+$array['element']['parkedcalltransfers']['default'] = 'both';
+$array['element']['parkedcalltransfers']['null']    = true;
+
+$array['element']['parkedcallreparking'] = array();
+$array['element']['parkedcallreparking']['value']   = array('callee','caller','both','no');
+$array['element']['parkedcallreparking']['default'] = 'no';
+$array['element']['parkedcallreparking']['null']    = true;
+
+$array['element']['parkedcallhangup'] = array();
+$array['element']['parkedcallhangup']['value']   = array('callee','caller','both','no');
+$array['element']['parkedcallhangup']['default'] = 'no';
+$array['element']['parkedcallhangup']['null']    = true;
+
+$array['element']['parkedcallrecording'] = array();
+$array['element']['parkedcallrecording']['value']   = array('callee','caller','both','no');
+$array['element']['parkedcallrecording']['default'] = 'no';
+$array['element']['parkedcallrecording']['null']    = true;
+
+$array['element']['atxfernoanswertimeout'] = array();
+$array['element']['atxfernoanswertimeout']['value'] = range(5,600,5);
+$array['element']['atxfernoanswertimeout']['default'] = 15;
+
 
 $array['filter'] = array();
 $array['filter']['parkext'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
@@ -97,5 +121,11 @@ $array['filter']['courtesytone'] = array('set' => false,'chk' => 2,'maxlen' => 2
 $array['filter']['xfersound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['xferfailsound'] = array('set' => false,'chk' => 2,'maxlen' => 255,'cast' => 'sgraph');
 $array['filter']['pickupexten'] = array('regexp' => '/^[0-9\*#]+$/','minlen' => 1,'maxlen' => 40);
+
+$array['filter']['parkedcalltransfers'] = array('key' => array('callee','caller','both','no'));
+$array['filter']['parkedcallreparking'] = array('key' => array('callee','caller','both','no'));
+$array['filter']['parkedcallhangup'] = array('key' => array('callee','caller','both','no'));
+$array['filter']['parkedcallrecording'] = array('key' => array('callee','caller','both','no'));
+$array['filter']['atxfernoanswertimeout'] = array('cast' => 'uint','between' => array(5,600,5));
 
 ?>
