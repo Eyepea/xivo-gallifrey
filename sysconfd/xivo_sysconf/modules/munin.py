@@ -41,7 +41,7 @@ class Munin(object):
             name='munin_update')
             
         self.cmd1 = ['/usr/sbin/update-pf-stats-munin']
-        self.cmd2 = ['/usr/bin/munin-cron', '--force-root']
+        self.cmd2 = ['/usr/sbin/sudo','-u','munin','/usr/bin/munin-cron']
         
     def safe_init(self, options):
         pass
