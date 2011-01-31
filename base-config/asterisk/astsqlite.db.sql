@@ -632,6 +632,11 @@ INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','courtesytone'
 INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','xfersound',NULL);
 INSERT INTO features VALUES (NULL,0,0,1,'features.conf','general','xferfailsound',NULL);
 INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','pickupexten','*8');
+INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkedcalltransfers','both');
+INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkedcallreparking','no');
+INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkedcallhangup','no');
+INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','parkedcallrecording','no');
+INSERT INTO features VALUES (NULL,0,0,0,'features.conf','general','atxfernoanswertimeout',30);
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','blindxfer','*1');
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','atxfer','*2');
 INSERT INTO features VALUES (NULL,1,0,0,'features.conf','featuremap','automon','*3');
