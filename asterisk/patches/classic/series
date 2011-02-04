@@ -57,3 +57,4 @@ pf_skill_queues
 pf_queue_penalty_rules
 pf_file_copy_keeps_modes
 pf_manager_rename
+pf_manager_inherit.patch
