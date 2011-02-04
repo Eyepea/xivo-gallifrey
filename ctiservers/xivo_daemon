@@ -685,6 +685,7 @@ class manage_connection:
         'Masquerade':           'ami_masquerade',               # (1.6 backported) for indirect transfers & intercepts
         'Hangup':               'ami_hangup',
         'HangupRequest':        'ami_hanguprequest',            # (xivo) to know who 'ordered' the hangup
+        'Inherit':              'ami_inherit',                  # (xivo) to track Local/ channels
         'Join':                 'ami_join',
         'Leave':                'ami_leave',
         'DTMF':                 'ami_dtmf',                     # (1.6 backported)

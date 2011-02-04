@@ -2173,6 +2173,15 @@ class XivoCTICommand(BaseCommand):
         log.info('%s ami_bridge : %s' % (astid, event))
         return
 
+    def ami_inherit(self, astid, event):
+        log.info('%s ami_inherit : %s' % (astid, event))
+        parentchannel = event.get('Parent')
+        childchannel = event.get('Child')
+        if childchannel.startswith('Local/') and childchannel.endswith(',1'):
+            uniqueid = self.channels[astid].get(parentchannel)
+            self.uniqueids[astid][uniqueid]['transfercancel'] = childchannel
+        return
+
     def ami_masquerade(self, astid, event):
         originalstate = event.get('OriginalState')
         clonestate = event.get('CloneState')
@@ -6048,6 +6057,17 @@ class XivoCTICommand(BaseCommand):
                                                    'hangup',
                                                    channelid.get('channel'))
 
+            elif actionname == 'transfercancel':
+                channelids = self.__mergelist__(userinfo, args.get('channelids').split(','))
+                for channelid in channelids:
+                    if channelid.get('channel'):
+                        castid = channelid.get('astid')
+                        uniqueid = self.channels[castid].get(channelid.get('channel'))
+                        hchannel = self.uniqueids[castid][uniqueid].get('transfercancel')
+                        if hchannel:
+                            ret = self.__ami_execute__(castid,
+                                                       'hangup',
+                                                       hchannel)
             else:
                 log.warning('__ipbxaction__ unknown command %s' % actionname)
 
