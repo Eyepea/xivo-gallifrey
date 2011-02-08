@@ -1,0 +1,14 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_actions.c	2011-02-08 16:12:48.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c	2011-02-08 16:13:39.000000000 +0100
+@@ -1034,8 +1034,8 @@
+ 					sccp_dev_set_activeline(d, l);
+ 					sccp_dev_set_cplane(l, instance, d, 1);
+ 				}
++				sccp_channel_unlock(holdChannel);
+ 			}
+-			sccp_channel_unlock(holdChannel);
+ 		}
+ 		break;
+ 
