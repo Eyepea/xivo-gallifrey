@@ -1,0 +1,63 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## mysql_res_charset.dpatch by Proformatique
+##
+## DP: New option to specify MySQL charset.
+
+@DPATCH@
+--- a/res/res_config_mysql.c	2008-02-13 23:58:11.000000000 +0100
++++ b/res/res_config_mysql.c	2009-03-30 17:12:18.000000000 +0200
+@@ -68,6 +68,7 @@
+ static char   dbpass[50];
+ static char   dbname[50];
+ static char   dbsock[50];
++static char   dbcharset[50];
+ static int    dbport;
+ static int    comment_support;
+ static int    connected;
+@@ -584,6 +585,13 @@
+ 			dbport = atoi(s);
+                 }
+ 
++		if(!(s=ast_variable_retrieve(config, "general", "dbcharset")) || ast_strlen_zero(s)) {
++			ast_log(LOG_WARNING, "MySQL RealTime: No database charset found, using default charset.\n");
++			dbcharset[0] = '\0';
++		} else {
++			strncpy(dbcharset, s, sizeof(dbcharset) - 1);
++		}
++
+ 		if(dbhost && !(s=ast_variable_retrieve(config, "general", "dbsock"))) {
+                         ast_log(LOG_WARNING, "MySQL RealTime: No database socket found, using '/tmp/mysql.sock' as default.\n");
+                         strncpy(dbsock, "/tmp/mysql.sock", sizeof(dbsock) - 1);
+@@ -605,6 +613,11 @@
+ 	} else {
+ 		ast_log(LOG_DEBUG, "MySQL RealTime Socket: %s\n", dbsock);
+ 	}
++
++	if(dbcharset[0]) {
++		ast_log(LOG_DEBUG, "MySQL RealTime Charset: %s\n", dbcharset);
++	}
++
+ 	ast_log(LOG_DEBUG, "MySQL RealTime User: %s\n", dbuser);
+ 	ast_log(LOG_DEBUG, "MySQL RealTime Password: %s\n", dbpass);
+ 
+@@ -614,6 +627,7 @@
+ static int mysql_reconnect(const char *database)
+ {
+ 	char my_database[50];
++	char sqlquery[128];
+ #ifdef MYSQL_OPT_RECONNECT
+ 	my_bool trueval = 1;
+ #endif
+@@ -641,6 +655,12 @@
+ 			ast_log(LOG_DEBUG, "MySQL RealTime: Successfully connected to database.\n");
+ 			connected = 1;
+ 			connect_time = time(NULL);
++
++			if (dbcharset[0]) {
++				snprintf(sqlquery, sizeof(sqlquery), "SET NAMES '%s'", dbcharset);
++				mysql_real_query(&mysql, sqlquery, strlen(sqlquery));
++				ast_log(LOG_DEBUG, "MySQL RealTime: SQL command as follows: %s\n", sqlquery);
++			}
+ 			return 1;
+ 		} else {
+ 			ast_log(LOG_ERROR, "MySQL RealTime: Failed to connect database server %s on %s (err %d). Check debug for more info.\n", dbname, dbhost, mysql_errno(&mysql));

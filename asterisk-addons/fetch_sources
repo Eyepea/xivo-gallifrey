@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. ./sources.pkg
+
+##########################################################################
+
+UPVERSION=$(cat SOURCE-VERSION)
+FILENAME="${PKG_NAME}.orig.tar.gz"
+
+mkdir -p ${DEST_PATH}
+UPFILENAME="${PKG_NAME}_${UPVERSION}.orig.tar.gz"
+URL="${BASE_URL}/${PKG_NAME}-${UPVERSION}.tar.gz"
+
+if [ -e "${DEST_PATH}/${UPFILENAME}" ]; then
+	echo "A tarball already exist for this version ; remove it if you want to regenerate."
+	exit 0
+fi
+
+echo "Downloading ${UPFILENAME} from ${URL}"
+wget -nv -T10 -t3 -O ${DEST_PATH}/${UPFILENAME} ${URL}
+if [ $? != 0 ]; then
+	rm -f ${DEST_PATH}/${UPFILENAME}
+	echo "Could not find tarball."
+	exit 2
+fi
+
+echo "Done !"
+

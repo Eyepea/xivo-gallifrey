@@ -1,0 +1,106 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## mysql_cdr_charset.dpatch by sergee (http://bugs.digium.com/view.php?id=13775)
+## Backported from the 1.6 by Proformatique
+##
+## DP: New option to specify MySQL charset in CDR.
+
+@DPATCH@
+--- a/cdr/cdr_addon_mysql.c	2008-02-13 23:58:11.000000000 +0100
++++ b/cdr/cdr_addon_mysql.c	2009-03-27 19:13:18.000000000 +0100
+@@ -53,8 +53,8 @@
+ static char *desc = "MySQL CDR Backend";
+ static char *name = "mysql";
+ static char *config = "cdr_mysql.conf";
+-static char *hostname = NULL, *dbname = NULL, *dbuser = NULL, *password = NULL, *dbsock = NULL, *dbtable = NULL;
+-static int hostname_alloc = 0, dbname_alloc = 0, dbuser_alloc = 0, password_alloc = 0, dbsock_alloc = 0, dbtable_alloc = 0;
++static char *hostname = NULL, *dbname = NULL, *dbuser = NULL, *password = NULL, *dbsock = NULL, *dbtable = NULL, *dbcharset = NULL;
++static int hostname_alloc = 0, dbname_alloc = 0, dbuser_alloc = 0, password_alloc = 0, dbsock_alloc = 0, dbtable_alloc = 0, dbcharset_alloc = 0;
+ static int dbport = 0;
+ static int connected = 0;
+ static time_t connect_time = 0;
+@@ -120,7 +120,7 @@
+ 	struct timeval tv;
+ 	struct ast_module_user *u;
+ 	char *userfielddata = NULL;
+-	char sqlcmd[2048], timestr[128];
++	char sqlcmd[2048], timestr[128], sqlquery[128];
+ 	char *clid=NULL, *dcontext=NULL, *channel=NULL, *dstchannel=NULL, *lastapp=NULL, *lastdata=NULL, *src=NULL, *dst=NULL, *accountcode=NULL;
+ 	int retries = 5;
+ #ifdef MYSQL_LOGUNIQUEID
+@@ -155,6 +155,11 @@
+ 			connected = 1;
+ 			connect_time = time(NULL);
+ 			records = 0;
++			if (dbcharset) {
++				snprintf(sqlquery, sizeof(sqlquery), "SET NAMES '%s'", dbcharset);
++				mysql_real_query(&mysql, sqlquery, strlen(sqlquery));
++				ast_log(LOG_DEBUG, "cdr_mysql: SQL command as follows: %s\n", sqlquery);
++			}
+ 		} else {
+ 			ast_log(LOG_ERROR, "cdr_mysql: cannot connect to database server %s.\n", hostname);
+ 			connected = 0;
+@@ -296,6 +301,11 @@
+ 		password = NULL;
+ 		password_alloc = 0;
+ 	}
++	if (dbcharset && dbcharset_alloc) {
++		free(dbcharset);
++		dbcharset = NULL;
++		dbcharset_alloc = 0;
++	}
+ 	dbport = 0;
+ 	ast_cdr_unregister(name);
+ 	return 0;
+@@ -307,6 +317,7 @@
+ 	struct ast_config *cfg;
+ 	struct ast_variable *var;
+ 	const char *tmp;
++	char sqlquery[128];
+ #if MYSQL_VERSION_ID >= 50013
+ 	my_bool my_bool_true = 1;
+ #endif
+@@ -436,7 +447,22 @@
+ 			userfield = 0;
+ 		}
+ 	}
+-	
++
++	tmp = ast_variable_retrieve(cfg, "global", "charset");
++	if (tmp) {
++		dbcharset = malloc(strlen(tmp) + 1);
++		if (dbcharset != NULL) {
++			dbcharset_alloc = 1;
++			strcpy(dbcharset, tmp);
++		} else {
++			ast_log(LOG_ERROR, "Out of memory error.\n");
++			return -1;
++		}
++	} else {
++		ast_log(LOG_WARNING, "MySQL database charset file not specified. Using default\n");
++		dbcharset = NULL;
++	}
++
+ 	ast_config_destroy(cfg);
+ 
+ 	if (option_debug) {
+@@ -448,6 +474,8 @@
+ 		ast_log(LOG_DEBUG, "cdr_mysql: got user of %s\n", dbuser);
+ 		ast_log(LOG_DEBUG, "cdr_mysql: got dbname of %s\n", dbname);
+ 		ast_log(LOG_DEBUG, "cdr_mysql: got password of %s\n", password);
++		if (dbcharset)
++			ast_log(LOG_DEBUG, "cdr_mysql: got charset of %s\n", dbcharset);
+ 	}
+ 	
+ 	mysql_init(&mysql);
+@@ -473,6 +501,11 @@
+ 		connected = 1;
+ 		records = 0;
+ 		connect_time = time(NULL);
++		if (dbcharset) {
++			snprintf(sqlquery, sizeof(sqlquery), "SET NAMES '%s'", dbcharset);
++			mysql_real_query(&mysql, sqlquery, strlen(sqlquery));
++			ast_log(LOG_DEBUG, "cdr_mysql: SQL command as follows: %s\n", sqlquery);
++		}
+ 	}
+ 
+ 	res = ast_cdr_register(name, desc, mysql_log);

@@ -1,0 +1,6 @@
+DEST_PATH=tarballs
+BASE_URL="http://downloads.asterisk.org/pub/telephony/asterisk/"
+TARBALL_PREFIX="asterisk-addons-"
+SRC_DIR_PREFIX="asterisk-addons-"
+PKG_NAME="asterisk-addons"
+DFSG_EXCLUDE_PATTERNS=

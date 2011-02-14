@@ -1,0 +1,111 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## include_asterisk.dpatch by Tzafrir Cohen <tzafrir.cohen@xorcom.com>
+##
+## DP: Our asterisk-dev package puts asterisk.h in the asterisk/ include
+## DP: dir. It seems that the files here expect to find it directly under
+## DP: /usr/include . (and no: trying -I/usr/include/asterisk fails ).
+
+@DPATCH@
+--- a/apps/app_addon_sql_mysql.c
++++ b/apps/app_addon_sql_mysql.c
+@@ -12,7 +12,7 @@
+  * the GNU General Public License
+  */
+ 
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ 
+ #include <stdlib.h>
+ #include <unistd.h>
+--- a/apps/app_saycountpl.c
++++ b/apps/app_saycountpl.c
+@@ -7,7 +7,7 @@
+  *
+  */
+ 
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ #include <stdio.h>
+ #include <asterisk/file.h>
+ #include <asterisk/logger.h>
+--- a/channels/chan_ooh323.h
++++ b/channels/chan_ooh323.h
+@@ -16,7 +16,7 @@
+ #ifndef _OO_CHAN_H323_H_
+ #define _OO_CHAN_H323_H_
+ 
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ #undef PACKAGE_NAME
+ #undef PACKAGE_TARNAME
+ #undef PACKAGE_VERSION
+--- a/cdr/cdr_addon_mysql.c
++++ b/cdr/cdr_addon_mysql.c
+@@ -19,7 +19,7 @@
+  *
+  */
+ 
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ 
+ #include <sys/types.h>
+ #include <asterisk/config.h>
+--- a/configure
++++ b/configure
+@@ -6324,7 +6324,7 @@
+ echo $ECHO_N "checking for asterisk.h... $ECHO_C" >&6; }
+    saved_cppflags="${CPPFLAGS}"
+    if test "x${ASTERISK_DIR}" != "x"; then
+-      CPPFLAGS="${CPPFLAGS} -I${ASTERISK_DIR}/include"
++      CPPFLAGS="${CPPFLAGS} -I${ASTERISK_DIR}/include/asterisk"
+    fi
+    cat >conftest.$ac_ext <<_ACEOF
+ 
+@@ -6333,7 +6333,7 @@
+ cat confdefs.h >>conftest.$ac_ext
+ cat >>conftest.$ac_ext <<_ACEOF
+ /* end confdefs.h.  */
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ int
+ main ()
+ {
+--- a/configure.ac
++++ b/configure.ac
+@@ -214,12 +214,12 @@
+    AC_MSG_CHECKING(for asterisk.h)
+    saved_cppflags="${CPPFLAGS}"
+    if test "x${ASTERISK_DIR}" != "x"; then
+-      CPPFLAGS="${CPPFLAGS} -I${ASTERISK_DIR}/include"
++      CPPFLAGS="${CPPFLAGS} -I${ASTERISK_DIR}/include/asterisk"
+    fi
+    AC_COMPILE_IFELSE(
+ 	[
+ 	AC_LANG_PROGRAM(
+-	[#include <asterisk.h>],
++	[#include <asterisk/asterisk.h>],
+ 	[])
+ 	],
+ 	[	AC_MSG_RESULT(yes) 
+--- a/formats/format_mp3.c
++++ b/formats/format_mp3.c
+@@ -15,7 +15,7 @@
+  * the GNU General Public License
+  */
+ 
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ 
+ #include "mpg123.h" 
+ #include "mpglib.h" 
+--- a/res/res_config_mysql.c
++++ b/res/res_config_mysql.c
+@@ -38,7 +38,7 @@
+  *                       Code beautification (doc/CODING-GUIDELINES)
+  */
+ 
+-#include <asterisk.h>
++#include <asterisk/asterisk.h>
+ 
+ #include <asterisk/channel.h>
+ #include <asterisk/logger.h>
