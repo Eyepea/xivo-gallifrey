@@ -4,9 +4,11 @@
 ## DP: Use -O2 instead of -O6
 
 @DPATCH@
---- a/formats/mp3/Makefile
-+++ b/formats/mp3/Makefile
-@@ -8,12 +8,6 @@
+Index: asterisk-addons-1.4.13/formats/mp3/Makefile
+===================================================================
+--- asterisk-addons-1.4.13.orig/formats/mp3/Makefile	2011-02-15 13:29:01.000000000 +0100
++++ asterisk-addons-1.4.13/formats/mp3/Makefile	2011-02-15 13:29:04.000000000 +0100
+@@ -7,12 +7,6 @@
  
  ifeq (${OSARCH},Linux)
  PROC=$(shell uname -m)
@@ -19,7 +21,7 @@
  ifeq ($(PROC),sparc64)
  #The problem with sparc is the best stuff is in newer versions of gcc (post 3.0) only.
  #This works for even old (2.96) versions of gcc and provides a small boost either way.
-@@ -55,7 +49,7 @@
+@@ -54,7 +48,7 @@
  endif
  
  #Tell gcc to optimize the asterisk's code

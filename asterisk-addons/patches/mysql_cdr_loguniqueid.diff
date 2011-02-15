@@ -1,0 +1,18 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## mysql_cdr_loguniqueid.dpatch by Waycom
+##
+## DP: enable MYSQL_LOGUNIQUEID
+
+Index: asterisk-addons-1.4.13/Makefile
+===================================================================
+--- asterisk-addons-1.4.13.orig/Makefile	2011-02-15 13:28:55.000000000 +0100
++++ asterisk-addons-1.4.13/Makefile	2011-02-15 13:29:15.000000000 +0100
+@@ -27,7 +27,7 @@
+ # Overwite config files on "make samples"
+ OVERWRITE:=y
+ 
+-ASTCFLAGS+=-fPIC
++ASTCFLAGS+=-fPIC -DMYSQL_LOGUNIQUEID
+ 
+ #NOISY_BUILD=yes
+ 

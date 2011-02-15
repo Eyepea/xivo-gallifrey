@@ -6,19 +6,23 @@
 ## DP: /usr/include . (and no: trying -I/usr/include/asterisk fails ).
 
 @DPATCH@
---- a/apps/app_addon_sql_mysql.c
-+++ b/apps/app_addon_sql_mysql.c
-@@ -12,7 +12,7 @@
-  * the GNU General Public License
-  */
+Index: asterisk-addons-1.4.13/apps/app_addon_sql_mysql.c
+===================================================================
+--- asterisk-addons-1.4.13.orig/apps/app_addon_sql_mysql.c	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/apps/app_addon_sql_mysql.c	2011-02-15 13:29:08.000000000 +0100
+@@ -16,7 +16,7 @@
+ 	<depend>mysqlclient</depend>
+  ***/
  
 -#include <asterisk.h>
 +#include <asterisk/asterisk.h>
  
  #include <stdlib.h>
  #include <unistd.h>
---- a/apps/app_saycountpl.c
-+++ b/apps/app_saycountpl.c
+Index: asterisk-addons-1.4.13/apps/app_saycountpl.c
+===================================================================
+--- asterisk-addons-1.4.13.orig/apps/app_saycountpl.c	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/apps/app_saycountpl.c	2011-02-15 13:29:08.000000000 +0100
 @@ -7,7 +7,7 @@
   *
   */
@@ -28,8 +32,10 @@
  #include <stdio.h>
  #include <asterisk/file.h>
  #include <asterisk/logger.h>
---- a/channels/chan_ooh323.h
-+++ b/channels/chan_ooh323.h
+Index: asterisk-addons-1.4.13/channels/chan_ooh323.h
+===================================================================
+--- asterisk-addons-1.4.13.orig/channels/chan_ooh323.h	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/channels/chan_ooh323.h	2011-02-15 13:29:08.000000000 +0100
 @@ -16,7 +16,7 @@
  #ifndef _OO_CHAN_H323_H_
  #define _OO_CHAN_H323_H_
@@ -39,21 +45,25 @@
  #undef PACKAGE_NAME
  #undef PACKAGE_TARNAME
  #undef PACKAGE_VERSION
---- a/cdr/cdr_addon_mysql.c
-+++ b/cdr/cdr_addon_mysql.c
-@@ -19,7 +19,7 @@
-  *
-  */
+Index: asterisk-addons-1.4.13/cdr/cdr_addon_mysql.c
+===================================================================
+--- asterisk-addons-1.4.13.orig/cdr/cdr_addon_mysql.c	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/cdr/cdr_addon_mysql.c	2011-02-15 13:29:08.000000000 +0100
+@@ -23,7 +23,7 @@
+ 	<depend>mysqlclient</depend>
+  ***/
  
 -#include <asterisk.h>
 +#include <asterisk/asterisk.h>
  
  #include <sys/types.h>
  #include <asterisk/config.h>
---- a/configure
-+++ b/configure
-@@ -6324,7 +6324,7 @@
- echo $ECHO_N "checking for asterisk.h... $ECHO_C" >&6; }
+Index: asterisk-addons-1.4.13/configure
+===================================================================
+--- asterisk-addons-1.4.13.orig/configure	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/configure	2011-02-15 13:29:08.000000000 +0100
+@@ -7424,7 +7424,7 @@
+ $as_echo_n "checking for asterisk.h... " >&6; }
     saved_cppflags="${CPPFLAGS}"
     if test "x${ASTERISK_DIR}" != "x"; then
 -      CPPFLAGS="${CPPFLAGS} -I${ASTERISK_DIR}/include"
@@ -61,7 +71,7 @@
     fi
     cat >conftest.$ac_ext <<_ACEOF
  
-@@ -6333,7 +6333,7 @@
+@@ -7433,7 +7433,7 @@
  cat confdefs.h >>conftest.$ac_ext
  cat >>conftest.$ac_ext <<_ACEOF
  /* end confdefs.h.  */
@@ -70,9 +80,11 @@
  int
  main ()
  {
---- a/configure.ac
-+++ b/configure.ac
-@@ -214,12 +214,12 @@
+Index: asterisk-addons-1.4.13/configure.ac
+===================================================================
+--- asterisk-addons-1.4.13.orig/configure.ac	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/configure.ac	2011-02-15 13:29:08.000000000 +0100
+@@ -216,12 +216,12 @@
     AC_MSG_CHECKING(for asterisk.h)
     saved_cppflags="${CPPFLAGS}"
     if test "x${ASTERISK_DIR}" != "x"; then
@@ -87,8 +99,10 @@
  	[])
  	],
  	[	AC_MSG_RESULT(yes) 
---- a/formats/format_mp3.c
-+++ b/formats/format_mp3.c
+Index: asterisk-addons-1.4.13/formats/format_mp3.c
+===================================================================
+--- asterisk-addons-1.4.13.orig/formats/format_mp3.c	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/formats/format_mp3.c	2011-02-15 13:29:08.000000000 +0100
 @@ -15,7 +15,7 @@
   * the GNU General Public License
   */
@@ -96,13 +110,15 @@
 -#include <asterisk.h>
 +#include <asterisk/asterisk.h>
  
- #include "mpg123.h" 
- #include "mpglib.h" 
---- a/res/res_config_mysql.c
-+++ b/res/res_config_mysql.c
-@@ -38,7 +38,7 @@
-  *                       Code beautification (doc/CODING-GUIDELINES)
-  */
+ #include "mp3/mpg123.h" 
+ #include "mp3/mpglib.h" 
+Index: asterisk-addons-1.4.13/res/res_config_mysql.c
+===================================================================
+--- asterisk-addons-1.4.13.orig/res/res_config_mysql.c	2011-02-15 13:29:00.000000000 +0100
++++ asterisk-addons-1.4.13/res/res_config_mysql.c	2011-02-15 13:29:08.000000000 +0100
+@@ -42,7 +42,7 @@
+ 	<depend>mysqlclient</depend>
+  ***/
  
 -#include <asterisk.h>
 +#include <asterisk/asterisk.h>

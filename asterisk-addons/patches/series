@@ -1,5 +1,4 @@
 nomarch.diff
 include_asterisk.diff
 comment_support.diff
-mysql_cdr_charset.diff
-mysql_res_charset.diff
+mysql_cdr_loguniqueid.diff

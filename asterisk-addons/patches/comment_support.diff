@@ -4,17 +4,19 @@
 ## DP: add support for "commented" lines in tables
 
 @DPATCH@
---- a/res/res_config_mysql.c	2008-12-11 17:55:16.000000000 +0100
-+++ b/res/res_config_mysql.c	2008-12-11 17:56:54.000000000 +0100
-@@ -69,6 +69,7 @@
- static char   dbname[50];
+Index: asterisk-addons-1.4.13/res/res_config_mysql.c
+===================================================================
+--- asterisk-addons-1.4.13.orig/res/res_config_mysql.c	2011-02-15 13:29:08.000000000 +0100
++++ asterisk-addons-1.4.13/res/res_config_mysql.c	2011-02-15 13:29:11.000000000 +0100
+@@ -70,6 +70,7 @@
  static char   dbsock[50];
+ static char   dbcharset[50];
  static int    dbport;
 +static int    comment_support;
  static int    connected;
  static time_t connect_time;
  
-@@ -126,7 +127,12 @@
+@@ -127,7 +128,12 @@
  	if ((valsz = strlen (newval)) * 2 + 1 > sizeof(buf))
  		valsz = (sizeof(buf) - 1) / 2;
  	mysql_real_escape_string(&mysql, buf, newval, valsz);
@@ -28,7 +30,7 @@
  	while((newparam = va_arg(ap, const char *))) {
  		newval = va_arg(ap, const char *);
  		if(!strchr(newparam, ' ')) op = " ="; else op = "";
-@@ -241,7 +247,12 @@
+@@ -242,7 +248,12 @@
  	if ((valsz = strlen (newval)) * 2 + 1 > sizeof(buf))
  		valsz = (sizeof(buf) - 1) / 2;
  	mysql_real_escape_string(&mysql, buf, newval, valsz);
@@ -42,16 +44,16 @@
  	while((newparam = va_arg(ap, const char *))) {
  		newval = va_arg(ap, const char *);
  		if(!strchr(newparam, ' ')) op = " ="; else op = "";
-@@ -579,6 +590,12 @@
-                 } else {
+@@ -581,6 +592,12 @@
                          strncpy(dbsock, s, sizeof(dbsock) - 1);
                  }
-+
+ 
 +		if(!(s=ast_variable_retrieve(config, "general", "comment_support"))) {
 +			comment_support = 0;
 +		} else {
 +			comment_support = ast_true(s);
 +		}
- 	}
- 	ast_config_destroy(config);
- 
++
+ 		if (s = ast_variable_retrieve(config, "general", "dbcharset")) {
+ 			ast_copy_string(dbcharset, s, sizeof(dbcharset));
+ 		}
