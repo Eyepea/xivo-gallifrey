@@ -1,0 +1,32 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.c	2011-02-25 15:15:59.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c	2011-02-25 15:16:25.000000000 +0100
+@@ -1589,12 +1589,14 @@
+ 			sccp_log((DEBUGCAT_CORE | DEBUGCAT_CHANNEL | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_3 "%s: Sending force hangup request to %s\n", DEV_ID_LOG(c->device), c->owner->name);
+ 			ast_hangup(c->owner);
+ 		} else {
++			sccp_channel_unlock(c);
+ 			if (res) {
+ 				c->owner->_softhangup |= AST_SOFTHANGUP_DEV;
+ 				ast_queue_hangup(c->owner);
+ 			} else {
+ 				ast_hangup(c->owner);
+ 			}
++			sccp_channel_lock(c);
+ 		}
+ 	} else {
+ 		sccp_log((DEBUGCAT_CHANNEL | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_1 "%s: No Asterisk channel to hangup for sccp channel %d on line %s\n", DEV_ID_LOG(c->device), c->callid, c->line->name);
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_pbx.c	2011-02-25 15:15:56.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c	2011-02-25 15:16:41.000000000 +0100
+@@ -481,7 +481,7 @@
+ 
+ 	sccp_channel_clean_locked(c);
+ 
+-	if (sccp_sched_add(sched, 0, sccp_channel_destroy_callback, c) < 0) {
++	if (sccp_sched_add(sched, 10, sccp_channel_destroy_callback, c) < 0) {
+ 		sccp_log((DEBUGCAT_CORE)) (VERBOSE_PREFIX_1 "SCCP: Unable to schedule destroy of channel %08X\n", c->callid);
+ 	}
+ 
