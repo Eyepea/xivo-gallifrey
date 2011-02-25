@@ -16,7 +16,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
 
 $access_category = 'call_center';
 $access_subcategory = 'queues';
@@ -47,6 +46,6 @@ switch($act)
 }
 
 $_TPL->set_var('act',$act);
-$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_center/generic');
+$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/pbx_settings/generic');
 
 ?>
