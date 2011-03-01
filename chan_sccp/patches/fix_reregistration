@@ -1,0 +1,67 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2011-03-01 17:20:48.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-03-01 17:23:11.000000000 +0100
+@@ -125,7 +125,7 @@
+ 
+ 	// fire event to set device unregistered
+ 
+-	if (s->device) {
++	if (s->device && s->device->session == s) {
+ 		sccp_event_t *event = ast_malloc(sizeof(sccp_event_t));
+ 		memset(event, 0, sizeof(sccp_event_t));
+ 		event->type = SCCP_EVENT_DEVICEUNREGISTERED;
+@@ -226,7 +226,7 @@
+ 			destroy_session(s, 5);
+ 		}
+ 	}
+-	s->session_thread = AST_PTHREADT_NULL;
++	sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "Session %d: Terminated.\n", s->fds[0].fd);
+ 
+ 	// Called with &GLOB(sessions) locked
+ 	sccp_device_t *d;
+@@ -240,18 +240,23 @@
+ 
+ 	d = s->device;
+ 
+-	if (d && (d->session == s)) {
++	if (d) {
++		sccp_device_lock(d);
++		if (d->session == s) {
+ #if ASTERISK_VERSION_NUM < 10400
+-		sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Killing Session %s\n", DEV_ID_LOG(d), ast_inet_ntoa(iabuf, sizeof(iabuf), s->sin.sin_addr));
++			sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Killing Session %s\n", DEV_ID_LOG(d), ast_inet_ntoa(iabuf, sizeof(iabuf), s->sin.sin_addr));
+ #else
+-		sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Killing Session %s\n", DEV_ID_LOG(d), ast_inet_ntoa(s->sin.sin_addr));
++			sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Killing Session %s\n", DEV_ID_LOG(d), ast_inet_ntoa(s->sin.sin_addr));
+ #endif
+-		sccp_device_lock(d);
+-		d->session = NULL;
+-		d->registrationState = SKINNY_DEVICE_RS_NONE;
+-		d->needcheckringback = 0;
+-		sccp_device_unlock(d);
+-		sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay);
++			sccp_device_lock(d);
++			d->session = NULL;
++			d->registrationState = SKINNY_DEVICE_RS_NONE;
++			d->needcheckringback = 0;
++			sccp_device_unlock(d);
++			sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay);
++		}
++		else
++			sccp_device_unlock(d);
+ 	}
+ 
+ 	/* closing fd's */
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_actions.c	2011-03-01 17:20:46.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c	2011-03-01 17:24:07.000000000 +0100
+@@ -177,6 +177,7 @@
+ 			sccp_session_close(d->session);
+ 			sccp_log(1) (VERBOSE_PREFIX_3 "Previous Session for %s Closed!\n", d->id);
+ 			destroy_session(d->session, destroy_timeout);
++			pthread_join(d->session->session_thread, NULL);
+ 			if (isRealtime) {
+ 				// wait for destroy_session to finish
+ 				usleep(destroy_timeout * 1100);			// destroy_timeout + 10%

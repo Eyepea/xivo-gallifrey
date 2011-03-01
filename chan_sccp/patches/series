@@ -2,3 +2,4 @@ fix_callerid
 fix_originate
 fix_mutexcrash
 fix_hangup_deadlock
+fix_reregistration
