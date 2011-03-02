@@ -881,13 +881,13 @@ sha1sum: 66be3d5003f56d94ce4ea809929d91777873d6a1
 [zenitel_ipst]
 brand: Zenitel
 model: SIP Vandal Resistant Substation
-version: 01.10.3.4
-files: A100G80200.01_10_3_4.zip
+version: 01.11.3.2
+files: A100G80200.01_11_3_2.zip
 
-[A100G80200.01_10_3_4.zip]
-url: https://alphasupport.zenitel.com/alphawiki/downloads/A100G80200.01_10_3_4.zip
-size: 5003951
-sha1sum: 304c2037491f9ab2c75a89ad0791460cfd08a0d4
+[A100G80200.01_11_3_2.zip]
+url: https://alphasupport.zenitel.com/alphawiki/downloads/A100G80200.01_11_3_2.zip
+size: 5101240
+sha1sum: 5f4ebbe32e2c11e6d3dd17bbe737d7d5ec3645e5
 
 ###
 ### Cards Firmwares starting from here ###
@@ -1069,6 +1069,6 @@ version: 3.5.15
 files: wanpipe-3.5.15.tgz
 
 [wanpipe-3.5.15.tgz]
-url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.15.tgz
-size: 13925835
-sha1sum: 1641d54ad0ac955e23a9f4965c07868fba7b865f
+url: ftp://ftp.sangoma.com/linux/current_wanpipe/wanpipe-3.5.18.tgz
+size: 15957879
+sha1sum: d6fd4c98bac0ea5718066cfed80367ca0cc5e02a

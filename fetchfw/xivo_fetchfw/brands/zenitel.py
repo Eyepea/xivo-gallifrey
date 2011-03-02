@@ -23,7 +23,7 @@ from xivo_fetchfw import fetchfw
 def zenitel_install(firmware):
     fw_dst_dir = os.path.join(fetchfw.TFTP_PATH)
     fetchfw.makedirs(fw_dst_dir)
-    fetchfw.zip_extract_files(firmware.remote_files[0].path, ('A100G80200.01_10_3_4.bin',), fw_dst_dir)
+    fetchfw.zip_extract_files(firmware.remote_files[0].path, ('A100G80200.01_11_3_2.bin',), fw_dst_dir)
 
 
 fetchfw.register_install_fn('Zenitel', None, zenitel_install)
