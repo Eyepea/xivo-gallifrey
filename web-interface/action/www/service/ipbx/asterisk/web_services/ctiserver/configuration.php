@@ -336,17 +336,6 @@ switch($act)
 			foreach($load_profiles as $pf)
 			{
 				$pfid = $pf['name'];
-				$prefs = array();
-				$prefout = array();
-
-				$prefs = explode(',', $pf['preferences']);
-				$pattern = '/^(.*)\((.*)\)/';
-				foreach($prefs as $p)
-				{
-					$match = array();
-					preg_match($pattern, $p, $match);
-					$prefout[$match[1]] = $match[2];
-				}
 				$out['xivocti']['profiles'][$pfid] = array(
 					'xlets' => dwho_json::decode($pf['xlets'], true),
 					'funcs' => explode(',', $pf['funcs']),
@@ -354,7 +343,7 @@ switch($act)
 					'appliname' => $pf['appliname'],
 					'presence' => "presences.".$pf['presence'],
 					'services' => explode(',', $pf['services']),
-					'preferences' => $prefout
+					'preferences' => strlen($pf['preferences']) == 0?null:dwho_json::decode($pf['preferences'])
 				);
 			}
 		}

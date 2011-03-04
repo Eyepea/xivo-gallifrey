@@ -161,13 +161,11 @@ switch($act)
 
 			if(array_key_exists('preferencesargs', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['preferencesargs'] as $k => $v)
-				{
-					$pref = $_QR['preferenceslist'][$k];
-					$arr[] = $pref.'('.$v.')';
-				}
-				$_QR['profiles']['preferences'] = implode(',', $arr);
+				$pres = array();
+				for($i = 0; $i < count($_QR['preferenceslist'])-1; $i++)
+				{ $pres[$_QR['preferenceslist'][$i]] = $_QR['preferencesargs'][$i]; }
+
+				$_QR['profiles']['preferences'] = dwho_json::encode($pres);
 			}
 			else
 				$_QR['profiles']['preferences'] = '';
@@ -270,15 +268,15 @@ switch($act)
 			}
 			else
 				$_QR['profiles']['funcs'] = '';
+
+
 			if(array_key_exists('preferencesargs', $_QR))
 			{
-				$arr = array();
-				foreach($_QR['preferencesargs'] as $k => $v)
-				{
-					$pref = $_QR['preferenceslist'][$k];
-					$arr[] = $pref.'('.$v.')';
-				}
-				$_QR['profiles']['preferences'] = implode(',', $arr);
+				$pres = array();
+				for($i = 0; $i < count($_QR['preferenceslist'])-1; $i++)
+				{ $pres[$_QR['preferenceslist'][$i]] = $_QR['preferencesargs'][$i]; }
+
+				$_QR['profiles']['preferences'] = dwho_json::encode($pres);
 			}
 			else
 				$_QR['profiles']['preferences'] = '';
@@ -335,7 +333,7 @@ switch($act)
 		
 		if(isset($info['ctiprofiles']['preferences']) && dwho_has_len($info['ctiprofiles']['preferences']))
 		{
-			$info['preferences']['slt'] = explode(',', $info['ctiprofiles']['preferences']);
+			$info['preferences']['slt'] = dwho_json::decode($info['ctiprofiles']['preferences'], true);
 		}
 
 		$info['xlets']['list']['xlets'] = $xletsavail;
