@@ -81,7 +81,8 @@ class CommonConf(jsoncore.JsonCore):
     def apply(self, args, options):
         ret = -1
         try:
-            p = subprocess.Popen([self.cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p = subprocess.Popen([self.cmd], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                 close_fds=True)
             ret = p.wait()
             output = p.stdout.read()
             self.log.debug("commonconf apply: %d" % ret)
@@ -90,7 +91,8 @@ class CommonConf(jsoncore.JsonCore):
                 raise HttpReqError(500, output)
 
             # monit configuration also need to be updated (if emails changed)
-            p = subprocess.Popen([self.monit], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            p = subprocess.Popen([self.monit], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                 close_fds=True)
             ret = p.wait()
             output += '\n' + p.stdout.read()
             self.log.debug("monit apply: %d" % ret)
