@@ -1,7 +1,7 @@
 Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2011-03-01 17:20:48.000000000 +0100
-+++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-03-01 17:23:11.000000000 +0100
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2010-12-01 16:07:10.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-03-07 15:11:13.000000000 +0100
 @@ -125,7 +125,7 @@
  
  	// fire event to set device unregistered
@@ -20,7 +20,7 @@ Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
  
  	// Called with &GLOB(sessions) locked
  	sccp_device_t *d;
-@@ -240,18 +240,23 @@
+@@ -240,18 +240,22 @@
  
  	d = s->device;
  
@@ -41,7 +41,6 @@ Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
 -		d->needcheckringback = 0;
 -		sccp_device_unlock(d);
 -		sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay);
-+			sccp_device_lock(d);
 +			d->session = NULL;
 +			d->registrationState = SKINNY_DEVICE_RS_NONE;
 +			d->needcheckringback = 0;
@@ -55,8 +54,8 @@ Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
  	/* closing fd's */
 Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c
 ===================================================================
---- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_actions.c	2011-03-01 17:20:46.000000000 +0100
-+++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c	2011-03-01 17:24:07.000000000 +0100
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_actions.c	2011-03-07 15:10:53.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c	2011-03-07 15:10:53.000000000 +0100
 @@ -177,6 +177,7 @@
  			sccp_session_close(d->session);
  			sccp_log(1) (VERBOSE_PREFIX_3 "Previous Session for %s Closed!\n", d->id);
