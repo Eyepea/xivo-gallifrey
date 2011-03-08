@@ -173,29 +173,29 @@ class Aastra(PhoneVendorMixin):
         
     @classmethod
     def __get_keytype_from_model_and_keynum(cls, model, keynum):
-        if model in ("6730i", "6731i"):
+        if model in ["6730i", "6731i"]:
             if keynum <= 8:
                 return "prgkey%d" % keynum
-        elif model in ("6739i"):
+        elif model == "6739i":
             if keynum <= 55:
                 return "softkey%d" % keynum
             else:
                 return cls.__format_expmod(keynum - 55)
-        elif model in ("6753i"):
+        elif model == "6753i":
             if keynum <= 6:
                 return "prgkey%d" % keynum
             else:
                 return cls.__format_expmod(keynum - 6)
-        elif model in ("6755i"):
+        elif model == "6755i":
             if keynum <= 6:
                 return "prgkey%d" % keynum
             else:
                 keynum -= 6
-                if keynum <= 6:
+                if keynum <= 20:
                     return "softkey%d" % keynum
                 else:
-                    return cls.__format_expmod(keynum - 6)
-        elif model in ("6757i"):
+                    return cls.__format_expmod(keynum - 20)
+        elif model == "6757i":
             # The 57i has 6 'top keys' and 6 'bottom keys'. 10 functions are programmable for
             # the top keys and 20 are for the bottom keys.
             if keynum <= 10:
