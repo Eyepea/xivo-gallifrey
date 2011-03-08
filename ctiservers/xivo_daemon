@@ -348,10 +348,10 @@ class manage_connection:
                                 dumpami = ([], [])
                         else:
                             connid.sendall('dumpami status : enable (%s) disable (%s)\n'
-                                           % (''.join(dumpami[0]), ''.join(dumpami[1])))
+                                           % (','.join(dumpami[0]), ','.join(dumpami[1])))
                     else:
                         connid.sendall('dumpami status : enable (%s) disable (%s)\n'
-                                       % (''.join(dumpami[0]), ''.join(dumpami[1])))
+                                       % (','.join(dumpami[0]), ','.join(dumpami[1])))
                 elif usefulmsg.startswith('loglevel '):
                     command_args = usefulmsg.split()
                     if len(command_args) > 2:
@@ -1228,10 +1228,11 @@ class xivo_daemon:
             self.fdlist_full = list()
             self.fdlist_full.append(self.pipe_queued_threads_commandclass[0])
             self.fdlist_full.append(self.pipe_queued_threads_main[0])
+            # put AMI fd's before FAGI ones in order to be properly synced
+            self.fdlist_full.extend(self.amilist.fdlist())
             self.fdlist_full.extend(self.fdlist_listen_cti.keys())
             self.fdlist_full.extend(self.fdlist_udp_cti.keys())
             self.fdlist_full.extend(self.fdlist_established.keys())
-            self.fdlist_full.extend(self.amilist.fdlist())
             if self.outsock is not None:
                 self.fdlist_full.append(self.outsock)
             writefds = []
