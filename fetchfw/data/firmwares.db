@@ -22,17 +22,17 @@ url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6731i_FC-0012
 size: 1806903
 sha1sum: d6ff43f0d4c44457b520edbd2c01f7fb9c53e173
 
-# Aastra 6739i 3.0.1
-[aa6739i_301]
+# Aastra 6739i
+[aa6739i_320]
 brand: Aastra
 model: 6739i
-version: 3.0.1.2031
-files: LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip 6739i_FC-001274-00_REV05_6739i_3_0_1_2031_11_2010.zip
+version: 3.2.0.70
+files: LangPacks_PA-001006-07_REV00_lp_3_2_0_02_2011.zip 6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip
 
-[6739i_FC-001274-00_REV05_6739i_3_0_1_2031_11_2010.zip]
-url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6739i_FC-001274-00_REV05_6739i_3_0_1_2031_11_2010.zip
-size: 4497974
-sha1sum: 6c0e485966794c6a490841cad11e124ed20db7ae
+[6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip]
+url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip
+size: 4364467
+sha1sum: ebcebf569d69be92cebcfe4dad3a0be2bcd8d2ff
 
 # Aastra 6751i 2.6.0
 [aa6751i_260]
@@ -88,10 +88,10 @@ url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/LangPacks_PA-
 size: 145824
 sha1sum: 859de6f9b34ae3eb0addd18175af3ec9cef735d4
 
-[LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip]
-url: http://www.aastra.ca/cps/rde/xbcr/SID-505BB951-378AC9F6/en-ca/LangPacksPA-001006-04_REV00_lp_3.0.1.38_1002.zip
-size: 138130
-sha1sum: fd79b1909b41254b864e4f993675a81d87209288
+[LangPacks_PA-001006-07_REV00_lp_3_2_0_02_2011.zip]
+url: http://www.aastra.ca/cps/rde/xbcr/SID-94D8B181-20D6BE51/en-ca/LangPacks_PA-001006-07_REV00_lp_3_2_0_02_2011.zip
+size: 211751
+sha1sum: 02d3954b601f66a5b844c3be072023221114570f
 
 # Cisco 7975G SCCP 9.0.3
 [cisco7975_sccp_903]
