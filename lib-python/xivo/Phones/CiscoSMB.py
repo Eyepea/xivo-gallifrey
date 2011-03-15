@@ -170,7 +170,8 @@ class CiscoSMB(PhoneVendorMixin):
             timezone = ''
             
         if self.PROXY_BACKUP:
-            backup_proxy = 'xivo_proxies:SRV=%s:5060:p=0|%s:5060:p=1' % (self.PROXY_MAIN, self.PROXY_BACKUP)
+            backup_proxy = '<Proxy_1_>xivo_proxies:SRV=%s:5060:p=0|%s:5060:p=1</Proxy_1_>' % \
+                           (self.PROXY_MAIN, self.PROXY_BACKUP)
         else:
             backup_proxy = ''
         
