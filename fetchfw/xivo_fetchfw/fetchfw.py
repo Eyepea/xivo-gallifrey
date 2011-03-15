@@ -227,6 +227,17 @@ class CiscoRemoteFile(RemoteFile):
         
         if 'login' in line.lower():
             raise InvalidCiscoCredentialsError()
+        
+        # Do GET request that sets more cookies and stuff. This is not done
+        # automatically because:
+        # - we don't support javascript
+        # - we don't understand the HTML <meta http⁻equiv"refresh"> tag neither
+        # This is extremely flimsy, but since we have no control on how cisco
+        # handle the whole login process, this is as good as it can get.
+        f = op.open('https://fedps.cisco.com/idp/startSSO.ping?PartnerSpId=https://fedam.cisco.com&IdpAdapterId=fedsmidpCCO&TargetResource=http%3A//www.cisco.com/cgi-bin/login%3Freferer%3Dhttp%3A//www.cisco.com/')
+        f.read()
+        f.close()
+        
         print "Logged in."
         
     def open_src(self):
