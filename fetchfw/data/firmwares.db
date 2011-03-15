@@ -324,92 +324,92 @@ url: http://download-sj.cisco.com/swc/esd/03/268437897/contract/po-locale-combin
 size: 9351296
 sha1sum: f08e688de664d7e6d4fb19377cc057e5fc251d1d
 
-# CiscoSMB SPA 525G 7.4.4
-[ciscospa525_744]
+# CiscoSMB SPA 525G
+[ciscospa525_748]
 brand: CiscoSMB
 model: SPA525
-version: 7.4.4
-files: spa525g-7-4-4.zip
+version: 7.4.8
+files: spa525g-7-4-8.zip
 
-[spa525g-7-4-4.zip]
-url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282414147/guest/spa525g-7-4-4.zip
-size: 10562212
-sha1sum: fd89788a118aa132c9d721d7c969c696fb62f0df
+[spa525g-7-4-8.zip]
+url: http://download.cisco.com/swc/esd/04/282414147/anon/spa525g-7-4-8.zip
+size: 10078621
+sha1sum: 47d9f36e8375af17806f94a88cc9a580671978b7
 
-# CiscoSMB SPA 509G 7.4.4
-[ciscospa509_744]
+# CiscoSMB SPA 509G
+[ciscospa509_748]
 brand: CiscoSMB
 model: SPA509
-version: 7.4.4
-files: spa5x5-7-4-4.zip
+version: 7.4.8
+files: spa50x-30x-7-4-8.zip
 
-# CiscoSMB SPA 508G 7.4.4
-[ciscospa508_744]
+# CiscoSMB SPA 508G
+[ciscospa508_748]
 brand: CiscoSMB
 model: SPA508
-version: 7.4.4
-files: spa5x5-7-4-4.zip
+version: 7.4.8
+files: spa50x-30x-7-4-8.zip
 
-# CiscoSMB SPA 504G 7.4.4
-[ciscospa504_744]
+# CiscoSMB SPA 504G
+[ciscospa504_748]
 brand: CiscoSMB
 model: SPA504
-version: 7.4.4
-files: spa5x5-7-4-4.zip
+version: 7.4.8
+files: spa50x-30x-7-4-8.zip
 
-# CiscoSMB SPA 502G 7.4.4
-[ciscospa502_744]
+# CiscoSMB SPA 502G
+[ciscospa502_748]
 brand: CiscoSMB
 model: SPA502
-version: 7.4.4
-files: spa5x5-7-4-4.zip
+version: 7.4.8
+files: spa50x-30x-7-4-8.zip
 
-# CiscoSMB SPA 501G 7.4.4
-[ciscospa501_744]
+# CiscoSMB SPA 501G
+[ciscospa501_748]
 brand: CiscoSMB
 model: SPA501
-version: 7.4.4
-files: spa5x5-7-4-4.zip
+version: 7.4.8
+files: spa50x-30x-7-4-8.zip
 
-[spa5x5-7-4-4.zip]
-url: http://download-sj.cisco.com/swc/esd/03/crypto/3DES/282724524/guest/spa5x5-7-4-4.zip
-size: 7607391
-sha1sum: 2e4173d847170837011cb58b6107ad765041bc5d
+[spa50x-30x-7-4-8.zip]
+url: http://download.cisco.com/swc/esd/04/282724524/anon/spa50x-30x-7-4-8.zip
+size: 11970690
+sha1sum: 9c070ba6d0d031bf74afa3829f4d073d455c04b6
 
 [ciscospa5xx_locale_de]
 brand: CiscoSMB
 model: 5xx de
 version: 7.4.5
-files: spa525_v745.zip spa50x_30x_v745.zip
+files: spa525_v746.zip spa50x_30x_v746.zip
 
 # Locales for CiscoSMB SPA5xx phones 7.4.X
 [ciscospa5xx_locale_fr]
 brand: CiscoSMB
 model: 5xx fr
-version: 7.4.5
-files: spa525_v745.zip spa50x_30x_v745.zip
+version: 7.4.6
+files: spa525_v746.zip spa50x_30x_v746.zip
 
 [ciscospa5xx_locale_en]
 brand: CiscoSMB
 model: 5xx en
-version: 7.4.5
-files: spa525_v745.zip spa50x_30x_v745.zip
+version: 7.4.6
+files: spa525_v746.zip spa50x_30x_v746.zip
 
 [ciscospa5xx_locale_es]
 brand: CiscoSMB
 model: 5xx es
-version: 7.4.5
-files: spa525_v745.zip spa50x_30x_v745.zip
+version: 7.4.6
+files: spa525_v746.zip spa50x_30x_v746.zip
 
-[spa525_v745.zip]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-1-67251/spa525_v745.zip
-size: 120137
-sha1sum: c57412fb760767c20103d8a5a093d0f00817c660
+[spa525_v746.zip]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11462-3-71742/spa525_v746.zip
+size: 223906
+sha1sum: 0b442d71304599d69774607b6462acde0a4b1cc8
 
-[spa50x_30x_v745.zip]
-url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-2-67252/spa50x_30x_v745.zip
-size: 69437
-sha1sum: fecbded0ba1a187d325eb44db8a69bd32a47849d
+[spa50x_30x_v746.zip]
+url: https://supportforums.cisco.com/servlet/JiveServlet/download/11463-8-71741/spa50x_30x_v746.zip
+size: 127995
+sha1sum: e681bd835d154cf849ea21468a00a88996a7c0fe
 
 # Linksys SPA962 6.1.5a
 [lsspa962_615a]

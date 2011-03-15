@@ -201,8 +201,6 @@ class CiscoSMB(PhoneVendorMixin):
         lines = []
         hours, minutes = inform['utcoffset'].as_hms[:2]
         lines.append('<Time_Zone ua="rw">GMT%+03d:%02d</Time_Zone>' % (hours, minutes))
-        # We need to substract 1 from the computed hour (bug in the SPA firmware?)
-        lines.append('<Time_Offset__HH_mm_ ua="rw">%d/%d</Time_Offset__HH_mm_>' % (hours - 1, minutes))
         if inform['dst'] is None:
             lines.append('<Daylight_Saving_Time_Enable ua="rw">no</Daylight_Saving_Time_Enable>')
         else:

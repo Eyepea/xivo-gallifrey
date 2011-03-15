@@ -519,7 +519,7 @@ def load():
         files = config.get(fw_name, 'files').split()
         remote_files = []
         
-        if brand in ('Cisco', 'CiscoSMB'):
+        if brand == 'Cisco':
             remote_file_class = CiscoRemoteFile
         else:
             remote_file_class = RemoteFile
