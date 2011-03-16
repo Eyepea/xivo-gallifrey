@@ -13,7 +13,7 @@ Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c
  			} else {
  				ast_hangup(c->owner);
  			}
-+			sccp_channel_lock(c);
++			//sccp_channel_lock(c);
  		}
  	} else {
  		sccp_log((DEBUGCAT_CHANNEL | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_1 "%s: No Asterisk channel to hangup for sccp channel %d on line %s\n", DEV_ID_LOG(c->device), c->callid, c->line->name);
