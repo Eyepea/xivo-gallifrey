@@ -732,6 +732,8 @@ class XivoCTICommand(BaseCommand):
             if name not in self.capas:
                 self.capas[name] = cti_capas.Capabilities(allowedxlets)
             for prop, value in val.iteritems():
+                if value is None:
+                    continue
                 if prop == 'xlets':
                     self.capas[name].setxlets(value)
                 elif prop == 'funcs':
