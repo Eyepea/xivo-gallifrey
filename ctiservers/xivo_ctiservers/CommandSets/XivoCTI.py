@@ -2616,7 +2616,8 @@ class XivoCTICommand(BaseCommand):
             services_actions_list = ['enablevoicemail', 'callrecord', 'incallfilter', 'enablednd',
                                      'enableunc', 'enablebusy', 'enablerna']
             queues_actions_list = ['queueadd', 'queueremove', 'queuepause', 'queueunpause',
-                                   'queuepause_all', 'queueunpause_all']
+                                   'queuepause_all', 'queueunpause_all',
+                                   'agentlogin', 'agentlogout']
             for actionname, paction in presenceactions.iteritems():
                 if actionname and paction:
                     params = paction.split('|')
@@ -2642,6 +2643,10 @@ class XivoCTICommand(BaseCommand):
                                 for qname, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
                                     if qv.get('Paused') == '1':
                                         self.__ami_execute__(astid, 'queuepause', qname, agent_channel, 'false')
+                            elif actionname == 'agentlogin':
+                                self.__login_agent__(astid, agent_id)
+                            elif actionname == 'agentlogout':
+                                self.__logout_agent__(astid, agent_id)
                     # services-related actions
                     elif actionname in services_actions_list and len(params) > 0:
                         if params[0] == 'false':
@@ -3035,7 +3040,7 @@ class XivoCTICommand(BaseCommand):
         # 'Exten', 'Context', 'Channel', 'CallerID', 'CallerIDNum', 'CallerIDName'
         if uniqueid in self.uniqueids[astid]:
             self.uniqueids[astid][uniqueid].update({'time-originateresponse' : time.time(),
-                'actionid' : actionid})
+                                                    'actionid' : actionid})
             if actionid in self.origapplication[astid]:
                 self.uniqueids[astid][uniqueid].update(self.origapplication[astid][actionid])
 

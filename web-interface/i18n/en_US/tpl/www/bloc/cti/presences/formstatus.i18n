@@ -55,10 +55,10 @@ All Queues pause
 ; action-queueunpause_all
 All Queues unpause
 
-; action-loginagent
+; action-agentlogin
 Login Agent
 
-; action-logoutagent
+; action-agentlogout
 Logout Agent
 
 ; action-enablevoicemail
@@ -71,14 +71,14 @@ Record calls
 Filter incoming calls
 
 ; action-enablednd
-Activate DND mode
+Enable DND mode
 
 ; action-enableunc
-Activate unconditional transfer
+Enable unconditional forward
 
 ; action-enablebusy
-Activate transfer on busy
+Enable forward on busy
 
 ; action-enablerna
-Activate transfer on non-answer
+Enable forward on non-answer
 

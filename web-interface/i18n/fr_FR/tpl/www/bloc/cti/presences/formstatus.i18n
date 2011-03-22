@@ -46,10 +46,10 @@ Mettre en pause (toutes les files d'attente)
 ; action-queueunpause_all
 Sortir de pause (toutes les files d'attente)
 
-; action-loginagent
+; action-agentlogin
 Login de l'agent
 
-; action-logoutagent
+; action-agentlogout
 Logout de l'agent
 
 ; action-enablevoicemail
@@ -65,11 +65,11 @@ Filtrer les appels entrants
 Activer le mode NPD
 
 ; action-enableunc
-Activer le transfert inconditionnel
+Activer le renvoi inconditionnel
 
 ; action-enablebusy
-Activer le transfert sur occupation
+Activer le renvoi sur occupation
 
 ; action-enablerna
-Activer le transfert sur non réponse
+Activer le renvoi sur non réponse
 
