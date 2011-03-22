@@ -40,6 +40,18 @@ Mettre en pause (file d'attente)
 ; action-queueunpause
 Sortir de pause (file d'attente)
 
+; action-queuepause_all
+Mettre en pause (toutes les files d'attente)
+
+; action-queueunpause_all
+Sortir de pause (toutes les files d'attente)
+
+; action-loginagent
+Login de l'agent
+
+; action-logoutagent
+Logout de l'agent
+
 ; action-enablevoicemail
 Activer la messagerie vocale
 

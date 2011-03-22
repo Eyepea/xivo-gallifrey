@@ -49,6 +49,18 @@ Queue pause
 ; action-queueunpause
 Queue unpause
 
+; action-queuepause_all
+All Queues pause
+
+; action-queueunpause_all
+All Queues unpause
+
+; action-loginagent
+Login Agent
+
+; action-logoutagent
+Logout Agent
+
 ; action-enablevoicemail
 Activate voicemail
 
