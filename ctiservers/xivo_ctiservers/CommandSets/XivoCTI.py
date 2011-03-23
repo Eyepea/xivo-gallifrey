@@ -745,7 +745,11 @@ class XivoCTICommand(BaseCommand):
                 elif prop == 'services':
                     self.capas[name].setservices(value)
                 elif prop == 'preferences':
-                    self.capas[name].setguisettings(value)
+                    if isinstance(value, dict):
+                        self.capas[name].setguisettings(value)
+                    else:
+                        log.warning('value in preferences is not a dict for profile %s : %s'
+                                    % (name, value))
                 elif prop == 'presence':
                     self.capas[name].setpresenceid(value)
                     if value in self.presence_sections:
