@@ -3,3 +3,4 @@ fix_originate
 fix_mutexcrash
 fix_hangup_deadlock
 fix_reregistration
+fix_config_update_deadlock

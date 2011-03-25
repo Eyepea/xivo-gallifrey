@@ -1,0 +1,221 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_device.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_device.c	2010-11-22 14:09:55.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_device.c	2011-03-25 11:25:43.000000000 +0100
+@@ -12,8 +12,8 @@
+  *   		Relationships: 	SCCP Device -> SCCP DeviceLine -> SCCP Line
+  *   			 	SCCP Line -> SCCP ButtonConfig -> SCCP Device
+  *
+- * \date        $Date: 2010-11-22 14:09:55 +0100 (Mon, 22 Nov 2010) $
+- * \version     $Revision: 2176 $
++ * \date        $Date$
++ * \version     $Revision$
+  */
+ 
+ #include "config.h"
+@@ -23,7 +23,7 @@
+ #endif
+ #include "chan_sccp.h"
+ 
+-SCCP_FILE_VERSION(__FILE__, "$Revision: 2176 $")
++SCCP_FILE_VERSION(__FILE__, "$Revision$")
+ #include "sccp_lock.h"
+ #include "sccp_utils.h"
+ #include "sccp_device.h"
+@@ -103,7 +103,7 @@
+  * 	  - see sccp_session_close()
+  * 	  - device->buttonconfig
+  */
+-boolean_t sccp_device_check_update(sccp_device_t * d)
++boolean_t sccp_device_check_update(sccp_device_t * d, boolean_t devices_locked)
+ {
+ 	if (!d->pendingUpdate && !d->pendingDelete)
+ 		return FALSE;
+@@ -123,7 +123,7 @@
+ 	if (d->pendingDelete) {
+ 		sccp_log((DEBUGCAT_NEWCODE | DEBUGCAT_CHANNEL)) (VERBOSE_PREFIX_3 "%s: Remove Device from List\n", d->id);
+ 		sccp_device_unlock(d);
+-		sccp_dev_clean(d, TRUE, 0);
++		sccp_dev_clean(d, TRUE, 0, devices_locked);
+ 	} else {
+ 		sccp_buttonconfig_t *buttonconfig;
+ 
+@@ -163,7 +163,7 @@
+ {
+ 	sccp_device_t *d;
+ 
+-	SCCP_RWLIST_RDLOCK(&GLOB(devices));
++	SCCP_RWLIST_WRLOCK(&GLOB(devices));
+ 	SCCP_RWLIST_TRAVERSE(&GLOB(devices), d, list) {
+ 		if (!d->pendingDelete && !d->pendingUpdate)
+ 			continue;
+@@ -171,7 +171,7 @@
+ 		/* Because of the previous check, the only reason that the device hasn't
+ 		 * been updated will be because it is currently engaged in a call.
+ 		 */
+-		if (!sccp_device_check_update(d))
++		if (!sccp_device_check_update(d, TRUE))
+ 			sccp_log(DEBUGCAT_NEWCODE) (VERBOSE_PREFIX_3 "Device %s will receive reset after current call is completed\n", d->id);
+ 	}
+ 	SCCP_RWLIST_UNLOCK(&GLOB(devices));
+@@ -1579,7 +1579,7 @@
+  * 	  - device->session
+  * 	  - device->devstateSpecifiers
+  */
+-void sccp_dev_clean(sccp_device_t * d, boolean_t remove_from_global, uint8_t cleanupTime)
++void sccp_dev_clean(sccp_device_t * d, boolean_t remove_from_global, uint8_t cleanupTime, boolean_t devices_locked)
+ {
+ 	sccp_buttonconfig_t *config = NULL;
+ 	sccp_selectedchannel_t *selectedChannel = NULL;
+@@ -1596,9 +1596,11 @@
+ 	sccp_log((DEBUGCAT_CORE | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_1 "SCCP: Clean Device %s\n", d->id);
+ 
+ 	if (remove_from_global) {
+-		SCCP_RWLIST_WRLOCK(&GLOB(devices));
++		if (!devices_locked)
++			SCCP_RWLIST_WRLOCK(&GLOB(devices));
+ 		SCCP_RWLIST_REMOVE(&GLOB(devices), d, list);
+-		SCCP_RWLIST_UNLOCK(&GLOB(devices));
++		if (!devices_locked)
++			SCCP_RWLIST_UNLOCK(&GLOB(devices));
+ 	}
+ 
+ 	sccp_device_lock(d);
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_device.h
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_device.h	2010-11-17 12:03:44.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_device.h	2011-03-25 11:25:43.000000000 +0100
+@@ -8,8 +8,8 @@
+  * \note        This program is free software and may be modified and distributed under the terms of the GNU Public License.
+  *		See the LICENSE file at the top of the source tree.
+  *
+- * $Date: 2010-11-17 12:03:44 +0100 (Wed, 17 Nov 2010) $
+- * $Revision: 2130 $
++ * $Date$
++ * $Revision$
+  */
+ 
+ #ifndef __SCCP_DEVICE_H
+@@ -62,7 +62,7 @@
+ boolean_t sccp_dev_display_cfwd(sccp_device_t * device, boolean_t force);
+ int sccp_device_check_ringback(sccp_device_t * d);
+ void *sccp_dev_postregistration(void *data);
+-void sccp_dev_clean(sccp_device_t * d, boolean_t destroy, uint8_t cleanupTime);
++void sccp_dev_clean(sccp_device_t * d, boolean_t destroy, uint8_t cleanupTime, boolean_t devices_locked);
+ sccp_service_t *sccp_dev_serviceURL_find_byindex(sccp_device_t * d, uint16_t instance);
+ uint8_t sccp_device_find_index_for_line(const sccp_device_t * d, const char *lineName);
+ 
+@@ -80,7 +80,7 @@
+ #    ifdef CS_DYNAMIC_CONFIG
+ sccp_device_t *sccp_clone_device(sccp_device_t * orig_device);
+ 
+-boolean_t sccp_device_check_update(sccp_device_t * d);
++boolean_t sccp_device_check_update(sccp_device_t * d, boolean_t devices_locked);
+ void sccp_duplicate_device_buttonconfig_list(sccp_device_t * new_device, sccp_device_t * orig_device);
+ void sccp_duplicate_device_hostname_list(sccp_device_t * new_device, sccp_device_t * orig_device);
+ void sccp_duplicate_device_selectedchannel_list(sccp_device_t * new_device, sccp_device_t * orig_device);
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/chan_sccp.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/chan_sccp.c	2011-03-25 11:25:51.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/chan_sccp.c	2011-03-25 11:26:06.000000000 +0100
+@@ -12,8 +12,8 @@
+  * 		When to use:	Methods communicating to asterisk about module initialization, status, destruction
+  *   		Relationships: 	Main hub for all other sourcefiles.
+  *
+- * $Date: 2010-12-01 16:07:10 +0100 (Wed, 01 Dec 2010) $
+- * $Revision: 2187 $
++ * $Date$
++ * $Revision$
+  */
+ 
+ #define AST_MODULE "chan_sccp"
+@@ -24,7 +24,7 @@
+ #endif
+ #include "chan_sccp.h"
+ 
+-SCCP_FILE_VERSION(__FILE__, "$Revision: 2187 $")
++SCCP_FILE_VERSION(__FILE__, "$Revision$")
+ #include "sccp_hint.h"
+ #include "sccp_lock.h"
+ #include "sccp_actions.h"
+@@ -1845,7 +1845,7 @@
+ 	SCCP_RWLIST_WRLOCK(&GLOB(devices));
+ 	while ((d = SCCP_LIST_REMOVE_HEAD(&GLOB(devices), list))) {
+ 		sccp_log((DEBUGCAT_CORE | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_3 "SCCP: Removing device %s\n", d->id);
+-		sccp_dev_clean(d, TRUE, 0);
++		sccp_dev_clean(d, TRUE, 0, TRUE);
+ 	}
+ 	if (SCCP_RWLIST_EMPTY(&GLOB(devices)))
+ 		SCCP_RWLIST_HEAD_DESTROY(&GLOB(devices));
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2011-03-25 11:25:56.000000000 +0100
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-03-25 11:26:11.000000000 +0100
+@@ -8,8 +8,8 @@
+  * \note		This program is free software and may be modified and distributed under the terms of the GNU Public License.
+  *		See the LICENSE file at the top of the source tree.
+  *
+- * $Date: 2010-12-01 16:07:10 +0100 (Wed, 01 Dec 2010) $
+- * $Revision: 2187 $
++ * $Date$
++ * $Revision$
+  */
+ 
+ #include "config.h"
+@@ -19,7 +19,7 @@
+ #endif
+ #include "chan_sccp.h"
+ 
+-SCCP_FILE_VERSION(__FILE__, "$Revision: 2187 $")
++SCCP_FILE_VERSION(__FILE__, "$Revision$")
+ #include "sccp_event.h"
+ #include "sccp_lock.h"
+ #include "sccp_line.h"
+@@ -174,9 +174,6 @@
+ 	int res;
+ 	time_t now;
+ 	sccp_moo_t *m;
+-	pthread_attr_t attr;
+-	pthread_attr_init(&attr);
+-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+ 
+ 	/* we increase additionalTime for wireless/slower devices */
+ 	if (s->device && (s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7920 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7921 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7925 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7975 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7970 )) {
+@@ -188,7 +185,7 @@
+ 		if (s->device) {
+ 			ast_mutex_lock(&GLOB(lock));
+ 			if (GLOB(reload_in_progress) == FALSE)
+-				sccp_device_check_update(s->device);
++				sccp_device_check_update(s->device, FALSE);
+ 			ast_mutex_unlock(&GLOB(lock));
+ 		}
+ #endif
+@@ -252,7 +249,8 @@
+ 			d->registrationState = SKINNY_DEVICE_RS_NONE;
+ 			d->needcheckringback = 0;
+ 			sccp_device_unlock(d);
+-			sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay);
++			sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay, FALSE);
++			sccp_log(DEBUGCAT_DEVICE) (VERBOSE_PREFIX_3 "Device cleaned\n");
+ 		}
+ 		else
+ 			sccp_device_unlock(d);
+@@ -266,6 +264,8 @@
+ 	if (s->buffer)
+ 		ast_free(s->buffer);
+ 
++	sccp_log(DEBUGCAT_DEVICE) (VERBOSE_PREFIX_3 "End of thread\n");
++
+ 	/* destroying mutex and cleaning the session */
+ 	sccp_mutex_destroy(&s->lock);
+ 	ast_free(s);
+@@ -429,9 +429,6 @@
+ 	fds[0].revents = 0;
+ 
+ 	int res;
+-	pthread_attr_t attr;
+-	pthread_attr_init(&attr);
+-	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+ 
+ 	//I think asterisk should set these, it's a bit strange for a plugin to catch signals
+ /*
