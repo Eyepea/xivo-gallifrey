@@ -2185,7 +2185,7 @@ class XivoCTICommand(BaseCommand):
         parentchannel = event.get('Parent')
         childchannel = event.get('Child')
         if parentchannel in self.atxfer_relations[astid]:
-            self.atxfer_relations[astid].remove(parentchannel)
+            del self.atxfer_relations[astid][parentchannel]
             self.__ami_execute__(astid, 'setvar', 'CTI_ATXFER', '1', childchannel.replace(',1', ',2'))
         if childchannel.startswith('Local/') and childchannel.endswith(',1'):
             uniqueid = self.channels[astid].get(parentchannel)
@@ -5808,7 +5808,7 @@ class XivoCTICommand(BaseCommand):
                 else:
                     if exten_dst:
                         if commname == 'atxfer':
-                            self.atxfer_relations[astid_src].append(chan_src)
+                            self.atxfer_relations[astid_src][chan_src] = None
                         ret = self.__ami_execute__(astid_src, commname,
                                                    chan_src,
                                                    exten_dst, context_src)
