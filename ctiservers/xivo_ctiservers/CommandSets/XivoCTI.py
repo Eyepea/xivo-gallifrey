@@ -149,6 +149,7 @@ class XivoCTICommand(BaseCommand):
         'queues_channels_list',
         'origapplication',
         'events_link',
+        'atxfer_relations',
         'localchans', # leaks might occur there
         'rename_stack',
         # astid + actionid (AMI) indexed hashes
@@ -2183,6 +2184,9 @@ class XivoCTICommand(BaseCommand):
         log.info('%s ami_inherit : %s' % (astid, event))
         parentchannel = event.get('Parent')
         childchannel = event.get('Child')
+        if parentchannel in self.atxfer_relations[astid]:
+            self.atxfer_relations[astid].remove(parentchannel)
+            self.__ami_execute__(astid, 'setvar', 'CTI_ATXFER', '1', childchannel.replace(',1', ',2'))
         if childchannel.startswith('Local/') and childchannel.endswith(',1'):
             uniqueid = self.channels[astid].get(parentchannel)
             self.uniqueids[astid][uniqueid]['transfercancel'] = childchannel
@@ -5803,6 +5807,8 @@ class XivoCTICommand(BaseCommand):
                     ret = self.__ami_execute__(astid_src, 'park', chan_park, chan_src)
                 else:
                     if exten_dst:
+                        if commname == 'atxfer':
+                            self.atxfer_relations[astid_src].append(chan_src)
                         ret = self.__ami_execute__(astid_src, commname,
                                                    chan_src,
                                                    exten_dst, context_src)
