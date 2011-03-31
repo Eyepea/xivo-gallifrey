@@ -46,7 +46,8 @@ class CiscoSMB(PhoneVendorMixin):
                        'spa504g',
                        'spa508g',
                        'spa509g',
-                       'spa525g')
+                       'spa525g',
+                       'spa525g2')
 
     CISCOSMB_MACADDR_PREFIX = ('1:00:26:99',)
 
@@ -275,7 +276,7 @@ class CiscoSMB(PhoneVendorMixin):
                     key -= 12
                     fk_config_lines.append(cls.__format_function_keys_unit(key, func))
                     continue
-            elif model == 'spa525g':
+            elif model == 'spa525g' or model == 'spa525g2':
                 if key > 5:
                     key -= 5
                     fk_config_lines.append(cls.__format_function_keys_unit(key, func))
