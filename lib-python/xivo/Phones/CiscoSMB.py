@@ -145,7 +145,7 @@ class CiscoSMB(PhoneVendorMixin):
 
         template_lines = template_file.readlines()
         template_file.close()
-        tmp_filename = os.path.join(self.CISCOSMB_COMMON_DIR, model[:-1] + model[-1].upper() + "-" + macaddr + ".cfg.tmp")
+        tmp_filename = os.path.join(self.CISCOSMB_COMMON_DIR, model[:3] + model[3:].upper() + "-" + macaddr + ".cfg.tmp")
         cfg_filename = tmp_filename[:-4]
 
         if bool(int(provinfo.get('subscribemwi', 0))):
