@@ -1,2 +1,4 @@
 ServerAdmin technique@proformatique.com
 DirectoryIndex index.php index.html
+ServerTokens ProductOnly
+ServerSignature Off
