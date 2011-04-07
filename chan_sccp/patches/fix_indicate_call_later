@@ -1,0 +1,134 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_indicate.c	2011-04-07 12:43:30.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.c	2011-04-07 12:43:53.000000000 +0200
+@@ -669,3 +669,36 @@
+ 		return "Unknown";
+ 	}
+ }
++
++struct indicate_task_data
++{
++	sccp_device_t* device;
++	sccp_channel_t* channel;
++	uint8_t state;
++};
++
++static int sccp_indicate_task_callback(const void* data)
++{
++	struct indicate_task_data *info = (struct indicate_task_data*)data;
++
++	sccp_channel_lock(info->channel);
++	sccp_indicate_locked(info->device, info->channel, info->state);
++	sccp_channel_unlock(info->channel);
++
++	ast_free(info);
++
++	return 0;
++}
++
++void sccp_indicate_later(sccp_device_t *d, sccp_channel_t *c, uint8_t state)
++{
++	struct indicate_task_data *data = ast_calloc(1, sizeof(struct indicate_task_data));
++	data->device = d;
++	data->channel = c;
++	data->state = state;
++
++	sccp_channel_setSkinnyCallstate(c, state);
++	if (sccp_sched_add(sched, 0, sccp_indicate_task_callback, data) < 0) {
++		sccp_log((DEBUGCAT_CORE)) (VERBOSE_PREFIX_1 "SCCP: Unable to schedule indicate on channel %08X\n", c->callid);
++	}
++}
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.h
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_indicate.h	2011-04-07 12:43:29.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.h	2011-04-07 12:43:54.000000000 +0200
+@@ -28,4 +28,6 @@
+ #        define sccp_indicate_locked(x, y, z)	__sccp_indicate_locked(x, y, z, 0, NULL, 0, NULL)
+ #    endif
+
++void sccp_indicate_later(sccp_device_t *d, sccp_channel_t *c, uint8_t state);
++
+ #endif										/* __SCCP_INDICATE_H */
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_pbx.c	2011-04-07 12:43:23.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c	2011-04-07 12:43:59.000000000 +0200
+@@ -315,19 +315,13 @@
+ 		}
+
+ 		if (sccp_channel_get_active_nolock(linedevice->device)) {
+-			/* XXX perhaps lock the channel on global section */
+-			sccp_channel_lock(c);
+-			sccp_indicate_locked(linedevice->device, c, SCCP_CHANNELSTATE_CALLWAITING);
+-			sccp_channel_unlock(c);
++			sccp_indicate_later(linedevice->device, c, SCCP_CHANNELSTATE_CALLWAITING);
+ 			isRinging = TRUE;
+ 		} else {
+ 			if (linedevice->device->dndFeature.enabled && linedevice->device->dndFeature.status == SCCP_DNDMODE_REJECT)
+ 				continue;
+
+-			/* XXX perhaps lock the channel on global section */
+-			sccp_channel_lock(c);
+-			sccp_indicate_locked(linedevice->device, c, SCCP_CHANNELSTATE_RINGING);
+-			sccp_channel_unlock(c);
++			sccp_indicate_later(linedevice->device, c, SCCP_CHANNELSTATE_RINGING);
+ 			isRinging = TRUE;
+ 			if (c->autoanswer_type) {
+
+@@ -904,10 +898,7 @@
+ 	if (!c->device)
+ 		return -1;
+
+-	sccp_channel_lock(c);
+-
+ 	if (c->state == SCCP_CHANNELSTATE_DOWN) {
+-		sccp_channel_unlock(c);
+ 		return -1;
+ 	}
+
+@@ -922,22 +913,22 @@
+ 			// Allow signalling of RINGOUT only on outbound calls.
+ 			// Otherwise, there are some issues with late arrival of ringing
+ 			// indications on ISDN calls (chan_lcr, chan_dahdi) (-DD).
+-			sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_RINGOUT);
++			sccp_indicate_later(c->device, c, SCCP_CHANNELSTATE_RINGOUT);
+ 		}
+ 		break;
+ 	case AST_CONTROL_BUSY:
+-		sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_BUSY);
++		sccp_indicate_later(c->device, c, SCCP_CHANNELSTATE_BUSY);
+ 		break;
+ 	case AST_CONTROL_CONGESTION:
+-		sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
++		sccp_indicate_later(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
+ 		break;
+ 	case AST_CONTROL_PROGRESS:
+-		//sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
++		//sccp_indicate_later(c->device, c, SCCP_CHANNELSTATE_PROGRESS);
+ 		sccp_pbx_answer(ast);//TODO FIXIT dirty hack
+ 		res = -1;
+ 		break;
+ 	case AST_CONTROL_PROCEEDING:
+-		sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_PROCEED);
++		sccp_indicate_later(c->device, c, SCCP_CHANNELSTATE_PROCEED);
+ 		res = -1;
+ 		break;
+
+@@ -1011,7 +1002,7 @@
+ #ifdef CS_AST_CONTROL_CONNECTED_LINE
+ 	case AST_CONTROL_CONNECTED_LINE:
+ 		sccp_pbx_update_connectedline(ast, data, datalen);
+-		sccp_indicate_locked(c->device, c, c->state);
++		sccp_indicate_later(c->device, c, c->state);
+ 		break;
+ #endif										// CS_AST_CONTROL_CONNECTED_LINE
+ 	case AST_CONTROL_VIDUPDATE:						/* Request a video frame update */
+@@ -1028,7 +1019,6 @@
+ 		res = -1;
+ 	}
+
+-	sccp_channel_unlock(c);
+ 	return res;
+ }
+
