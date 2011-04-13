@@ -96,7 +96,7 @@ class xivo_ldap:
             # - filter = '(&(mail=*.com)(telephoneNumber=*)(displayName=*%Q*))'
             # - extensions = ''
 
-            dbpos = iuri.find(self.dbname)
+            dbpos = iuri.rfind(self.dbname)
             # ?attributes?scope?filter?extensions = 'asfe'
             asfe = iuri[dbpos + len(self.dbname):].split('?', 4)
             while len(asfe) < 5:
@@ -105,7 +105,8 @@ class xivo_ldap:
              self.base_filter, self.base_extensions) = asfe[1:]
 
             self.uri = "%s://%s:%s" % (uri_scheme, ldaphost, ldapport)
-            self.ldapobj = ldap.initialize(self.uri)
+            debuglevel = 0
+            self.ldapobj = ldap.initialize(self.uri, debuglevel)
 
             log.info('LDAP URI understood: %r / filter: %r', self.uri, self.base_filter)
 
@@ -120,11 +121,16 @@ class xivo_ldap:
             #   self.ldapobj.set_option(ldap.OPT_NETWORK_TIMEOUT,
             #   float(ldapquery.get('network_timeout')))
 
+            self.ldapobj.simple_bind_s(ldapuser, ldappass)
+            log.info('LDAP : simple bind done on %r %r', ldapuser, ldappass)
+
             # XXX how should we handle the starttls option ?
             # if uri_scheme == 'ldap' and int(ldapquery.get('tls', 0)):
             # self.ldapobj.start_tls_s()
+            usetls = False # looks like you need to set this to True in some AD2008 configs
+            if usetls:
+                self.ldapobj.set_option(ldap.OPT_X_TLS, 1)
 
-            self.ldapobj.simple_bind_s(ldapuser, ldappass)
         except ldap.LDAPError, exc:
             log.exception('__init__: ldap.LDAPError (%r, %r, %r)', self.ldapobj, iuri, exc)
             self.ldapobj = None
