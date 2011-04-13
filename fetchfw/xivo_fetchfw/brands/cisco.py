@@ -181,15 +181,15 @@ cisco_install_map = {
     'ciscospa525_748':
         ciscospa5xx_metainstall_fw('spa525g-7-4-8.bin'),
     'ciscospa509_748':
-        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8.bin'),
+        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8a.bin'),
     'ciscospa508_748':
-        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8.bin'),
+        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8a.bin'),
     'ciscospa504_748':
-        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8.bin'),
+        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8a.bin'),
     'ciscospa502_748':
-        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8.bin'),
+        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8a.bin'),
     'ciscospa501_748':
-        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8.bin'),
+        ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8a.bin'),
     'ciscospa5xx_locale_de':
         ciscospa5xx_metainstall_locale('spa525_v746/spa525_de_v746.xml',
                                        'spa525_de.xml',

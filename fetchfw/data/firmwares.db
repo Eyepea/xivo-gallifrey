@@ -372,9 +372,9 @@ version: 7.4.8
 files: spa50x-30x-7-4-8.zip
 
 [spa50x-30x-7-4-8.zip]
-url: http://download.cisco.com/swc/esd/04/282724524/anon/spa50x-30x-7-4-8.zip
-size: 11970690
-sha1sum: 9c070ba6d0d031bf74afa3829f4d073d455c04b6
+url: http://download.cisco.com/swc/esd/04/282724524/anon/spa50x-30x-7-4-8a.zip
+size: 11907814
+sha1sum: d16fbfac1df6c9b77edb12469a692d615efc95e0
 
 [ciscospa5xx_locale_de]
 brand: CiscoSMB
