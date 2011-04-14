@@ -45,19 +45,22 @@ def outgoing_user_set_features(agi, cursor, args):
     if outcall.externprefix:
         dstnum = outcall.externprefix + dstnum
 
-    if not outcall.internal:
-        try:
-            user = objects.User(agi, cursor, int(userid))
+    try:
+        user = objects.User(agi, cursor, int(userid))
 
+        if user.enablexfer:
+            options += 'T'
+
+        if not outcall.internal:
             callerid = user.outcallerid
 
             if user.enableautomon:
                 options += "W"
 
             callrecord = user.callrecord
-        except (ValueError, LookupError):
-            pass
-
+    except (ValueError, LookupError):
+        pass
+			
     if callerid in (None, '', 'default') and outcall.setcallerid:
         callerid = outcall.callerid
 
