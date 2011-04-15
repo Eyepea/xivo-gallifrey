@@ -1,2 +1,2 @@
-no_firmware_download
-disable_update_modules
+no_firmware_download.diff
+disable_update_modules.diff
