@@ -67,7 +67,8 @@ class xivo_object_commonconf extends xivo_object_abstract
         // dhcp
         $rawdata = $this->_dhcp->get(1);
         $conf = array_merge($conf, array(
-            'xivo.dhcp.pool'         => $rawdata['pool_start'].' '.$rawdata['pool_end'],
+            'xivo.dhcp.pool'         =>
+                strlen($rawdata['pool_start'])==0?'':$rawdata['pool_start'].' '.$rawdata['pool_end'],
             'xivo.dhcp.extra_ifaces' => $rawdata['extra_ifaces'],
             'xivo.dhcp.active'       => $rawdata['active']==0?false:true,
         ));
