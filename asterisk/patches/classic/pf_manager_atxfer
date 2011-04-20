@@ -7,10 +7,10 @@
 
         http://bugs.digium.com/view.php?id=10585
 
-Index: asterisk-1.4.39/CREDITS
+Index: asterisk-1.4.40/CREDITS
 ===================================================================
---- asterisk-1.4.39.orig/CREDITS	2011-01-17 18:11:17.788089866 -0500
-+++ asterisk-1.4.39/CREDITS	2011-01-17 18:11:51.128090925 -0500
+--- asterisk-1.4.40.orig/CREDITS	2009-08-18 22:26:53.000000000 +0200
++++ asterisk-1.4.40/CREDITS	2011-04-20 14:39:39.000000000 +0200
 @@ -152,6 +152,8 @@
  
  Paul Cadach - Bringing chan_h323 up to date, bug fixes, and more!
@@ -20,10 +20,10 @@ Index: asterisk-1.4.39/CREDITS
  === OTHER CONTRIBUTIONS ===
  John Todd - Monkey sounds and associated teletorture prompt
  Michael Jerris - bug marshaling
-Index: asterisk-1.4.39/include/asterisk/frame.h
+Index: asterisk-1.4.40/include/asterisk/frame.h
 ===================================================================
---- asterisk-1.4.39.orig/include/asterisk/frame.h	2011-01-17 18:11:17.798089932 -0500
-+++ asterisk-1.4.39/include/asterisk/frame.h	2011-01-17 18:11:51.128090925 -0500
+--- asterisk-1.4.40.orig/include/asterisk/frame.h	2010-12-01 17:59:26.000000000 +0100
++++ asterisk-1.4.40/include/asterisk/frame.h	2011-04-20 14:39:39.000000000 +0200
 @@ -290,6 +290,7 @@
  	AST_CONTROL_HOLD = 16,		/*!< Indicate call is placed on hold */
  	AST_CONTROL_UNHOLD = 17,	/*!< Indicate call is left from hold */
@@ -32,11 +32,11 @@ Index: asterisk-1.4.39/include/asterisk/frame.h
  	AST_CONTROL_SRCUPDATE = 20,     /*!< Indicate source of media has changed */
  	AST_CONTROL_SRCCHANGE = 21,     /*!< Media has changed and requires a new RTP SSRC */
  	AST_CONTROL_END_OF_Q = 22,		/*!< Indicate that this position was the end of the channel queue for a softhangup. */
-Index: asterisk-1.4.39/main/manager.c
+Index: asterisk-1.4.40/main/manager.c
 ===================================================================
---- asterisk-1.4.39.orig/main/manager.c	2011-01-17 18:11:50.388090479 -0500
-+++ asterisk-1.4.39/main/manager.c	2011-01-17 18:11:51.128090925 -0500
-@@ -1824,6 +1824,49 @@
+--- asterisk-1.4.40.orig/main/manager.c	2011-04-20 14:37:18.000000000 +0200
++++ asterisk-1.4.40/main/manager.c	2011-04-20 14:39:39.000000000 +0200
+@@ -1822,6 +1822,49 @@
  	return 0;
  }
  
@@ -86,7 +86,7 @@ Index: asterisk-1.4.39/main/manager.c
  static char mandescr_command[] = 
  "Description: Run a CLI command.\n"
  "Variables: (Names marked with * are required)\n"
-@@ -3086,6 +3129,7 @@
+@@ -3078,6 +3121,7 @@
  		ast_manager_register2("GetConfig", EVENT_FLAG_CONFIG, action_getconfig, "Retrieve configuration", mandescr_getconfig);
  		ast_manager_register2("UpdateConfig", EVENT_FLAG_CONFIG, action_updateconfig, "Update basic configuration", mandescr_updateconfig);
  		ast_manager_register2("Redirect", EVENT_FLAG_CALL, action_redirect, "Redirect (transfer) a call", mandescr_redirect );
@@ -94,60 +94,65 @@ Index: asterisk-1.4.39/main/manager.c
  		ast_manager_register2("Originate", EVENT_FLAG_CALL, action_originate, "Originate Call", mandescr_originate);
  		ast_manager_register2("Command", EVENT_FLAG_COMMAND, action_command, "Execute Asterisk CLI Command", mandescr_command );
  		ast_manager_register2("ExtensionState", EVENT_FLAG_CALL, action_extensionstate, "Check Extension Status", mandescr_extensionstate );
-Index: asterisk-1.4.39/res/res_features.c
+Index: asterisk-1.4.40/res/res_features.c
 ===================================================================
---- asterisk-1.4.39.orig/res/res_features.c	2011-01-17 18:11:17.808091460 -0500
-+++ asterisk-1.4.39/res/res_features.c	2011-01-17 18:11:51.128090925 -0500
-@@ -893,11 +893,27 @@
- 	return 0;
+--- asterisk-1.4.40.orig/res/res_features.c	2011-04-20 14:39:47.000000000 +0200
++++ asterisk-1.4.40/res/res_features.c	2011-04-20 15:02:01.000000000 +0200
+@@ -1058,25 +1058,26 @@
  }
  
--static int builtin_atxfer(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense, void *data)
-+/*!
+ /*!
+- * \brief Attended transfer
 + * \brief Attended transfer implementation
-+ * \param chan transfered user
-+ * \param peer person transfering call
-+ * \param config
-+ * \param sense feature options
-+ *
+  * \param chan transfered user
+  * \param peer person transfering call
+  * \param config
+- * \param code
+  * \param sense feature options
+  *
+- * \param data
+- * Get extension to transfer to, if you cannot generate channel (or find extension)
+- * return to host channel. After called channel answered wait for hangup of transferer,
+- * bridge call between transfer peer (taking them off hold) to attended transfer channel.
 + * \param toExt
 + * \param toCont
 + * This is the actual implementation of attended transfer, it can be activated as a regular feature or through the AMI.
 + * "toExt" is the extension to transfer to (default: ask for it on the transferer channel)
 + * "toCont" is the context to transfer to (default: the one in which the transferer is)
-+ *
-+ * \return -1 on failure
-+*/
+  *
+  * \return -1 on failure
+ */
+-static int builtin_atxfer(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense, void *data)
 +static int do_atxfer(struct ast_channel *chan,struct ast_channel *peer,struct ast_bridge_config *config,int sense,const char *toExt,const char *toCont)
  {
- 	struct ast_channel *transferer;
- 	struct ast_channel *transferee;
+ 	struct ast_channel *transferer;/* Party B */
+ 	struct ast_channel *transferee;/* Party A */
  	const char *transferer_real_context;
 +	const char *transfer_context;
  	char xferto[256] = "";
  	int res;
  	int outstate=0;
-@@ -914,37 +930,44 @@
+@@ -1092,49 +1093,55 @@
  		ast_log(LOG_DEBUG, "Executing Attended Transfer %s, %s (sense=%d) \n", chan->name, peer->name, sense);
  	set_peers(&transferer, &transferee, peer, chan, sense);
  	transferer_real_context = real_ctx(transferer, transferee);
 +	transfer_context = S_OR(toCont, transferer_real_context);
-+
- 	/* Start autoservice on chan while we talk to the originator */
+ 
+ 	/* Start autoservice on transferee while we talk to the transferer */
  	ast_autoservice_start(transferee);
- 	ast_autoservice_ignore(transferee, AST_FRAME_DTMF_END);
  	ast_indicate(transferee, AST_CONTROL_HOLD);
  
- 	/* Transfer */
+-	/* Transfer */
 -	res = ast_stream_and_wait(transferer, "pbx-transfer", transferer->language, AST_DIGIT_ANY);
 -	if (res < 0) {
 -		finishup(transferee);
--		return res;
+-		return -1;
 -	}
 -	if (res > 0) /* If they've typed a digit already, handle it */
 -		xferto[0] = (char) res;
 +	if (!ast_strlen_zero(toExt)) {
 +		ast_copy_string(xferto, toExt, sizeof(xferto));
++		l = strlen(xferto);
 +	} else {
 +		/* Ask for extension to transfer to on the transferer channel */
 +		res = ast_stream_and_wait(transferer, "pbx-transfer", transferer->language, AST_DIGIT_ANY);
@@ -160,40 +165,44 @@ Index: asterisk-1.4.39/res/res_features.c
  
 -	/* this is specific of atxfer */
 -	res = ast_app_dtget(transferer, transferer_real_context, xferto, sizeof(xferto), 100, transferdigittimeout);
--        if (res < 0) {  /* hangup, would be 0 for invalid and 1 for valid */
--                finishup(transferee);
--                return res;
--        }
--	if (res == 0) {
--		ast_log(LOG_WARNING, "Did not read data.\n");
+-	if (res < 0) {  /* hangup or error, (would be 0 for invalid and 1 for valid) */
 -		finishup(transferee);
--		if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
--			return -1;
--		return FEATURE_RETURN_SUCCESS;
+-		return -1;
+-	}
+-	l = strlen(xferto);
+-	if (res == 0) {
+-		if (l) {
+-			ast_log(LOG_WARNING, "Extension '%s' does not exist in context '%s'\n",
+-				xferto, transferer_real_context);
+-		} else {
+-			/* Does anyone care about this case? */
+-			ast_log(LOG_WARNING, "No digits dialed for atxfer.\n");
 +		/* this is specific of atxfer */
-+		res = ast_app_dtget(transferer, transfer_context, xferto, sizeof(xferto), 100, transferdigittimeout);
-+		if (res < 0) {  /* hangup, would be 0 for invalid and 1 for valid */
++		res = ast_app_dtget(transferer, transferer_real_context, xferto, sizeof(xferto), 100, transferdigittimeout);
++		if (res < 0) {  /* hangup or error, (would be 0 for invalid and 1 for valid) */
 +			finishup(transferee);
 +			return res;
-+		}
+ 		}
+-		ast_stream_and_wait(transferer, "pbx-invalid", transferer->language, "");
+-		finishup(transferee);
+-		return FEATURE_RETURN_SUCCESS;
+-	}
++		l = strlen(xferto);
 +		if (res == 0) {
-+			ast_log(LOG_WARNING, "Did not read data.\n");
++			if (l) {
++				ast_log(LOG_WARNING, "Extension '%s' does not exist in context '%s'\n",
++					xferto, transfer_context);
++			} else {
++				/* Does anyone care about this case? */
++				ast_log(LOG_WARNING, "No digits dialed for atxfer.\n");
++			}
++			ast_stream_and_wait(transferer, "pbx-invalid", transferer->language, "");
 +			finishup(transferee);
-+			if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
-+				return -1;
 +			return FEATURE_RETURN_SUCCESS;
 +		}
- 	}
++ 	}
  
- 	/* valid extension, res == 1 */
--	if (!ast_exists_extension(transferer, transferer_real_context, xferto, 1, transferer->cid.cid_num)) {
--		ast_log(LOG_WARNING, "Extension %s does not exist in context %s\n",xferto,transferer_real_context);
-+	if (!ast_exists_extension(transferer, transfer_context, xferto, 1, transferer->cid.cid_num)) {
-+		ast_log(LOG_WARNING, "Extension %s does not exist in context %s\n",xferto,transfer_context);
- 		finishup(transferee);
- 		if (ast_stream_and_wait(transferer, "beeperr", transferer->language, ""))
- 			return -1;
-@@ -955,11 +978,11 @@
+ 	/* If we are attended transfering to parking, just use builtin_parkcall instead of trying to track all of
  	 * the different variables for handling this properly with a builtin_atxfer */
  	if (!strcmp(xferto, ast_parking_ext())) {
  		finishup(transferee);
@@ -201,13 +210,13 @@ Index: asterisk-1.4.39/res/res_features.c
 +		return builtin_parkcall(chan, peer, config, NULL, sense, NULL);
  	}
  
- 	l = strlen(xferto);
--	snprintf(xferto + l, sizeof(xferto) - l, "@%s", transferer_real_context);	/* append context */
-+	snprintf(xferto + l, sizeof(xferto) - l, "@%s", transfer_context);	/* append context */
- 	newchan = ast_feature_request_and_dial(transferer, "Local", ast_best_codec(transferer->nativeformats),
- 		xferto, atxfernoanswertimeout, &outstate, transferer->cid.cid_num, transferer->cid.cid_name, transferer->language);
- 	ast_indicate(transferer, -1);
-@@ -1121,6 +1144,25 @@
+ 	/* Append context to dialed transfer number. */
+-	snprintf(xferto + l, sizeof(xferto) - l, "@%s/n", transferer_real_context);
++	snprintf(xferto + l, sizeof(xferto) - l, "@%s/n", transfer_context);
+ 
+ 	/* Stop autoservice so we can monitor all parties involved in the transfer. */
+ 	if (ast_autoservice_stop(transferee) < 0) {
+@@ -1338,6 +1345,24 @@
  }
  
  
@@ -223,17 +232,16 @@ Index: asterisk-1.4.39/res/res_features.c
 + * return to host channel. After called channel answered wait for hangup of transferer,
 + * bridge call between transfer peer (taking them off hold) to attended transfer channel.
 + * \return -1 means what failure/success both?
-+*/
++ */
 +static int builtin_atxfer(struct ast_channel *chan, struct ast_channel *peer, struct ast_bridge_config *config, char *code, int sense, void *data)
 +{
 +	return do_atxfer(chan, peer, config, sense, NULL, NULL);
 +}
 +
-+
  /* add atxfer and automon as undefined so you can only use em if you configure them */
  #define FEATURES_COUNT (sizeof(builtin_features) / sizeof(builtin_features[0]))
  
-@@ -1719,6 +1761,15 @@
+@@ -2061,6 +2086,15 @@
  	return;
  }
  
@@ -249,7 +257,7 @@ Index: asterisk-1.4.39/res/res_features.c
  int ast_bridge_call(struct ast_channel *chan,struct ast_channel *peer,struct ast_bridge_config *config)
  {
  	/* Copy voice back and forth between the two channels.  Give the peer
-@@ -1986,6 +2037,9 @@
+@@ -2328,6 +2362,9 @@
  						f->datalen - sizeof(struct ast_option_header), 0);
  				}
  				break;

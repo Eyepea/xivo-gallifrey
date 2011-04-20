@@ -1,8 +1,8 @@
-Index: asterisk-1.4.39.1/channels/chan_sip.c
+Index: asterisk-1.4.40/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.39.1.orig/channels/chan_sip.c	2011-01-21 17:17:24.000000000 +0100
-+++ asterisk-1.4.39.1/channels/chan_sip.c	2011-01-21 17:17:29.000000000 +0100
-@@ -14425,7 +14425,7 @@
+--- asterisk-1.4.40.orig/channels/chan_sip.c	2011-04-20 15:17:27.000000000 +0200
++++ asterisk-1.4.40/channels/chan_sip.c	2011-04-20 15:17:34.000000000 +0200
+@@ -14426,7 +14426,7 @@
  		ast_log(LOG_DEBUG, "SIP Park: Transferer channel %s, Transferee %s\n", transferer->name, transferee->name);
  
  	ast_channel_lock(transferee);
@@ -11,7 +11,7 @@ Index: asterisk-1.4.39.1/channels/chan_sip.c
  		ast_log(LOG_WARNING, "Masquerade failed.\n");
  		transmit_response(transferer->tech_pvt, "503 Internal error", &req);
  		ast_channel_unlock(transferee);
-@@ -16115,7 +16115,8 @@
+@@ -16116,7 +16116,8 @@
  			/* We can't indicate to the called channel directly so we force the masquerade to complete
  			   and queue and update to be read and passed-through */
  			ast_channel_lock(target.chan1);

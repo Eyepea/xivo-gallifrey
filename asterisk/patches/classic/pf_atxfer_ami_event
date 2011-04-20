@@ -8,24 +8,25 @@ SrcUniqueid:
 DstChannel:
 DstUniqueid:
 
-Index: asterisk-1.4.35/res/res_features.c
+Index: asterisk-1.4.40/res/res_features.c
 ===================================================================
---- asterisk-1.4.35.orig/res/res_features.c	2010-08-16 08:53:41.142283716 -0400
-+++ asterisk-1.4.35/res/res_features.c	2010-08-16 08:53:52.753534094 -0400
-@@ -1010,6 +1010,16 @@
- 			return -1;
- 		return FEATURE_RETURN_SUCCESS;
+--- asterisk-1.4.40.orig/res/res_features.c	2011-04-20 15:33:28.000000000 +0200
++++ asterisk-1.4.40/res/res_features.c	2011-04-20 15:51:03.000000000 +0200
+@@ -1174,6 +1174,17 @@
+ 		ast_log(LOG_DEBUG, "Dial party C result: newchan:%d, outstate:%d\n", !!newchan, outstate);
  	}
-+	/* atxfer ami event */
-+	manager_event(EVENT_FLAG_CALL, "Atxfer",
-+	                               "SrcChannel: %s\r\n"
-+	                               "SrcUniqueid: %s\r\n"
-+	                               "DstChannel: %s\r\n"
-+	                               "DstUniqueid: %s\r\n",
-+	                               transferer->name,
-+	                               transferer->uniqueid,
-+	                               newchan->name,
-+	                               newchan->uniqueid);
  
++	/* atxfer ami event */
++	if (newchan)
++		manager_event(EVENT_FLAG_CALL, "Atxfer",
++		                               "SrcChannel: %s\r\n"
++		                               "SrcUniqueid: %s\r\n"
++		                               "DstChannel: %s\r\n"
++		                               "DstUniqueid: %s\r\n",
++		                               transferer->name,
++		                               transferer->uniqueid,
++		                               newchan->name,
++		                               newchan->uniqueid);
  	if (!ast_check_hangup(transferer)) {
  		int hangup_dont = 0;
+ 
