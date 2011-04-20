@@ -1,7 +1,7 @@
-Index: asterisk-1.4.37/apps/app_queue.c
+Index: asterisk-1.4.40/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.37.orig/apps/app_queue.c	2010-12-06 16:41:58.000000000 +0100
-+++ asterisk-1.4.37/apps/app_queue.c	2010-12-06 16:46:16.000000000 +0100
+--- asterisk-1.4.40.orig/apps/app_queue.c	2011-04-20 17:12:39.000000000 +0200
++++ asterisk-1.4.40/apps/app_queue.c	2011-04-20 17:14:17.000000000 +0200
 @@ -150,7 +150,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
@@ -473,7 +473,7 @@ Index: asterisk-1.4.37/apps/app_queue.c
  check_turns:
  		if (ringing) {
  			ast_indicate(chan, AST_CONTROL_RINGING);
-@@ -5362,12 +5584,18 @@
+@@ -5362,6 +5584,12 @@
  				ast_queue_log(args.queuename, chan->uniqueid, "NONE", "EXITWITHTIMEOUT", "%d", qe.pos);
  				break;
  			}
@@ -486,14 +486,16 @@ Index: asterisk-1.4.37/apps/app_queue.c
  			/* Try calling all queue members for 'timeout' seconds */
  			res = try_calling(&qe, args.options, args.announceoverride, args.url, &tries, &noption, args.agi);
  			if (res)
- 				goto stop;
+@@ -5371,7 +5599,7 @@
+ 				select_members_from_skills(&qe);
+ 			}
  
 -			stat = get_member_status(qe.parent, qe.max_penalty, &qe);
 +			stat = get_member_status(qe.parent, qe.max_penalty, qe.min_penalty, &qe);
  
  			/* exit after 'timeout' cycle if 'n' option enabled */
  			if (noption && tries >= qe.parent->membercount) {
-@@ -6029,11 +6257,56 @@
+@@ -6033,11 +6261,56 @@
  	return 1;
  }
  
@@ -550,7 +552,7 @@ Index: asterisk-1.4.37/apps/app_queue.c
  	ret |= reload_skills();
  	ret |= reload_skill_rules();
  
-@@ -6207,13 +6480,13 @@
+@@ -6211,13 +6484,13 @@
  				if (qe->vqueue)
  					continue;
  				if (s)
@@ -568,10 +570,10 @@ Index: asterisk-1.4.37/apps/app_queue.c
  			}
  		} else if (s)
  			astman_append(s, "   No Callers%s", term);
-Index: asterisk-1.4.37/configs/queuerules.conf.sample
+Index: asterisk-1.4.40/configs/queuerules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.37/configs/queuerules.conf.sample	2010-12-06 16:46:16.000000000 +0100
++++ asterisk-1.4.40/configs/queuerules.conf.sample	2011-04-20 17:14:17.000000000 +0200
 @@ -0,0 +1,20 @@
 +; It is possible to change the value of the QUEUE_MAX_PENALTY and QUEUE_MIN_PENALTY
 +; channel variables in mid-call by defining rules in the queue for when to do so. This can allow for
