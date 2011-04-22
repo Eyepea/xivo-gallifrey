@@ -9,4 +9,4 @@ tar xzf ../tarballs/asterisk_${VER}+dfsg.orig.tar.gz
 cd asterisk-${VER}
 ln -s ../../patches/classic patches
 quilt push -a
-
+echo "done"
