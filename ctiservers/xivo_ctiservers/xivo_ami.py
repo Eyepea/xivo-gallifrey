@@ -161,6 +161,7 @@ class AMIClass:
     def sendagents(self):
         ret = self.sendcommand('Agents', [])
         return ret
+
     # \brief Requesting the Queues' Status.
     def sendqueuestatus(self, queue = None):
         if queue is None:
@@ -169,6 +170,12 @@ class AMIClass:
             ret = self.sendcommand('QueueStatus',
                                    [('Queue', queue)])
         return ret
+
+    # \brief Requesting the Queues' Status (CLI)
+    def sendqueues(self):
+        ret = self.sendcommand('Queues', [])
+        return ret
+
     # \brief Requesting an ExtensionState.
     def sendextensionstate(self, exten, context):
         ret = self.sendcommand('ExtensionState',
@@ -574,6 +581,8 @@ class AMIList:
                   )
                  ]
                 )
+            # initializes asterisk' queues (looks mandatory in xivo 1.1.14)
+            amicl.sendqueues()
             self.request_initvalues(astid)
         else:
             log.info('%s AMI : already connected %s'
