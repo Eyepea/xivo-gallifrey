@@ -719,7 +719,9 @@ class xivo_service_asterisk extends xivo_service_abstract
 		$pat = array('_','X','Z','N','\.','\!');
 		$rep = array('','[0-9]','[1-9]','[2-9]','[0-9#\*]+','[0-9#\*]*');
 
-		return(str_replace($pat,$rep,preg_quote($str)));
+		//FIX: intervals in $str string (i.e [45] must not be quoted
+		//return(str_replace($pat,$rep,preg_quote($str)));
+		return(str_replace($pat,$rep,$str));
 	}
 
 	function valid_exten_pattern_in_interval($min,$pattern,$max)
