@@ -12,10 +12,10 @@ Forwarded as a note to #10811.
 
  -- Faidon Liambotis <paravoid@debian.org>
 
-Index: asterisk-1.4.39/keys/jnctn.pub
+Index: asterisk-1.4.41/keys/jnctn.pub
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.39/keys/jnctn.pub	2011-01-17 18:11:44.378089869 -0500
++++ asterisk-1.4.41/keys/jnctn.pub	2011-05-06 17:08:25.000000000 +0200
 @@ -0,0 +1,6 @@
 +-----BEGIN PUBLIC KEY-----
 +MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDWaDv4190BpeL5K+Yuq5Q7+vPs
@@ -23,10 +23,10 @@ Index: asterisk-1.4.39/keys/jnctn.pub
 +3Ilu//eX8ph8Wu+Oxs/ymi/hzKm+Cd6aty94zYuqiegc0KdrjvU5TLQAkIQpiB6k
 +CvuIm0R0XXQjj3R7LwIDAQAB
 +-----END PUBLIC KEY-----
-Index: asterisk-1.4.39/Makefile
+Index: asterisk-1.4.41/Makefile
 ===================================================================
---- asterisk-1.4.39.orig/Makefile	2011-01-17 18:11:41.038090242 -0500
-+++ asterisk-1.4.39/Makefile	2011-01-17 18:11:44.378089869 -0500
+--- asterisk-1.4.41.orig/Makefile	2011-05-06 17:08:22.000000000 +0200
++++ asterisk-1.4.41/Makefile	2011-05-06 17:08:25.000000000 +0200
 @@ -491,8 +491,7 @@
  	mkdir -p $(DESTDIR)$(ASTDATADIR)/firmware
  	mkdir -p $(DESTDIR)$(ASTDATADIR)/firmware/iax

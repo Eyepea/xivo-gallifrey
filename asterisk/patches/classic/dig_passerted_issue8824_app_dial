@@ -1,9 +1,9 @@
 2011-01-18 <nhicher@proformatique.com>
 add small patch to allow asterisk build (splitting original dig_passerted_issue8824)
-Index: asterisk-1.4.39.1/apps/app_dial.c
+Index: asterisk-1.4.41/apps/app_dial.c
 ===================================================================
---- asterisk-1.4.39.1.orig/apps/app_dial.c	2011-01-21 18:38:55.000000000 +0100
-+++ asterisk-1.4.39.1/apps/app_dial.c	2011-01-21 18:41:14.000000000 +0100
+--- asterisk-1.4.41.orig/apps/app_dial.c	2011-05-06 17:08:42.000000000 +0200
++++ asterisk-1.4.41/apps/app_dial.c	2011-05-06 17:08:44.000000000 +0200
 @@ -423,24 +423,29 @@
  	int orig = *to;
  	struct ast_channel *peer = NULL;

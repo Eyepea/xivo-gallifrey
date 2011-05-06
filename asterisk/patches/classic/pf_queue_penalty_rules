@@ -1,8 +1,8 @@
-Index: asterisk-1.4.40/apps/app_queue.c
+Index: asterisk-1.4.41/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.40.orig/apps/app_queue.c	2011-04-20 17:12:39.000000000 +0200
-+++ asterisk-1.4.40/apps/app_queue.c	2011-04-20 17:14:17.000000000 +0200
-@@ -150,7 +150,7 @@
+--- asterisk-1.4.41.orig/apps/app_queue.c	2011-05-06 17:08:52.000000000 +0200
++++ asterisk-1.4.41/apps/app_queue.c	2011-05-06 17:08:53.000000000 +0200
+@@ -152,7 +152,7 @@
  static char *synopsis = "Queue a call for a call queue";
  
  static char *descrip =
@@ -11,7 +11,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  "Queues an incoming call in a particular call queue as defined in queues.conf.\n"
  "This application will return to the dialplan if the queue does not exist, or\n"
  "any of the join options cause the caller to not enter the queue.\n"
-@@ -354,12 +354,15 @@
+@@ -356,12 +356,15 @@
  	int handled;                        /*!< Whether our call was handled */
  	int pending;                        /*!< Non-zero if we are attempting to call a member */
  	int max_penalty;                    /*!< Limit the members that can take this call to this penalty or lower */
@@ -27,7 +27,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	struct queue_ent *next;             /*!< The next queue entry */
  };
  
-@@ -478,11 +481,22 @@
+@@ -480,11 +483,22 @@
  #define ANNOUNCEHOLDTIME_ONCE 2
  #define QUEUE_EVENT_VARIABLES 3
  
@@ -50,7 +50,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	unsigned int monjoin:1;
  	unsigned int dead:1;
  	unsigned int joinempty:2;
-@@ -543,8 +557,17 @@
+@@ -545,8 +559,17 @@
  	int membercount;
  	struct queue_ent *head;             /*!< Head of the list of callers */
  	AST_LIST_ENTRY(call_queue) list;    /*!< Next call queue */
@@ -68,7 +68,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  static AST_LIST_HEAD_STATIC(queues, call_queue);
  
  static int set_member_paused(const char *queuename, const char *interface, int paused);
-@@ -1423,7 +1446,7 @@
+@@ -1425,7 +1448,7 @@
   * is available, the function immediately returns QUEUE_NORMAL. If no members are available,
   * the appropriate reason why is returned
   */
@@ -77,7 +77,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  {
  	struct member *member;
  	struct ao2_iterator mem_iter;
-@@ -1435,7 +1458,7 @@
+@@ -1437,7 +1460,7 @@
  	while ((member = ao2_iterator_next(&mem_iter))) {
  		empty = 0;
  
@@ -86,7 +86,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  			ao2_ref(member, -1);
  			continue;
  		}
-@@ -1740,6 +1763,7 @@
+@@ -1742,6 +1765,7 @@
  static void init_queue(struct call_queue *q)
  {
  	int i;
@@ -94,7 +94,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  
  	q->dead = 0;
  	q->retry = DEFAULT_RETRY;
-@@ -1785,6 +1809,8 @@
+@@ -1792,6 +1816,8 @@
  	for (i = 1; i < MAX_PERIODIC_ANNOUNCEMENTS; i++) {
  		q->sound_periodicannounce[i][0]='\0';
  	}
@@ -103,7 +103,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  }
  
  static void clear_queue(struct call_queue *q)
-@@ -1796,6 +1822,85 @@
+@@ -1803,6 +1829,85 @@
  	q->wrapuptime = 0;
  }
  
@@ -189,7 +189,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  static int add_to_interfaces(const char *interface)
  {
  	struct member_interface *curint;
-@@ -2030,6 +2135,8 @@
+@@ -2037,6 +2142,8 @@
  		   we will not see any effect on use_weight until next reload. */
  	} else if (!strcasecmp(param, "timeoutrestart")) {
  		q->timeoutrestart = ast_true(val);
@@ -198,7 +198,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	} else if (failunknown) {
  		if (linenum >= 0) {
  			ast_log(LOG_WARNING, "Unknown keyword in queue '%s': %s at line %d of queues.conf\n",
-@@ -2501,7 +2608,7 @@
+@@ -2530,7 +2637,7 @@
  	return 0;
  }
  
@@ -207,7 +207,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  {
  	struct call_queue *q;
  	struct queue_ent *cur, *prev = NULL;
-@@ -2520,9 +2627,9 @@
+@@ -2549,9 +2656,9 @@
  		join_virtual_queue(q, qe);
  
  	/* This is our one */
@@ -220,7 +220,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	if (!q->joinempty && (stat == QUEUE_NO_MEMBERS))
  		*reason = QUEUE_JOINEMPTY;
  	else if ((q->joinempty == QUEUE_EMPTY_STRICT) && (stat == QUEUE_NO_REACHABLE_MEMBERS || stat == QUEUE_NO_MEMBERS))
-@@ -2544,6 +2651,17 @@
+@@ -2573,6 +2680,17 @@
  				insert_entry(q, prev, qe, &pos);
  				inserted = 1;
  			}
@@ -238,7 +238,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  			cur->pos = ++pos;
  			prev = cur;
  			cur = cur->next;
-@@ -2772,6 +2890,7 @@
+@@ -2801,6 +2919,7 @@
  {
  	struct call_queue *q;
  	struct queue_ent *cur, *prev = NULL;
@@ -246,7 +246,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	int pos = 0;
  
  	if (!(q = qe->parent))
-@@ -2781,6 +2900,7 @@
+@@ -2810,6 +2929,7 @@
  	prev = NULL;
  	for (cur = q->head; cur; cur = cur->next) {
  		if (cur == qe) {
@@ -254,7 +254,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  			q->count--;
  			update_queue_ent_skills_next_check(q);
  
-@@ -2789,11 +2909,13 @@
+@@ -2818,11 +2938,13 @@
                                        "Channel: %s\r\n"
                                        "Queue: %s\r\n"
                                        "Count: %d\r\n"
@@ -268,7 +268,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
                                        reason,
                                        qe->chan->uniqueid);
  			if (option_debug)
-@@ -2803,6 +2925,10 @@
+@@ -2832,6 +2954,10 @@
  				prev->next = cur->next;
  			else
  				q->head = cur->next;
@@ -279,7 +279,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  		} else {
  			/* Renumber the people after us in the queue based on a new count */
  			cur->pos = ++pos;
-@@ -3648,6 +3774,37 @@
+@@ -3677,6 +3803,37 @@
  
  	return res;
  }
@@ -317,7 +317,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  /*! \brief The waiting areas for callers who are not actively calling members
   *
   * This function is one large loop. This function will return if a caller
-@@ -3675,7 +3832,7 @@
+@@ -3704,7 +3861,7 @@
  			break;
  		}
  
@@ -326,7 +326,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  
  		/* leave the queue if no agents, if enabled */
  		if (qe->parent->leavewhenempty && (stat == QUEUE_NO_MEMBERS)) {
-@@ -3709,6 +3866,11 @@
+@@ -3738,6 +3895,11 @@
  			(res = say_periodic_announcement(qe)))
  			break;
  
@@ -338,7 +338,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  		/* If we have timed out, break out */
  		if (qe->expire && (time(NULL) >= qe->expire)) {
  			*reason = QUEUE_TIMEOUT;
-@@ -3758,7 +3920,7 @@
+@@ -3787,7 +3949,7 @@
   */
  static int calc_metric(struct call_queue *q, struct member *mem, int pos, struct queue_ent *qe, struct callattempt *tmp)
  {
@@ -347,7 +347,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  		return -1;
  
  	switch (q->strategy) {
-@@ -5178,6 +5340,37 @@
+@@ -5208,6 +5370,37 @@
  	return 0;
  }
  
@@ -385,7 +385,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  /*!\brief The starting point for all queue calls
   *
   * The process involved here is to 
-@@ -5197,13 +5390,15 @@
+@@ -5227,13 +5420,15 @@
  	struct ast_module_user *lu;
  	const char *user_priority;
  	const char *max_penalty_str;
@@ -402,7 +402,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	AST_DECLARE_APP_ARGS(args,
  		AST_APP_ARG(queuename);
  		AST_APP_ARG(options);
-@@ -5212,12 +5407,14 @@
+@@ -5242,12 +5437,14 @@
  		AST_APP_ARG(queuetimeoutstr);
  		AST_APP_ARG(agi);
  		AST_APP_ARG(skill_ruleset);
@@ -418,7 +418,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  		return -1;
  	}
  
-@@ -5268,9 +5465,31 @@
+@@ -5298,9 +5495,31 @@
  		max_penalty = 0;
  	}
  
@@ -450,7 +450,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	if (option_debug)
  		ast_log(LOG_DEBUG, "queue: %s, options: %s, url: %s, announce: %s, expires: %ld, priority: %d\n",
  			args.queuename, args.options, args.url, args.announceoverride, (long)qe.expire, prio);
-@@ -5278,6 +5497,7 @@
+@@ -5308,6 +5527,7 @@
  	qe.chan = chan;
  	qe.prio = prio;
  	qe.max_penalty = max_penalty;
@@ -458,7 +458,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	if (!ast_strlen_zero(args.skill_ruleset)) {
  		ast_copy_string(qe.skill_ruleset, args.skill_ruleset, sizeof(qe.skill_ruleset));
  	}
-@@ -5286,11 +5506,13 @@
+@@ -5316,11 +5536,13 @@
  	qe.last_periodic_announce_time = time(NULL);
  	qe.last_periodic_announce_sound = 0;
  	qe.valid_digits = 0;
@@ -473,7 +473,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  check_turns:
  		if (ringing) {
  			ast_indicate(chan, AST_CONTROL_RINGING);
-@@ -5362,6 +5584,12 @@
+@@ -5392,6 +5614,12 @@
  				ast_queue_log(args.queuename, chan->uniqueid, "NONE", "EXITWITHTIMEOUT", "%d", qe.pos);
  				break;
  			}
@@ -486,7 +486,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  			/* Try calling all queue members for 'timeout' seconds */
  			res = try_calling(&qe, args.options, args.announceoverride, args.url, &tries, &noption, args.agi);
  			if (res)
-@@ -5371,7 +5599,7 @@
+@@ -5401,7 +5629,7 @@
  				select_members_from_skills(&qe);
  			}
  
@@ -495,7 +495,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  
  			/* exit after 'timeout' cycle if 'n' option enabled */
  			if (noption && tries >= qe.parent->membercount) {
-@@ -6033,11 +6261,56 @@
+@@ -6080,11 +6308,56 @@
  	return 1;
  }
  
@@ -552,7 +552,7 @@ Index: asterisk-1.4.40/apps/app_queue.c
  	ret |= reload_skills();
  	ret |= reload_skill_rules();
  
-@@ -6211,13 +6484,13 @@
+@@ -6258,13 +6531,13 @@
  				if (qe->vqueue)
  					continue;
  				if (s)
@@ -570,10 +570,10 @@ Index: asterisk-1.4.40/apps/app_queue.c
  			}
  		} else if (s)
  			astman_append(s, "   No Callers%s", term);
-Index: asterisk-1.4.40/configs/queuerules.conf.sample
+Index: asterisk-1.4.41/configs/queuerules.conf.sample
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ asterisk-1.4.40/configs/queuerules.conf.sample	2011-04-20 17:14:17.000000000 +0200
++++ asterisk-1.4.41/configs/queuerules.conf.sample	2011-05-06 17:08:53.000000000 +0200
 @@ -0,0 +1,20 @@
 +; It is possible to change the value of the QUEUE_MAX_PENALTY and QUEUE_MIN_PENALTY
 +; channel variables in mid-call by defining rules in the queue for when to do so. This can allow for

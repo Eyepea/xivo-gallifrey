@@ -11,10 +11,10 @@
 	It was first done for Asterisk 1.2 by Richard Braun, I just refreshed
 	it for Asterisk 1.4.
 
-Index: asterisk-1.4.39/res/res_agi.c
+Index: asterisk-1.4.41/res/res_agi.c
 ===================================================================
---- asterisk-1.4.39.orig/res/res_agi.c	2011-01-17 18:11:19.188090078 -0500
-+++ asterisk-1.4.39/res/res_agi.c	2011-01-17 18:11:48.278095658 -0500
+--- asterisk-1.4.41.orig/res/res_agi.c	2011-05-06 17:08:03.000000000 +0200
++++ asterisk-1.4.41/res/res_agi.c	2011-05-06 17:08:36.000000000 +0200
 @@ -160,7 +160,7 @@
  	FastAGI defaults to port 4573 */
  static enum agi_result launch_netscript(char *agiurl, char *argv[], int *fds, int *efd, int *opid)

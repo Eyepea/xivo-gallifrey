@@ -5,11 +5,11 @@
     $Date$
 
     Fix some callerid displaying during ATXFER.
-Index: asterisk-1.4.40/res/res_features.c
+Index: asterisk-1.4.41/res/res_features.c
 ===================================================================
---- asterisk-1.4.40.orig/res/res_features.c	2011-04-20 15:08:02.000000000 +0200
-+++ asterisk-1.4.40/res/res_features.c	2011-04-20 15:14:26.000000000 +0200
-@@ -1225,7 +1225,8 @@
+--- asterisk-1.4.41.orig/res/res_features.c	2011-05-06 17:08:42.000000000 +0200
++++ asterisk-1.4.41/res/res_features.c	2011-05-06 17:08:46.000000000 +0200
+@@ -1235,7 +1235,8 @@
  			hangup_dont = 1;
  		}
  		/* Let party B and party C talk as long as they want. */
@@ -19,7 +19,7 @@ Index: asterisk-1.4.40/res/res_features.c
  		if (hangup_dont) {
  			ast_set_flag(chan, AST_FLAG_BRIDGE_HANGUP_DONT);
  		}
-@@ -1354,9 +1355,24 @@
+@@ -1364,9 +1365,24 @@
  		tobj->bconfig.end_bridge_callback_data_fixup(&tobj->bconfig, tobj->peer, tobj->chan);
  	}
  
@@ -44,7 +44,7 @@ Index: asterisk-1.4.40/res/res_features.c
  	return -1;/* The transferee is masqueraded and the original bridged channels can be hungup. */
  }
  
-@@ -1764,6 +1780,7 @@
+@@ -1774,6 +1790,7 @@
  
  	caller_hungup = ast_check_hangup(caller);
  
@@ -52,7 +52,7 @@ Index: asterisk-1.4.40/res/res_features.c
  	if (!(chan = ast_request(type, format, data, &cause))) {
  		ast_log(LOG_NOTICE, "Unable to request channel %s/%s\n", type, (char *)data);
  		switch (cause) {
-@@ -1781,10 +1798,17 @@
+@@ -1791,10 +1808,17 @@
  	}
  
  	ast_set_callerid(chan, cid_num, cid_name, cid_num);
@@ -70,7 +70,7 @@ Index: asterisk-1.4.40/res/res_features.c
  	if (ast_call(chan, data, timeout)) {
  		ast_log(LOG_NOTICE, "Unable to call channel %s/%s\n", type, (char *)data);
  		switch (chan->hangupcause) {
-@@ -1998,6 +2022,10 @@
+@@ -2007,6 +2031,10 @@
  	if (outstate)
  		*outstate = state;
  

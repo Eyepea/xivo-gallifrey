@@ -10,11 +10,11 @@
 	It was first done for Asterisk 1.2 by Richard Braun, I just refreshed
 	it for Asterisk 1.4 and take care Digium comments (https://issues.asterisk.org/view.php?id=8580).
 
-Index: asterisk-1.4.36/apps/app_queue.c
+Index: asterisk-1.4.41/apps/app_queue.c
 ===================================================================
---- asterisk-1.4.36.orig/apps/app_queue.c	2010-09-17 08:30:02.916393281 -0400
-+++ asterisk-1.4.36/apps/app_queue.c	2010-09-17 08:30:25.226393715 -0400
-@@ -192,7 +192,7 @@
+--- asterisk-1.4.41.orig/apps/app_queue.c	2011-05-06 17:08:46.000000000 +0200
++++ asterisk-1.4.41/apps/app_queue.c	2011-05-06 17:08:51.000000000 +0200
+@@ -194,7 +194,7 @@
  static char *app_aqm = "AddQueueMember" ;
  static char *app_aqm_synopsis = "Dynamically adds queue members" ;
  static char *app_aqm_descrip =
@@ -23,7 +23,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  "Dynamically adds interface to an existing queue.\n"
  "If the interface is already in the queue and there exists an n+101 priority\n"
  "then it will then jump to this priority.  Otherwise it will return an error\n"
-@@ -365,6 +365,8 @@
+@@ -367,6 +367,8 @@
  	int realtime;                       /*!< Is this member realtime? */
  	int status;                         /*!< Status of queue member */
  	int paused;                         /*!< Are we paused (not accepting calls)? */
@@ -32,7 +32,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	time_t lastcall;                    /*!< When last successful call was hungup */
  	unsigned int dead:1;                /*!< Used to detect members deleted in realtime */
  	unsigned int delme:1;               /*!< Flag to delete entry on reload */
-@@ -593,6 +595,11 @@
+@@ -595,6 +597,11 @@
  			allpaused = 0;
  		}
  
@@ -44,7 +44,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		switch (member->status) {
  		case AST_DEVICE_INVALID:
  			/* nothing to do */
-@@ -662,11 +669,20 @@
+@@ -664,11 +671,20 @@
                                                "CallsTaken: %d\r\n"
                                                "LastCall: %d\r\n"
                                                "Status: %d\r\n"
@@ -69,7 +69,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  			}
  			ao2_ref(cur, -1);
  		}
-@@ -792,7 +808,7 @@
+@@ -794,7 +810,7 @@
  	return 0;
  }
  /*! \brief allocate space for new queue member and set fields based on parameters passed */
@@ -78,7 +78,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  {
  	struct member *cur;
  	
-@@ -812,6 +828,7 @@
+@@ -814,6 +830,7 @@
  		if (!strchr(cur->interface, '/'))
  			ast_log(LOG_WARNING, "No location at interface '%s'\n", interface);
  		cur->status = ast_device_state(cur->state_interface);
@@ -86,7 +86,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	}
  
  	return cur;
-@@ -1158,11 +1175,12 @@
+@@ -1165,11 +1182,12 @@
  	}
  }
  
@@ -100,7 +100,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  
  	if (penalty_str) {
  		penalty = atoi(penalty_str);
-@@ -1176,13 +1194,19 @@
+@@ -1183,13 +1201,19 @@
  			paused = 0;
  	}
  
@@ -122,7 +122,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  			m->dead = 0;
  			m->realtime = 1;
  			add_to_interfaces(m->state_interface);
-@@ -1201,6 +1225,7 @@
+@@ -1208,6 +1232,7 @@
  			add_to_interfaces(m->state_interface);
  		}
  		m->penalty = penalty;
@@ -130,7 +130,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		ao2_ref(m, -1);
  	}
  }
-@@ -1327,7 +1352,8 @@
+@@ -1356,7 +1381,8 @@
  			ast_variable_retrieve(member_config, interface, "membername"),
  			ast_variable_retrieve(member_config, interface, "penalty"),
  			ast_variable_retrieve(member_config, interface, "paused"),
@@ -140,7 +140,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	}
  
  	/* Delete all realtime members that have been deleted in DB. */
-@@ -1400,7 +1426,8 @@
+@@ -1429,7 +1455,8 @@
  			S_OR(ast_variable_retrieve(member_config, interface, "membername"), interface),
  			ast_variable_retrieve(member_config, interface, "penalty"),
  			ast_variable_retrieve(member_config, interface, "paused"),
@@ -150,7 +150,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	}
  
  	/* Delete all realtime members that have been deleted in DB. */
-@@ -1810,7 +1837,8 @@
+@@ -1839,7 +1866,8 @@
  			/* else fall through */
  		case AST_DEVICE_NOT_INUSE:
  		case AST_DEVICE_UNKNOWN:
@@ -160,7 +160,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  				avl++;
  			}
  			break;
-@@ -1951,6 +1979,16 @@
+@@ -1980,6 +2008,16 @@
  		tmp->stillgoing = 0;
  		return 0;
  	}
@@ -177,7 +177,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	if (use_weight && compare_weight(qe->parent,tmp->member)) {
  		ast_log(LOG_DEBUG, "Priority queue delaying call to %s:%s\n", qe->parent->name, tmp->interface);
  		if (qe->chan->cdr)
-@@ -3205,6 +3243,8 @@
+@@ -3235,6 +3273,8 @@
  			return -1;
  		}
  
@@ -186,7 +186,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		if (qe->parent->setinterfacevar)
  				pbx_builtin_setvar_helper(qe->chan, "MEMBERINTERFACE", member->interface);
  
-@@ -3428,6 +3468,7 @@
+@@ -3458,6 +3498,7 @@
  		}
  		ast_channel_unlock(qe->chan);
  		ast_hangup(peer);
@@ -194,7 +194,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		res = bridge ? bridge : 1;
  		ao2_ref(member, -1);
  	}
-@@ -3473,7 +3514,7 @@
+@@ -3503,7 +3544,7 @@
  
  /* Dump all members in a specific queue to the database
   *
@@ -203,7 +203,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
   *
   */
  static void dump_queue_members(struct call_queue *pm_queue)
-@@ -3496,8 +3537,8 @@
+@@ -3526,8 +3567,8 @@
  			continue;
  		}
  
@@ -214,7 +214,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  
  		ao2_ref(cur_member, -1);
  
-@@ -3569,7 +3610,7 @@
+@@ -3599,7 +3640,7 @@
  }
  
  
@@ -223,7 +223,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  {
  	struct call_queue *q;
  	struct member *new_member, *old_member;
-@@ -3584,7 +3625,7 @@
+@@ -3614,7 +3655,7 @@
  
  	ao2_lock(q);
  	if ((old_member = interface_exists(q, interface)) == NULL) {
@@ -232,7 +232,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  			add_to_interfaces(new_member->state_interface);
  			new_member->dynamic = 1;
  			ao2_link(q->members, new_member);
-@@ -3598,11 +3639,20 @@
+@@ -3628,11 +3669,20 @@
                                        "CallsTaken: %d\r\n"
                                        "LastCall: %d\r\n"
                                        "Status: %d\r\n"
@@ -257,7 +257,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  			
  			ao2_ref(new_member, -1);
  			new_member = NULL;
-@@ -3681,6 +3731,8 @@
+@@ -3711,6 +3761,8 @@
  	char *state_interface;
  	char *penalty_tok;
  	int penalty = 0;
@@ -266,7 +266,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	char *paused_tok;
  	int paused = 0;
  	struct ast_db_entry *db_tree;
-@@ -3728,6 +3780,7 @@
+@@ -3758,6 +3810,7 @@
  			paused_tok = strsep(&member, ";");
  			membername = strsep(&member, ";");
  			state_interface = strsep(&member,";");
@@ -274,7 +274,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  
  			if (!penalty_tok) {
  				ast_log(LOG_WARNING, "Error parsing persistent member string for '%s' (penalty)\n", queue_name);
-@@ -3751,10 +3804,20 @@
+@@ -3781,10 +3834,20 @@
  			if (ast_strlen_zero(membername))
  				membername = interface;
  
@@ -297,7 +297,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  				ast_log(LOG_ERROR, "Out of Memory when reloading persistent queue member\n");
  				break;
  			}
-@@ -3954,11 +4017,13 @@
+@@ -3984,11 +4047,13 @@
  		AST_APP_ARG(options);
  		AST_APP_ARG(membername);
  		AST_APP_ARG(state_interface);
@@ -312,7 +312,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		return -1;
  	}
  
-@@ -3987,7 +4052,14 @@
+@@ -4017,7 +4082,14 @@
  			priority_jump = 1;
  	}
  
@@ -328,7 +328,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	case RES_OKAY:
  		ast_queue_log(args.queuename, chan->uniqueid, args.interface, "ADDMEMBER", "%s", "");
  		ast_log(LOG_NOTICE, "Added interface '%s' to queue '%s'\n", args.interface, args.queuename);
-@@ -4522,11 +4594,13 @@
+@@ -4552,11 +4624,13 @@
  	char *interface, *state_interface;
  	char *membername = NULL;
  	int penalty;
@@ -342,7 +342,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	);
  	
  	if (!(cfg = ast_config_load("queues.conf"))) {
-@@ -4630,6 +4704,15 @@
+@@ -4677,6 +4751,15 @@
  							state_interface = interface;
  						}
  
@@ -358,7 +358,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  						/* Find the old position in the list */
  						ast_copy_string(tmpmem.interface, interface, sizeof(tmpmem.interface));
  						cur = ao2_find(q->members, &tmpmem, OBJ_POINTER | OBJ_UNLINK);
-@@ -4639,7 +4722,7 @@
+@@ -4686,7 +4769,7 @@
  							remove_from_interfaces(cur->state_interface);
  						}
  
@@ -367,7 +367,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  						if (!cur || (cur && strcasecmp(cur->state_interface, state_interface))) {
  							add_to_interfaces(state_interface);
  						}
-@@ -4713,7 +4796,7 @@
+@@ -4760,7 +4843,7 @@
  	struct member *mem;
  	int pos, queue_show;
  	time_t now;
@@ -376,7 +376,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	char *max;
  	size_t max_left;
  	float sl = 0;
-@@ -4783,10 +4866,10 @@
+@@ -4830,10 +4913,10 @@
  		if (s)
  			astman_append(s, "%-12.12s has %d calls (max %s) in '%s' strategy (%ds holdtime), W:%d, C:%d, A:%d, SL:%2.1f%% within %ds%s",
  				q->name, q->count, max_buf, int2strat(q->strategy), q->holdtime, q->weight,
@@ -389,7 +389,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		if (ao2_container_count(q->members)) {
  			if (s)
  				astman_append(s, "   Members: %s", term);
-@@ -4800,14 +4883,22 @@
+@@ -4847,14 +4930,22 @@
  				if (strcasecmp(mem->membername, mem->interface)) {
  					ast_build_string(&max, &max_left, " (%s)", mem->interface);
  				}
@@ -413,7 +413,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  				ast_build_string(&max, &max_left, " (%s)", devstate2str(mem->status));
  				if (mem->calls) {
  					ast_build_string(&max, &max_left, " has taken %d calls (last was %ld secs ago)",
-@@ -4956,13 +5047,22 @@
+@@ -5003,13 +5094,22 @@
                                                        "LastCall: %d\r\n"
                                                        "Status: %d\r\n"
                                                        "Paused: %d\r\n"
@@ -439,7 +439,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  				}
  				ao2_ref(mem, -1);
  			}
-@@ -5004,8 +5104,8 @@
+@@ -5051,8 +5151,8 @@
  
  static int manager_add_queue_member(struct mansession *s, const struct message *m)
  {
@@ -450,7 +450,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  
  	queuename = astman_get_header(m, "Queue");
  	interface = astman_get_header(m, "Interface");
-@@ -5013,6 +5113,7 @@
+@@ -5060,6 +5160,7 @@
  	paused_s = astman_get_header(m, "Paused");
  	membername = astman_get_header(m, "MemberName");
  	state_interface = astman_get_header(m, "StateInterface");
@@ -458,7 +458,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  
  	if (ast_strlen_zero(queuename)) {
  		astman_send_error(s, m, "'Queue' not specified.");
-@@ -5034,7 +5135,12 @@
+@@ -5081,7 +5182,12 @@
  	else
  		paused = abs(ast_true(paused_s));
  
@@ -472,7 +472,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	case RES_OKAY:
  		ast_queue_log(queuename, "MANAGER", interface, "ADDMEMBER", "%s", "");
  		astman_send_ack(s, m, "Added interface to queue");
-@@ -5113,9 +5219,9 @@
+@@ -5160,9 +5266,9 @@
  static int handle_queue_add_member(int fd, int argc, char *argv[])
  {
  	char *queuename, *interface, *membername = NULL, *state_interface = NULL;
@@ -484,7 +484,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		return RESULT_SHOWUSAGE;
  	} else if (strcmp(argv[4], "to")) {
  		return RESULT_SHOWUSAGE;
-@@ -5125,6 +5231,8 @@
+@@ -5172,6 +5278,8 @@
  		return RESULT_SHOWUSAGE;
  	} else if ((argc == 12) && strcmp(argv[10], "state_interface")) {
  		return RESULT_SHOWUSAGE;
@@ -493,7 +493,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	}
  
  	queuename = argv[5];
-@@ -5151,7 +5259,21 @@
+@@ -5198,7 +5306,21 @@
  		state_interface = argv[11];
  	}
  
@@ -516,7 +516,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	case RES_OKAY:
  		ast_queue_log(queuename, "CLI", interface, "ADDMEMBER", "%s", "");
  		ast_cli(fd, "Added interface '%s' to queue '%s'\n", interface, queuename);
-@@ -5172,7 +5294,7 @@
+@@ -5219,7 +5341,7 @@
  
  static char *complete_queue_add_member(const char *line, const char *word, int pos, int state)
  {
@@ -525,7 +525,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	switch (pos) {
  	case 3:	/* Don't attempt to complete name of interface (infinite possibilities) */
  		return NULL;
-@@ -5183,6 +5305,7 @@
+@@ -5230,6 +5352,7 @@
  	case 6: /* only one possible match, "penalty" */
  		return state == 0 ? ast_strdup("penalty") : NULL;
  	case 7:
@@ -533,7 +533,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  		if (state < 100) {	/* 0-99 */
  			char *num;
  			if ((num = ast_malloc(3))) {
-@@ -5198,6 +5321,8 @@
+@@ -5245,6 +5368,8 @@
  		return NULL;
  	case 10:
  		return state == 0 ? ast_strdup("state_interface") : NULL;
@@ -542,7 +542,7 @@ Index: asterisk-1.4.36/apps/app_queue.c
  	default:
  		return NULL;
  	}
-@@ -5283,7 +5408,7 @@
+@@ -5330,7 +5455,7 @@
  "       Provides summary information on a specified queue.\n";
  
  static char qam_cmd_usage[] =

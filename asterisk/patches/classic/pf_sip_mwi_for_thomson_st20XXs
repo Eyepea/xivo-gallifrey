@@ -9,11 +9,11 @@
 	Replaced phone domain by Asterisk domain in Call-ID of the MWI subscription.
 	Special fix for Thomson ST2022S and ST2030S.
 
-Index: asterisk-1.4.39/channels/chan_sip.c
+Index: asterisk-1.4.41/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.39.orig/channels/chan_sip.c	2011-01-17 18:13:58.308089877 -0500
-+++ asterisk-1.4.39/channels/chan_sip.c	2011-01-17 18:13:59.448090960 -0500
-@@ -17437,6 +17437,18 @@
+--- asterisk-1.4.41.orig/channels/chan_sip.c	2011-05-06 17:08:41.000000000 +0200
++++ asterisk-1.4.41/channels/chan_sip.c	2011-05-06 17:08:41.000000000 +0200
+@@ -17662,6 +17662,18 @@
  	if (peer->mwipvt) {
  		/* Base message on subscription */
  		p = peer->mwipvt;
