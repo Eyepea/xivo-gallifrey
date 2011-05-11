@@ -2640,9 +2640,11 @@ class XivoCTICommand(BaseCommand):
                             elif actionname == 'queueremove' and len(params) > 0:
                                 self.__ami_execute__(astid, actionname, params[0], agent_channel)
                             elif actionname == 'queuepause' and len(params) > 0:
-                                self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'true')
+                                for queuename in params:
+                                    self.__ami_execute__(astid, 'queuepause', queuename, agent_channel, 'true')
                             elif actionname == 'queueunpause' and len(params) > 0:
-                                self.__ami_execute__(astid, 'queuepause', params[0], agent_channel, 'false')
+                                for queuename in params:
+                                    self.__ami_execute__(astid, 'queuepause', queuename, agent_channel, 'false')
                             elif actionname == 'queuepause_all':
                                 for qid, qv in self.weblist['agents'][astid].keeplist[agent_id]['queues_by_agent'].iteritems():
                                     if qv.get('Paused') == '0':
