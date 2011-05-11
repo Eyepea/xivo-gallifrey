@@ -31,6 +31,7 @@ $array['element']['devicetype']['value'] = array('12', '30', '7902', '7905', '79
 
 $array['element']['keepalive'] = array();
 $array['element']['keepalive']['default'] = '';
+$array['element']['keepalive']['null'] = true;
 
 $array['element']['tzoffset'] = array();
 $array['element']['tzoffset']['default'] = '';

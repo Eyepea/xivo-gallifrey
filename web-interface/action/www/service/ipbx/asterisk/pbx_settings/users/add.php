@@ -104,6 +104,9 @@ if(isset($_QR['fm_send']) === true
 	}
 	$_QR['protocol']['softkeys'] = $softkeys;
 	
+	if(strlen($_QR['protocol']['keepalive']) == 0)
+		$_QR['protocol']['keepalive'] = NULL;
+
 	if($appuser->set_add($_QR,$_QR['protocol']['protocol']) === false
 	|| $appuser->add() === false)
 	{
