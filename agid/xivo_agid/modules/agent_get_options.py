@@ -1,3 +1,4 @@
+#-*- coding: utf8 -*-
 __version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2008-2010  Proformatique <technique@proformatique.com>
@@ -42,7 +43,29 @@ def agent_get_options(agi, cursor, args):
     agi.set_variable('XIVO_AGENTPASSWD', agent.passwd)
     agi.set_variable('_XIVO_AGENTID', agent.id)
     agi.set_variable('_XIVO_AGENTNUM', agent.number)
-    agi.set_variable('_XIVO_AGENTLANGUAGE', agent.language)
     agi.set_variable('_XIVO_AGENTOPTIONS', options)
+
+    # get agent lang
+    lang = agent.language
+    if lang is None or len(lang) == 0:
+        userid = agi.get_variable('XIVO_USERID')
+        if userid:
+            try:				
+                caller = objects.User(agi, cursor, int(userid))
+                lang = caller.language						
+
+                # get channel default lang
+                if lang is None or len(lang) == 0:
+                    static = objects.Static(cursor, caller.protocol)
+                    lang = static.language										
+
+            except (ValueError, LookupError), e:
+                pass
+
+    if lang is None or len(lang) == 0:
+        # setting default value
+        lang = 'en_US'
+
+    agi.set_variable('_XIVO_AGENTLANGUAGE', lang)
 
 agid.register(agent_get_options)
