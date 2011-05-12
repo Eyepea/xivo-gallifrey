@@ -22,6 +22,7 @@ import logging
 import os
 import subprocess
 import ftplib
+import time
 from ConfigParser import RawConfigParser
 from xivo_agid import agid
 
@@ -35,7 +36,7 @@ DESTINATIONS  = {}
 
 
 def _pdffile_from_file(file):
-    return file.rsplit(".", 1) + ".pdf"
+    return file.rsplit(".", 1)[0] + ".pdf"
 
 
 def _convert_tiff_to_pdf(tifffile, pdffile=None):
@@ -132,7 +133,7 @@ def _new_log_backend(file, msg):
     def aux(faxfile, dstnum, args):
         fobj = open(file, "a")
         try:
-            print >>fobj, msg % {"dstnum": dstnum} 
+            print >>fobj, time.strftime("%Y-%m-%d %H:%M:%S"), msg % {"dstnum": dstnum} 
         finally:
             fobj.close()
     return aux
@@ -145,9 +146,11 @@ def _do_handle_fax(faxfile, dstnum, args):
         raise ValueError("Invalid dstnum value: %s" % dstnum)
     
     if dstnum in DESTINATIONS:
+        logger.debug("Using backends for destination %s", dstnum)
         backends = DESTINATIONS[dstnum]
     else:
         if "default" in DESTINATIONS:
+            logger.debug("Using backends for destination default")
             backends = DESTINATIONS["default"]
         else:
             raise ValueError("No backends associated with dstnum %s" % dstnum)
@@ -213,6 +216,7 @@ def setup_handle_fax(cursor):
     logger.debug("Created %s backends", len(backends))
 
     # 4. creation destinations
+    global DESTINATIONS
     DESTINATIONS = {}
     for section in filter(lambda s: s.startswith("dstnum_"), config.sections()):
         cur_destination = section[7:]   # 6 == len("dstnum_")
