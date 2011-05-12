@@ -56,7 +56,7 @@ class Polycom(PhoneVendorMixin):
                       ('spip_6000', 'SSIP6000'),
                       ('spip_7000', 'SSIP7000'))
 
-    POLYCOM_SSIP_MODELS = ('ssip_4000', 'spip_5000', 'ssip_6000', 'ssip_7000')
+    POLYCOM_SSIP_MODELS = ('ssip_5000', 'ssip_6000', 'ssip_7000')
 
     POLYCOM_COMMON_HTTP_USER = "Polycom"
     POLYCOM_COMMON_HTTP_PASS = "456"
