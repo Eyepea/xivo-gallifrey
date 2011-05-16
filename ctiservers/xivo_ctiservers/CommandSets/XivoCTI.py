@@ -73,7 +73,7 @@ log = logging.getLogger('xivocti')
 
 XIVOVERSION_NUM = '1.1'
 XIVOVERSION_NAME = 'gallifrey'
-__revision__ = __version__.split()[1]
+__revision__ = '10234'
 __alphanums__ = string.uppercase + string.lowercase + string.digits
 HISTSEPAR = ';'
 AMI_ORIGINATE = 'originate'

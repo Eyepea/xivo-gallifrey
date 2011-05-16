@@ -52,7 +52,7 @@ __author__    = 'Corentin Le Gall'
 #
 """
 
-__revision__ = __version__.split()[1]
+__revision__ = '10123'
 
 # debian.org modules
 import getopt
