@@ -85,6 +85,9 @@ Round robin
 ; fm_queue_strategy-opt(rrmemory)
 Round robin memory
 
+; fm_queue_strategy-opt(rrordered)
+Round robin ordered
+
 ; fm_queue_strategy-opt(random)
 Random
 

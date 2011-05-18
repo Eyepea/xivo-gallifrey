@@ -79,6 +79,9 @@ Répartition cyclique
 ; fm_queue_strategy-opt(rrmemory)
 Répartition cyclique (mémorisée)
 
+; fm_queue_strategy-opt(rrordered)
+Répartition cyclique (ordonnée)
+
 ; fm_queue_strategy-opt(random)
 Aléatoire
 

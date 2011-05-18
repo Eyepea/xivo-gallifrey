@@ -40,7 +40,8 @@ $array['element']['strategy'] = array();
 $array['element']['strategy']['value'] = array('leastrecent',
 					       'fewestcalls',
 					       'roundrobin',
-					       'rrmemory',
+								 'rrmemory',
+								 'rrordered',
 					       'random',
 					       'ringall');
 $array['element']['strategy']['default'] = 'ringall';
@@ -202,6 +203,7 @@ $array['filter']['strategy'] = array('set'	=> false,
 							 'fewestcalls',
 							 'roundrobin',
 							 'rrmemory',
+							 'rrordered',
 							 'random',
 							 'ringall'));
 $array['filter']['servicelevel'] = array('set' => false,'chk' => 2,'cast' => 'int');
