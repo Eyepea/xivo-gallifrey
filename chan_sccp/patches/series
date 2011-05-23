@@ -6,3 +6,4 @@ fix_reregistration
 fix_config_update_deadlock
 fix_answer_key_crash
 fix_indicate_call_later
+fix_forward_on_bad_numbers
