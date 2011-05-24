@@ -86,9 +86,14 @@ class Capabilities:
         return self.guisettings
 
     def setguisettings(self, guisettings):
-        if guisettings.has_key(''):
-            del guisettings['']
-        self.guisettings = guisettings
+        self.guisettings = {}
+        for k, v in guisettings.iteritems():
+            if k:
+                if v.startswith('{') and v.endswith('}'):
+                    vv = cjson.decode(v.replace('\"', '"'))
+                else:
+                    vv = v
+                self.guisettings[k] = vv
         return
 
     # maxgui's
