@@ -1,0 +1,98 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.c	2011-05-25 11:23:26.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c	2011-05-25 11:23:45.000000000 +0200
+@@ -2684,14 +2684,14 @@
+  * \lock
+  * 	- channel
+  */
+-void sccp_channel_forward(sccp_channel_t * parent, sccp_linedevices_t * lineDevice, char *fwdNumber)
++int sccp_channel_forward(sccp_channel_t * parent, sccp_linedevices_t * lineDevice, char *fwdNumber)
+ {
+ 	sccp_channel_t *forwarder = NULL;
+ 	char dialedNumber[256];
+
+ 	if (!parent) {
+ 		ast_log(LOG_ERROR, "We can not forward a call without parent channel\n");
+-		return;
++		return -1;
+ 	}
+
+ 	sccp_copy_string(dialedNumber, fwdNumber, sizeof(dialedNumber));
+@@ -2700,7 +2700,7 @@
+
+ 	if (!forwarder) {
+ 		ast_log(LOG_ERROR, "%s: Can't allocate SCCP channel\n", lineDevice->device->id);
+-		return;
++		return -1;
+ 	}
+
+ 	forwarder->parentChannel = parent;
+@@ -2718,7 +2718,7 @@
+ 		sccp_line_removeChannel(forwarder->line, forwarder);
+ 		sccp_channel_clean_locked(forwarder);
+ 		sccp_channel_destroy_locked(forwarder);
+-		return;
++		return -1;
+ 	}
+
+ 	/* setting callerid */
+@@ -2747,8 +2747,16 @@
+ 			ast_log(LOG_WARNING, "%s: invalide number\n", "SCCP");
+ 		}
+ 	}
++	else
++	{
++		ast_log(LOG_NOTICE, "%s: (sccp_channel_forward) channel %s-%08x cannot dial this number %s\n", "SCCP",
++				     forwarder->line->name, forwarder->callid, dialedNumber);
++		sccp_channel_endcall_locked(forwarder);
++		return -1;
++	}
+
+ 	sccp_channel_unlock(forwarder);
++	return 0;
+ }
+
+ #ifdef CS_SCCP_PARK
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.h
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.h	2011-05-25 11:23:28.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.h	2011-05-25 11:23:46.000000000 +0200
+@@ -67,7 +67,7 @@
+ void sccp_channel_destroy_rtp(sccp_channel_t * c);
+ void sccp_channel_transfer_locked(sccp_channel_t * c);
+ void sccp_channel_transfer_complete(sccp_channel_t * c);
+-void sccp_channel_forward(sccp_channel_t * parent, sccp_linedevices_t * lineDevice, char *fwdNumber);
++int sccp_channel_forward(sccp_channel_t * parent, sccp_linedevices_t * lineDevice, char *fwdNumber);
+ #    ifdef CS_SCCP_PARK
+ void sccp_channel_park(sccp_channel_t * c);
+ #    endif
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_pbx.c	2011-05-25 11:23:31.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c	2011-05-25 11:23:52.000000000 +0200
+@@ -297,10 +297,11 @@
+ 		/* do we have cfwd enabled? */
+ 		if (linedevice->cfwdAll.enabled) {
+ 			ast_log(LOG_NOTICE, "%s: initialize cfwd for line %s\n", linedevice->device->id, l->name);
+-			sccp_device_sendcallstate(linedevice->device, linedevice->lineInstance, c->callid, SKINNY_CALLSTATE_INTERCOMONEWAY, SKINNY_CALLPRIORITY_NORMAL, SKINNY_CALLINFO_VISIBILITY_DEFAULT);
+-			sccp_channel_send_callinfo(linedevice->device, c);
+-			sccp_channel_forward(c, linedevice, linedevice->cfwdAll.number);
+-			isRinging = TRUE;
++			if (sccp_channel_forward(c, linedevice, linedevice->cfwdAll.number) == 0) {
++				sccp_device_sendcallstate(linedevice->device, linedevice->lineInstance, c->callid, SKINNY_CALLSTATE_INTERCOMONEWAY, SKINNY_CALLPRIORITY_NORMAL, SKINNY_CALLINFO_VISIBILITY_DEFAULT);
++				sccp_channel_send_callinfo(linedevice->device, c);
++				isRinging = TRUE;
++			}
+ 			continue;
+ 		}
+
+@@ -349,7 +350,7 @@
+ 		ast_queue_control(ast, AST_CONTROL_CONGESTION);
+ 	}
+
+-	return 0;
++	return isRinging != TRUE;
+ }
+
+ /*!
