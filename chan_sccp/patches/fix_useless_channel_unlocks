@@ -1,0 +1,155 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_actions.c	2011-05-25 16:54:12.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c	2011-05-25 16:55:15.000000000 +0200
+@@ -998,7 +998,6 @@
+ 			if (c->state != SCCP_CHANNELSTATE_CONNECTED) {
+ 				sccp_log(1) (VERBOSE_PREFIX_3 "%s: Call not in progress. Closing line %s\n", d->id, (l) ? l->name : "(nil)");
+ 				sccp_channel_endcall_locked(c);
+-				sccp_channel_unlock(c);
+ 				sccp_dev_deactivate_cplane(d);
+ 				return;
+ 			} else {
+@@ -1073,7 +1072,9 @@
+ 			if (c1) {
+ 				if(c1->state == SCCP_CHANNELSTATE_OFFHOOK)
+ 					sccp_channel_endcall_locked(c1);
+-				sccp_channel_unlock(c1);
++				else
++					sccp_channel_unlock(c1);
++				c1 = NULL;
+ 			}
+ 			sccp_channel_resume_locked(d, c);
+ 			sccp_channel_unlock(c);
+@@ -1439,7 +1440,6 @@
+ 		sccp_dev_stoptone(d, 0, 0);
+ 	} else {
+ 		sccp_channel_endcall_locked(c);
+-		sccp_channel_unlock(c);
+ 	}
+ 
+ 	return;
+@@ -2855,7 +2855,6 @@
+ 	if (status) {
+ 		ast_log(LOG_WARNING, "%s: Error while opening MediaTransmission. Ending call\n", DEV_ID_LOG(d));
+ 		sccp_channel_endcall_locked(c);
+-		sccp_channel_unlock(c);
+ 		return;
+ 	}
+ 
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.c	2011-05-25 16:54:17.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c	2011-05-25 16:55:16.000000000 +0200
+@@ -1539,6 +1539,8 @@
+ 
+ 	if (!c || !c->line) {
+ 		ast_log(LOG_WARNING, "No channel or line or device to hangup\n");
++		if (c)
++			sccp_channel_unlock(c);
+ 		return;
+ 	}
+ 
+@@ -1600,6 +1603,7 @@
+ 		}
+ 	} else {
+ 		sccp_log((DEBUGCAT_CHANNEL | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_1 "%s: No Asterisk channel to hangup for sccp channel %d on line %s\n", DEV_ID_LOG(c->device), c->callid, c->line->name);
++		sccp_channel_unlock(c);
+ 	}
+ }
+ 
+@@ -1790,12 +1794,14 @@
+ 		/* If there is a ringout or offhook call, we end it so that we can answer the call. */
+ 		if (c1->state == SCCP_CHANNELSTATE_OFFHOOK || c1->state == SCCP_CHANNELSTATE_RINGOUT) {
+ 			sccp_channel_endcall_locked(c1);
+-		} else if (!sccp_channel_hold_locked(c1)) {
+-			/* there is an active call, let's put it on hold first */
++		} else {
++			if (!sccp_channel_hold_locked(c1)) {
++				/* there is an active call, let's put it on hold first */
++				sccp_channel_unlock(c1);
++				return;
++			}
+ 			sccp_channel_unlock(c1);
+-			return;
+ 		}
+-		sccp_channel_unlock(c1);
+ 		c1 = NULL;
+ 	}
+ 
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_device.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_device.c	2011-05-25 16:54:44.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_device.c	2011-05-25 16:55:17.000000000 +0200
+@@ -1642,7 +1642,6 @@
+ 					sccp_log((DEBUGCAT_CORE | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_2 "SCCP: Hangup open channel on line %s device %s\n", line->name, d->id);
+ 					sccp_channel_lock(channel);
+ 					sccp_channel_endcall_locked(channel);
+-					sccp_channel_unlock(channel);
+ 				}
+ 			}
+ 			SCCP_LIST_UNLOCK(&line->channels);
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_features.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_features.c	2011-05-25 16:54:56.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_features.c	2011-05-25 16:55:18.000000000 +0200
+@@ -115,7 +115,6 @@
+ 					//sccp_dev_starttone(device, SKINNY_TONE_ZIPZIP, instance, 0, 0);
+ 
+ 					sccp_channel_endcall_locked(c);
+-					sccp_channel_unlock(c);
+ 					return NULL;
+ 				}
+ 			} else if (c->owner && (bridge = ast_bridged_channel(c->owner))) {	// check if we have an ast channel to get callerid from
+@@ -143,7 +142,6 @@
+ 					sccp_dev_starttone(device, SKINNY_TONE_ZIPZIP, linedevice->lineInstance, 0, 0);
+ 
+ 					sccp_channel_endcall_locked(c);
+-					sccp_channel_unlock(c);
+ 					sccp_free(number);
+ 					return NULL;
+ 				}
+@@ -193,7 +191,6 @@
+ 		ast_log(LOG_WARNING, "%s: (handle_callforward) Unable to allocate a new channel for line %s\n", device->id, l->name);
+ 		sccp_indicate_locked(c->device, c, SCCP_CHANNELSTATE_CONGESTION);
+ 		sccp_channel_endcall_locked(c);
+-		sccp_channel_unlock(c);
+ 		return c;
+ 	}
+ 
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_pbx.c	2011-05-25 16:54:19.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_pbx.c	2011-05-25 16:55:20.000000000 +0200
+@@ -596,7 +596,6 @@
+ #if 0
+ 			sccp_channel_lock(c->parentChannel);
+ 			sccp_channel_endcall_locked(c->parentChannel);
+-			sccp_channel_unlock(c->parentChannel);
+ #endif
+ 			return 0;
+ 		}
+@@ -607,11 +606,9 @@
+ #if 0
+ 		sccp_channel_lock(c->parentChannel);
+ 		sccp_channel_endcall_locked(c->parentChannel);
+-		sccp_channel_unlock(c->parentChannel);
+ #endif
+ 		sccp_channel_lock(c);
+ 		sccp_channel_endcall_locked(c);
+-		sccp_channel_unlock(c);
+ 		return -1;
+ 	}
+ 
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_softkeys.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_softkeys.c	2011-05-25 16:54:51.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_softkeys.c	2011-05-25 16:55:20.000000000 +0200
+@@ -360,7 +360,6 @@
+ 	}
+ 	sccp_channel_lock(c);
+ 	sccp_channel_endcall_locked(c);
+-	sccp_channel_unlock(c);
+ }
+ 
+ /*!
