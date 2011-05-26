@@ -47,6 +47,9 @@ class xivo_service_asterisk_cdr extends xivo_service_asterisk_abstract
 
 		$search = array();
 
+		if(dwho_has_len($arr,'idbeg') === true)
+			$search['idbeg'] =  $arr['idbeg'];
+
 		if(dwho_has_len($arr,'dbeg') === true)
 		{
 			$date = array('dbeg' => null,'dend' => null);

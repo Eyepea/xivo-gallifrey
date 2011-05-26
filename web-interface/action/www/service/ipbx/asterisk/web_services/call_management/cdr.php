@@ -23,13 +23,34 @@ $access_subcategory = 'cdr';
 
 include(dwho_file::joinpath(dirname(__FILE__),'..','_common.php'));
 
+$cdr = &$ipbx->get_module('cdr');
+
 switch($_QRY->get('act'))
 {
+	case 'searchid':
+		$result = false;
+		
+		if(isset($_QR['idbeg']) !== false
+		&& ($result = $cdr->search($_QR,'calldate')) !== false)
+		{
+			if($result === null)
+			{
+				$http_response->set_status_line(204);
+				$http_response->send(true);
+			}
+		}
+		else
+		{
+			$http_response->set_status_line(400);
+			$http_response->send(true);
+		}
+
+		$_TPL->set_var('result',$result);
+		$_TPL->display('/service/ipbx/'.$ipbx->get_name().'/call_management/cdr');
+		break;
 	case 'search':
 	default:
 		$result = false;
-
-		$cdr = &$ipbx->get_module('cdr');
 
 		if(($info = $cdr->chk_values($_QRY->request_meth_raw(),false)) !== false
 		&& ($result = $cdr->search($info,'calldate')) !== false)

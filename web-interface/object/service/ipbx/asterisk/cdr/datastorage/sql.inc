@@ -72,6 +72,9 @@ class xivo_service_asterisk_cdr_sql extends xivo_service_asterisk_abstract_sql
 			$this->_dso->wheredate('calldate',$dbeg,$dend,null,$format);
 		}
 
+		if(isset($arr['idbeg']) === true)
+			$this->_dso->where(sprintf('id > %s',$arr['idbeg']));
+
 		if(isset($arr['channel']) === true)
 		{
 			if(is_array($arr['channel']) === true)
