@@ -30,23 +30,42 @@ import urllib
 log = logging.getLogger('capas')
 
 class Capabilities:
-    allowed_funcs = ['agents', 'conference', 'customerinfo', 'dial',
-                     'directory', 'fax', 'features', 'history',
-                     'chitchat', 'presence', 'database',
-                     'switchboard']
+    allowed_funcs = [
+        # action rights
+        'agents', 'conference', 'customerinfo', 'dial',
+        'directory', 'fax', 'features', 'history',
+        'chitchat', 'presence', 'database',
+        # record campaigns acl
+        'supervisor', 'administrator',
+        # misc. switchboard-related actions
+        'switchboard', 'pickup'
+        ]
 
     def __init__(self, allowed_xlets):
-        self.capafuncs = []
-        self.capadisps = []
-        self.capaservices = []
         self.appliname = 'Client'
+        self.capaxlets = []
+
+        self.capafuncs = []
+        self.capaservices = []
         self.guisettings = {}
         self.conngui = 0
         self.maxgui = -1
         self.presenceid = 'none'
         self.watchedpresenceid = 'none'
-        self.guiurl = None
         self.allowed_xlets = allowed_xlets
+        return
+
+    def setappliname(self, appliname):
+        self.appliname = appliname
+        return
+
+    def setxlets(self, capalist):
+        for detail in capalist:
+            capa = '-'.join(detail)
+            if detail[0] in self.allowed_xlets.keys():
+                if capa not in self.capaxlets:
+                    self.capaxlets.append(capa)
+                self.setfuncs(self.allowed_xlets[detail[0]])
         return
 
     def setfuncs(self, capalist):
@@ -55,31 +74,8 @@ class Capabilities:
                 self.capafuncs.append(capa)
         return
 
-    def setxlets(self, capalist):
-        for detail in capalist:
-            capa = '-'.join(detail)
-            if detail[0] in self.allowed_xlets.keys():
-                if capa not in self.capadisps:
-                    self.capadisps.append(capa)
-                self.setfuncs(self.allowed_xlets[detail[0]])
-        return
-    
-    def setappliname(self, appliname):
-        self.appliname = appliname
-        return
-
     def setservices(self, services):
         self.capaservices = services
-        return
-
-    def setpresenceid(self, presenceid):
-        self.presenceid = presenceid
-        if self.watchedpresenceid == 'none':
-            self.watchedpresenceid = presenceid
-        return
-
-    def setwatchedpresenceid(self, watchedpresenceid):
-        self.watchedpresenceid = watchedpresenceid
         return
 
     def getguisettings(self):
@@ -94,6 +90,16 @@ class Capabilities:
                 else:
                     vv = v
                 self.guisettings[k] = vv
+        return
+
+    def setpresenceid(self, presenceid):
+        self.presenceid = presenceid
+        if self.watchedpresenceid == 'none':
+            self.watchedpresenceid = presenceid
+        return
+
+    def setwatchedpresenceid(self, watchedpresenceid):
+        self.watchedpresenceid = watchedpresenceid
         return
 
     # maxgui's
@@ -135,6 +141,9 @@ class Capabilities:
         return lst
 
     def match_funcs(self, ucapas, capa_str):
+        """
+        ucapas is intended to be a mask for some user-level defined capas
+        """
         capas = capa_str.split(',')
         for cap in capas:
             if cap in self.capafuncs:

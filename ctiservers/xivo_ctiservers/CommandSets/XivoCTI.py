@@ -54,11 +54,13 @@ from xivo_ctiservers import cti_grouplist
 from xivo_ctiservers import cti_phonelist
 from xivo_ctiservers import cti_meetmelist
 from xivo_ctiservers import cti_voicemaillist
+from xivo_ctiservers import cti_campaignlist
 from xivo_ctiservers import cti_incomingcalllist
 from xivo_ctiservers import cti_trunklist
 from xivo_ctiservers import cti_phonebook
 from xivo_ctiservers import cti_directories
 from xivo_ctiservers import cti_extrarequests
+from xivo_ctiservers import xivo_records_base
 
 from xivo_ctiservers.cti_sheetmanager import SheetManager
 
@@ -126,6 +128,7 @@ class XivoCTICommand(BaseCommand):
                  'ipbxcommand',
                  'callcampaign',
 
+                 'records-campaign',
                  'getqueuesstats',
                  # to be prefixed with call. someday
                  'originate', 'dial',
@@ -171,6 +174,7 @@ class XivoCTICommand(BaseCommand):
                          'meetme' : {},
                          'incomingcalls' : {},
                          'voicemail' : {},
+                         'callcenter_campaigns' : {},
                          'phonebook' : {} }
         self.weblistprops = {'agents' : {'classfile' : cti_agentlist, 'classname' : 'AgentList'},
                              'queues' : {'classfile' : cti_queuelist, 'classname' : 'QueueList'},
@@ -180,6 +184,7 @@ class XivoCTICommand(BaseCommand):
                              'meetme' : {'classfile' : cti_meetmelist, 'classname' : 'MeetmeList'},
                              'incomingcalls' : {'classfile' : cti_incomingcalllist, 'classname' : 'IncomingCallList'},
                              'voicemail' : {'classfile' : cti_voicemaillist, 'classname' : 'VoiceMailList'},
+                             'callcenter_campaigns' : {'classfile' : cti_campaignlist, 'classname' : 'CampaignList'},
                              'phonebook' : {'classfile' : cti_phonebook, 'classname' : 'PhoneBook'}
                              }
         # self.plist_ng = cti_phonelist.PhoneList()
@@ -577,14 +582,16 @@ class XivoCTICommand(BaseCommand):
             tosend = { 'class' : 'login_capas_ok',
                        'astid' : astid,
                        'xivo_userid' : userinfo.get('xivo_userid'),
-                       'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
-                       'capaxlets' : self.capas[capaid].capadisps,
                        'appliname' : self.capas[capaid].appliname,
+                       'capaxlets' : self.capas[capaid].capaxlets,
+
+                       'capafuncs' : self.capas[capaid].tostringlist(self.capas[capaid].all()),
                        'guisettings' : self.capas[capaid].getguisettings(),
+                       'capaservices' : self.capas[capaid].capaservices,
+
                        'capapresence' : { 'names'   : details,
                                           'state'   : statedetails,
                                           'allowed' : allowed },
-                       'capaservices' : self.capas[capaid].capaservices,
                        'presencecounter' : cstatus
                        }
 
@@ -737,12 +744,12 @@ class XivoCTICommand(BaseCommand):
                     continue
                 if prop == 'xlets':
                     self.capas[name].setxlets(value)
-                elif prop == 'funcs':
-                    self.capas[name].setfuncs(value)
                 elif prop == 'maxgui':
                     self.capas[name].setmaxgui(value)
                 elif prop == 'appliname':
                     self.capas[name].setappliname(value)
+                elif prop == 'funcs':
+                    self.capas[name].setfuncs(value)
                 elif prop == 'services':
                     self.capas[name].setservices(value)
                 elif prop == 'preferences':
@@ -776,6 +783,13 @@ class XivoCTICommand(BaseCommand):
         self.configs = configs
         return
 
+    def set_cdr_db_uri(self, uri):
+        try:
+            self.records_base = xivo_records_base.XivoRecords(self, uri)
+        except Exception:
+            self.records_base = None
+        return
+
     def set_urllist(self, astid, listname, urllist):
             if listname == 'phones':
                 # XXX
@@ -788,6 +802,9 @@ class XivoCTICommand(BaseCommand):
                 cn = self.weblistprops[listname]['classname']
                 self.weblist[listname][astid] = getattr(cf, cn)(urllist, { 'conf' : self.lconf })
                 self.weblist[listname][astid].setcommandclass(self)
+            if listname == 'callcenter_campaigns':
+                if self.records_base:
+                    self.records_base.fetch_config(astid)
             if listname == 'phones':
                 # XXX
                 self.weblist['phones'][astid].setdisplayhints(self.display_hints)
@@ -1298,7 +1315,7 @@ class XivoCTICommand(BaseCommand):
                 for k, v in z.iteritems():
                     if v: # since WEBI config generates a default {'null' : ''} entry
                         try:
-                            r = urllib.urlopen(v)
+                            r = urllib.urlopen(v.replace('\/', '/'))
                             t = r.read().decode('utf8')
                             r.close()
                         except Exception, exc: # conscious limited exception output ("No such file or directory")
@@ -2722,6 +2739,12 @@ class XivoCTICommand(BaseCommand):
         if chan in self.queues_channels_list[astid]:
             del self.queues_channels_list[astid][chan]
 
+        try:
+            if self.records_base:
+                self.records_base.hangup_if_started(chan, uid)
+        except Exception:
+            log.exception('casual call to records campaign treatment')
+
         self.__remove_local_channel__(astid, chan)
 
         if uid in self.uniqueids[astid]:
@@ -3151,20 +3174,15 @@ class XivoCTICommand(BaseCommand):
             # % (astid, application, uniqueid, event.get('AppData').split('|')))
             # set extension only if numeric
 
-            elif application == 'BackGround':
-                pass
-            elif application == 'WaitExten':
-                pass
-            elif application == 'Set':
+            # elif application in ['BackGround', 'WaitExten', 'Read']:
+            elif application in ['Set']:
                 # why "Newexten + Set" and not "UserEvent + dialplan2cti" ?
                 # - catched without need to add a dialplan line
                 # - convenient when one is sure the variable goes this way
                 # - channel and uniqueid already there
-
-                # (myvar, myval) = event.get('AppData').split('=')
-
-                pass
-
+                (myvar, myval) = event.get('AppData').split('=', 1)
+                if myvar == 'XIVO_QUEUESKILLRULESET':
+                    self.uniqueids[astid][uniqueid]['skillrule'] = myval
             if event.get('Extension').isdigit():
                 self.uniqueids[astid][uniqueid]['extension'] = event.get('Extension')
         # TODO do not call __sheet_alert__ so often
@@ -3542,7 +3560,25 @@ class XivoCTICommand(BaseCommand):
 
     def ami_agentconnect(self, astid, event):
         log.info('%s ami_agentconnect : %s' % (astid, event))
-        agent_channel = event.get('Member')
+        uniqueid = event.get('Uniqueid')
+        agent_channel = event.get('Channel')
+        queuename = event.get('Queue')
+        if uniqueid in self.uniqueids[astid]:
+            vv = self.uniqueids[astid][uniqueid]
+            if self.records_base:
+                try:
+                    self.records_base.record_if_required(astid,
+                                                         'I',
+                                                         uniqueid,
+                                                         vv.get('channel'), # caller
+                                                         queuename, # queue
+                                                         agent_channel, # agent selected
+                                                         vv.get('skillrule')
+                                                         )
+                except Exception:
+                    log.exception('event %s' % event)
+        else:
+            log.warning('%s ami_agentconnect : unable to find uniqueid' % (astid, uniqueid))
         if agent_channel.startswith('Agent/'):
             agent_number = agent_channel[LENGTH_AGENT:]
             if astid in self.weblist['agents']:
@@ -5240,6 +5276,10 @@ class XivoCTICommand(BaseCommand):
                             # self.__send_msg_to_cti_client__(userinfo,
                             # '{'class':"callcampaign","command":"callnext","list":["%s"]}' % icommand.args[1])
 
+                    elif classcomm == 'records-campaign':
+                        if self.records_base:
+                            repstr = self.records_base.records_campaign(userinfo, icommand.struct)
+
                     elif classcomm in ['originate', 'transfer', 'atxfer']:
                         if self.capas[capaid].match_funcs(ucapa, 'dial'):
                             repstr = self.__originate_or_transfer__(classcomm,
@@ -5465,6 +5505,13 @@ class XivoCTICommand(BaseCommand):
         """
         for userinfo in self.ulist_ng.keeplist.itervalues():
             self.__logout_agent__(userinfo)
+        return
+
+    def cron_actions(self, arguments):
+        """
+        """
+        if self.records_base:
+                self.records_base.purge_records(arguments)
         return
 
     def regular_update(self):

@@ -122,6 +122,7 @@ infohelptext = ['',
                 'disc <ip> <port>             : closes the socket linked to <ip>:<port> if present',
                 'ami <astid> <command> <args> : executes the CTI-defined AMI function on <astid>',
                 'reverse <dirname> <number>   : lookup the number in the given directory',
+                'cron-actions                 : performs actions according to crontab requests',
                 '']
 
 def parse_command_line():
@@ -383,6 +384,8 @@ class manage_connection:
                             connid.sendall('%s %s\n' % (user.encode('latin1'), info))
                         except Exception:
                             log.exception('INFO %s' % usefulmsg)
+                elif usefulmsg.startswith('cron-actions'):
+                    daemon.commandclass.cron_actions(usefulmsg.split()[1:])
                 elif usefulmsg in show_command_list:
                     itemname = usefulmsg[5:]
                     for astid, itm in daemon.commandclass.getdetails(itemname).iteritems():
@@ -999,6 +1002,7 @@ class xivo_daemon:
                                                                  faxcallerid,
                                                                  aoriginate)
 
+                self.commandclass.set_cdr_db_uri(cdr_db_uri)
                 for ilist in self.commandclass.weblist.keys():
                     self.commandclass.set_urllist(astid, ilist, urllist[ilist])
 
@@ -1324,6 +1328,7 @@ class xivo_daemon:
                             astid = self.amilist.astid(sel_i)
                             sock = self.amilist.ami[astid].sock
                             buf = sock.recv(200000)
+
                             if len(buf) == 0:
                                 log.warning('%s AMI : CLOSING' % astid)
                                 self.amilist.remove(astid)
