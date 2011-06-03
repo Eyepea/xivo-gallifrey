@@ -1,0 +1,13 @@
+Index: asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c
+===================================================================
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_actions.c	2011-06-03 16:43:11.000000000 +0200
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_actions.c	2011-06-03 16:43:13.000000000 +0200
+@@ -1361,7 +1361,7 @@
+ 		} else {
+ 			l = sccp_dev_get_activeline(d);
+ 		}
+-		sccp_log(1) (VERBOSE_PREFIX_3 "%s: Using line %s\n", d->id, l->name);
++		sccp_log(1) (VERBOSE_PREFIX_3 "%s: Using line %s\n", d->id, l ? l->name : "(null)");
+ 
+ 		if (l && !ast_strlen_zero(l->adhocNumber)) {
+ 			sccp_channel_newcall(l, d, l->adhocNumber, SKINNY_CALLTYPE_OUTBOUND);
