@@ -6,7 +6,12 @@ fix_reregistration
 fix_config_update_deadlock
 fix_answer_key_crash
 fix_indicate_call_later
-fix_forward_on_bad_numbers
-fix_forward_indicate_invalid_numbers
+
+# introduce a new crash issue:
+#fix_forward_on_bad_numbers
+#fix_forward_indicate_invalid_numbers
+
+# new deadlocks:
 #fix_useless_channel_unlocks
+
 fix_devices_without_line
