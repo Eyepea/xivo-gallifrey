@@ -217,7 +217,7 @@ for r in cursor.fetchall():
     print "id = %s" % r['name']
     print "label = %s" % label
     print "pin = %s" % r['pin']
-    print "cid_name = %s" % r['cid_name']
+    print "cid_name = %s" % r['cid_name'].encode('utf8','ignore')
     print "cid_num = %s" % r['cid_num']
     
     for k, v in r.iteritems():
