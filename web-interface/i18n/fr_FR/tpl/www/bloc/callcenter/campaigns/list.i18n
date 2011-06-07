@@ -1,0 +1,21 @@
+
+; col_name
+Nom
+
+; col_occasional
+Ponctuelle
+
+; col_start
+Date de début
+
+; col_end
+Date de fin
+
+; no_campaigns
+Aucune campagne
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette campagne ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces campagnes ?

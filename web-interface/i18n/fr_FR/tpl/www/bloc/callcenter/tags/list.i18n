@@ -1,0 +1,28 @@
+
+; col_name
+Nom
+
+; col_label
+Libellé
+
+; col_tagaction
+Gestion des enregistrements
+
+; fm_tag_action-opt(removenow)
+Suppression immédiate
+
+; fm_tag_action-opt(keep)
+Conserver
+
+; fm_tag_action-opt(purge)
+Suppression programmée
+
+
+; no_tags
+Aucune étiquette
+
+; opt_delete_confirm
+Etes-vous certain de vouloir supprimer cette étiquette ?
+
+; toolbar_adv_menu_delete_confirm
+Etes-vous certain de vouloir supprimer cette ou ces étiquettes ?

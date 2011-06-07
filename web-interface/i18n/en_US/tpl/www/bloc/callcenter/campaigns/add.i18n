@@ -1,0 +1,49 @@
+; title_content_name
+Campaign > Add
+
+; smenu_general
+General
+
+; smenu_filters
+Filters
+
+; fm_campaign_name
+Name : 
+
+; fm_campaign_occasional
+Punctual : 
+
+; fm_campaign_start
+Start date : 
+
+; fm_campaign_end
+Stop date : 
+
+; fld-campaign-filter-agents
+Agents
+
+; fld-campaign-filter-queues
+Queues
+
+; fld-campaign-filter-skills
+Skills
+
+; fld-campaign-filter-way
+Direction
+
+; fm_campaign_filter_way_in
+Incoming calls : 
+
+; fm_campaign_filter_way_out
+Outgoing calls : 
+
+; hlp_fm_campaign_occasional
+Check if this is a selective campaign
+
+; error(record_error)
+This name is already defined
+
+; hlp_fm_campaign_filter_way_in
+
+; hlp_fm_campaign_filter_way_out
+

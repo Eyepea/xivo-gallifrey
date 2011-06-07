@@ -323,3 +323,12 @@ Provisioning
 
 ; acl(xivo-configuration-provisioning-general)
 General
+
+; acl(service-callcenter-general)
+General
+
+; acl(service-callcenter-tags)
+Tags
+
+; acl(service-callcenter-campaigns)
+Campaigns

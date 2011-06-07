@@ -332,4 +332,20 @@ $array['general'] = array();
 $array['general']['table'] = 'general';
 $array['general']['primary'] = array('id' => '');
 
+$array['campaign_general'] = array();
+$array['campaign_general']['table'] = 'callcenter_campaigns_general';
+$array['campaign_general']['primary'] = array('id' => '');
+
+$array['campaign_tag'] = array();
+$array['campaign_tag']['table'] = 'callcenter_campaigns_tag';
+$array['campaign_tag']['primary'] = array('name' => '');
+
+$array['campaign_campaign'] = array();
+$array['campaign_campaign']['table'] = 'callcenter_campaigns_campaign';
+$array['campaign_campaign']['primary'] = array('id' => '');
+
+$array['campaign_campaign_filter'] = array();
+$array['campaign_campaign_filter']['table'] = 'callcenter_campaigns_campaign_filter';
+$array['campaign_campaign_filter']['primary'] = array('campaign_id' => '', 'type' => '', 'value' => '');
+
 ?>

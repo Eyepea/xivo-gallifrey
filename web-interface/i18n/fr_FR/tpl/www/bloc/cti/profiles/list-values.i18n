@@ -22,44 +22,52 @@ Transfert sur occupation
 ; fwdrna
 Transfert sur non-réponse
 
-; presence 
+
+
+; func-presence 
 Autoriser l'information de présence
 
-; switchboard 
+; func-switchboard 
 Mise en relation extérieure des téléphones
 
-; customerinfo 
+; func-customerinfo 
 Autoriser les fiches client
 
-; agents
+; func-agents
 Agents
 
-; search 
+; func-search 
 Contacts
 
-; dial 
+; func-dial 
 Composer
 
-; chitchat
+; func-chitchat
 Messagerie instantanée
 
-; conference
+; func-conference
 Autoriser les chambres de conférence
 
-; directory
+; func-directory
 Répertoire
 
-; fax
+; func-fax
 Autoriser l'accés au fax
 
-; features
+; func-features
 Autoriser les services
 
-; history
+; func-history
 Autoriser l'historique
 
-; database
+; func-database
 Autoriser l'écriture dans la base de données
+
+; func-supervisor
+Accorder un droit superviseur pour les campagnes d'enregistrements
+
+; func-administrator
+Accorder un droit administrateur pour les campagnes d'enregistrements
 
 
 
@@ -178,6 +186,9 @@ Mon répertoire local
 
 ; xlet-callcampaign
 Campagnes d'appel
+
+; xlet-record
+Campagnes d'enregistrements
 
 ; xlet-tabber
 Tabber

@@ -343,7 +343,8 @@ switch($act)
 					'appliname' => $pf['appliname'],
 					'presence' => "presences.".$pf['presence'],
 					'services' => explode(',', $pf['services']),
-					'preferences' => strlen($pf['preferences']) == 0?null:dwho_json::decode($pf['preferences'])
+					'preferences' => $prefout,
+					'callcenter_type' => $pf['callcenter_type']
 				);
 			}
 		}
@@ -384,6 +385,7 @@ switch($act)
 											$json . 'trunk_management/iax'
 										),
 					'urllist_phonebook'   => array($json . 'pbx_services/phonebook'),
+					'urllist_callcenter_campaigns'   => array($json . 'call_center/campaigns'),
 					'ami_port'            => $list[$v]['ami_port'],
 					'ami_login'           => $list[$v]['ami_login'],
 					'ami_pass'            => $list[$v]['ami_pass'],

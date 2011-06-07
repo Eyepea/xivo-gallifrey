@@ -372,7 +372,6 @@ class dwho_tpl
 
 	function display($page,$preload_i18n=false,$ext='')
 	{
-
 		if(dwho_has_len($page) === false)
 			return(false);
 

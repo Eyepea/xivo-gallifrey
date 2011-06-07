@@ -1,0 +1,49 @@
+; title_content_name
+Campagne > Ajouter
+
+; smenu_general
+Général
+
+; smenu_filters
+Filtres
+
+; fm_campaign_name
+Nom : 
+
+; fm_campaign_occasional
+Ponctuelle : 
+
+; fm_campaign_start
+Date de début : 
+
+; fm_campaign_end
+Date de fin : 
+
+; fld-campaign-filter-agents
+Agents
+
+; fld-campaign-filter-queues
+Files d'attentes
+
+; fld-campaign-filter-skills
+Compétences
+
+; fld-campaign-filter-way
+Direction
+
+; fm_campaign_filter_way_in
+Appels entrants : 
+
+; fm_campaign_filter_way_out
+Appels sortants : 
+
+; hlp_fm_campaign_occasional
+Cochez la case s'il s'agit d'une campagne ponctuelle
+
+; error(record_error)
+Ce nom est déjà défini
+
+; hlp_fm_campaign_filter_way_in
+
+; hlp_fm_campaign_filter_way_out
+

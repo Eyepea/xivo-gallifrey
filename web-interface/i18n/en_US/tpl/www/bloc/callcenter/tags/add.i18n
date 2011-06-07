@@ -1,0 +1,28 @@
+
+; title_content_name
+Tags > Add
+
+; fm_tag_name
+Name : 
+
+; fm_tag_label
+Label : 
+
+; fm_tag_action
+Action : 
+
+; fm_tag_action-opt(removenow)
+Immediate removal
+
+; fm_tag_action-opt(keep)
+Keep
+
+; fm_tag_action-opt(purge)
+Delayed removal
+
+; already_set
+Already existing name
+
+; empty
+The field should be filled
+

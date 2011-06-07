@@ -1,0 +1,89 @@
+
+; title_content_name
+Campagnes d'enregistrement > Général
+
+; smenu_general
+Général
+
+; smenu_purges
+Programmation des effacements
+
+; smenu_variables
+Variables
+
+; fm_records_path
+Chemin des enregistrements : 
+
+; fm_records_announce
+Annonce jouée : 
+
+; fld-purge-syst-tagged
+Campagnes systématiques / Enregistrements taggés
+
+; fld-purge-syst-untagged
+Campagnes systématiques / Enregistrements non taggés
+
+; fld-purge-punct
+Campagnes ponctuelles
+
+; fm_delay
+Effacer les enregistrements de plus de : 
+
+; fm_at
+Effectué tous les jours, à : 
+
+; column_svichoices_name
+Nom
+
+; column_svichoices_astvar
+Variable asterisk
+
+; column_svientries_name
+Nom
+
+; column_svientries_astvar
+Variable asterisk
+
+; column_svivariables_name
+Nom
+
+; column_svivariables_astvar
+Variable asterisk
+
+; hlp_fm_records_path
+
+; hlp_fm_records_announce
+
+; hlp_fm_purge_syst_tagged_delay
+en jours
+
+; hlp_fm_purge_syst_tagged_at
+
+; hlp_fm_purge_syst_untagged_delay
+en jours
+
+; hlp_fm_purge_syst_untagged_at
+
+; hlp_fm_purge_punct_delay
+en jours
+
+; hlp_fm_purge_punct_at
+
+; no_disp4
+Aucune variable SVI
+
+; no_disp3
+Aucune entrée SVI
+
+; no_disp2
+Aucun choix SVI
+
+; svi_choices_legend
+Choix SVI
+
+; svi_entries_legend
+Saisies SVI
+
+; svi_variables_legend
+Variables définies
+

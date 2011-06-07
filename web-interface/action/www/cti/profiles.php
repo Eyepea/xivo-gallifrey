@@ -58,19 +58,21 @@ $preferencesavail = array(
 );
 
 $funcsavail = array(
-    'agents' => $_TPL->bbf('agents'),
-    'presence' => $_TPL->bbf('presence'),
-    'switchboard' => $_TPL->bbf('switchboard'),
-    'customerinfo' => $_TPL->bbf('customerinfo'),
-    'search' => $_TPL->bbf('search'),
-    'dial' => $_TPL->bbf('dial'),
-    'chitchat' => $_TPL->bbf('chitchat'),
-    'conference' => $_TPL->bbf('conference'),
-    'directory' => $_TPL->bbf('directory'),
-    'fax' => $_TPL->bbf('fax'),
-    'features' => $_TPL->bbf('features'),
-    'history' => $_TPL->bbf('history'),
-    'database' => $_TPL->bbf('database'),
+    'agents' => $_TPL->bbf('func-agents'),
+    'presence' => $_TPL->bbf('func-presence'),
+    'switchboard' => $_TPL->bbf('func-switchboard'),
+    'customerinfo' => $_TPL->bbf('func-customerinfo'),
+    'search' => $_TPL->bbf('func-search'),
+    'dial' => $_TPL->bbf('func-dial'),
+    'chitchat' => $_TPL->bbf('func-chitchat'),
+    'conference' => $_TPL->bbf('func-conference'),
+    'directory' => $_TPL->bbf('func-directory'),
+    'fax' => $_TPL->bbf('func-fax'),
+    'features' => $_TPL->bbf('func-features'),
+    'history' => $_TPL->bbf('func-history'),
+    'database' => $_TPL->bbf('func-database'),
+    'supervisor' => $_TPL->bbf('func-supervisor'),
+    'administrator' => $_TPL->bbf('func-administrator'),
 );
 
 $ctixlets = array_keys(dwho_json::decode(file_get_contents('/etc/pf-xivo/ctiservers/allowedxlets.json'), true));

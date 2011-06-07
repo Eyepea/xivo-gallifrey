@@ -1,0 +1,28 @@
+
+; title_content_name
+Étiquettes > Ajouter
+
+; fm_tag_name
+Nom : 
+
+; fm_tag_label
+Libellé : 
+
+; fm_tag_action
+Action : 
+
+; fm_tag_action-opt(removenow)
+Suppression immédiate
+
+; fm_tag_action-opt(keep)
+Conserver
+
+; fm_tag_action-opt(purge)
+Suppression programmée
+
+; already_set
+Nom déjà existant
+
+; empty
+Le champ doit être rempli
+

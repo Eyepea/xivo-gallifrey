@@ -1,0 +1,28 @@
+
+; col_name
+Name
+
+; col_label
+Label
+
+; col_tagaction
+Recordings management
+
+; fm_tag_action-opt(removenow)
+Immediate removal
+
+; fm_tag_action-opt(keep)
+Keep
+
+; fm_tag_action-opt(purge)
+Delayed removal
+
+
+; no_tags
+No tag
+
+; opt_delete_confirm
+Are you sure you want to remove this tag ?
+
+; toolbar_adv_menu_delete_confirm
+Are you sure you want to remove this or these tags ?

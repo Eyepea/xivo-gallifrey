@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>jQuery UI Timepicker by Francois Gelinas</title>
+<link rel="stylesheet" href="redmond/jquery.ui.theme.css" type="text/css" />
+<link rel="stylesheet" href="redmond/jquery-ui-timepicker.css" type="text/css" />
+
+<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+<script type="text/javascript" src="jquery.ui.core.js"></script>
+<script type="text/javascript" src="jquery.ui.timepicker.js"></script>
+<style type="text/css">
+    /* some styling for the page */
+    body { font-size: 10px; /* for the widget natural size */}
+    #content { font-size: 1.4em; /* for the rest of the page to show at a normal size */}
+    fieldset { padding: 2em }
+    hr { margin: 2em 0; clear: both }
+</style>
+</head>
+<body>
+
+    <div id="content">
+
+    <h1>jQuery UI Timepicker</h1>
+
+    <fieldset>
+
+    Time :
+    <input type="text" style="width: 70px;" id="timepicker_1" value="13h45" />
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#timepicker_1').timepicker();
+        });
+    </script>
+
+   
+
+    <hr />
+    
+    Time picker with ":" time separator
+    <input type="text" style="width: 70px;" id="timepicker_2" value="09:45" />
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#timepicker_2').timepicker({
+                timeSeparator: ':'
+            })
+        });
+    </script>
+
+    <hr />
+
+    Testing events :
+    <input type="text" style="width: 70px" id="timepicker_3" value="12:34" />
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#timepicker_3').timepicker({
+                onClose: function(time, inst) {
+                    log_event('onClose triggered with time : ' + time + ' for instance id : ' + inst.id);
+                },
+                onSelect: function(time, inst) {
+                    log_event('onSelect triggered with time : ' + time + ' for instance id : ' + inst.id);
+                }
+            });
+        });
+
+        function log_event(event) {
+            $('#events_log').val(
+                $('#events_log').val() + "\n" + event
+            )
+        }
+    </script>
+
+    <br />
+    <textarea id="events_log" rows="6" cols="80" >events log :</textarea>
+
+    </fieldset>
+
+
+    <h2>Requirements : </h2>
+    <ul>
+        <li>
+            <a href="http://jquery.com">
+                jQuery 1.4.2 (probably works with previous versions)
+            </a>
+        </li>
+        <li>
+            <a href="http://jqueryui.com/">
+                jQuery UI Core (included in jquery-ui-x.x.x.custom.min.js)
+            </a>
+        </li>
+        <li>
+            <a href="http://jqueryui.com/">
+                jQuery UI Theme.css (included in jquery-ui-x.x.x.custom.css)
+            </a>
+        </li>
+
+        <li>
+            <a href="jquery-ui-timepicker-0.0.1.zip">
+                jquery.ui.timepicker.js
+            </a>
+        </li>
+
+        <li>
+            <a href="jquery-ui-timepicker-0.0.1.zip">
+                jquery-ui-timepicker.css
+            </a>
+        </li>
+
+    </ul>
+
+    Get the release package here : <a href="jquery-ui-timepicker-0.0.1.zip">jquery-ui-timepicker-0.0.1.zip</a>
+
+    <hr />
+
+    <h2>To Do : </h2>
+
+    <ul>
+        <li>
+            Detect a second click on the same cell and close the picker (ie: the user selected hours and do not want to select different minutes or vice versa, and click twice on the same cell instead)
+            This is already simulated with the handling of the double click.
+        </li>
+        <li><a name="documentation"></a>Documentation (*shrug*). See source code for usage.
+            <br />
+            Sample usage :
+            <pre>
+$(document).ready(function() {
+    $('#timepicker').timepicker({
+        onClose: function(time, inst) {
+            alert('onClose triggered with time : ' + time + ' for instance id : ' + inst.id);
+        },
+        onSelect: function(time, inst) {
+            alert('onSelect triggered with time : ' + time + ' for instance id : ' + inst.id);
+        }
+    });
+});
+            </pre>
+        </li>
+    </ul>
+
+    Bug, ideas or comments : <a href="mailto:frank@fgelinas.com">frank@fgelinas.com</a>
+
+    <br />
+    <br />
+    --
+    <br />
+    Francois Gelinas 
+
+    </div>
+</body>
+</html>

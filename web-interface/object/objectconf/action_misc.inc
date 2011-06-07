@@ -104,6 +104,10 @@ $array['service/ipbx/asterisk/web_services/private/call_center/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_center/agents',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
+$array['service/ipbx/asterisk/web_services/private/call_center/campaigns'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/campaigns',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'private'));
 $array['service/ipbx/asterisk/web_services/private/pbx_settings/users'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/pbx_settings/users',
 	'define'	=> array(
@@ -214,6 +218,10 @@ $array['service/ipbx/asterisk/web_services/restricted/ctiserver/configuration'] 
 
 $array['service/ipbx/asterisk/web_services/restricted/call_center/agents'] = array(
 	'path'		=> 'service/ipbx/asterisk/web_services/call_center/agents',
+	'define'	=> array(
+			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
+$array['service/ipbx/asterisk/web_services/restricted/call_center/campaigns'] = array(
+	'path'		=> 'service/ipbx/asterisk/web_services/call_center/campaigns',
 	'define'	=> array(
 			'XIVO_LOC_WEBSERVICES_MODE'	=> 'restricted'));
 $array['service/ipbx/asterisk/web_services/restricted/pbx_settings/users'] = array(

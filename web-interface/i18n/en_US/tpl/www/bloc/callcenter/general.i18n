@@ -1,0 +1,89 @@
+
+; title_content_name
+Record campaigns > General
+
+; smenu_general
+General
+
+; smenu_purges
+Records programming
+
+; smenu_variables
+Variables
+
+; fm_records_path
+Recordings path :
+
+; fm_records_announce
+Played announce :
+
+; fld-purge-syst-tagged
+Systematics campaigns / Tagged recordings
+
+; fld-purge-syst-untagged
+Systematics campaigns / Untagged recordings
+
+; fld-purge-punct
+Selective campaigns
+
+; fm_delay
+Delete the recordings older than : 
+
+; fm_at
+Executed every day, at : 
+
+; column_svichoices_name
+Name
+
+; column_svichoices_astvar
+Asterisk variable
+
+; column_svientries_name
+Name
+
+; column_svientries_astvar
+Asterisk variable
+
+; column_svivariables_name
+Name
+
+; column_svivariables_astvar
+Asterisk variable
+
+; hlp_fm_records_path
+
+; hlp_fm_records_announce
+
+; hlp_fm_purge_syst_tagged_delay
+in days
+
+; hlp_fm_purge_syst_tagged_at
+
+; hlp_fm_purge_syst_untagged_delay
+in days
+
+; hlp_fm_purge_syst_untagged_at
+
+; hlp_fm_purge_punct_delay
+in days
+
+; hlp_fm_purge_punct_at
+
+; no_disp4
+No IVR variable
+
+; no_disp3
+No IVR entry
+
+; no_disp2
+No IVR choice
+
+; svi_choices_legend
+IVR choices
+
+; svi_entries_legend
+IVR inputs
+
+; svi_variables_legend
+Setted variables
+
