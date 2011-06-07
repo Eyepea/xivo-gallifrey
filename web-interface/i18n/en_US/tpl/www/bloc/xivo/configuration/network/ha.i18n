@@ -78,13 +78,13 @@ no virtual network found
 
 
 ; fm_ha_nodes
-Communication links heartbeat
+Virtual IPs
 
 ; fm_ha_virtnet_col_iface
 Network Interface
 
 ; fm_ha_virtnet_col_peer
-Peer Address IP
+Virtual IP
 
 ; fm_ha_virtnet_col_xfer
 Transfer enabled via this link
