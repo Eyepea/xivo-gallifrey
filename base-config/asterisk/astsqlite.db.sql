@@ -2036,7 +2036,7 @@ INSERT INTO callcenter_campaigns_tag VALUES('notag', 'no tag', 'purge');
 
 DROP TABLE callcenter_campaigns_records;
 CREATE TABLE callcenter_campaigns_records (
-	id                INTEGER PRIMARY KEY,
+	id                INTEGER unsigned auto_increment,
 	uniqueid          VARCHAR(32) NOT NULL,
 	channel           VARCHAR(32) NOT NULL,
 	filename          VARCHAR(64) NOT NULL,
