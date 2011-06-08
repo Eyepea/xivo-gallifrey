@@ -2019,7 +2019,7 @@ CREATE TABLE callcenter_campaigns_campaign (
 DROP TABLE callcenter_campaigns_campaign_filter;
 CREATE TABLE callcenter_campaigns_campaign_filter (
 	campaign_id      INTEGER unsigned auto_increment,
-	type             INTEGER NOT NULL,
+	type             VARCHAR(8) NOT NULL,
 	value            VARCHAR(255) NOT NULL,
 	PRIMARY KEY (campaign_id,type,value)
 );
