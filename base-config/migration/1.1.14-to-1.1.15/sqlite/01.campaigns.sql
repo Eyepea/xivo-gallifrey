@@ -45,7 +45,7 @@ CREATE TABLE callcenter_campaigns_campaign_filter (
 CREATE TABLE callcenter_campaigns_tag (
 	name             VARCHAR(32),
 	label            VARCHAR(255) NOT NULL,
-	action           INTEGER NOT NULL,
+	action           VARCHAR(16) NOT NULL,
 	PRIMARY KEY (name)
 );
 
