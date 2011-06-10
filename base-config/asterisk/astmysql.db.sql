@@ -2109,7 +2109,7 @@ INSERT INTO `callcenter_campaigns_tag` VALUES('notag', 'no tag', 'purge');
 
 DROP TABLE IF EXISTS `callcenter_campaigns_records`;
 CREATE TABLE `callcenter_campaigns_records` (
-	`id`                INTEGER,
+	`id`                INTEGER NOT NULL auto_increment,
 	`uniqueid`          VARCHAR(32) NOT NULL,
 	`channel`           VARCHAR(32) NOT NULL,
 	`filename`          VARCHAR(64) NOT NULL,
@@ -2118,8 +2118,8 @@ CREATE TABLE `callcenter_campaigns_records` (
 	`direction`         VARCHAR(1) NOT NULL,
 	`calleridnum`       VARCHAR(32) NOT NULL,
 
-	`callstart`         FLOAT NOT NULL,
-	`callstop`          FLOAT NULL,
+	`callstart`         DOUBLE NOT NULL,
+	`callstop`          DOUBLE NULL,
 	`callduration`      INTEGER(11) NULL,
 	`callstatus`        VARCHAR(16) NOT NULL,
 	`recordstatus`      VARCHAR(16) NOT NULL,
