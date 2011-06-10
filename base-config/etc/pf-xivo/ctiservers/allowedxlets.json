@@ -19,7 +19,7 @@
 "agents" : ["agents"],
 "agentsnext" : ["agents"],
 "agentdetails" : ["agents"],
-"record" : ["agents"],
+"records" : ["agents"],
 
 "queues" : ["agents"],
 "queuedetails" : ["agents"],
