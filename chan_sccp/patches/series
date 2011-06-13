@@ -16,4 +16,4 @@ fix_indicate_call_later
 
 fix_devices_without_line
 # remove patch to allow autobuild
-fix_hidden_callplane_on_transfer
+# fix_hidden_callplane_on_transfer
