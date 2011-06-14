@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.15 to 1.1.16 =
+ 
+* add callcenter campaigns tables
