@@ -1300,6 +1300,8 @@ class xivo_daemon:
         # }
         try:    # {
             # connexions ready for sending(writing)
+            if sels_o:
+                log.warning('got some sels_o %s' % sels_o)
             for sel_o in sels_o:
                 try:
                     sel_o.process_sending()
@@ -1580,9 +1582,10 @@ class xivo_daemon:
                     # }
                 # }
             # }
-            else: # { when nothing happens on the sockets, we fall here sooner or later
-                log.info('[%s] updates (select timeout) %s'
-                          % (self.xdname, time.asctime()))
+
+            if not sels_i and not sels_o and not sels_e:
+                # when nothing happens on the sockets, we fall here
+                log.info('[%s] updates (select timeout) %s' % (self.xdname, time.asctime()))
                 for astid in self.configs:
                     try:
                         self.commandclass.updates(astid, 'others') # signal-less updates ...
