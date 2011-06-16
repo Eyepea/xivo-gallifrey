@@ -1,0 +1,11 @@
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_indicate.c	2011-06-16 12:49:21.323703301 -0400
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.c	2011-06-16 12:51:12.379900117 -0400
+@@ -337,7 +337,7 @@
+ 	case SCCP_CHANNELSTATE_CALLTRANSFER:
+ 		sccp_dev_displayprompt(d, instance, c->callid, SKINNY_DISP_TRANSFER, 0);
+ 		sccp_dev_set_ringer(d, SKINNY_STATION_RINGOFF, instance, c->callid);
+-		sccp_device_sendcallstate(d, instance, c->callid, SCCP_CHANNELSTATE_CALLTRANSFER, SKINNY_CALLPRIORITY_LOW, SKINNY_CALLINFO_VISIBILITY_DEFAULT);
++		sccp_device_sendcallstate(d, instance, c->callid, SKINNY_CALLSTATE_HOLD, SKINNY_CALLPRIORITY_LOW, SKINNY_CALLINFO_VISIBILITY_DEFAULT);
+ 		sccp_channel_send_callinfo(d, c);
+ 		break;
+ 	case SCCP_CHANNELSTATE_CALLCONFERENCE:
