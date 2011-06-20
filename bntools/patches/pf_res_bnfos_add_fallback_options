@@ -1,0 +1,112 @@
+Index: bntools/res_bnfos/cli.c
+===================================================================
+--- bntools.orig/res_bnfos/cli.c
++++ bntools/res_bnfos/cli.c
+@@ -57,6 +57,8 @@ static void bnfos_status(const int fd, s
+ 
+   ast_cli(fd, " enable_wdog_on_start = %d\n", dev->enable_wdog_on_start);
+   ast_cli(fd, " relais_mode_on_start = %d\n", dev->relais_mode_on_start);
++  ast_cli(fd, " enable_wdog_on_fallback = %d\n", dev->enable_wdog_on_fallback);
++  ast_cli(fd, " relais_mode_on_fallback = %d\n", dev->relais_mode_on_fallback);
+ }
+ 
+ static void bnfos_start(const int fd, struct res_bnfos_dev_t *dev) {
+Index: bntools/res_bnfos/conf/bnfos.conf
+===================================================================
+--- bntools.orig/res_bnfos/conf/bnfos.conf
++++ bntools/res_bnfos/conf/bnfos.conf
+@@ -48,6 +48,14 @@ events_cmd=logger
+ ; (optional; default: -1).
+ ;relais_mode_on_start=-1
+ 
++; Enable the watchdog of the device when the module goes from state 'WDOG_FAILED'
++; to 'WDOG_OK'. Similar to 'enable_wdog_on_start'.
++;enable_wdog_on_fallback=0
++
++; Relais mode to set when the module goes from state 'WDOG_FAILED' to 'WDOG_OK'.
++; Similar to 'relais_mode_on_start'.
++;relais_mode_on_fallback=-1
++
+ ; Username/password (<username>:<password>) of the device. This is necessary if
+ ; you use enable_wdog_on_start and/or relais_mode_on_start. For example, if you
+ ; have set the admin password to 'adminpass', you would have 
+Index: bntools/res_bnfos/config.c
+===================================================================
+--- bntools.orig/res_bnfos/config.c
++++ bntools/res_bnfos/config.c
+@@ -163,6 +163,18 @@ int bnfos_load_config(void) {
+ 			continue;
+ 		}
+ 
++		BNFOS_CREAD_INT(enable_wdog_on_fallback, 0);
++		if (dev->enable_wdog_on_fallback < 0 && dev->enable_wdog_on_fallback > 1) {
++			ast_log(LOG_ERROR, "Value of 'enable_wdog_on_fallback' on device '%s' is invalid!\n", dev->name);
++			continue;
++		}
++
++		BNFOS_CREAD_INT(relais_mode_on_fallback, -1);
++		if (dev->relais_mode_on_fallback < -1 || dev->relais_mode_on_fallback > 1) {
++			ast_log(LOG_ERROR, "Value of 'relais_mode_on_fallback' on device '%s' is invalid!\n", dev->name);
++			continue;
++		}
++
+ 		{
+ 			CONST_1_4 char *p = ast_variable_retrieve(cfg, cat, "user_pwd");
+ 			if (!p || strlen(p) == 0)
+Index: bntools/res_bnfos/kick.c
+===================================================================
+--- bntools.orig/res_bnfos/kick.c
++++ bntools/res_bnfos/kick.c
+@@ -102,9 +102,38 @@ void *bnfos_kicker(void *p)
+ 				}
+ 			}
+ 			else {
+-				if ((void *)dev->last_event == (void *)BNFOS_EVENTS_WDOG_FAILED)
++				if ((void *)dev->last_event == (void *)BNFOS_EVENTS_WDOG_FAILED) {
+ 					ast_log(LOG_NOTICE, "bero*fos '%s' successfully kicked\n", dev->name);
+ 
++					if (dev->relais_mode_on_fallback != -1) {
++						bnfos_set_t set;
++						char *err;
++						char val[24];
++						sprintf(val, "%d", dev->relais_mode_on_fallback);
++						if (bnfos_key_set_prep(&set, BNFOS_KEY_MODE, val, &err) == BNFOS_RET_ERR) {
++							ast_log(LOG_WARNING, "Failed to set relais mode on fallback\n");
++						}
++						else {
++							if (bnfos_key_set_do(&dev->dev, &set) != BNFOS_RET_OK) {
++								ast_log(LOG_WARNING, "Failed to set relais mode on fallback\n");
++							}
++						}
++					}
++
++					if (dev->enable_wdog_on_fallback) {
++						bnfos_set_t set;
++						char *err;
++						if (bnfos_key_set_prep(&set, BNFOS_KEY_WDOG, "1", &err) == BNFOS_RET_ERR) {
++							ast_log(LOG_WARNING, "Failed to enable watchdog on fallback\n");
++						}
++						else {
++							if (bnfos_key_set_do(&dev->dev, &set) != BNFOS_RET_OK) {
++								ast_log(LOG_WARNING, "Failed to enable watchdog on fallback\n");
++							}
++						}
++					}
++				}
++
+ 				if ((void *)dev->last_event != (void *)BNFOS_EVENTS_WDOG_OK) {
+ 					dev->last_event = BNFOS_EVENTS_WDOG_OK;
+ 					bnfos_events_run(dev, BNFOS_EVENTS_WDOG_OK);
+Index: bntools/res_bnfos/res_bnfos.h
+===================================================================
+--- bntools.orig/res_bnfos/res_bnfos.h
++++ bntools/res_bnfos/res_bnfos.h
+@@ -54,6 +54,8 @@ struct res_bnfos_dev_t {
+ 
+   int enable_wdog_on_start;
+   int relais_mode_on_start;
++  int enable_wdog_on_fallback;
++  int relais_mode_on_fallback;
+ };
+ 
+ extern struct res_bnfos_dev_t **bnfos_devices;
