@@ -1,0 +1,179 @@
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2011-06-22 13:16:41.047649951 -0400
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-06-22 13:44:59.411649825 -0400
+@@ -52,7 +52,7 @@
+  * \lock
+  * 	- session
+  */
+-static void sccp_read_data(sccp_session_t * s)
++static int sccp_read_data(sccp_session_t * s)
+ {
+ 	int bytesAvailable;
+ 	int16_t length, readlen;
+@@ -64,8 +64,7 @@
+ 	if (ioctl(s->fds[0].fd, FIONREAD, &bytesAvailable) == -1) {
+ 		ast_log(LOG_WARNING, "SCCP: FIONREAD ioctl failed: %s\n", strerror(errno));
+ 		sccp_session_unlock(s);
+-		sccp_session_close(s);
+-		return;
++		return -1;
+ 	}
+ 
+ 	length = (int16_t) bytesAvailable;
+@@ -73,8 +72,7 @@
+ 	if (!length) {
+ 		/* probably a CLOSE_WAIT */
+ 		sccp_session_unlock(s);
+-		sccp_session_close(s);
+-		return;
++		return -1;
+ 	}
+ 
+ 	input = ast_malloc(length + 1);
+@@ -83,8 +81,7 @@
+ 		ast_log(LOG_WARNING, "SCCP: read() returned %s\n", strerror(errno));
+ 		ast_free(input);
+ 		sccp_session_unlock(s);
+-		sccp_session_close(s);
+-		return;
++		return -1;
+ 	}
+ 
+ 	/* \todo Suggestion: We should create some mechanism to assemble
+@@ -105,6 +102,8 @@
+ 	ast_free(input);
+ 
+ 	sccp_session_unlock(s);
++
++	return readlen;
+ }
+ 
+ /*!
+@@ -168,20 +167,31 @@
+ }
+ 
+ 
+-void *sccp_socket_device_thread(void *session){
++void *sccp_socket_device_thread(void *session)
++{
++
+ 	sccp_session_t *s = (sccp_session_t *)session;
+ 	uint8_t keepaliveAdditionalTime = 10;
+ 	int res;
++	int ret;
+ 	time_t now;
+ 	sccp_moo_t *m;
+ 
+ 	/* we increase additionalTime for wireless/slower devices */
+-	if (s->device && (s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7920 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7921 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7925 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7975 || s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7970 )) {
++	if (s->device
++		&& (s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7920
++			|| s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7921
++			|| s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7925
++			|| s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7975
++			|| s->device->skinny_type == SKINNY_DEVICETYPE_CISCO7970)) {
++
+ 		keepaliveAdditionalTime += 20;
+ 	}
+ 
+-	while(!s->session_stop){
++	while (!s->session_stop) {
++
+ #ifdef CS_DYNAMIC_CONFIG
++
+ 		if (s->device) {
+ 			ast_mutex_lock(&GLOB(lock));
+ 			if (GLOB(reload_in_progress) == FALSE)
+@@ -192,37 +202,53 @@
+ 		if (s->fds[0].fd > 0) {
+ 			res = sccp_socket_poll(s->fds, 1, 20);
+ 			if (res < 0) {
++
+ 				ast_log(LOG_ERROR, "SCCP poll() returned %d. errno: %s\n", errno, strerror(errno));
+ 				sccp_session_close(s);
+ 				destroy_session(s, 5);
++
+ 			} else if (res == 0) {
+-				// poll timeout
++
+ 				now = time(0);
++
+ 				if (s->device && s->device->keepalive && (now > ((s->lastKeepAlive + s->device->keepalive) + keepaliveAdditionalTime))) {
++
+ 					sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Session Keepalive %s Expired, now %s\n", (s->device) ? s->device->id : "SCCP", ctime(&s->lastKeepAlive), ctime(&now));
+ 					ast_log(LOG_WARNING, "%s: Dead device does not send a keepalive message in %d+%d seconds. Will be removed\n", (s->device) ? s->device->id : "SCCP", GLOB(keepalive), keepaliveAdditionalTime);
+-					sccp_session_close(s);
+ 					destroy_session(s, 5);
+ 				}
++
+ 			} else {
+ 				/* we have new data -> continue */
+ 				sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Session New Data Arriving\n", (s->device) ? s->device->id : "SCCP");
+-				sccp_read_data(s);
+-				while ((m = sccp_process_data(s))) {
+-					if (!sccp_handle_message(m, s)) {
++
++				ast_mutex_lock(&GLOB(lock));
++
++				ret = sccp_read_data(s);
++				if (ret <= 0) {
+ 						sccp_device_sendReset(s->device, SKINNY_DEVICE_RESTART);
+-						sccp_session_close(s);
+-						break;
++						destroy_session(s, 5);
++				}
++
++				else {
++					while ((m = sccp_process_data(s))) {
++						if (!sccp_handle_message(m, s)) {
++							sccp_device_sendReset(s->device, SKINNY_DEVICE_RESTART);
++							destroy_session(s, 5);
++							break;
++						}
+ 					}
+ 				}
++
++				ast_mutex_unlock(&GLOB(lock));
+ 			}
+ 		} else {
+ 			/* session is gone */
+ 			sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "%s: Session is Gone\n", (s->device) ? s->device->id : "SCCP");
+-			sccp_session_close(s);
+ 			destroy_session(s, 5);
+ 		}
+ 	}
++
+ 	sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "Session %d: Terminated.\n", s->fds[0].fd);
+ 
+ 	// Called with &GLOB(sessions) locked
+@@ -231,13 +257,14 @@
+ 	char iabuf[INET_ADDRSTRLEN];
+ #endif
+ 
++
+ 	SCCP_RWLIST_WRLOCK(&GLOB(sessions));
+ 	SCCP_LIST_REMOVE(&GLOB(sessions), s, list);
+ 	SCCP_RWLIST_UNLOCK(&GLOB(sessions));
+ 
+ 	d = s->device;
+ 
+-	if (d) {
++	if (d && GLOB(reload_in_progress) == FALSE) {
+ 		sccp_device_lock(d);
+ 		if (d->session == s) {
+ #if ASTERISK_VERSION_NUM < 10400
+@@ -250,14 +277,13 @@
+ 			d->needcheckringback = 0;
+ 			sccp_device_unlock(d);
+ 			sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay, FALSE);
+-			sccp_log(DEBUGCAT_DEVICE) (VERBOSE_PREFIX_3 "Device cleaned\n");
+ 		}
+ 		else
+ 			sccp_device_unlock(d);
+ 	}
+ 
+ 	/* closing fd's */
+-	if (s->fds[0].fd > 0) {
++	if (s->fds[0].fd > 0 ) {
+ 		close(s->fds[0].fd);
+ 	}
+ 	/* freeing buffers */
