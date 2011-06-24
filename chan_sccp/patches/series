@@ -17,5 +17,5 @@ fix_indicate_call_later
 fix_devices_without_line
 fix_hidden_callplane_on_transfer
 fix_focus_transfer
-fix_ghost_channel
+#fix_ghost_channel
 fix_initialize_crash
