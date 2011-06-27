@@ -191,24 +191,24 @@ cisco_install_map = {
     'ciscospa501_748':
         ciscospa5xx_metainstall_fw('spa50x-30x-7-4-8a.bin'),
     'ciscospa5xx_locale_de':
-        ciscospa5xx_metainstall_locale('spa525_v746/spa525_de_v746.xml',
+        ciscospa5xx_metainstall_locale('spa525_de_v748.xml',
                                        'spa525_de.xml',
-                                       'spa50x_30x_v746/spa50x_30x_de_v746.xml',
+                                       'spa50x_30x_de_v748.xml',
                                        'spa50x_30x_de.xml'),
     'ciscospa5xx_locale_en':
-        ciscospa5xx_metainstall_locale('spa525_v746/spa525_en_v746.xml',
+        ciscospa5xx_metainstall_locale('spa525_en_v748.xml',
                                        'spa525_en.xml',
-                                       'spa50x_30x_v746/spa50x_30x_en_v746.xml',
+                                       'spa50x_30x_en_v748.xml',
                                        'spa50x_30x_en.xml'),
     'ciscospa5xx_locale_es':
-        ciscospa5xx_metainstall_locale('spa525_v746/spa525_es_v746.xml',
+        ciscospa5xx_metainstall_locale('spa525_es_v748.xml',
                                        'spa525_es.xml',
-                                       'spa50x_30x_v746/spa50x_30x_es_v746.xml',
+                                       'spa50x_30x_es_v748.xml',
                                        'spa50x_30x_es.xml'),
     'ciscospa5xx_locale_fr':
-        ciscospa5xx_metainstall_locale('spa525_v746/spa525_fr_v746.xml',
+        ciscospa5xx_metainstall_locale('spa525_fr_v748.xml',
                                        'spa525_fr.xml',
-                                       'spa50x_30x_v746/spa50x_30x_fr_v746.xml',
+                                       'spa50x_30x_fr_v748.xml',
                                        'spa50x_30x_fr.xml'),
 }
 
