@@ -1,10 +1,12 @@
---- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.c	2011-06-17 14:30:01.988399532 -0400
-+++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c	2011-06-17 14:37:45.071649918 -0400
-@@ -2694,6 +2694,7 @@
- 	forwarder->ss_action = SCCP_SS_DIAL;					/* softswitch will catch the number to be dialed */
- 	forwarder->ss_data = 0;							// nothing to pass to action
- 	forwarder->calltype = SKINNY_CALLTYPE_OUTBOUND;
-+	forwarder->state = SCCP_CHANNELSTATE_OFFHOOK;				/* default channel state initialisation */
+diff -u asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.c asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_channel.c	2011-06-27 13:38:29.670685129 -0400
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_channel.c	2011-06-27 13:39:36.726186904 -0400
+@@ -1572,7 +1572,7 @@
+ 		}
  
- 	/* copy the number to dial in the ast->exten */
- 	sccp_copy_string(forwarder->dialedNumber, dialedNumber, sizeof(forwarder->dialedNumber));
+ 		/* force hangup for invalid dials */
+-		if (c->state == SCCP_CHANNELSTATE_INVALIDNUMBER || c->state == SCCP_CHANNELSTATE_OFFHOOK) {
++		if (!ast_test_flag(c->owner, AST_FLAG_BLOCKING) || c->state == SCCP_CHANNELSTATE_INVALIDNUMBER || c->state == SCCP_CHANNELSTATE_OFFHOOK) {
+ 			sccp_log((DEBUGCAT_CORE | DEBUGCAT_CHANNEL | DEBUGCAT_DEVICE)) (VERBOSE_PREFIX_3 "%s: Sending force hangup request to %s\n", DEV_ID_LOG(c->device), c->owner->name);
+ 			ast_hangup(c->owner);
+ 		} else {
