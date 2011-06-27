@@ -118,8 +118,9 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 
 		foreach($this->_conf['vendor'] as $key => $val)
 		{
-			if(strpos($useragent,$val) !== false)
-				return($key);
+			foreach($val as $ua)
+				if(strpos($useragent,$ua) !== false)
+					return($key);
 		}
 
 		return(false);

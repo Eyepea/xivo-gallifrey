@@ -57,6 +57,7 @@ NameVirtualHost *:80
 	RewriteCond %{HTTP_USER_AGENT} !^yealink
 	# Cisco phones don't support SSL (phonebook)
 	RewriteCond %{HTTP_USER_AGENT} !^Allegro-Software
+	RewriteCond %{HTTP_USER_AGENT} !^Cisco/SPA50
 	# XXX Polycom phones don't support SSL without a valid certificate
 	RewriteCond %{HTTP_USER_AGENT} !^Microbrowser
 	# Used for stats/monitoring
