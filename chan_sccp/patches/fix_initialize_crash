@@ -1,5 +1,6 @@
---- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2011-06-22 13:16:41.047649951 -0400
-+++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-06-22 13:44:59.411649825 -0400
+diff -u asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_socket.c	2011-06-27 15:41:06.054438843 -0400
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_socket.c	2011-06-27 15:42:01.934246186 -0400
 @@ -52,7 +52,7 @@
   * \lock
   * 	- session
@@ -83,7 +84,7 @@
  		if (s->device) {
  			ast_mutex_lock(&GLOB(lock));
  			if (GLOB(reload_in_progress) == FALSE)
-@@ -192,37 +202,53 @@
+@@ -192,37 +202,49 @@
  		if (s->fds[0].fd > 0) {
  			res = sccp_socket_poll(s->fds, 1, 20);
  			if (res < 0) {
@@ -112,8 +113,6 @@
 -				while ((m = sccp_process_data(s))) {
 -					if (!sccp_handle_message(m, s)) {
 +
-+				ast_mutex_lock(&GLOB(lock));
-+
 +				ret = sccp_read_data(s);
 +				if (ret <= 0) {
  						sccp_device_sendReset(s->device, SKINNY_DEVICE_RESTART);
@@ -131,8 +130,6 @@
 +						}
  					}
  				}
-+
-+				ast_mutex_unlock(&GLOB(lock));
  			}
  		} else {
  			/* session is gone */
@@ -145,7 +142,7 @@
  	sccp_log((DEBUGCAT_SOCKET)) (VERBOSE_PREFIX_3 "Session %d: Terminated.\n", s->fds[0].fd);
  
  	// Called with &GLOB(sessions) locked
-@@ -231,13 +257,14 @@
+@@ -231,13 +253,14 @@
  	char iabuf[INET_ADDRSTRLEN];
  #endif
  
@@ -161,7 +158,7 @@
  		sccp_device_lock(d);
  		if (d->session == s) {
  #if ASTERISK_VERSION_NUM < 10400
-@@ -250,14 +277,13 @@
+@@ -250,14 +273,13 @@
  			d->needcheckringback = 0;
  			sccp_device_unlock(d);
  			sccp_dev_clean(d, (d->realtime) ? TRUE : FALSE, s->device_destroy_delay, FALSE);
