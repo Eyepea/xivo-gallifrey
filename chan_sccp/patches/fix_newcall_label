@@ -1,0 +1,12 @@
+diff -u asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_indicate.c asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.c
+--- asterisk-chan-sccp-0~prerelease+svn2187.orig/src/sccp_indicate.c	2011-06-28 14:42:52.062436369 -0400
++++ asterisk-chan-sccp-0~prerelease+svn2187/src/sccp_indicate.c	2011-06-28 14:43:18.222187917 -0400
+@@ -243,7 +243,7 @@
+ 		}
+ 
+ 		sccp_dev_set_keyset(d, instance, c->callid, KEYMODE_RINGIN);
+-		sccp_dev_displayprompt(d, instance, c->callid, "Incoming Call", 0);
++		sccp_dev_displayprompt(d, instance, c->callid, SKINNY_DISP_NEWCALL, 0);
+ 		sccp_ast_setstate(c, AST_STATE_RINGING);
+ 		break;
+ 	case SCCP_CHANNELSTATE_CONNECTED:
