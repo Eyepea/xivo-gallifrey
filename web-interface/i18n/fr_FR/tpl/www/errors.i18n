@@ -2,6 +2,10 @@
 ; error(empty)
 Champ obligatoire
 
+; error(invalidstartdate)
+La date de début de la conférence DOIT ÊTRE supérieure à la l'heure actuelle
+
+
 ; error(regexp)
 Contient des caractères invalides
 

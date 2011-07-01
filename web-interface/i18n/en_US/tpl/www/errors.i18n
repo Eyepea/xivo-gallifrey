@@ -7,6 +7,9 @@ An error occurred when saving the form.
 ; error(empty)
 Required Field
 
+; error(invalidstartdate)
+Conference starting date MUST BE in the future
+
 ; error(regexp)
 Contains invalid characters
 

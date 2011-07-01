@@ -156,7 +156,8 @@ endif;
 				       'key'		=> false,
 				       'optionf'	=> '%02u',
 				       'default'	=> $element['meetmefeatures']['startdatemday']['default'],
-				       'selected'	=> $this->get_var('info','meetmefeatures','startdate','mday')),
+				       'selected'	=> $this->get_var('info','meetmefeatures','startdate','mday'),
+							 'error'	=> $this->bbf_args('error', $this->get_var('error','meetmefeatures','startdate')));
 				 $element['meetmefeatures']['startdatemday']['value']);?>
 		</td>
 	</tr>
@@ -254,7 +255,8 @@ endif;
 									'from'		=> 'second',
 									'format'	=> '%M%s')),
 				    'selected'	=> $info['meetmefeatures']['timeannounceclose'],
-				    'default'	=> $element['meetmefeatures']['timeannounceclose']['default']),
+				    'default'	=> $element['meetmefeatures']['timeannounceclose']['default'],
+						 'error'	=> $this->bbf_args('error', $this->get_var('error','meetmefeatures','timeannounceclose'))),
 			      $element['meetmefeatures']['timeannounceclose']['value']);
 ?>
 </div>

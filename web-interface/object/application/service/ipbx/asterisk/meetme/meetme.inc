@@ -329,7 +329,7 @@ class xivo_application_service_asterisk_meetme extends xivo_application_asterisk
 				$rs['startdate']) === false)
 		{
 			$this->_set_result('meetmefeatures',$rs);
-			$this->_set_error('meetmefeatures','invalid startdate');
+			$this->_set_error('meetmefeatures','startdate', 'invalidstartdate');
 			return(false);
 		}
 		else if(($typefrom = $this->_meetmefeatures->normalize_admin_typefrom(
