@@ -157,7 +157,7 @@ endif;
 				       'optionf'	=> '%02u',
 				       'default'	=> $element['meetmefeatures']['startdatemday']['default'],
 				       'selected'	=> $this->get_var('info','meetmefeatures','startdate','mday'),
-							 'error'	=> $this->bbf_args('error', $this->get_var('error','meetmefeatures','startdate')));
+							 'error'	=> $this->bbf_args('error', $this->get_var('error','meetmefeatures','startdate'))),
 				 $element['meetmefeatures']['startdatemday']['value']);?>
 		</td>
 	</tr>
