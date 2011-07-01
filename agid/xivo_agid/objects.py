@@ -737,9 +737,8 @@ class MeetMe:
         self.admin_number                       = res['userfeatures.number']
 
         if res['meetmefeatures.startdate']:
-            self.starttime = time.mktime(
-                                time.strptime(res['meetmefeatures.startdate'],
-                                              '%Y-%m-%d %H:%M:%S'))
+            # startdate is a datetime object, not a string					
+            self.starttime = time.mktime(res['meetmefeatures.startdate'].timetuple())
         else:
             self.starttime = None
 
