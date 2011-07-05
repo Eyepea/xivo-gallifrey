@@ -8,11 +8,11 @@ SrcUniqueid:
 DstChannel:
 DstUniqueid:
 
-Index: asterisk-1.4.41/res/res_features.c
+Index: asterisk-1.4.42/res/res_features.c
 ===================================================================
---- asterisk-1.4.41.orig/res/res_features.c	2011-05-06 17:08:46.000000000 +0200
-+++ asterisk-1.4.41/res/res_features.c	2011-05-06 17:08:47.000000000 +0200
-@@ -1184,6 +1184,17 @@
+--- asterisk-1.4.42.orig/res/res_features.c	2011-07-05 15:43:25.535707863 -0400
++++ asterisk-1.4.42/res/res_features.c	2011-07-05 15:43:40.415707328 -0400
+@@ -1190,6 +1190,17 @@
  		ast_log(LOG_DEBUG, "Dial party C result: newchan:%d, outstate:%d\n", !!newchan, outstate);
  	}
  

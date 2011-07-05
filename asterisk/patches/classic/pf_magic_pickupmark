@@ -7,11 +7,11 @@
 	Added possibility to do a magic pickup with PICKUPMARK.
 	PICKUPMARK variable can contains multiple extensions separated by an '&'.
 
-Index: asterisk-1.4.41/channels/chan_sip.c
+Index: asterisk-1.4.42/channels/chan_sip.c
 ===================================================================
---- asterisk-1.4.41.orig/channels/chan_sip.c	2011-05-06 17:08:42.000000000 +0200
-+++ asterisk-1.4.41/channels/chan_sip.c	2011-05-06 17:08:47.000000000 +0200
-@@ -15499,7 +15499,10 @@
+--- asterisk-1.4.42.orig/channels/chan_sip.c	2011-07-05 15:43:13.415709676 -0400
++++ asterisk-1.4.42/channels/chan_sip.c	2011-07-05 15:43:35.425708096 -0400
+@@ -15423,7 +15423,10 @@
  		return -1;
  	}
  
@@ -23,7 +23,7 @@ Index: asterisk-1.4.41/channels/chan_sip.c
  
  	/* There is no point in capturing the return value since pickup_exec
  	   doesn't return anything meaningful unless the passed data is an empty
-@@ -15717,8 +15720,18 @@
+@@ -15641,8 +15644,18 @@
  					error = 1;
  				} else {
  					ast_log(LOG_NOTICE, "Trying to pick up %s@%s\n", subscription->exten, subscription->context);
@@ -44,11 +44,11 @@ Index: asterisk-1.4.41/channels/chan_sip.c
  					ast_mutex_unlock(&subscription->lock);
  					if (subscription->owner) {
  						ast_channel_unlock(subscription->owner);
-Index: asterisk-1.4.41/apps/app_directed_pickup.c
+Index: asterisk-1.4.42/apps/app_directed_pickup.c
 ===================================================================
---- asterisk-1.4.41.orig/apps/app_directed_pickup.c	2011-05-06 17:08:42.000000000 +0200
-+++ asterisk-1.4.41/apps/app_directed_pickup.c	2011-05-06 17:08:47.000000000 +0200
-@@ -115,22 +115,35 @@
+--- asterisk-1.4.42.orig/apps/app_directed_pickup.c	2011-07-05 15:42:52.805707434 -0400
++++ asterisk-1.4.42/apps/app_directed_pickup.c	2011-07-05 15:43:35.425708096 -0400
+@@ -118,22 +118,35 @@
  /* Attempt to pick up specified mark */
  static int pickup_by_mark(struct ast_channel *chan, char *mark)
  {
