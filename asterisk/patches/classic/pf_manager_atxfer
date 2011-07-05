@@ -7,10 +7,10 @@
 
         http://bugs.digium.com/view.php?id=10585
 
-Index: asterisk-1.4.41/CREDITS
+Index: asterisk-1.4.42/CREDITS
 ===================================================================
---- asterisk-1.4.41.orig/CREDITS	2011-05-06 17:07:59.000000000 +0200
-+++ asterisk-1.4.41/CREDITS	2011-05-06 17:08:37.000000000 +0200
+--- asterisk-1.4.42.orig/CREDITS	2011-07-05 15:02:57.265710060 -0400
++++ asterisk-1.4.42/CREDITS	2011-07-05 15:03:44.325707444 -0400
 @@ -152,6 +152,8 @@
  
  Paul Cadach - Bringing chan_h323 up to date, bug fixes, and more!
@@ -20,10 +20,10 @@ Index: asterisk-1.4.41/CREDITS
  === OTHER CONTRIBUTIONS ===
  John Todd - Monkey sounds and associated teletorture prompt
  Michael Jerris - bug marshaling
-Index: asterisk-1.4.41/include/asterisk/frame.h
+Index: asterisk-1.4.42/include/asterisk/frame.h
 ===================================================================
---- asterisk-1.4.41.orig/include/asterisk/frame.h	2011-05-06 17:07:59.000000000 +0200
-+++ asterisk-1.4.41/include/asterisk/frame.h	2011-05-06 17:08:37.000000000 +0200
+--- asterisk-1.4.42.orig/include/asterisk/frame.h	2011-07-05 15:02:57.295708527 -0400
++++ asterisk-1.4.42/include/asterisk/frame.h	2011-07-05 15:03:44.325707444 -0400
 @@ -290,6 +290,7 @@
  	AST_CONTROL_HOLD = 16,		/*!< Indicate call is placed on hold */
  	AST_CONTROL_UNHOLD = 17,	/*!< Indicate call is left from hold */
@@ -32,11 +32,11 @@ Index: asterisk-1.4.41/include/asterisk/frame.h
  	AST_CONTROL_SRCUPDATE = 20,     /*!< Indicate source of media has changed */
  	AST_CONTROL_SRCCHANGE = 21,     /*!< Media has changed and requires a new RTP SSRC */
  	AST_CONTROL_END_OF_Q = 22,		/*!< Indicate that this position was the end of the channel queue for a softhangup. */
-Index: asterisk-1.4.41/main/manager.c
+Index: asterisk-1.4.42/main/manager.c
 ===================================================================
---- asterisk-1.4.41.orig/main/manager.c	2011-05-06 17:08:37.000000000 +0200
-+++ asterisk-1.4.41/main/manager.c	2011-05-06 17:08:37.000000000 +0200
-@@ -1828,6 +1828,49 @@
+--- asterisk-1.4.42.orig/main/manager.c	2011-07-05 15:03:39.525709949 -0400
++++ asterisk-1.4.42/main/manager.c	2011-07-05 15:03:44.335707725 -0400
+@@ -1829,6 +1829,49 @@
  	return 0;
  }
  
@@ -86,7 +86,7 @@ Index: asterisk-1.4.41/main/manager.c
  static char mandescr_command[] = 
  "Description: Run a CLI command.\n"
  "Variables: (Names marked with * are required)\n"
-@@ -3137,6 +3180,7 @@
+@@ -3152,6 +3195,7 @@
  		ast_manager_register2("GetConfig", EVENT_FLAG_CONFIG, action_getconfig, "Retrieve configuration", mandescr_getconfig);
  		ast_manager_register2("UpdateConfig", EVENT_FLAG_CONFIG, action_updateconfig, "Update basic configuration", mandescr_updateconfig);
  		ast_manager_register2("Redirect", EVENT_FLAG_CALL, action_redirect, "Redirect (transfer) a call", mandescr_redirect );
@@ -94,11 +94,11 @@ Index: asterisk-1.4.41/main/manager.c
  		ast_manager_register2("Originate", EVENT_FLAG_CALL, action_originate, "Originate Call", mandescr_originate);
  		ast_manager_register2("Command", EVENT_FLAG_COMMAND, action_command, "Execute Asterisk CLI Command", mandescr_command );
  		ast_manager_register2("ExtensionState", EVENT_FLAG_CALL, action_extensionstate, "Check Extension Status", mandescr_extensionstate );
-Index: asterisk-1.4.41/res/res_features.c
+Index: asterisk-1.4.42/res/res_features.c
 ===================================================================
---- asterisk-1.4.41.orig/res/res_features.c	2011-05-06 17:07:59.000000000 +0200
-+++ asterisk-1.4.41/res/res_features.c	2011-05-06 17:08:37.000000000 +0200
-@@ -1068,25 +1068,26 @@
+--- asterisk-1.4.42.orig/res/res_features.c	2011-07-05 15:02:57.305708720 -0400
++++ asterisk-1.4.42/res/res_features.c	2011-07-05 15:03:44.335707725 -0400
+@@ -1074,25 +1074,26 @@
  }
  
  /*!
@@ -132,7 +132,7 @@ Index: asterisk-1.4.41/res/res_features.c
  	char xferto[256] = "";
  	int res;
  	int outstate=0;
-@@ -1102,49 +1103,55 @@
+@@ -1108,49 +1109,55 @@
  		ast_log(LOG_DEBUG, "Executing Attended Transfer %s, %s (sense=%d) \n", chan->name, peer->name, sense);
  	set_peers(&transferer, &transferee, peer, chan, sense);
  	transferer_real_context = real_ctx(transferer, transferee);
@@ -216,7 +216,7 @@ Index: asterisk-1.4.41/res/res_features.c
  
  	/* Stop autoservice so we can monitor all parties involved in the transfer. */
  	if (ast_autoservice_stop(transferee) < 0) {
-@@ -1348,6 +1355,24 @@
+@@ -1354,6 +1361,24 @@
  }
  
  
@@ -241,8 +241,8 @@ Index: asterisk-1.4.41/res/res_features.c
  /* add atxfer and automon as undefined so you can only use em if you configure them */
  #define FEATURES_COUNT (sizeof(builtin_features) / sizeof(builtin_features[0]))
  
-@@ -2070,6 +2095,15 @@
- 	return;
+@@ -2112,6 +2137,15 @@
+ 	ast_channel_unlock(chan);
  }
  
 +static void cmd_atxfer(struct ast_channel *a, struct ast_channel *b, struct ast_bridge_config *conf, struct ast_channel *who, char *xferto)
@@ -257,8 +257,8 @@ Index: asterisk-1.4.41/res/res_features.c
  int ast_bridge_call(struct ast_channel *chan,struct ast_channel *peer,struct ast_bridge_config *config)
  {
  	/* Copy voice back and forth between the two channels.  Give the peer
-@@ -2337,6 +2371,9 @@
- 						f->datalen - sizeof(struct ast_option_header), 0);
+@@ -2396,6 +2430,9 @@
+ 					}
  				}
  				break;
 +			case AST_CONTROL_ATXFERCMD:
@@ -266,4 +266,4 @@ Index: asterisk-1.4.41/res/res_features.c
 +				break;
  			}
  		} else if (f->frametype == AST_FRAME_DTMF_BEGIN) {
- 			/* eat it */
+ 			struct ast_flags *cfg;

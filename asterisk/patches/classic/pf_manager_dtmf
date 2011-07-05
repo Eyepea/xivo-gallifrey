@@ -8,10 +8,10 @@
 	XIVO needs these Asterisk 1.6 events, in order to filter out
         some ill-timed Unlink/Link events.
 
-Index: asterisk-1.4.41/main/manager.c
+Index: asterisk-1.4.42/main/manager.c
 ===================================================================
---- asterisk-1.4.41.orig/main/manager.c	2011-05-06 17:08:03.000000000 +0200
-+++ asterisk-1.4.41/main/manager.c	2011-05-06 17:08:37.000000000 +0200
+--- asterisk-1.4.42.orig/main/manager.c	2011-07-05 15:02:57.785708476 -0400
++++ asterisk-1.4.42/main/manager.c	2011-07-05 15:03:39.525709949 -0400
 @@ -144,6 +144,7 @@
  	{ EVENT_FLAG_AGENT, "agent" },
  	{ EVENT_FLAG_USER, "user" },
@@ -20,10 +20,10 @@ Index: asterisk-1.4.41/main/manager.c
  	{ INT_MAX, "all" },
  	{ 0, "none" },
  };
-Index: asterisk-1.4.41/include/asterisk/manager.h
+Index: asterisk-1.4.42/include/asterisk/manager.h
 ===================================================================
---- asterisk-1.4.41.orig/include/asterisk/manager.h	2011-05-06 17:08:03.000000000 +0200
-+++ asterisk-1.4.41/include/asterisk/manager.h	2011-05-06 17:08:37.000000000 +0200
+--- asterisk-1.4.42.orig/include/asterisk/manager.h	2011-07-05 15:02:57.805708607 -0400
++++ asterisk-1.4.42/include/asterisk/manager.h	2011-07-05 15:03:39.525709949 -0400
 @@ -55,6 +55,7 @@
  #define EVENT_FLAG_AGENT		(1 << 5) /* Ability to read/set agent info */
  #define EVENT_FLAG_USER                 (1 << 6) /* Ability to read/set user info */
@@ -32,10 +32,10 @@ Index: asterisk-1.4.41/include/asterisk/manager.h
  
  /* Export manager structures */
  #define AST_MAX_MANHEADERS 128
-Index: asterisk-1.4.41/main/channel.c
+Index: asterisk-1.4.42/main/channel.c
 ===================================================================
---- asterisk-1.4.41.orig/main/channel.c	2011-05-06 17:08:02.000000000 +0200
-+++ asterisk-1.4.41/main/channel.c	2011-05-06 17:08:37.000000000 +0200
+--- asterisk-1.4.42.orig/main/channel.c	2011-07-05 15:02:57.775708068 -0400
++++ asterisk-1.4.42/main/channel.c	2011-07-05 15:03:39.525709949 -0400
 @@ -2122,6 +2122,19 @@
  	return 0; /* Time is up */
  }
@@ -56,7 +56,7 @@ Index: asterisk-1.4.41/main/channel.c
  static void ast_read_generator_actions(struct ast_channel *chan, struct ast_frame *f)
  {
  	if (chan->generator && chan->generator->generate && chan->generatordata &&  !ast_internal_timing_enabled(chan)) {
-@@ -2446,6 +2459,7 @@
+@@ -2452,6 +2465,7 @@
  			}
  			break;
  		case AST_FRAME_DTMF_END:
@@ -64,7 +64,7 @@ Index: asterisk-1.4.41/main/channel.c
  			ast_log(LOG_DTMF, "DTMF end '%c' received on %s, duration %ld ms\n", f->subclass, chan->name, f->len);
  			/* Queue it up if DTMF is deferred, or if DTMF emulation is forced. */
  			if (ast_test_flag(chan, AST_FLAG_DEFER_DTMF) || ast_test_flag(chan, AST_FLAG_EMULATE_DTMF)) {
-@@ -2527,6 +2541,7 @@
+@@ -2533,6 +2547,7 @@
  			}
  			break;
  		case AST_FRAME_DTMF_BEGIN:
@@ -72,7 +72,7 @@ Index: asterisk-1.4.41/main/channel.c
  			ast_log(LOG_DTMF, "DTMF begin '%c' received on %s\n", f->subclass, chan->name);
  			if ( ast_test_flag(chan, AST_FLAG_DEFER_DTMF | AST_FLAG_END_DTMF_ONLY | AST_FLAG_EMULATE_DTMF) || 
  			    (!ast_tvzero(chan->dtmf_tv) && 
-@@ -3189,6 +3204,7 @@
+@@ -3195,6 +3210,7 @@
  			if (old_frame != fr)
  				f = fr;
  		}
@@ -80,7 +80,7 @@ Index: asterisk-1.4.41/main/channel.c
  		ast_clear_flag(chan, AST_FLAG_BLOCKING);
  		ast_channel_unlock(chan);
  		res = ast_senddigit_begin(chan, fr->subclass);
-@@ -3204,6 +3220,7 @@
+@@ -3210,6 +3226,7 @@
  				ast_frfree(new_frame);
  			}
  		}
