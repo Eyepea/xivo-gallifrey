@@ -21,7 +21,9 @@
 dwho::load_class('dwho_http');
 $http_response = dwho_http::factory('response');
 
-if(($data = dwho_json::encode($this->get_var('result'))) === false)
+// NOTE: we limit response to 5K lines of results as json_encode() crash if more
+// results are required
+if(($data = dwho_json::encode(array_slice($this->get_var('result'),0,5000))) === false)
 {
 	$http_response->set_status_line(500);
 	$http_response->send(true);
