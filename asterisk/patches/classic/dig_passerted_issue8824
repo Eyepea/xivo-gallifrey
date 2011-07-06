@@ -2470,7 +2470,7 @@ Index: asterisk-1.4.42/res/res_features.c
  	if (option_debug)
  		ast_log(LOG_DEBUG, "Call pickup on '%s' by '%s'\n", target->name, chan->name);
  
-+	ast_connectedline_update(chan, target->lid.lid_num, target->lid.lid_name, cur->lid.lid_pres);
++	ast_connectedline_update(chan, target->lid.lid_num, target->lid.lid_name, target->lid.lid_pres);
 +	ast_queue_connectedline_update(chan, chan->cid.cid_num, chan->cid.cid_name, chan->cid.cid_pres);
 +
  	if (ast_answer(chan)) {
