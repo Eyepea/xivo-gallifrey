@@ -194,7 +194,7 @@ $array['element']['category']['value'] = array('queue','group');
 
 $array['element']['autopause'] = array();
 $array['element']['autopause']['value'] = array(0,1);
-$array['element']['autopause']['default'] = 1;
+$array['element']['autopause']['default'] = 0;
 $array['element']['autopause']['set'] = true;
 
 $array['filter'] = array();
