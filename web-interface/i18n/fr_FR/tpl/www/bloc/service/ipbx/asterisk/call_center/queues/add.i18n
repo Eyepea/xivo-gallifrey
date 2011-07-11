@@ -375,3 +375,6 @@ Défaut
 
 ; fm_queue_periodic-announce-frequency
 Fréquence des annonces périodiques:
+
+; fm_queue_autopause
+Mise en pause automatique si non-réponse : 

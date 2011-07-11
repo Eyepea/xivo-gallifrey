@@ -453,3 +453,7 @@ Default
 
 ; fm_queue_periodic-announce-frequency
 Periodic announces frequency:
+
+; fm_queue_autopause
+Autopause:
+

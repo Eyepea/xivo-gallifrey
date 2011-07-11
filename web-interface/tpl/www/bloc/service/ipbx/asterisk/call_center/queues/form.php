@@ -803,6 +803,12 @@ endif;
 				      'name'	=> 'queue[timeoutrestart]',
 				      'labelid'	=> 'queue-timeoutrestart',
 				      'default'	=> $element['queue']['timeoutrestart']['default'],
-				      'checked' => $info['queue']['timeoutrestart']));
+							'checked' => $info['queue']['timeoutrestart'])),
+
+		$form->checkbox(array('desc'	=> $this->bbf('fm_queue_autopause'),
+				      'name'	=> 'queue[autopause]',
+				      'labelid'	=> 'queue-autopause',
+				      'default'	=> $element['queue']['autopause']['default'],
+				      'checked'	=> $info['queue']['autopause']));
 ?>
 </div>

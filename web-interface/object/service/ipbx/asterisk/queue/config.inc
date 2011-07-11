@@ -192,6 +192,11 @@ $array['element']['periodic-announce']['setdef'] = true;
 $array['element']['category'] = array();
 $array['element']['category']['value'] = array('queue','group');
 
+$array['element']['autopause'] = array();
+$array['element']['autopause']['value'] = array(0,1);
+$array['element']['autopause']['default'] = 1;
+$array['element']['autopause']['set'] = true;
+
 $array['filter'] = array();
 $array['filter']['name'] = array('regexp' => '/^[a-z0-9_\.-]+$/i','minlen' => 1,'maxlen' => 128);
 $array['filter']['timeout'] = array('set' => false,'chk' => 2,'cast' => 'uint','between' => array(0,60,5));
@@ -248,5 +253,6 @@ $array['filter']['periodic-announce'] = array('set'	=> false,
 					      'regexp'	=> '/^(?:['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.
 								    preg_quote(DWHO_SEP_DIR,'/').']{1,79}\|?){1,10}$/');
 $array['filter']['category'] = array('key' => array('queue','group'));
+$array['filter']['autopause'] = array('bool' => true);
 
 ?>
