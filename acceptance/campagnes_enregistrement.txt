@@ -8,8 +8,8 @@ Préliminaires "généraux" de configuration :
 - créer 3 files
 - créer ou mettre à jour des profils CTI contenant la xlet "records"
   - un sans droit superviseur ni administrateur
-  - un avec droit superviseur mais pas administrateur
-  - un avec droit administrateur mais pas superviseur
+  - un avec droit superviseur mais pas administrateur (mais tout de même agent)
+  - un avec droit administrateur mais pas superviseur (mais tout de même agent)
 - créer 3 utilisateurs, chacun avec un compte CTI
   - leur attribuer chacun une des xlets définies précédemment
 - attribuer des agents à ces utilisateurs
@@ -17,6 +17,10 @@ Préliminaires "généraux" de configuration :
 Configuration des campagnes :
 
 - définir des campagnes d'enregistrement, ponctuelles et/ou systématiques
+- y mettre éventuellement des contraintes (agents, files, ...) : pour chaque
+  élément, "aucun champ" = "pas de contrainte"
+- définir le chemin (absolu) de destination des fichiers sons
+- le fichier d'annonce est inutilisé pour le moment
 - définir 3 tags en plus de "notag", avec chacune des propriétés existantes
 - définir des temps de purge relativement bas pour ne pas avoir à attendre 3
   mois pour les constater
@@ -40,4 +44,5 @@ Avancé :
 - changer le répertoire de définition des campagnes
 - modifier la caractérisation des enregistrements, vérifier leur modification
   effective ainsi que leur influence éventuelle sur leur purge
+- définir des variables pour les interactions avec le dialplan
 
