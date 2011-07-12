@@ -2112,7 +2112,7 @@ CREATE TABLE `callcenter_campaigns_records` (
 	`id`                INTEGER NOT NULL auto_increment,
 	`uniqueid`          VARCHAR(32) NOT NULL,
 	`channel`           VARCHAR(32) NOT NULL,
-	`filename`          VARCHAR(64) NOT NULL,
+	`filename`          VARCHAR(255) NOT NULL,
 	`campaignkind`      VARCHAR(1) NOT NULL,
 
 	`direction`         VARCHAR(1) NOT NULL,
