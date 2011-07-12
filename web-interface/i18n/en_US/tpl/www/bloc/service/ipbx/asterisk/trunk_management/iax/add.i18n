@@ -167,8 +167,17 @@ Private RSA key :
 ; fm_protocol_encryption
 Encryption : 
 
+; fm_protocol_maxauthreq 
+Max authentication request: 
+
 ; fm_protocol_adsi
 Activate ADSI support
+
+; fm_protocol_amaflags 
+Amaflags: 
+
+; fm_protocol_accountcode
+Account code: 
 
 ; fm_protocol_requirecalltoken
 Calltoken validation : 
@@ -241,6 +250,9 @@ Force jitterbuffer :
 
 ; fm_protocol_timezone
 Timezone : 
+
+; fm_protocol_codecpriority 
+Codec priority: 
 
 ; fm_protocol_qualify-opt(no)
 no
