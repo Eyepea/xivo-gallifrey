@@ -1,0 +1,34 @@
+#!/bin/bash
+# Small script to create a tar.gz file that can be extracted easily on a
+# XiVO 1.1 with a "tar xvf <file> -C /"
+
+OUTFILE=qlogc.tar.gz
+
+if [[ ! -d scripts || ! -d src || ! -d etc ]]; then
+    echo "You must run this script in the project root..." >&2
+    exit 1
+fi
+
+TMPDIR=$(mktemp -d)
+
+# copy scripts
+mkdir -p "$TMPDIR/usr/bin"
+cp --preserve=mode scripts/qlogc "$TMPDIR/usr/bin"
+
+# copy configuration files
+mkdir -p "$TMPDIR/etc/pf-xivo"
+cp etc/qlog-client.conf "$TMPDIR/etc/pf-xivo"
+
+# copy python modules
+mkdir -p "$TMPDIR/var/lib/python-support/python2.5/qlogclient"
+rsync -rp --exclude '*.pyc' src/ "$TMPDIR/var/lib/python-support/python2.5"
+
+# create state dir
+mkdir -p "$TMPDIR/var/lib/pf-xivo-qlog-client"
+
+# create package
+cd "$TMPDIR"
+tar caf "$OLDPWD/$OUTFILE" *
+cd "$OLDPWD"
+
+rm -r "$TMPDIR"
