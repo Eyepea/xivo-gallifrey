@@ -31,6 +31,12 @@ CONFIG_FILE = '/etc/pf-xivo/qlog-client.conf'
 logger = logging.getLogger()
 
 
+def merge_options(opts, cli_opts):
+    # Merge options from cli_opts to opts (when applicable)
+    if cli_opts.gzip:
+        opts['general.compress'] = True
+
+
 def init_logging():
     handler = logging.StreamHandler()
     handler.setFormatter(logging.Formatter("%(message)s"))
@@ -51,7 +57,7 @@ if __name__ == '__main__':
     parser.add_option('-n', '--dry-run', dest='dry_run', action='store_true',
                       help='do a dry run')
     parser.add_option('-z', '--gzip', action='store_true',
-                      help='compress data before sending it to server')
+                      help='gzip queuelog data before sending it to server')
     parser.add_option('--disable-mtime', dest='disable_mtime', action='store_true',
                       help='disable check based on file modification time')
     parser.add_option('--no-agent-infos', action='store_true',
@@ -69,6 +75,7 @@ if __name__ == '__main__':
     cfg_filename = cli_opts.config or CONFIG_FILE
     
     opts = config.read_config(cfg_filename)
+    merge_options(opts, cli_opts)
     
     if cli_opts.no_qlog:
         logger.info('Not sending qlog')
@@ -81,9 +88,9 @@ if __name__ == '__main__':
                 opts['general.qlog_basepath'],
                 use_mtime=not cli_opts.disable_mtime,
                 maxlines=opts['general.maxlines_per_request'],
-                compress=cli_opts.gzip,
+                compress=opts['general.compress'],
                 dry_run=cli_opts.dry_run)
-        print
+    logger.info('')
     
     if cli_opts.no_agent_infos:
         logger.info('Not sending agent infos')
@@ -93,6 +100,5 @@ if __name__ == '__main__':
                 opts['general.username'],
                 opts['general.password'],
                 opts['general.ast_db_uri'],
-                compress=cli_opts.gzip,
                 dry_run=cli_opts.dry_run)
-        print
+    logger.info('')

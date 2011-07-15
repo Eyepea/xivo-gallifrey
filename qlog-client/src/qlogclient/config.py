@@ -24,15 +24,29 @@ from ConfigParser import RawConfigParser
 from qlogclient.params import ConfigSpec
 
 
+_BOOL_TRUE = ['True', 'true', '1']
+_BOOL_FALSE = ['False', 'false', '0']
+
+def _bool(raw_value):
+    # Return a boolean (type boolean) from a boolean string representation
+    if raw_value in _BOOL_TRUE:
+        return True
+    elif raw_value in _BOOL_FALSE:
+        return False
+    else:
+        raise ValueError('invalid boolean raw value "%s"' % raw_value)
+
+
 def _new_config_spec():
     cfg_spec = ConfigSpec()
     cfg_spec.add_param('general.qlog_server_uri', default=ConfigSpec.MANDATORY)
     cfg_spec.add_param('general.agents_server_uri', default=ConfigSpec.MANDATORY)
     cfg_spec.add_param('general.username', default=ConfigSpec.MANDATORY)
     cfg_spec.add_param('general.password', default=ConfigSpec.MANDATORY)
+    cfg_spec.add_param('general.compress', default=True, fun=_bool)
     cfg_spec.add_param('general.state_dir', default='/var/lib/pf-xivo-qlog-client')
-    cfg_spec.add_param('general.qlog_basepath', default='/var/log/queuelog')
-    cfg_spec.add_param('general.maxlines_per_request', default='75000', fun=int)
+    cfg_spec.add_param('general.qlog_basepath', default='/var/log/asterisk/queue_log')
+    cfg_spec.add_param('general.maxlines_per_request', default=75000, fun=int)
     cfg_spec.add_param('general.ast_db_uri', default='sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150')
     return cfg_spec
 

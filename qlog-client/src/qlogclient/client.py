@@ -42,7 +42,7 @@ except ImportError:
         import cjson
 
 LAST_TIMESTAMP_FILE = 'qlog-timestamp'
-IGNORED_LINES = 'qlog-ignored-lines'
+IGNORED_LINES_FILE = 'qlog-ignored-lines'
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,8 @@ def _open_qlog_file(file):
 
 def _get_qlog_lines_from_file(qlog_file, ref_timestamp, ignored_lines):
     # Return an iterator that yields (timestamp, line) tuples for every line
-    # in qlog_file such that timestamp >= ref_timestamp.
+    # in qlog_file such that timestamp >= ref_timestamp and line is not in
+    # ignored_lines.
     #
     # qlog_file can be either a plain text file or a gzipped file
     with _open_qlog_file(qlog_file) as fobj:
@@ -197,7 +198,7 @@ def _write_last_timestamp(state_dir, timestamp):
 def _read_ignored_lines(state_dir):
     # Return the set of stored ignored lines or an empty set if the file is
     # missing
-    abs_file = os.path.join(state_dir, IGNORED_LINES)
+    abs_file = os.path.join(state_dir, IGNORED_LINES_FILE)
     try:
         fobj = open(abs_file)
     except IOError, e:
@@ -214,7 +215,7 @@ def _read_ignored_lines(state_dir):
 
 
 def _write_ignored_lines(state_dir, ignored_lines):
-    abs_file = os.path.join(state_dir, IGNORED_LINES)
+    abs_file = os.path.join(state_dir, IGNORED_LINES_FILE)
     with open(abs_file, 'w') as fobj:
         fobj.write('\n'.join(ignored_lines))
 
@@ -269,7 +270,7 @@ def _serialize_agent_infos_to_json(agent_infos):
 
 
 def send_agent_infos(server_uri, username, password, ast_db_uri,
-                     compress=False, dry_run=False):
+                     dry_run=False):
     logger.info('Sending agent infos...')
     connection = anysql.connect_by_uri(ast_db_uri)
     try:
@@ -284,4 +285,4 @@ def send_agent_infos(server_uri, username, password, ast_db_uri,
     else:
         logger.info('Transmitting agent infos to server...')
         headers = {'Content-Type': 'application/json'}
-        _send_content_to_server(server_uri, username, password, content, headers, compress)
+        _send_content_to_server(server_uri, username, password, content, headers, False)

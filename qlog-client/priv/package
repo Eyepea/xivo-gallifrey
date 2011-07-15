@@ -21,7 +21,7 @@ cp etc/qlog-client.conf "$TMPDIR/etc/pf-xivo"
 
 # copy python modules
 mkdir -p "$TMPDIR/var/lib/python-support/python2.5/qlogclient"
-rsync -rp --exclude '*.pyc' src/ "$TMPDIR/var/lib/python-support/python2.5"
+rsync -rp --exclude '.*' --exclude '*.pyc' src/ "$TMPDIR/var/lib/python-support/python2.5"
 
 # create state dir
 mkdir -p "$TMPDIR/var/lib/pf-xivo-qlog-client"
