@@ -64,6 +64,8 @@ if __name__ == '__main__':
                       help='don\'t send agent infos')
     parser.add_option('--no-qlog', action='store_true',
                       help='don\'t send queuelog')
+    parser.add_option('--asternic', action='store_true',
+                      help='retrieve queuelog data from asternic database')
     
     cli_opts, args = parser.parse_args()
     
@@ -80,16 +82,24 @@ if __name__ == '__main__':
     if cli_opts.no_qlog:
         logger.info('Not sending qlog')
     else:
-        client.send_qlog(
-                opts['general.qlog_server_uri'],
-                opts['general.username'],
-                opts['general.password'],
-                opts['general.state_dir'],
-                opts['general.qlog_basepath'],
-                use_mtime=not cli_opts.disable_mtime,
-                maxlines=opts['general.maxlines_per_request'],
-                compress=opts['general.compress'],
-                dry_run=cli_opts.dry_run)
+        kwargs = {
+            'server_uri': opts['general.qlog_server_uri'],
+            'username': opts['general.username'],
+            'password': opts['general.password'],
+            'state_dir': opts['general.state_dir'],
+            'maxlines': opts['general.maxlines_per_request'],
+            'compress': opts['general.compress'],
+            'dry_run': cli_opts.dry_run
+        }
+        if cli_opts.asternic:
+            client.send_qlog_from_asternic_db(
+                    opts['general.asternic_db_uri'],
+                    **kwargs)
+        else:
+            client.send_qlog_from_files(
+                    opts['general.qlog_basepath'],
+                    not cli_opts.disable_mtime,
+                    **kwargs)
     logger.info('')
     
     if cli_opts.no_agent_infos:

@@ -48,6 +48,7 @@ def _new_config_spec():
     cfg_spec.add_param('general.qlog_basepath', default='/var/log/asterisk/queue_log')
     cfg_spec.add_param('general.maxlines_per_request', default=75000, fun=int)
     cfg_spec.add_param('general.ast_db_uri', default='sqlite:/var/lib/asterisk/astsqlite?timeout_ms=150')
+    cfg_spec.add_param('general.asternic_db_uri', default='mysql://stats:stats@localhost/stats')
     return cfg_spec
 
 _CONFIG_SPEC = _new_config_spec()
