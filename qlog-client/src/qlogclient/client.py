@@ -31,7 +31,7 @@ import time
 import StringIO
 import urllib2
 from xivo import anysql
-from xivo.BackSQL import backmysql
+from qlogclient import backmysql    # do NOT import xivo.BackSQL.backmysql
 from xivo.BackSQL import backsqlite
 try:
     import json
