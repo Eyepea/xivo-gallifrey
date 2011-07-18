@@ -625,10 +625,12 @@ class XivoRecords():
 
             rights = ''
             firstname = ''
+            lastname = ''
             if agentid:
                 for uinfo in self.cset.__find_userinfos_by_agentid__(astid, agentid):
                     rights = uinfo.get('capaids')[0]
                     firstname = self.cset.weblist['agents'][astid].keeplist[agentid].get('firstname')
+                    lastname = self.cset.weblist['agents'][astid].keeplist[agentid].get('lastname')
 
             if skillrule is None:
                 skillrule = ''
@@ -645,7 +647,7 @@ class XivoRecords():
                 'recordstatus' : 'rec_started',
                 'skillrules' : skillrule,
                 'queuenames' : queuename,
-                'agentnames' : firstname,
+                'agentnames' : '%s %s' % (firstname, lastname),
                 'agentnumbers' : agent_channel,
                 'agentrights' : rights,
                 'svientries' : ','.join(se),
