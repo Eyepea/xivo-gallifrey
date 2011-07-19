@@ -179,11 +179,10 @@ class _AsternicDBQlogReader(object):
     # Similar to _FilesQlogReader but with the asternic database as the source
     # of queuelog data.
     
-    def __init__(self, asternic_db_conn, ref_timestamp, ignored_lines):
+    def __init__(self, asternic_db_cursor, ref_timestamp, ignored_lines):
         self.last_timestamp = ref_timestamp
         self.last_ignored_lines = list(ignored_lines)
-        cursor = asternic_db_conn.cursor()
-        self._iter = self._new_iterator(cursor, ref_timestamp, ignored_lines)
+        self._iter = self._new_iterator(asternic_db_cursor, ref_timestamp, ignored_lines)
     
     _COLUMNS = ('queue_stats.datetime',
                 'queue_stats.uniqueid',
@@ -238,9 +237,9 @@ class _AsternicDBQlogReader(object):
         return self._iter.next()
     
     @classmethod
-    def new_factory(cls, asternic_db_conn):
+    def new_factory(cls, asternic_db_cursor):
         def aux(ref_timestamp, ignored_lines):
-            return cls(asternic_db_conn, ref_timestamp, ignored_lines)
+            return cls(asternic_db_cursor, ref_timestamp, ignored_lines)
         return aux
 
 
@@ -337,8 +336,12 @@ def send_qlog_from_files(qlog_basepath, use_mtime, *args, **kwargs):
 def send_qlog_from_asternic_db(asternic_db_uri, *args, **kwargs):
     connection = anysql.connect_by_uri(asternic_db_uri)
     try:
-        reader_factory = _AsternicDBQlogReader.new_factory(connection)
-        _send_qlog(reader_factory, *args, **kwargs)
+        cursor = connection.cursor()
+        try:
+            reader_factory = _AsternicDBQlogReader.new_factory(cursor)
+            _send_qlog(reader_factory, *args, **kwargs)
+        finally:
+            cursor.close()
     finally:
         connection.close()
 
@@ -362,7 +365,10 @@ def send_agent_infos(server_uri, username, password, ast_db_uri, dry_run=False):
     connection = anysql.connect_by_uri(ast_db_uri)
     try:
         cursor = connection.cursor()
-        agent_infos = _get_agent_infos(cursor)
+        try:
+            agent_infos = _get_agent_infos(cursor)
+        finally:
+            cursor.close()
     finally:
         connection.close()
     

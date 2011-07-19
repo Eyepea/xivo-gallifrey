@@ -19,6 +19,9 @@ cp --preserve=mode scripts/qlogc "$TMPDIR/usr/bin"
 mkdir -p "$TMPDIR/etc/pf-xivo"
 cp etc/qlog-client.conf "$TMPDIR/etc/pf-xivo"
 
+mkdir -p "$TMPDIR/etc/cron.d"
+cp etc/cron.d/pf-xivo-qlog-client "$TMPDIR/etc/cron.d/pf-xivo-qlog-client"
+
 # copy python modules
 mkdir -p "$TMPDIR/var/lib/python-support/python2.5/qlogclient"
 rsync -rp --exclude '.*' --exclude '*.pyc' src/ "$TMPDIR/var/lib/python-support/python2.5"
@@ -30,5 +33,7 @@ mkdir -p "$TMPDIR/var/lib/pf-xivo-qlog-client"
 cd "$TMPDIR"
 tar caf "$OLDPWD/$OUTFILE" *
 cd "$OLDPWD"
+
+echo "Created file $OUTFILE"
 
 rm -r "$TMPDIR"
