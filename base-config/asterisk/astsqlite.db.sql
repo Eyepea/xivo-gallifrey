@@ -287,7 +287,7 @@ INSERT INTO ctidirectoryfields VALUES (1, 'phone'    , 'phonebooknumber.office.n
 INSERT INTO ctidirectoryfields VALUES (1, 'firstname', 'phonebook.firsname');
 INSERT INTO ctidirectoryfields VALUES (1, 'lastname' , 'phonebook.lastname');
 INSERT INTO ctidirectoryfields VALUES (1, 'fullname' , 'phonebook.fullname');
-INSERT INTO ctidirectoryfields VALUES (1, 'company'  , 'phonebook.company');
+INSERT INTO ctidirectoryfields VALUES (1, 'company'  , 'phonebook.society');
 INSERT INTO ctidirectoryfields VALUES (1, 'mail'     , 'phonebook.email');
 INSERT INTO ctidirectoryfields VALUES (2, 'fullname' , '{internal-fullname}');
 
@@ -417,7 +417,7 @@ CREATE TABLE ctisheetactions (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctisheetactions VALUES(6,'dial','','["default"]','dest','','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ "","title","","Appel {xivo-direction}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{"10": [ "","urlauto","","http://www.google.fr/search?q={xivo-calleridnum}" ]}',0,1);
+INSERT INTO ctisheetactions VALUES(6,'dial','','["default"]','dest','','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de {xivo-calleridnum}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ],"40": [ "Numéro appelé","phone","Inconnu","{xivo-calledidnum}" ]}','{"10": [ "","title","","Appel {xivo-direction}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1);
 INSERT INTO ctisheetactions VALUES(7,'queue','','["default"]','dest','','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} de la File {xivo-queuename}" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','file:///etc/pf-xivo/ctiservers/form.ui','{}',0,1);
 INSERT INTO ctisheetactions VALUES(8,'custom1','','["default"]','all','','["agentsup","agent","client"]','{"10": [ "","text","Inconnu","Appel {xivo-direction} (Custom)" ],"20": [ "Numéro entrant","phone","Inconnu","{xivo-calleridnum}" ],"30": [ "Nom","text","Inconnu","{db-fullname}" ]}','{"10": [ "","title","","Appel {xivo-direction} (Custom)" ],"20": [ "","body","Inconnu","appel de {xivo-calleridnum} pour {xivo-calledidnum}" ],"30": [ "","body","Inconnu","{db-fullname} (selon {xivo-directory})" ],"40": [ "","body","","le {xivo-date}, il est {xivo-time}" ]}','','{}',0,1);
 
