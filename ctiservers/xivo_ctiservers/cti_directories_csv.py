@@ -26,8 +26,8 @@ __author__    = 'Corentin Le Gall'
 
 import csv
 import logging
-import sys
 import urllib
+from itertools import chain
 
 log = logging.getLogger('directories_csv')
 
@@ -47,7 +47,7 @@ def csv_extractlines(uri, match_list, searchpattern, delimiter):
 
     f = urllib.urlopen(uri)
     csvreader = csv.DictReader(f, dialect = d)
-    csvreader.next() # needed in python <= 2.5 in order to fill csvreader.fieldnames
+    first_line = csvreader.next() # needed in python <= 2.5 in order to fill csvreader.fieldnames
     lookup_list = list()
     for fieldname in csvreader.fieldnames:
         if fieldname in match_list:
@@ -55,7 +55,7 @@ def csv_extractlines(uri, match_list, searchpattern, delimiter):
 
     allmatches = []
     if lookup_list:
-        for t in csvreader:
+        for t in chain([first_line], csvreader):
             match = match_dict(t, lookup_list, searchpattern)
             if match:
                 allmatches.append(t)
