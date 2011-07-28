@@ -97,7 +97,7 @@ $page = $url->pager($pager['pages'],
 			</label>
 		</td>
 		<td><?=$ref['exten']?></td>
-		<td><?=$ref['context']?></td>
+		<td><?=$ref['contextdisplayname']?></td>
 		<td class="td-right" colspan="2">
 <?php
 			echo	$url->href_html($url->img_html('img/site/button/edit.gif',

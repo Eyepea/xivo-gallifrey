@@ -67,11 +67,48 @@ if(isset($_QR['fm_send']) === true || isset($_QR['search']) === true)
 			$limit[1] = $nbbypage;
 		}
 
-		if(($result = $cdr->search($info,'calldate',$limit)) !== false && $result !== null)
+		if(($result = $cdr->search($info,'calldate',$limit)) !== false && $result !== null
+		&& ($nb = count($result)) !== 0)
 			$total = $cdr->get_cnt();
 
 		if($result === false)
 			$info = null;
+			
+		$sounds = &$ipbx->get_module('sounds');
+		$url = &$_TPL->get_module('url');
+		
+		for($i = 0;$i < $nb;$i++)
+		{
+			$ref = &$result[$i];
+			
+			if(dwho_has_len($ref['userfield']) === true)
+			{
+				$infos = split(':', $ref['userfield']);
+				if (is_array($infos) === true
+				&& isset($infos[0]) === true)
+				{
+					switch ($infos[0])
+					{
+						case 'sounds':
+								if (isset($infos[1],$infos[2]) === true
+								&& $sounds->_chk_file($infos[2],$infos[1]) === true)
+								{
+									$dir = $infos[1];
+									$filename = $infos[2];
+									$ref['userfield'] =	$url->href_html($filename,
+									   'service/ipbx/pbx_services/sounds',
+									   array('act'	=> 'download',
+										 'dir'	=> $dir,
+										 'id'	=> $filename));
+								}
+							break;
+						default:
+					}
+				}
+				else
+					$ref['userfield'] =	dwho_htmlen(dwho_trunc($ref['userfield'],20,'...',false));
+			}
+		}
 
 		$_TPL->set_var('pager',dwho_calc_page($page,$nbbypage,$total));
 	}

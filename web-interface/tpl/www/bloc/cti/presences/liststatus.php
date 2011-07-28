@@ -83,7 +83,7 @@ $page = $url->pager($pager['pages'],
 						 'paragraph'	=> false));?>
 		</td>
 		<td class="txt-left curpointer"
-		    title="<?=dwho_alttitle($ref['ctistatus']['name']);?>"
+		    title="<?=dwho_alttitle($ref['ctistatus']['name']);?>">
 <?php
 			echo	$url->img_html('img/site/flag/'.$icon.'.gif',null,'class="icons-list"'),
 				$ref['ctistatus']['name'];

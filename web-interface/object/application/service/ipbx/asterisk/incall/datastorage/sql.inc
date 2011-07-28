@@ -24,6 +24,7 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 {
 	var $_table	= array(
 				'incall'		=> '',
+				'context'		=> '',
 				'dialaction'		=> '',
 				'userfeatures'		=> '',
 				'groupfeatures'		=> '',
@@ -36,6 +37,11 @@ class xivo_application_service_asterisk_incall_sql extends xivo_application_abst
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_dso->new_select($this->_table['incall']);
+
+		$this->_dso->innerjoin($this->_table['context'],
+				       $this->_table['context'].'.name = '.$this->_table['incall'].'.context',
+				       null,
+				       array('contextdisplayname' => 'displayname'));
 
 		$this->_dso->innerjoin($this->_table['dialaction'],
 				       $this->_table['incall'].'.id = '.$this->_table['dialaction'].'.categoryval',

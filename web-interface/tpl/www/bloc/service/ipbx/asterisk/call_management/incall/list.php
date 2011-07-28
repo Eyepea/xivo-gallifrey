@@ -124,7 +124,7 @@ $page = $url->pager($pager['pages'],
 ?>
 			</label>
 		</td>
-		<td><?=$ref['context']?></td>
+		<td><?=$ref['contextdisplayname']?></td>
 		<td><?=$destination?></td>
 		<td title="<?=dwho_alttitle($destidentity);?>">
 			<?=dwho_htmlen(dwho_trunc($destidentity,30,'...',false));?>

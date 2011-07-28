@@ -560,7 +560,7 @@ endif;
 			if(dwho_has_len($ref['userfield']) === true):
 				echo	'<dt>',$this->bbf('entry_userfield'),'</dt>',
 					'<dd title="',dwho_htmlen($ref['userfield']),'">',
-					dwho_htmlen(dwho_trunc($ref['userfield'],20,'...',false)),
+					$ref['userfield'],
 					'<br /></dd>';
 			endif;
 		?>
