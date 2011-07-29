@@ -183,7 +183,7 @@ switch($act)
 						$out['reversedid'][$curctx] = $curblok;
 					
 					$curctx  = $rdid['context'];
-					if(array_key_exists($out['reversedid'], $curctx))
+					if(array_key_exists($curctx, $out['reversedid']))
 						$curblok = $out['reversedid'][$curctx];
 					else
 						$curblok = array();
