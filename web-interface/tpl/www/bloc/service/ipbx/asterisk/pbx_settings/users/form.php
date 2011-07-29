@@ -1511,7 +1511,7 @@ endif;
 				  'help'		=> $this->bbf('hlp_fm_imageversion'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'imageversion')) )),
-						   
+
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_trustphoneip'),
 				    'name'	=> 'protocol[trustphoneip]',
 				    'labelid'	=> 'protocol-trustphoneip',
@@ -1523,7 +1523,7 @@ endif;
 				    'default'	=> $element['protocol']['sccp']['trustphoneip']['default'],
 				    'selected'	=> $this->get_var('info','protocol','trustphoneip')),
 			      $element['protocol']['sccp']['trustphoneip']['value']),
-			      
+
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_secondary_dialtone_digits'),
 				    'name'	=> 'protocol[secondary_dialtone_digits]',
 				    'labelid'	=> 'protocol-secondary_dialtone_digits',
@@ -1535,7 +1535,7 @@ endif;
 				    'default'	=> $element['protocol']['sccp']['secondary_dialtone_digits']['default'],
 				    'selected'	=> $this->get_var('info','protocol','secondary_dialtone_digits')),
 			      $element['protocol']['sccp']['secondary_dialtone_digits']['value']),
-			      
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_secondary_dialtone_tone'),
 				  'name'	=> 'protocol[secondary_dialtone_tone]',
 				  'labelid'	=> 'protocol-secondary_dialtone_tone',
@@ -1544,7 +1544,7 @@ endif;
 				  'help'		=> $this->bbf('hlp_fm_dialtone_tone'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'secondary_dialtone_tone')) )),
-						   
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_audio_tos'),
 				  'name'	=> 'protocol[audio_tos]',
 				  'labelid'	=> 'protocol-audio_tos',
@@ -1553,7 +1553,7 @@ endif;
 				  'help'		=> $this->bbf('hlp_fm_audio_tos'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'audio_tos')) )),
-						   
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_audio_cos'),
 				  'name'	=> 'protocol[audio_cos]',
 				  'labelid'	=> 'protocol-audio_cos',
@@ -1562,7 +1562,7 @@ endif;
 				  'help'		=> $this->bbf('hlp_fm_audio_cos'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'audio_cos')) )),
-						   
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_video_tos'),
 				  'name'	=> 'protocol[video_tos]',
 				  'labelid'	=> 'protocol-video_tos',
@@ -1571,7 +1571,7 @@ endif;
 				  'help'		=> $this->bbf('hlp_fm_video_tos'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'video_tos')) )),
-						   
+
 		$form->text(array('desc'	=> $this->bbf('fm_protocol_video_cos'),
 				  'name'	=> 'protocol[video_cos]',
 				  'labelid'	=> 'protocol-video_cos',
@@ -1621,6 +1621,14 @@ endif;
 				  'value'	=> $this->get_var('info','protocol','accountcode'),
 				  'error'	=> $this->bbf_args('error',
 						   $this->get_var('error', 'protocol', 'accountcode')) )),
+
+		$form->text(array('desc'	=> $this->bbf('fm_userfeatures_userfield'),
+				  'name'	=> 'userfeatures[userfield]',
+				  'labelid'	=> 'userfeatures-userfield',
+				  'size'	=> 15,
+				  'value'	=> $this->get_var('info','userfeatures','userfield'),
+				  'error'	=> $this->bbf_args('error',
+						   $this->get_var('error', 'userfeatures', 'userfield')) )),
 
 		$form->select(array('desc'	=> $this->bbf('fm_protocol_useclientcode'),
 				    'name'	=> 'protocol[useclientcode]',

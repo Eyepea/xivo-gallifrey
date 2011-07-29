@@ -121,6 +121,9 @@ Invite:
 ; fm_protocol_accountcode
 Account number:
 
+; fm_userfeatures_userfield
+User field: 
+
 ; fm_protocol_progressinband
 Events in the band RING:
 
