@@ -183,7 +183,7 @@ switch($act)
 						$out['reversedid'][$curctx] = $curblok;
 					
 					$curctx  = $rdid['context'];
-					if(array_key_exists($out['reversedid'], $curctx))
+					if(array_key_exists($curctx, $out['reversedid']))
 						$curblok = $out['reversedid'][$curctx];
 					else
 						$curblok = array();
@@ -343,7 +343,7 @@ switch($act)
 					'appliname' => $pf['appliname'],
 					'presence' => "presences.".$pf['presence'],
 					'services' => explode(',', $pf['services']),
-					'preferences' => $prefout,
+					'preferences' => strlen($pf['preferences']) == 0?null:dwho_json::decode($pf['preferences']),
 					'callcenter_type' => $pf['callcenter_type']
 				);
 			}
