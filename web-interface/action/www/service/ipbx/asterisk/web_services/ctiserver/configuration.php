@@ -343,7 +343,7 @@ switch($act)
 					'appliname' => $pf['appliname'],
 					'presence' => "presences.".$pf['presence'],
 					'services' => explode(',', $pf['services']),
-					'preferences' => $prefout,
+					'preferences' => strlen($pf['preferences']) == 0?null:dwho_json::decode($pf['preferences']),
 					'callcenter_type' => $pf['callcenter_type']
 				);
 			}
