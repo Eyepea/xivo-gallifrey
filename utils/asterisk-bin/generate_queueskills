@@ -1,7 +1,7 @@
 #!/usr/bin/python
-__version__ = ""
+__version__ = "$Revision$ $Date$"
 __license__ = """
-    Copyright (C) 2010  Proformatique <technique@proformatique.com>
+    Copyright (C) 2010-2011  Proformatique <technique@proformatique.com>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ from xivo import xivo_helpers
 cursor = xivo_helpers.db_connect().cursor()
 section = None
 
-cursor.query("SELECT ${columns} FROM userqueueskill u, userfeatures uf, queueskill s WHERE u.userid = uf.id AND u.skillid = s.id", ('uf.id', 's.name', 'u.weight'))
+cursor.query("SELECT ${columns} FROM userqueueskill u, userfeatures uf, queueskill s WHERE u.userid = uf.id AND u.skillid = s.id ORDER BY uf.id", ('uf.id', 's.name', 'u.weight'))
 res = cursor.fetchall()
 for r in res:
 	nsection = "%d" % r['uf.id']
@@ -37,7 +37,7 @@ for r in res:
 
 
 
-cursor.query("SELECT ${columns} FROM agentqueueskill a, agentfeatures af, queueskill s WHERE a.agentid = af.id AND a.skillid = s.id", ('af.id', 's.name', 'a.weight'))
+cursor.query("SELECT ${columns} FROM agentqueueskill a, agentfeatures af, queueskill s WHERE a.agentid = af.id AND a.skillid = s.id ORDER BY af.id", ('af.id', 's.name', 'a.weight'))
 res = cursor.fetchall()
 for r in res:
 	nsection = "%d" % r['af.id']
