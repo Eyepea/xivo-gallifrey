@@ -27,7 +27,6 @@ __license__ = """
 import os
 import logging
 import subprocess
-import math
 
 from xivo import tzinform
 from xivo import xivo_config
