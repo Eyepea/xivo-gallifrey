@@ -207,15 +207,13 @@ class Polycom(PhoneVendorMixin):
         lines = []
         for fkey_no, fkey in funckey.iteritems():
             if not fkey['supervision']:
-                log.info('Ignoring function key no %s -- supervision must be enabled for Polycom',
-                         fkey_no)
+                log.info('Polycom doesn\'t support non-supervised function keys')
+            if fkey_no < 1 or fkey_no > max_fkey_no:
+                log.info('Invalid function key no %s for Polycom %s -- must be in [1, %s[',
+                         fkey_no, model, max_fkey_no)
             else:
-                if fkey_no < 1 or fkey_no > max_fkey_no:
-                    log.info('Invalid function key no %s for Polycom %s -- must be in [1, %s[',
-                             fkey_no, model, max_fkey_no)
-                else:
-                    lines.append('attendant.resourceList.%s.address="%s"' % (fkey_no, fkey['exten']))
-                    lines.append('attendant.resourceList.%s.label="%s"' % (fkey_no, fkey['label']))
+                lines.append('attendant.resourceList.%s.address="%s"' % (fkey_no, fkey['exten']))
+                lines.append('attendant.resourceList.%s.label="%s"' % (fkey_no, fkey['label']))
         return '\n'.join(lines)
         
     @classmethod
