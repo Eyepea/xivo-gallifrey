@@ -399,10 +399,14 @@ class xivo_application_service_asterisk_webservices_phonebook extends xivo_appli
 			if(preg_match('/^\+(\d+)\(\d+\)(\d+)$/',$info['phone'],$match) === 1)
 				$info['phone'] = '00'.$match[1].$match[2];
 
+			$prefix = '';
+			if(preg_match('/^\s*\+/',$info['phone']))
+				$prefix = '00';
+
 			if(preg_match_all('/\d+/',$info['phone'],$match) === 0)
 				continue;
 
-			$info['phone'] = implode('',$match[0]);
+			$info['phone'] = $prefix.implode('',$match[0]);
 
 			$info['identity'] = $info['name'];
 
