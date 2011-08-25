@@ -108,7 +108,12 @@ class Snom(PhoneVendorMixin):
                 xtype = "dest"
             else:
                 xtype = "speed"
-            fk_config_lines.append('<fkey idx="%d" context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' % (int(key)-1, xtype, exten, cls.ASTERISK_IPV4))
+            if value.get('label'):
+                label_attr = 'label="%s"' % value['label']
+            else:
+                label_attr = ''
+            fk_config_lines.append('<fkey idx="%d" %s context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
+                                   (int(key)-1, label_attr, xtype, exten, cls.ASTERISK_IPV4))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
