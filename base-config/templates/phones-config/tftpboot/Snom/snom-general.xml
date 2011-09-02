@@ -9,7 +9,6 @@
     <admin_mode perm="R">on</admin_mode>
     <admin_mode_password perm="R">12345</admin_mode_password>
     <display_method perm="R">display_name_number</display_method>
-    <gateway perm="R">#XIVO_NET4_IP#</gateway>
     <http_user perm="R">guest</http_user>
     <http_pass perm="R">guest</http_pass>
     <ntp_server perm="R">#XIVO_NET4_IP#</ntp_server>

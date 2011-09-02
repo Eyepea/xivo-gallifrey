@@ -91,6 +91,26 @@ class xivo_service_asterisk_context extends xivo_service_asterisk_abstract
 		return($r);
 	}
 
+	function get_all($disable=null,$prepare=true,$order=null,$limit=null,$assoc=false)
+	{
+		$prepare = (bool) $prepare;
+		$assoc = (bool) $assoc;
+
+		if(isset($this->_origin_list) === true)
+			$this->_origin_list = false;
+
+		if(($list = $this->_dso->get_all($disable,$order,$limit)) === false
+		|| isset($list[0]) === false)
+			return(false);
+		else if(isset($this->_origin_list) === true)
+			$this->_origin_list = $list;
+
+		if($prepare === false && $assoc === false)
+			return($list);
+
+		return($this->_mk_list_assoc_prepare($list,$assoc,$prepare));
+	}
+
 	function get_all_except($name=null,$order=null,$limit=null,$assoc=false)
 	{
 		if(dwho_has_len($name) === false)

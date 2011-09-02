@@ -358,7 +358,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		$q = sprintf("%s %s load",
 			$protocols[$this->_info['userfeatures']['protocol']],
 			$this->_info['protocol']['name']
-		);                                                                             
+		);
 
 		$infos = $this->_service->discuss($q, true);
 		if(!is_array($infos))
@@ -531,10 +531,10 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		return($r);
 	}
 
-	function get_all_context()
+	function get_all_context($disable=null,$order=null,$limit=null)
 	{
-		if(($r = $this->_userfeatures->get_all_context()) !== false)
-			ksort($r);
+		if(($r = $this->_userfeatures->get_all_context($disable,$order,$limit)) === false)
+			return(false);
 
 		return($r);
 	}
@@ -908,7 +908,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 		if($this->_errnb === 0 && $numhaslen === true)
 		{
 			$callerid = (string) $this->get_result_var('protocol','callerid');
-			$callerid = $this->_service->mk_callerid($callerid, $number, $protocolname); 
+			$callerid = $this->_service->mk_callerid($callerid, $number, $protocolname);
 			$this->_set_result_var('protocol','callerid',$callerid);
 
 			$enablehint = (bool) $this->get_result_var('userfeatures','enablehint') === false;
@@ -2635,7 +2635,7 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 			{
 				$r['lines'][$row] = 'error';
 				$r['total']['error']++;
-				
+
 				dwho_logw(print_r($this->get_error(),true)."\n".print_r($data[$i], true), 'userimport', "line #$i");
 				continue;
 			}

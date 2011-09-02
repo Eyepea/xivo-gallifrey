@@ -23,8 +23,8 @@
 <div class="b-infos">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 	<div class="sb-content">
-		<div class="logo"><?=$url->img_html('img/site/avencall.png',XIVO_AV_FR_CORP_NAME);?></div>
-		<div class="logo"><?=$url->img_html('img/site/proformatique.png',XIVO_PF_FR_CORP_NAME);?></div>
+		<div class="logo"><?=$url->img_html('img/site/avencall.png'.XIVO_AV_FR_CORP_NAME);?></div>
+		<div class="logo"><?=$url->img_html('img/site/proformatique.png'.XIVO_PF_FR_CORP_NAME);?></div>
 		<div class="clear"></div>
 	</div>
 	<div class="sb-content">
@@ -38,10 +38,10 @@
 			<dt><?=$this->bbf('info_fax');?></dt>
 				<dd><?=XIVO_AV_FR_CORP_FAX?></dd>
 			<dt><?=$this->bbf('info_e-mail');?></dt>
-				<dd><?='<a href="mailto:',XIVO_AV_FR_CORP_EMAIL,'" title="',XIVO_AV_FR_CORP_EMAIL,'">',XIVO_AV_FR_CORP_EMAIL,'</a>'?></dd>
+				<dd><?='<a href="mailto:'.XIVO_AV_FR_CORP_EMAIL.'" title="'.XIVO_AV_FR_CORP_EMAIL.'">'.XIVO_AV_FR_CORP_EMAIL.'</a>'?></dd>
 			<dt><?=$this->bbf('info_websites');?></dt>
-				<dd><?='<a href="http://',XIVO_AV_FR_CORP_URL,'" title="',XIVO_AV_FR_CORP_URL,'" target="_blank">',XIVO_AV_FR_CORP_URL,'</a>'?></dd>
-				<dd><?='<a href="http://',XIVO_SOFT_URL,'" title="',XIVO_SOFT_LABEL,'" target="_blank">',XIVO_SOFT_URL,'</a>'?></dd>
+				<dd><?='<a href="http://'.XIVO_AV_FR_CORP_URL.'" title="'.XIVO_AV_FR_CORP_URL.'" target="_blank">'.XIVO_AV_FR_CORP_URL.'</a>'?></dd>
+				<dd><?='<a href="http://'.XIVO_SOFT_URL.'" title="'.XIVO_SOFT_LABEL.'" target="_blank">'.XIVO_SOFT_URL.'</a>'?></dd>
 		</dl>
 		<dl class="body">
 			<dt><?=$this->bbf('info_address');?></dt>
@@ -53,10 +53,10 @@
 			<dt><?=$this->bbf('info_fax');?></dt>
 				<dd><?=XIVO_PF_FR_CORP_FAX?></dd>
 			<dt><?=$this->bbf('info_e-mail');?></dt>
-				<dd><?='<a href="mailto:',XIVO_PF_FR_CORP_EMAIL,'" title="',XIVO_PF_FR_CORP_EMAIL,'">',XIVO_PF_FR_CORP_EMAIL,'</a>'?></dd>
+				<dd><?='<a href="mailto:'.XIVO_PF_FR_CORP_EMAIL.'" title="'.XIVO_PF_FR_CORP_EMAIL.'">'.XIVO_PF_FR_CORP_EMAIL.'</a>'?></dd>
 			<dt><?=$this->bbf('info_websites');?></dt>
-				<dd><?='<a href="http://',XIVO_PF_FR_CORP_URL,'" title="',XIVO_PF_FR_CORP_LABEL,'" target="_blank">',XIVO_PF_FR_CORP_URL,'</a>'?></dd>
-				<dd><?='<a href="http://',XIVO_SOFT_URL,'" title="',XIVO_SOFT_LABEL,'" target="_blank">',XIVO_SOFT_URL,'</a>'?></dd>
+				<dd><?='<a href="http://'.XIVO_PF_FR_CORP_URL.'" title="'.XIVO_PF_FR_CORP_LABEL.'" target="_blank">'.XIVO_PF_FR_CORP_URL.'</a>'?></dd>
+				<dd><?='<a href="http://'.XIVO_SOFT_URL.'" title="'.XIVO_SOFT_LABEL.'" target="_blank">'.XIVO_SOFT_URL.'</a>'?></dd>
 		</dl>
 		<dl class="body">
 			<dt><?=$this->bbf('info_address');?></dt>
@@ -68,10 +68,10 @@
 			<dt><?=$this->bbf('info_fax');?></dt>
 				<dd><?=XIVO_PF_CA_CORP_FAX?></dd>
 			<dt><?=$this->bbf('info_e-mail');?></dt>
-				<dd><?='<a href="mailto:',XIVO_PF_CA_CORP_EMAIL,'" title="',XIVO_PF_CA_CORP_EMAIL,'">',XIVO_PF_CA_CORP_EMAIL,'</a>'?></dd>
+				<dd><?='<a href="mailto:'.XIVO_PF_CA_CORP_EMAIL.'" title="'.XIVO_PF_CA_CORP_EMAIL.'">'.XIVO_PF_CA_CORP_EMAIL.'</a>'?></dd>
 			<dt><?=$this->bbf('info_websites');?></dt>
-				<dd><?='<a href="http://',XIVO_PF_CA_CORP_URL,'" title="',XIVO_PF_CA_CORP_URL,'" target="_blank">',XIVO_PF_CA_CORP_URL,'</a>'?></dd>
-				<dd><?='<a href="http://',XIVO_SOFT_URL,'" title="',XIVO_SOFT_LABEL,'" target="_blank">',XIVO_SOFT_URL,'</a>'?></dd>
+				<dd><?='<a href="http://'.XIVO_PF_CA_CORP_URL.'" title="'.XIVO_PF_CA_CORP_URL.'" target="_blank">'.XIVO_PF_CA_CORP_URL.'</a>'?></dd>
+				<dd><?='<a href="http://'.XIVO_SOFT_URL.'" title="'.XIVO_SOFT_LABEL.'" target="_blank">'.XIVO_SOFT_URL.'</a>'?></dd>
 		</dl>
 		<div class="clear"></div>
 	</div>

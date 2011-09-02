@@ -63,7 +63,7 @@ endif;
 		<dt><?=$this->bbf('info_ipbxengine');?></dt>
 		<dd><?=dwho_htmlen($this->get_var('ipbxengine','engines',$info['ipbxengine']['engine'],'label'));?></dd>
 		<dt><?=$this->bbf('info_dbbackend');?></dt>
-		<dd><?=dwho_htmlen($this->get_var('dbbackend',$info['dbconfig']['result']['backend'],'label')),
+		<dd><?=dwho_htmlen($this->get_var('dbbackend',$info['dbconfig']['result']['backend'],'label')).
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_dbconfig_backends',
 					        $this->get_var('error','dbconfig','backends'))));?></dd>
@@ -73,22 +73,22 @@ endif;
 	<legend><?=$this->bbf('fld-server-information');?></legend>
 	<dl>
 		<dt><?=$this->bbf('info_servername');?></dt>
-		<dd><?=dwho_htmlen($info['mainconfig']['hostname']),
+		<dd><?=dwho_htmlen($info['mainconfig']['hostname']).
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_mainconfig_hosts',
 					        $this->get_var('error','mainconfig','hosts'))));?></dd>
 		<dt><?=$this->bbf('info_serverdomain');?></dt>
 		<dd><?=dwho_htmlen($info['mainconfig']['domain']);?></dd>
 		<dt><?=$this->bbf('info_adminpasswd');?></dt>
-		<dd><?=dwho_htmlen($info['mainconfig']['adminpasswd']),
+		<dd><?=dwho_htmlen($info['mainconfig']['adminpasswd']).
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_mainconfig_adminpasswd',
 					        $this->get_var('error','mainconfig','adminpasswd'))));?></dd>
 <?php
-	if(is_array($netiface) === true && empty($netiface) === false):	
+	if(is_array($netiface) === true && empty($netiface) === false):
 ?>
 		<dt><?=$this->bbf('info_netiface_address');?></dt>
-		<dd><?=dwho_htmlen($this->get_var('info','netiface','address')),
+		<dd><?=dwho_htmlen($this->get_var('info','netiface','address')).
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_netiface',
 					        $this->get_var('error','netiface'))));?></dd>
@@ -107,7 +107,7 @@ endif;
 		if(dwho_has_len($resolvconf,'nameserver1') === true):
 ?>
 		<dt><?=$this->bbf('info_resolvconf_nameserver1');?></dt>
-		<dd><?=dwho_htmlen($resolvconf['nameserver1']),
+		<dd><?=dwho_htmlen($resolvconf['nameserver1']).
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_resolvconf_nameservers',
 					        $this->get_var('error','resolvconf','nameservers'))));?></dd>
@@ -127,7 +127,7 @@ endif;
 	<legend><?=$this->bbf('fld-entity');?></legend>
 	<dl>
 		<dt><?= $this->bbf('entity_name'); ?></dt>
-		<dd><?=dwho_htmlen($info['entity']['name']),
+		<dd><?=dwho_htmlen($info['entity']['name']).
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_entity',
 					        $this->get_var('error','entity'))));?></dd>
@@ -140,19 +140,19 @@ endif;
 	<dl>
 		<dt><?= $this->bbf('internal_calls'); ?></dt>
 		<dd><?=dwho_htmlen($info['context_internal']['context']['displayname'].
-				   ' ('.$info['context_internal']['context']['name'].')'),
+				   ' ('.$info['context_internal']['context']['name'].')').
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_context_internal',
 					        $this->get_var('error','context_internal'))));?></dd>
 		<dt><?= $this->bbf('incoming_calls'); ?></dt>
 		<dd><?=dwho_htmlen($info['context_incall']['context']['displayname'].
-				   ' ('.$info['context_incall']['context']['name'].')'),
+				   ' ('.$info['context_incall']['context']['name'].')').
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_context_incall',
 					        $this->get_var('error','context_incall'))));?></dd>
 		<dt><?= $this->bbf('outgoing_calls'); ?></dt>
 		<dd><?=dwho_htmlen($info['context_outcall']['context']['displayname'].
-				   ' ('.$info['context_outcall']['context']['name'].')'),
+				   ' ('.$info['context_outcall']['context']['name'].')').
 		       $dhtml->message_error(
 				nl2br($this->bbf_args('error_context_outcall',
 					        $this->get_var('error','context_outcall'))));?></dd>

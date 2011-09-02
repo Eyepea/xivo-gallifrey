@@ -267,6 +267,7 @@ switch($act)
 		$appcontext = &$ipbx->get_application('context');
 
 		$order = array();
+		$order['entity'] = SORT_ASC;
 		$order['name'] = SORT_ASC;
 
 		$limit = array();

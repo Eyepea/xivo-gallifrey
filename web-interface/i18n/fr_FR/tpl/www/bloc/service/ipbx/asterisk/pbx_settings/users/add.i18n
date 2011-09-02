@@ -736,6 +736,9 @@ Drapeau de facturation :
 ; fm_protocol_accountcode
 Numéro d'acompte :
 
+; fm_userfeatures_userfield
+Champ utilisateur: 
+
 ; fm_protocol_useclientcode
 Code client :
 

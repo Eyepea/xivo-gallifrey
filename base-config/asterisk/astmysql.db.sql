@@ -1642,6 +1642,7 @@ CREATE TABLE `userfeatures` (
  `musiconhold` varchar(128) NOT NULL DEFAULT '',
  `outcallerid` varchar(80) NOT NULL DEFAULT '',
  `mobilephonenumber` varchar(128) NOT NULL DEFAULT '',
+ `userfield` varchar(128) NOT NULL DEFAULT '',
  `bsfilter` enum('no','boss','secretary') NOT NULL DEFAULT 'no',
  `preprocess_subroutine` varchar(39),
  `internal` tinyint(1) NOT NULL DEFAULT 0,

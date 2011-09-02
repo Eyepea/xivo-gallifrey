@@ -240,9 +240,15 @@ def incoming_user_set_features(agi, cursor, args):
     else:
         mobilephonenumber = ""
 
+    if user.userfield:
+        userfield = user.userfield
+    else:
+        userfield = ""
+
     agi.set_variable('XIVO_CALLRECORDFILE', callrecordfile)
     agi.set_variable('XIVO_USERPREPROCESS_SUBROUTINE', preprocess_subroutine)
     agi.set_variable('XIVO_MOBILEPHONENUMBER', mobilephonenumber)
+    agi.set_variable('XIVO_USERFIELD', userfield)
     
     # voicemail lang
     vmbox = None

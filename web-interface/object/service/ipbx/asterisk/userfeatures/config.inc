@@ -180,6 +180,9 @@ $array['element']['outcallerid-custom']['unset'] = true;
 $array['element']['mobilephonenumber'] = array();
 $array['element']['mobilephonenumber']['default'] = '';
 
+$array['element']['userfield'] = array();
+$array['element']['userfield']['default'] = '';
+
 $array['element']['bsfilter'] = array();
 $array['element']['bsfilter']['value'] = array('no','boss','secretary');
 $array['element']['bsfilter']['default'] = 'no';
@@ -253,6 +256,9 @@ $array['filter']['bsfilter'] = array('set' => false,'chk' => 2,'key' => array('n
 $array['filter']['mobilephonenumber'] = array('set'	=> false,
 					      'chk'	=> 2,
 					      'regexp'	=> '/^\+?[0-9\*#]+$/',
+					      'maxlen'	=> 128);
+$array['filter']['userfield'] = array('set'	=> false,
+					      'chk'	=> 2,
 					      'maxlen'	=> 128);
 $array['filter']['preprocess_subroutine'] = array('set' => false,
 						  'chk'	=> 2,

@@ -149,6 +149,11 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 
 		$this->_dso->new_select($this->_table,'context');
 
+		$this->_dso->innerjoin('context',
+				       'context.name = '.$this->_table.'.context',
+				       null,
+				       array('contextdisplayname' => 'displayname'));
+
 		$arr = array();
 
 		if($disable !== null && isset($this->_disable) === true)
@@ -158,10 +163,10 @@ class xivo_service_asterisk_userfeatures_sql extends xivo_service_asterisk_abstr
 			$arr['internal'] = $internal;
 
 		if(empty($arr) === false)
-			$this->_dso->where($arr);
+			$this->_dso->where($arr,$this->_table);
 
-		$this->_dso->new_group('context');
-		$this->_dso->new_order($order);
+		$this->_dso->new_group('context',$this->_table);
+		$this->_dso->new_order($order,$this->_table);
 		$this->_dso->limit($limit);
 
 		$r = $this->_dso->select_all();

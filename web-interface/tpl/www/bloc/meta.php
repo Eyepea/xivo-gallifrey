@@ -27,8 +27,8 @@
 <meta name="author" content="<?=XIVO_CORP_LABEL?>">
 <meta name="publisher" content="<?=XIVO_CORP_LABEL?>">
 <meta name="distribution" content="iu">
-<meta name="copyright" content="Copyright <?=dwho_i18n::strftime_l('%Y',null),
-					     ' ',
+<meta name="copyright" content="Copyright <?=dwho_i18n::strftime_l('%Y',null).
+					     ' '.
 					     XIVO_CORP_LABEL?>">
 <meta name="title" content="<?=dwho_htmlsc($this->bbf('page_title',php_uname('n')));?>">
 

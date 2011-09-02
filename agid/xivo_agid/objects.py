@@ -395,7 +395,8 @@ class User:
                    'callrecord', 'incallfilter', 'enablednd',
                    'enableunc', 'destunc', 'enablerna', 'destrna',
                    'enablebusy', 'destbusy', 'musiconhold',
-                   'outcallerid', 'bsfilter', 'preprocess_subroutine', 'mobilephonenumber')
+                   'outcallerid', 'bsfilter', 'preprocess_subroutine', 
+                   'mobilephonenumber', 'userfield')
 
         if xid:
             cursor.query("SELECT ${columns} FROM userfeatures "
@@ -461,6 +462,7 @@ class User:
         self.outcallerid = res['outcallerid']
         self.preprocess_subroutine = res['preprocess_subroutine']
         self.mobilephonenumber = res['mobilephonenumber']
+        self.userfield = res['userfield']
         self.bsfilter = res['bsfilter']
 
         if self.destunc == '':

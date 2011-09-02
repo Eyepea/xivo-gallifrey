@@ -22,11 +22,17 @@ require_once(dwho_file::joinpath(XIVO_PATH_OBJECT,'application','abstract','data
 
 class xivo_application_service_asterisk_outcall_sql extends xivo_application_abstract_datastorage_sql
 {
-	var $_table	= array('outcall'	=> '');
+	var $_table	= array('context'	=> '',
+	                    'outcall'	=> '');
 
 	function get_all($disable=null,$order=null,$limit=null,$value=null)
 	{
 		$this->_dso->new_select($this->_table['outcall']);
+
+		$this->_dso->innerjoin($this->_table['context'],
+				       $this->_table['context'].'.name = '.$this->_table['outcall'].'.context',
+				       null,
+				       array('contextdisplayname' => 'displayname'));
 
 		if($disable !== null)
 		{

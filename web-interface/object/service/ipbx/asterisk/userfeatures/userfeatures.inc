@@ -253,9 +253,9 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		return($this->_mk_list_assoc_prepare($list,false,true));
 	}
 
-	function get_all_context($disable=null)
+	function get_all_context($disable=null,$order=null,$limit=null)
 	{
-		if(($list = $this->_dso->get_all_context($disable)) === false)
+		if(($list = $this->_dso->get_all_context($disable,$order,$limit)) === false)
 			return(false);
 
 		$nb = count($list);
@@ -266,7 +266,7 @@ class xivo_service_asterisk_userfeatures extends xivo_service_asterisk_abstract
 		{
 			$info = $list[$i];
 
-			$r[$info['context']] = $info['context'];
+			$r[$info['context']] = $info['contextdisplayname'];
 		}
 
 		if(empty($r) === true)

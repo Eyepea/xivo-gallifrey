@@ -15,8 +15,6 @@ fix_indicate_call_later
 #fix_useless_channel_unlocks
 
 fix_devices_without_line
-fix_hidden_callplane_on_transfer
 fix_focus_transfer
-fix_ghost_channel
 fix_initialize_crash
 fix_newcall_label
