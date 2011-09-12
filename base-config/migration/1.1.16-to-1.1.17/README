@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.16 to 1.1.17 =
+ 
+* add userfield field in userfeatures tables
