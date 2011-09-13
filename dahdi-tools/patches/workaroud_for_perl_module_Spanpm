@@ -1,0 +1,80 @@
+merging Span.pm from dahdi-linux-2.4.1 to fix gen_conf error :
+
+# /usr/sbin/dahdi_genconf: missing default group (termtype=UNKNOWN)
+Index: dahdi-tools-2.5.0/xpp/perl_modules/Dahdi/Span.pm
+===================================================================
+--- dahdi-tools-2.5.0.orig/xpp/perl_modules/Dahdi/Span.pm	2011-09-13 09:40:15.226746819 -0400
++++ dahdi-tools-2.5.0/xpp/perl_modules/Dahdi/Span.pm	2011-09-13 09:40:26.514746848 -0400
+@@ -5,7 +5,7 @@
+ # This program is free software; you can redistribute and/or
+ # modify it under the same terms as Perl itself.
+ #
+-# $Id: Span.pm 10040 2011-07-12 23:01:02Z sruffell $
++# $Id: Span.pm 9742 2011-02-08 14:12:51Z tzafrir $
+ #
+ use strict;
+ use Dahdi::Utils;
+@@ -151,11 +151,6 @@
+ 		'WP(E1|T1)/.* "wanpipe',           # Sangoma E1/T1
+ 		);
+ 
+-my @soft_term_type_strings = (
+-		'Xorcom XPD.*: (E1|T1)',           # Astribank PRI
+-		'(WCBRI)', # has selectable NT/TE modes via dahdi_cfg
+-);
+-
+ our $DAHDI_BRI_NET = 'bri_net';
+ our $DAHDI_BRI_CPE = 'bri_cpe';
+ 
+@@ -201,7 +196,6 @@
+ 			$self->{TYPE} = "BRI_$termtype";
+ 			$self->{DCHAN_IDX} = 2;
+ 			$self->{BCHAN_LIST} = [ 0, 1 ];
+-			$self->init_proto('BRI');
+ 			last;
+ 		}
+ 	}
+@@ -223,21 +217,13 @@
+ 			last;
+ 		}
+ 	}
+-	$self->{IS_SOFT_TERM_TYPE} = 0;
+-	foreach my $cardtype (@soft_term_type_strings) {
+-		if($head =~ m/$cardtype/) {
+-			$self->{IS_SOFT_TERM_TYPE} = 1;
+-			last;
+-		}
+-	}
+ 	($self->{NAME}, $self->{DESCRIPTION}) = (split(/\s+/, $head, 4))[2, 3];
+ 	$self->{IS_DAHDI_SYNC_MASTER} =
+ 		($self->{DESCRIPTION} =~ /\(MASTER\)/) ? 1 : 0;
+ 	$self->{CHANS} = [];
+ 	my @channels;
+ 	my $index = 0;
+-	my @channel_lines = <F>;
+-	foreach (@channel_lines) {
++	while(<F>) {
+ 		chomp;
+ 		s/^\s*//;
+ 		s/\s*$//;
+@@ -319,11 +305,7 @@
+ 	my $span = shift || die;
+ 	my $termtype = shift || die;
+ 	$span->{TERMTYPE} = $termtype;
+-	if ($span->is_pri) {
+-		$span->{SIGNALLING} = ($termtype eq 'NT') ? $DAHDI_PRI_NET : $DAHDI_PRI_CPE ;
+-	} elsif ($span->is_bri) {
+-		$span->{SIGNALLING} = ($termtype eq 'NT') ? $DAHDI_BRI_NET : $DAHDI_BRI_CPE ;
+-	}
++	$span->{SIGNALLING} = ($termtype eq 'NT') ? $DAHDI_PRI_NET : $DAHDI_PRI_CPE ;
+ 	$span->{TYPE} = $span->proto . "_$termtype";
+ }
+ 
+@@ -331,7 +313,6 @@
+ 	my $span = shift || die;
+ 	my $genconf = shift || die;
+ 	my $name = $span->name;
+-	return unless $span->is_soft_term_type;
+ #	if(defined $termtype) {
+ #		die "Termtype for $name already defined as $termtype\n";
+ #	}
