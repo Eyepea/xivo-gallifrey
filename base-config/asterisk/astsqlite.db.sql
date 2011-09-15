@@ -326,7 +326,7 @@ CREATE TABLE ctimain (
  PRIMARY KEY(id)
 );
 
-INSERT INTO ctimain VALUES(1, 'xivocti', '0.0.0.0', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
+INSERT INTO ctimain VALUES(1, 'xivocti', '127.0.0.1', 5002, '0.0.0.0', 5003, '127.0.0.1', 5004, '127.0.0.1', 5005, '127.0.0.1', 5006, 1, 60, 10, 5, 'context');
 
 
 DROP TABLE ctiphonehints;
@@ -1599,7 +1599,7 @@ CREATE UNIQUE INDEX userfeatures__uidx__protocol_name ON userfeatures(protocol,n
 CREATE UNIQUE INDEX userfeatures__uidx__protocol_protocolid ON userfeatures(protocol,protocolid);
 
 INSERT INTO userfeatures VALUES (1,'sip',1,'Guest','','guest','','xivo-initconfig',NULL,NULL,148378,
-                                 30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','no',NULL,1,NULL,0,'');
+                                 30,5,0,'','','',0,0,0,0,0,0,0,0,'',0,'',0,'','','','','','no',NULL,1,NULL,0,'');
 
 
 DROP TABLE useriax;
