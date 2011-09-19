@@ -7,7 +7,6 @@ Copyright (C) 2007-2010  Proformatique
 #       instead of a Cursor to prevent abusively large amount of memory to be
 #       taken when doing queries with large result sets
 
-__version__ = "$Revision$ $Date$"
 __license__ = """
     Copyright (C) 2007-2011  Proformatique
 
