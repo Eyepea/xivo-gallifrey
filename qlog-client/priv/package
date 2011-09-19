@@ -17,7 +17,7 @@ cp --preserve=mode scripts/qlogc "$TMPDIR/usr/bin"
 
 # copy configuration files
 mkdir -p "$TMPDIR/etc/pf-xivo"
-cp etc/qlog-client.conf "$TMPDIR/etc/pf-xivo"
+cp etc/pf-xivo/qlog-client.conf "$TMPDIR/etc/pf-xivo"
 
 mkdir -p "$TMPDIR/etc/cron.d"
 cp etc/cron.d/pf-xivo-qlog-client "$TMPDIR/etc/cron.d/pf-xivo-qlog-client"
