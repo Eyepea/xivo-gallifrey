@@ -245,7 +245,7 @@ class Cisco(PhoneVendorMixin):
             function_keys_config_lines = \
                 self.__format_function_keys(provinfo['funckey'], model, provinfo)
 
-        if bool(int(provinfo.get('subscribemwi', 0))):
+        if provinfo.get('subscribemwi', 0) != None and bool(int(provinfo.get('subscribemwi', 0))):
             provinfo['vmailaddr'] = "%s@%s" % (provinfo['number'], self.ASTERISK_IPV4)
         else:
             provinfo['vmailaddr'] = ""
