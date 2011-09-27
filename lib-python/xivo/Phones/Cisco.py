@@ -124,6 +124,28 @@ class Cisco(PhoneVendorMixin):
                     ('cp7975g', '7975'),
                     ('cipc', 'cipc'))
 
+    CISCO_PROFILE_CAPACITIES = {'xmljava': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload'},
+                                            'sip':  {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sip notify check-sync'}},
+                                'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload'},
+                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': ''}}}
+
+    CISCO_CAPACITIES = {'cp7906g': CISCO_PROFILE_CAPACITIES['xmljava'],
+                        'cp7911g': CISCO_PROFILE_CAPACITIES['xmljava'],
+                        'cp7912g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7931g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7940g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7941g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7942g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7945g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7960g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7961g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7962g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7965g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7970g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7971g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7975g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cipc':    CISCO_PROFILE_CAPACITIES['default']}
+
     CISCO_COMMON_HTTP_USER = "admin"
     CISCO_COMMON_HTTP_PASS = ""
 
@@ -200,6 +222,7 @@ class Cisco(PhoneVendorMixin):
         """
         model = self.phone['model']
         macaddr = self.phone['macaddr'].replace(":", "").upper()
+        capacities = self.CISCO_CAPACITIES[model][provinfo['proto']]
         fromdhcp = 0
 
         if self.phone.get('from') == 'dhcp':
@@ -229,16 +252,13 @@ class Cisco(PhoneVendorMixin):
         template_lines = template_file.readlines()
         template_file.close()
 
-        if provinfo['proto'] == 'sccp':
-            tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml.tmp")
-            cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SEP" + macaddr + ".cnf.xml")
+        tmp_filename = os.path.join(self.CISCO_COMMON_DIR, capacities['prefix'] + macaddr + capacities['suffix'] + ".tmp")
+        cfg_filename = os.path.join(self.CISCO_COMMON_DIR, capacities['prefix'] + macaddr + capacities['suffix'])
 
+        if provinfo['proto'] == 'sccp':
             exten_pickup_prefix        = ''
             function_keys_config_lines = ''
         else:
-            tmp_filename = os.path.join(self.CISCO_COMMON_DIR, "SIP" + macaddr + ".cnf.tmp")
-            cfg_filename = os.path.join(self.CISCO_COMMON_DIR, "SIP" + macaddr + ".cnf")
-
             exten_pickup_prefix = \
                 clean_extension(provinfo['extensions']['pickupexten']) + "#"
 
