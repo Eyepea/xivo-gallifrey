@@ -133,7 +133,7 @@ class Cisco(PhoneVendorMixin):
     CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False}
     CISCO_PROFILE_CAPACITIES['gk'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
     CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True}
-    print(CISCO_PROFILE_CAPACITIES)
+
     CISCO_CAPACITIES = {'cp7906g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7911g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7912g': CISCO_PROFILE_CAPACITIES['gk'],
@@ -450,8 +450,13 @@ class Cisco(PhoneVendorMixin):
         fw = 'unknown'
         if len(ua_splitted) == 3:
             fws = ua_splitted[2].split("/", 1)
-            fw = fws[1]
-            model = ua_splitted[1].lower()
+            try:
+                fw = fws[1]
+                model = ua_splitted[1].lower()
+            except IndexError:
+                fws = ua_splitted[1].split("/", 1)
+                fw = fws[1]
+                model = fws[0].lower()+'g'
         elif len(ua_splitted) == 2:
             fws = ua_splitted[1].split("/", 1)
             fw = fws[1]
