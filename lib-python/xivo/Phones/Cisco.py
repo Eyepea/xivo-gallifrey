@@ -320,6 +320,8 @@ class Cisco(PhoneVendorMixin):
         else:
             timezone = self.DEFAULT_TIMEZONE
         timezone_value = self._timezone_name_to_value(timezone)
+        inform = tzinform.get_timezone_info(timezone)
+        utcoffset_m = inform['utcoffset'].as_minutes
 
         txt = xivo_config.txtsubst(
                 template_lines,
@@ -331,6 +333,7 @@ class Cisco(PhoneVendorMixin):
                       'addons':                 addons,
                       'language':               language,
                       'timezone':               timezone_value,
+                      'timezone_integer':       str(utcoffset_m),
                     },
                     clean_extension),
                 cfg_filename,
