@@ -124,14 +124,18 @@ class Cisco(PhoneVendorMixin):
                     ('cp7975g', '7975'),
                     ('cipc', 'cipc'))
 
-    CISCO_PROFILE_CAPACITIES = {'xmljava': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload'},
-                                            'sip':  {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sip notify check-sync'}},
-                                'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload'},
-                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': ''}}}
+    # Define the capacities of each model with a profile
+    CISCO_PROFILE_CAPACITIES = {'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload', 'compile': False, 'lower': False},
+                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': '', 'compile': False, 'lower': False}}}
+
+    CISCO_PROFILE_CAPACITIES['xmljava'] = CISCO_PROFILE_CAPACITIES['default']
+    CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False}
+    CISCO_PROFILE_CAPACITIES['gk'] = CISCO_PROFILE_CAPACITIES['default']
+    CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True}
 
     CISCO_CAPACITIES = {'cp7906g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7911g': CISCO_PROFILE_CAPACITIES['xmljava'],
-                        'cp7912g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7912g': CISCO_PROFILE_CAPACITIES['gk'],
                         'cp7931g': CISCO_PROFILE_CAPACITIES['default'],
                         'cp7940g': CISCO_PROFILE_CAPACITIES['default'],
                         'cp7941g': CISCO_PROFILE_CAPACITIES['default'],
@@ -145,6 +149,8 @@ class Cisco(PhoneVendorMixin):
                         'cp7971g': CISCO_PROFILE_CAPACITIES['default'],
                         'cp7975g': CISCO_PROFILE_CAPACITIES['default'],
                         'cipc':    CISCO_PROFILE_CAPACITIES['default']}
+
+    CISCO_COMPILER_DIR = "/usr/local/bin/"
 
     CISCO_COMMON_HTTP_USER = "admin"
     CISCO_COMMON_HTTP_PASS = ""
@@ -252,8 +258,12 @@ class Cisco(PhoneVendorMixin):
         template_lines = template_file.readlines()
         template_file.close()
 
-        tmp_filename = os.path.join(self.CISCO_COMMON_DIR, capacities['prefix'] + macaddr + capacities['suffix'] + ".tmp")
-        cfg_filename = os.path.join(self.CISCO_COMMON_DIR, capacities['prefix'] + macaddr + capacities['suffix'])
+        prov_filename = capacities['prefix'] + macaddr + capacities['suffix']
+        if capacities['lower'] == True:
+            prov_filename = prov_filename.lower()
+
+        tmp_filename = os.path.join(self.CISCO_COMMON_DIR, prov_filename + ".tmp")
+        cfg_filename = os.path.join(self.CISCO_COMMON_DIR, prov_filename)
 
         if provinfo['proto'] == 'sccp':
             exten_pickup_prefix        = ''
@@ -333,6 +343,20 @@ class Cisco(PhoneVendorMixin):
             return ''.join(txt)
         else:
             self._write_cfg(tmp_filename, cfg_filename, txt)
+            if capacities['compile'] == 'cfgfmt':
+                compile_filename = capacities['prefix'] + macaddr
+                if capacities['lower'] == True:
+                    compile_filename = compile_filename.lower()
+                try:
+                    subprocess.check_call([self.CISCO_COMPILER_DIR+capacities['compile'],
+                                    "-t"+self.CISCO_COMPILER_DIR+'sip_ptag.dat',
+                                    cfg_filename,
+                                    os.path.join(self.CISCO_COMMON_DIR, compile_filename)],
+                                    close_fds = True)
+                except OSError:
+                    log.exception("error when trying to call "+capacities['compile'])
+                except CalledProcessError:
+                    log.exception("error to compile with: "+capacities['compile']+'. Error code: '+str(CalledProcessError.returncode))
 
     @classmethod
     def __format_function_keys(cls, funckey, model, provinfo):
