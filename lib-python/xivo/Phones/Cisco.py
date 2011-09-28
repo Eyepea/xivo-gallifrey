@@ -29,6 +29,7 @@ import logging
 import subprocess
 import math
 import socket
+from copy import deepcopy
 
 from xivo import tzinform
 from xivo import xivo_config
@@ -128,11 +129,11 @@ class Cisco(PhoneVendorMixin):
     CISCO_PROFILE_CAPACITIES = {'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload', 'compile': False, 'lower': False},
                                             'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': '', 'compile': False, 'lower': False}}}
 
-    CISCO_PROFILE_CAPACITIES['xmljava'] = CISCO_PROFILE_CAPACITIES['default']
+    CISCO_PROFILE_CAPACITIES['xmljava'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
     CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False}
-    CISCO_PROFILE_CAPACITIES['gk'] = CISCO_PROFILE_CAPACITIES['default']
+    CISCO_PROFILE_CAPACITIES['gk'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
     CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True}
-
+    print(CISCO_PROFILE_CAPACITIES)
     CISCO_CAPACITIES = {'cp7906g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7911g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7912g': CISCO_PROFILE_CAPACITIES['gk'],
@@ -355,7 +356,7 @@ class Cisco(PhoneVendorMixin):
                                     close_fds = True)
                 except OSError:
                     log.exception("error when trying to call "+capacities['compile'])
-                except CalledProcessError:
+                except subprocess.CalledProcessError:
                     log.exception("error to compile with: "+capacities['compile']+'. Error code: '+str(CalledProcessError.returncode))
 
     @classmethod
