@@ -108,7 +108,8 @@ def _gen_tz_map():
 
 class Cisco(PhoneVendorMixin):
 
-    CISCO_MODELS = (('cp7906g', '7906'),
+    CISCO_MODELS = (('cp7905g', '7905'),
+                    ('cp7906g', '7906'),
                     ('cp7911g', '7911'),
                     ('cp7912g', '7912'),
                     ('cp7931g', '7931'),
@@ -133,8 +134,11 @@ class Cisco(PhoneVendorMixin):
     CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': False, 'compile': False, 'lower': False}
     CISCO_PROFILE_CAPACITIES['gk'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
     CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True}
+    CISCO_PROFILE_CAPACITIES['ld'] = deepcopy(CISCO_PROFILE_CAPACITIES['gk'])
+    CISCO_PROFILE_CAPACITIES['ld']['sip']['prefix'] = 'ld'
 
-    CISCO_CAPACITIES = {'cp7906g': CISCO_PROFILE_CAPACITIES['xmljava'],
+    CISCO_CAPACITIES = {'cp7905g': CISCO_PROFILE_CAPACITIES['ld'],
+                        'cp7906g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7911g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7912g': CISCO_PROFILE_CAPACITIES['gk'],
                         'cp7931g': CISCO_PROFILE_CAPACITIES['default'],
