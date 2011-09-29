@@ -128,7 +128,7 @@ class Cisco(PhoneVendorMixin):
 
     # Define the capacities of each model with a profile
     CISCO_PROFILE_CAPACITIES = {'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload', 'compile': False, 'lower': False},
-                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': False, 'compile': False, 'lower': False}}}
+                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False}}}
 
     CISCO_PROFILE_CAPACITIES['xmljava'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
     CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': False, 'compile': False, 'lower': False}
