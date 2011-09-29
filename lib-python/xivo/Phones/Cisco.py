@@ -127,10 +127,10 @@ class Cisco(PhoneVendorMixin):
 
     # Define the capacities of each model with a profile
     CISCO_PROFILE_CAPACITIES = {'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload', 'compile': False, 'lower': False},
-                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': '', 'compile': False, 'lower': False}}}
+                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': False, 'compile': False, 'lower': False}}}
 
     CISCO_PROFILE_CAPACITIES['xmljava'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
-    CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False}
+    CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': False, 'compile': False, 'lower': False}
     CISCO_PROFILE_CAPACITIES['gk'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
     CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True}
 
@@ -200,16 +200,22 @@ class Cisco(PhoneVendorMixin):
             raise ValueError, "Unknown Cisco model %r" % self.phone['model']
 
     def __action(self, command, user, passwd):
-        if self.phone['proto'] == 'sccp' and command == 'REBOOT':
-            # a phone is reconfigured by reloading chan_sccp configuration
-            # send to commands to asterisk through CTI server remote protocol
-            try:
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
-                s.connect(('127.0.0.1', 5004))
-                s.send('sccp reload')
-                s.close()
-            except Exception:
-                log.exception("error when trying to reload chan_sccp")
+        if command == 'REBOOT':
+            capacities = self.CISCO_CAPACITIES[self.phone['model']][self.phone['proto']]
+            if capacities['reboot'] != False:
+                ast_cmd = capacities['reboot']
+                if ast_cmd == 'sip notify check-sync':
+                    ast_cmd += ' '+self.phone['ipv4']
+                print(ast_cmd)
+                # a sccp phone is reconfigured by reloading chan_sccp configuration
+                # send to commands to asterisk through CTI server remote protocol
+                try:
+                    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
+                    s.connect(('127.0.0.1', 5004))
+                    s.send(ast_cmd)
+                    s.close()
+                except Exception:
+                    log.exception("error when trying to launch asterisk command")
 
     def do_reinit(self):
         """
