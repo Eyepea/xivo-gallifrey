@@ -31,7 +31,7 @@ switch($_QRY->get('act'))
 		$result = false;
 		
 		if(isset($_QR['idbeg']) !== false
-		&& ($result = $cdr->search($_QR,'calldate')) !== false)
+		&& ($result = $cdr->search($_QR,'calldate',5000)) !== false)
 		{
 			if($result === null)
 			{
@@ -53,7 +53,7 @@ switch($_QRY->get('act'))
 		$result = false;
 
 		if(($info = $cdr->chk_values($_QRY->request_meth_raw(),false)) !== false
-		&& ($result = $cdr->search($info,'calldate')) !== false)
+		&& ($result = $cdr->search($info,'calldate',5000)) !== false)
 		{
 			if($result === null)
 			{
