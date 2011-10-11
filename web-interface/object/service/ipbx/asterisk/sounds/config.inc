@@ -32,7 +32,7 @@ $array['option']['defdir']['playback'] = 1;
 $array['option']['defdir']['recordings'] = 1;
 
 $array['option']['dir'] = array();
-$array['option']['dir']['name'] = '/^[a-z0-9_-]{1,50}$/i';
+$array['option']['dir']['name'] = '/^[a-z0-9_-]{1,200}$/i';
 
 $array['option']['file'] = array();
 $array['option']['file']['name'] = '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
@@ -51,7 +51,7 @@ $array['option']['file']['extension'][XIVO_SRE_IPBX_AST_FORMAT_AUDIO_MP3] = true
 
 $array['filter'] = array();
 $array['filter']['filename'] = array('regexp' => '/^['.XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_PATTERN.']'.
-						 XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/','minlen' => 4,'maxlen' => 56);
-$array['filter']['dirname'] = array('regexp' => '/^[a-z0-9_-]+$/i','minlen' => 1,'maxlen' => 50);
+						 XIVO_SRE_IPBX_AST_REGEXP_AUDIO_FILE_LENGTH.'\.[a-zA-Z0-9]{2,5}$/','minlen' => 4,'maxlen' => 200);
+$array['filter']['dirname'] = array('regexp' => '/^[a-z0-9_-]+$/i','minlen' => 1,'maxlen' => 200);
 
 ?>
