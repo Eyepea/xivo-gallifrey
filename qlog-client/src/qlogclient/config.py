@@ -40,6 +40,7 @@ def _new_config_spec():
     cfg_spec = ConfigSpec()
     cfg_spec.add_param('general.qlog_server_uri', default=ConfigSpec.MANDATORY)
     cfg_spec.add_param('general.agents_server_uri', default=ConfigSpec.MANDATORY)
+    cfg_spec.add_param('general.https_proxy', default=ConfigSpec.NO_DEFAULT)
     cfg_spec.add_param('general.username', default=ConfigSpec.MANDATORY)
     cfg_spec.add_param('general.password', default=ConfigSpec.MANDATORY)
     cfg_spec.add_param('general.compress', default=True, fun=_bool)
