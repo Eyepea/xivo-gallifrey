@@ -28,11 +28,10 @@ import math
 import os
 import time
 import StringIO
-import urllib2
+from qlogclient import urllib2
 from xivo import anysql
 from xivo.BackSQL import backsqlite
 from qlogclient import backmysql    # do NOT import xivo.BackSQL.backmysql
-from qlogclient.proxy import ConnectHTTPSHandler
 try:
     import json
 except ImportError:
@@ -53,7 +52,7 @@ def _new_opener(base_uri, username, password, https_proxy):
     pwd_manager.add_password(None, base_uri, username, password)
     handlers = [urllib2.HTTPBasicAuthHandler(pwd_manager)]
     if https_proxy:
-        handlers.append(ConnectHTTPSHandler(https_proxy))
+        handlers.append(urllib2.ProxyHandler({'https': https_proxy}))
     return urllib2.build_opener(*handlers)
 
 
