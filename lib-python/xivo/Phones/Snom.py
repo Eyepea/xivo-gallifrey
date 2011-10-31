@@ -96,7 +96,9 @@ class Snom(PhoneVendorMixin):
             log.exception("error when trying to call curl")
 
     @classmethod
-    def __format_function_keys(cls, funckey):
+    def _format_function_keys(cls, provinfo):
+        funckey = provinfo['funckey']
+        pickup_exten = provinfo['extensions']['pickupexten']
         sorted_keys = funckey.keys()
         sorted_keys.sort()
         fk_config_lines = []
@@ -105,15 +107,17 @@ class Snom(PhoneVendorMixin):
             exten = value['exten']
 
             if value.get('supervision'):
-                xtype = "dest"
+                xtype = "blf"
+                suffix = "|%s" % pickup_exten
             else:
                 xtype = "speed"
+                suffix = ""
             if value.get('label'):
                 label_attr = 'label="%s"' % value['label']
             else:
                 label_attr = ''
-            fk_config_lines.append('<fkey idx="%d" %s context="active" perm="R">%s &lt;sip:%s@%s&gt;</fkey>' %
-                                   (int(key)-1, label_attr, xtype, exten, cls.ASTERISK_IPV4))
+            fk_config_lines.append('<fkey idx="%d" %s context="active" perm="R">%s &lt;sip:%s@%s&gt;%s</fkey>' %
+                                   (int(key)-1, label_attr, xtype, exten, cls.ASTERISK_IPV4, suffix))
         return "\n".join(fk_config_lines)
 
     def do_reinit(self):
@@ -171,8 +175,7 @@ class Snom(PhoneVendorMixin):
         tmp_filename = os.path.join(self.SNOM_SPEC_DIR, "snom" + model + "-" + macaddr + ".xml.tmp")
         xml_filename = tmp_filename[:-4]
 
-        function_keys_config_lines = \
-                self.__format_function_keys(provinfo['funckey'])
+        function_keys_config_lines = self._format_function_keys(provinfo)
         
         if 'language' in provinfo and provinfo['language'] in self.SNOM_LOCALES:
             locale = provinfo['language']

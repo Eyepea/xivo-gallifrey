@@ -23,8 +23,8 @@
 <div class="b-infos">
 	<h3 class="sb-top xspan"><span class="span-left">&nbsp;</span><span class="span-center"><?=$this->bbf('title_content_name');?></span><span class="span-right">&nbsp;</span></h3>
 	<div class="sb-content">
-		<div class="logo"><?=$url->img_html('img/site/avencall.png'.XIVO_AV_FR_CORP_NAME);?></div>
-		<div class="logo"><?=$url->img_html('img/site/proformatique.png'.XIVO_PF_FR_CORP_NAME);?></div>
+		<div class="logo"><?=$url->img_html('img/site/avencall.png',XIVO_AV_FR_CORP_NAME);?></div>
+		<div class="logo"><?=$url->img_html('img/site/proformatique.png',XIVO_PF_FR_CORP_NAME);?></div>
 		<div class="clear"></div>
 	</div>
 	<div class="sb-content">
