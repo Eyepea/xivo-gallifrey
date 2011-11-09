@@ -44,7 +44,7 @@ $array['element']['context'] = array();
 $array['element']['context']['default'] = '';
 
 $array['element']['language'] = array();
-$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA', 'nl_NL');
 $array['element']['language']['default'] = '';
 
 $array['element']['silent'] = array();
@@ -63,7 +63,7 @@ $array['filter']['passwd'] = array('set' => false,'chk' => 2,'regexp' => '/^[0-9
 $array['filter']['firstname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'cast' => 'sgraph');
 $array['filter']['lastname'] = array('set' => false,'chk' => 2,'maxlen' => 128,'cast' => 'sgraph');
 $array['filter']['context'] = array('callback' => 'xivo_service_asterisk::chk_context');
-$array['filter']['language'] = array('set' => false,'chk' => 2,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+$array['filter']['language'] = array('set' => false,'chk' => 2,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA', 'nl_NL'));
 $array['filter']['silent'] = array('bool' => true);
 $array['filter']['description'] = array('set' => false,'chk' => 2,'maxlen' => 1000,'cast' => 'sgraph_crlf_tab','eol' => true);
 

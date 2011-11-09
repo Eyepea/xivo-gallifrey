@@ -83,7 +83,7 @@ $array['element']['musicclass']['default'] = '';
 
 $array['element']['language'] = array();
 $array['element']['language']['default'] = '';
-$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA');
+$array['element']['language']['value'] = array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA', 'nl_NL');
 
 $array['element']['accountcode'] = array();
 $array['element']['accountcode']['default'] = '';
@@ -159,7 +159,7 @@ $array['filter']['secondary_dialtone_tone']      = array('set' => false, 'chk'	=
 $array['filter']['musicclass']                   = array('set' => false, 'chk'	=> 2,
 	'cast' => 'sgraph','maxlen' => 20);
 $array['filter']['language']                     = array('set' => false, 'chk'	=> 2,
-	'minlen' => 5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA'));
+	'minlen' => 5,'maxlen' => 5,'key' => array('de_DE', 'en_US', 'es_ES', 'fr_FR', 'fr_CA', 'nl_NL'));
 $array['filter']['accountcode']                  = array('set' => false, 'chk'	=> 2,
 	'regexp' => '/^[a-z0-9_-]+$/i','maxlen' => 32);
 $array['filter']['audio_tos']                    = array('set' => false, 'chk'	=> 2,
