@@ -84,7 +84,7 @@ Virtual IPs
 Network Interface
 
 ; fm_ha_virtnet_col_peer
-Virtual IP
+Peer Address IP
 
 ; fm_ha_virtnet_col_xfer
 Transfer enabled via this link
