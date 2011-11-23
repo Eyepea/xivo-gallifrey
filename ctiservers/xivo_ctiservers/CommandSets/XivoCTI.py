@@ -5125,7 +5125,7 @@ class XivoCTICommand(BaseCommand):
                                         validuid = uid
                                         break
 
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomname   = self.weblist['meetme'][astid].keeplist[confno]['roomname']
                                 datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                                 if argums[1] == "start":
                                     self.__ami_execute__(astid, "monitor", chan,
@@ -5136,28 +5136,28 @@ class XivoCTICommand(BaseCommand):
                             elif function in ['MeetmePause']:
                                 confno = argums[0]
                                 status = argums[1]
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomnumber = self.weblist['meetme'][astid].keeplist[confno]['roomnumber']
                                 self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
+                                                     function, [('Meetme', '%s' % (roomnumber)),
                                                                 ('status', '%s' % (status))])
 
                             elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
                                 castid = argums[0]
                                 confno = argums[1]
                                 adminnum = self.weblist['meetme'][astid].keeplist[confno]['adminnum']
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomnumber = self.weblist['meetme'][astid].keeplist[confno]['roomnumber']
                                 self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
+                                                     function, [('Meetme', '%s' % (roomnumber)),
                                                                 ('Usernum', '%s' % (castid)),
                                                                 ('Adminnum', '%s' % (adminnum[0]))])
 
                             elif function in ['kick', 'mute', 'unmute']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomnumber = self.weblist['meetme'][astid].keeplist[confno]['roomnumber']
                                 self.__ami_execute__(astid, 'sendcommand',
                                                             'Command', [('Command', 'meetme %s %s %s' %
-                                                                        (function, roomname, castid))])
+                                                                        (function, roomnumber, castid))])
 
                             elif function == 'getlist':
                                 fullstat = {}
