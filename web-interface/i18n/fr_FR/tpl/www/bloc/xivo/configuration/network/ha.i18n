@@ -146,7 +146,7 @@ Adresses IP virtuelles :
 Interface réseau
 
 ; fm_ha_virtnet_col_peer
-Adresse IP virtuelle
+Adresse IP du pair
 
 ; fm_ha_virtnet_col_xfer
 Transfert activé via ce lien

@@ -120,6 +120,8 @@ class xivo_ldap:
             # if ldapquery.has_key('network_timeout'):
             #   self.ldapobj.set_option(ldap.OPT_NETWORK_TIMEOUT,
             #   float(ldapquery.get('network_timeout')))
+            self.ldapobj.set_option(ldap.OPT_TIMEOUT        , 1)
+            self.ldapobj.set_option(ldap.OPT_NETWORK_TIMEOUT, 1)
 
             self.ldapobj.simple_bind_s(ldapuser, ldappass)
             log.info('LDAP : simple bind done on %r %r', ldapuser, ldappass)
@@ -157,10 +159,11 @@ class xivo_ldap:
                  % (actual_scope, actual_filter, search_attributes))
 
         try:
-            result = self.ldapobj.search_s(self.dbname,
+            result = self.ldapobj.search_st(self.dbname,
                                            actual_scope,
                                            actual_filter,
-                                           search_attributes)
+                                           search_attributes,
+                                           timeout=3)
             return result
         except (AttributeError, ldap.LDAPError), exc1:
             # display exc1 since sometimes the error stack looks too long for the logfile
@@ -168,10 +171,11 @@ class xivo_ldap:
                           self.ldapobj, self.uri, exc1)
             self.__init__(self.iuri)
             try:
-                result = self.ldapobj.search_s(self.dbname,
+                result = self.ldapobj.search_st(self.dbname,
                                                ldap.SCOPE_SUBTREE,
                                                actual_filter,
-                                               search_attributes)
+                                               search_attributes,
+                                               timeout=3)
                 return result
             except ldap.LDAPError, exc2:
                 log.exception('getldap: ldap.LDAPError (%r, %r, %r) could not reconnect',
