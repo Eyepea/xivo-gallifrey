@@ -152,7 +152,7 @@ class XivoCTICommand(BaseCommand):
         'queues_channels_list',
         'origapplication',
         'events_link',
-        'xfer_relations',
+        'atxfer_relations',
         'localchans', # leaks might occur there
         'rename_stack',
         # astid + actionid (AMI) indexed hashes
@@ -2201,8 +2201,8 @@ class XivoCTICommand(BaseCommand):
         log.info('%s ami_inherit : %s' % (astid, event))
         parentchannel = event.get('Parent')
         childchannel = event.get('Child')
-        if parentchannel in self.xfer_relations[astid]:
-            del self.xfer_relations[astid][parentchannel]
+        if parentchannel in self.atxfer_relations[astid]:
+            del self.atxfer_relations[astid][parentchannel]
             self.__ami_execute__(astid, 'setvar', 'CTI_XFER', '1', childchannel.replace(',1', ',2'))
         if childchannel.startswith('Local/') and childchannel.endswith(',1'):
             uniqueid = self.channels[astid].get(parentchannel)
@@ -5858,8 +5858,17 @@ class XivoCTICommand(BaseCommand):
                     ret = self.__ami_execute__(astid_src, 'park', chan_park, chan_src)
                 else:
                     if exten_dst:
-                        if commname in ('transfer','atxfer'):
-                            self.xfer_relations[astid_src][chan_src] = None
+                        if commname == 'atxfer':
+                            # indirect transfer
+                            # asterisk open a new channel on target phone
+                            # variable CTI_XFER will be set on this new channel (see ami_inherit() )
+                            self.atxfer_relations[astid_src][chan_src] = None
+                        else:
+                            # direct transfer
+                            # variable must be set on source channel (macro-user executed in this
+                            # context)
+                            self.__ami_execute__(astid_src, 'setvar', 'CTI_XFER', '1', chan_src)
+
                         ret = self.__ami_execute__(astid_src, commname,
                                                    chan_src,
                                                    exten_dst, context_src)
