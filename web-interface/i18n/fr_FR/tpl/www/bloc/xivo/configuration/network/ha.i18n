@@ -140,7 +140,7 @@ Masque de sous-réseau
 Adresse broadcast
 
 ; fm_ha_nodes
-Adresses IP virtuelles : 
+Liens de communication heartbeat:
 
 ; fm_ha_virtnet_col_iface
 Interface réseau
