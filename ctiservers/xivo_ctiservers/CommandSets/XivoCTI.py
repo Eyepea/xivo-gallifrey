@@ -1554,7 +1554,7 @@ class XivoCTICommand(BaseCommand):
                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
             elif where == 'dial':
                 # define the receiver from the xivo-dstid data
-                if 'xivo-dstid' in extraevent and extraevent.get('xivo-useragent',None) == 'MacroUser':
+                if 'xivo-dstid' in extraevent and extraevent.get('xivo-userevent',None) == 'MacroUser':
                     xuserid = '%s/%s' % (astid, extraevent['xivo-dstid'])
                     if xuserid in self.ulist_ng.keeplist:
                         userinfos.append(self.ulist_ng.keeplist[xuserid])
