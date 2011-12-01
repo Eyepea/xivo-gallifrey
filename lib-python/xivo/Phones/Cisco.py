@@ -127,13 +127,15 @@ class Cisco(PhoneVendorMixin):
                     ('cipc', 'cipc'))
 
     # Define the capacities of each model with a profile
-    CISCO_PROFILE_CAPACITIES = {'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload', 'compile': False, 'lower': False},
-                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False}}}
+    CISCO_PROFILE_CAPACITIES = {'default': {'sccp': {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': 'sccp reload', 'compile': False, 'lower': False, 'regenerate_sep_file': False},
+                                            'sip':  {'prefix': 'SIP', 'suffix': '.cnf', 'reboot': 'sip notify check-sync', 'compile': False, 'lower': False, 'regenerate_sep_file': False}}}
 
+    CISCO_PROFILE_CAPACITIES['sepsip'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
+    CISCO_PROFILE_CAPACITIES['sepsip']['sip']['regenerate_sep_file'] = True
     CISCO_PROFILE_CAPACITIES['xmljava'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
-    CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': False, 'compile': False, 'lower': False}
+    CISCO_PROFILE_CAPACITIES['xmljava']['sip'] = {'prefix': 'SEP', 'suffix': '.cnf.xml', 'reboot': False, 'compile': False, 'lower': False, 'regenerate_sep_file': False}
     CISCO_PROFILE_CAPACITIES['gk'] = deepcopy(CISCO_PROFILE_CAPACITIES['default'])
-    CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True}
+    CISCO_PROFILE_CAPACITIES['gk']['sip'] = {'prefix': 'gk', 'suffix': '.txt', 'reboot': 'sip notify check-sync', 'compile': 'cfgfmt', 'lower': True, 'regenerate_sep_file': False}
     CISCO_PROFILE_CAPACITIES['ld'] = deepcopy(CISCO_PROFILE_CAPACITIES['gk'])
     CISCO_PROFILE_CAPACITIES['ld']['sip']['prefix'] = 'ld'
 
@@ -142,7 +144,7 @@ class Cisco(PhoneVendorMixin):
                         'cp7911g': CISCO_PROFILE_CAPACITIES['xmljava'],
                         'cp7912g': CISCO_PROFILE_CAPACITIES['gk'],
                         'cp7931g': CISCO_PROFILE_CAPACITIES['default'],
-                        'cp7940g': CISCO_PROFILE_CAPACITIES['default'],
+                        'cp7940g': CISCO_PROFILE_CAPACITIES['sepsip'],
                         'cp7941g': CISCO_PROFILE_CAPACITIES['default'],
                         'cp7942g': CISCO_PROFILE_CAPACITIES['default'],
                         'cp7945g': CISCO_PROFILE_CAPACITIES['default'],
@@ -371,6 +373,10 @@ class Cisco(PhoneVendorMixin):
                     log.exception("error when trying to call "+capacities['compile'])
                 except subprocess.CalledProcessError:
                     log.exception("error to compile with: "+capacities['compile']+'. Error code: '+str(CalledProcessError.returncode))
+
+            if capacities['regenerate_sep_file']:
+                provinfo['proto'] = 'sccp'
+                self.__generate(provinfo, dry_run)
 
     @classmethod
     def __format_function_keys(cls, funckey, model, provinfo):
