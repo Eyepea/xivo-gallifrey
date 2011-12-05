@@ -138,8 +138,8 @@ DROP TABLE netiface;
 CREATE TABLE netiface (
  name varchar(64) NOT NULL DEFAULT '',
  ifname varchar(64) NOT NULL DEFAULT '',
- networktype char(4) NOT NULL,
  hwtypeid smallint unsigned NOT NULL DEFAULT 65534,
+ networktype char(4) NOT NULL,
  type char(5) NOT NULL,
  family varchar(5) NOT NULL,
  method varchar(6) NOT NULL,
