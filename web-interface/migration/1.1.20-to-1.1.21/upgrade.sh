@@ -24,8 +24,7 @@ source "`dirname $0`/../functions.sh"
 
 
 sqlite_migrate() {
-	#XIVOSQLITE_DB="/var/lib/pf-xivo-web-interface/sqlite/xivo.db"
-	XIVOSQLITE_DB="/tmp/plope"
+	XIVOSQLITE_DB="/var/lib/pf-xivo-web-interface/sqlite/xivo.db"
 	# backuping
 	cp -a "${XIVOSQLITE_DB}" "${BACKUP_DIR}/${XIVOSQLITE_DB_FILENAME}-pre-1.1.21-`date +%Y%m%d%H%M%S`"
 
