@@ -44,10 +44,10 @@ switch($act)
 				if(trim($v) != '')
 				{
 					$str .= '"'.$cpt.'": ';
-					$str .= '[ "'.trim($v).'",';
-					$str .= '"'.trim($_QR['dispcol2'][$k]).'",';
-					$str .= '"'.trim($_QR['dispcol3'][$k]).'",';
-					$str .= '"'.trim($_QR['dispcol4'][$k]).'" ]';
+					$str .= '[ "'.addslashes(trim($v)).'",';
+					$str .= '"'.addslashes(trim($_QR['dispcol2'][$k])).'",';
+					$str .= '"'.addslashes(trim($_QR['dispcol3'][$k])).'",';
+					$str .= '"'.addslashes(trim($_QR['dispcol4'][$k])).'" ]';
 					$cpt += 10;
 				}
 				$str .= ',';
@@ -99,10 +99,10 @@ switch($act)
 				if(trim($v) != '')
 				{
 					$str .= '"'.$cpt.'": ';
-					$str .= '[ "'.trim($v).'",';
-					$str .= '"'.trim($_QR['dispcol2'][$k]).'",';
-					$str .= '"'.trim($_QR['dispcol3'][$k]).'",';
-					$str .= '"'.trim($_QR['dispcol4'][$k]).'" ]';
+					$str .= '[ "'.addslashes(trim($v)).'",';
+					$str .= '"'.addslashes(trim($_QR['dispcol2'][$k])).'",';
+					$str .= '"'.addslashes(trim($_QR['dispcol3'][$k])).'",';
+					$str .= '"'.addslashes(trim($_QR['dispcol4'][$k])).'" ]';
 					$cpt += 10;
 				}
 				$str .= ',';
