@@ -56,7 +56,7 @@ class XivoRecords():
         self.recorded_channels = {}
         self.records_db_path = dbpath
         self.records_db_table = 'callcenter_campaigns_records'
-        self.cron_filename = '/etc/cron.d/xivo_records_purge'
+        self.cron_filename = '/etc/cron.d/pf-xivo-cti-records-purge'
         self.records_db = xivo_records_db.Records(self.records_db_path,
                                                   self.records_db_table)
         return
