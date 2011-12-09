@@ -88,7 +88,8 @@ if __name__ == '__main__':
             'state_dir': opts['general.state_dir'],
             'maxlines': opts['general.maxlines_per_request'],
             'compress': opts['general.compress'],
-            'dry_run': cli_opts.dry_run
+            'https_proxy': opts.get('general.https_proxy'),
+            'dry_run': cli_opts.dry_run,
         }
         if cli_opts.asternic:
             client.send_qlog_from_asternic_db(
@@ -109,5 +110,6 @@ if __name__ == '__main__':
                 opts['general.username'],
                 opts['general.password'],
                 opts['general.ast_db_uri'],
+                https_proxy=opts.get('general.https_proxy'),
                 dry_run=cli_opts.dry_run)
     logger.info('')

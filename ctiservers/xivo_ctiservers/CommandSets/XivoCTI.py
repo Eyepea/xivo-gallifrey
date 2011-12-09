@@ -1554,7 +1554,7 @@ class XivoCTICommand(BaseCommand):
                 userinfos.extend(self.__find_userinfos_by_agentnum__(astid, dstnum))
             elif where == 'dial':
                 # define the receiver from the xivo-dstid data
-                if 'xivo-dstid' in extraevent:
+                if 'xivo-dstid' in extraevent and extraevent.get('xivo-userevent',None) == 'MacroUser':
                     xuserid = '%s/%s' % (astid, extraevent['xivo-dstid'])
                     if xuserid in self.ulist_ng.keeplist:
                         userinfos.append(self.ulist_ng.keeplist[xuserid])
@@ -2203,7 +2203,7 @@ class XivoCTICommand(BaseCommand):
         childchannel = event.get('Child')
         if parentchannel in self.atxfer_relations[astid]:
             del self.atxfer_relations[astid][parentchannel]
-            self.__ami_execute__(astid, 'setvar', 'CTI_ATXFER', '1', childchannel.replace(',1', ',2'))
+            self.__ami_execute__(astid, 'setvar', 'CTI_XFER', '1', childchannel.replace(',1', ',2'))
         if childchannel.startswith('Local/') and childchannel.endswith(',1'):
             uniqueid = self.channels[astid].get(parentchannel)
             self.uniqueids[astid][uniqueid]['transfercancel'] = childchannel
@@ -5125,7 +5125,7 @@ class XivoCTICommand(BaseCommand):
                                         validuid = uid
                                         break
 
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomname   = self.weblist['meetme'][astid].keeplist[confno]['roomname']
                                 datestring = time.strftime('%Y%m%d-%H%M%S', time.localtime())
                                 if argums[1] == "start":
                                     self.__ami_execute__(astid, "monitor", chan,
@@ -5136,28 +5136,28 @@ class XivoCTICommand(BaseCommand):
                             elif function in ['MeetmePause']:
                                 confno = argums[0]
                                 status = argums[1]
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomnumber = self.weblist['meetme'][astid].keeplist[confno]['roomnumber']
                                 self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
+                                                     function, [('Meetme', '%s' % (roomnumber)),
                                                                 ('status', '%s' % (status))])
 
                             elif function in ['MeetmeKick', 'MeetmeAccept', 'MeetmeTalk']:
                                 castid = argums[0]
                                 confno = argums[1]
                                 adminnum = self.weblist['meetme'][astid].keeplist[confno]['adminnum']
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomnumber = self.weblist['meetme'][astid].keeplist[confno]['roomnumber']
                                 self.__ami_execute__(astid, 'sendcommand',
-                                                     function, [('Meetme', '%s' % (roomname)),
+                                                     function, [('Meetme', '%s' % (roomnumber)),
                                                                 ('Usernum', '%s' % (castid)),
                                                                 ('Adminnum', '%s' % (adminnum[0]))])
 
                             elif function in ['kick', 'mute', 'unmute']:
                                 castid = argums[0]
                                 confno = argums[1]
-                                roomname = self.weblist['meetme'][astid].keeplist[confno]['roomname']
+                                roomnumber = self.weblist['meetme'][astid].keeplist[confno]['roomnumber']
                                 self.__ami_execute__(astid, 'sendcommand',
                                                             'Command', [('Command', 'meetme %s %s %s' %
-                                                                        (function, roomname, castid))])
+                                                                        (function, roomnumber, castid))])
 
                             elif function == 'getlist':
                                 fullstat = {}
@@ -5859,7 +5859,16 @@ class XivoCTICommand(BaseCommand):
                 else:
                     if exten_dst:
                         if commname == 'atxfer':
+                            # indirect transfer
+                            # asterisk open a new channel on target phone
+                            # variable CTI_XFER will be set on this new channel (see ami_inherit() )
                             self.atxfer_relations[astid_src][chan_src] = None
+                        else:
+                            # direct transfer
+                            # variable must be set on source channel (macro-user executed in this
+                            # context)
+                            self.__ami_execute__(astid_src, 'setvar', 'CTI_XFER', '1', chan_src)
+
                         ret = self.__ami_execute__(astid_src, commname,
                                                    chan_src,
                                                    exten_dst, context_src)

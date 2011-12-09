@@ -76,15 +76,14 @@ Broadcast
 ; no_disp-virtnet
 no virtual network found
 
-
 ; fm_ha_nodes
-Virtual IPs
+Heartbeat communication links
 
 ; fm_ha_virtnet_col_iface
 Network Interface
 
 ; fm_ha_virtnet_col_peer
-Virtual IP
+Peer Address IP
 
 ; fm_ha_virtnet_col_xfer
 Transfer enabled via this link

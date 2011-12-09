@@ -28,10 +28,10 @@ import math
 import os
 import time
 import StringIO
-import urllib2
+from qlogclient import urllib2
 from xivo import anysql
-from qlogclient import backmysql    # do NOT import xivo.BackSQL.backmysql
 from xivo.BackSQL import backsqlite
+from qlogclient import backmysql    # do NOT import xivo.BackSQL.backmysql
 try:
     import json
 except ImportError:
@@ -47,11 +47,13 @@ IGNORED_LINES_FILE = 'qlog-ignored-lines'
 logger = logging.getLogger(__name__)
 
 
-def _new_opener(base_uri, username, password):
+def _new_opener(base_uri, username, password, https_proxy):
     pwd_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
     pwd_manager.add_password(None, base_uri, username, password)
-    basic_auth_handler = urllib2.HTTPBasicAuthHandler(pwd_manager)
-    return urllib2.build_opener(basic_auth_handler)
+    handlers = [urllib2.HTTPBasicAuthHandler(pwd_manager)]
+    if https_proxy:
+        handlers.append(urllib2.ProxyHandler({'https': https_proxy}))
+    return urllib2.build_opener(*handlers)
 
 
 def _gzip_content(content):
@@ -64,12 +66,13 @@ def _gzip_content(content):
     return buf.getvalue()
 
 
-def _send_content_to_server(server_uri, username, password, content, headers, compress):
+def _send_content_to_server(server_uri, username, password, content, headers,
+                            compress, https_proxy):
     # headers should be a dictionary that may be modified by this function
     if compress:
         content = _gzip_content(content)
         headers['Content-Type'] = 'application/gzip'
-    opener = _new_opener(server_uri, username, password)
+    opener = _new_opener(server_uri, username, password, https_proxy)
     request = urllib2.Request(server_uri, content, headers)
     logger.debug('Sending %s bytes to %s', len(content), server_uri)
     fobj = opener.open(request)
@@ -293,7 +296,7 @@ def _write_ignored_lines(state_dir, ignored_lines):
 
 
 def _send_qlog(reader_factory, server_uri, username, password, state_dir,
-               maxlines=-1, compress=False, dry_run=False):
+               maxlines=-1, compress=False, https_proxy=None, dry_run=False):
     logger.info('Sending new queuelog lines...')
     old_timestamp = _read_last_timestamp(state_dir)
     logger.debug('Old timestamp is %s', old_timestamp)
@@ -316,7 +319,8 @@ def _send_qlog(reader_factory, server_uri, username, password, state_dir,
         else:
             logger.info('Transmitting qlog to server...')
             headers = {'Content-Type': 'text/plain'}
-            _send_content_to_server(server_uri, username, password, content, headers, compress)
+            _send_content_to_server(server_uri, username, password, content,
+                                    headers, compress, https_proxy)
         
     new_timestamp = reader.last_timestamp
     new_ignored_lines = reader.last_ignored_lines
@@ -359,7 +363,8 @@ def _serialize_agent_infos_to_json(agent_infos):
         return cjson.encode(agent_infos)
 
 
-def send_agent_infos(server_uri, username, password, ast_db_uri, dry_run=False):
+def send_agent_infos(server_uri, username, password, ast_db_uri,
+                     https_proxy=None, dry_run=False):
     logger.info('Sending agent infos...')
     connection = anysql.connect_by_uri(ast_db_uri)
     try:
@@ -377,4 +382,5 @@ def send_agent_infos(server_uri, username, password, ast_db_uri, dry_run=False):
     else:
         logger.info('Transmitting agent infos to server...')
         headers = {'Content-Type': 'application/json'}
-        _send_content_to_server(server_uri, username, password, content, headers, False)
+        _send_content_to_server(server_uri, username, password, content,
+                                headers, False, https_proxy)

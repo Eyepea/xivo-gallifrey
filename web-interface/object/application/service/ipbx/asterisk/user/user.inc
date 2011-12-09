@@ -2541,6 +2541,8 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$arr['protocol']['callerid'] .= $arr['userfeatures']['lastname'];
 
 			trim($arr['protocol']['callerid']);
+
+			$arr['protocol']['protocol'] = strtolower($arr['protocol']['protocol']);
 		}
 
 		if($issa_userfeatures === true
@@ -2656,7 +2658,6 @@ class xivo_application_service_asterisk_user extends xivo_application_asterisk_a
 				$r['total']['success']++;
 			}
 		}
-
 
 		return($r);
 	}

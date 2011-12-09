@@ -140,13 +140,13 @@ Masque de sous-réseau
 Adresse broadcast
 
 ; fm_ha_nodes
-Adresses IP virtuelles : 
+Liens de communication heartbeat:
 
 ; fm_ha_virtnet_col_iface
 Interface réseau
 
 ; fm_ha_virtnet_col_peer
-Adresse IP virtuelle
+Adresse IP du pair
 
 ; fm_ha_virtnet_col_xfer
 Transfert activé via ce lien
