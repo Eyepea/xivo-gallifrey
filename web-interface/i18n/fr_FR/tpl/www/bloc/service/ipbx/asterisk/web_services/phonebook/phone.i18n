@@ -2,13 +2,13 @@
 Recherche XIVO
 
 ; phone_search-prompt
-Nom ou numéro :
+Nom ou numero :
 
 ; phone_search-submit
 Rechercher
 
 ; phone_noentries
-Aucune entrée
+Aucune entree
 
 ; phone_back
 Retour
@@ -35,4 +35,4 @@ Retour
 %s (Autre)
 
 ; phone_mainmenu-title
-Répertoire XiVO
+Repertoire XiVO
