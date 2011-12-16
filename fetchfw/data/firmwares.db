@@ -78,7 +78,7 @@ version: 3.2.2.56
 files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6757i_FC-001323-01-REV05_3_2_2_56_06_2011.zip
 
 [6757i_FC-001323-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=7041-15162-_P06_XML&dsproject=aastra&mtype=zip
+http://www.aastra.com/cps/rde/aareddownload?file_id=7041-15162-_P06_XML&dsproject=aastra&mtype=zip
 size: 2681526
 sha1sum: 1f25e1d7b301f607ed31b425486cceadcaeb88f1
 
