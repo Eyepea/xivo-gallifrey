@@ -57,7 +57,7 @@ class CommonConf(jsoncore.JsonCore):
         '2. Network'    : [
             'xivo.hostname', 'xivo.domain', 'xivo.net4.ip', 
             'xivo.net4.netmask', 'xivo.net4.broadcast', 'xivo.net4.subnet', 
-            'xivo.extra.dns.search', 'xivo.nameservers'
+            'xivo.extra.dns.search', 'xivo.nameservers', 'xivo.externip'
          ],
         '3. DHCP'       : [
             'xivo.dhcp.active', 'xivo.dhcp.pool', 'xivo.dhcp.extra_ifaces'

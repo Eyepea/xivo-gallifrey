@@ -44,7 +44,7 @@ else:
 						null,
 						true,
 						null,
-						false),']<br /></li>',"\n";
+						false,true,true,true),']<br /></li>',"\n";
 	endif;
 
 	if($node === 1):
@@ -85,7 +85,7 @@ else:
 						null,
 						true,
 						null,
-						false),']<br /></li>',"\n";
+						false,true,true,true),']<br /></li>',"\n";
 	endfor;
 endif;
 

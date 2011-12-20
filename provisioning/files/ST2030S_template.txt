@@ -16,7 +16,7 @@ sw_park_srv_addr0={{exten_park}}@{{asterisk_ipv4}}
 config_sn={{config_sn}}
 CountryCode={{country}}
 Current_Max_Multiline={{user_simultcalls}}
-Phonebook1_url=http://{{asterisk_ipv4}}/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH&id={{user_phone_ident}}
+Phonebook1_url=http://{{xivo_externip}}/service/ipbx/web_services.php/phonebook/search/?name=#SEARCH&id={{user_phone_ident}}
 Phonebook1_name=Annuaire entreprise
 
 FeatureKeyExt01=L/<sip:>

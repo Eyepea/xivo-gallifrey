@@ -58,7 +58,7 @@ else:
 					   $prevparam,
 					   true,
 					   $argseparator,
-					   false),
+					   false,true,true,true),
 			'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endif;
@@ -101,7 +101,7 @@ else:
 				$param,
 				true,
 				$argseparator,
-				false)),
+				false,true,true,true)),
 			'</URL>',"\n",
 			'</MenuItem>',"\n";
 	endfor;

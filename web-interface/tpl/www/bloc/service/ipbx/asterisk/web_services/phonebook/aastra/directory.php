@@ -42,7 +42,7 @@ if($prevpos > 0):
 			       $prevparam,
 			       true,
 			       $argseparator,
-			       false);
+			       false,true,true,true);
 else:
 	$previous = '';
 endif;

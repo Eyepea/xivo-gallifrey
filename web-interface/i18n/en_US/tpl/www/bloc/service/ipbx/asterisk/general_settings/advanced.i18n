@@ -69,3 +69,13 @@ Timezone :
 
 ; hlp_fm_general_timezone
 Phones provisioned timezone<br\>(can be overriden by user account)
+
+; smenu_network
+Network
+
+; fm_externip
+XiVO extern ip:
+
+; hlp_fm_general_externip
+Set when XiVO is behind a NAT
+

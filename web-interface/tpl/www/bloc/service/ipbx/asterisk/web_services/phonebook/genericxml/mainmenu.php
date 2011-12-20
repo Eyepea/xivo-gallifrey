@@ -28,7 +28,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
 <<?=$tagmenu?>>
 	<MenuItem> 
 		<Name><?=$xmlvendor->escape($this->bbf('phone_mainmenu-title'));?></Name> 
-		<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true);?></URL> 
+		<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true,true,true);?></URL> 
 	</MenuItem> 
 </<?=$tagmenu?>>
 

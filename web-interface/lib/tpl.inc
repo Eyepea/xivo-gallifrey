@@ -459,7 +459,7 @@ class dwho_tpl
 		return($file);
 	}
 
-	function url($url='',$absolute=false,$internal=true)
+	function url($url='',$absolute=false,$internal=true,$extern=false)
 	{
 		$r = '';
 
@@ -475,7 +475,14 @@ class dwho_tpl
 		$r = $url{0} !== '/' ? $this->get_option('root_location').'/'.$url : $url;
 
 		if((bool) $absolute === true)
-			$r = rtrim(DWHO_URL,'/').'/'.ltrim($url,'/');
+			if($extern) {
+				$_SRE = &dwho_gct::get('xivo_service');
+				$g = &$_SRE->get_module('ipbx', 'general');
+				$r = $g->build_externurl($url);
+
+			} else {
+				$r = rtrim(DWHO_URL,'/').'/'.ltrim($url,'/');
+			}
 
 		return($r);
 	}

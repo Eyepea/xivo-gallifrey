@@ -39,7 +39,7 @@ if($prevpos > 0):
 					null,
 					true,
 					null,
-					false),']<br /></li>',"\n";
+					false,true,true,true),']<br /></li>',"\n";
 endif;
 
 if(is_array($list) === false || ($nb = count($list)) === 0):

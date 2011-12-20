@@ -30,16 +30,19 @@ class xivo_object_commonconf extends xivo_object_abstract
 	var $_netiface   = false;
 	var $_resolvconf = false;
 	var $_prov       = false;
+	var $_general    = false;
 	
 	function xivo_object_commonconf(&$xobj)
 	{
 		$this->xivo_object_abstract(&$xobj);
+		$_SRE = &dwho_gct::get('xivo_service');
 
 		if(($this->_sysconfd    = &$this->_xobj->get_module('sysconfd'))     === false
 		|| ($this->_dhcp        = &$this->_xobj->get_module('dhcp'))         === false
 		|| ($this->_monitoring  = &$this->_xobj->get_module('monitoring'))   === false
 		|| ($this->_mail        = &$this->_xobj->get_module('mail'))         === false
-		|| ($this->_prov        = &$this->_xobj->get_module('provisioning')) === false)
+		|| ($this->_prov        = &$this->_xobj->get_module('provisioning')) === false
+		|| ($this->_general     = &$_SRE->get_module('ipbx', 'general')) === false)
 			return(false);
 
 		return(true);
@@ -194,7 +197,10 @@ class xivo_object_commonconf extends xivo_object_abstract
             if(!$hafound)
                 return false;
         }
-        
+
+				
+				$general = $this->_general->get(1);
+
         $conf = array_merge($conf, array(
             'xivo.voip.ifaces'      => $ifaces,
             //'xivo.voip.vlan.id'     => $vlanid,
@@ -203,6 +209,7 @@ class xivo_object_commonconf extends xivo_object_abstract
             'xivo.net4.netmask'     => $net['netmask'],
             'xivo.net4.broadcast'   => $net['broadcast'],
             'xivo.net4.subnet'      => $subnet,
+            'xivo.externip'         => $general['externip'],
         ));
 
         // load database uri

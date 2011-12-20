@@ -66,3 +66,12 @@ Fuseau horaire :
 
 ; hlp_fm_general_timezone
 Fuseau horaire provisioné dans les téléphones<br\>(Cette valeur peut-être surchargée par compte utilisateur)
+
+; smenu_network
+Réseau
+
+; fm_externip
+Adresse IP externe du XiVO : 
+
+; hlp_fm_general_externip
+À définir quand XiVO est derrière un NAT

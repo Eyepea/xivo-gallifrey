@@ -21,7 +21,7 @@
 $form = &$this->get_module('form');
 
 ?>
-<form	action="<?=$this->url('service/ipbx/web_services/phonebook/search',true);?>"
+<form	action="<?=$this->url('service/ipbx/web_services/phonebook/search',true,true,true);?>"
 	method="get"
 	accept-charset="utf-8">
 <?php

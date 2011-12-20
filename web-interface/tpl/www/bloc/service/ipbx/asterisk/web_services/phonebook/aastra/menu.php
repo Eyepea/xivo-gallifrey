@@ -70,7 +70,7 @@ else:
 					   $prevparam,
 					   true,
 					   $argseparator,
-					   false),
+					   false,true,true,true),
 			'</URI>',"\n",
 			'</MenuItem>',"\n";
 	endif;
@@ -112,7 +112,7 @@ else:
 					   $param,
 					   true,
 					   $argseparator,
-					   false),
+					   false,true,true,true),
 			'</URI>',"\n",
 			'</MenuItem>',"\n";
 	endfor;

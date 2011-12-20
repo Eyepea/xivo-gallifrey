@@ -2046,10 +2046,12 @@ CREATE TABLE `general`
 (
  `id`       int(10) unsigned auto_increment,
  `timezone` varchar(128),
+ `externip` varchar(32) DEFAULT NULL,
+
  PRIMARY KEY(`id`)
 );
 
-INSERT INTO `general` VALUES (1, 'Europe/Paris');
+INSERT INTO `general` VALUES (1, 'Europe/Paris', NULL);
 
 
 DROP TABLE IF EXISTS `callcenter_campaigns_general`;

@@ -27,6 +27,6 @@ $taginput = $xmlvendor->tag_input();
 <<?=$taginput?> type="string" editable="yes">
 	<Title><?=$xmlvendor->escape($this->bbf('phone_search-title'));?></Title>
 	<Prompt><?=$xmlvendor->escape($this->bbf('phone_search-prompt'));?></Prompt>
-	<URL><?=$xmlvendor->escape($this->url('service/ipbx/web_services/phonebook/search',true));?></URL>
+	<URL><?=$xmlvendor->escape($this->url('service/ipbx/web_services/phonebook/search',true,true,true));?></URL>
 	<Parameter>name</Parameter>
 </<?=$taginput?>>

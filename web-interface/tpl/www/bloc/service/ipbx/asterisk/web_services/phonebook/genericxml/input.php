@@ -29,7 +29,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>";
 
 	<Title><?=$xmlvendor->escape($this->bbf('phone_search-title'));?></Title>
 	<Prompt><?=$xmlvendor->escape($this->bbf('phone_search-prompt'));?></Prompt>
-	<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true);?></URL>
+	<URL><?=$this->url('service/ipbx/web_services/phonebook/search',true,true,true);?></URL>
 	<InputItem>
 		<DisplayName><?=$xmlvendor->escape($this->bbf('phone_search-prompt'));?></DisplayName>
 		<QueryStringParam>name</QueryStringParam>

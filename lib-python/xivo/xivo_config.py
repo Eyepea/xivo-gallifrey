@@ -102,6 +102,7 @@ ProvGeneralConf = {
     'registrar_backup':         "0.0.0.0",
     'proxy_main':               "0.0.0.0",
     'proxy_backup':             "0.0.0.0",
+    'xivo_externip':            "0.0.0.0",
 }
 Pgc = ProvGeneralConf
 AUTHORIZED_PREFIXES = ("eth", "vlan", "dummy")
@@ -298,6 +299,7 @@ class PhoneVendorMixin(object):
     REGISTRAR_BACKUP = None
     PROXY_MAIN = None
     PROXY_BACKUP = None
+    XIVO_EXTERNIP = None
     TEMPLATES_DIR = None
     NTP_SERVER_IPV4 = None
     TFTPROOT = None
@@ -310,6 +312,7 @@ class PhoneVendorMixin(object):
                          'registrar_backup':    None,
                          'proxy_main':          None,
                          'proxy_backup':        None,
+                         'xivo_externip':       None,
                          },
                   'user':
                         {'display_name':    'name',
@@ -352,6 +355,7 @@ class PhoneVendorMixin(object):
         cls.REGISTRAR_BACKUP = get_value_if_valid(config['registrar_backup'], None)
         cls.PROXY_MAIN = config['proxy_main']
         cls.PROXY_BACKUP = get_value_if_valid(config['proxy_backup'], None)
+        cls.XIVO_EXTERNIP = config['xivo_externip']
 
         cls.PROVI_VARS['config']['asterisk_ipv4'] = cls.ASTERISK_IPV4
         cls.PROVI_VARS['config']['ntp_server_ipv4'] = cls.NTP_SERVER_IPV4
@@ -359,6 +363,7 @@ class PhoneVendorMixin(object):
         cls.PROVI_VARS['config']['registrar_backup'] = cls.REGISTRAR_BACKUP
         cls.PROVI_VARS['config']['proxy_main'] = cls.PROXY_MAIN
         cls.PROVI_VARS['config']['proxy_backup'] = cls.PROXY_BACKUP
+        cls.PROVI_VARS['config']['xivo_externip'] = cls.XIVO_EXTERNIP
 
     @classmethod
     def set_provisioning_variables(cls, provinfo, xvars, format_var=None, format_extension=None):

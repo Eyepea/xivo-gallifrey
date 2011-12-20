@@ -102,9 +102,9 @@ class dwho_tpl_module
 		return($this->_tpl->file_time($file));
 	}
 
-	function url($url,$absolute=false,$internal=true)
+	function url($url,$absolute=false,$internal=true,$extern=false)
 	{
-		return($this->_tpl->url($url,$absolute,$internal));
+		return($this->_tpl->url($url,$absolute,$internal,$extern));
 	}
 
 	function &_get_module($name)
