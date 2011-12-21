@@ -20,7 +20,7 @@
 
 include(dwho_file::joinpath(dirname(__FILE__),'_common.php'));
 
-define('XIVO_PHONEBOOK_URL',$_TPL->url('service/ipbx/web_services/phonebook/search',true));
+define('XIVO_PHONEBOOK_URL',$_TPL->url('service/ipbx/web_services/phonebook/search',true,true,true));
 
 $vendor = isset($_QR['vendor']) === true ? $phonebook->chk_vendor($_QR['vendor']) : false;
 

@@ -1973,10 +1973,12 @@ CREATE TABLE general
 (
  id       integer unsigned,
  timezone varchar(128),
+ externip varchar(32) DEFAULT NULL, 
+
  PRIMARY KEY(id)
 );
 
-INSERT INTO general VALUES (1, 'Europe/Paris');
+INSERT INTO general VALUES (1, 'Europe/Paris', NULL);
 
 
 DROP TABLE callcenter_campaigns_general;

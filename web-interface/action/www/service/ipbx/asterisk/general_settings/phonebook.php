@@ -76,10 +76,7 @@ if(isset($_QR['fm_send']) === true)
 
 	$appxivoserver = $ipbx->get_application('serverfeatures',array('feature' => 'phonebook','type' => 'xivo'));
 	if($appxivoserver->set($_QR['xivoserver']) !== false)
-	{
-		$appxivoserver->delete_all();
 		$appxivoserver->save();
-	}
 
 	$info['xivoserver']['info'] = $appxivoserver->get_result();
 	$error['xivoserver']        = $appxivoserver->get_error();

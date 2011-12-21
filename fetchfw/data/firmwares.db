@@ -1,38 +1,38 @@
-# Aastra 6730i 3.2.2
-[aa6730i_322]
+# Aastra 6730i 2.6.0
+[aa6730i_260]
 brand: Aastra
 model: 6730i
-version: 3.2.2.56
-files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6730i_FC-001319-01-REV05_3_2_2_56_06_2011.zip
+version: 2.6.0.2010
+files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6730i_FC-001240-03-REV03_2.6.0.2010_11_2010.zip
 
-[6730i_FC-001319-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=6167-15148-_P06_XML&dsproject=aastra&mtype=zip
-size: 1903894
-sha1sum: a0c38fb4751b63fce8bfd2723e4efeb0a703adf3
+[6730i_FC-001240-03-REV03_2.6.0.2010_11_2010.zip]
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6167-13995-_P06_XML&dsproject=aastra&mtype=zip 
+size: 1806875
+sha1sum: 7beb35c22724d8eab8bbb2b7e07efcd669237c69
 
-# Aastra 6731i 3.2.2
-[aa6731i_322]
+# Aastra 6731i 2.6.0
+[aa6731i_260]
 brand: Aastra
 model: 6731i
-version: 3.2.2.56
-files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6731i_FC-001318-01-REV05_3_2_2_56_06_2011.zip
+version: 2.6.0.2010
+files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6731i_FC-001224-04-REV03_2.6.0.2010_11_2010.zip
 
-[6731i_FC-001318-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=6274-15154-_P06_XML&dsproject=aastra&mtype=zip
-size: 1907027
-sha1sum: 4b25ae5784a4e4775c2aecc1f1b03b43ea59075c
+[6731i_FC-001224-04-REV03_2.6.0.2010_11_2010.zip]
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6274-13997-_P06_XML&dsproject=aastra&mtype=zip
+size: 1806903
+sha1sum: d6ff43f0d4c44457b520edbd2c01f7fb9c53e173
 
-# Aastra 6739i 3.2.2
-[aa6739i_322]
+# Aastra 6739i
+[aa6739i_320]
 brand: Aastra
 model: 6739i
-version: 3.2.2.56
-files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6739i_FC-001317-01-REV05_3_2_2_56_06_2011.zip
+version: 3.2.0.70
+files: LangPacks_PA-001006-07_REV00_lp_3_2_0_02_2011.zip 6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip
 
-[6739i_FC-001317-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=6354-15156-_P06_XML&dsproject=aastra&mtype=zip
-size: 4777510
-sha1sum: d3c436d1cf40e16804af4a03cbd296b7a7142071
+[6739i_FC-001317-01-REV00_3_2_0_70_02_2011.zip]
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6354-14578-_P06_XML&dsproject=aastra&mtype=zip
+size: 4364467
+sha1sum: ebcebf569d69be92cebcfe4dad3a0be2bcd8d2ff
 
 # Aastra 6751i 2.6.0
 [aa6751i_260]
@@ -46,41 +46,41 @@ url: http://www.aastra.com/cps/rde/aareddownload?file_id=6726-14351-_P06_XML&dsp
 size: 1753248
 sha1sum: 1943495e3f008d22be7cbc7764d640f1739279bf
 
-# Aastra 6753i 3.2.2
-[aa6753i_322]
+# Aastra 6753i 2.6.0
+[aa6753i_260]
 brand: Aastra
 model: 6753i
-version: 3.2.2.56
-files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6753i_FC-001321-01-REV05_3_2_2_56_06_2011.zip
+version: 2.6.0.2010
+files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6753i_FC-001086-10-REV03_2.6.0.2010_11_2010.zip
 
-[6753i_FC-001321-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=6848-15158-_P06_XML&dsproject=aastra&mtype=zip
-size: 2649495
-sha1sum: 8a148b87aa50f5bb120602c97d51e56105be50ed
+[6753i_FC-001086-10-REV03_2.6.0.2010_11_2010.zip]
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6848-14005-_P06_XML&dsproject=aastra&mtype=zip
+size: 2603009
+sha1sum: 41059fbd22b9aa7f9cd8c1d9975fe9b55a95aed5
 
-# Aastra 6755i 3.2.2
-[aa6755i_322]
+# Aastra 6755i 2.6.0
+[aa6755i_260]
 brand: Aastra
 model: 6755i
-version: 3.2.2.56
-files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6755i_FC-001322-01-REV05_3_2_2_56_06_2011.zip
+version: 2.6.0.2010
+files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6755i_FC-001087-11-REV03_2.6.0.2010_11_2010.zip
 
-[6755i_FC-001322-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=6950-15160-_P06_XML&dsproject=aastra&mtype=zip
-size: 2681831
-sha1sum: 800c43bc9d91430b7a8551b6b36c0808f9a4d29d
+[6755i_FC-001087-11-REV03_2.6.0.2010_11_2010.zip]
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=6950-14007-_P06_XML&dsproject=aastra&mtype=zip
+size: 2635994
+sha1sum: 4e11ecd250e74d8a3fe2af6f7bd655f648f8905b
 
-# Aastra 6757i 3.2.2.56
-[aa6757i_322]
+# Aastra 6757i 2.6.0
+[aa6757i_260]
 brand: Aastra
 model: 6757i
-version: 3.2.2.56
-files: LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip 6757i_FC-001323-01-REV05_3_2_2_56_06_2011.zip
+version: 2.6.0.2010
+files: LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip 6757i_FC-001088-10-REV03_2.6.0.2010_11_2010.zip
 
-[6757i_FC-001323-01-REV05_3_2_2_56_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=7041-15162-_P06_XML&dsproject=aastra&mtype=zip
-size: 2681526
-sha1sum: 1f25e1d7b301f607ed31b425486cceadcaeb88f1
+[6757i_FC-001088-10-REV03_2.6.0.2010_11_2010.zip]
+url: http://www.aastra.com/cps/rde/aareddownload?file_id=7041-14009-_P06_XML&dsproject=aastra&mtype=zip
+size: 2636545
+sha1sum: 740cdd09d4306406480887341c004d8a32f1de03
 
 # Common files for Aastra phones
 [LangPacks_PA-001006-05-REV00_lp_2.6.0_1005.zip]
@@ -92,11 +92,6 @@ sha1sum: 859de6f9b34ae3eb0addd18175af3ec9cef735d4
 url: http://www.aastra.com/cps/rde/aareddownload?file_id=6354-14566-_P06_XML&dsproject=aastra&mtype=zip
 size: 211751
 sha1sum: 02d3954b601f66a5b844c3be072023221114570f
-
-[LangPacks_PA-001006-07_REV02-LP_3_2_2_56-_06_2011.zip]
-url: http://www.aastra.com/cps/rde/aareddownload?file_id=7041-15152-_P06_XML&dsproject=aastra&mtype=zip
-size: 340073
-sha1sum: 2bf3747470fe6d2f2bf43e485983f983001c6ef3
 
 # Cisco 7975G SCCP 9.0.3
 [cisco7975_sccp_903]

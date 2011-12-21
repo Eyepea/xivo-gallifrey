@@ -87,7 +87,7 @@ if(isset($error_js[0]) === true)
 		</li>
 		<li id="dwsm-tab-4"
 		    class="dwsm-blur"
-		    onclick="dwho_submenu.select(this,'sb-part-meetme',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-meetme');"
 		    onmouseout="dwho_submenu.blur(this);"
 		    onmouseover="dwho_submenu.focus(this);">
 			<div class="tab">
@@ -98,13 +98,25 @@ if(isset($error_js[0]) === true)
 			<span class="span-right">&nbsp;</span>
 		</li>
 		<li id="dwsm-tab-5"
+		    class="dwsm-blur"
+		    onclick="dwho_submenu.select(this,'sb-part-tz');"
+		    onmouseout="dwho_submenu.blur(this);"
+		    onmouseover="dwho_submenu.focus(this);">
+			<div class="tab">
+				<span class="span-center">
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_timezone');?></a>
+				</span>
+			</div>
+			<span class="span-right">&nbsp;</span>
+		</li>
+		<li id="dwsm-tab-6"
 		    class="dwsm-blur-last"
-		    onclick="dwho_submenu.select(this,'sb-part-last',1);"
+		    onclick="dwho_submenu.select(this,'sb-part-network',1);"
 		    onmouseout="dwho_submenu.blur(this,1);"
 		    onmouseover="dwho_submenu.focus(this,1);">
 			<div class="tab">
 				<span class="span-center">
-					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_timezone');?></a>
+					<a href="#" onclick="return(false);"><?=$this->bbf('smenu_network');?></a>
 				</span>
 			</div>
 			<span class="span-right">&nbsp;</span>
@@ -186,7 +198,7 @@ if(isset($error_js[0]) === true)
 ?>
 </div>
 
-<div id="sb-part-last" class="b-nodisplay">
+<div id="sb-part-tz" class="b-nodisplay">
 <?php
 	echo	$form->select(array('desc'	=> $this->bbf('fm_general_timezone'),
 				    'name'     => 'general[timezone]',
@@ -196,6 +208,20 @@ if(isset($error_js[0]) === true)
 				    'help'     => $this->bbf('hlp_fm_general_timezone'),
 				    'selected' => $this->get_var('general','timezone')),
 			      $element['general']);
+?>
+</div>
+
+<div id="sb-part-network" class="b-nodisplay">
+<?php
+	echo	$form->text(array('desc'	=> $this->bbf('fm_externip'),
+				  'name'		=> 'general[externip]',
+				  'labelid'		=> 'general-externip',
+				  'size'		=> 15,
+				  'help'		=> $this->bbf('hlp_fm_general_externip'),
+				  'value'		=> $this->get_var('general','externip'),
+				  'default'		=> $element['general']['externip']['default'],
+				  'error'		=> $this->bbf_args('error',
+						   $this->get_var('error', 'general', 'externip')) ));
 ?>
 </div>
 

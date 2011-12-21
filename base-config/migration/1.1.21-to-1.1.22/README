@@ -1,0 +1,4 @@
+
+ = migration script from 1.1.21 to 1.1.22 =
+ 
+* add externip field in general table

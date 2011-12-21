@@ -63,9 +63,9 @@ class dwho_tpl_url extends dwho_tpl_module
 		return('');
 	}
 
-	function href($url=null,$query=null,$absolute=false,$sep=null,$sid=true,$internal=true,$encode=true)
+	function href($url=null,$query=null,$absolute=false,$sep=null,$sid=true,$internal=true,$encode=true,$extern=false)
 	{
-		$url = $this->url($url,$absolute,$internal);
+		$url = $this->url($url,$absolute,$internal,$extern);
 
 		$sep = $this->get_separator($sep);
 
@@ -88,9 +88,10 @@ class dwho_tpl_url extends dwho_tpl_module
 			   $sep='&amp;',
 			   $sid=true,
 			   $internal=true,
-			   $encode=true)
+				 $encode=true,
+			   $extern=false)
 	{
-		$url = $this->href($url,$query,$absolute,$sep,$sid,$internal,$encode);
+		$url = $this->href($url,$query,$absolute,$sep,$sid,$internal,$encode,$extern);
 
 		return($this->_mk_href_html($content,$url,$opt,$title));
 	}

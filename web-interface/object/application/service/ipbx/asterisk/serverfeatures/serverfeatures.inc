@@ -216,12 +216,7 @@ class xivo_application_service_asterisk_serverfeatures extends xivo_application_
 
 		for($i = 0;$i < $nb;$i++)
 		{
-			if(isset($this->_info[$i]) === true)
-				$aid = $this->_info[$i]['id'];
-			else
-				$aid = 0;
-
-			if(($this->_return[] = $this->_serverfeatures->add($rs[$i],$aid)) === false)
+			if(($this->_return[] = $this->_serverfeatures->add($rs[$i])) === false)
 				return(false);
 		}
 

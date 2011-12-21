@@ -40,6 +40,31 @@ class xivo_service_asterisk_general extends xivo_service_asterisk_abstract
 
 		$this->_load_config();
 	}
+
+	function build_externurl($url)
+	{
+		$general = $this->_dso->get(1);
+		$base    = DWHO_URL;
+
+		if(isset($general['externip']) && strlen($general['externip']) > 0) {
+			$base = $general['externip'];
+
+			if(!strstr($base, ':') && isset($_SERVER['SERVER_PORT']) === true)
+				$base .= ':'.$_SERVER['SERVER_PORT'];
+
+			if(isset($_SERVER['HTTP_HOST']) === true)
+			{
+				$scheme = 'http';
+				if(isset($_SERVER['HTTPS']) === true
+				&& (bool) $_SERVER['HTTPS'] === true)
+					$scheme .= 's';
+
+				$base = $scheme.'://'.$base;
+			}
+		}
+			 
+		return rtrim($base,'/').'/'.ltrim($url,'/');
+	}
 }
 
 ?>

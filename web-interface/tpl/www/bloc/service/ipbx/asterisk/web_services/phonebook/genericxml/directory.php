@@ -43,7 +43,7 @@ if($xmlvendor->get_vendor() === 'thomson' && $prevpos > 0):
 				   $prevparam,
 				   true,
 				   $xmlvendor->arg_separator(),
-				   false),
+				   false,true,true,true),
 		'</URL>',"\n",
 		'</MenuItem>',"\n";
 endif;

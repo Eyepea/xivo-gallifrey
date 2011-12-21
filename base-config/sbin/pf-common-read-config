@@ -71,3 +71,6 @@ else
   _XIVO_SMTP_MYDOMAIN=${XIVO_DOMAIN}
 fi
 
+if [ -z "${XIVO_EXTERNIP}" ]; then
+	XIVO_EXTERNIP=${XIVO_NET4_IP}
+fi
