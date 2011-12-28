@@ -405,25 +405,17 @@ class XivoRecords():
         if lsdir:
             idv = resultitem.get('id')
             prefix = record_base[:-4]
-            infile = '%s-in.wav' % prefix
-            outfile = '%s-out.wav' % prefix
 
-            if infile in lsdir:
-                log.info('%s file is in %s, removing it now' % (infile, record_path))
-                os.unlink('%s/%s-in.wav' % (record_path, prefix))
+            recfile = '%s.wav' % prefix
+            if recfile in lsdir:
+                log.info('%s file is in %s, removing it now' % (recfile, record_path))
+                os.unlink('%s/%s.wav' % (record_path, prefix))
                 ret = True
 
                 calldata = { 'recordstatus' : 'auto_purged' }
                 self.records_db.update_call(idv, calldata)
             else:
-                log.warning('did not find %s' % infile)
-
-            if outfile in lsdir:
-                log.info('%s file is in %s, removing it now' % (outfile, record_path))
-                os.unlink('%s/%s-out.wav' % (record_path, prefix))
-                ret = ret & True
-            else:
-                log.warning('did not find %s' % infile)
+                log.warning('did not find %s' % recfile)
         return ret
 
     def purge_records(self, arguments):
@@ -697,20 +689,12 @@ class XivoRecords():
                 record_path = os.path.dirname(fullfilename)
                 record_base = os.path.basename(fullfilename)
                 prefix = record_base[:-4]
-                infile = '%s-in.wav' % prefix
-                outfile = '%s-out.wav' % prefix
-                if infile in lsdir:
-                    log.info('ok for %s : will move it' % infile)
-                    src = '%s/%s' % (source_records_path, infile)
-                    dst = '%s/%s' % (target_records_path, infile)
-                    try:
-                        os.rename(src, dst)
-                    except:
-                        log.exception('moving %s to %s' % (src, dst))
-                if outfile in lsdir:
-                    log.info('ok for %s : will move it' % outfile)
-                    src = '%s/%s' % (source_records_path, outfile)
-                    dst = '%s/%s' % (target_records_path, outfile)
+
+                recfile = '%s.wav' % prefix
+                if recfile in lsdir:
+                    log.info('ok for %s : will move it' % recfile)
+                    src = '%s/%s' % (source_records_path, recfile)
+                    dst = '%s/%s' % (target_records_path, recfile)
                     try:
                         os.rename(src, dst)
                     except:
