@@ -23,8 +23,7 @@ from xivo_fetchfw import fetchfw
 
 
 def snom3xx_install_lang(xfile):
-    unzip_dir = fetchfw.tgz_extract_all('snom-lang', xfile.path)
-    src_dir = os.path.join(unzip_dir, "snomlang")
+    src_dir = fetchfw.zip_extract_all('snom-lang', xfile.path)
     dst_dir = os.path.join(fetchfw.TFTP_PATH, "Snom/i18n")
     distutils.dir_util.copy_tree(src_dir, dst_dir)
 
