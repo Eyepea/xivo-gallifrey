@@ -621,7 +621,8 @@ class XivoRecords():
                     if v in varsets:
                         sc.append('%s=%s' % (k, varsets.get(v)))
 
-            aid = self.cset.__ami_execute__(astid, 'monitor', channel, filenamecmd, 'false')
+      # mixin in & out channels
+            aid = self.cset.__ami_execute__(astid, 'monitor', channel, filenamecmd, 'true')
             self.recorded_channels[channel] = True
 
             rights = ''
