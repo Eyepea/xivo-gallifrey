@@ -45,7 +45,7 @@ log = logging.getLogger("xivo.Phones.Snom") # pylint: disable-msg=C0103
 
 class Snom(PhoneVendorMixin):
 
-    SNOM_MODELS = ('300', '320', '360', '370', '820', '821', '870')
+    SNOM_MODELS = ('300', '320', '360', '370', '820', '821', '870', 'mp')
 
     SNOM_COMMON_HTTP_USER = "guest"
     SNOM_COMMON_HTTP_PASS = "guest"
@@ -151,6 +151,8 @@ class Snom(PhoneVendorMixin):
         this phone.
         """
         model = self.phone['model']
+        if model == 'mp':
+            model = model.upper()
         macaddr = self.phone['macaddr'].replace(":", "").upper()
 
         try:

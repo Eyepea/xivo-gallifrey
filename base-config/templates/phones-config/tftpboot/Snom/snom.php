@@ -21,7 +21,7 @@
 
 
 if(isset($_SERVER["HTTP_USER_AGENT"]) === true
-&& preg_match("/(snom[0-9]{3})-/",$_SERVER["HTTP_USER_AGENT"],$match) === 1){
+&& preg_match("/(snom([0-9]{3}|MP))-/",$_SERVER["HTTP_USER_AGENT"],$match) === 1){
     $model = $match[1];
     $firmware_status = "http://#XIVO_NET4_IP#:8667/Snom/".$model."-firmware.xml";
     
