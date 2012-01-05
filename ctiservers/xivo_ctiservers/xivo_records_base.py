@@ -27,8 +27,11 @@ __author__    = 'Corentin Le Gall'
 import cjson
 import logging
 import os
+import os.path
 import time
 import urllib
+import random
+import string
 from xivo_ctiservers import xivo_records_db
 
 LENGTH_AGENT = 6
@@ -331,7 +334,24 @@ class XivoRecords():
                        }
             repstr = self.cset.__cjson_encode__(tosend)
 
-        return repstr
+        elif function == "getfile":
+            # send recorded file to CTI client
+            # received filename is absolute path
+            tosend   = {
+                    'class': 'records-campaign',
+                    'function': function,
+                    'returncode': 'ko:unknown'
+            }
+
+            filename = command.get('filename')
+            if os.path.exists(filename):
+                fileid   = ''.join(random.sample(string.uppercase + string.lowercase + string.digits, 10))
+                self.cset.filestodownload[fileid] = filename
+                tosend = { 'class'      : 'callcampaign-record',
+                           'tdirection' : 'download',
+                           'fileid'     : fileid }
+
+        return self.cset.__cjson_encode__(tosend)
 
 
     def __make_cron__(self):
