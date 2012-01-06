@@ -125,7 +125,12 @@ if(isset($_QR['fm_send']) === true)
 		$fm_save = false;
 	}
 	else
-	{ $info['general'] = $_QR['general']; }
+	{ 
+		$info['general'] = $_QR['general']; 
+
+		$commonconf    = &$_XOBJ->get_module('commonconf');
+		$commonconf->generate();
+	}
 }
 
 $_TPL->set_var('fm_save',$fm_save);
