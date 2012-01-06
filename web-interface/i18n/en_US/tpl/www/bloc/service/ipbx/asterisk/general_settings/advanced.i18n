@@ -77,5 +77,5 @@ Network
 XiVO extern ip:
 
 ; hlp_fm_general_externip
-Set when XiVO is behind a NAT
+Set when XiVO is behind a NAT.<br/>Format: &lt;ipaddress&gt;[:&lt;port&gt;]
 

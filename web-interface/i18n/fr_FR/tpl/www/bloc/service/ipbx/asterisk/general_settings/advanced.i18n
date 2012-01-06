@@ -74,4 +74,4 @@ Réseau
 Adresse IP externe du XiVO : 
 
 ; hlp_fm_general_externip
-À définir quand XiVO est derrière un NAT
+À définir quand XiVO est derrière un NAT.<br/>Format: &lt;addresseip&gt;[:&lt;port&gt;]
