@@ -115,9 +115,9 @@ if(isset($_QR['fm_send']) === true)
 	
 	if(dwho_issa('general',$_QR) === false)
 		$_QR['general'] = array();
-	
+
 	//$arr = $general->get(1);
-	if(!$general->edit(1, $_QR['general']))
+	if($general->edit(1, $_QR['general']) === false)
 	{
 		$info['general']  = $general->get_filter_result();
 		$error['general'] = $general->get_filter_error();
