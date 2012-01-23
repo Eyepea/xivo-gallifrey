@@ -109,6 +109,8 @@ endif;
 					  'size'		  => 15,
 					  'help'		  => $this->bbf('hlp_fm_records_announce'),
 					  'required'	=> false,
+					  'disabled'   => true,
+					  'class' => 'it-disabled',
 					  'value'		  => $this->get_var('info','records_announce'),
 					  'default'		=> $element['records_announce']['default'],
 					  'error'		  => $this->bbf_args('error',
