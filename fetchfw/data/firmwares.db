@@ -917,6 +917,17 @@ url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-oct611
 size: 165869
 sha1sum: 2fb8e5f4f7aedb285ffa21632efd45af877eacd4
 
+[vpmoct-032_1120]
+brand: Digium
+model: VPMOCT032
+version: 1.12.0
+files: dahdi-fw-vpmoct032-1.12.0.tar.gz
+
+[dahdi-fw-vpmoct032-1.12.0.tar.gz]
+url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-vpmoct032-1.12.0.tar.gz
+size: 443985
+sha1sum: 743a3356d5c3ba6dd5ad759550f598879049cd2e
+
 [tc400m_612]
 brand: Digium
 model: TC400M
@@ -938,6 +949,7 @@ files: dahdi-fw-vpmadt032-1.07.tar.gz
 url: http://downloads.digium.com/pub/telephony/firmware/releases/dahdi-fw-vpmadt032-1.07.tar.gz
 size: 41376
 sha1sum: fd470e7aec0db62e3750aa4819ff03b70c6e9977
+
 
 # Sangoma
 
