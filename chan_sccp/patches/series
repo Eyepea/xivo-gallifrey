@@ -19,3 +19,4 @@ fix_focus_transfer
 fix_initialize_crash
 fix_newcall_label
 fix_ringing_ringout_not_later
+fix_transfer_crash
