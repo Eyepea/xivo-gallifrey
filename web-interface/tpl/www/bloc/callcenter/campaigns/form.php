@@ -255,6 +255,8 @@ endif;
 		      'labelid'		=> 'campaign_filter_way_out',
 				  'help'	  	=> $this->bbf('hlp_fm_campaign_filter_way_out'),
 				  'required'	=> false,
+				  'disabled'    => true,
+				  'class' => 'it-disabled',
 		      'checked'		=> $info['filters']['way']['out'],
 					'default'		=> $element['campaign_filter_way_out']['default']));
 ?>

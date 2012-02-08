@@ -115,9 +115,9 @@ if(isset($_QR['fm_send']) === true)
 	
 	if(dwho_issa('general',$_QR) === false)
 		$_QR['general'] = array();
-	
+
 	//$arr = $general->get(1);
-	if(!$general->edit(1, $_QR['general']))
+	if($general->edit(1, $_QR['general']) === false)
 	{
 		$info['general']  = $general->get_filter_result();
 		$error['general'] = $general->get_filter_error();
@@ -125,7 +125,12 @@ if(isset($_QR['fm_send']) === true)
 		$fm_save = false;
 	}
 	else
-	{ $info['general'] = $_QR['general']; }
+	{ 
+		$info['general'] = $_QR['general']; 
+
+		$commonconf    = &$_XOBJ->get_module('commonconf');
+		$commonconf->generate();
+	}
 }
 
 $_TPL->set_var('fm_save',$fm_save);

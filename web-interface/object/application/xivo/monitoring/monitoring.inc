@@ -92,7 +92,9 @@ class xivo_application_xivo_object_monitoring extends xivo_application_xivo_obje
         $this->_reset();
 
         // checking duration is int or empty
-        if(strlen($arr['duration']) > 0 && !ctype_digit($arr['duration']))
+        if(strlen($arr['max_call_duration']) == 0)
+            $arr['max_call_duration'] = null;
+        else if(!ctype_digit($arr['max_call_duration']))
             $this->_set_error('max_call_duration', 'typechecking');
             
         if($this->get_errnb() > 0)

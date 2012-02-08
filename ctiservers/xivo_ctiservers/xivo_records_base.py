@@ -27,8 +27,11 @@ __author__    = 'Corentin Le Gall'
 import cjson
 import logging
 import os
+import os.path
 import time
 import urllib
+import random
+import string
 from xivo_ctiservers import xivo_records_db
 
 LENGTH_AGENT = 6
@@ -331,7 +334,24 @@ class XivoRecords():
                        }
             repstr = self.cset.__cjson_encode__(tosend)
 
-        return repstr
+        elif function == "getfile":
+            # send recorded file to CTI client
+            # received filename is absolute path
+            tosend   = {
+                    'class': 'records-campaign',
+                    'function': function,
+                    'returncode': 'ko:unknown'
+            }
+
+            filename = command.get('filename')
+            if os.path.exists(filename):
+                fileid   = ''.join(random.sample(string.uppercase + string.lowercase + string.digits, 10))
+                self.cset.filestodownload[fileid] = filename
+                tosend = { 'class'      : 'callcampaign-record',
+                           'tdirection' : 'download',
+                           'fileid'     : fileid }
+
+        return self.cset.__cjson_encode__(tosend)
 
 
     def __make_cron__(self):
@@ -405,25 +425,17 @@ class XivoRecords():
         if lsdir:
             idv = resultitem.get('id')
             prefix = record_base[:-4]
-            infile = '%s-in.wav' % prefix
-            outfile = '%s-out.wav' % prefix
 
-            if infile in lsdir:
-                log.info('%s file is in %s, removing it now' % (infile, record_path))
-                os.unlink('%s/%s-in.wav' % (record_path, prefix))
+            recfile = '%s.wav' % prefix
+            if recfile in lsdir:
+                log.info('%s file is in %s, removing it now' % (recfile, record_path))
+                os.unlink('%s/%s.wav' % (record_path, prefix))
                 ret = True
 
                 calldata = { 'recordstatus' : 'auto_purged' }
                 self.records_db.update_call(idv, calldata)
             else:
-                log.warning('did not find %s' % infile)
-
-            if outfile in lsdir:
-                log.info('%s file is in %s, removing it now' % (outfile, record_path))
-                os.unlink('%s/%s-out.wav' % (record_path, prefix))
-                ret = ret & True
-            else:
-                log.warning('did not find %s' % infile)
+                log.warning('did not find %s' % recfile)
         return ret
 
     def purge_records(self, arguments):
@@ -621,7 +633,8 @@ class XivoRecords():
                     if v in varsets:
                         sc.append('%s=%s' % (k, varsets.get(v)))
 
-            aid = self.cset.__ami_execute__(astid, 'monitor', channel, filenamecmd, 'false')
+      # mixin in & out channels
+            aid = self.cset.__ami_execute__(astid, 'monitor', channel, filenamecmd, 'true')
             self.recorded_channels[channel] = True
 
             rights = ''
@@ -696,20 +709,12 @@ class XivoRecords():
                 record_path = os.path.dirname(fullfilename)
                 record_base = os.path.basename(fullfilename)
                 prefix = record_base[:-4]
-                infile = '%s-in.wav' % prefix
-                outfile = '%s-out.wav' % prefix
-                if infile in lsdir:
-                    log.info('ok for %s : will move it' % infile)
-                    src = '%s/%s' % (source_records_path, infile)
-                    dst = '%s/%s' % (target_records_path, infile)
-                    try:
-                        os.rename(src, dst)
-                    except:
-                        log.exception('moving %s to %s' % (src, dst))
-                if outfile in lsdir:
-                    log.info('ok for %s : will move it' % outfile)
-                    src = '%s/%s' % (source_records_path, outfile)
-                    dst = '%s/%s' % (target_records_path, outfile)
+
+                recfile = '%s.wav' % prefix
+                if recfile in lsdir:
+                    log.info('ok for %s : will move it' % recfile)
+                    src = '%s/%s' % (source_records_path, recfile)
+                    dst = '%s/%s' % (target_records_path, recfile)
                     try:
                         os.rename(src, dst)
                     except:

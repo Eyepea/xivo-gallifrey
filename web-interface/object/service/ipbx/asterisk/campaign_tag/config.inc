@@ -34,7 +34,8 @@ $array['element']['action']['default'] = '';
 
 
 $array['filter'] = array();
-$array['filter']['name']   = array('set' => true,'chk' => 1, 'minlen' => '1');
+$array['filter']['name']   = array('set' => true,'chk' => 1, 'minlen' => '1', 'maxlen' => 16,
+	'regexp' => '/^[a-z0-9#\*\.\/_@:-]+$/i');
 $array['filter']['label']  = array('set' => false,'chk' => 2);
 $array['filter']['action'] = array('set' => false,'chk' => 2, 'key' => array('removenow','keep','purge'));
 
