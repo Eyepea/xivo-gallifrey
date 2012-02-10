@@ -96,6 +96,9 @@ Record
 ; fm_ipbxapplications-opt(stopmonitor)
 StopMonitor
 
+; fm_ipbxapplications-opt(ringing)
+Ringing
+
 ; fm_ipbxapplications-optgroup(timeout)
 Timeout
 

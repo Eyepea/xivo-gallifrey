@@ -196,6 +196,11 @@ endif;
 				    array('apparg_playback'		=> $ipbxapplications['playback']['arg']));
 	endif;
 
+        if(isset($ipbxapplications['ringing']) === true):
+                $this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/ringing',
+                                    array('apparg_ringing'          => $ipbxapplications['ringing']['arg']));
+        endif;
+
 	if(isset($ipbxapplications['absolutetimeout']) === true):
 		$this->file_include('bloc/service/ipbx/asterisk/call_management/voicemenu/ipbxapplication/absolutetimeout',
 				    array('apparg_absolutetimeout'	=> $ipbxapplications['absolutetimeout']['arg']));

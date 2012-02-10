@@ -389,6 +389,9 @@ $array['app']['setlanguage']['arg'][0] = array('regexp'	=> '/^[a-zA-Z]{2,3}(?:[_
 $array['app']['stopmonitor'] = array();
 $array['app']['stopmonitor']['displayname'] = 'StopMonitor';
 
+$array['app']['ringing'] = array();
+$array['app']['ringing']['displayname'] = 'Ringing';
+
 $array['app']['system'] = array();
 $array['app']['system']['displayname'] = 'System';
 $array['app']['system']['arg'] = array();

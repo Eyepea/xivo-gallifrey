@@ -282,6 +282,10 @@ $array['ipbxapplication']['playback']['arg']['noanswer']['default'] = 0;
 $array['ipbxapplication']['playback']['arg']['j'] = array();
 $array['ipbxapplication']['playback']['arg']['j']['default'] = 0;
 
+$array['ipbxapplication']['ringing'] = array();
+$array['ipbxapplication']['ringing']['category'] = 'sound';
+$array['ipbxapplication']['ringing']['arg'] = null;
+
 // TIMEOUT
 $array['ipbxapplication']['absolutetimeout'] = array();
 $array['ipbxapplication']['absolutetimeout']['category'] = 'timeout';

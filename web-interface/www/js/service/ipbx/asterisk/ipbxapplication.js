@@ -570,6 +570,11 @@ function xivo_ast_application_stopmonitor()
 	return(xivo_fm_select_add_ast_application('stopmonitor'));
 }
 
+function xivo_ast_application_ringing()
+{
+        return(xivo_fm_select_add_ast_application('ringing'));
+}
+
 function xivo_ast_application_vmauthenticate()
 {
 	if((mailbox = dwho_eid('it-ipbxapplication-vmauthenticate-mailbox')) === false
@@ -749,6 +754,7 @@ var xivo_ast_application = {
 	'setcidnum':		{displayname:	'SetCIDNum'},
 	'setlanguage':		{displayname:	'SetLanguage'},
 	'stopmonitor':		{displayname:	'StopMonitor'},
+        'ringing':              {displayname:   'Ringing'},
 	'wait':			{displayname:	'Wait'},
 	'waitexten':		{displayname:	'WaitExten'},
 	'waitforring':		{displayname:	'WaitForRing'},
